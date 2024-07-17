@@ -103,6 +103,7 @@ public final class GeneralData extends ConfigurationProperties {
 	public static int PASSWORDTRIES;
 	public static int PASSWORDLOCKTIME;
 	public static int PASSWORDIDLE;
+	public static String ORTHANCBASEURL;
 
 	private static final String DEFAULT_LANGUAGE = "en";
 	private static final boolean DEFAULT_SINGLEUSER = false;
@@ -162,6 +163,7 @@ public final class GeneralData extends ConfigurationProperties {
 	public static final int IMAGE_THUMBNAIL_MAX_WIDTH = 140;
 	public static final int MAX_PROFILE_IMAGE_FILE_SIZE_BYTES = 32768;
 	public static final String DEFAULT_PARAMSURL = "";
+	public static final String DEFAULT_ORTHANCBASEURL = "http://localhost:8042";
 
 	private static GeneralData mySingleData;
 
@@ -247,6 +249,7 @@ public final class GeneralData extends ConfigurationProperties {
 		PATIENTPHOTOSTORAGE = myGetProperty("PATIENTPHOTOSTORAGE", DEFAULT_PATIENTPHOTOSTORAGE);
 		SESSIONTIMEOUT = myGetProperty("SESSIONTIMEOUT", DEFAULT_SESSIONTIMEOUT);
 		PARAMSURL = myGetProperty("PARAMSURL", DEFAULT_PARAMSURL);
+		ORTHANCBASEURL = myGetProperty("", DEFAULT_ORTHANCBASEURL);
 	}
 
 	public static GeneralData getGeneralData() {

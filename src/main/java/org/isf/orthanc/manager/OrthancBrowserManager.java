@@ -21,41 +21,130 @@
  */
 package org.isf.orthanc.manager;
 
+import java.lang.StackWalker.Option;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.Optional;
 
+import org.isf.generaldata.GeneralData;
+import org.isf.orthanc.model.OrthancConfig;
+import org.isf.orthanc.model.OrthancPatient;
+import org.isf.orthanc.service.OrthancConfigIoOperation;
+import org.isf.orthanc.service.OrthancPatientIoOperation;
+import org.isf.utils.exception.OHServiceException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-@Service
+@Component
 public class OrthancBrowserManager {
 
-    @Value("${orthanc.url}")
-    private String orthancUrl;
+    private final String ORTHANCBASEURL = GeneralData.ORTHANCBASEURL;
 
-    @Value("${orthanc.username}")
-    private String username;
 
-    @Value("${orthanc.password}")
-    private String password;
+    
+    private OrthancConfigIoOperation orthancConfigIoOperation;
+    
+    private OrthancPatientIoOperation orthancPatientIoOperation;
 
-    private RestTemplate restTemplate = new RestTemplate();
+    public OrthancBrowserManager(OrthancConfigIoOperation orthancConfigIoOperation,
+			OrthancPatientIoOperation orthancPatientIoOperation) {
+		super();
+		this.orthancConfigIoOperation = orthancConfigIoOperation;
+		this.orthancPatientIoOperation = orthancPatientIoOperation;
+	}
 
-    public OrthancBrowserManager() {
-        HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
-        restTemplate.setRequestFactory(factory);
-    }
+    /**
+	 * Return {@link OrthancConfig}
+	 * 
+	 * @param userName - the user name
+	 * @return {@link OrthancConfig}. It could be {@code null}.
+	 * @throws OHServiceException 
+	 */
+	public OrthancConfig getOrtancConfigByUserName(String userName) throws OHServiceException {
+		return orthancConfigIoOperation.getOrtancConfigByUserName(userName);
+	}
+	
+	/**
+	 * Insert an {@link OrthancConfig} in the DB
+	 * 
+	 * @param orthancConfig - the {@link OrthancConfig} to insert
+	 * @return the {@link OrthancConfig} that has been inserted, {@code null} otherwise.
+	 * @throws OHServiceException 
+	 */
+	public OrthancConfig newOrthancConfig(OrthancConfig orthancConfig) throws OHServiceException {
+		return orthancConfigIoOperation.newOrthancConfig(orthancConfig);
+	}
+	
+	/**
+	 * Update an {@link OrthancConfig}
+	 * 
+	 * @param orthancConfig - the {@link OrthancConfig} to update
+	 * @return the {@link OrthancConfig} that has been updated, {@code null} otherwise.
+	 * @throws OHServiceException 
+	 */
+	public OrthancConfig updateOrthancConfig(OrthancConfig orthancConfig) throws OHServiceException {
+		return orthancConfigIoOperation.updateOrthancConfig(orthancConfig);
+	}
 
-    public String getStudies() {
-        HttpHeaders headers = createHeaders(username, password);
+	/**
+	 * Return {@link OrthancPatient}
+	 * 
+	 * @param patId - the patient id
+	 * @return {@link OrthancPatient}. It could be {@code null}.
+	 * @throws OHServiceException 
+	 */
+	public OrthancPatient getOrthancPatientByPatientId(int patId) throws OHServiceException {
+		return orthancPatientIoOperation.getOrthancPatientByPatientId(patId);
+	}
+	
+	/**
+	 * Return {@link OrthancPatient}
+	 * 
+	 * @param id - the orthan patient id
+	 * @return {@link OrthancPatient}. It could be {@code null}.
+	 * @throws OHServiceException 
+	 */
+	public OrthancPatient getOrthancPatientById(int id) throws OHServiceException {
+		Optional<OrthancPatient> optionalOrthancPatient = orthancPatientIoOperation.getOrthancPatientById(id);
+		if (optionalOrthancPatient.isPresent()) {
+			return optionalOrthancPatient.get();
+		}
+		return null;
+	}
+	
+	/**
+	 * Insert an {@link OrthancPatient} in the DB
+	 * 
+	 * @param orthancPatient - the {@link OrthancPatient} to insert
+	 * @return the {@link OrthancPatient} that has been inserted, {@code null} otherwise.
+	 * @throws OHServiceException 
+	 */
+	public OrthancPatient newOrthancPatient(OrthancPatient orthancPatient) throws OHServiceException {
+		return orthancPatientIoOperation.newOrthancPatient(orthancPatient);
+	}
+	
+	/**
+	 * Update an {@link OrthancPatient}
+	 * 
+	 * @param orthancPatient - the {@link OrthancPatient} to update
+	 * @return the {@link OrthancPatient} that has been updated, {@code null} otherwise.
+	 * @throws OHServiceException 
+	 */
+	public OrthancPatient updateOrthancPatient(OrthancPatient orthancPatient) throws OHServiceException {
+		return orthancPatientIoOperation.updateOrthancPatient(orthancPatient);
+	}
+
+	public String getStudies() {
+		HttpHeaders headers = createHeaders("u2g", "u2g123"); // use the credential of current user here
         HttpEntity<String> entity = new HttpEntity<>(headers);
-        ResponseEntity<String> response = restTemplate.exchange(orthancUrl + "/studies", HttpMethod.GET, entity, String.class);
+        RestTemplate restTemplate = createRestTemplate();
+        ResponseEntity<String> response = restTemplate.exchange(ORTHANCBASEURL + "/studies", HttpMethod.GET, entity, String.class);
         return response.getBody();
     }
 
@@ -68,5 +157,12 @@ public class OrthancBrowserManager {
             set("Authorization", authHeader);
             }
         };
+    }
+    
+    private RestTemplate createRestTemplate() {
+    	RestTemplate restTemplate = new RestTemplate();
+        HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
+        restTemplate.setRequestFactory(factory);
+        return restTemplate;
     }
 }
