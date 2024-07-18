@@ -51,10 +51,10 @@ public class OrthancUser {
 	private String ohUserId;
 	
 	@Column(name="ORC_USER_NAME")
-	private String orthancUserName;
+	private String username;
 	
 	@Column(name="ORC_PASSWORD")
-	private String orthancPassword;
+	private String password;
 
 	public OrthancConfig() {}
 
