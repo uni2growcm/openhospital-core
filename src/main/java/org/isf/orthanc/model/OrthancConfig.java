@@ -40,7 +40,7 @@ import jakarta.persistence.Table;
 @AttributeOverride(name = "lastModifiedBy", column = @Column(name = "ORC_LAST_MODIFIED_BY"))
 @AttributeOverride(name = "active", column = @Column(name = "ORC_ACTIVE"))
 @AttributeOverride(name = "lastModifiedDate", column = @Column(name = "ORC_LAST_MODIFIED_DATE"))
-public class OrthancConfig {
+public class OrthancUser {
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -48,13 +48,13 @@ public class OrthancConfig {
 	private Integer id; 
 	
 	@Column(name="ORC_US_ID_A")		
-	private String userName;
+	private String ohUserId;
 	
 	@Column(name="ORC_USER_NAME")
-	private String orthancUserName;
+	private String username;
 	
 	@Column(name="ORC_PASSWORD")
-	private String orthancPassword;
+	private String password;
 
 	public OrthancConfig() {}
 
