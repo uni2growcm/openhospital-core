@@ -1,7 +1,7 @@
 -- Orthanc Config Access And lien Orthanc Patient to patient int OH
 
 -- Create new table Orthanc config user access
-CREATE TABLE OH_ORTHANC_CONFIG (
+CREATE TABLE OH_ORTHANC_USERS (
   ORC_ID int(11) NOT NULL AUTO_INCREMENT,
   ORC_USER_NAME VARCHAR(50) NOT NULL,
   ORC_US_ID_A varchar(50) NOT NULL, 
