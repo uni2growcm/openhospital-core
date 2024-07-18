@@ -21,7 +21,6 @@
  */
 package org.isf.orthanc.manager;
 
-import java.lang.StackWalker.Option;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Optional;
@@ -32,7 +31,6 @@ import org.isf.orthanc.model.OrthancPatient;
 import org.isf.orthanc.service.OrthancConfigIoOperation;
 import org.isf.orthanc.service.OrthancPatientIoOperation;
 import org.isf.utils.exception.OHServiceException;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -45,7 +43,6 @@ import org.springframework.web.client.RestTemplate;
 public class OrthancBrowserManager {
 
     private final String ORTHANCBASEURL = GeneralData.ORTHANCBASEURL;
-
 
     
     private OrthancConfigIoOperation orthancConfigIoOperation;
