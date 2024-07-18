@@ -35,25 +35,25 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name="OH_ORTHANC_USERS")
 @EntityListeners(AuditingEntityListener.class)
-@AttributeOverride(name = "createdBy", column = @Column(name = "ORC_CREATED_BY", updatable = false))
-@AttributeOverride(name = "createdDate", column = @Column(name = "ORC_CREATED_DATE", updatable = false))
-@AttributeOverride(name = "lastModifiedBy", column = @Column(name = "ORC_LAST_MODIFIED_BY"))
-@AttributeOverride(name = "active", column = @Column(name = "ORC_ACTIVE"))
-@AttributeOverride(name = "lastModifiedDate", column = @Column(name = "ORC_LAST_MODIFIED_DATE"))
+@AttributeOverride(name = "createdBy", column = @Column(name = "ORU_CREATED_BY", updatable = false))
+@AttributeOverride(name = "createdDate", column = @Column(name = "ORU_CREATED_DATE", updatable = false))
+@AttributeOverride(name = "lastModifiedBy", column = @Column(name = "ORU_LAST_MODIFIED_BY"))
+@AttributeOverride(name = "active", column = @Column(name = "ORU_ACTIVE"))
+@AttributeOverride(name = "lastModifiedDate", column = @Column(name = "ORU_LAST_MODIFIED_DATE"))
 public class OrthancUser {
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name = "ORC_ID")
+	@Column(name = "ORU_ID")
 	private Integer id; 
 	
-	@Column(name="ORC_US_ID_A")		
+	@Column(name="ORU_US_ID_A")		
 	private String ohUserId;
 	
-	@Column(name="ORC_USER_NAME")
+	@Column(name="ORU_USER_NAME")
 	private String orthancUserName;
 	
-	@Column(name="ORC_PASSWORD")
+	@Column(name="ORU_PASSWORD")
 	private String orthancPassword;
 
 	public OrthancUser() {}
