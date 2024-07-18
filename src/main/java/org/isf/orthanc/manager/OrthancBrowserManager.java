@@ -51,7 +51,6 @@ public class OrthancBrowserManager {
 
     public OrthancBrowserManager(OrthancUserIoOperation orthancUserIoOperation,
 			OrthancPatientIoOperation orthancPatientIoOperation) {
-		super();
 		this.orthancUserIoOperation = orthancUserIoOperation;
 		this.orthancPatientIoOperation = orthancPatientIoOperation;
 	}

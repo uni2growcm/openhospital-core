@@ -33,7 +33,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name="OH_ORTHANC_CONFIG")
+@Table(name="OH_ORTHANC_USERS")
 @EntityListeners(AuditingEntityListener.class)
 @AttributeOverride(name = "createdBy", column = @Column(name = "ORC_CREATED_BY", updatable = false))
 @AttributeOverride(name = "createdDate", column = @Column(name = "ORC_CREATED_DATE", updatable = false))

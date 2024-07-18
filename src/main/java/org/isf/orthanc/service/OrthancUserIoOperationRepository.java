@@ -31,7 +31,7 @@ import feign.Param;
 @Repository
 public interface OrthancUserIoOperationRepository extends JpaRepository<OrthancUser, Integer> {
 
-	@Query("select or from OrthancConfig or where or.userName = :userName")
+	@Query("select or from OrthancUser or where or.ohUserId = :userName")
 	OrthancUser findByUserName(@Param("userName") String userName);
 
 }
