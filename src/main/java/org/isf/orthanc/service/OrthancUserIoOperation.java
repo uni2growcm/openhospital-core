@@ -21,7 +21,7 @@
  */
 package org.isf.orthanc.service;
 
-import org.isf.orthanc.model.OrthancConfig;
+import org.isf.orthanc.model.OrthancUser;
 import org.isf.utils.db.TranslateOHServiceException;
 import org.isf.utils.exception.OHServiceException;
 import org.springframework.stereotype.Service;
@@ -30,44 +30,44 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(rollbackFor=OHServiceException.class)
 @TranslateOHServiceException
-public class OrthancConfigIoOperation {
+public class OrthancUserIoOperation {
 
-	private OrthancConfigIoOperationRepository repository;
+	private OrthancUserIoOperationRepository repository;
 	
-	public OrthancConfigIoOperation(OrthancConfigIoOperationRepository repository) {
+	public OrthancUserIoOperation(OrthancUserIoOperationRepository repository) {
 		this.repository = repository;
 	}
 	
 	/**
-	 * Return {@link OrthancConfig}
+	 * Return {@link OrthancUser}
 	 * 
-	 * @param userName - the user name
-	 * @return {@link OrthancConfig}. It could be {@code null}.
+	 * @param ohUserId - the oh user name
+	 * @return {@link OrthancUser}. It could be {@code null}.
 	 * @throws OHServiceException 
 	 */
-	public OrthancConfig getOrtancConfigByUserName(String userName) throws OHServiceException {
-		return repository.findByUserName(userName);
+	public OrthancUser getOrtancUserByOhUserId(String ohUserId) throws OHServiceException {
+		return repository.findByUserName(ohUserId);
 	}
 	
 	/**
-	 * Insert an {@link OrthancConfig} in the DB
+	 * Insert an {@link OrthancUser} in the DB
 	 * 
-	 * @param orthancConfig - the {@link OrthancConfig} to insert
-	 * @return the {@link OrthancConfig} that has been inserted, {@code null} otherwise.
+	 * @param orthancUser - the {@link OrthancUser} to insert
+	 * @return the {@link OrthancUser} that has been inserted, {@code null} otherwise.
 	 * @throws OHServiceException 
 	 */
-	public OrthancConfig newOrthancConfig(OrthancConfig orthancConfig) throws OHServiceException {
-		return repository.save(orthancConfig);
+	public OrthancUser newOrthancUser(OrthancUser orthancUser) throws OHServiceException {
+		return repository.save(orthancUser);
 	}
 	
 	/**
-	 * Update an {@link OrthancConfig}
+	 * Update an {@link OrthancUser}
 	 * 
-	 * @param orthancConfig - the {@link OrthancConfig} to update
-	 * @return the {@link OrthancConfig} that has been updated, {@code null} otherwise.
+	 * @param orthancUser - the {@link OrthancUser} to update
+	 * @return the {@link OrthancUser} that has been updated, {@code null} otherwise.
 	 * @throws OHServiceException 
 	 */
-	public OrthancConfig updateOrthancConfig(OrthancConfig orthancConfig) throws OHServiceException {
-		return repository.save(orthancConfig);
+	public OrthancUser updateOrthancUser(OrthancUser orthancUser) throws OHServiceException {
+		return repository.save(orthancUser);
 	}
 }

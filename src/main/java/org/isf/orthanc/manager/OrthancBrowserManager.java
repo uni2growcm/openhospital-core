@@ -26,9 +26,9 @@ import java.util.Base64;
 import java.util.Optional;
 
 import org.isf.generaldata.GeneralData;
-import org.isf.orthanc.model.OrthancConfig;
 import org.isf.orthanc.model.OrthancPatient;
-import org.isf.orthanc.service.OrthancConfigIoOperation;
+import org.isf.orthanc.model.OrthancUser;
+import org.isf.orthanc.service.OrthancUserIoOperation;
 import org.isf.orthanc.service.OrthancPatientIoOperation;
 import org.isf.utils.exception.OHServiceException;
 import org.springframework.http.HttpEntity;
@@ -45,48 +45,48 @@ public class OrthancBrowserManager {
     private final String ORTHANCBASEURL = GeneralData.ORTHANCBASEURL;
 
     
-    private OrthancConfigIoOperation orthancConfigIoOperation;
+    private OrthancUserIoOperation orthancUserIoOperation;
     
     private OrthancPatientIoOperation orthancPatientIoOperation;
 
-    public OrthancBrowserManager(OrthancConfigIoOperation orthancConfigIoOperation,
+    public OrthancBrowserManager(OrthancUserIoOperation orthancUserIoOperation,
 			OrthancPatientIoOperation orthancPatientIoOperation) {
 		super();
-		this.orthancConfigIoOperation = orthancConfigIoOperation;
+		this.orthancUserIoOperation = orthancUserIoOperation;
 		this.orthancPatientIoOperation = orthancPatientIoOperation;
 	}
 
     /**
-	 * Return {@link OrthancConfig}
+	 * Return {@link OrthancUser}
 	 * 
-	 * @param userName - the user name
-	 * @return {@link OrthancConfig}. It could be {@code null}.
+	 * @param ohUserId - the oh user name
+	 * @return {@link OrthancUser}. It could be {@code null}.
 	 * @throws OHServiceException 
 	 */
-	public OrthancConfig getOrtancConfigByUserName(String userName) throws OHServiceException {
-		return orthancConfigIoOperation.getOrtancConfigByUserName(userName);
+	public OrthancUser getOrtancUserByOhUserId(String ohUserId) throws OHServiceException {
+		return orthancUserIoOperation.getOrtancUserByOhUserId(ohUserId);
 	}
 	
 	/**
-	 * Insert an {@link OrthancConfig} in the DB
+	 * Insert an {@link OrthancUser} in the DB
 	 * 
-	 * @param orthancConfig - the {@link OrthancConfig} to insert
-	 * @return the {@link OrthancConfig} that has been inserted, {@code null} otherwise.
+	 * @param orthancUser - the {@link OrthancUser} to insert
+	 * @return the {@link OrthancUser} that has been inserted, {@code null} otherwise.
 	 * @throws OHServiceException 
 	 */
-	public OrthancConfig newOrthancConfig(OrthancConfig orthancConfig) throws OHServiceException {
-		return orthancConfigIoOperation.newOrthancConfig(orthancConfig);
+	public OrthancUser newOrthancUser(OrthancUser orthancUser) throws OHServiceException {
+		return orthancUserIoOperation.newOrthancUser(orthancUser);
 	}
 	
 	/**
-	 * Update an {@link OrthancConfig}
+	 * Update an {@link OrthancUser}
 	 * 
-	 * @param orthancConfig - the {@link OrthancConfig} to update
-	 * @return the {@link OrthancConfig} that has been updated, {@code null} otherwise.
+	 * @param orthancUser - the {@link OrthancUser} to update
+	 * @return the {@link OrthancUser} that has been updated, {@code null} otherwise.
 	 * @throws OHServiceException 
 	 */
-	public OrthancConfig updateOrthancConfig(OrthancConfig orthancConfig) throws OHServiceException {
-		return orthancConfigIoOperation.updateOrthancConfig(orthancConfig);
+	public OrthancUser updateOrthancConfig(OrthancUser orthancUser) throws OHServiceException {
+		return orthancUserIoOperation.updateOrthancUser(orthancUser);
 	}
 
 	/**

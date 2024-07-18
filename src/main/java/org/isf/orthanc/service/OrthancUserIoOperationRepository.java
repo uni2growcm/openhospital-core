@@ -21,7 +21,7 @@
  */
 package org.isf.orthanc.service;
 
-import org.isf.orthanc.model.OrthancConfig;
+import org.isf.orthanc.model.OrthancUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -29,9 +29,9 @@ import org.springframework.stereotype.Repository;
 import feign.Param;
 
 @Repository
-public interface OrthancConfigIoOperationRepository extends JpaRepository<OrthancConfig, Integer> {
+public interface OrthancUserIoOperationRepository extends JpaRepository<OrthancUser, Integer> {
 
 	@Query("select or from OrthancConfig or where or.userName = :userName")
-	OrthancConfig findByUserName(@Param("userName") String userName);
+	OrthancUser findByUserName(@Param("userName") String userName);
 
 }

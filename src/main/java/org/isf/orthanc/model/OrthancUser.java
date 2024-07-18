@@ -51,22 +51,22 @@ public class OrthancUser {
 	private String ohUserId;
 	
 	@Column(name="ORC_USER_NAME")
-	private String username;
+	private String orthancUserName;
 	
 	@Column(name="ORC_PASSWORD")
-	private String password;
+	private String orthancPassword;
 
-	public OrthancConfig() {}
+	public OrthancUser() {}
 
-	public OrthancConfig(String userName, String orthancUserName, String orthancPassword) {
-		this.userName = userName;
+	public OrthancUser(String ohUserId, String orthancUserName, String orthancPassword) {
+		this.ohUserId = ohUserId;
 		this.orthancUserName = orthancUserName;
 		this.orthancPassword = orthancPassword;
 	}
 
-	public OrthancConfig(Integer id, String userName, String orthancUserName, String orthancPassword) {
+	public OrthancUser(Integer id, String ohUserId, String orthancUserName, String orthancPassword) {
 		this.id = id;
-		this.userName = userName;
+		this.ohUserId = ohUserId;
 		this.orthancUserName = orthancUserName;
 		this.orthancPassword = orthancPassword;
 	}
@@ -79,12 +79,12 @@ public class OrthancUser {
 		this.id = id;
 	}
 
-	public String getUserName() {
-		return userName;
+	public String getOhUserId() {
+		return ohUserId;
 	}
 
-	public void setUserName(String userName) {
-		this.userName = userName;
+	public void setOhUserId(String ohUserId) {
+		this.ohUserId = ohUserId;
 	}
 
 	public String getOrthancUserName() {
