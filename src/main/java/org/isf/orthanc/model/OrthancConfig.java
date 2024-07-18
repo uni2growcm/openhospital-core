@@ -48,7 +48,7 @@ public class OrthancUser {
 	private Integer id; 
 	
 	@Column(name="ORC_US_ID_A")		
-	private String userName;
+	private String ohUserId;
 	
 	@Column(name="ORC_USER_NAME")
 	private String orthancUserName;
