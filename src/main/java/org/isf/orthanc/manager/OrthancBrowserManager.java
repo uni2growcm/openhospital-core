@@ -144,6 +144,17 @@ public class OrthancBrowserManager {
         ResponseEntity<String> response = restTemplate.exchange(ORTHANCBASEURL + "/studies", HttpMethod.GET, entity, String.class);
         return response.getBody();
     }
+	
+	public Object getPatientById(String id, String userName) throws OHServiceException {
+		OrthancConfig config = orthancConfigIoOperation.getOrtancConfigByUserName(userName);
+		String user = config.getOrthancUserName();
+		String password = config.getOrthancPassword();
+		HttpHeaders headers = createHeaders(user, password);
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        RestTemplate restTemplate = createRestTemplate();
+        ResponseEntity<Object> response = restTemplate.exchange(ORTHANCBASEURL + "/patients/"+id, HttpMethod.GET, entity, Object.class);
+        return response.getBody();
+    }
 
     private HttpHeaders createHeaders(String username, String password) {
         return new HttpHeaders() {
