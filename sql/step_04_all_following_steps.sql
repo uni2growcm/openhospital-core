@@ -1,3 +1,4 @@
+
 source step_05_update_menu_i18n.sql;
 source step_06_opd_extended.sql;
 source step_07_modifiche_matiri.sql;
@@ -105,3 +106,4 @@ source step_a108_audit_dicom_type_and_dicom_data.sql;
 source step_a109_update_user_settings_table_constraints_and_add_usergroups_permissions.sql;
 source step_a110_update_operations_table_change_ope_for_to_enum.sql;
 source step_a111_add_missing_lock_columns.sql;
+source u2g_update/step_x_add_table_reductionplan.sql;
