@@ -114,6 +114,27 @@ public class Medical extends Auditable<String> implements Comparable<Medical>, C
 	@NotNull
 	@Column(name = "MDSR_MIN_STOCK_QTI")
 	private double minqty;
+	
+	/**
+	 * Conditioning
+	 */
+	@NotNull
+	@Column(name = "MDSR_CONDITIONING")
+	private String conditioning;
+	
+	/**
+	 * Shape
+	 */
+	@NotNull
+	@Column(name = "MDSR_SHAPE")
+	private String shape;
+	
+	/**
+	 * Dosing
+	 */
+	@NotNull
+	@Column(name = "MDSR_DOSING")
+	private String dosing;
 
 	/**
 	 * Lock control
@@ -151,6 +172,24 @@ public class Medical extends Auditable<String> implements Comparable<Medical>, C
 		this.inqty = inqty;
 		this.outqty = outqty;
 	}
+	
+	public Medical(Integer code, MedicalType type, String prod_code, String description,
+					double initialqty, Integer pcsperpck, double minqty, double inqty, double outqty, Integer lock, String conditioning, String shape, String dosing) {
+				super();
+				this.code = code;
+				this.type = type;
+				this.prod_code = prod_code;
+				this.description = description;
+				this.initialqty = initialqty;
+				this.pcsperpck = pcsperpck;
+				this.minqty=minqty;
+				this.inqty = inqty;
+				this.outqty = outqty;
+				this.lock = lock;
+				this.conditioning = conditioning;
+				this.shape = shape;
+				this.dosing = dosing;
+			}
 
 	public double getTotalQuantity() {
 		return initialqty + inqty - outqty;
@@ -230,6 +269,30 @@ public class Medical extends Auditable<String> implements Comparable<Medical>, C
 
 	public void setPcsperpck(Integer pcsperpck) {
 		this.pcsperpck = pcsperpck;
+	}
+	
+	public String getConditioning() {
+		return conditioning;
+	}
+
+	public void setConditioning(String conditioning) {
+		this.conditioning = conditioning;
+	}
+
+	public String getShape() {
+		return shape;
+	}
+
+	public void setShape(String shape) {
+		this.shape = shape;
+	}
+
+	public String getDosing() {
+		return dosing;
+	}
+
+	public void setDosing(String dosing) {
+		this.dosing = dosing;
 	}
 
 	public char getDeleted() {
