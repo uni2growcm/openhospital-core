@@ -22,12 +22,12 @@
 
 package org.isf.mortuary.manager;
 
+import java.util.List;
+
 import org.isf.mortuary.model.Mortuary;
 import org.isf.mortuary.service.MortuaryIoOperations;
 import org.isf.utils.exception.OHServiceException;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 @Component
 public class MortuaryBrowserManager {
@@ -55,8 +55,8 @@ public class MortuaryBrowserManager {
 	 * @return mortuary that has been updated.
 	 * @throws OHServiceException if an error occurs during the update.
 	 */
-	public Mortuary updateMortary(Mortuary mortuary) throws OHServiceException {
-		return ioOperations.updateMortary(mortuary);
+	public Mortuary updateMortuary(Mortuary mortuary) throws OHServiceException {
+		return ioOperations.updateMortuary(mortuary);
 	}
 
 	/**
@@ -68,5 +68,37 @@ public class MortuaryBrowserManager {
 	 */
 	public Mortuary newMortuary(Mortuary mortuary) throws OHServiceException {
 		return ioOperations.newMortuary(mortuary);
+	}
+
+	/**
+	 * Deletes a {@link Mortuary} in the DB.
+	 *
+	 * @param mortuary - the item to delete
+	 * @throws OHServiceException
+	 */
+	public void deleteMortuary(Mortuary mortuary) throws OHServiceException {
+		ioOperations.deleteMortuary(mortuary);
+	}
+
+	/**
+	 * Checks if the code is already in use.
+	 *
+	 * @param code - the {@link Mortuary} code
+	 * @return {@code true} if the code is already in use, {@code false} otherwise
+	 * @throws OHServiceException
+	 */
+	public boolean isCodePresent(String code) throws OHServiceException {
+		return ioOperations.isCodePresent(code);
+	}
+
+	/**
+	 * Returns the {@link Mortuary} based on vaccine type code.
+	 *
+	 * @param code - the  {@link Mortuary} code.
+	 * @return the {@link Mortuary} or {@literal null} if none found
+	 * @throws OHServiceException
+	 */
+	public Mortuary findMortuaryByCode(String code) throws OHServiceException {
+		return ioOperations.findMortuaryByCode(code);
 	}
 }

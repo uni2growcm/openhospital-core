@@ -23,10 +23,12 @@ package org.isf.mortuary.service;
 
 import java.util.List;
 
+import org.isf.generaldata.MessageBundle;
 import org.isf.mortuary.model.Mortuary;
 import org.isf.utils.db.TranslateOHServiceException;
 import org.isf.utils.exception.OHServiceException;
-import org.isf.ward.model.Ward;
+import org.isf.utils.exception.model.OHExceptionMessage;
+import org.isf.vactype.model.VaccineType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,16 +43,12 @@ public class MortuaryIoOperations {
 		this.repository = repository;
 	}
 
-	public long countAllActiveMortuaries() throws OHServiceException {
-		return repository.countAllActiveMortuaries();
-	}
-
 	/**
 	 * Retrieves all stored {@link Mortuary}s
 	 * @return
 	 */
 	public List<Mortuary> getMortuaries() throws OHServiceException {
-		return repository.findAllMortuariesByOrderByDescriptionAsc();
+		return repository.findAllMortuaries();
 	}
 
 	/**
@@ -60,7 +58,7 @@ public class MortuaryIoOperations {
 	 * @return mortuary that has been updated.
 	 * @throws OHServiceException if an error occurs during the update.
 	 */
-	public Mortuary updateMortary(Mortuary mortuary) throws OHServiceException {
+	public Mortuary updateMortuary(Mortuary mortuary) throws OHServiceException {
 		return repository.save(mortuary);
 	}
 
@@ -73,5 +71,40 @@ public class MortuaryIoOperations {
 	 */
 	public Mortuary newMortuary(Mortuary mortuary) throws OHServiceException {
 		return repository.save(mortuary);
+	}
+
+	/**
+	 * Deletes a {@link Mortuary} in the DB.
+	 *
+	 * @param mortuary - the item to delete
+	 * @throws OHServiceException
+	 */
+	public void deleteMortuary(Mortuary mortuary) throws OHServiceException {
+		repository.delete(mortuary);
+	}
+
+	/**
+	 * Checks if the code is already in use.
+	 *
+	 * @param code - the {@link Mortuary} code
+	 * @return {@code true} if the code is already in use, {@code false} otherwise
+	 * @throws OHServiceException
+	 */
+	public boolean isCodePresent(String code) throws OHServiceException {
+		return repository.existsById(code);
+	}
+
+	/**
+	 * Returns the {@link Mortuary} based on code
+	 *
+	 * @param code - the code, must not be {@literal null}
+	 * @return the {@link Mortuary} or {@literal null} if none found
+	 * @throws OHServiceException if {@code code} is {@literal null}
+	 */
+	public Mortuary findMortuaryByCode(String code) throws OHServiceException {
+		if (code != null) {
+			return repository.findById(code).orElse(null);
+		}
+		throw new OHServiceException(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuary.codemostnotbenull.msg")));//"Mortuary code must not be null.";
 	}
 }

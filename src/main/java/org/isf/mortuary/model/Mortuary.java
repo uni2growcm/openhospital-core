@@ -29,10 +29,11 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Entity
 @Table(name = "OH_MORTUARY")
 @EntityListeners(AuditingEntityListener.class)
-@AttributeOverride(name = "code", column = @Column(name = "MOR_ID", updatable = false))
-@AttributeOverride(name = "description", column = @Column(name = "MOR_NAME"))
-@AttributeOverride(name = "days max", column = @Column(name = "MOR_DMAX"))
-@AttributeOverride(name = "days min", column = @Column(name = "MOR_DMIN"))
+@AttributeOverride(name = "createdBy", column = @Column(name = "MOR_CREATED_BY", updatable = false))
+@AttributeOverride(name = "createdDate", column = @Column(name = "MOR_CREATED_DATE", updatable = false))
+@AttributeOverride(name = "lastModifiedBy", column = @Column(name = "MOR_LAST_MODIFIED_BY"))
+@AttributeOverride(name = "active", column = @Column(name = "MOR_ACTIVE"))
+@AttributeOverride(name = "lastModifiedDate", column = @Column(name = "MOR_LAST_MODIFIED_DATE"))
 public class Mortuary extends Auditable<String> {
 
 	@Id
@@ -40,7 +41,7 @@ public class Mortuary extends Auditable<String> {
 	private String code;
 
 	@NotNull
-	@Column(name = "WRD_NAME")
+	@Column(name = "MOR_NAME")
 	private String description;
 
 	@NotNull
@@ -92,5 +93,9 @@ public class Mortuary extends Auditable<String> {
 
 	public int getDaysMin() {
 		return daysMin;
+	}
+
+	public String print() {
+		return "mortuary code=." + getCode() + ". description=." + getDescription() + '.';
 	}
 }

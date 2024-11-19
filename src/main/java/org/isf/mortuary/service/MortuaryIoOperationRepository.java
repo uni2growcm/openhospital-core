@@ -31,19 +31,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface MortuaryIoOperationRepository extends JpaRepository<Mortuary, String> {
 
-	@Query(value = "SELECT m FROM OH_MORTUARY m WHERE  ORDER BY w.description")
-	List<Mortuary> findAllMortuariesByOrderByDescriptionAsc();
+	@Query(value = "SELECT m FROM Mortuary m ")
+	List<Mortuary> findAllMortuaries();
 
-	//List<Mortuary> findByCodeNot(String code);
-
-	//List<Mortuary> findByCodeContains(String id);
-
-	//List<Mortuary> findByIsOpdIsTrue();
-
-	//List<Mortuary> findByBedsGreaterThanZero();
-
-	@Query("select count(m) from OH_MORTUARY m")
-	long countAllActiveMortuaries();
 }
 
 
