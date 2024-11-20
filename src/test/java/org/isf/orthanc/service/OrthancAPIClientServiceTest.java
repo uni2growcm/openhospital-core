@@ -26,6 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.isf.OHCoreTestCase;
 import org.isf.utils.exception.OHServiceException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +48,7 @@ public class OrthancAPIClientServiceTest extends OHCoreTestCase {
 
 	@Test
 	@DisplayName("Should successfully establish connection to ORTHANC server")
+	@Disabled("Disabled because ORTHANC may not be properly configured")
 	void testTestConnection() throws OHServiceException {
 		assertThat(service.testConnection()).isTrue();
 	}
