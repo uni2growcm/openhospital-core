@@ -106,3 +106,4 @@ source step_a109_update_user_settings_table_constraints_and_add_usergroups_permi
 source step_a110_update_operations_table_change_ope_for_to_enum.sql;
 source step_a111_add_missing_lock_columns.sql;
 source u2g_udapte/step_3_add_column_medicaldsr.sql;
+source u2g_udapte/step_7_add_column_medicaldsrtype.sql;
