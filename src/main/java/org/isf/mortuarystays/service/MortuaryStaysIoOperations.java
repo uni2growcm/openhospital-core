@@ -19,16 +19,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.isf.mortuary.service;
+package org.isf.mortuarystays.service;
 
 import java.util.List;
 
 import org.isf.generaldata.MessageBundle;
-import org.isf.mortuary.model.Mortuary;
+import org.isf.mortuarystays.model.MortuaryStays;
 import org.isf.utils.db.TranslateOHServiceException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.model.OHExceptionMessage;
-import org.isf.vactype.model.VaccineType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,57 +35,57 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(rollbackFor = OHServiceException.class)
 @TranslateOHServiceException
-public class MortuaryIoOperations {
-	private MortuaryIoOperationRepository repository;
+public class MortuaryStaysIoOperations {
+	private MortuaryStaysIoOperationRepository repository;
 
-	public MortuaryIoOperations(MortuaryIoOperationRepository repository) {
+	public MortuaryStaysIoOperations(MortuaryStaysIoOperationRepository repository) {
 		this.repository = repository;
 	}
 
 	/**
-	 * Retrieves all stored {@link Mortuary}s
+	 * Retrieves all stored {@link MortuaryStays}s
 	 * @return
 	 */
-	public List<Mortuary> getMortuaries() throws OHServiceException {
+	public List<MortuaryStays> getMortuaries() throws OHServiceException {
 		return repository.findAllMortuaries();
 	}
 
 	/**
-	 * Updates the specified {@link Mortuary}.
+	 * Updates the specified {@link MortuaryStays}.
 	 *
-	 * @param mortuary - the {@link Mortuary} to update.
+	 * @param mortuary - the {@link MortuaryStays} to update.
 	 * @return mortuary that has been updated.
 	 * @throws OHServiceException if an error occurs during the update.
 	 */
-	public Mortuary updateMortuary(Mortuary mortuary) throws OHServiceException {
+	public MortuaryStays update(MortuaryStays mortuary) throws OHServiceException {
 		return repository.save(mortuary);
 	}
 
 	/**
-	 * Stores the specified {@link Mortuary}.
+	 * Stores the specified {@link MortuaryStays}.
 	 *
 	 * @param mortuary the mortuary to store.
 	 * @return mortuary that has been stored.
 	 * @throws OHServiceException if an error occurs storing the mortuary.
 	 */
-	public Mortuary newMortuary(Mortuary mortuary) throws OHServiceException {
+	public MortuaryStays newMortuaryStays (MortuaryStays mortuary) throws OHServiceException {
 		return repository.save(mortuary);
 	}
 
 	/**
-	 * Deletes a {@link Mortuary} in the DB.
+	 * Deletes a {@link MortuaryStays} in the DB.
 	 *
 	 * @param mortuary - the item to delete
 	 * @throws OHServiceException
 	 */
-	public void deleteMortuary(Mortuary mortuary) throws OHServiceException {
+	public void delete(MortuaryStays mortuary) throws OHServiceException {
 		repository.delete(mortuary);
 	}
 
 	/**
 	 * Checks if the code is already in use.
 	 *
-	 * @param code - the {@link Mortuary} code
+	 * @param code - the {@link MortuaryStays} code
 	 * @return {@code true} if the code is already in use, {@code false} otherwise
 	 * @throws OHServiceException
 	 */
@@ -95,16 +94,16 @@ public class MortuaryIoOperations {
 	}
 
 	/**
-	 * Returns the {@link Mortuary} based on code
+	 * Returns the {@link MortuaryStays} based on code
 	 *
 	 * @param code - the code, must not be {@literal null}
-	 * @return the {@link Mortuary} or {@literal null} if none found
+	 * @return the {@link MortuaryStays} or {@literal null} if none found
 	 * @throws OHServiceException if {@code code} is {@literal null}
 	 */
-	public Mortuary findMortuaryByCode(String code) throws OHServiceException {
+	public MortuaryStays getByCode(String code) throws OHServiceException {
 		if (code != null) {
 			return repository.findById(code).orElse(null);
 		}
-		throw new OHServiceException(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuary.codemostnotbenull.msg")));//"Mortuary code must not be null.";
+		throw new OHServiceException(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuarystays.codemostnotbenull.msg")));//"Mortuary code must not be null.";
 	}
 }

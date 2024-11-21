@@ -19,7 +19,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.isf.mortuary.model;
+package org.isf.mortuarystays.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -27,37 +27,42 @@ import org.isf.utils.db.Auditable;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
-@Table(name = "OH_MORTUARY")
+@Table(name = "OH_MORTUARYSTAYS")
 @EntityListeners(AuditingEntityListener.class)
-@AttributeOverride(name = "createdBy", column = @Column(name = "MOR_CREATED_BY", updatable = false))
-@AttributeOverride(name = "createdDate", column = @Column(name = "MOR_CREATED_DATE", updatable = false))
-@AttributeOverride(name = "lastModifiedBy", column = @Column(name = "MOR_LAST_MODIFIED_BY"))
-@AttributeOverride(name = "active", column = @Column(name = "MOR_ACTIVE"))
-@AttributeOverride(name = "lastModifiedDate", column = @Column(name = "MOR_LAST_MODIFIED_DATE"))
-public class Mortuary extends Auditable<String> {
+@AttributeOverride(name = "createdBy", column = @Column(name = "MRTST_CREATED_BY", updatable = false))
+@AttributeOverride(name = "createdDate", column = @Column(name = "MRTST_CREATED_DATE", updatable = false))
+@AttributeOverride(name = "lastModifiedBy", column = @Column(name = "MRTST_LAST_MODIFIED_BY"))
+@AttributeOverride(name = "active", column = @Column(name = "MRTST_ACTIVE"))
+@AttributeOverride(name = "lastModifiedDate", column = @Column(name = "MRTST_LAST_MODIFIED_DATE"))
+public class MortuaryStays extends Auditable<String> {
 
 	@Id
-	@Column(name = "MOR_ID")
+	@Column(name = "MRTST_CODE")
 	private String code;
 
 	@NotNull
-	@Column(name = "MOR_NAME")
+	@Column(name = "MRTST_NAME")
+	private String name;
+
+	@NotNull
+	@Column(name = "MRTST_DESC")
 	private String description;
 
 	@NotNull
-	@Column(name = "MOR_DMAX")
+	@Column(name = "MRTST_MAX_DAYS")
 	private int daysMax;
 
 	@NotNull
-	@Column(name = "MOR_DMIN")
+	@Column(name = "MRTST_MIN_DAYS")
 	private int daysMin;
 
-	public Mortuary(){
+	public MortuaryStays(){
 		super();
 	}
 
-	public Mortuary(String code, String description, int daysMax, int daysMin){
+	public MortuaryStays(String code, String name,String description, int daysMax, int daysMin){
 		this.code = code;
+		this.name = name;
 		this.description = description;
 		this.daysMax = daysMax;
 		this.daysMin = daysMin;
@@ -69,6 +74,14 @@ public class Mortuary extends Auditable<String> {
 
 	public String getCode() {
 		return code;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getName() {
+		return name;
 	}
 
 	public void setDescription(String description) {
@@ -96,6 +109,6 @@ public class Mortuary extends Auditable<String> {
 	}
 
 	public String print() {
-		return "mortuary code=." + getCode() + ". description=." + getDescription() + '.';
+		return "mortuarystays code=." + getCode() + ". description=." + getDescription() + ". name=." + getName() +'.';
 	}
 }

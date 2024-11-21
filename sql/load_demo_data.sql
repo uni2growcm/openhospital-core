@@ -1589,7 +1589,7 @@ INSERT INTO `oh_groupmenu` (`GM_ID`, `GM_UG_ID_A`, `GM_MNI_ID_A`, `GM_ACTIVE`, `
 INSERT INTO `oh_groupmenu` (`GM_ID`, `GM_UG_ID_A`, `GM_MNI_ID_A`, `GM_ACTIVE`, `GM_CREATED_BY`, `GM_CREATED_DATE`, `GM_LAST_MODIFIED_BY`, `GM_LAST_MODIFIED_DATE`) VALUES (344,'admin','btnmedicalswarddelete',1,NULL,NULL,NULL,NULL);
 INSERT INTO `oh_groupmenu` (`GM_ID`, `GM_UG_ID_A`, `GM_MNI_ID_A`, `GM_ACTIVE`, `GM_CREATED_BY`, `GM_CREATED_DATE`, `GM_LAST_MODIFIED_BY`, `GM_LAST_MODIFIED_DATE`) VALUES (345,'admin','inventory',1,NULL,NULL,NULL,NULL);
 INSERT INTO `oh_groupmenu` (`GM_ID`, `GM_UG_ID_A`, `GM_MNI_ID_A`, `GM_ACTIVE`, `GM_CREATED_BY`, `GM_CREATED_DATE`, `GM_LAST_MODIFIED_BY`, `GM_LAST_MODIFIED_DATE`) VALUES (346,'admin','inventoryward',1,NULL,NULL,NULL,NULL);
-INSERT INTO `oh_groupmenu` (`GM_ID`, `GM_UG_ID_A`, `GM_MNI_ID_A`, `GM_ACTIVE`, `GM_CREATED_BY`, `GM_CREATED_DATE`, `GM_LAST_MODIFIED_BY`, `GM_LAST_MODIFIED_DATE`) VALUES (347,'admin','mortuary',1,NULL,NULL,NULL,NULL);
+INSERT INTO `oh_groupmenu` (`GM_ID`, `GM_UG_ID_A`, `GM_MNI_ID_A`, `GM_ACTIVE`, `GM_CREATED_BY`, `GM_CREATED_DATE`, `GM_LAST_MODIFIED_BY`, `GM_LAST_MODIFIED_DATE`) VALUES (347,'admin','mortuarystays',1,NULL,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `oh_groupmenu` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -3125,19 +3125,19 @@ INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTI
 INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('ward','angal.menu.btn.ward','angal.menu.ward','x','W','generaldata','org.isf.ward.gui.WardBrowser','N',2);
 INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('worksheet','angal.menu.btn.worksheet','angal.menu.worksheet','x','W','main','org.isf.visits.gui.VisitView','N',7);
 INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('inventory','angal.menu.btn.inventory','angal.menu.inventory','x','I','pharmacy','org.isf.medicalinventory.gui.InventoryBrowser','N',6);
-INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('mortuary', 'angal.menu.btn.mortuary', 'angal.menu.mortuary', 'x', 'U', 'generaldata', 'org.isf.mortuary.gui.MortuaryBrowser','N', 11);
+INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('mortuarystays', 'angal.menu.btn.mortuarystays', 'angal.menu.mortuarystays', 'x', 'U', 'generaldata', 'org.isf.mortuarystays.gui.MortuaryStaysBrowser','N', 11);
 /*!40000 ALTER TABLE `oh_menuitem` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Dumping data for table `oh_mortuary`
+-- Dumping data for table `oh_mortuarystays`
 --
 
-LOCK TABLES `oh_mortuary` WRITE;
-/*!40000 ALTER TABLE `oh_mortuary` DISABLE KEYS */;
-INSERT INTO `oh_mortuary` (`MOR_ID`, `MOR_NAME`, `MOR_DMAX`, `MOR_DMIN`, `MOR_CREATED_BY`, `MOR_CREATED_DATE`, `MOR_LAST_MODIFIED_BY`, `MOR_LAST_MODIFIED_DATE`, `MOR_ACTIVE`) VALUES ('1', 'Jean Piere', 4, 2, 'admin','2024-11-19 14:41:33',NULL,NULL,1 );
-INSERT INTO `oh_mortuary` (`MOR_ID`, `MOR_NAME`, `MOR_DMAX`, `MOR_DMIN`, `MOR_CREATED_BY`, `MOR_CREATED_DATE`, `MOR_LAST_MODIFIED_BY`, `MOR_LAST_MODIFIED_DATE`, `MOR_ACTIVE`) VALUES ('2', 'Paul Bernard', 4, 1, 'admin','2024-11-19 14:47:33',NULL,NULL,1);
-/*!40000 ALTER TABLE `oh_mortuary` ENABLE KEYS */;
+LOCK TABLES `oh_mortuarystays` WRITE;
+/*!40000 ALTER TABLE `oh_mortuarystays` DISABLE KEYS */;
+INSERT INTO `oh_mortuarystays` (`MRTST_CODE`, `MRTST_NAME`, `MRTST_DESC`, `MRTST_MAX_DAYS`, `MRTST_MIN_DAYS`, `MRTST_CREATED_BY`, `MRTST_CREATED_DATE`, `MRTST_LAST_MODIFIED_BY`, `MRTST_LAST_MODIFIED_DATE`, `MRTST_ACTIVE`) VALUES ('s', 'Short stay', 'Stays in short time', 4, 1, 'admin','2024-11-19 14:41:33',NULL,NULL,1 );
+INSERT INTO `oh_mortuarystays` (`MRTST_CODE`, `MRTST_NAME`, `MRTST_DESC`, `MRTST_MAX_DAYS`, `MRTST_MIN_DAYS`, `MRTST_CREATED_BY`, `MRTST_CREATED_DATE`, `MRTST_LAST_MODIFIED_BY`, `MRTST_LAST_MODIFIED_DATE`, `MRTST_ACTIVE`) VALUES ('l', 'Long stay', 'Stays in long time', 8, 3, 'admin','2024-11-19 14:41:33',NULL,NULL,1 );
+/*!40000 ALTER TABLE `oh_mortuarystays` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
