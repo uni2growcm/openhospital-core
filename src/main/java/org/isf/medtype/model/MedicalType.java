@@ -48,15 +48,6 @@ public class MedicalType extends Auditable<String> {
 
 	@Column(name="MDSRT_DESC")	
 	private String description;
-	
-	@Column(name="MDSRT_SHAPE")	
-	private String shape;
-	
-	@Column(name="MDSRT_CONDITIONING")	
-	private String conditioning;
-	
-	@Column(name="MDSRT_DOSING")	
-	private String dosing;
 
 	@Transient
 	private volatile int hashCode;
@@ -88,30 +79,6 @@ public class MedicalType extends Auditable<String> {
 		this.description = description;
 	}
 	
-	public String getShape() {
-		return shape;
-	}
-
-	public void setShape(String shape) {
-		this.shape = shape;
-	}
-	
-	public String getConditioning() {
-		return conditioning;
-	}
-
-	public void setConditioning(String conditioning) {
-		this.conditioning = conditioning;
-	}
-	
-	public String getDosing() {
-		return dosing;
-	}
-
-	public void setDosing(String dosing) {
-		this.dosing = dosing;
-	}
-
 	@Override
 	public boolean equals(Object anObject) {
 		return anObject instanceof MedicalType && (getCode().equalsIgnoreCase(((MedicalType) anObject).getCode())
