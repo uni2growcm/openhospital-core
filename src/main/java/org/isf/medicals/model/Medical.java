@@ -175,16 +175,7 @@ public class Medical extends Auditable<String> implements Comparable<Medical>, C
 	
 	public Medical(Integer code, MedicalType type, String prod_code, String description,
 					double initialqty, Integer pcsperpck, double minqty, double inqty, double outqty, Integer lock, String conditioning, String shape, String dosing) {
-				super();
-				this.code = code;
-				this.type = type;
-				this.prod_code = prod_code;
-				this.description = description;
-				this.initialqty = initialqty;
-				this.pcsperpck = pcsperpck;
-				this.minqty=minqty;
-				this.inqty = inqty;
-				this.outqty = outqty;
+				super(code, type, prod_code, description, initialqty, pcsperpck, minqty, inqty, outqty);
 				this.lock = lock;
 				this.conditioning = conditioning;
 				this.shape = shape;
