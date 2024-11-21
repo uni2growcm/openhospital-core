@@ -108,7 +108,7 @@ public class MedicalType extends Auditable<String> {
 		return dosing;
 	}
 
-	public void setDosinf(String dosing) {
+	public void setDosing(String dosing) {
 		this.dosing = dosing;
 	}
 
