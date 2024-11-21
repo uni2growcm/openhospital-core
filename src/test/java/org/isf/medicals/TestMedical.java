@@ -37,9 +37,9 @@ public class TestMedical {
 	private double inqty = 30.30;
 	private double outqty = 20.20;
 	private double minqty = 40.40;
-	private String conditioning = "66";
-	private String shape = "xxl";
-	private String dosing = "37";
+	private String conditioning = "pack";
+	private String shape = "tablet";
+	private String dosing = "child: 2 per day, adult: 3 per days";
 	
 
 	public Medical setup(MedicalType medicalType, boolean usingSet) throws OHException {
