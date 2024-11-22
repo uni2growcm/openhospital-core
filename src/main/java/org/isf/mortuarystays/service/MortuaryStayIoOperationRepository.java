@@ -21,20 +21,12 @@
  */
 package org.isf.mortuarystays.service;
 
-import java.util.List;
-
-import org.isf.mortuarystays.model.MortuaryStays;
+import org.isf.mortuarystays.model.MortuaryStay;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface MortuaryStaysIoOperationRepository extends JpaRepository<MortuaryStays, String> {
-
-	@Query(value = "SELECT m FROM MortuaryStays m ")
-	List<MortuaryStays> findAllMortuaries();
-
-}
+public interface MortuaryStayIoOperationRepository extends JpaRepository<MortuaryStay, String> { }
 
 
 

@@ -34,7 +34,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @AttributeOverride(name = "lastModifiedBy", column = @Column(name = "MRTST_LAST_MODIFIED_BY"))
 @AttributeOverride(name = "active", column = @Column(name = "MRTST_ACTIVE"))
 @AttributeOverride(name = "lastModifiedDate", column = @Column(name = "MRTST_LAST_MODIFIED_DATE"))
-public class MortuaryStays extends Auditable<String> {
+public class MortuaryStay extends Auditable<String> {
 
 	@Id
 	@Column(name = "MRTST_CODE")
@@ -50,22 +50,22 @@ public class MortuaryStays extends Auditable<String> {
 
 	@NotNull
 	@Column(name = "MRTST_MAX_DAYS")
-	private int daysMax;
+	private int maxDays;
 
 	@NotNull
 	@Column(name = "MRTST_MIN_DAYS")
-	private int daysMin;
+	private int minDays;
 
-	public MortuaryStays(){
+	public MortuaryStay(){
 		super();
 	}
 
-	public MortuaryStays(String code, String name,String description, int daysMax, int daysMin){
+	public MortuaryStay(String code, String name, String description, int maxDays, int minDays){
 		this.code = code;
 		this.name = name;
 		this.description = description;
-		this.daysMax = daysMax;
-		this.daysMin = daysMin;
+		this.maxDays = maxDays;
+		this.minDays = minDays;
 	}
 
 	public void setCode(String code) {
@@ -92,20 +92,20 @@ public class MortuaryStays extends Auditable<String> {
 		return description;
 	}
 
-	public void setDaysMax(int daysMax) {
-		this.daysMax = daysMax;
+	public void setDaysMax(int maxDays) {
+		this.maxDays = maxDays;
 	}
 
 	public int getDaysMax() {
-		return daysMax;
+		return maxDays;
 	}
 
-	public void setDaysMin(int daysMin) {
-		this.daysMin = daysMin;
+	public void setDaysMin(int minDays) {
+		this.minDays = minDays;
 	}
 
 	public int getDaysMin() {
-		return daysMin;
+		return minDays;
 	}
 
 	public String print() {

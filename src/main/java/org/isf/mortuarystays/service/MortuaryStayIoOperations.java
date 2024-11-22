@@ -24,68 +24,68 @@ package org.isf.mortuarystays.service;
 import java.util.List;
 
 import org.isf.generaldata.MessageBundle;
-import org.isf.mortuarystays.model.MortuaryStays;
+import org.isf.mortuarystays.model.MortuaryStay;
 import org.isf.utils.db.TranslateOHServiceException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.model.OHExceptionMessage;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 
-@Service
+@Component
 @Transactional(rollbackFor = OHServiceException.class)
 @TranslateOHServiceException
-public class MortuaryStaysIoOperations {
-	private MortuaryStaysIoOperationRepository repository;
+public class MortuaryStayIoOperations {
+	private MortuaryStayIoOperationRepository repository;
 
-	public MortuaryStaysIoOperations(MortuaryStaysIoOperationRepository repository) {
+	public MortuaryStayIoOperations(MortuaryStayIoOperationRepository repository) {
 		this.repository = repository;
 	}
 
 	/**
-	 * Retrieves all stored {@link MortuaryStays}s
+	 * Retrieves all stored {@link MortuaryStay}s
 	 * @return
 	 */
-	public List<MortuaryStays> getMortuaries() throws OHServiceException {
-		return repository.findAllMortuaries();
+	public List<MortuaryStay> getAll() throws OHServiceException {
+		return repository.findAll();
 	}
 
 	/**
-	 * Updates the specified {@link MortuaryStays}.
+	 * Updates the specified {@link MortuaryStay}.
 	 *
-	 * @param mortuary - the {@link MortuaryStays} to update.
+	 * @param mortuary - the {@link MortuaryStay} to update.
 	 * @return mortuary that has been updated.
 	 * @throws OHServiceException if an error occurs during the update.
 	 */
-	public MortuaryStays update(MortuaryStays mortuary) throws OHServiceException {
+	public MortuaryStay update(MortuaryStay mortuary) throws OHServiceException {
 		return repository.save(mortuary);
 	}
 
 	/**
-	 * Stores the specified {@link MortuaryStays}.
+	 * Stores the specified {@link MortuaryStay}.
 	 *
 	 * @param mortuary the mortuary to store.
 	 * @return mortuary that has been stored.
 	 * @throws OHServiceException if an error occurs storing the mortuary.
 	 */
-	public MortuaryStays newMortuaryStays (MortuaryStays mortuary) throws OHServiceException {
+	public MortuaryStay add(MortuaryStay mortuary) throws OHServiceException {
 		return repository.save(mortuary);
 	}
 
 	/**
-	 * Deletes a {@link MortuaryStays} in the DB.
+	 * Deletes a {@link MortuaryStay} in the DB.
 	 *
 	 * @param mortuary - the item to delete
 	 * @throws OHServiceException
 	 */
-	public void delete(MortuaryStays mortuary) throws OHServiceException {
+	public void delete(MortuaryStay mortuary) throws OHServiceException {
 		repository.delete(mortuary);
 	}
 
 	/**
 	 * Checks if the code is already in use.
 	 *
-	 * @param code - the {@link MortuaryStays} code
+	 * @param code - the {@link MortuaryStay} code
 	 * @return {@code true} if the code is already in use, {@code false} otherwise
 	 * @throws OHServiceException
 	 */
@@ -94,13 +94,13 @@ public class MortuaryStaysIoOperations {
 	}
 
 	/**
-	 * Returns the {@link MortuaryStays} based on code
+	 * Returns the {@link MortuaryStay} based on code
 	 *
 	 * @param code - the code, must not be {@literal null}
-	 * @return the {@link MortuaryStays} or {@literal null} if none found
+	 * @return the {@link MortuaryStay} or {@literal null} if none found
 	 * @throws OHServiceException if {@code code} is {@literal null}
 	 */
-	public MortuaryStays getByCode(String code) throws OHServiceException {
+	public MortuaryStay getByCode(String code) throws OHServiceException {
 		if (code != null) {
 			return repository.findById(code).orElse(null);
 		}

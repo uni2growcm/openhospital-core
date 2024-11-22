@@ -26,71 +26,70 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.isf.generaldata.MessageBundle;
-import org.isf.mortuarystays.model.MortuaryStays;
-import org.isf.mortuarystays.service.MortuaryStaysIoOperations;
+import org.isf.mortuarystays.model.MortuaryStay;
+import org.isf.mortuarystays.service.MortuaryStayIoOperations;
 import org.isf.utils.exception.OHDataIntegrityViolationException;
 import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.model.OHExceptionMessage;
-import org.isf.utils.validator.EmailValidator;
 import org.springframework.stereotype.Component;
 
 @Component
 public class MortuaryStaysBrowserManager {
-	private MortuaryStaysIoOperations ioOperations;
+	private MortuaryStayIoOperations ioOperations;
 
-	public MortuaryStaysBrowserManager(MortuaryStaysIoOperations ioOperations) {
+	public MortuaryStaysBrowserManager(MortuaryStayIoOperations ioOperations) {
 		this.ioOperations = ioOperations;
 	}
 
 	/**
-	 * Returns all stored {@link MortuaryStays}s.
+	 * Returns all stored {@link MortuaryStay}s.
 	 * In case of error a message error is shown and a {@code null} value is returned.
 	 *
 	 * @return the stored Mortuaries.
 	 * @throws OHServiceException
 	 */
-	public List<MortuaryStays> getMortuariesStays() throws OHServiceException {
-		return ioOperations.getMortuaries();
+	public List<MortuaryStay> getAll() throws OHServiceException {
+		return ioOperations.getAll();
 	}
 
 	/**
-	 * Updates the specified {@link MortuaryStays}.
+	 * Updates the specified {@link MortuaryStay}.
 	 *
-	 * @param mortuary - the {@link MortuaryStays} to update.
+	 * @param mortuary - the {@link MortuaryStay} to update.
 	 * @return mortuary that has been updated.
 	 * @throws OHServiceException if an error occurs during the update.
 	 */
-	public MortuaryStays update(MortuaryStays mortuary) throws OHServiceException {
+	public MortuaryStay update(MortuaryStay mortuary) throws OHServiceException {
 		return ioOperations.update(mortuary);
 	}
 
 	/**
-	 * Stores the specified {@link MortuaryStays}.
+	 * Stores the specified {@link MortuaryStay}.
 	 *
 	 * @param mortuary the mortuary to store.
 	 * @return mortuary that has been stored.
 	 * @throws OHServiceException if an error occurs storing the mortuary.
 	 */
-	public MortuaryStays newMortuaryStays(MortuaryStays mortuary) throws OHServiceException {
-		validateMortuaryStays(mortuary, true);
-		return ioOperations.newMortuaryStays(mortuary);
+	public MortuaryStay add(MortuaryStay mortuary) throws OHServiceException {
+		validate(mortuary, true);
+		return ioOperations.add(mortuary);
 	}
 
 	/**
-	 * Deletes a {@link MortuaryStays} in the DB.
+	 * Deletes a {@link MortuaryStay} in the DB.
 	 *
 	 * @param mortuary - the item to delete
 	 * @throws OHServiceException
 	 */
-	public void delete(MortuaryStays mortuary) throws OHServiceException {
+	public void delete(MortuaryStay mortuary) throws OHServiceException {
 		ioOperations.delete(mortuary);
 	}
 
 	/**
 	 * Checks if the code is already in use.
 	 *
-	 * @param code - the {@link MortuaryStays} code
+	 * @param code - the {@link MortuaryStay} code
 	 * @return {@code true} if the code is already in use, {@code false} otherwise
 	 * @throws OHServiceException
 	 */
@@ -99,13 +98,13 @@ public class MortuaryStaysBrowserManager {
 	}
 
 	/**
-	 * Returns the {@link MortuaryStays} based on vaccine type code.
+	 * Returns the {@link MortuaryStay} based on vaccine type code.
 	 *
-	 * @param code - the  {@link MortuaryStays} code.
-	 * @return the {@link MortuaryStays} or {@literal null} if none found
+	 * @param code - the  {@link MortuaryStay} code.
+	 * @return the {@link MortuaryStay} or {@literal null} if none found
 	 * @throws OHServiceException
 	 */
-	public MortuaryStays getByCode(String code) throws OHServiceException {
+	public MortuaryStay getByCode(String code) throws OHServiceException {
 		if (code == null) {
 			throw new OHDataValidationException(new OHExceptionMessage(MessageBundle.getMessage("angal.common.pleaseinsertacode.msg")));
 		}
@@ -114,16 +113,16 @@ public class MortuaryStaysBrowserManager {
 
 	/**
 	 * Verify if the object is valid for CRUD and return a list of errors, if any.
-	 * @param mortuaryStays the {@link MortuaryStays} object to validate.
+	 * @param mortuaryStay the {@link MortuaryStay} object to validate.
 	 * @param insert {@code true} or updated {@code false}
 	 * @throws OHServiceException
 	 */
-	protected void validateMortuaryStays(MortuaryStays mortuaryStays, boolean insert) throws OHServiceException {
-		String code = mortuaryStays.getCode();
-		String desc = mortuaryStays.getDescription();
-		String name = mortuaryStays.getName();
-		int minD = mortuaryStays.getDaysMin();
-		int maxD = mortuaryStays.getDaysMax();
+	protected void validate(MortuaryStay mortuaryStay, boolean insert) throws OHServiceException {
+		String code = mortuaryStay.getCode();
+		String desc = mortuaryStay.getDescription();
+		String name = mortuaryStay.getName();
+		int minD = mortuaryStay.getDaysMin();
+		int maxD = mortuaryStay.getDaysMax();
 		List<OHExceptionMessage> errors = new ArrayList<>();
 		if (code.isEmpty()) {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.common.pleaseinsertacode.msg")));
@@ -151,7 +150,7 @@ public class MortuaryStaysBrowserManager {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuarystays.insertcoherencemaxminvalues.msg")));
 		}
 
-		if (insert && isCodePresent(mortuaryStays.getCode())) {
+		if (insert && isCodePresent(mortuaryStay.getCode())) {
 			throw new OHDataIntegrityViolationException(new OHExceptionMessage(MessageBundle.getMessage("angal.common.thecodeisalreadyinuse.msg")));
 		}
 		if (!errors.isEmpty()) {
