@@ -27,6 +27,7 @@ import java.util.List;
 import org.isf.generaldata.MessageBundle;
 import org.isf.medicals.model.Medical;
 import org.isf.medicals.service.MedicalsIoOperations;
+import org.isf.medicalstock.model.Movement;
 import org.isf.medtype.model.MedicalType;
 import org.isf.utils.exception.OHDataIntegrityViolationException;
 import org.isf.utils.exception.OHDataValidationException;
@@ -74,6 +75,7 @@ public class MedicalBrowsingManager {
 		return ioOperations.getMedicalByMedicalCode(prod_code);
 	}
 
+
 	/**
 	 * Returns all the medicals.
 	 *
@@ -94,6 +96,18 @@ public class MedicalBrowsingManager {
 	 */
 	public Page<Medical> getMedicalsPageable(int page, int size) throws OHServiceException {
 		return ioOperations.getMedicalsPageable(page, size);
+	}
+
+	/**
+	 * Returns the movements pageable.
+	 *
+	 * @param page - the page number.
+	 * @param size - the page size.
+	 * @return the list of {@link Movement}s pageable. It could be {@code empty}.
+	 * @throws OHServiceException
+	 */
+	public Page<Movement> getMovementsPageable(int page, int size) throws OHServiceException {
+		return ioOperations.getMovementsPageable(page, size);
 	}
 
 	/**

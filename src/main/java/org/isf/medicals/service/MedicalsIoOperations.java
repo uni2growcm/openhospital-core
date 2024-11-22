@@ -24,6 +24,7 @@ package org.isf.medicals.service;
 import java.util.List;
 
 import org.isf.medicals.model.Medical;
+import org.isf.medicalstock.model.Movement;
 import org.isf.medicalstock.service.MovementIoOperationRepository;
 import org.isf.utils.db.TranslateOHServiceException;
 import org.isf.utils.exception.OHServiceException;
@@ -127,6 +128,19 @@ public class MedicalsIoOperations {
 	public Page<Medical> getMedicalsPageable(int page, int size) throws OHServiceException {
 		Pageable pageable = PageRequest.of(page, size);
 		return repository.findAllPageable(pageable);
+	}
+
+	/**
+	 * Returns the movements pageable.
+	 *
+	 * @param page - the page number.
+	 * @param size - the page size.
+	 * @return the list of {@link Movement}s pageable. It could be {@code empty}.
+	 * @throws OHServiceException
+	 */
+	public Page<Movement> getMovementsPageable(int page, int size) throws OHServiceException {
+		Pageable pageable = PageRequest.of(page, size);
+		return repository.findAllMovementsPageable(pageable);
 	}
 
 	/**
