@@ -29,6 +29,7 @@ import org.springframework.cloud.openfeign.support.SpringMvcContract;
 import org.springframework.stereotype.Component;
 
 import feign.Feign;
+import feign.Logger;
 import feign.auth.BasicAuthRequestInterceptor;
 import feign.gson.GsonDecoder;
 import feign.gson.GsonEncoder;
@@ -58,6 +59,8 @@ public class FeignClientFactory {
 
 	private final SettingManager settingManager;
 
+	private OrthancAPIClient client;
+
 	public FeignClientFactory(SettingManager settingManager) {
 		this.settingManager = settingManager;
 	}
@@ -71,14 +74,18 @@ public class FeignClientFactory {
 	public OrthancAPIClient createClient() throws OHServiceException {
 		initConfig();
 
-		return Feign.builder()
+		if (client != null) return client;
+
+		client = Feign.builder()
 			.encoder(new GsonEncoder())
 			.decoder(new GsonDecoder())
 			.requestInterceptor(new BasicAuthRequestInterceptor(username, password))
 			.logger(new Slf4jLogger(OrthancAPIClient.class))
-			.logLevel(feign.Logger.Level.BASIC)
+			.logLevel(Logger.Level.FULL)
 			.contract(new SpringMvcContract())
 			.target(OrthancAPIClient.class, baseURL);
+
+		return client;
 	}
 
 	/**

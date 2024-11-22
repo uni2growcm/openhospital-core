@@ -21,9 +21,20 @@
  */
 package org.isf.orthanc.client;
 
+import java.util.List;
+
+import org.isf.orthanc.model.FindRequest;
+import org.isf.orthanc.model.InstanceResponse;
+import org.isf.orthanc.model.SeriesResponse;
+import org.isf.orthanc.model.StudyResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
+import feign.Response;
 
 /**
  * @author Silevester D.
@@ -33,4 +44,31 @@ import org.springframework.web.bind.annotation.GetMapping;
 public interface OrthancAPIClient {
 	@GetMapping(value = "/tools/now", produces = MediaType.TEXT_PLAIN_VALUE)
 	String testConnection();
+
+	@GetMapping(value = "/studies?expand=true", produces = MediaType.APPLICATION_JSON_VALUE)
+	List<StudyResponse> getAllStudies();
+
+	@PostMapping(value = "/tools/find", produces = MediaType.APPLICATION_JSON_VALUE)
+	List<StudyResponse> getPatientStudiesById(@RequestBody FindRequest request);
+
+	@GetMapping(value = "/patients/{id}/studies", produces = MediaType.APPLICATION_JSON_VALUE)
+	List<StudyResponse> getPatientStudiesByUuid(@PathVariable("id") String patientUuid);
+
+	@GetMapping(value = "/studies/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	StudyResponse getStudyById(@PathVariable("id") String id);
+
+	@GetMapping(value = "/studies/{id}/series", produces = MediaType.APPLICATION_JSON_VALUE)
+	List<SeriesResponse> getStudySeries(@PathVariable("id") String id);
+
+	@GetMapping(value = "/series/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	SeriesResponse getSeriesById(@PathVariable("id") String id);
+
+	@GetMapping(value = "/series/{id}/instances", produces = MediaType.APPLICATION_JSON_VALUE)
+	List<InstanceResponse> getSeriesInstances(@PathVariable("id") String id);
+
+	@GetMapping(value = "/instances/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	InstanceResponse getInstanceById(@PathVariable("id") String id);
+
+	@GetMapping(value = "/instances/{id}/preview", produces = MediaType.IMAGE_PNG_VALUE)
+	Response getInstancePreview(@PathVariable("id") String id);
 }
