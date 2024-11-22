@@ -1226,6 +1226,25 @@ INSERT INTO `oh_examrow` (`EXR_ID`, `EXR_EXA_ID_A`, `EXR_DESC`, `EXR_CREATED_BY`
 UNLOCK TABLES;
 
 --
+-- Dumping data for table `oh_examsreduction`
+--
+
+
+
+LOCK TABLES `oh_examsreduction` WRITE;
+/*!40000 ALTER TABLE `oh_examsreduction` DISABLE KEYS */;
+
+INSERT INTO `oh_examsreduction`(`ER_RP_ID`, `ER_EXA_ID_A`, `ER_REDUCTIONRATE`) VALUES (1, 'EXA001', 15.00);
+INSERT INTO `oh_examsreduction`(`ER_RP_ID`, `ER_EXA_ID_A`, `ER_REDUCTIONRATE`) VALUES (2, 'EXA002', 20.00);
+INSERT INTO `oh_examsreduction`(`ER_RP_ID`, `ER_EXA_ID_A`, `ER_REDUCTIONRATE`) VALUES (3, 'EXA003', 10.00);
+INSERT INTO `oh_examsreduction`(`ER_RP_ID`, `ER_EXA_ID_A`, `ER_REDUCTIONRATE`) VALUES (4, 'EXA004', 25.00);
+INSERT INTO `oh_examsreduction`(`ER_RP_ID`, `ER_EXA_ID_A`, `ER_REDUCTIONRATE`) VALUES (5, 'EXA005', 12.50);
+
+/*!40000 ALTER TABLE `oh_examsreduction` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+--
 -- Dumping data for table `oh_examtype`
 --
 
@@ -1589,6 +1608,7 @@ INSERT INTO `oh_groupmenu` (`GM_ID`, `GM_UG_ID_A`, `GM_MNI_ID_A`, `GM_ACTIVE`, `
 INSERT INTO `oh_groupmenu` (`GM_ID`, `GM_UG_ID_A`, `GM_MNI_ID_A`, `GM_ACTIVE`, `GM_CREATED_BY`, `GM_CREATED_DATE`, `GM_LAST_MODIFIED_BY`, `GM_LAST_MODIFIED_DATE`) VALUES (344,'admin','btnmedicalswarddelete',1,NULL,NULL,NULL,NULL);
 INSERT INTO `oh_groupmenu` (`GM_ID`, `GM_UG_ID_A`, `GM_MNI_ID_A`, `GM_ACTIVE`, `GM_CREATED_BY`, `GM_CREATED_DATE`, `GM_LAST_MODIFIED_BY`, `GM_LAST_MODIFIED_DATE`) VALUES (345,'admin','inventory',1,NULL,NULL,NULL,NULL);
 INSERT INTO `oh_groupmenu` (`GM_ID`, `GM_UG_ID_A`, `GM_MNI_ID_A`, `GM_ACTIVE`, `GM_CREATED_BY`, `GM_CREATED_DATE`, `GM_LAST_MODIFIED_BY`, `GM_LAST_MODIFIED_DATE`) VALUES (346,'admin','inventoryward',1,NULL,NULL,NULL,NULL);
+INSERT INTO `oh_groupmenu` (`GM_ID`, `GM_UG_ID_A`, `GM_MNI_ID_A`, `GM_ACTIVE`, `GM_CREATED_BY`, `GM_CREATED_DATE`, `GM_LAST_MODIFIED_BY`, `GM_LAST_MODIFIED_DATE`) VALUES (347,'admin','reductionplan',1,NULL,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `oh_groupmenu` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2324,6 +2344,24 @@ LOCK TABLES `oh_malnutritioncontrol` WRITE;
 /*!40000 ALTER TABLE `oh_malnutritioncontrol` DISABLE KEYS */;
 /*!40000 ALTER TABLE `oh_malnutritioncontrol` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Dumping data for table `oh_medicalsreduction`
+--
+
+LOCK TABLES `oh_medicalsreduction` WRITE;
+/*!40000 ALTER TABLE `oh_medicalsreduction` DISABLE KEYS */;
+
+INSERT INTO `oh_medicalsreduction`(`MR_RP_ID`, `MR_MED_ID`, `MR_REDUCTIONRATE`) VALUES (1, 201, 5.50);
+INSERT INTO `oh_medicalsreduction`(`MR_RP_ID`, `MR_MED_ID`, `MR_REDUCTIONRATE`) VALUES (2, 202, 7.00);
+INSERT INTO `oh_medicalsreduction`(`MR_RP_ID`, `MR_MED_ID`, `MR_REDUCTIONRATE`) VALUES (3, 203, 6.25);
+INSERT INTO `oh_medicalsreduction`(`MR_RP_ID`, `MR_MED_ID`, `MR_REDUCTIONRATE`) VALUES (4, 204, 8.00);
+INSERT INTO `oh_medicalsreduction`(`MR_RP_ID`, `MR_MED_ID`, `MR_REDUCTIONRATE`) VALUES (5, 205, 9.00);
+
+/*!40000 ALTER TABLE `oh_medicalsreduction` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
 
 --
 -- Dumping data for table `oh_medicaldsr`
@@ -3124,8 +3162,29 @@ INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTI
 INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('ward','angal.menu.btn.ward','angal.menu.ward','x','W','generaldata','org.isf.ward.gui.WardBrowser','N',2);
 INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('worksheet','angal.menu.btn.worksheet','angal.menu.worksheet','x','W','main','org.isf.visits.gui.VisitView','N',7);
 INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('inventory','angal.menu.btn.inventory','angal.menu.inventory','x','I','pharmacy','org.isf.medicalinventory.gui.InventoryBrowser','N',6);
+INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('reductionplan','angal.menu.btn.reductionplan','angal.menu.reductionplan','x','R','generaldata','org.isf.reductionplan.gui.ReductionPlanBrowser','N',12);
 /*!40000 ALTER TABLE `oh_menuitem` ENABLE KEYS */;
 UNLOCK TABLES;
+
+
+--
+-- Dumping data for table `oh_operationsreduction`
+--
+
+
+LOCK TABLES `oh_operationsreduction` WRITE;
+/*!40000 ALTER TABLE `oh_operationsreduction` DISABLE KEYS */;
+
+INSERT INTO `oh_operationsreduction`(`OPR_RP_ID`, `OPR_OPE_ID_A`, `OPR_REDUCTIONRATE`) VALUES (1, 'OPE001', 10.00);
+INSERT INTO `oh_operationsreduction`(`OPR_RP_ID`, `OPR_OPE_ID_A`, `OPR_REDUCTIONRATE`) VALUES (2, 'OPE002', 12.50);
+INSERT INTO `oh_operationsreduction`(`OPR_RP_ID`, `OPR_OPE_ID_A`, `OPR_REDUCTIONRATE`) VALUES (3, 'OPE003', 7.00);
+INSERT INTO `oh_operationsreduction`(`OPR_RP_ID`, `OPR_OPE_ID_A`, `OPR_REDUCTIONRATE`) VALUES (4, 'OPE004', 15.00);
+INSERT INTO `oh_operationsreduction`(`OPR_RP_ID`, `OPR_OPE_ID_A`, `OPR_REDUCTIONRATE`) VALUES (5, 'OPE005', 20.00);
+
+/*!40000 ALTER TABLE `oh_operationsreduction` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
 
 --
 -- Dumping data for table `oh_opd`
@@ -3625,6 +3684,23 @@ INSERT INTO `oh_operationtype` (`OCL_ID_A`, `OCL_DESC`, `OCL_TYPE`, `OCL_CREATED
 INSERT INTO `oh_operationtype` (`OCL_ID_A`, `OCL_DESC`, `OCL_TYPE`, `OCL_CREATED_BY`, `OCL_CREATED_DATE`, `OCL_LAST_MODIFIED_BY`, `OCL_LAST_MODIFIED_DATE`, `OCL_ACTIVE`) VALUES ('OS','OTHERS: SKIN AND SUBCUTANEOUS','MAJOR',NULL,NULL,NULL,NULL,1);
 /*!40000 ALTER TABLE `oh_operationtype` ENABLE KEYS */;
 UNLOCK TABLES;
+
+
+--
+-- Dumping data for table `oh_otherreduction`
+--
+LOCK TABLES `oh_otherreduction` WRITE;
+/*!40000 ALTER TABLE `oh_otherreduction` DISABLE KEYS */;
+
+INSERT INTO `oh_otherreduction`(`OTR_RP_ID`, `OTR_OTH_ID`, `OTR_REDUCTIONRATE`) VALUES (1, 101, 5.00);
+INSERT INTO `oh_otherreduction`(`OTR_RP_ID`, `OTR_OTH_ID`, `OTR_REDUCTIONRATE`) VALUES (2, 102, 10.00);
+INSERT INTO `oh_otherreduction`(`OTR_RP_ID`, `OTR_OTH_ID`, `OTR_REDUCTIONRATE`) VALUES (3, 103, 7.50);
+INSERT INTO `oh_otherreduction`(`OTR_RP_ID`, `OTR_OTH_ID`, `OTR_REDUCTIONRATE`) VALUES (4, 104, 12.00);
+INSERT INTO `oh_otherreduction`(`OTR_RP_ID`, `OTR_OTH_ID`, `OTR_REDUCTIONRATE`) VALUES (5, 105, 8.00);
+
+/*!40000 ALTER TABLE `oh_otherreduction` ENABLE KEYS */;
+UNLOCK TABLES;
+
 
 --
 -- Dumping data for table `oh_patient`
@@ -6641,11 +6717,11 @@ UNLOCK TABLES;
 
 LOCK TABLES `oh_reductionplan` WRITE;
 /*!40000 ALTER TABLE `oh_reductionplan` DISABLE KEYS */;
-INSERT INTO `oh_reductionplan`(`RP_ID`, `RP_DESCRIPTION`, `RP_OPERATIONRATE`, `RP_MEDICALRATE`, `RP_EXAMRATE`, `RP_OTHERRATE`, `RP_DATE`, `RP_UPDATE`) VALUES (1,'DRIVERS','10.00','3.00','24.00','3.00','2024-11-24 02:31:38','2024-12-05 02:31:38');
-INSERT INTO `oh_reductionplan`(`RP_ID`, `RP_DESCRIPTION`, `RP_OPERATIONRATE`, `RP_MEDICALRATE`, `RP_EXAMRATE`, `RP_OTHERRATE`, `RP_DATE`, `RP_UPDATE`) VALUES (2,'FREE IN CHARGE','10.00','3.00','24.00','3.00','2024-11-25 02:31:38','2024-12-02');
-INSERT INTO `oh_reductionplan`(`RP_ID`, `RP_DESCRIPTION`, `RP_OPERATIONRATE`, `RP_MEDICALRATE`, `RP_EXAMRATE`, `RP_OTHERRATE`, `RP_DATE`, `RP_UPDATE`) VALUES (3,'FAMILLY','10.00','3.00','24.00','3.00','2024-11-26 02:31:38','2024-12-02');
-INSERT INTO `oh_reductionplan`(`RP_ID`, `RP_DESCRIPTION`, `RP_OPERATIONRATE`, `RP_MEDICALRATE`, `RP_EXAMRATE`, `RP_OTHERRATE`, `RP_DATE`, `RP_UPDATE`) VALUES (4,'DRIVERS','10.00','3.00','24.00','3.00','2024-11-27 02:31:38','2024-12-02');
-INSERT INTO `oh_reductionplan`(`RP_ID`, `RP_DESCRIPTION`, `RP_OPERATIONRATE`, `RP_MEDICALRATE`, `RP_EXAMRATE`, `RP_OTHERRATE`, `RP_DATE`, `RP_UPDATE`) VALUES (5,'DRIVERS','10.00','3.00','24.00','3.00','2024-11-28 02:31:38','2024-12-02');
+INSERT INTO `oh_reductionplan`(`RP_ID`, `RP_DESCRIPTION`, `RP_OPERATIONRATE`, `RP_MEDICALRATE`, `RP_EXAMRATE`, `RP_OTHERRATE`, `RP_CREATED_BY`, `RP_CREATED_DATE`, `RP_LAST_MODIFIED_BY`, `RP_LAST_MODIFIED_DATE`, `RP_ACTIVE`, `RP_LOCK`) VALUES (1,'DRIVERS','10.00','3.00','24.00','3.00',NULL,NULL,NULL,NULL,1,0);
+INSERT INTO `oh_reductionplan`(`RP_ID`, `RP_DESCRIPTION`, `RP_OPERATIONRATE`, `RP_MEDICALRATE`, `RP_EXAMRATE`, `RP_OTHERRATE`, `RP_CREATED_BY`, `RP_CREATED_DATE`, `RP_LAST_MODIFIED_BY`, `RP_LAST_MODIFIED_DATE`, `RP_ACTIVE`, `RP_LOCK`) VALUES (2,'DRIVERS','10.00','3.00','24.00','3.00',NULL,NULL,NULL,NULL,1,0);
+INSERT INTO `oh_reductionplan`(`RP_ID`, `RP_DESCRIPTION`, `RP_OPERATIONRATE`, `RP_MEDICALRATE`, `RP_EXAMRATE`, `RP_OTHERRATE`, `RP_CREATED_BY`, `RP_CREATED_DATE`, `RP_LAST_MODIFIED_BY`, `RP_LAST_MODIFIED_DATE`, `RP_ACTIVE`, `RP_LOCK`) VALUES (3,'DRIVERS','10.00','3.00','24.00','3.00',NULL,NULL,NULL,NULL,1,0);
+INSERT INTO `oh_reductionplan`(`RP_ID`, `RP_DESCRIPTION`, `RP_OPERATIONRATE`, `RP_MEDICALRATE`, `RP_EXAMRATE`, `RP_OTHERRATE`, `RP_CREATED_BY`, `RP_CREATED_DATE`, `RP_LAST_MODIFIED_BY`, `RP_LAST_MODIFIED_DATE`, `RP_ACTIVE`, `RP_LOCK`) VALUES (4,'DRIVERS','10.00','3.00','24.00','3.00',NULL,NULL,NULL,NULL,1,0);
+INSERT INTO `oh_reductionplan`(`RP_ID`, `RP_DESCRIPTION`, `RP_OPERATIONRATE`, `RP_MEDICALRATE`, `RP_EXAMRATE`, `RP_OTHERRATE`, `RP_CREATED_BY`, `RP_CREATED_DATE`, `RP_LAST_MODIFIED_BY`, `RP_LAST_MODIFIED_DATE`, `RP_ACTIVE`, `RP_LOCK`) VALUES (5,'DRIVERS','10.00','3.00','24.00','3.00',NULL,NULL,NULL,NULL,1,0);
 /*!40000 ALTER TABLE `oh_reductionplan` ENABLE KEYS */;
 UNLOCK TABLES;
 --
