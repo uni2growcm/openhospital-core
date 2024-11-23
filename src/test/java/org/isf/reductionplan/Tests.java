@@ -72,46 +72,38 @@ class Tests extends OHCoreTestCase {
 
 	@Test
 	void testFindById() throws Exception {
-		// GIVEN: Sauvegarder plusieurs Reductionplan
+		// GIVEN: Save multiple ReductionPlans
 		ReductionPlan reduction1 = new ReductionPlan("Plan 1", 10, 20, 30, 40);
 		ReductionPlan reduction2 = new ReductionPlan("Plan 2", 15, 25, 35, 45);
 		repository.save(reduction1);
 		repository.save(reduction2);
 
-		// Récupérer les IDs générés
+		// Retrieve the generated IDs
 		List<Integer> ids = List.of(reduction1.getId(), reduction2.getId());
 
-		// WHEN: Appeler la méthode findById
+		// WHEN: Call the findById method
 		List<ReductionPlan> result = manager.getReductionplanByIds(ids);
 
-		// THEN: Vérifier que les résultats sont corrects
+		// THEN: Verify that the results are correct
 		assertThat(result).isNotNull();
-		assertThat(result.size()).isEqualTo(2); // Les deux objets doivent être récupérés
+		assertThat(result.size()).isEqualTo(2); // Both objects should be retrieved
 		assertThat(result).extracting(ReductionPlan::getDescription)
 						.containsExactlyInAnyOrder("Plan 1", "Plan 2");
 	}
 
-
-
-
-
-
 	@Test
-void testMgrGetReductionplanByDescription() throws Exception {
-	// given: Initialiser et sauvegarder un Reductionplan
-	ReductionPlan reductionplan = testsReductionplan.setup(false); // Utilise les setters
-	repository.save(reductionplan); // Sauvegarder l'entité dans la base de données
+	void testMgrGetReductionplanByDescription() throws Exception {
+		// given: Initialize and save a ReductionPlan
+		ReductionPlan reductionplan = testsReductionplan.setup(false); // Use setters
+		repository.save(reductionplan); // Save the entity in the database
 
-	// when: Utiliser la méthode manager pour rechercher par description
-	List<ReductionPlan> result = manager.getReductionplan(reductionplan.getDescription());
+		// when: Use the manager method to search by description
+		List<ReductionPlan> result = manager.getReductionplan(reductionplan.getDescription());
 
-	// then: Vérifier que le Reductionplan attendu est dans les résultats
-	assertThat(result).isNotEmpty();
-	assertThat(result.get(0).getDescription()).isEqualTo(reductionplan.getDescription());
-}
-
-
-
+		// then: Verify that the expected ReductionPlan is in the results
+		assertThat(result).isNotEmpty();
+		assertThat(result.get(0).getDescription()).isEqualTo(reductionplan.getDescription());
+	}
 
 	@Test
 	void testMgrUpdateReductionplan() throws Exception {
@@ -132,7 +124,7 @@ void testMgrGetReductionplanByDescription() throws Exception {
 		ReductionPlan newReductionPlan = manager.newReductionplan(reductionplan);
 
 		// then:
-		assertThat(newReductionPlan.getId()).isGreaterThan(0); // Vérifier que l'ID est généré
+		assertThat(newReductionPlan.getId()).isGreaterThan(0); // Verify that the ID is generated
 		checkReductionplanIntoDb(newReductionPlan.getId());
 	}
 
@@ -153,9 +145,9 @@ void testMgrGetReductionplanByDescription() throws Exception {
 	@Test
 	void testMgrValidationCodeEmpty() throws Exception {
 		assertThatThrownBy(() -> {
-			// Test sans définir un rpId, l'ID sera généré automatiquement
+			// Test without setting an rpId, the ID will be automatically generated
 			ReductionPlan reductionplan = testsReductionplan.setup(true);
-			reductionplan.setDescription("");  // Validation du champ description vide
+			reductionplan.setDescription("");  // Validate the empty description field
 			manager.newReductionplan(reductionplan);
 		}).isInstanceOf(OHDataValidationException.class)
 						.has(new Condition<>(e -> ((OHServiceException) e).getMessages().size() == 1, "Expecting single validation error"));
@@ -165,7 +157,7 @@ void testMgrGetReductionplanByDescription() throws Exception {
 	void testMgrValidationDescriptionEmpty() throws Exception {
 		assertThatThrownBy(() -> {
 			ReductionPlan reductionplan = testsReductionplan.setup(true);
-			reductionplan.setDescription("");  // Validation de la description vide
+			reductionplan.setDescription("");  // Validate the empty description
 			manager.newReductionplan(reductionplan);
 		}).isInstanceOf(OHDataValidationException.class)
 						.has(new Condition<>(e -> ((OHServiceException) e).getMessages().size() == 1, "Expecting single validation error"));
@@ -198,7 +190,7 @@ void testMgrGetReductionplanByDescription() throws Exception {
 		ReductionPlan reductionplan = testsReductionplan.setup(true);
 		reductionplan.setId(1);
 		int hashCode = reductionplan.hashCode();
-		assertThat(hashCode).isEqualTo(23 * 133 + 1); // check computed value
+		assertThat(hashCode).isEqualTo(23 * 133 + 1); // Check computed value
 		assertThat(reductionplan.hashCode()).isEqualTo(hashCode);
 	}
 

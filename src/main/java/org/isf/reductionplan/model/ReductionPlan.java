@@ -2,7 +2,7 @@ package org.isf.reductionplan.model;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.time.LocalDateTime;
+
 
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
@@ -57,10 +57,8 @@ public class ReductionPlan extends Auditable<String> implements Serializable {
 	@Column(name = "RP_LOCK")
 	private int lock;
 
-
 	@Transient
 	private volatile int hashcode;
-
 
 	// Default constructor
 	public ReductionPlan() {
@@ -80,8 +78,6 @@ public class ReductionPlan extends Auditable<String> implements Serializable {
 		this.otherRate = otherRate;
 
 	}
-
-
 
 	public int getId() {
 		return id;
@@ -121,7 +117,6 @@ public class ReductionPlan extends Auditable<String> implements Serializable {
 	public void setOtherRate(double otherRate) {
 		this.otherRate = otherRate;
 	}
-
 
 	public ReductionPlan(String description, double operationRate, double medicalRate, double examRate, double otherRate) {
 		this.description = description;

@@ -17,15 +17,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(rollbackFor=OHServiceException.class)
 @TranslateOHServiceException
 public class ReductionPlanIoOperations {
-
 	private final ReductionplanIoOperationRepository repository;
-
 
 	public ReductionPlanIoOperations(ReductionplanIoOperationRepository reductionplanIoOperationRepository
 				) {
-		this.repository = reductionplanIoOperationRepository;
-
-	}
+		this.repository = reductionplanIoOperationRepository;}
 
 	/**
 	 * Return the list of {@link ReductionPlan}s in the DB

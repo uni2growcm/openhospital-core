@@ -12,18 +12,13 @@ import org.isf.utils.exception.model.OHExceptionMessage;
 import org.isf.vaccine.model.Vaccine;
 import org.springframework.stereotype.Component;
 
-;
-
-
 @Component
 public class ReductionplanBrowserManager {
-
 	private  final  ReductionPlanIoOperations ioOperations;
 
 	public ReductionplanBrowserManager(ReductionPlanIoOperations reductionPlanIoOperations){
 		this.ioOperations=reductionPlanIoOperations;
 	}
-
 
 	/**
 	 * Verify if the object is valid for CRUD and return a list of errors, if any.
@@ -43,8 +38,6 @@ public class ReductionplanBrowserManager {
 		}
 	}
 
-
-
 	/**
 	 * Returns the list of {@link ReductionPlan}s in the DB.
 	 *
@@ -53,7 +46,6 @@ public class ReductionplanBrowserManager {
 	public List<ReductionPlan> getReductionplan() throws OHServiceException {
 		return ioOperations.getReductionplan();
 	}
-
 
 	public List<ReductionPlan> getReductionplan(String description) throws OHServiceException {
 		return ioOperations.getReductionPlan(description); // Assurez-vous que description est passé ici
@@ -104,23 +96,6 @@ public class ReductionplanBrowserManager {
 	public List<ReductionPlan> getById(List<Integer> ids) throws OHServiceException {
 		return ioOperations.findByIdIn(ids);
 	}
-	//	public  List<ExamsReduction> getExamsReduction(int rpId) throws  OHServiceException{
-	//		return ioOperations.getExamsReduction(rpId);
-	//	}
-	//
-	//	public  List<OtherReduction> getOtherReduction(int rpId) throws  OHServiceException{
-	//		return ioOperations.getOtherReduction(rpId);
-	//
-	//	}
-	//
-	//	public  List<OperationsReduction> getOperationsReduction(int rpId) throws  OHServiceException{
-	//		return ioOperations.getOperationsReduction(rpId);
-	//
-	//	}
-	//	public  List<MedicalsReduction> getMedicalsReduction(int rpId) throws  OHServiceException{
-	//		return ioOperations.getMedicalsReduction(rpId);
-	//
-	//	}
 
 }
 

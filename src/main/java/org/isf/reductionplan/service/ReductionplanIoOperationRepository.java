@@ -9,10 +9,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ReductionplanIoOperationRepository  extends JpaRepository<ReductionPlan, Integer> {
 	List<ReductionPlan> findByDescription(String description);
-//	List<ReductionPlan> getAll();
 	List<ReductionPlan> findByIdIn(List<Integer> ids);
-
-
 }
 
 
