@@ -52,7 +52,7 @@ public class MortuaryStayManagerTest extends OHCoreTestCase {
 	MortuaryStayIoOperationRepository mortuaryStayIoOperationRepository;
 
 	@Autowired
-	MortuaryStaysBrowserManager mortuaryStayBrowserManager;
+	MortuaryStayManager mortuaryStayBrowserManager;
 
 	@BeforeAll
 	static void setUpClass() {

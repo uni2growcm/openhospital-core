@@ -27,8 +27,3 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MortuaryStayIoOperationRepository extends JpaRepository<MortuaryStay, String> { }
-
-
-
-
-

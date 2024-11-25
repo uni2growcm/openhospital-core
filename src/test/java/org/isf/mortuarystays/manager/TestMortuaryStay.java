@@ -49,15 +49,15 @@ public class TestMortuaryStay {
 		mortuary.setCode(code);
 		mortuary.setName(name);
 		mortuary.setDescription(description);
-		mortuary.setDaysMax(daysMax);
-		mortuary.setDaysMin(daysMin);
+		mortuary.setMaxDays(daysMax);
+		mortuary.setMinDays(daysMin);
 	}
 
 	public void check(MortuaryStay mortuary) {
 		assertThat(mortuary.getCode()).isEqualTo(code);
 		assertThat(mortuary.getName()).isEqualTo(name);
 		assertThat(mortuary.getDescription()).isEqualTo(description);
-		assertThat(mortuary.getDaysMax()).isEqualTo(daysMax);
-		assertThat(mortuary.getDaysMin()).isEqualTo(daysMin);
+		assertThat(mortuary.getMaxDays()).isEqualTo(daysMax);
+		assertThat(mortuary.getMinDays()).isEqualTo(daysMin);
 	}
 }

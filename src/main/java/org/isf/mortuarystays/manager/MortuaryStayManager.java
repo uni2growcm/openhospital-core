@@ -35,17 +35,16 @@ import org.isf.utils.exception.model.OHExceptionMessage;
 import org.springframework.stereotype.Component;
 
 @Component
-public class MortuaryStaysBrowserManager {
+public class MortuaryStayManager {
+
 	private MortuaryStayIoOperations ioOperations;
 
-	public MortuaryStaysBrowserManager(MortuaryStayIoOperations ioOperations) {
+	public MortuaryStayManager(MortuaryStayIoOperations ioOperations) {
 		this.ioOperations = ioOperations;
 	}
 
 	/**
-	 * Returns all stored {@link MortuaryStay}s.
-	 * In case of error a message error is shown and a {@code null} value is returned.
-	 *
+	 * Returns all stored {@link MortuaryStay}s. In case of error a message error is shown and a {@code null} value is returned.
 	 * @return the stored Mortuaries.
 	 * @throws OHServiceException
 	 */
@@ -55,7 +54,6 @@ public class MortuaryStaysBrowserManager {
 
 	/**
 	 * Updates the specified {@link MortuaryStay}.
-	 *
 	 * @param mortuary - the {@link MortuaryStay} to update.
 	 * @return mortuary that has been updated.
 	 * @throws OHServiceException if an error occurs during the update.
@@ -66,7 +64,6 @@ public class MortuaryStaysBrowserManager {
 
 	/**
 	 * Stores the specified {@link MortuaryStay}.
-	 *
 	 * @param mortuary the mortuary to store.
 	 * @return mortuary that has been stored.
 	 * @throws OHServiceException if an error occurs storing the mortuary.
@@ -78,7 +75,6 @@ public class MortuaryStaysBrowserManager {
 
 	/**
 	 * Deletes a {@link MortuaryStay} in the DB.
-	 *
 	 * @param mortuary - the item to delete
 	 * @throws OHServiceException
 	 */
@@ -88,7 +84,6 @@ public class MortuaryStaysBrowserManager {
 
 	/**
 	 * Checks if the code is already in use.
-	 *
 	 * @param code - the {@link MortuaryStay} code
 	 * @return {@code true} if the code is already in use, {@code false} otherwise
 	 * @throws OHServiceException
@@ -99,7 +94,6 @@ public class MortuaryStaysBrowserManager {
 
 	/**
 	 * Returns the {@link MortuaryStay} based on vaccine type code.
-	 *
 	 * @param code - the  {@link MortuaryStay} code.
 	 * @return the {@link MortuaryStay} or {@literal null} if none found
 	 * @throws OHServiceException
@@ -121,8 +115,8 @@ public class MortuaryStaysBrowserManager {
 		String code = mortuaryStay.getCode();
 		String desc = mortuaryStay.getDescription();
 		String name = mortuaryStay.getName();
-		int minD = mortuaryStay.getDaysMin();
-		int maxD = mortuaryStay.getDaysMax();
+		int minD = mortuaryStay.getMinDays();
+		int maxD = mortuaryStay.getMaxDays();
 		List<OHExceptionMessage> errors = new ArrayList<>();
 		if (code.isEmpty()) {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.common.pleaseinsertacode.msg")));
@@ -131,7 +125,7 @@ public class MortuaryStaysBrowserManager {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.common.thecodeistoolongmax1char.msg")));
 		}
 
-		if (name.isEmpty()){
+		if (name.isEmpty()) {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuarystays.pleaseinsertavalidname.msg")));
 		}
 		if (ioOperations.isCodePresent(code)) {
@@ -146,7 +140,7 @@ public class MortuaryStaysBrowserManager {
 		if (maxD < 0) {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuatystays.insertavalidmaxdnumber.msg")));
 		}
-		if(minD >= maxD){
+		if (minD >= maxD) {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuarystays.insertcoherencemaxminvalues.msg")));
 		}
 

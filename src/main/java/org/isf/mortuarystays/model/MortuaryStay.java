@@ -21,8 +21,14 @@
  */
 package org.isf.mortuarystays.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
+
 import org.isf.utils.db.Auditable;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -56,59 +62,48 @@ public class MortuaryStay extends Auditable<String> {
 	@Column(name = "MRTST_MIN_DAYS")
 	private int minDays;
 
-	public MortuaryStay(){
+	public MortuaryStay() {
 		super();
 	}
 
-	public MortuaryStay(String code, String name, String description, int maxDays, int minDays){
+	public MortuaryStay(String code, String name, String description, int maxDays, int minDays) {
 		this.code = code;
 		this.name = name;
 		this.description = description;
 		this.maxDays = maxDays;
 		this.minDays = minDays;
 	}
-
-	public void setCode(String code) {
-		this.code = code;
-	}
-
 	public String getCode() {
 		return code;
 	}
-
-	public void setName(String name) {
-		this.name = name;
+	public void setCode(String code) {
+		this.code = code;
 	}
-
 	public String getName() {
 		return name;
 	}
-
-	public void setDescription(String description) {
-		this.description = description;
+	public void setName(String name) {
+		this.name = name;
 	}
-
 	public String getDescription() {
 		return description;
 	}
-
-	public void setDaysMax(int maxDays) {
-		this.maxDays = maxDays;
+	public void setDescription(String description) {
+		this.description = description;
 	}
-
-	public int getDaysMax() {
+	public int getMaxDays() {
 		return maxDays;
 	}
-
-	public void setDaysMin(int minDays) {
-		this.minDays = minDays;
+	public void setMaxDays(int maxDays) {
+		this.maxDays = maxDays;
 	}
-
-	public int getDaysMin() {
+	public int getMinDays() {
 		return minDays;
 	}
-
-	public String print() {
-		return "mortuarystays code=." + getCode() + ". description=." + getDescription() + ". name=." + getName() +'.';
+	public void setMinDays(int minDays) {
+		this.minDays = minDays;
+	}
+	public String toString() {
+		return "mortuarystays code=." + getCode() + ". description=." + getDescription() + ". name=." + getName() + '.';
 	}
 }
