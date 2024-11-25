@@ -131,19 +131,6 @@ public class MedicalsIoOperations {
 	}
 
 	/**
-	 * Returns the movements pageable.
-	 *
-	 * @param page - the page number.
-	 * @param size - the page size.
-	 * @return the list of {@link Movement}s pageable. It could be {@code empty}.
-	 * @throws OHServiceException
-	 */
-	public Page<Movement> getMovementsPageable(int page, int size) throws OHServiceException {
-		Pageable pageable = PageRequest.of(page, size);
-		return repository.findAllMovementsPageable(pageable);
-	}
-
-	/**
 	 * Retrieves the stored {@link Medical}s based on the specified filter criteria.
 	 * @param description the medical description or {@code null}
 	 * @param type the medical type or {@code null}

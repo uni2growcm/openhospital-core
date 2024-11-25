@@ -40,6 +40,9 @@ import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.model.OHExceptionMessage;
 import org.isf.ward.model.Ward;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -141,6 +144,19 @@ public class MovBrowserManager {
 		check(lotDueFrom, lotDueTo, "angal.medicalstock.chooseavalidduedate.msg");
 
 		return ioOperations.getMovements(medicalCode, medicalType, wardId, movType, movFrom, movTo, lotPrepFrom, lotPrepTo, lotDueFrom, lotDueTo);
+	}
+
+	/**
+	 * Retrieves all the stored {@link Movement} and give the specific page.
+	 *
+	 * @param currentPage
+	 * @param pageSize
+	 * @return the page of movement
+	 * @throws OHServiceException
+	 */
+	public Page<Movement> getMovementsPageable(int currentPage, int pageSize) throws OHServiceException{
+		Pageable pageable = PageRequest.of(currentPage, pageSize);
+		return ioOperations.getMovementsPageable(currentPage, pageSize);
 	}
 
 	private void check(LocalDateTime from, LocalDateTime to, String errMsgKey) throws OHDataValidationException {

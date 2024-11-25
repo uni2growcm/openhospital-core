@@ -30,6 +30,7 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+import org.checkerframework.checker.units.qual.A;
 import org.isf.generaldata.GeneralData;
 import org.isf.generaldata.MessageBundle;
 import org.isf.medicals.model.Medical;
@@ -48,6 +49,9 @@ import org.isf.utils.time.TimeTools;
 import org.isf.ward.model.Ward;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -550,6 +554,18 @@ public class MedicalStockIoOperations {
 			pMovement.add(i, movement);
 		}
 		return pMovement;
+	}
+
+	/**
+	 * Retrieves all the stored {@link Movement} and give the specific page.
+	 *
+	 * @param currentPage
+	 * @param pageSize
+	 * @throws OHServiceException
+	 */
+	public Page<Movement> getMovementsPageable(int currentPage, int pageSize) throws OHServiceException {
+		Pageable pageable = PageRequest.of(currentPage, pageSize);
+		return movRepository.findAll(pageable);
 	}
 
 	/**

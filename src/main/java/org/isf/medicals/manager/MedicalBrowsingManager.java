@@ -99,18 +99,6 @@ public class MedicalBrowsingManager {
 	}
 
 	/**
-	 * Returns the movements pageable.
-	 *
-	 * @param page - the page number.
-	 * @param size - the page size.
-	 * @return the list of {@link Movement}s pageable. It could be {@code empty}.
-	 * @throws OHServiceException
-	 */
-	public Page<Movement> getMovementsPageable(int page, int size) throws OHServiceException {
-		return ioOperations.getMovementsPageable(page, size);
-	}
-
-	/**
 	 * Returns all the medicals sorted by Name.
 	 *
 	 * @return all the medicals.
