@@ -27,6 +27,7 @@ import java.util.List;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Order;
@@ -40,7 +41,9 @@ import org.isf.medicalstock.service.MedicalStockIoOperations.MovementOrder;
 import org.isf.medstockmovtype.model.MovementType;
 import org.isf.medtype.model.MedicalType;
 import org.isf.utils.time.TimeTools;
+import org.springframework.data.domain.PageRequest;
 import org.isf.ward.model.Ward;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
@@ -79,6 +82,24 @@ public class MovementIoOperationRepositoryImpl implements MovementIoOperationRep
 					LocalDateTime lotDueTo) {
 		return getMovementWhereData(medicalCode, medicalType, wardId, movType, movFrom, movTo,
 						lotPrepFrom, lotPrepTo, lotDueFrom, lotDueTo);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Integer> findMovementWhereData(
+		Integer medicalCode,
+		String medicalType,
+		String wardId,
+		String movType,
+		LocalDateTime movFrom,
+		LocalDateTime movTo,
+		LocalDateTime lotPrepFrom,
+		LocalDateTime lotPrepTo,
+		LocalDateTime lotDueFrom,
+		LocalDateTime lotDueTo,
+		Pageable pageable) {
+		return getMovementWhereData(medicalCode, medicalType, wardId, movType, movFrom, movTo,
+			lotPrepFrom, lotPrepTo, lotDueFrom, lotDueTo, pageable);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -170,6 +191,90 @@ public class MovementIoOperationRepositoryImpl implements MovementIoOperationRep
 		query.where(predicates.toArray(new Predicate[] {})).orderBy(orderList);
 		return entityManager.createQuery(query).getResultList();
 	}
+
+	private List<Integer> getMovementWhereData(
+		Integer medicalCode,
+		String medicalType,
+		String wardId,
+		String movType,
+		LocalDateTime movFrom,
+		LocalDateTime movTo,
+		LocalDateTime lotPrepFrom,
+		LocalDateTime lotPrepTo,
+		LocalDateTime lotDueFrom,
+		LocalDateTime lotDueTo,
+		Pageable pageable) {  // Ajouter Pageable comme paramètre
+		// Créer le CriteriaBuilder et CriteriaQuery
+		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+		CriteriaQuery<Integer> query = builder.createQuery(Integer.class);
+		Root<Movement> root = query.from(Movement.class);
+		query.select(root.<Integer> get(CODE));
+
+		// Liste des prédicats (filtres)
+		List<Predicate> predicates = new ArrayList<>();
+
+		// Ajouter les conditions de filtrage
+		if (medicalCode != null) {
+			predicates.add(builder.equal(root.<Medical> get(MEDICAL).<String> get(CODE), medicalCode));
+		}
+		if (medicalType != null) {
+			predicates.add(builder.equal(root.<Medical> get(MEDICAL).<MedicalType> get(TYPE).<String> get(CODE), medicalType));
+		}
+		if ((movFrom != null) && (movTo != null)) {
+			predicates.add(builder.between(root.<LocalDateTime> get(DATE), TimeTools.getBeginningOfDay(movFrom), TimeTools.getBeginningOfNextDay(movTo)));
+		}
+		if ((lotPrepFrom != null) && (lotPrepTo != null)) {
+			predicates.add(builder.between(root.<Lot> get(LOT).<LocalDateTime> get("preparationDate"), TimeTools.getBeginningOfDay(lotPrepFrom),
+				TimeTools.getBeginningOfNextDay(lotPrepTo)));
+		}
+		if ((lotDueFrom != null) && (lotDueTo != null)) {
+			predicates.add(builder.between(root.<Lot> get(LOT).<LocalDateTime> get("dueDate"), TimeTools.getBeginningOfDay(lotDueFrom),
+				TimeTools.getBeginningOfNextDay(lotDueTo)));
+		}
+		if ("+".equals(movType)) {
+			predicates.add(builder.equal(root.<MovementType> get(TYPE).<String> get(TYPE), movType));
+		} else if ("-".equals(movType)) {
+			predicates.add(builder.equal(root.<MovementType> get(TYPE).<String> get(TYPE), movType));
+		} else if (movType != null) {
+			predicates.add(builder.equal(root.<MovementType> get(TYPE).<String> get(CODE), movType));
+		}
+		if (wardId != null) {
+			predicates.add(builder.equal(root.<Ward> get(WARD).<String> get(CODE), wardId));
+		}
+
+		// Appliquer le tri via Pageable
+		List<Order> orderList = new ArrayList<>();
+		if (pageable.getSort() != null) {
+			pageable.getSort().forEach(order -> {
+				if (order.isAscending()) {
+					orderList.add(builder.asc(root.get(order.getProperty())));
+				} else {
+					orderList.add(builder.desc(root.get(order.getProperty())));
+				}
+			});
+		} else {
+			// Tri par défaut
+			orderList.add(builder.desc(root.get(CODE)));
+			orderList.add(builder.desc(root.get(REF_NO)));
+		}
+
+		// Appliquer les conditions et les ordres à la requête
+		query.where(predicates.toArray(new Predicate[0])).orderBy(orderList);
+
+		// Créer la requête paginée
+		TypedQuery<Integer> typedQuery = entityManager.createQuery(query);
+
+		// Pagination : Calculer l'index du premier résultat et la taille de la page
+		int firstResult = pageable.getPageNumber() * pageable.getPageSize();
+		typedQuery.setFirstResult(firstResult);
+		typedQuery.setMaxResults(pageable.getPageSize());
+
+		// Exécuter la requête et obtenir la liste des résultats
+		List<Integer> result = typedQuery.getResultList();
+
+		return result;
+	}
+
 
 	private List<Integer> getMovementForPrint(
 					String medicalDescription,

@@ -147,6 +147,52 @@ public class MovBrowserManager {
 	}
 
 	/**
+	 * Retrieves all the {@link Movement}s with the specified criteria.<br>
+	 * <br>
+	 * Note: {@link Lot Lot's} <code>@Transient</code> properties {@link Lot#mainStoreQuantity mainStoreQuantity}, {@link Lot#wardsTotalQuantity
+	 * wardsTotalQuantity} and {@link Lot#overallQuantity overallQuantity} are not calculated at this step, use
+	 * {@link MovStockInsertingManager#getLotByMedical(Medical) getLotByMedical} for that.
+	 *
+	 * @param medicalCode the medical code.
+	 * @param medicalType the medical type.
+	 * @param wardId the ward type.
+	 * @param movType the movement type.
+	 * @param movFrom the lower bound for the movement date range.
+	 * @param movTo the upper bound for the movement date range.
+	 * @param lotPrepFrom the lower bound for the lot preparation date range.
+	 * @param lotPrepTo the upper bound for the lot preparation date range.
+	 * @param lotDueFrom the lower bound for the lot due date range.
+	 * @param lotDueTo the lower bound for the lot due date range.
+	 * @param page
+	 * @param size
+	 * @return the retrieved movements.
+	 * @throws OHServiceException
+	 */
+	public List<Movement> getMovements(Integer medicalCode, String medicalType,
+		String wardId, String movType, LocalDateTime movFrom, LocalDateTime movTo,
+		LocalDateTime lotPrepFrom, LocalDateTime lotPrepTo,
+		LocalDateTime lotDueFrom, LocalDateTime lotDueTo, int page, int size) throws OHServiceException {
+
+		if (medicalCode == null &&
+			medicalType == null &&
+			movType == null &&
+			movFrom == null &&
+			movTo == null &&
+			lotPrepFrom == null &&
+			lotPrepTo == null &&
+			lotDueFrom == null &&
+			lotDueTo == null) {
+			return getMovements();
+		}
+
+		check(movFrom, movTo, "angal.medicalstock.chooseavalidmovementdate.msg");
+		check(lotPrepFrom, lotPrepTo, "angal.medicalstock.chooseavalidmovementdate.msg");
+		check(lotDueFrom, lotDueTo, "angal.medicalstock.chooseavalidduedate.msg");
+		Pageable pageable = PageRequest.of(page, size);
+		return ioOperations.getMovements(medicalCode, medicalType, wardId, movType, movFrom, movTo, lotPrepFrom, lotPrepTo, lotDueFrom, lotDueTo, pageable);
+	}
+
+	/**
 	 * Retrieves all the stored {@link Movement} and give the specific page.
 	 *
 	 * @param currentPage

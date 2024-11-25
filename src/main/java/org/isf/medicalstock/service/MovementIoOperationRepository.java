@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.isf.medicalstock.model.Lot;
 import org.isf.medicalstock.model.Movement;
+import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -68,4 +69,10 @@ public interface MovementIoOperationRepository extends JpaRepository<Movement, I
 	@Query("select count(m) from Movement m where active=1")
 	long countAllActiveMovements();
 
+//	@Override
+//	default List<Integer> findMovementWhereData(Integer medicalCode, String medicalType, String wardId, String movType, LocalDateTime movFrom,
+//		LocalDateTime movTo, LocalDateTime lotPrepFrom, LocalDateTime lotPrepTo, LocalDateTime lotDueFrom, LocalDateTime lotDueTo, int pageNumber,
+//		int pageSize) {
+//		return List.of();
+//	}
 }
