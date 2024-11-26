@@ -114,13 +114,13 @@ public class Medical extends Auditable<String> implements Comparable<Medical>, C
 	@NotNull
 	@Column(name = "MDSR_MIN_STOCK_QTI")
 	private double minqty;
-	@NotNull
+	
 	@Column(name = "MDSR_CONDITIONING")
 	private String conditioning;
-	@NotNull
+	
 	@Column(name = "MDSR_SHAPE")
 	private String shape;
-	@NotNull
+	
 	@Column(name = "MDSR_DOSING")
 	private String dosing;
 

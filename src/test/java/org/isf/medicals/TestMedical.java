@@ -37,9 +37,6 @@ public class TestMedical {
 	private double inqty = 30.30;
 	private double outqty = 20.20;
 	private double minqty = 40.40;
-	private String conditioning = "pack";
-	private String shape = "tablet";
-	private String dosing = "child: 2 per day, adult: 3 per days";
 	
 
 	public Medical setup(MedicalType medicalType, boolean usingSet) throws OHException {
@@ -63,9 +60,6 @@ public class TestMedical {
 		medical.setOutqty(outqty);
 		medical.setPcsperpck(pcsperpck);
 		medical.setProdCode(prod_code);
-		medical.setConditioning(conditioning);
-		medical.setShape(shape);
-		medical.setDosing(dosing);
 		medical.setType(medicalType);
 	}
 
@@ -76,9 +70,6 @@ public class TestMedical {
 		assertThat(medical.getOutqty()).isCloseTo(outqty, offset(0.1));
 		assertThat(medical.getPcsperpck()).isEqualTo(pcsperpck);
 		assertThat(medical.getProdCode()).isEqualTo(prod_code);
-		assertThat(medical.getConditioning()).isEqualTo(conditioning);
-		assertThat(medical.getShape()).isEqualTo(shape);
-		assertThat(medical.getDosing()).isEqualTo(dosing);
 		
 	}
 }

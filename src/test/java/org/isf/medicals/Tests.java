@@ -455,6 +455,58 @@ class Tests extends OHCoreTestCase {
 		assertThat(updatedMedical).isNotNull();
 		assertThat(updatedMedical.getDescription()).isEqualTo("Update");
 	}
+	
+	@Test
+	void testMgrUpdateMedicalWithConditioning() throws Exception {
+		int code = setupTestMedical(false);
+		Medical foundMedical = medicalsIoOperationRepository.findById(code).orElse(null);
+		assertThat(foundMedical).isNotNull();
+		foundMedical.setConditioning("Conditioning");
+		assertThat(medicalBrowsingManager.updateMedical(foundMedical)).isNotNull();
+		Medical updatedMedical = medicalsIoOperationRepository.findById(code).orElse(null);
+		assertThat(updatedMedical).isNotNull();
+		assertThat(updatedMedical.getConditioning()).isEqualTo("Conditioning");
+	}
+	
+	@Test
+	void testMgrUpdateMedicalWithDosing() throws Exception {
+		int code = setupTestMedical(false);
+		Medical foundMedical = medicalsIoOperationRepository.findById(code).orElse(null);
+		assertThat(foundMedical).isNotNull();
+		foundMedical.setDosing("Dosing");
+		assertThat(medicalBrowsingManager.updateMedical(foundMedical)).isNotNull();
+		Medical updatedMedical = medicalsIoOperationRepository.findById(code).orElse(null);
+		assertThat(updatedMedical).isNotNull();
+		assertThat(updatedMedical.getDosing()).isEqualTo("Dosing");
+	}
+	
+	@Test
+	void testMgrUpdateMedicalWithShape() throws Exception {
+		int code = setupTestMedical(false);
+		Medical foundMedical = medicalsIoOperationRepository.findById(code).orElse(null);
+		assertThat(foundMedical).isNotNull();
+		foundMedical.setShape("Shape");
+		assertThat(medicalBrowsingManager.updateMedical(foundMedical)).isNotNull();
+		Medical updatedMedical = medicalsIoOperationRepository.findById(code).orElse(null);
+		assertThat(updatedMedical).isNotNull();
+		assertThat(updatedMedical.getShape()).isEqualTo("Shape");
+	}
+	
+	@Test
+	void testMgrUpdateMedicalWithConditioningDosingShape() throws Exception {
+		int code = setupTestMedical(false);
+		Medical foundMedical = medicalsIoOperationRepository.findById(code).orElse(null);
+		assertThat(foundMedical).isNotNull();
+		foundMedical.setConditioning("Conditioning");
+		foundMedical.setDosing("Dosing");
+		foundMedical.setShape("Shape");
+		assertThat(medicalBrowsingManager.updateMedical(foundMedical)).isNotNull();
+		Medical updatedMedical = medicalsIoOperationRepository.findById(code).orElse(null);
+		assertThat(updatedMedical).isNotNull();
+		assertThat(updatedMedical.getConditioning()).isEqualTo("Conditioning");
+		assertThat(updatedMedical.getDosing()).isEqualTo("Dosing");
+		assertThat(updatedMedical.getShape()).isEqualTo("Shape");
+	}
 
 	@Test
 	void testMgrDeleteMedical() throws Exception {
