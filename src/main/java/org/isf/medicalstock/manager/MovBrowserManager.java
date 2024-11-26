@@ -192,19 +192,6 @@ public class MovBrowserManager {
 		return ioOperations.getMovements(medicalCode, medicalType, wardId, movType, movFrom, movTo, lotPrepFrom, lotPrepTo, lotDueFrom, lotDueTo, pageable);
 	}
 
-	/**
-	 * Retrieves all the stored {@link Movement} and give the specific page.
-	 *
-	 * @param currentPage
-	 * @param pageSize
-	 * @return the page of movement
-	 * @throws OHServiceException
-	 */
-	public Page<Movement> getMovementsPageable(int currentPage, int pageSize) throws OHServiceException{
-		Pageable pageable = PageRequest.of(currentPage, pageSize);
-		return ioOperations.getMovementsPageable(currentPage, pageSize);
-	}
-
 	private void check(LocalDateTime from, LocalDateTime to, String errMsgKey) throws OHDataValidationException {
 		if (from == null || to == null) {
 			if (!(from == null && to == null)) {

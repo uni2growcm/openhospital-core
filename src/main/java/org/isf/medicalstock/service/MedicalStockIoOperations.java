@@ -584,17 +584,6 @@ public class MedicalStockIoOperations {
 	}
 
 	/**
-	 * Retrieves all the stored {@link Movement} and give the specific page.
-	 * @param currentPage
-	 * @param pageSize
-	 * @throws OHServiceException
-	 */
-	public Page<Movement> getMovementsPageable(int currentPage, int pageSize) throws OHServiceException {
-		Pageable pageable = PageRequest.of(currentPage, pageSize);
-		return movRepository.findAll(pageable);
-	}
-
-	/**
 	 * Retrieves {@link Movement}s for printing using specified filtering criteria.
 	 * @param medicalDescription the medical description.
 	 * @param medicalTypeCode the medical type code.

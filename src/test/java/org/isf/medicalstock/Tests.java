@@ -23,6 +23,7 @@ package org.isf.medicalstock;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.lang.reflect.InvocationTargetException;
@@ -75,11 +76,13 @@ import org.isf.ward.service.WardIoOperationRepository;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
@@ -752,6 +755,23 @@ class Tests extends OHCoreTestCase {
 		List<Movement> movements = movBrowserManager.getMovements(null, null, foundMovement.getWard().getCode(), null,
 			null, null, null, null, null, null);
 		assertThat(movements.get(0).getCode()).isEqualTo(foundMovement.getCode());
+	}
+
+	@ParameterizedTest(name = "Test with AUTOMATICLOT_IN={0}, AUTOMATICLOT_OUT={1}, AUTOMATICLOTWARD_TOWARD={2}")
+	@MethodSource("automaticlot")
+	@DisplayName("Test the getMovements method with the pageable parameter and it should return a filtered page")
+	void testGetMovements(boolean in, boolean out, boolean toward) throws Exception {
+		setGeneralData(in, out, toward);
+		LocalDateTime fromDate = LocalDateTime.of(2000, 1, 1, 0, 0, 0);
+		LocalDateTime toDate = LocalDateTime.of(2000, 3, 3, 0, 0, 0);
+		int code = setupTestMovement(false);
+		Movement foundMovement = movementIoOperationRepository.findById(code).orElse(null);
+		assertThat(foundMovement).isNotNull();
+		List<Movement> movements = movBrowserManager.getMovements(foundMovement.getMedical().getCode(), foundMovement.getMedical().getType().getCode(),
+			foundMovement.getWard().getCode(), foundMovement.getType().getCode(), fromDate, toDate, fromDate, toDate, fromDate, toDate);
+		assertThat(movements.get(0).getCode()).isEqualTo(foundMovement.getCode());
+		assertThat(movements.size()!=0);
+		assertInstanceOf(List.class, movements, "Expecting a list with a fixed-size filter");
 	}
 
 	@ParameterizedTest(name = "Test with AUTOMATICLOT_IN={0}, AUTOMATICLOT_OUT={1}, AUTOMATICLOTWARD_TOWARD={2}")
