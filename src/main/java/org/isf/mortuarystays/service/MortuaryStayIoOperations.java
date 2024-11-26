@@ -33,8 +33,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 @Component
-@Transactional(rollbackFor = OHServiceException.class)
-@TranslateOHServiceException
 public class MortuaryStayIoOperations {
 	private MortuaryStayIoOperationRepository repository;
 
@@ -104,6 +102,6 @@ public class MortuaryStayIoOperations {
 		if (code != null) {
 			return repository.findById(code).orElse(null);
 		}
-		throw new OHServiceException(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuarystays.codemostnotbenull.msg")));//"Mortuary code must not be null.";
+		throw new OHServiceException(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuarystays.codemostnotbenull.msg")));
 	}
 }
