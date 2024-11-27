@@ -69,10 +69,4 @@ public interface MovementIoOperationRepository extends JpaRepository<Movement, I
 	@Query("select count(m) from Movement m where active=1")
 	long countAllActiveMovements();
 
-//	@Override
-//	default List<Integer> findMovementWhereData(Integer medicalCode, String medicalType, String wardId, String movType, LocalDateTime movFrom,
-//		LocalDateTime movTo, LocalDateTime lotPrepFrom, LocalDateTime lotPrepTo, LocalDateTime lotDueFrom, LocalDateTime lotDueTo, int pageNumber,
-//		int pageSize) {
-//		return List.of();
-//	}
 }

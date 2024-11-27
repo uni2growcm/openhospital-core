@@ -48,8 +48,6 @@ import org.isf.utils.time.TimeTools;
 import org.isf.ward.model.Ward;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,15 +62,15 @@ public class MedicalStockIoOperations {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(MedicalStockIoOperations.class);
 
-	private MovementIoOperationRepository movRepository;
+	private final MovementIoOperationRepository movRepository;
 
-	private LotIoOperationRepository lotRepository;
+	private final LotIoOperationRepository lotRepository;
 
-	private MedicalsIoOperationRepository medicalRepository;
+	private final MedicalsIoOperationRepository medicalRepository;
 
-	private MedicalStockIoOperationRepository medicalStockRepository;
+	private final MedicalStockIoOperationRepository medicalStockRepository;
 
-	private MedicalStockWardIoOperationRepository medicalStockWardRepository;
+	private final MedicalStockWardIoOperationRepository medicalStockWardRepository;
 
 	public MedicalStockIoOperations(MovementIoOperationRepository movementIoOperationRepository, LotIoOperationRepository lotIoOperationRepository,
 		MedicalsIoOperationRepository medicalsIoOperationRepository,
@@ -84,11 +82,6 @@ public class MedicalStockIoOperations {
 		this.medicalStockRepository = medicalStockIoOperationRepository;
 		this.medicalStockWardRepository = medicalStockWardIoOperationRepository;
 	}
-
-	public enum MovementOrder {
-		DATE, WARD, PHARMACEUTICAL_TYPE, TYPE
-	}
-
 	/**
 	 * Checks if we are in automatic lot mode.
 	 * @return {@code true} if automatic lot mode, {@code false} otherwise.
@@ -96,7 +89,6 @@ public class MedicalStockIoOperations {
 	private boolean isAutomaticLotMode() {
 		return GeneralData.AUTOMATICLOT_IN;
 	}
-
 	/**
 	 * Retrieves all medicals referencing the specified code.
 	 * @param lotCode the lot code.
@@ -106,7 +98,6 @@ public class MedicalStockIoOperations {
 	public List<Integer> getMedicalsFromLot(String lotCode) throws OHServiceException {
 		return movRepository.findAllByLot(lotCode);
 	}
-
 	/**
 	 * Retrieves all movements referencing the specified lot.
 	 * @param lot - the lot.
@@ -116,7 +107,6 @@ public class MedicalStockIoOperations {
 	public List<Movement> getMovementByLot(Lot lot) throws OHServiceException {
 		return movRepository.findByLot(lot);
 	}
-
 	/**
 	 * Store the specified {@link Movement} by using automatically the most old lots and splitting in more movements if required
 	 * @param movement - the {@link Movement} to store
@@ -174,7 +164,6 @@ public class MedicalStockIoOperations {
 		}
 		return dischargingMovements;
 	}
-
 	/**
 	 * Stores the specified {@link Movement}.
 	 * @param movement - the movement to store.
@@ -205,7 +194,6 @@ public class MedicalStockIoOperations {
 		updateStockQuantity(movement);
 		return movementStored;
 	}
-
 	/**
 	 * Prepare the insert of the specified {@link Movement} (no commit)
 	 * @param movement - the movement to store.
@@ -215,7 +203,6 @@ public class MedicalStockIoOperations {
 	public Movement prepareChargingMovement(Movement movement) throws OHServiceException {
 		return newMovement(movement);
 	}
-
 	/**
 	 * Prepare the insert of the specified {@link Movement} (no commit)
 	 * @param movement - the movement to store.
@@ -235,7 +222,6 @@ public class MedicalStockIoOperations {
 		updateStockQuantity(movement);
 		return movementStored;
 	}
-
 	/**
 	 * Stores the specified {@link Movement}.
 	 * @param movement the movement to store.
@@ -251,7 +237,6 @@ public class MedicalStockIoOperations {
 		movement.setLot(lot);
 		return movRepository.save(movement);
 	}
-
 	/**
 	 * Creates a new unique lot code.
 	 * @return the new unique code.
@@ -269,7 +254,6 @@ public class MedicalStockIoOperations {
 
 		return String.valueOf(candidateCode);
 	}
-
 	/**
 	 * Checks if the specified {@link Lot} exists.
 	 * @param lotCode the lot code.
@@ -279,7 +263,6 @@ public class MedicalStockIoOperations {
 	public boolean lotExists(String lotCode) throws OHServiceException {
 		return lotRepository.findById(String.valueOf(lotCode)).orElse(null) != null;
 	}
-
 	/**
 	 * Retrieves the {@link Lot}.
 	 * @param lotCode the lot code.
@@ -289,7 +272,6 @@ public class MedicalStockIoOperations {
 	public Lot getLot(String lotCode) throws OHServiceException {
 		return lotRepository.findById(String.valueOf(lotCode)).orElse(null);
 	}
-
 	/**
 	 * Update the {@link Lot}.
 	 * @param lot - the lot.
@@ -299,7 +281,6 @@ public class MedicalStockIoOperations {
 	public Lot updateLot(Lot lot) throws OHServiceException {
 		return lotRepository.save(lot);
 	}
-
 	/**
 	 * Stores the specified {@link Lot}.
 	 * @param lotCode the {@link Lot} code.
@@ -317,7 +298,6 @@ public class MedicalStockIoOperations {
 		lot.setMedical(medical);
 		return lotRepository.save(lot);
 	}
-
 	/**
 	 * Updated {@link Medical} stock quantity for the specified {@link Movement}.
 	 * @param movement the movement.
@@ -349,7 +329,6 @@ public class MedicalStockIoOperations {
 			}
 		}
 	}
-
 	/**
 	 * Updates the incoming quantity for the specified medical.
 	 * @param medicalCode the medical code.
@@ -365,7 +344,6 @@ public class MedicalStockIoOperations {
 		medical.setInqty(medical.getInqty() + incrementQuantity);
 		return medicalRepository.save(medical);
 	}
-
 	/**
 	 * Updates the outcoming quantity for the specified medicinal.
 	 * @param medicalCode the medical code.
@@ -381,7 +359,6 @@ public class MedicalStockIoOperations {
 		medical.setOutqty(medical.getOutqty() + incrementQuantity);
 		return medicalRepository.save(medical);
 	}
-
 	/**
 	 * Updates the medical stock balance for the specified medical at the specified date.
 	 *
@@ -431,7 +408,6 @@ public class MedicalStockIoOperations {
 		newMedicalStock.setBalance(newBalance);
 		return medicalStockRepository.save(newMedicalStock);
 	}
-
 	/**
 	 * Updates medical quantity for the specified ward.
 	 * @param ward the ward.
@@ -453,7 +429,6 @@ public class MedicalStockIoOperations {
 		}
 		return medicalStockWardRepository.save(medicalWard);
 	}
-
 	/**
 	 * Gets all the stored {@link Movement}.
 	 * @return all retrieved movement
@@ -462,7 +437,6 @@ public class MedicalStockIoOperations {
 	public List<Movement> getMovements() throws OHServiceException {
 		return getMovements(null, null, null);
 	}
-
 	/**
 	 * Retrieves all the stored {@link Movement}s for the specified {@link Ward}.
 	 * @param wardId the ward id.
@@ -487,7 +461,6 @@ public class MedicalStockIoOperations {
 		}
 		return pMovement;
 	}
-
 	/**
 	 * Retrieves all the stored {@link Movement} with the specified criteria.
 	 * @param medicalCode the {@link Medical} code (optional).
@@ -533,7 +506,6 @@ public class MedicalStockIoOperations {
 		}
 		return pMovement;
 	}
-
 	/**
 	 * Retrieves all the stored {@link Movement} with the specified criteria.
 	 * @param medicalCode the {@link Medical} code (optional).
@@ -562,7 +534,7 @@ public class MedicalStockIoOperations {
 		LocalDateTime lotDueFrom,
 		LocalDateTime lotDueTo,
 		Pageable pageable) throws OHServiceException {
-		List<Movement> pMovement = new ArrayList<>();
+		List<Movement> movementList = new ArrayList<>();
 
 		List<Integer> pMovementCode = movRepository.findMovementWhereData(medicalCode, medicalType, wardId, movType,
 			TimeTools.truncateToSeconds(movFrom),
@@ -578,11 +550,10 @@ public class MedicalStockIoOperations {
 			if (movement == null) {
 				throw new OHServiceException(new OHExceptionMessage("Movement '" + code + "' not found."));
 			}
-			pMovement.add(i, movement);
+			movementList.add(i, movement);
 		}
-		return pMovement;
+		return movementList;
 	}
-
 	/**
 	 * Retrieves {@link Movement}s for printing using specified filtering criteria.
 	 * @param medicalDescription the medical description.
@@ -618,7 +589,6 @@ public class MedicalStockIoOperations {
 		}
 		return pMovement;
 	}
-
 	/**
 	 * Retrieves lot referred to the specified {@link Medical}, expiring first on top Lots with zero quantities will be stripped out if removeEmpty is set to
 	 * true.
@@ -672,7 +642,6 @@ public class MedicalStockIoOperations {
 
 		return lots;
 	}
-
 	/**
 	 * Returns the date of the last movement
 	 * @return
@@ -681,7 +650,6 @@ public class MedicalStockIoOperations {
 	public LocalDateTime getLastMovementDate() throws OHServiceException {
 		return movRepository.findMaxDate();
 	}
-
 	/**
 	 * Check if the reference number is already used
 	 * @return {@code true} if is already used, {@code false} otherwise.
@@ -690,7 +658,6 @@ public class MedicalStockIoOperations {
 	public boolean refNoExists(String refNo) throws OHServiceException {
 		return !movRepository.findAllWhereRefNo(refNo).isEmpty();
 	}
-
 	/**
 	 * Retrieves all the movement associated to the specified reference number. In case of error a message error is shown and a {@code null} value is returned.
 	 * @param refNo the reference number.
@@ -700,7 +667,6 @@ public class MedicalStockIoOperations {
 	public List<Movement> getMovementsByReference(String refNo) throws OHServiceException {
 		return movRepository.findAllByRefNo(refNo);
 	}
-
 	/**
 	 * Retrieves the last movement.
 	 * @return the retrieved movement.
@@ -709,7 +675,6 @@ public class MedicalStockIoOperations {
 	public Movement getLastMovement() throws OHServiceException {
 		return movRepository.findLastMovement();
 	}
-
 	/**
 	 * Deletes the movement.
 	 * @param movement - the movement to delete
@@ -768,7 +733,6 @@ public class MedicalStockIoOperations {
 		}
 		movRepository.delete(movement);
 	}
-
 	/**
 	 * Count active {@link Movement}s
 	 * @return the number of recorded {@link Movement}s
@@ -777,7 +741,6 @@ public class MedicalStockIoOperations {
 	public long countAllActiveMovements() {
 		return this.movRepository.countAllActiveMovements();
 	}
-
 	/**
 	 * Deletes the specified {@link Lot}.
 	 * @param lot the lot to delete.
@@ -785,6 +748,10 @@ public class MedicalStockIoOperations {
 	 */
 	public void deleteLot(Lot lot) throws OHServiceException {
 		lotRepository.delete(lot);
+	}
+
+	public enum MovementOrder {
+		DATE, WARD, PHARMACEUTICAL_TYPE, TYPE
 	}
 
 }

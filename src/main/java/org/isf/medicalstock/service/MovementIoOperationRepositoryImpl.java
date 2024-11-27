@@ -203,17 +203,15 @@ public class MovementIoOperationRepositoryImpl implements MovementIoOperationRep
 		LocalDateTime lotPrepTo,
 		LocalDateTime lotDueFrom,
 		LocalDateTime lotDueTo,
-		Pageable pageable) {  // Ajouter Pageable comme paramètre
-		// Créer le CriteriaBuilder et CriteriaQuery
+		Pageable pageable) {
+
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<Integer> query = builder.createQuery(Integer.class);
 		Root<Movement> root = query.from(Movement.class);
 		query.select(root.<Integer> get(CODE));
 
-		// Liste des prédicats (filtres)
 		List<Predicate> predicates = new ArrayList<>();
 
-		// Ajouter les conditions de filtrage
 		if (medicalCode != null) {
 			predicates.add(builder.equal(root.<Medical> get(MEDICAL).<String> get(CODE), medicalCode));
 		}
@@ -242,7 +240,6 @@ public class MovementIoOperationRepositoryImpl implements MovementIoOperationRep
 			predicates.add(builder.equal(root.<Ward> get(WARD).<String> get(CODE), wardId));
 		}
 
-		// Appliquer le tri via Pageable
 		List<Order> orderList = new ArrayList<>();
 		if (pageable.getSort() != null) {
 			pageable.getSort().forEach(order -> {
@@ -253,23 +250,18 @@ public class MovementIoOperationRepositoryImpl implements MovementIoOperationRep
 				}
 			});
 		} else {
-			// Tri par défaut
 			orderList.add(builder.desc(root.get(CODE)));
 			orderList.add(builder.desc(root.get(REF_NO)));
 		}
 
-		// Appliquer les conditions et les ordres à la requête
 		query.where(predicates.toArray(new Predicate[0])).orderBy(orderList);
 
-		// Créer la requête paginée
 		TypedQuery<Integer> typedQuery = entityManager.createQuery(query);
 
-		// Pagination : Calculer l'index du premier résultat et la taille de la page
 		int firstResult = pageable.getPageNumber() * pageable.getPageSize();
 		typedQuery.setFirstResult(firstResult);
 		typedQuery.setMaxResults(pageable.getPageSize());
 
-		// Exécuter la requête et obtenir la liste des résultats
 		List<Integer> result = typedQuery.getResultList();
 
 		return result;

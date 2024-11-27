@@ -24,7 +24,6 @@ package org.isf.medicals.service;
 import java.util.List;
 
 import org.isf.medicals.model.Medical;
-import org.isf.medicalstock.model.Movement;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -94,8 +93,4 @@ public interface MedicalsIoOperationRepository extends JpaRepository<Medical, In
 
 	@Query(value = "SELECT m FROM Medical m")
 	Page<Medical> findAllPageable(Pageable pageable);
-
-	@Query(value = "SELECT m FROM Movement m")
-	Page<Movement> findAllMovementsPageable(Pageable pageable);
-	
 }
