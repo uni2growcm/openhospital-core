@@ -1,9 +1,9 @@
 package org.isf.reductionplan.service;
 
-
-import org.isf.reductionplan.model.ReductionPlan;
 import java.util.List;
 import java.util.Optional;
+
+import org.isf.reductionplan.model.ReductionPlan;
 import org.isf.utils.db.TranslateOHServiceException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.model.OHExceptionMessage;
@@ -14,14 +14,16 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Mwithi
  */
 @Service
-@Transactional(rollbackFor=OHServiceException.class)
+@Transactional(rollbackFor = OHServiceException.class)
 @TranslateOHServiceException
 public class ReductionPlanIoOperations {
+
 	private final ReductionplanIoOperationRepository repository;
 
 	public ReductionPlanIoOperations(ReductionplanIoOperationRepository reductionplanIoOperationRepository
-				) {
-		this.repository = reductionplanIoOperationRepository;}
+	) {
+		this.repository = reductionplanIoOperationRepository;
+	}
 
 	/**
 	 * Return the list of {@link ReductionPlan}s in the DB

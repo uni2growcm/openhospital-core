@@ -3,7 +3,6 @@ package org.isf.reductionplan.model;
 import java.io.Serial;
 import java.io.Serializable;
 
-
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -125,12 +124,16 @@ public class ReductionPlan extends Auditable<String> implements Serializable {
 		this.examRate = examRate;
 		this.otherRate = otherRate;
 	}
-	public int getLock() { return lock; }
+	public int getLock() {
+		return lock;
+	}
 
-	public void setLock(int lock) { this.lock = lock; }
+	public void setLock(int lock) {
+		this.lock = lock;
+	}
 
 	@Override
-	public String toString(){
+	public String toString() {
 		return description;
 	}
 

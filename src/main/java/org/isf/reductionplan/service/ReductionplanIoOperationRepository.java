@@ -7,7 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ReductionplanIoOperationRepository  extends JpaRepository<ReductionPlan, Integer> {
+public interface ReductionplanIoOperationRepository extends JpaRepository<ReductionPlan, Integer> {
+
 	List<ReductionPlan> findByDescription(String description);
 	List<ReductionPlan> findByIdIn(List<Integer> ids);
 }
