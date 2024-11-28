@@ -1,4 +1,3 @@
-
 source step_05_update_menu_i18n.sql;
 source step_06_opd_extended.sql;
 source step_07_modifiche_matiri.sql;
