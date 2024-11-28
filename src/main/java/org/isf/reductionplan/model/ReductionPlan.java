@@ -142,11 +142,9 @@ public class ReductionPlan extends Auditable<String> implements Serializable {
 		if (this == obj) {
 			return true;
 		}
-
 		if (!(obj instanceof ReductionPlan reductionplan)) {
 			return false;
 		}
-
 		return (id == reductionplan.getId());
 	}
 
@@ -155,12 +153,9 @@ public class ReductionPlan extends Auditable<String> implements Serializable {
 		if (this.hashcode == 0) {
 			final int m = 23;
 			int c = 133;
-
 			c = m * c + id;
-
 			this.hashcode = c;
 		}
-
 		return this.hashcode;
 	}
 }

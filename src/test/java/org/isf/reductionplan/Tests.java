@@ -1,5 +1,6 @@
 package org.isf.reductionplan;
 
+import static org.apache.poi.ss.formula.CollaboratingWorkbooksEnvironment.setup;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
@@ -204,5 +205,18 @@ class Tests extends OHCoreTestCase {
 		ReductionPlan foundReductionPlan = repository.findById(id).orElse(null);
 		assertThat(foundReductionPlan).isNotNull();
 		testsReductionplan.check(foundReductionPlan);
+	}
+
+	@Test
+	public void testReductionplanUsingConstructor() {
+		ReductionPlan reductionplan = testsReductionplan.setup(true);
+		testsReductionplan.check(reductionplan);
+	}
+
+	// Test avec les setters
+	@Test
+	public void testReductionplanUsingSetters() {
+		ReductionPlan reductionplan = testsReductionplan.setup(false);
+		testsReductionplan.check(reductionplan);
 	}
 }

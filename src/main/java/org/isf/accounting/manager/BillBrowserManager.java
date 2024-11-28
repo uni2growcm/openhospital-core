@@ -56,7 +56,7 @@ public class BillBrowserManager {
 	 * @throws OHDataValidationException
 	 */
 	protected void validateBill(Bill bill, List<BillItems> billItems, List<BillPayments> billPayments) throws OHDataValidationException {
-		List<OHExceptionMessage> errors = new ArrayList<>();
+        List<OHExceptionMessage> errors = new ArrayList<>();
 
 		LocalDateTime today = TimeTools.getNow();
 		LocalDateTime upDate;
@@ -151,9 +151,9 @@ public class BillBrowserManager {
 	@Transactional(rollbackFor=OHServiceException.class)
 	@TranslateOHServiceException
 	public Bill newBill(
-					Bill bill,
-					List<BillItems> billItems,
-					List<BillPayments> billPayments) throws OHServiceException {
+			Bill bill,
+			List<BillItems> billItems,
+			List<BillPayments> billPayments) throws OHServiceException {
 		validateBill(bill, billItems, billPayments);
 		Bill newBill = newBill(bill);
 		int billId = newBill.getId();
@@ -207,8 +207,8 @@ public class BillBrowserManager {
 	@Transactional(rollbackFor=OHServiceException.class)
 	@TranslateOHServiceException
 	public Bill updateBill(Bill updateBill,
-					List<BillItems> billItems,
-					List<BillPayments> billPayments) throws OHServiceException {
+			List<BillItems> billItems,
+			List<BillPayments> billPayments) throws OHServiceException {
 		validateBill(updateBill, billItems, billPayments);
 		Bill updatedBill = updateBill(updateBill);
 		newBillItems(updateBill.getId(), billItems);

@@ -42,19 +42,7 @@ class TestsReductionplan{
 
 		}
 
-		// Test avec le constructeur
-		@Test
-		public void testReductionplanUsingConstructor() {
-			ReductionPlan reductionplan = setup(true); // Création avec constructeur
-			check(reductionplan); // Vérification des valeurs
-		}
-
-		// Test avec les setters
-		@Test
-		public void testReductionplanUsingSetters() {
-			ReductionPlan reductionplan = setup(false); // Création avec setters
-			check(reductionplan); // Vérification des valeurs
-		}
+		
 	}
 
 
