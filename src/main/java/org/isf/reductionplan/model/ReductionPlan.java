@@ -120,6 +120,7 @@ public class ReductionPlan extends Auditable<String> implements Serializable {
 	public double getOtherRate() {
 		return otherRate;
 	}
+	
 	public void setOtherRate(double otherRate) {
 		this.otherRate = otherRate;
 	}
