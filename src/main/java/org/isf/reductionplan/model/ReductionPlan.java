@@ -88,6 +88,7 @@ public class ReductionPlan extends Auditable<String> implements Serializable {
 	public String getDescription() {
 		return description;
 	}
+	
 	public void setDescription(String description) {
 		this.description = description;
 	}
@@ -95,24 +96,31 @@ public class ReductionPlan extends Auditable<String> implements Serializable {
 	public double getOperationRate() {
 		return operationRate;
 	}
+	
 	public void setOperationRate(double operationRate) {
 		this.operationRate = operationRate;
 	}
+	
 	public double getMedicalRate() {
 		return medicalRate;
 	}
+	
 	public void setMedicalRate(double medicalRate) {
 		this.medicalRate = medicalRate;
 	}
+	
 	public double getExamRate() {
 		return examRate;
 	}
+	
 	public void setExamRate(double examRate) {
 		this.examRate = examRate;
 	}
+	
 	public double getOtherRate() {
 		return otherRate;
 	}
+	
 	public void setOtherRate(double otherRate) {
 		this.otherRate = otherRate;
 	}
@@ -124,6 +132,7 @@ public class ReductionPlan extends Auditable<String> implements Serializable {
 		this.examRate = examRate;
 		this.otherRate = otherRate;
 	}
+	
 	public int getLock() {
 		return lock;
 	}
