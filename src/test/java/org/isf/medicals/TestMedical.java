@@ -37,7 +37,6 @@ public class TestMedical {
 	private double inqty = 30.30;
 	private double outqty = 20.20;
 	private double minqty = 40.40;
-	
 
 	public Medical setup(MedicalType medicalType, boolean usingSet) throws OHException {
 		Medical medical;
@@ -69,7 +68,6 @@ public class TestMedical {
 		assertThat(medical.getMinqty()).isCloseTo(minqty, offset(0.1));
 		assertThat(medical.getOutqty()).isCloseTo(outqty, offset(0.1));
 		assertThat(medical.getPcsperpck()).isEqualTo(pcsperpck);
-		assertThat(medical.getProdCode()).isEqualTo(prod_code);
-		
+		assertThat(medical.getProdCode()).isEqualTo(prod_code);	
 	}
 }

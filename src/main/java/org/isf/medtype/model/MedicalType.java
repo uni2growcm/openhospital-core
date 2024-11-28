@@ -78,7 +78,7 @@ public class MedicalType extends Auditable<String> {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	
+
 	@Override
 	public boolean equals(Object anObject) {
 		return anObject instanceof MedicalType && (getCode().equalsIgnoreCase(((MedicalType) anObject).getCode())
