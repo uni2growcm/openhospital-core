@@ -68,6 +68,6 @@ public class TestMedical {
 		assertThat(medical.getMinqty()).isCloseTo(minqty, offset(0.1));
 		assertThat(medical.getOutqty()).isCloseTo(outqty, offset(0.1));
 		assertThat(medical.getPcsperpck()).isEqualTo(pcsperpck);
-		assertThat(medical.getProdCode()).isEqualTo(prod_code);	
+		assertThat(medical.getProdCode()).isEqualTo(prod_code);
 	}
 }
