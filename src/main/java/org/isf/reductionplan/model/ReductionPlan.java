@@ -132,6 +132,7 @@ public class ReductionPlan extends Auditable<String> implements Serializable {
 		this.examRate = examRate;
 		this.otherRate = otherRate;
 	}
+	
 	public int getLock() {
 		return lock;
 	}
