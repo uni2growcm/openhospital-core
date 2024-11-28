@@ -69,7 +69,7 @@ public class MortuaryStayManager {
 	 * @throws OHServiceException if an error occurs storing the mortuary.
 	 */
 	public MortuaryStay add(MortuaryStay mortuary) throws OHServiceException {
-		validate(mortuary, true);
+		validate(mortuary);
 		return ioOperations.add(mortuary);
 	}
 
@@ -108,10 +108,9 @@ public class MortuaryStayManager {
 	/**
 	 * Verify if the object is valid for CRUD and return a list of errors, if any.
 	 * @param mortuaryStay the {@link MortuaryStay} object to validate.
-	 * @param insert {@code true} or updated {@code false}
 	 * @throws OHServiceException
 	 */
-	protected void validate(MortuaryStay mortuaryStay, boolean insert) throws OHServiceException {
+	protected void validate(MortuaryStay mortuaryStay) throws OHServiceException {
 		String code = mortuaryStay.getCode();
 		String desc = mortuaryStay.getDescription();
 		String name = mortuaryStay.getName();
@@ -128,9 +127,6 @@ public class MortuaryStayManager {
 		if (name.isEmpty()) {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuarystays.pleaseinsertavalidname.msg")));
 		}
-		if (ioOperations.isCodePresent(code)) {
-			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuarystays.codealreadyinuse.msg")));
-		}
 		if (desc.isEmpty()) {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.common.pleaseinsertavaliddescription.msg")));
 		}
@@ -144,7 +140,7 @@ public class MortuaryStayManager {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuarystays.insertcoherencemaxminvalues.msg")));
 		}
 
-		if (insert && isCodePresent(mortuaryStay.getCode())) {
+		if (isCodePresent(mortuaryStay.getCode())) {
 			throw new OHDataIntegrityViolationException(new OHExceptionMessage(MessageBundle.getMessage("angal.common.thecodeisalreadyinuse.msg")));
 		}
 		if (!errors.isEmpty()) {
