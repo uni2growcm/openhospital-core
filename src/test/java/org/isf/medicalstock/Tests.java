@@ -77,6 +77,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -1126,7 +1127,7 @@ class Tests extends OHCoreTestCase {
 			Movement movement = movementIoOperationRepository.findById(code).orElse(null);
 			assertThat(movement).isNotNull();
 			Lot lot = movement.getLot();
-			lot.setCost(new BigDecimal(0.0));
+			lot.setCost(BigDecimal.ZERO);
 			lotIoOperationRepository.saveAndFlush(lot);
 			List<Movement> movements = new ArrayList<>(1);
 			movements.add(movement);
@@ -1540,13 +1541,27 @@ class Tests extends OHCoreTestCase {
 				method.invoke(medicalStockIoOperation, medical, newDate, quantity);
 			} catch (InvocationTargetException e) {
 				if (e.getCause() instanceof OHServiceException) {
-					throw (OHServiceException) e.getCause();
+					throw e.getCause();
 				} else {
 					throw e;
 				}
 			}
 		})
 			.isInstanceOf(OHServiceException.class);
+	}
+
+	@Test
+	void testMedicalWardLockGetterSetter() throws Exception {
+		int code = setupTestMovement(false);
+		Movement movement = movementIoOperationRepository.findById(code).orElse(null);
+		assertThat(movement).isNotNull();
+		MovementType movementType = movement.getType();
+		movementType.setType("-");
+		MedicalWard medicalWard = new MedicalWard(movement.getWard(), movement.getMedical(), 0, 0, movement.getLot());
+
+		assertThat(medicalWard.getLock()).isZero();
+		medicalWard.setLock(8);
+		assertThat(medicalWard.getLock()).isEqualTo(8);
 	}
 
 	private String setupTestLot(boolean usingSet) throws OHException {
