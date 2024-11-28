@@ -108,6 +108,7 @@ public class ReductionPlan extends Auditable<String> implements Serializable {
 	public void setMedicalRate(double medicalRate) {
 		this.medicalRate = medicalRate;
 	}
+	
 	public double getExamRate() {
 		return examRate;
 	}
