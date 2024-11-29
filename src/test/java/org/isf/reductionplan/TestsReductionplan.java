@@ -25,7 +25,7 @@ package org.isf.reductionplan;
 import static org.assertj.core.api.Assertions.assertThat;
 import org.isf.reductionplan.model.ReductionPlan;
 
-class TestsReductionplan{
+class TestsReductionplan {
 
 		private final String description = "Plan de réduction test";
 		private final double operationRate = 20.5f;
