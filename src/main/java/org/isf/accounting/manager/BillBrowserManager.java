@@ -148,7 +148,7 @@ public class BillBrowserManager {
 	/**
 	 * Stores a new {@link Bill} along with all its {@link BillItems} and {@link BillPayments}
 	 * 
-	 * @param bill - the bill to store.
+	 * @param bill the bill to store.
 	 * @param billItems - the list of bill's items
 	 * @param billPayments - the list of bill's payments
 	 * @returns the persisted Bill object
