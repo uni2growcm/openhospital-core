@@ -155,7 +155,7 @@ public class OpdBrowserManager {
 	/**
 	 * Return all Opds of today or since one week ago
 	 *
-	 * @param oneWeek - if {@code true} return the last week, only today otherwise.
+	 * @param oneWeek if {@code true} return the last week, only today otherwise.
 	 * @return the list of Opds. It could be {@code null}.
 	 * @throws OHServiceException
 	 */
@@ -187,7 +187,7 @@ public class OpdBrowserManager {
 	/**
 	 * Returns all {@link Opd}s associated to specified patient ID
 	 *
-	 * @param patientcode - the patient ID
+	 * @param patientcode the patient ID
 	 * @return the list of {@link Opd}s associated to specified patient ID. the whole list of {@link Opd}s if {@code 0} is passed.
 	 * @throws OHServiceException
 	 */
@@ -211,7 +211,7 @@ public class OpdBrowserManager {
 	/**
 	 * Updates the specified {@link Opd} object.
 	 *
-	 * @param opd - the {@link Opd} object to update.
+	 * @param opd the {@link Opd} object to update.
 	 * @return the updated {@link Opd}
 	 * @throws OHServiceException
 	 */
@@ -223,7 +223,7 @@ public class OpdBrowserManager {
 	/**
 	 * Delete an {@link Opd} from the db
 	 *
-	 * @param opd - the {@link Opd} to delete
+	 * @param opd the {@link Opd} to delete
 	 * @throws OHServiceException
 	 */
 	public void deleteOpd(Opd opd) throws OHServiceException {
@@ -234,7 +234,7 @@ public class OpdBrowserManager {
 	 * Returns the max progressive number within specified year or within current year if {@code 0}.
 	 *
 	 * @param year
-	 * @return {@code int} - the progressive number in the year
+	 * @return {@code int} the progressive number in the year
 	 * @throws OHServiceException
 	 */
 	public int getProgYear(int year) throws OHServiceException {
@@ -244,7 +244,7 @@ public class OpdBrowserManager {
 	/**
 	 * Return the last {@link Opd} in time associated with specified patient ID.
 	 *
-	 * @param patientcode - the patient ID
+	 * @param patientcode the patient ID
 	 * @return last Opd associated with specified patient ID or {@code null}
 	 * @throws OHServiceException
 	 */
@@ -255,8 +255,8 @@ public class OpdBrowserManager {
 	/**
 	 * Check if the given {@code opdNum} does already exist for the give {@code year}
 	 *
-	 * @param opdNum - the OPD progressive in year
-	 * @param year - the year
+	 * @param opdNum the OPD progressive in year
+	 * @param year the year
 	 * @return {@code true} if the given number exists in year, {@code false} otherwise
 	 */
 	public boolean isExistOpdNum(int opdNum, int year) throws OHServiceException {
@@ -266,7 +266,7 @@ public class OpdBrowserManager {
 	/**
 	 * Get an OPD by its code
 	 * 
-	 * @param code - the OPD code
+	 * @param code the OPD code
 	 * @return an OPD or {@code null}
 	 */
 	public Optional<Opd> getOpdById(int code) {
@@ -276,7 +276,7 @@ public class OpdBrowserManager {
 	/**
 	 * Get a list of OPD with specified Progressive in Year number
 	 * 
-	 * @param code - the OPD code
+	 * @param code the OPD code
 	 * @return a list of OPD or an empty list
 	 */
 	public List<Opd> getOpdByProgYear(int code) {
@@ -286,9 +286,9 @@ public class OpdBrowserManager {
 	/**
 	 * Returns {@link List} of {@link Opd}s associated to specified patient ID with page info.
 	 *
-	 * @param ward - the ward of opd
-	 * @param diseaseTypeCode - the disease type
-	 * @param diseaseCode - the Code of disease
+	 * @param ward the ward of opd
+	 * @param diseaseTypeCode the disease type
+	 * @param diseaseCode the Code of disease
 	 * @param dateFrom
 	 * @param dateTo
 	 * @param ageFrom

@@ -88,7 +88,7 @@ public class MedicalInventoryManager {
 	/**
 	 * Insert a new {@link MedicalInventory}.
 	 *
-	 * @param medicalInventory - the {@link MedicalInventory} to insert.
+	 * @param medicalInventory the {@link MedicalInventory} to insert.
 	 * @return the newly persisted {@link MedicalInventory} object.
 	 * @throws OHServiceException
 	 */
@@ -101,7 +101,7 @@ public class MedicalInventoryManager {
 	/**
 	 * Update an existing {@link MedicalInventory}.
 	 *
-	 * @param medicalInventory - the {@link MedicalInventory} to update.
+	 * @param medicalInventory the {@link MedicalInventory} to update.
 	 * @return the updated {@link MedicalInventory} object.
 	 * @throws OHServiceException
 	 */
@@ -116,7 +116,7 @@ public class MedicalInventoryManager {
 	/**
 	 * Check if the reference number is already used.
 	 * 
-	 * @param reference - the {@link MedicalInventory} reference.
+	 * @param reference the {@link MedicalInventory} reference.
 	 * @return {@code true} if the code is already in use, {@code false} otherwise.
 	 * @throws OHServiceException
 	 */
@@ -127,8 +127,8 @@ public class MedicalInventoryManager {
 	/**
 	 * Return a list of {@link MedicalInventory}s for passed params.
 	 *
-	 * @param status - the {@link MedicalInventory} status.
-	 * @param wardCode - the {@link Ward} code.
+	 * @param status the {@link MedicalInventory} status.
+	 * @param wardCode the {@link Ward} code.
 	 * @return the list of {@link MedicalInventory}s. It could be {@code empty}.
 	 * @throws OHServiceException
 	 */
@@ -139,8 +139,8 @@ public class MedicalInventoryManager {
 	/**
 	 * Return a list {@link MedicalInventory}s for passed params.
 	 *
-	 * @param status - the {@link MedicalInventory} status.
-	 * @param inventoryType - the {@link MedicalInventory} type.
+	 * @param status the {@link MedicalInventory} status.
+	 * @param inventoryType the {@link MedicalInventory} type.
 	 * @return the list of {@link MedicalInventory}s. It could be {@code empty}.
 	 * @throws OHServiceException
 	 */
@@ -161,10 +161,10 @@ public class MedicalInventoryManager {
 	/**
 	 * Return a list of {@link MedicalInventory}s for passed params.
 	 * 
-	 * @param dateFrom - the lowest date for the range.
-	 * @param dateTo - the highest date for the range.
-	 * @param status - the {@link MedicalInventory} status.
-	 * @param type - the {@link MedicalInventory} type.
+	 * @param dateFrom the lowest date for the range.
+	 * @param dateTo the highest date for the range.
+	 * @param status the {@link MedicalInventory} status.
+	 * @param type the {@link MedicalInventory} type.
 	 * @return the list of {@link MedicalInventory}s. It could be {@code empty}.
 	 * @throws OHServiceException
 	 */
@@ -178,12 +178,12 @@ public class MedicalInventoryManager {
 	/**
 	 * Return a list of {@link MedicalInventory}s for passed params.
 	 * 
-	 * @param dateFrom - the lower date for the range.
-	 * @param dateTo - the highest date for the range.
-	 * @param status - the {@link MedicalInventory} status.
-	 * @param type - the {@link MedicalInventory} type.
-	 * @param page - the page number.
-	 * @param size - the page size.
+	 * @param dateFrom the lower date for the range.
+	 * @param dateTo the highest date for the range.
+	 * @param status the {@link MedicalInventory} status.
+	 * @param type the {@link MedicalInventory} type.
+	 * @param page the page number.
+	 * @param size the page size.
 	 * @return the list of {@link MedicalInventory}s. It could be {@code empty}.
 	 * @throws OHServiceException
 	 */
@@ -197,7 +197,7 @@ public class MedicalInventoryManager {
 	/**
 	 * Fetch {@link MedicalInventory} with param.
 	 * 
-	 * @param inventoryId - the {@link MedicalInventory} id.
+	 * @param inventoryId the {@link MedicalInventory} id.
 	 * @return {@link MedicalInventory}. It could be {@code null}.
 	 * @throws OHServiceException
 	 */
@@ -208,7 +208,7 @@ public class MedicalInventoryManager {
 	/**
 	 * Fetch {@link MedicalInventory} with param.
 	 * 
-	 * @param reference - the {@link MedicalInventory} reference.
+	 * @param reference the {@link MedicalInventory} reference.
 	 * @return {@link MedicalInventory}. It could be {@code null}.
 	 * @throws OHServiceException
 	 */
@@ -243,7 +243,7 @@ public class MedicalInventoryManager {
 	/**
 	 * Validate the Inventory rows of inventory.
 	 *
-	 * @param inventory - The {@link MedicalInventory}
+	 * @param inventory the {@link MedicalInventory}
 	 * @param inventoryRowSearchList- The list of {@link MedicalInventory}
 	 * @throws OHServiceException
 	 */
@@ -358,7 +358,7 @@ public class MedicalInventoryManager {
 	/**
 	 * Marks an inventory as deleted by changing its status.
 	 * 
-	 * @param medicalInventory - the medicalInventory of the inventory to delete.
+	 * @param medicalInventory the medicalInventory of the inventory to delete.
 	 * @throws OHServiceException if an error occurs during the operation.
 	 */
 	public void deleteInventory(MedicalInventory medicalInventory) throws OHServiceException {
@@ -379,7 +379,7 @@ public class MedicalInventoryManager {
 	/**
 	 * Confirm the Inventory rows of inventory.
 	 *
-	 * @param inventory - The {@link MedicalInventory}
+	 * @param inventory the {@link MedicalInventory}
 	 * @param inventoryRowSearchList- The list of {@link MedicalInventory}
 	 * @return List {@link Movement}. It could be {@code empty}.
 	 * @throws OHServiceException
@@ -449,7 +449,7 @@ public class MedicalInventoryManager {
 	/**
 	 * Actualize the {@link MedicalInventory}.
 	 *
-	 * @param inventory - The {@link MedicalInventory}
+	 * @param inventory the {@link MedicalInventory}
 	 * @return {@link MedicalInventory}. It could be {@code null}.
 	 * @throws OHServiceException
 	 */

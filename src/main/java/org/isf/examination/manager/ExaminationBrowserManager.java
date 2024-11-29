@@ -147,7 +147,7 @@ public class ExaminationBrowserManager {
 	}
 
 	/**
-	 * @param patex - the PatientExamination to save
+	 * @param patex the PatientExamination to save
 	 * @throws OHServiceException
 	 */
 	public PatientExamination saveOrUpdate(PatientExamination patex) throws OHServiceException {
@@ -177,7 +177,7 @@ public class ExaminationBrowserManager {
 	}
 
 	/**
-	 * @param patexList - the {@link PatientExamination} to delete.
+	 * @param patexList the {@link PatientExamination} to delete.
 	 * @throws OHServiceException
 	 */
 	public void remove(List<PatientExamination> patexList) throws OHServiceException {

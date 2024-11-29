@@ -88,7 +88,7 @@ public class MalnutritionManager {
 	/**
 	 * Returns the last {@link Malnutrition} entry for specified patient ID
 	 *
-	 * @param patientID - the patient ID
+	 * @param patientID the patient ID
 	 * @return the last {@link Malnutrition} for specified patient ID. {@code null} if none.
 	 * @throws OHServiceException
 	 */

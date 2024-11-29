@@ -41,7 +41,7 @@ public class LabRowManager {
 	/**
 	 * Return a list of results ({@link LaboratoryRow}s) for passed lab entry.
 	 *
-	 * @param code - the {@link Laboratory} record ID.
+	 * @param code the {@link Laboratory} record ID.
 	 * @return the list of {@link LaboratoryRow}s. It could be {@code empty}
 	 * @throws OHServiceException
 	 */

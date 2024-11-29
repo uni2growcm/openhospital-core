@@ -138,7 +138,7 @@ public class LabManager {
 	/**
 	 * Return a list of exams ({@link Laboratory}s) related to a {@link Patient}.
 	 *
-	 * @param aPatient - the {@link Patient}.
+	 * @param aPatient the {@link Patient}.
 	 * @return the list of {@link Laboratory}s related to the {@link Patient}. It could be {@code empty}.
 	 * @throws OHServiceException
 	 */
@@ -149,9 +149,9 @@ public class LabManager {
 	/**
 	 * Return a list of exams ({@link Laboratory}s) between specified dates and matching passed exam name.
 	 *
-	 * @param exam - the exam name as {@code String}
-	 * @param dateFrom - the lower date for the range
-	 * @param dateTo - the highest date for the range
+	 * @param exam the exam name as {@code String}
+	 * @param dateFrom the lower date for the range
+	 * @param dateTo the highest date for the range
 	 * @return the list of {@link Laboratory}s. It could be {@code empty}.
 	 * @throws OHServiceException
 	 */
@@ -162,10 +162,10 @@ public class LabManager {
 	/**
 	 * Return a list of exams ({@link Laboratory}s) between specified dates and matching passed exam name
 	 *
-	 * @param exam - the exam name as {@code String}
-	 * @param dateFrom - the lower date for the range
-	 * @param dateTo - the highest date for the range
-	 * @param patient - the object patient
+	 * @param exam the exam name as {@code String}
+	 * @param dateFrom the lower date for the range
+	 * @param dateTo the highest date for the range
+	 * @param patient the object patient
 	 * @return the list of {@link Laboratory}s. It could be {@code empty}.
 	 * @throws OHServiceException
 	 */
@@ -177,9 +177,9 @@ public class LabManager {
 	 * Return a list of exams suitable for printing ({@link LaboratoryForPrint}s) between specified dates and matching passed exam name. If a lab has multiple
 	 * results, these are concatenated and added to the result string.
 	 *
-	 * @param exam - the exam name as {@code String}
-	 * @param dateFrom - the lower date for the range
-	 * @param dateTo - the highest date for the range
+	 * @param exam the exam name as {@code String}
+	 * @param dateFrom the lower date for the range
+	 * @param dateTo the highest date for the range
 	 * @return the list of {@link LaboratoryForPrint}s . It could be {@code empty}.
 	 * @throws OHServiceException
 	 */
@@ -193,9 +193,9 @@ public class LabManager {
 	 * Return a list of exams suitable for printing ({@link LaboratoryForPrint}s) between specified dates and matching passed exam name. If a lab has multiple
 	 * results, these are concatenated and added to the result string.
 	 *
-	 * @param exam - the exam name as {@code String}
-	 * @param dateFrom - the lower date for the range
-	 * @param dateTo - the highest date for the range
+	 * @param exam the exam name as {@code String}
+	 * @param dateFrom the lower date for the range
+	 * @param dateTo the highest date for the range
 	 * @return the list of {@link LaboratoryForPrint}s . It could be {@code empty}.
 	 * @throws OHServiceException
 	 */
@@ -207,8 +207,8 @@ public class LabManager {
 	/**
 	 * Inserts one Laboratory exam {@link Laboratory} (All Procedures)
 	 *
-	 * @param laboratory - the laboratory with its result (Procedure 1)
-	 * @param labRow - the list of results (Procedure 2) - it can be {@code null}
+	 * @param laboratory the laboratory with its result (Procedure 1)
+	 * @param labRow the list of results (Procedure 2); it can be {@code null}
 	 * @return the newly persisted {@link Laboratory} object.
 	 * @throws OHServiceException
 	 */
@@ -232,8 +232,8 @@ public class LabManager {
 	/**
 	 * Inserts one Laboratory exam {@link Laboratory} (All Procedures).
 	 *
-	 * @param laboratory - the laboratory with its result (Procedure 1)
-	 * @param labRow - the list of results (Procedure 2) - it can be {@code null}
+	 * @param laboratory the laboratory with its result (Procedure 1)
+	 * @param labRow the list of results (Procedure 2); it can be {@code null}
 	 * @return the newly persisted {@link Laboratory} object.
 	 * @throws OHServiceException
 	 */
@@ -252,7 +252,7 @@ public class LabManager {
 	/**
 	 * Inserts one Laboratory request (All Procedures).
 	 *
-	 * @param laboratory - the laboratory without result
+	 * @param laboratory the laboratory without result
 	 * @return the newly persisted {@link Laboratory} object.
 	 * @throws OHServiceException
 	 */
@@ -264,8 +264,8 @@ public class LabManager {
 	/**
 	 * Update one Laboratory request {(All Procedures).
 	 *
-	 * @param code - the code of the laboratory
-	 * @param status - the LaboratoryStatus to set
+	 * @param code the code of the laboratory
+	 * @param status the LaboratoryStatus to set
 	 * @return the updated {@link Laboratory}
 	 * @throws OHServiceException
 	 */
@@ -282,8 +282,8 @@ public class LabManager {
 	/**
 	 * Inserts one Laboratory exam {@link Laboratory} (All Procedures).
 	 *
-	 * @param laboratory - the laboratory with its result (Procedure 1)
-	 * @param labRow - the list of results (Procedure 2) - it can be {@code null}
+	 * @param laboratory the laboratory with its result (Procedure 1)
+	 * @param labRow the list of results (Procedure 2); it can be {@code null}
 	 * @return the updated {@link Laboratory}
 	 * @throws OHServiceException
 	 */
@@ -308,8 +308,8 @@ public class LabManager {
 	/**
 	 * Inserts list of Laboratory exams {@link Laboratory} (All Procedures).
 	 *
-	 * @param labList - the laboratory list with results
-	 * @param labRowList - the list of results, it can be {@code null}
+	 * @param labList the laboratory list with results
+	 * @param labRowList the list of results, it can be {@code null}
 	 * @return the first of the newly persisted {@link Laboratory} objects in the list.
 	 * @throws OHServiceException
 	 */
@@ -332,8 +332,8 @@ public class LabManager {
 	/**
 	 * Inserts list of Laboratory exams {@link Laboratory} (All Procedures).
 	 *
-	 * @param labList - the laboratory list with results
-	 * @param labRowList - the list of results, it can be {@code null}
+	 * @param labList the laboratory list with results
+	 * @param labRowList the list of results, it can be {@code null}
 	 * @return the first of the newly persisted {@link Laboratory} objects in the list.
 	 * @throws OHServiceException
 	 */
@@ -356,7 +356,7 @@ public class LabManager {
 	/**
 	 * Inserts one Laboratory exam {@link Laboratory} (Procedure One)
 	 *
-	 * @param laboratory - the {@link Laboratory} to insert
+	 * @param laboratory the {@link Laboratory} to insert
 	 * @return {@code true} if the exam has been inserted, {@code false} otherwise
 	 * @throws OHServiceException
 	 */
@@ -367,8 +367,8 @@ public class LabManager {
 	/**
 	 * Inserts one Laboratory exam {@link Laboratory} with multiple results (Procedure Two).
 	 *
-	 * @param laboratory - the {@link Laboratory} to insert
-	 * @param labRow - the list of results ({@link String}s)
+	 * @param laboratory the {@link Laboratory} to insert
+	 * @param labRow the list of results ({@link String}s)
 	 * @return the newly persisted {@link Laboratory} object.
 	 * @throws OHServiceException
 	 */
@@ -379,7 +379,7 @@ public class LabManager {
 	/**
 	 * Delete a Laboratory exam {@link Laboratory} (Procedure One or Two). Previous results, if any, are deleted as well.
 	 *
-	 * @param laboratory - the {@link Laboratory} to delete
+	 * @param laboratory the {@link Laboratory} to delete
 	 * @throws OHServiceException
 	 */
 	public void deleteLaboratory(Laboratory laboratory) throws OHServiceException {

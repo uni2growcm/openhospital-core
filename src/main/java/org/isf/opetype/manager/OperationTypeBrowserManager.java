@@ -54,7 +54,7 @@ public class OperationTypeBrowserManager {
 	/**
 	 * Insert an {@link OperationType} in the DB
 	 *
-	 * @param operationType - the {@link OperationType} to insert
+	 * @param operationType the {@link OperationType} to insert
 	 * @return the newly inserted {@link OperationType} object.
 	 * @throws OHServiceException
 	 */
@@ -66,7 +66,7 @@ public class OperationTypeBrowserManager {
 	/**
 	 * Update an {@link OperationType}
 	 *
-	 * @param operationType - the {@link OperationType} to update
+	 * @param operationType the {@link OperationType} to update
 	 * @return the newly updated {@link OperationType} object.
 	 * @throws OHServiceException
 	 */
@@ -79,7 +79,7 @@ public class OperationTypeBrowserManager {
 	 * Delete an {@link OperationType} object. If the object does not exist it is silently ignored. If the object is null a {@link OHServiceException} is
 	 * thrown.
 	 *
-	 * @param operationType - the {@link OperationType} to delete
+	 * @param operationType the {@link OperationType} to delete
 	 * @throws OHServiceException
 	 */
 	public void deleteOperationType(OperationType operationType) throws OHServiceException {
@@ -89,7 +89,7 @@ public class OperationTypeBrowserManager {
 	/**
 	 * Checks if an {@link OperationType} code has already been used
 	 *
-	 * @param code - the code
+	 * @param code the code
 	 * @return {@code true} if the code is already in use, {@code false} otherwise.
 	 * @throws OHServiceException
 	 */

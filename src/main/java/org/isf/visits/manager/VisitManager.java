@@ -159,7 +159,7 @@ public class VisitManager {
 	/**
 	 * Returns the list of all {@link Visit}s related to a patID
 	 *
-	 * @param patID - the {@link Patient} ID. If {@code 0} return the list of all {@link Visit}s
+	 * @param patID the {@link Patient} ID. If {@code 0} return the list of all {@link Visit}s
 	 * @return the list of {@link Visit}s
 	 * @throws OHServiceException
 	 */
@@ -170,7 +170,7 @@ public class VisitManager {
 	/**
 	 * Returns the list of all {@link Visit}s related to a patID in OPD (Ward is {@code null}).
 	 *
-	 * @param patID - the {@link Patient} ID. If {@code 0} return the list of all {@link Visit}s
+	 * @param patID the {@link Patient} ID. If {@code 0} return the list of all {@link Visit}s
 	 * @return the list of {@link Visit}s
 	 * @throws OHServiceException
 	 */
@@ -191,7 +191,7 @@ public class VisitManager {
 	/**
 	 * Returns the list of all {@link Visit}s related to a wardId
 	 *
-	 * @param wardId - if {@code null}, returns all visits for all wards
+	 * @param wardId if {@code null}, returns all visits for all wards
 	 * @return the list of {@link Visit}s
 	 * @throws OHServiceException
 	 */
@@ -202,7 +202,7 @@ public class VisitManager {
 	/**
 	 * Insert a new {@link Visit} for related Patient
 	 *
-	 * @param visit - the {@link Visit}
+	 * @param visit the {@link Visit}
 	 * @return the persisted Visit
 	 * @throws OHServiceException
 	 */
@@ -214,7 +214,7 @@ public class VisitManager {
 	/**
 	 * Update a new {@link Visit} for related Patient
 	 *
-	 * @param visit - the {@link Visit}
+	 * @param visit the {@link Visit}
 	 * @return the updated Visit
 	 * @throws OHServiceException
 	 */
@@ -226,7 +226,7 @@ public class VisitManager {
 	/**
 	 * Delete the {@link Visit} for related Patient
 	 *
-	 * @param visit - the {@link Visit}
+	 * @param visit the {@link Visit}
 	 * @return the visitID
 	 */
 	public void deleteVisit(Visit visit) throws OHServiceException {
@@ -238,7 +238,7 @@ public class VisitManager {
 	 * <br>
 	 * to avoid visits overlapping and patients ubiquity
 	 *
-	 * @param visits - the list of {@link Visit}s related to patID.
+	 * @param visits the list of {@link Visit}s related to patID.
 	 * @return {@code true} if the list has been replaced, {@code false} otherwise
 	 * @throws OHServiceException
 	 */
@@ -253,8 +253,8 @@ public class VisitManager {
 	 * <br>
 	 * to avoid visits overlapping and patients ubiquity
 	 *
-	 * @param visits - the list of {@link Visit}s related to patID.
-	 * @param removedVisits - the list of {@link Visit}s eventually removed
+	 * @param visits the list of {@link Visit}s related to patID.
+	 * @param removedVisits the list of {@link Visit}s eventually removed
 	 * @return {@code true} if the list has been replaced, {@code false} otherwise
 	 * @throws OHServiceException
 	 */
@@ -299,7 +299,7 @@ public class VisitManager {
 	/**
 	 * Deletes all {@link Visit}s related to a patID
 	 *
-	 * @param patID - the {@link Patient} ID
+	 * @param patID the {@link Patient} ID
 	 * @return {@code true} if the list has been deleted, {@code false} otherwise
 	 * @throws OHServiceException
 	 */
@@ -318,7 +318,7 @@ public class VisitManager {
 	 * Builds the {@link Sms} text for the specified {@link Visit} If the length exceeds {@code SmsManager.MAX_LENGTH} the message will be truncated to the
 	 * maximum length. (example: "REMINDER: dd/MM/yy - HH:mm:ss - {@link Visit#getNote()}")
 	 *
-	 * @param visit - the {@link Visit}
+	 * @param visit the {@link Visit}
 	 * @return a string containing the text
 	 */
 	private String prepareSmsFromVisit(Visit visit) {
@@ -338,7 +338,7 @@ public class VisitManager {
 	/**
 	 * Returns the {@link Visit} based on visit id
 	 *
-	 * @param id - the {@link Visit} id.
+	 * @param id the {@link Visit} id.
 	 * @return the {@link Visit}
 	 */
 	public Visit findVisit(int id) throws OHServiceException {

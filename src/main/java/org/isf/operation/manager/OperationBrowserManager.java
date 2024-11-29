@@ -81,18 +81,18 @@ public class OperationBrowserManager {
 	/**
 	 * Return the {@link Operation}s whose {@link OperationType} matches specified string
 	 *
-	 * @param typecode - a type description
+	 * @param typeDescription the type description
 	 * @return the list of {@link Operation}s. It could be {@code empty} or {@code null}.
 	 * @throws OHServiceException
 	 */
-	public List<Operation> getOperationByTypeDescription(String typecode) throws OHServiceException {
-		return ioOperations.getOperationByTypeDescription(typecode);
+	public List<Operation> getOperationByTypeDescription(String typeDescription) throws OHServiceException {
+		return ioOperations.getOperationByTypeDescription(typeDescription);
 	}
 
 	/**
 	 * Insert an {@link Operation} in the DB
 	 *
-	 * @param operation - the {@link Operation} to insert
+	 * @param operation the {@link Operation} to insert
 	 * @return the newly inserted {@link Operation} object
 	 * @throws OHServiceException
 	 */
@@ -103,7 +103,7 @@ public class OperationBrowserManager {
 	/**
 	 * Updates an {@link Operation} in the DB
 	 *
-	 * @param operation - the {@link Operation} to update
+	 * @param operation the {@link Operation} to update
 	 * @return the newly updated {@link Operation} object
 	 * @throws OHServiceException
 	 */
@@ -115,7 +115,7 @@ public class OperationBrowserManager {
 	/**
 	 * Delete a {@link Operation} in the DB
 	 *
-	 * @param operation - the {@link Operation} to delete
+	 * @param operation the {@link Operation} to delete
 	 * @throws OHServiceException
 	 */
 	public void deleteOperation(Operation operation) throws OHServiceException {
@@ -125,7 +125,7 @@ public class OperationBrowserManager {
 	/**
 	 * Checks if an {@link Operation} code has already been used
 	 *
-	 * @param code - the code
+	 * @param code the code
 	 * @return {@code true} if the code is already in use, {@code false} otherwise.
 	 * @throws OHServiceException
 	 */
@@ -136,8 +136,8 @@ public class OperationBrowserManager {
 	/**
 	 * Checks if an {@link Operation} description has already been used within the specified {@link OperationType}
 	 *
-	 * @param description - the {@link Operation} description
-	 * @param typeCode - the {@link OperationType} code
+	 * @param description the {@link Operation} description
+	 * @param typeCode the {@link OperationType} code
 	 * @return {@code true} if the description is already in use, {@code false} otherwise.
 	 * @throws OHServiceException
 	 */
@@ -195,8 +195,8 @@ public class OperationBrowserManager {
 	/**
 	 * Retrieves a page of {@link Operation}s
 	 * 
-	 * @param page - The page number of the operations to retrieve
-	 * @param size - The size of the page of operations to retrieve.
+	 * @param page the page number of the operations to retrieve
+	 * @param size the size of the page of operations to retrieve.
 	 * @return a {@link PagedResponse} object that contains the {@link Operation}s.
 	 * @throws OHServiceException
 	 */

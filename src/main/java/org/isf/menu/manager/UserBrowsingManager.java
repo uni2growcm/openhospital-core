@@ -72,7 +72,7 @@ public class UserBrowsingManager {
 	/**
 	 * Returns the list of {@link User}s in specified groupID.
 	 * 
-	 * @param groupID - the group ID
+	 * @param groupID the group ID
 	 * @return the list of {@link User}s
 	 * @throws OHServiceException When failed to retrieve group users
 	 */
@@ -83,7 +83,7 @@ public class UserBrowsingManager {
 	/**
 	 * Returns a {@link User} with the specified name.
 	 * 
-	 * @param userName - username
+	 * @param userName the username
 	 * @return {@link User}
 	 * @throws OHServiceException When error occurs
 	 */
@@ -94,8 +94,8 @@ public class UserBrowsingManager {
 	/**
 	 * Returns {@link User} from its username
 	 * 
-	 * @param username - the {@link User}'s username
-	 * @param withSoftDeletion - Included soft deleted if set to true
+	 * @param username the {@link User}'s username
+	 * @param withSoftDeletion includes soft deleted if set to true
 	 * @return {@link User}
 	 * @throws OHServiceException When error occurs
 	 */
@@ -106,7 +106,7 @@ public class UserBrowsingManager {
 	/**
 	 * Checks if the specified {@link User} code is already present.
 	 * 
-	 * @param userName - the {@link User} code to check.
+	 * @param userName the {@link User} code to check.
 	 * @return {@code true} if the medical code is already stored, {@code false} otherwise.
 	 * @throws OHServiceException if an error occurs during the check.
 	 */
@@ -117,7 +117,7 @@ public class UserBrowsingManager {
 	/**
 	 * Checks if the specified {@link UserGroup} code is already present.
 	 * 
-	 * @param groupName - the {@link UserGroup} code to check.
+	 * @param groupName the {@link UserGroup} code to check.
 	 * @return {@code true} if the medical code is already stored, {@code false} otherwise.
 	 * @throws OHServiceException if an error occurs during the check.
 	 */
@@ -128,7 +128,7 @@ public class UserBrowsingManager {
 	/**
 	 * Inserts a new {@link User} into the DB.
 	 * 
-	 * @param user - the {@link User} to insert
+	 * @param user the {@link User} to insert
 	 * @return the new {@link User}
 	 * @throws OHServiceException When error occurs
 	 */
@@ -148,7 +148,7 @@ public class UserBrowsingManager {
 	/**
 	 * Updates an existing {@link User} in the DB.
 	 * 
-	 * @param user - the {@link User} to update
+	 * @param user the {@link User} to update
 	 * @return the {@link User} that has been updated
 	 * @throws OHServiceException When failed to update user
 	 */
@@ -165,7 +165,7 @@ public class UserBrowsingManager {
 	/**
 	 * Updates the password of an existing {@link User} in the DB.
 	 * 
-	 * @param user - the {@link User} to update
+	 * @param user the {@link User} to update
 	 * @return the {@link User} that has been updated
 	 * @throws OHServiceException When failed to update password
 	 */
@@ -176,7 +176,7 @@ public class UserBrowsingManager {
 	/**
 	 * Deletes an existing {@link User}.
 	 * 
-	 * @param user - the {@link User} to delete
+	 * @param user the {@link User} to delete
 	 * @throws OHServiceException When failed to delete user
 	 */
 	public void deleteUser(User user) throws OHServiceException {
@@ -299,7 +299,7 @@ public class UserBrowsingManager {
 	/**
 	 * Returns the list of {@link UserMenuItem}s that compose the menu for a specified {@link User}.
 	 * 
-	 * @param aUser - the {@link User}
+	 * @param aUser the {@link User}
 	 * @return the list of {@link UserMenuItem}s
 	 * @throws OHServiceException When failed to retrieve user menus
 	 */
@@ -310,7 +310,7 @@ public class UserBrowsingManager {
 	/**
 	 * Returns the list of {@link UserMenuItem}s that compose the menu for the specified {@link UserGroup}.
 	 * 
-	 * @param aGroup - the {@link UserGroup}
+	 * @param aGroup the {@link UserGroup}
 	 * @return the list of {@link UserMenuItem}s
 	 * @throws OHServiceException When failed to retrieve group menus
 	 */
@@ -321,8 +321,8 @@ public class UserBrowsingManager {
 	/**
 	 * Replaces the {@link UserGroup} rights.
 	 * 
-	 * @param aGroup - the {@link UserGroup}
-	 * @param menu - the list of {@link UserMenuItem}s
+	 * @param aGroup the {@link UserGroup}
+	 * @param menu the list of {@link UserMenuItem}s
 	 * @return {@code true} if the menu has been replaced, {@code false} otherwise.
 	 * @throws OHServiceException When error occurs
 	 */
@@ -333,7 +333,7 @@ public class UserBrowsingManager {
 	/**
 	 * Returns the {@link User} description given the username.
 	 * 
-	 * @param userName - the {@link User}'s username
+	 * @param userName the {@link User}'s username
 	 * @return the {@link User}'s description
 	 * @throws OHServiceException When failed to get user info
 	 */
@@ -344,7 +344,7 @@ public class UserBrowsingManager {
 	/**
 	 * Deletes a {@link UserGroup}.
 	 * 
-	 * @param aGroup - the {@link UserGroup} to delete
+	 * @param aGroup the {@link UserGroup} to delete
 	 * @throws OHServiceException When failed to delete group
 	 */
 	public void deleteGroup(UserGroup aGroup) throws OHServiceException {
@@ -362,7 +362,7 @@ public class UserBrowsingManager {
 	/**
 	 * Insert a new {@link UserGroup} with a minimum set of rights.
 	 * 
-	 * @param userGroup - the {@link UserGroup} to insert
+	 * @param userGroup the {@link UserGroup} to insert
 	 * @return the new {@link UserGroup}
 	 * @throws OHServiceException When failed to create user group
 	 */
@@ -378,7 +378,7 @@ public class UserBrowsingManager {
 	/**
 	 * Insert a new {@link UserGroup} with related {@link Permission}s.
 	 * 
-	 * @param userGroup - the {@link UserGroup} to insert
+	 * @param userGroup the {@link UserGroup} to insert
 	 * @param permissions List of permissions to assign to the group
 	 * @return the new {@link UserGroup}
 	 * @throws OHServiceException When failed to create user group
@@ -395,7 +395,7 @@ public class UserBrowsingManager {
 	/**
 	 * Updates an existing {@link UserGroup} in the DB.
 	 * 
-	 * @param userGroup - the {@link UserGroup} to update
+	 * @param userGroup the {@link UserGroup} to update
 	 * @return the {@link UserGroup} that has been updated
 	 * @throws OHServiceException If failed to update group
 	 */
@@ -421,7 +421,7 @@ public class UserBrowsingManager {
 	 * Updates an existing {@link UserGroup} and related permissions. If permissions list is empty, the existing permissions are kept, otherwise they're
 	 * replaced with the provided ones.
 	 * 
-	 * @param userGroup - the {@link UserGroup} to update
+	 * @param userGroup the {@link UserGroup} to update
 	 * @param permissions Updated list of permissions to assign to the group
 	 * @return the {@link UserGroup} that has been updated
 	 * @throws OHServiceException If failed to update group

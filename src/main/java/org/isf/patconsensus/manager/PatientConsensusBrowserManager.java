@@ -55,7 +55,7 @@ public class PatientConsensusBrowserManager {
 	/**
 	 * Update a {@link PatientConsensus}.
 	 *
-	 * @param patientConsensus - the {@link PatientConsensus} to update
+	 * @param patientConsensus the {@link PatientConsensus} to update
 	 * @return the {@link PatientConsensus}.
 	 * @throws OHServiceException
 	 */
@@ -78,7 +78,7 @@ public class PatientConsensusBrowserManager {
 	/**
 	 * Checks if n user specified by its {@code code} has a {@link PatientConsensus}.
 	 *
-	 * @param code - the user's id code
+	 * @param code the user's id code
 	 * @return {@code true} if the username has a PatientConsensus, {@code false} otherwise.
 	 * @throws OHServiceException
 	 */

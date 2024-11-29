@@ -41,7 +41,7 @@ public class UserSettingManager {
 	/**
 	 * Inserts a new {@link UserSetting} into the DB.
 	 *
-	 * @param userSetting - the {@link UserSetting} to insert
+	 * @param userSetting the {@link UserSetting} to insert
 	 * @return {@link UserSetting} if the userSetting has been inserted, {@code null} otherwise.
 	 * @throws OHServiceException
 	 */
@@ -52,7 +52,7 @@ public class UserSettingManager {
 	/**
 	 * Updates an existing {@link UserSetting} in the DB.
 	 *
-	 * @param userSetting - the {@link UserSetting} to insert
+	 * @param userSetting the {@link UserSetting} to insert
 	 * @return {@link UserSetting} if the userSetting has been updated, {@code null} otherwise.
 	 * @throws OHServiceException
 	 */
@@ -63,7 +63,7 @@ public class UserSettingManager {
 	/**
 	 * Returns the list of {@link UserSetting}s of the specified userId.
 	 *
-	 * @param userName - the user name
+	 * @param userName the user name
 	 * @return the list of {@link UserSetting}s
 	 * @throws OHServiceException
 	 */
@@ -74,8 +74,8 @@ public class UserSettingManager {
 	/**
 	 * Returns {@link UserSetting}s of the specified userId.
 	 *
-	 * @param userName - the user name
-	 * @param configName - the name of the user setting
+	 * @param userName the user name
+	 * @param configName the name of the user setting
 	 * @return {@link UserSetting} if the userSetting exist, {@code null} otherwise.
 	 * @throws OHServiceException
 	 */
@@ -86,7 +86,7 @@ public class UserSettingManager {
 	/**
 	 * Returns {@link UserSetting}s of the specified userId.
 	 *
-	 * @param userSettingId - the user id
+	 * @param userSettingId the user id
 	 * @return {@link UserSetting} if the userSetting exist, {@code null} otherwise.
 	 * @throws OHServiceException
 	 */
@@ -97,7 +97,7 @@ public class UserSettingManager {
 	/**
 	 * Delete the {@link UserSetting}.
 	 * 
-	 * @param userSetting - the userSetting to delete
+	 * @param userSetting the userSetting to delete
 	 * @throws OHServiceException
 	 */
 	public void deleteUserSetting(UserSetting userSetting) throws OHServiceException {

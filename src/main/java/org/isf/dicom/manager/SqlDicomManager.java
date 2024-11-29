@@ -69,7 +69,7 @@ public class SqlDicomManager implements DicomManagerInterface {
 	/**
 	 * Check if dicom is loaded
 	 *
-	 * @param dicom - the detail of the dicom
+	 * @param dicom the detail of the dicom
 	 * @return true if file exist
 	 * @throws OHServiceException
 	 */

@@ -149,8 +149,8 @@ public class BillBrowserManager {
 	 * Stores a new {@link Bill} along with all its {@link BillItems} and {@link BillPayments}
 	 * 
 	 * @param bill the bill to store.
-	 * @param billItems - the list of bill's items
-	 * @param billPayments - the list of bill's payments
+	 * @param billItems the list of bill's items
+	 * @param billPayments the list of bill's payments
 	 * @returns the persisted Bill object
 	 * @throws OHServiceException
 	 */
@@ -208,9 +208,9 @@ public class BillBrowserManager {
 	/**
 	 * Updates the specified {@link Bill} along with all its {@link BillItems} and {@link BillPayments}
 	 * 
-	 * @param updateBill - the bill to update.
-	 * @param billItems - the list of bill's items
-	 * @param billPayments - the list of bill's payments
+	 * @param updateBill the bill to update.
+	 * @param billItems the list of bill's items
+	 * @param billPayments the list of bill's payments
 	 * @return the updated Bill object
 	 * @throws OHServiceException
 	 */
@@ -331,7 +331,7 @@ public class BillBrowserManager {
 	/**
 	 * Retrieves all the {@link Bill}s associated to the specified {@link Patient}.
 	 * 
-	 * @param patID - the Patient's ID
+	 * @param patID the Patient's ID
 	 * @return the list of {@link Bill}s
 	 * @throws OHServiceException
 	 */

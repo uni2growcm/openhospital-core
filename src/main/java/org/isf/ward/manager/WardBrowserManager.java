@@ -250,7 +250,7 @@ public class WardBrowserManager {
 	/**
 	 * Check if the Maternity {@link Ward} with code "M" exists or not.
 	 * 
-	 * @param createIfNotExists - if {@code true} it will create the missing {@link Ward} (with default values) and will return {@link true}
+	 * @param createIfNotExists if {@code true} it will create the missing {@link Ward} (with default values) and will return {@link true}
 	 * @return {@code true} if the Maternity {@link Ward} exists, {@code false} otherwise.
 	 * @throws OHServiceException
 	 */
@@ -268,7 +268,7 @@ public class WardBrowserManager {
 	/**
 	 * Check if the OPD {@link Ward} with code "OPD" exists or not.
 	 * 
-	 * @param createIfNotExists - if {@code true} it will create the missing {@link Ward} (with default values) and will return {@link true}
+	 * @param createIfNotExists if {@code true} it will create the missing {@link Ward} (with default values) and will return {@link true}
 	 * @return {@code true} if the OPD {@link Ward} exists, {@code false} otherwise.
 	 * @throws OHServiceException
 	 */
@@ -286,7 +286,7 @@ public class WardBrowserManager {
 	/**
 	 * Retrieves the number of patients currently admitted in the {@link Ward}.
 	 * 
-	 * @param ward - the ward
+	 * @param ward the ward
 	 * @return the number of patients currently admitted, {@code -1} if an error occurs
 	 * @throws OHServiceException
 	 */
@@ -297,7 +297,7 @@ public class WardBrowserManager {
 	/**
 	 * Returns the {@link Ward} based on ward code,
 	 *
-	 * @param code - the {@link Ward} code.
+	 * @param code the {@link Ward} code.
 	 * @return the {@link Ward} or {@code null} if not found
 	 */
 	public Ward findWard(String code) throws OHServiceException {

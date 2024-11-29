@@ -81,7 +81,7 @@ public class MovWardBrowserManager {
 	 * Gets all the {@link MedicalWard}s associated to the specified ward.
 	 *
 	 * @param wardId the ward id.
-	 * @param stripeEmpty - if {@code true}, stripes the empty lots
+	 * @param stripeEmpty if {@code true}, stripes the empty lots
 	 * @return the retrieved medicals.
 	 * @throws OHServiceException
 	 */
@@ -94,7 +94,7 @@ public class MovWardBrowserManager {
 	 * 
 	 * @param wardId the ward id.
 	 * @param medId the medical id.
-	 * @param stripeEmpty - if {@code true}, stripes the empty lots
+	 * @param stripeEmpty if {@code true}, stripes the empty lots
 	 * @return the retrieved medicals.
 	 * @throws OHServiceException
 	 */
@@ -192,8 +192,8 @@ public class MovWardBrowserManager {
 	/**
 	 * Gets the current quantity for the specified {@link Medical} and specified {@link Ward}.
 	 *
-	 * @param ward - if {@code null} the quantity is counted for the whole hospital
-	 * @param medical - the {@link Medical} to check.
+	 * @param ward if {@code null} the quantity is counted for the whole hospital
+	 * @param medical the {@link Medical} to check.
 	 * @return the total quantity.
 	 * @throws OHServiceException if an error occurs retrieving the quantity.
 	 */
@@ -204,8 +204,8 @@ public class MovWardBrowserManager {
 	/**
 	 * Gets the current quantity for the specified {@link Ward} and {@link Lot}.
 	 *
-	 * @param ward - if {@code null} the quantity is counted for the whole hospital
-	 * @param lot - the {@link Lot} to filter
+	 * @param ward if {@code null} the quantity is counted for the whole hospital
+	 * @param lot the {@link Lot} to filter
 	 * @return the total quantity.
 	 * @throws OHServiceException if an error occurs retrieving the quantity.
 	 */
@@ -243,9 +243,9 @@ public class MovWardBrowserManager {
 	/**
 	 * Get the MedicalWard for the specified criteria.
 	 *
-	 * @param wardCode - the ward id
-	 * @param medical - the mecical id
-	 * @param lotCode - the lot id
+	 * @param wardCode the ward id
+	 * @param medical the mecical id
+	 * @param lotCode the lot id
 	 * @return the retrieved medical.
 	 * @throws OHServiceException if an error occurs retrieving the medical.
 	 */
@@ -256,7 +256,7 @@ public class MovWardBrowserManager {
 	/**
 	 * Deletes the specified {@link MedicalWard}.
 	 *
-	 * @param medWard - the MedicalWard to delete.
+	 * @param medWard the MedicalWard to delete.
 	 * @throws OHServiceException
 	 */
 	public void deleteMedicalWard(MedicalWard medWard) throws OHServiceException {
@@ -266,7 +266,7 @@ public class MovWardBrowserManager {
 	/**
 	 * Updates the specified {@link MedicalWard}.
 	 *
-	 * @param medWard - the MedicalWard to update.
+	 * @param medWard the MedicalWard to update.
 	 * @throws OHServiceException
 	 */
 	public MedicalWard updateMedicalWard(MedicalWard medWard) throws OHServiceException {
@@ -315,7 +315,7 @@ public class MovWardBrowserManager {
 	/**
 	 * Delete a {@link MovementWard}
 	 *
-	 * @param movWardToDelete - the movement ward
+	 * @param movWardToDelete the movement ward
 	 * @throws OHServiceException if an error occurs retrieving the medical.
 	 */
 	@Transactional(rollbackFor = OHServiceException.class)

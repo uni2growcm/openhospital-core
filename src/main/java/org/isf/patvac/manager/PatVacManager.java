@@ -47,7 +47,7 @@ public class PatVacManager {
 	/**
 	 * Returns all {@link PatientVaccine}s for today or one week ago.
 	 *
-	 * @param minusOneWeek - if {@code true} return the last week
+	 * @param minusOneWeek if {@code true} return the last week
 	 * @return the list of {@link PatientVaccine}s
 	 * @throws OHServiceException
 	 */
@@ -76,7 +76,7 @@ public class PatVacManager {
 	/**
 	 * Inserts a {@link PatientVaccine}.
 	 *
-	 * @param patVac - the {@link PatientVaccine} to insert
+	 * @param patVac the {@link PatientVaccine} to insert
 	 * @return the newly {@link PatientVaccine} object.
 	 * @throws OHServiceException
 	 */
@@ -88,7 +88,7 @@ public class PatVacManager {
 	/**
 	 * Updates a {@link PatientVaccine}.
 	 *
-	 * @param patVac - the {@link PatientVaccine} to update
+	 * @param patVac the {@link PatientVaccine} to update
 	 * @return the updated {@link PatientVaccine} object.
 	 * @throws OHServiceException
 	 */
@@ -100,7 +100,7 @@ public class PatVacManager {
 	/**
 	 * Deletes a {@link PatientVaccine}.
 	 *
-	 * @param patVac - the {@link PatientVaccine} to delete
+	 * @param patVac the {@link PatientVaccine} to delete
 	 * @throws OHServiceException
 	 */
 	public void deletePatientVaccine(PatientVaccine patVac) throws OHServiceException {
@@ -111,7 +111,7 @@ public class PatVacManager {
 	 * Returns the max progressive number within specified year or within current year if {@code 0}.
 	 *
 	 * @param year
-	 * @return {@code int} - the progressive number in the year
+	 * @return {@code int} the progressive number in the year
 	 * @throws OHServiceException
 	 */
 	public int getProgYear(int year) throws OHServiceException {

@@ -51,7 +51,7 @@ public class MedicalInventoryRowManager {
 	/**
 	 * Insert a new {@link MedicalInventoryRow}.
 	 *
-	 * @param medicalInventoryRow - the {@link MedicalInventoryRow} to insert.
+	 * @param medicalInventoryRow the {@link MedicalInventoryRow} to insert.
 	 * @return the newly persisted {@link MedicalInventoryRow} object.
 	 * @throws OHServiceException
 	 */
@@ -63,7 +63,7 @@ public class MedicalInventoryRowManager {
 	/**
 	 * Update an existing {@link MedicalInventoryRow}.
 	 *
-	 * @param medicalInventoryRow - the {@link MedicalInventoryRow} to update.
+	 * @param medicalInventoryRow the {@link MedicalInventoryRow} to update.
 	 * @return the updated {@link MedicalInventoryRow} object.
 	 * @throws OHServiceException
 	 */
@@ -75,7 +75,7 @@ public class MedicalInventoryRowManager {
 	/**
 	 * Delete the specified {@link MedicalInventoryRow}.
 	 * 
-	 * @param medicalInventoryRow - the {@link MedicalInventoryRow} to delete.
+	 * @param medicalInventoryRow the {@link MedicalInventoryRow} to delete.
 	 * @throws OHServiceException
 	 */
 	public void deleteMedicalInventoryRow(MedicalInventoryRow medicalInventoryRow) throws OHServiceException {
@@ -85,7 +85,7 @@ public class MedicalInventoryRowManager {
 	/**
 	 * Return a list of {@link MedicalInventoryRow}s for passed params.
 	 *
-	 * @param inventoryId - the Inventory Id.
+	 * @param inventoryId the Inventory Id.
 	 * @return the list of {@link MedicalInventoryRow}s. It could be {@code empty}.
 	 * @throws OHServiceException
 	 */
@@ -96,7 +96,7 @@ public class MedicalInventoryRowManager {
 	/**
 	 * Delete a list of inventory rows {@link MedicalInventoryRow}s
 	 *
-	 * @param inventoryRowsToDelete - the list of {@link MedicalInventoryRow}s
+	 * @param inventoryRowsToDelete the list of {@link MedicalInventoryRow}s
 	 * 
 	 * @throws OHServiceException
 	 */
@@ -120,7 +120,7 @@ public class MedicalInventoryRowManager {
 	/**
 	 * Return {@link MedicalInventoryRow} for passed param.
 	 *
-	 * @param invRowId - the MedicalInventoryRow Id.
+	 * @param invRowId the MedicalInventoryRow Id.
 	 * @return the {@link MedicalInventoryRow} object.
 	 * @throws OHServiceException
 	 */
@@ -156,8 +156,8 @@ public class MedicalInventoryRowManager {
 	/**
 	 * Return {@link MedicalInventoryRow} for passed param.
 	 *
-	 * @param medicalCode - the medical code.
-	 * @param lotCode - the lot code.
+	 * @param medicalCode the medical code.
+	 * @param lotCode the lot code.
 	 * @return the {@link MedicalInventoryRow} object.
 	 * @throws OHServiceException
 	 */
