@@ -21,7 +21,9 @@
  */
 package org.isf.generaldata.configProvider;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
@@ -67,12 +69,15 @@ public class TestApiConfigProvider {
 	void testGetTestParamsDataDefaultVersion() throws Exception {
 		// Set up the mock server to respond with the desired JSON
 		mockServer.when(request().withMethod("GET").withPath("/test")).respond(response().withStatusCode(200)
-						.withContentType(MediaType.APPLICATION_JSON)
-						.withBody(CONFIG_JSON));
+			.withContentType(MediaType.APPLICATION_JSON)
+			.withBody(CONFIG_JSON));
+
+		// Await until the mock server has started
+		await().atMost(5, SECONDS).until(() -> mockServer.hasStarted());
 
 		// Use MockedStatic to mock GeneralData
 		try (MockedStatic<GeneralData> mockedGeneralData = mockStatic(GeneralData.class);
-						MockedStatic<Version> mockedVersion = Mockito.mockStatic(Version.class)) {
+			MockedStatic<Version> mockedVersion = Mockito.mockStatic(Version.class)) {
 
 			// Mock the Version.getVersion() method to return a specific version
 			Version mockVersion = mock(Version.class);
@@ -100,12 +105,15 @@ public class TestApiConfigProvider {
 	void testGetTestParamsDataWithVersion() throws Exception {
 		// Set up the mock server to respond with the desired JSON
 		mockServer.when(request().withMethod("GET").withPath("/test")).respond(response().withStatusCode(200)
-						.withContentType(MediaType.APPLICATION_JSON)
-						.withBody(CONFIG_JSON));
+			.withContentType(MediaType.APPLICATION_JSON)
+			.withBody(CONFIG_JSON));
+
+		// Await until the mock server has started
+		await().atMost(5, SECONDS).until(() -> mockServer.hasStarted());
 
 		// Use MockedStatic to mock GeneralData
 		try (MockedStatic<GeneralData> mockedGeneralData = mockStatic(GeneralData.class);
-						MockedStatic<Version> mockedVersion = Mockito.mockStatic(Version.class)) {
+			MockedStatic<Version> mockedVersion = Mockito.mockStatic(Version.class)) {
 
 			// Mock the Version.getVersion() method to return a specific version
 			Version mockVersion = mock(Version.class);
