@@ -83,7 +83,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.data.domain.Page;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
@@ -156,12 +155,6 @@ class Tests extends OHCoreTestCase {
 		testSupplier = new TestSupplier();
 		testMedicalStock = new TestMedicalStock();
 	}
-
-	@BeforeEach
-	void setUp() throws OHException {
-		cleanH2InMemoryDb();
-	}
-
 	@AfterAll
 	static void tearDownClass() {
 		testLot = null;
@@ -173,7 +166,10 @@ class Tests extends OHCoreTestCase {
 		testSupplier = null;
 		testMedicalStock = null;
 	}
-
+	@BeforeEach
+	void setUp() throws OHException {
+		cleanH2InMemoryDb();
+	}
 	@ParameterizedTest(name = "Test with AUTOMATICLOT_IN={0}, AUTOMATICLOT_OUT={1}, AUTOMATICLOTWARD_TOWARD={2}")
 	@MethodSource("automaticlot")
 	void testLotGets(boolean in, boolean out, boolean toward) throws Exception {
@@ -771,7 +767,7 @@ class Tests extends OHCoreTestCase {
 		List<Movement> movements = movBrowserManager.getMovements(foundMovement.getMedical().getCode(), foundMovement.getMedical().getType().getCode(),
 			foundMovement.getWard().getCode(), foundMovement.getType().getCode(), fromDate, toDate, fromDate, toDate, fromDate, toDate);
 		assertThat(movements.get(0).getCode()).isEqualTo(foundMovement.getCode());
-		assertThat(movements.size()!=0);
+		assertThat(movements.size() != 0);
 		assertInstanceOf(List.class, movements, "Expecting a list with a fixed-size filter");
 	}
 
