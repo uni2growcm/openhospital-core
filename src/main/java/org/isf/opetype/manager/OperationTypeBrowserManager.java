@@ -35,7 +35,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class OperationTypeBrowserManager {
 
-	private OperationTypeIoOperation ioOperations;
+	private final OperationTypeIoOperation ioOperations;
 
 	public OperationTypeBrowserManager(OperationTypeIoOperation operationTypeIoOperation) {
 		this.ioOperations = operationTypeIoOperation;
@@ -76,8 +76,8 @@ public class OperationTypeBrowserManager {
 	}
 
 	/**
-	 * Delete an {@link OperationType} object. If the object does not exist it is silently ignored.  If the
-	 * object is null a {@link OHServiceException} is thrown.
+	 * Delete an {@link OperationType} object. If the object does not exist it is silently ignored. If the object is null a {@link OHServiceException} is
+	 * thrown.
 	 *
 	 * @param operationType - the {@link OperationType} to delete
 	 * @throws OHServiceException
@@ -109,7 +109,7 @@ public class OperationTypeBrowserManager {
 			}
 		}
 		if (insert && isCodePresent(key)) {
-				errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.common.thecodeisalreadyinuse.msg")));
+			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.common.thecodeisalreadyinuse.msg")));
 		}
 		if (description == null || description.isEmpty()) {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.common.pleaseinsertavaliddescription.msg")));

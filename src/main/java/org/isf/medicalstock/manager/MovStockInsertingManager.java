@@ -45,11 +45,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 public class MovStockInsertingManager {
 
-	private MedicalStockIoOperations ioOperations;
+	private final MedicalStockIoOperations ioOperations;
 
-	private MedicalsIoOperations ioOperationsMedicals;
+	private final MedicalsIoOperations ioOperationsMedicals;
 
-	private LotIoOperationRepository ioOperationsLots;
+	private final LotIoOperationRepository ioOperationsLots;
 
 	public MovStockInsertingManager(MedicalStockIoOperations medicalStockIoOperations, MedicalsIoOperations medicalsIoOperations,
 		LotIoOperationRepository ioOperationsLots) {
@@ -191,7 +191,8 @@ public class MovStockInsertingManager {
 			if (!isAutomaticLotOut()) {
 
 				if (movement.getType() != null && !isCharge && movement.getQuantity() > lot.getMainStoreQuantity()) {
-					errors.add(new OHExceptionMessage(MessageBundle.formatMessage("angal.medicalstock.movementquantityisgreaterthanthequantityof.fmt.msg", movement.getQuantity(), lot.getMainStoreQuantity())));
+					errors.add(new OHExceptionMessage(MessageBundle.formatMessage("angal.medicalstock.movementquantityisgreaterthanthequantityof.fmt.msg",
+						movement.getQuantity(), lot.getMainStoreQuantity())));
 				}
 			}
 

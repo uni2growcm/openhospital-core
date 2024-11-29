@@ -35,7 +35,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ExamRowBrowsingManager {
 
-	private ExamRowIoOperations ioOperations;
+	private final ExamRowIoOperations ioOperations;
 
 	public ExamRowBrowsingManager(ExamRowIoOperations examRowIoOperations) {
 		this.ioOperations = examRowIoOperations;

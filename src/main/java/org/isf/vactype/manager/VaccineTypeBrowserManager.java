@@ -36,9 +36,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class VaccineTypeBrowserManager {
 
-	private VacTypeIoOperation ioOperations;
+	private final VacTypeIoOperation ioOperations;
 
-	public VaccineTypeBrowserManager( VacTypeIoOperation vacTypeIoOperation) {
+	public VaccineTypeBrowserManager(VacTypeIoOperation vacTypeIoOperation) {
 		this.ioOperations = vacTypeIoOperation;
 	}
 
@@ -128,7 +128,7 @@ public class VaccineTypeBrowserManager {
 	/**
 	 * Returns the {@link VaccineType} based on vaccine type code.
 	 *
-	 * @param code - the  {@link VaccineType} code.
+	 * @param code - the {@link VaccineType} code.
 	 * @return the {@link VaccineType} or {@literal null} if none found
 	 */
 	public VaccineType findVaccineType(String code) {

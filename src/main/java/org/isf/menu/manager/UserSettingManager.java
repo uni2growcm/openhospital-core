@@ -32,7 +32,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserSettingManager {
 
-	private UserSettingOperationRepository userSettingIoOperationRepository;
+	private final UserSettingOperationRepository userSettingIoOperationRepository;
 
 	public UserSettingManager(UserSettingOperationRepository userSettingOperationRepository) {
 		this.userSettingIoOperationRepository = userSettingOperationRepository;
@@ -59,7 +59,7 @@ public class UserSettingManager {
 	public UserSetting updateUserSetting(UserSetting userSetting) throws OHServiceException {
 		return userSettingIoOperationRepository.save(userSetting);
 	}
-	
+
 	/**
 	 * Returns the list of {@link UserSetting}s of the specified userId.
 	 *
@@ -74,7 +74,7 @@ public class UserSettingManager {
 	/**
 	 * Returns {@link UserSetting}s of the specified userId.
 	 *
-	 * @param userName     - the user name
+	 * @param userName - the user name
 	 * @param configName - the name of the user setting
 	 * @return {@link UserSetting} if the userSetting exist, {@code null} otherwise.
 	 * @throws OHServiceException
@@ -82,7 +82,7 @@ public class UserSettingManager {
 	public UserSetting getUserSettingByUserNameConfigName(String userName, String configName) throws OHServiceException {
 		return userSettingIoOperationRepository.findByUserNameAndConfigName(userName, configName);
 	}
-	
+
 	/**
 	 * Returns {@link UserSetting}s of the specified userId.
 	 *
@@ -91,7 +91,7 @@ public class UserSettingManager {
 	 * @throws OHServiceException
 	 */
 	public Optional<UserSetting> getUserSettingById(int userSettingId) throws OHServiceException {
-		 return userSettingIoOperationRepository.findById(userSettingId);
+		return userSettingIoOperationRepository.findById(userSettingId);
 	}
 
 	/**

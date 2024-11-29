@@ -36,7 +36,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class PricesOthersManager {
 
-	private PriceOthersIoOperations ioOperations;
+	private final PriceOthersIoOperations ioOperations;
 
 	public PricesOthersManager(PriceOthersIoOperations priceOthersIoOperations) {
 		this.ioOperations = priceOthersIoOperations;

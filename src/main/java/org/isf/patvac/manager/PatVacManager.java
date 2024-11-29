@@ -38,7 +38,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class PatVacManager {
 
-	private PatVacIoOperations ioOperations;
+	private final PatVacIoOperations ioOperations;
 
 	public PatVacManager(PatVacIoOperations patVacIoOperations) {
 		this.ioOperations = patVacIoOperations;
@@ -69,7 +69,7 @@ public class PatVacManager {
 	 * @throws OHServiceException
 	 */
 	public List<PatientVaccine> getPatientVaccine(String vaccineTypeCode, String vaccineCode, LocalDateTime dateFrom, LocalDateTime dateTo, char sex,
-			int ageFrom, int ageTo) throws OHServiceException {
+		int ageFrom, int ageTo) throws OHServiceException {
 		return ioOperations.getPatientVaccine(vaccineTypeCode, vaccineCode, dateFrom, dateTo, sex, ageFrom, ageTo);
 	}
 
@@ -117,7 +117,7 @@ public class PatVacManager {
 	public int getProgYear(int year) throws OHServiceException {
 		return ioOperations.getProgYear(year);
 	}
-	
+
 	public Optional<PatientVaccine> getPatientVaccine(int code) throws OHServiceException {
 		return ioOperations.getPatientVaccine(code);
 	}
@@ -138,12 +138,12 @@ public class PatVacManager {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.patvac.pleaseinsertavalidprogressive.msg")));
 		}
 		if (patientVaccine.getVaccine() == null
-				|| patientVaccine.getVaccine().getDescription().equals(MessageBundle.getMessage("angal.patvac.allvaccine"))) {
+			|| patientVaccine.getVaccine().getDescription().equals(MessageBundle.getMessage("angal.patvac.allvaccine"))) {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.patvac.pleaseselectavaccine.msg")));
 		}
 		if (patientVaccine.getPatient() == null
-				|| StringUtils.isEmpty(patientVaccine.getPatName())
-				|| StringUtils.isEmpty(String.valueOf(patientVaccine.getPatSex()))) {
+			|| StringUtils.isEmpty(patientVaccine.getPatName())
+			|| StringUtils.isEmpty(String.valueOf(patientVaccine.getPatSex()))) {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.common.pleaseselectapatient.msg")));
 		}
 		if (!errors.isEmpty()) {

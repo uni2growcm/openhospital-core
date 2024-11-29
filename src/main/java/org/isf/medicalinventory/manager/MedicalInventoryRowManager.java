@@ -39,8 +39,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class MedicalInventoryRowManager {
 
-	private MedicalInventoryRowIoOperation ioOperation;
-	private MovStockInsertingManager movStockInsertingManager;
+	private final MedicalInventoryRowIoOperation ioOperation;
+
+	private final MovStockInsertingManager movStockInsertingManager;
 
 	public MedicalInventoryRowManager(MedicalInventoryRowIoOperation medicalInventoryRowIoOperation, MovStockInsertingManager movStockInsertingManager) {
 		this.ioOperation = medicalInventoryRowIoOperation;
@@ -58,7 +59,7 @@ public class MedicalInventoryRowManager {
 		validateMedicalInventoryRow(medicalInventoryRow);
 		return ioOperation.newMedicalInventoryRow(medicalInventoryRow);
 	}
-	
+
 	/**
 	 * Update an existing {@link MedicalInventoryRow}.
 	 *
@@ -70,16 +71,17 @@ public class MedicalInventoryRowManager {
 		validateMedicalInventoryRow(medicalInventoryRow);
 		return ioOperation.updateMedicalInventoryRow(medicalInventoryRow);
 	}
-	
+
 	/**
 	 * Delete the specified {@link MedicalInventoryRow}.
+	 * 
 	 * @param medicalInventoryRow - the {@link MedicalInventoryRow} to delete.
 	 * @throws OHServiceException
 	 */
 	public void deleteMedicalInventoryRow(MedicalInventoryRow medicalInventoryRow) throws OHServiceException {
 		ioOperation.deleteMedicalInventoryRow(medicalInventoryRow);
 	}
-	
+
 	/**
 	 * Return a list of {@link MedicalInventoryRow}s for passed params.
 	 *
@@ -105,13 +107,13 @@ public class MedicalInventoryRowManager {
 			if (medInvRow.isPresent()) {
 				MedicalInventoryRow invRowDelete = medInvRow.get();
 				if (invRowDelete.isNewLot()) {
-					this.deleteMedicalInventoryRow(invRowDelete);	
+					this.deleteMedicalInventoryRow(invRowDelete);
 					if (invRowDelete.getLot() != null) {
 						movStockInsertingManager.deleteLot(invRowDelete.getLot());
 					}
 				}
 				ioOperation.deleteMedicalInventoryRow(invRow);
-			}	
+			}
 		}
 	}
 
@@ -129,7 +131,7 @@ public class MedicalInventoryRowManager {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Verify if the object is valid for CRUD and return a list of errors, if any.
 	 *
@@ -138,14 +140,14 @@ public class MedicalInventoryRowManager {
 	 */
 	private void validateMedicalInventoryRow(MedicalInventoryRow medicalInventoryRow) throws OHDataValidationException {
 		List<OHExceptionMessage> errors = new ArrayList<>();
-		
+
 		if (medicalInventoryRow.getInventory() == null) {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.inventory.pleaseinsertinventory.msg")));
 		}
 		if (medicalInventoryRow.getMedical() == null) {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.inventory.pleaseinsertmedical.msg")));
 		}
-		
+
 		if (!errors.isEmpty()) {
 			throw new OHDataValidationException(errors);
 		}

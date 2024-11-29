@@ -36,7 +36,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class PatientConsensusBrowserManager {
 
-	private PatientConsensusIoOperation ioOperations;
+	private final PatientConsensusIoOperation ioOperations;
 
 	public PatientConsensusBrowserManager(PatientConsensusIoOperation patientConsensusIoOperation) {
 		this.ioOperations = patientConsensusIoOperation;
@@ -52,7 +52,6 @@ public class PatientConsensusBrowserManager {
 		return ioOperations.getPatientConsensusByUserId(userId);
 	}
 
-
 	/**
 	 * Update a {@link PatientConsensus}.
 	 *
@@ -65,7 +64,6 @@ public class PatientConsensusBrowserManager {
 		return ioOperations.updatePatientConsensus(patientConsensus);
 	}
 
-
 	private void validate(PatientConsensus patientConsensus) throws OHDataValidationException {
 		List<OHExceptionMessage> errors = new ArrayList<>();
 		if (!patientConsensus.isConsensusFlag()) {
@@ -76,7 +74,6 @@ public class PatientConsensusBrowserManager {
 		}
 
 	}
-
 
 	/**
 	 * Checks if n user specified by its {@code code} has a {@link PatientConsensus}.

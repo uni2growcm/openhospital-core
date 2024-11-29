@@ -39,7 +39,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class PriceListManager {
 
-	private PricesListIoOperations ioOperations;
+	private final PricesListIoOperations ioOperations;
 
 	public PriceListManager(PricesListIoOperations pricesListIoOperations) {
 		this.ioOperations = pricesListIoOperations;

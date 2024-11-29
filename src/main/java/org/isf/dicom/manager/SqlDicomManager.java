@@ -35,7 +35,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class SqlDicomManager implements DicomManagerInterface {
 
-	private DicomIoOperations ioOperations;
+	private final DicomIoOperations ioOperations;
 
 	public SqlDicomManager(DicomIoOperations dicomIoOperations) {
 		this.ioOperations = dicomIoOperations;

@@ -32,7 +32,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class LabRowManager {
 
-	private LabIoOperations ioOperations;
+	private final LabIoOperations ioOperations;
 
 	public LabRowManager(LabIoOperations labIoOperations) {
 		this.ioOperations = labIoOperations;

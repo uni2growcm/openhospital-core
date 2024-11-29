@@ -50,8 +50,9 @@ public class OpdBrowserManager {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(OpdBrowserManager.class);
 
-	private OpdIoOperations ioOperations;
-	private DiseaseBrowserManager diseaseBrowserManager;
+	private final OpdIoOperations ioOperations;
+
+	private final DiseaseBrowserManager diseaseBrowserManager;
 
 	public OpdBrowserManager(OpdIoOperations opdIoOperations, DiseaseBrowserManager diseaseBrowserManager) {
 		this.ioOperations = opdIoOperations;
@@ -143,7 +144,7 @@ public class OpdBrowserManager {
 					errors.add(new OHExceptionMessage(MessageBundle.formatMessage("angal.opd.specifieddiseaseisnoenabledforopdservice.fmt.msg", "3")));
 				}
 			}
-		} catch(OHServiceException serviceException) {
+		} catch (OHServiceException serviceException) {
 			LOGGER.error("Unable to validate diseases within OPD diseases.", serviceException);
 		}
 		if (!errors.isEmpty()) {
@@ -178,16 +179,16 @@ public class OpdBrowserManager {
 	 * @return the list of Opds. It could be {@code null}.
 	 * @throws OHServiceException
 	 */
-	public List<Opd> getOpd(Ward ward, String diseaseTypeCode, String diseaseCode, LocalDate dateFrom, LocalDate dateTo, int ageFrom, int ageTo, char sex, char newPatient, String user) throws OHServiceException {
-		return ioOperations.getOpdList(ward, diseaseTypeCode, diseaseCode, dateFrom, dateTo, ageFrom, ageTo, sex,newPatient, user);
+	public List<Opd> getOpd(Ward ward, String diseaseTypeCode, String diseaseCode, LocalDate dateFrom, LocalDate dateTo, int ageFrom, int ageTo, char sex,
+		char newPatient, String user) throws OHServiceException {
+		return ioOperations.getOpdList(ward, diseaseTypeCode, diseaseCode, dateFrom, dateTo, ageFrom, ageTo, sex, newPatient, user);
 	}
 
 	/**
 	 * Returns all {@link Opd}s associated to specified patient ID
 	 *
 	 * @param patientcode - the patient ID
-	 * @return the list of {@link Opd}s associated to specified patient ID.
-	 * the whole list of {@link Opd}s if {@code 0} is passed.
+	 * @return the list of {@link Opd}s associated to specified patient ID. the whole list of {@link Opd}s if {@code 0} is passed.
 	 * @throws OHServiceException
 	 */
 	public List<Opd> getOpdList(int patientcode) throws OHServiceException {
@@ -296,11 +297,11 @@ public class OpdBrowserManager {
 	 * @param newPatient
 	 * @param page
 	 * @param size
-	 * @return the list of {@link Opd}s associated to specified patient ID.
-	 * the whole list of {@link Opd}s if {@code 0} is passed.
+	 * @return the list of {@link Opd}s associated to specified patient ID. the whole list of {@link Opd}s if {@code 0} is passed.
 	 * @throws OHServiceException
 	 */
-	public PagedResponse<Opd> getOpdPageable(Ward ward, String diseaseTypeCode, String diseaseCode, LocalDate dateFrom, LocalDate dateTo, int ageFrom, int ageTo, char sex, char newPatient, int page, int size) throws OHServiceException {
+	public PagedResponse<Opd> getOpdPageable(Ward ward, String diseaseTypeCode, String diseaseCode, LocalDate dateFrom, LocalDate dateTo, int ageFrom,
+		int ageTo, char sex, char newPatient, int page, int size) throws OHServiceException {
 		return ioOperations.getOpdListPageable(ward, diseaseTypeCode, diseaseCode, dateFrom, dateTo, ageFrom, ageTo, sex, newPatient, null, page, size);
 	}
 }

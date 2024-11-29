@@ -31,7 +31,6 @@ import java.util.stream.Collectors;
 
 import org.isf.generaldata.MessageBundle;
 import org.isf.menu.manager.UserBrowsingManager;
-import org.isf.opd.service.OpdIoOperationRepository;
 import org.isf.patient.manager.PatientBrowserManager;
 import org.isf.patient.model.Patient;
 import org.isf.sms.manager.SmsManager;
@@ -54,18 +53,15 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 public class VisitManager {
 
-	private VisitsIoOperations ioOperations;
+	private final VisitsIoOperations ioOperations;
 
-	private SmsOperations smsOp;
+	private final SmsOperations smsOp;
 
-	private OpdIoOperationRepository opdRepository;
+	private final PatientBrowserManager patientBrowserManager;
 
-	private PatientBrowserManager patientBrowserManager;
-
-	public VisitManager(VisitsIoOperations visitsIoOperations, SmsOperations smsOperations, OpdIoOperationRepository opdOperationIoRepository, PatientBrowserManager patientBrowserManager) {
+	public VisitManager(VisitsIoOperations visitsIoOperations, SmsOperations smsOperations, PatientBrowserManager patientBrowserManager) {
 		this.ioOperations = visitsIoOperations;
 		this.smsOp = smsOperations;
-		this.opdRepository = opdOperationIoRepository;
 		this.patientBrowserManager = patientBrowserManager;
 	}
 	/**
@@ -95,7 +91,7 @@ public class VisitManager {
 		if (errors.isEmpty()) {
 			String sex = String.valueOf(patient.getSex());
 			if ((sex.equalsIgnoreCase("F") && !ward.isFemale())
-					|| (sex.equalsIgnoreCase("M") && !ward.isMale())) {
+				|| (sex.equalsIgnoreCase("M") && !ward.isMale())) {
 				errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.visit.thepatientssexandwarddonotagree.msg")));
 			}
 		}
@@ -116,9 +112,9 @@ public class VisitManager {
 		// look if the visit overlaps any existing ones in the ward
 		LocalDateTime visitEnd = visit.getEnd();
 		List<Visit> overlappingVisits = getVisitsWard(visitWard.getCode()).stream()
-				.filter(otherVisit -> otherVisit.getVisitID() != visit.getVisitID()) // don't compare visit with its current state in the DB (if any)
-				.filter(otherVisit -> visitOverlaps(visitDate, visitEnd, otherVisit))
-				.collect(toList());
+			.filter(otherVisit -> otherVisit.getVisitID() != visit.getVisitID()) // don't compare visit with its current state in the DB (if any)
+			.filter(otherVisit -> visitOverlaps(visitDate, visitEnd, otherVisit))
+			.collect(toList());
 		if (overlappingVisits.isEmpty()) {
 			return Optional.empty();
 		}
@@ -140,20 +136,20 @@ public class VisitManager {
 		LocalDateTime visitEnd = visit.getEnd();
 		List<Visit> patientVisits = getVisits(visitPatient.getCode());
 		List<Visit> overlappingPatientVisitsInDifferentWards = patientVisits.stream()
-				.filter(otherVisit -> otherVisit.getVisitID() != visit.getVisitID()) // don't compare visit with its current state in the DB (if any)
-				.filter(otherVisit -> !visitWard.equals(otherVisit.getWard())) // different ward
-				.filter(otherVisit -> visitOverlaps(visitDate, visitEnd, otherVisit)) // overlapping visits
-				.collect(toList());
+			.filter(otherVisit -> otherVisit.getVisitID() != visit.getVisitID()) // don't compare visit with its current state in the DB (if any)
+			.filter(otherVisit -> !visitWard.equals(otherVisit.getWard())) // different ward
+			.filter(otherVisit -> visitOverlaps(visitDate, visitEnd, otherVisit)) // overlapping visits
+			.collect(toList());
 		if (overlappingPatientVisitsInDifferentWards.isEmpty()) {
 			return Optional.empty();
 		}
 		if (overlappingPatientVisitsInDifferentWards.size() == 1) {
 			return Optional.of(new OHExceptionMessage(MessageBundle.formatMessage("angal.visit.overlappingpatientvisitsindifferentwards.msg",
-					overlappingPatientVisitsInDifferentWards.get(0).toString())));
+				overlappingPatientVisitsInDifferentWards.get(0).toString())));
 		}
 		String visitsDescription = overlappingPatientVisitsInDifferentWards.stream().map(Visit::toString).collect(Collectors.joining(", ", "", ""));
 		return Optional.of(new OHExceptionMessage(MessageBundle.formatMessage("angal.visit.manyoverlappingpatientvisitsindifferentwards.msg",
-				visitsDescription)));
+			visitsDescription)));
 	}
 
 	private static boolean visitOverlaps(LocalDateTime visitStart, LocalDateTime visitEnd, Visit otherVisit) {
@@ -319,11 +315,8 @@ public class VisitManager {
 	}
 
 	/**
-	 * Builds the {@link Sms} text for the specified {@link Visit}
-	 * If the length exceeds {@code SmsManager.MAX_LENGTH} the message will be truncated to
-	 * the maximum length.
-	 * (example:
-	 * "REMINDER: dd/MM/yy - HH:mm:ss - {@link Visit#getNote()}")
+	 * Builds the {@link Sms} text for the specified {@link Visit} If the length exceeds {@code SmsManager.MAX_LENGTH} the message will be truncated to the
+	 * maximum length. (example: "REMINDER: dd/MM/yy - HH:mm:ss - {@link Visit#getNote()}")
 	 *
 	 * @param visit - the {@link Visit}
 	 * @return a string containing the text
@@ -345,7 +338,7 @@ public class VisitManager {
 	/**
 	 * Returns the {@link Visit} based on visit id
 	 *
-	 * @param id - the  {@link Visit} id.
+	 * @param id - the {@link Visit} id.
 	 * @return the {@link Visit}
 	 */
 	public Visit findVisit(int id) throws OHServiceException {

@@ -47,18 +47,18 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 public class TherapyManager {
 
-	private TherapyIoOperations ioOperations;
+	private final TherapyIoOperations ioOperations;
 
-	private SmsOperations smsOp;
+	private final SmsOperations smsOp;
 
-	private PatientBrowserManager patientManager;
+	private final PatientBrowserManager patientManager;
 
-	private MedicalBrowsingManager medManager;
+	private final MedicalBrowsingManager medManager;
 
-	private MovWardBrowserManager wardManager;
+	private final MovWardBrowserManager wardManager;
 
 	public TherapyManager(TherapyIoOperations therapyIoOperations, SmsOperations smsOperations, PatientBrowserManager patientBrowserManager,
-	                      MedicalBrowsingManager medicalBrowsingManager, MovWardBrowserManager movWardBrowserManager) {
+		MedicalBrowsingManager medicalBrowsingManager, MovWardBrowserManager movWardBrowserManager) {
 		this.ioOperations = therapyIoOperations;
 		this.smsOp = smsOperations;
 		this.patientManager = patientBrowserManager;
@@ -75,12 +75,11 @@ public class TherapyManager {
 	 */
 	public Therapy createTherapy(TherapyRow th) throws OHServiceException {
 		return createTherapy(th.getTherapyID(), th.getPatient().getCode(), th.getMedical(), th.getQty(), th.getStartDate(), th.getEndDate(),
-				th.getFreqInPeriod(), th.getFreqInDay(), th.getNote(), th.isNotify(), th.isSms());
+			th.getFreqInPeriod(), th.getFreqInDay(), th.getNote(), th.isNotify(), th.isSms());
 	}
 
 	/**
-	 * Creates a {@link Therapy} from its parameters, fetching the {@link Medical}
-	 * and building the array of Dates ({@link LocalDateTime})
+	 * Creates a {@link Therapy} from its parameters, fetching the {@link Medical} and building the array of Dates ({@link LocalDateTime})
 	 *
 	 * @param therapyID
 	 * @param patID
@@ -96,8 +95,8 @@ public class TherapyManager {
 	 * @return the {@link Therapy}
 	 */
 	private Therapy createTherapy(int therapyID, int patID, Integer medId, Double qty,
-			LocalDateTime startDate, LocalDateTime endDate, int freqInPeriod,
-			int freqInDay, String note, boolean notify, boolean sms) throws OHServiceException {
+		LocalDateTime startDate, LocalDateTime endDate, int freqInPeriod,
+		int freqInDay, String note, boolean notify, boolean sms) throws OHServiceException {
 
 		List<LocalDateTime> datesArray = new ArrayList<>();
 
@@ -142,9 +141,7 @@ public class TherapyManager {
 	}
 
 	/**
-	 * Return the list of {@link TherapyRow}s (therapies) for specified Patient ID
-	 * or
-	 * return all {@link TherapyRow}s (therapies) if {@code 0} is passed
+	 * Return the list of {@link TherapyRow}s (therapies) for specified Patient ID or return all {@link TherapyRow}s (therapies) if {@code 0} is passed
 	 *
 	 * @param code - the Patient ID
 	 * @return the list of {@link TherapyRow}s (therapies)
@@ -208,9 +205,7 @@ public class TherapyManager {
 	}
 
 	/**
-	 * Builds the {@link Sms} text for the specified {@link Therapy}
-	 * If length exceed {@code SmsManager.MAX_LENGTH} the message will be cropped
-	 * (example:
+	 * Builds the {@link Sms} text for the specified {@link Therapy} If length exceed {@code SmsManager.MAX_LENGTH} the message will be cropped (example:
 	 * "REMINDER: {@link Medical} 3pcs - 2pd - {@link Therapy#getNote()}")
 	 *
 	 * @param th - the {@link Therapy}s
@@ -309,16 +304,16 @@ public class TherapyManager {
 	 * @param note
 	 * @param notify
 	 * @param sms
-	 * @return 
+	 * @return
 	 * @throws OHServiceException
 	 */
 	public TherapyRow newTherapy(int therapyID, int patID, LocalDateTime startDate, LocalDateTime endDate, Medical medical, Double qty, int unitID,
-			int freqInDay, int freqInPeriod, String note, boolean notify, boolean sms) throws OHServiceException {
+		int freqInDay, int freqInPeriod, String note, boolean notify, boolean sms) throws OHServiceException {
 		Patient patient = patientManager.getPatientById(patID);
 		TherapyRow thRow = new TherapyRow(therapyID, patient, startDate, endDate, medical, qty, unitID, freqInDay, freqInPeriod, note, notify, sms);
 		return newTherapy(thRow);
 	}
-	
+
 	/**
 	 * Prepare a {@link TherapyRow} (DB record) object from a {@link Therapy}
 	 *
@@ -338,7 +333,7 @@ public class TherapyManager {
 	 * @throws OHServiceException
 	 */
 	public TherapyRow getTherapyRow(int therapyID, int patID, LocalDateTime startDate, LocalDateTime endDate, Medical medical, Double qty, int unitID,
-			int freqInDay, int freqInPeriod, String note, boolean notify, boolean sms) throws OHServiceException {
+		int freqInDay, int freqInPeriod, String note, boolean notify, boolean sms) throws OHServiceException {
 		Patient patient = patientManager.getPatientById(patID);
 		return new TherapyRow(therapyID, patient, startDate, endDate, medical, qty, unitID, freqInDay, freqInPeriod, note, notify, sms);
 	}

@@ -36,7 +36,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class PregnantTreatmentTypeBrowserManager {
 
-	private PregnantTreatmentTypeIoOperation ioOperations;
+	private final PregnantTreatmentTypeIoOperation ioOperations;
 
 	public PregnantTreatmentTypeBrowserManager(PregnantTreatmentTypeIoOperation pregnantTreatmentTypeIoOperation) {
 		this.ioOperations = pregnantTreatmentTypeIoOperation;

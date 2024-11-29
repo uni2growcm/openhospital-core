@@ -36,7 +36,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class VaccineBrowserManager {
 
-	private VaccineIoOperations ioOperations;
+	private final VaccineIoOperations ioOperations;
 
 	public VaccineBrowserManager(VaccineIoOperations vaccineIoOperations) {
 		this.ioOperations = vaccineIoOperations;

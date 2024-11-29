@@ -40,9 +40,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class OperationBrowserManager {
 
-	private OperationIoOperations ioOperations;
-	
-	LinkedHashMap<String, String> resultsListHashMap;
+	private final OperationIoOperations ioOperations;
+
+	protected LinkedHashMap<String, String> resultsListHashMap;
 
 	public OperationBrowserManager(OperationIoOperations operationIoOperations) {
 		this.ioOperations = operationIoOperations;
@@ -54,7 +54,7 @@ public class OperationBrowserManager {
 	 * @return the list of {@link Operation}s. It could be {@code empty} or {@code null}.
 	 * @throws OHServiceException
 	 */
-	//TODO: Evaluate the use of a parameter in one method only
+	// TODO: Evaluate the use of a parameter in one method only
 	public List<Operation> getOperationOpd() throws OHServiceException {
 		return ioOperations.getOperationOpd();
 	}
@@ -156,14 +156,14 @@ public class OperationBrowserManager {
 		}
 		return resultsListHashMap;
 	}
-	
+
 	private void buildResultHashMap() {
 		resultsListHashMap = new LinkedHashMap<>();
 		resultsListHashMap.put("success", MessageBundle.getMessage("angal.operation.result.success.txt"));
 		resultsListHashMap.put("failure", MessageBundle.getMessage("angal.operation.result.failure.txt"));
 		resultsListHashMap.put("unknown", MessageBundle.getMessage("angal.operation.result.undefined.txt"));
 	}
-	
+
 	public String getResultDescriptionKey(String description) {
 		if (resultsListHashMap == null) {
 			buildResultHashMap();
@@ -191,20 +191,20 @@ public class OperationBrowserManager {
 		}
 		return resultsListHashMap.get(resultDescKey);
 	}
-	
+
 	/**
 	 * Retrieves a page of {@link Operation}s
 	 * 
 	 * @param page - The page number of the operations to retrieve
 	 * @param size - The size of the page of operations to retrieve.
 	 * @return a {@link PagedResponse} object that contains the {@link Operation}s.
-	 * @throws OHServiceException 
+	 * @throws OHServiceException
 	 */
 	public PagedResponse<Operation> getOperationPageable(int page, int size) throws OHServiceException {
-		Page<Operation> operations= ioOperations.getOperationPageable(page, size);
+		Page<Operation> operations = ioOperations.getOperationPageable(page, size);
 		return setPaginationData(operations);
 	}
-	
+
 	PagedResponse<Operation> setPaginationData(Page<Operation> pages) {
 		PagedResponse<Operation> data = new PagedResponse<>();
 		data.setData(pages.getContent());
