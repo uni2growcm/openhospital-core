@@ -21,9 +21,7 @@
  */
 package org.isf.generaldata.configProvider;
 
-import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
@@ -61,8 +59,8 @@ public class TestApiConfigProvider {
 	}
 
 	@AfterEach
-	public void stopServer() {
-		mockServer.stop(); // Stop the MockServer
+	public void resetServer() {
+		mockServer.reset(); // Resets all settings
 	}
 
 	@Test
@@ -71,9 +69,6 @@ public class TestApiConfigProvider {
 		mockServer.when(request().withMethod("GET").withPath("/test")).respond(response().withStatusCode(200)
 			.withContentType(MediaType.APPLICATION_JSON)
 			.withBody(CONFIG_JSON));
-
-		// Await until the mock server has started
-		await().atMost(5, SECONDS).until(() -> mockServer.hasStarted());
 
 		// Use MockedStatic to mock GeneralData
 		try (MockedStatic<GeneralData> mockedGeneralData = mockStatic(GeneralData.class);
@@ -107,9 +102,6 @@ public class TestApiConfigProvider {
 		mockServer.when(request().withMethod("GET").withPath("/test")).respond(response().withStatusCode(200)
 			.withContentType(MediaType.APPLICATION_JSON)
 			.withBody(CONFIG_JSON));
-
-		// Await until the mock server has started
-		await().atMost(5, SECONDS).until(() -> mockServer.hasStarted());
 
 		// Use MockedStatic to mock GeneralData
 		try (MockedStatic<GeneralData> mockedGeneralData = mockStatic(GeneralData.class);
