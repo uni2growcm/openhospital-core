@@ -30,6 +30,7 @@ import org.isf.accounting.model.BillItems;
 import org.isf.accounting.model.BillPayments;
 import org.isf.accounting.service.AccountingIoOperations;
 import org.isf.generaldata.MessageBundle;
+import org.isf.menu.model.User;
 import org.isf.patient.model.Patient;
 import org.isf.utils.db.TranslateOHServiceException;
 import org.isf.utils.exception.OHDataValidationException;
@@ -340,5 +341,47 @@ public class BillBrowserManager {
 	 */
 	public List<Bill> getBills(LocalDateTime dateFrom, LocalDateTime dateTo,BillItems billItem) throws OHServiceException {
 		return ioOperations.getBillsBetweenDatesWhereBillItem(dateFrom, dateTo, billItem);
+	}
+	
+	/**
+	 * Get the bills list with a given billItem
+	 * 
+	 * @param dateFrom
+	 * @param dateTo
+	 * @param username == guarantor
+	 * @param billItem
+	 * @return
+	 * @throws OHServiceException
+	 */
+
+	public List<Bill> getBillsWithGuarantor(LocalDateTime dateFrom, LocalDateTime dateTo, User guarantor) throws OHServiceException {
+		return ioOperations.getBillsBetweenDatesWhereGuarantor(dateFrom, dateTo, guarantor);
+	}
+
+	/**
+	 * Get the bills list with a given billItem
+	 * 
+	 * @param dateFrom
+	 * @param dateTo
+	 * @param patient
+	 * @param username == guarantor
+	 * @param billItem
+	 * @return
+	 * @throws OHServiceException
+	 */
+	public List<Bill> getBillsWithPatientAndGuarantor(LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient, User guarantor) throws OHServiceException {
+		return ioOperations.getBillsBetweenDatesWherePatientAndGuarantor(dateFrom, dateTo, patient, guarantor);
+	}
+
+	public List<BillPayments> getPaymentsWithPatientGuarantor(LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient, User guarantor)
+					throws OHServiceException {
+		return ioOperations.getPaymentsBetweenDatesWherePatientAndGuarantor(dateFrom, dateTo, patient, guarantor);
+	}
+
+	public List<Bill> getBillsWithGuarantor(List<BillPayments> billPayments, User guarantor) throws OHServiceException {
+		if (billPayments.isEmpty()) {
+			return new ArrayList<>();
+		}
+		return ioOperations.getBillsWithGuarantor(billPayments, guarantor);
 	}
 }

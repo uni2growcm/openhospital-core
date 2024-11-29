@@ -30,6 +30,7 @@ import java.util.TreeSet;
 import org.isf.accounting.model.Bill;
 import org.isf.accounting.model.BillItems;
 import org.isf.accounting.model.BillPayments;
+import org.isf.menu.model.User;
 import org.isf.patient.model.Patient;
 import org.isf.utils.db.TranslateOHServiceException;
 import org.isf.utils.exception.OHServiceException;
@@ -314,5 +315,36 @@ public class AccountingIoOperations {
 	public long countAllActiveBills() {
 		return this.billRepository.countAllActiveBills();
 	}
+	
+	public List<Bill> getBillsBetweenDatesWherePatientAndGuarantor(LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient, User guarantor)
+					throws OHServiceException {
+		return billRepository.findByDateAndPatientAndGuarantor(TimeTools.getBeginningOfDay(dateFrom), TimeTools.getBeginningOfNextDay(dateTo),
+						patient.getCode(), guarantor.getUserName());
+
+	}
+
+	public List<Bill> getBillsBetweenDatesWhereGuarantor(LocalDateTime dateFrom, LocalDateTime dateTo, User guarantor) throws OHServiceException {
+		return billRepository.findByDateAndGuarantor(TimeTools.getBeginningOfDay(dateFrom), TimeTools.getBeginningOfNextDay(dateTo), guarantor.getUserName());
+
+	}
+
+	public List<BillPayments> getPaymentsBetweenDatesWherePatientAndGuarantor(LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient, User guarantor)
+					throws OHServiceException {
+		return billPaymentRepository.findPaymentsByFilters(TimeTools.getBeginningOfDay(dateFrom), TimeTools.getBeginningOfNextDay(dateTo), patient.getCode(),
+						guarantor.getUserName());
+
+	}
+
+	public List<Bill> getBillsWithGuarantor(List<BillPayments> payments, User guarantor) throws OHServiceException {
+		Set<Bill> bills = new TreeSet<>((o1, o2) -> o1.getId() == o2.getId() ? 0 : -1);
+		for (BillPayments bp : payments) {
+			Bill bill = bp.getBill();
+			if (bill.getGuarantor().equals(guarantor)) {
+				bills.add(bill);
+			}
+		}
+		return new ArrayList<>(bills);
+	}
+
 
 }

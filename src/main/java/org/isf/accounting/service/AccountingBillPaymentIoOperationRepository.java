@@ -60,4 +60,13 @@ public interface AccountingBillPaymentIoOperationRepository extends JpaRepositor
 			"ORDER BY BP.bill, BP.date ASC")
 	List<BillPayments> findByDateAndPatient(@Param("dateFrom") LocalDateTime dateFrom, @Param("dateTo") LocalDateTime dateTo,
 			@Param("patientCode") Integer patientCode);
+	
+	@Query(value = "SELECT BP FROM BillPayments BP WHERE " +
+					"BP.bill.billPatient.code = :patientCode and " +
+					"BP.bill.guarantor.userName = :guarantor and " +
+					"DATE(BP.date) between DATE(:dateFrom) and DATE(:dateTo) " +
+					"ORDER BY BP.bill, BP.date ASC")
+	List<BillPayments> findPaymentsByFilters(@Param("dateFrom") LocalDateTime dateFrom, @Param("dateTo") LocalDateTime dateTo,
+	                @Param("patientCode") Integer patientCode,
+	                @Param("guarantor") String guarantor);
 }

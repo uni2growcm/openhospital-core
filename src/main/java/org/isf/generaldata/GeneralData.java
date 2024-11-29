@@ -90,6 +90,7 @@ public final class GeneralData extends ConfigurationProperties {
 	public static int PASSWORDLOCKTIME;
 	public static int PASSWORDIDLE;
 
+	private static final boolean DEFAULT_ALLOWBILLGUARANTOR  = false;
 	private static final String DEFAULT_LANGUAGE = "en";
 	private static final boolean DEFAULT_SINGLEUSER = false;
 	private static final boolean DEFAULT_USERSLISTLOGIN = false;
@@ -148,6 +149,7 @@ public final class GeneralData extends ConfigurationProperties {
 	public static final int IMAGE_THUMBNAIL_MAX_WIDTH = 140;
 	public static final int MAX_PROFILE_IMAGE_FILE_SIZE_BYTES = 32768;
 	public static final String DEFAULT_PARAMSURL = "";
+	public static final boolean ALLOWBILLGUARANTOR = false;
 
 	private static GeneralData mySingleData;
 

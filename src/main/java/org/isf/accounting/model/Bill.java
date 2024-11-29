@@ -38,6 +38,7 @@ import jakarta.persistence.Version;
 import jakarta.validation.constraints.NotNull;
 
 import org.isf.admission.model.Admission;
+import org.isf.menu.model.User;
 import org.isf.patient.model.Patient;
 import org.isf.priceslist.model.PriceList;
 import org.isf.utils.db.Auditable;
@@ -97,6 +98,10 @@ public class Bill extends Auditable<String> implements Cloneable, Comparable<Bil
 
 	@Column(name = "BLL_BALANCE")
 	private Double balance;
+	
+	@ManyToOne
+	@JoinColumn(name = "BLL_GUARANTOR")
+	private User guarantor;
 
 	@Version
 	@Column(name = "BLL_LOCK")
@@ -241,6 +246,14 @@ public class Bill extends Auditable<String> implements Cloneable, Comparable<Bil
 	public void setAdmission(Admission admission) {
 		this.admission = admission;
 	}
+	
+	public User getGuarantor() {
+		return guarantor;
+	}
+
+	public void setGuarantor(User guarantor) {
+		this.guarantor = guarantor;
+	}
 
 	public int getLock() { return lock; }
 
@@ -281,5 +294,10 @@ public class Bill extends Auditable<String> implements Cloneable, Comparable<Bil
 	@Override
 	public Object clone() throws CloneNotSupportedException {
 		return super.clone();
+	}
+
+	public void setGuarantor(String userName) {
+		this.user = userName;
+		
 	}
 }
