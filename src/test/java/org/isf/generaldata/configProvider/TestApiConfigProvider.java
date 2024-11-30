@@ -25,24 +25,22 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
+import static org.mockserver.integration.ClientAndServer.startClientAndServer;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 
+import java.util.concurrent.TimeUnit;
+
 import org.isf.generaldata.GeneralData;
 import org.isf.generaldata.Version;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-import org.mockserver.client.MockServerClient;
 import org.mockserver.integration.ClientAndServer;
-import org.mockserver.junit.jupiter.MockServerExtension;
-import org.mockserver.junit.jupiter.MockServerSettings;
 import org.mockserver.model.MediaType;
 
-@ExtendWith(MockServerExtension.class)
-@MockServerSettings(ports = {1080})
 public class TestApiConfigProvider {
 
 	private static final String CONFIG_JSON = """
@@ -55,25 +53,26 @@ public class TestApiConfigProvider {
 		  }
 		}""";
 
-	private final ClientAndServer mockServer;
-
-	private MockServerClient client;
+	private ClientAndServer mockServer;
 
 	@BeforeEach
-	public void beforeEachLifecyleMethod(MockServerClient client) {
-		this.client = client;
+	public void startServer() {
+		mockServer = startClientAndServer(1080); // Start the MockServer
 	}
 
-	public TestApiConfigProvider(ClientAndServer mockServer) {
-		this.mockServer = mockServer;
+	@AfterEach
+	public void stopServer() {
+		mockServer.stop(); // Stop the MockServer
 	}
 
 	@Test
-	void testGetTestParamsDataDefaultVersion(MockServerClient client) throws Exception {
+	void testGetTestParamsDataDefaultVersion() throws Exception {
 		// Set up the mock server to respond with the desired JSON
-		mockServer.when(request().withMethod("GET").withPath("/test")).respond(response().withStatusCode(200)
-			.withContentType(MediaType.APPLICATION_JSON)
-			.withBody(CONFIG_JSON));
+		mockServer.when(request().withMethod("GET").withPath("/test"))
+			.respond(response().withStatusCode(200)
+				.withContentType(MediaType.APPLICATION_JSON)
+				.withBody(CONFIG_JSON)
+				.withDelay(TimeUnit.MILLISECONDS, 200)); // Adding fixed delay to ensure response stability
 
 		// Use MockedStatic to mock GeneralData
 		try (MockedStatic<GeneralData> mockedGeneralData = mockStatic(GeneralData.class);
@@ -102,11 +101,13 @@ public class TestApiConfigProvider {
 	}
 
 	@Test
-	void testGetTestParamsDataWithVersion(MockServerClient client) throws Exception {
+	void testGetTestParamsDataWithVersion() throws Exception {
 		// Set up the mock server to respond with the desired JSON
-		mockServer.when(request().withMethod("GET").withPath("/test")).respond(response().withStatusCode(200)
-			.withContentType(MediaType.APPLICATION_JSON)
-			.withBody(CONFIG_JSON));
+		mockServer.when(request().withMethod("GET").withPath("/test"))
+			.respond(response().withStatusCode(200)
+				.withContentType(MediaType.APPLICATION_JSON)
+				.withBody(CONFIG_JSON)
+				.withDelay(TimeUnit.MILLISECONDS, 200)); // Adding fixed delay to ensure response stability
 
 		// Use MockedStatic to mock GeneralData
 		try (MockedStatic<GeneralData> mockedGeneralData = mockStatic(GeneralData.class);
@@ -135,7 +136,7 @@ public class TestApiConfigProvider {
 	}
 
 	@Test
-	void testGetTestParamsDataEmptyParamsUrl(MockServerClient client) {
+	void testGetTestParamsDataEmptyParmsUrl() {
 
 		try (MockedStatic<GeneralData> mockedGeneralData = mockStatic(GeneralData.class)) {
 
