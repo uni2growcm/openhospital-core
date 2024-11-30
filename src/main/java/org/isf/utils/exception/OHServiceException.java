@@ -34,22 +34,22 @@ import org.isf.utils.exception.model.OHExceptionMessage;
 public class OHServiceException extends Exception {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	private List<OHExceptionMessage> messages = new ArrayList<>();
-	
+
 	public OHServiceException(Throwable cause, List<OHExceptionMessage> messages) {
 		super(cause);
 		this.messages = messages;
 	}
-	
+
 	public OHServiceException(OHExceptionMessage message) {
 		this.messages.add(message);
 	}
-	
+
 	public OHServiceException(List<OHExceptionMessage> messages) {
 		this.messages = messages;
 	}
-	
+
 	public OHServiceException(Throwable cause, OHExceptionMessage message) {
 		super(cause);
 		this.messages.add(message);
