@@ -21,9 +21,15 @@
  */
 package org.isf.mortuarystays.service;
 
+import java.util.List;
+
 import org.isf.mortuarystays.model.MortuaryStay;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface MortuaryStayIoOperationRepository extends JpaRepository<MortuaryStay, String> { }
+public interface MortuaryStayIoOperationRepository extends JpaRepository<MortuaryStay, String> {
+	@Query(value = "SELECT m FROM MortuaryStay m WHERE m.deleted = 0 ORDER BY m.name")
+	List<MortuaryStay> findAllNotDeleted();
+}

@@ -45,7 +45,7 @@ public class MortuaryStayIoOperations {
 	 * @return
 	 */
 	public List<MortuaryStay> getAll() throws OHServiceException {
-		return repository.findAll();
+		return repository.findAllNotDeleted();
 	}
 
 	/**
@@ -76,8 +76,8 @@ public class MortuaryStayIoOperations {
 	 * @param mortuary - the item to delete
 	 * @throws OHServiceException
 	 */
-	public void delete(MortuaryStay mortuary) throws OHServiceException {
-		repository.delete(mortuary);
+	public MortuaryStay delete(MortuaryStay mortuary) throws OHServiceException {
+		return repository.save(mortuary);
 	}
 
 	/**

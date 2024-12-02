@@ -62,6 +62,9 @@ public class MortuaryStay extends Auditable<String> {
 	@Column(name = "MRTST_MIN_DAYS")
 	private int minDays;
 
+	@Column(name = "MRTST_DELETED")
+	private int deleted;
+
 	public MortuaryStay() {
 		super();
 	}
@@ -99,6 +102,12 @@ public class MortuaryStay extends Auditable<String> {
 	}
 	public int getMinDays() {
 		return minDays;
+	}
+	public void setDeleted(int deleted) {
+		this.deleted = deleted;
+	}
+	public int getDeleted() {
+		return deleted;
 	}
 	public void setMinDays(int minDays) {
 		this.minDays = minDays;

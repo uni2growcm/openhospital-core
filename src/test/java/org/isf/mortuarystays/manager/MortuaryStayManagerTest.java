@@ -65,7 +65,7 @@ public class MortuaryStayManagerTest extends OHCoreTestCase {
 	}
 
 	@Test
-	@DisplayName("Get all mortuaries stays")
+	@DisplayName("Get all mortuaries stays not deleted")
 	void testGetAll() throws Exception {
 		String code = setupTestMortuaryStays(false);
 		MortuaryStay foundMortuary = mortuaryStayBrowserManager.getByCode(code);
@@ -101,10 +101,11 @@ public class MortuaryStayManagerTest extends OHCoreTestCase {
 	@Test
 	void testDelete() throws Exception {
 		String code = setupTestMortuaryStays(false);
-		MortuaryStay foundMortuary = mortuaryStayIoOperations.getByCode(code);
+		MortuaryStay foundMortuary = mortuaryStayBrowserManager.getByCode(code);
 		assertThat(foundMortuary).isNotNull();
-		mortuaryStayBrowserManager.delete(foundMortuary);
-		assertThat(mortuaryStayBrowserManager.isCodePresent(code)).isFalse();
+		MortuaryStay deletedMortuary = mortuaryStayBrowserManager.delete(foundMortuary);
+		assertThat(deletedMortuary).isNotNull();
+		assertThat(deletedMortuary.getDeleted()).isEqualTo(1);
 	}
 
 	@Test
