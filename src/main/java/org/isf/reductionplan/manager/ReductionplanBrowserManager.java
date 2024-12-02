@@ -37,10 +37,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class ReductionplanBrowserManager {
 
-	private final ReductionPlanIoOperations ioOperations;
+	private final ReductionPlanIoOperations reductionPlanIoOperations;
 
 	public ReductionplanBrowserManager(ReductionPlanIoOperations reductionPlanIoOperations) {
-		this.ioOperations = reductionPlanIoOperations;
+		this.reductionPlanIoOperations = reductionPlanIoOperations;
 	}
 
 	/**
@@ -65,14 +65,14 @@ public class ReductionplanBrowserManager {
 	 * @return the list of {@link ReductionPlan}s
 	 */
 	public List<ReductionPlan> getReductionplan() throws OHServiceException {
-		return ioOperations.getReductionplan();
+		return reductionPlanIoOperations.getReductionplan();
 	}
 
 	public List<ReductionPlan> getReductionplan(String description) throws OHServiceException {
-		return ioOperations.getReductionPlan(description);
+		return reductionPlanIoOperations.getReductionPlan(description);
 	}
 	public List<ReductionPlan> getReductionplanByIds(List<Integer> ids) throws OHServiceException {
-		return ioOperations.findByIdIn(ids);
+		return reductionPlanIoOperations.findByIdIn(ids);
 	}
 
 	/**
@@ -82,7 +82,7 @@ public class ReductionplanBrowserManager {
 	 */
 	public ReductionPlan newReductionplan(ReductionPlan reductionplan) throws OHServiceException {
 		validateReductionplan(reductionplan);
-		return ioOperations.newReductionPlan(reductionplan);
+		return reductionPlanIoOperations.newReductionPlan(reductionplan);
 	}
 
 	/**
@@ -92,7 +92,7 @@ public class ReductionplanBrowserManager {
 	 */
 	public ReductionPlan updateReductionplan(ReductionPlan reductionplan) throws OHServiceException {
 		validateReductionplan(reductionplan);
-		return ioOperations.updateReductionPlan(reductionplan.getId(), reductionplan);
+		return reductionPlanIoOperations.updateReductionPlan(reductionplan.getId(), reductionplan);
 	}
 
 	/**
@@ -100,7 +100,7 @@ public class ReductionplanBrowserManager {
 	 * @param reductionplan - the item to delete
 	 */
 	public void deleteReductionplan(ReductionPlan reductionplan) throws OHServiceException {
-		ioOperations.deleteReductionplan(reductionplan);
+		reductionPlanIoOperations.deleteReductionplan(reductionplan);
 	}
 
 	/**
@@ -109,7 +109,7 @@ public class ReductionplanBrowserManager {
 	 * @return the {@link ReductionPlan}
 	 */
 	public List<ReductionPlan> getById(List<Integer> ids) throws OHServiceException {
-		return ioOperations.findByIdIn(ids);
+		return reductionPlanIoOperations.findByIdIn(ids);
 	}
 
 }

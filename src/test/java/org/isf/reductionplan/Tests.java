@@ -48,7 +48,7 @@ class Tests extends OHCoreTestCase {
 	ReductionPlanIoOperations ioOperations;
 
 	@Autowired
-	ReductionplanIoOperationRepository repository;
+	ReductionplanIoOperationRepository reductionplanIoOperationRepository;
 
 	@Autowired
 	ReductionplanBrowserManager manager;
@@ -85,7 +85,7 @@ class Tests extends OHCoreTestCase {
 	void testIoReductionplanGetAll() throws Exception {
 		// given:
 		ReductionPlan reductionplan = testsReductionplan.setup(false);
-		repository.save(reductionplan);
+		reductionplanIoOperationRepository.save(reductionplan);
 		List<ReductionPlan> foundReductionPlan = ioOperations.getReductionplan();
 		assertThat(foundReductionPlan).isNotNull();
 		assertThat(foundReductionPlan.size()).isGreaterThan(0);
@@ -97,8 +97,8 @@ class Tests extends OHCoreTestCase {
 		// GIVEN: Save multiple ReductionPlans
 		ReductionPlan reduction1 = new ReductionPlan("Plan 1", 10, 20, 30, 40);
 		ReductionPlan reduction2 = new ReductionPlan("Plan 2", 15, 25, 35, 45);
-		repository.save(reduction1);
-		repository.save(reduction2);
+		reductionplanIoOperationRepository.save(reduction1);
+		reductionplanIoOperationRepository.save(reduction2);
 
 		// Retrieve the generated IDs
 		List<Integer> ids = List.of(reduction1.getId(), reduction2.getId());
@@ -117,7 +117,7 @@ class Tests extends OHCoreTestCase {
 	void testMgrGetReductionplanByDescription() throws Exception {
 		// given: Initialize and save a ReductionPlan
 		ReductionPlan reductionplan = testsReductionplan.setup(false);
-		repository.save(reductionplan);
+		reductionplanIoOperationRepository.save(reductionplan);
 
 		// when: Use the manager method to search by description
 		List<ReductionPlan> result = manager.getReductionplan(reductionplan.getDescription());
@@ -130,7 +130,7 @@ class Tests extends OHCoreTestCase {
 	@Test
 	void testMgrUpdateReductionplan() throws Exception {
 		int id = setupTestReductionplan(false);
-		ReductionPlan foundReductionPlan = repository.findById(id).orElse(null);
+		ReductionPlan foundReductionPlan = reductionplanIoOperationRepository.findById(id).orElse(null);
 		assertThat(foundReductionPlan).isNotNull();
 		foundReductionPlan.setDescription("Updated Manager Description");
 		ReductionPlan updatedReductionPlan = manager.updateReductionplan(foundReductionPlan);
@@ -154,14 +154,14 @@ class Tests extends OHCoreTestCase {
 	void testMgrDeleteReductionplan() throws Exception {
 		// given:
 		int id = setupTestReductionplan(false);
-		ReductionPlan foundReductionPlan = repository.findById(id).orElse(null);
+		ReductionPlan foundReductionPlan = reductionplanIoOperationRepository.findById(id).orElse(null);
 		assertThat(foundReductionPlan).isNotNull();
 
 		// when:
 		manager.deleteReductionplan(foundReductionPlan);
 
 		// then:
-		assertThat(repository.existsById(id)).isFalse();
+		assertThat(reductionplanIoOperationRepository.existsById(id)).isFalse();
 	}
 
 	@Test
@@ -218,12 +218,12 @@ class Tests extends OHCoreTestCase {
 
 	private int setupTestReductionplan(boolean usingSet) throws Exception {
 		ReductionPlan reductionplan = testsReductionplan.setup(usingSet);
-		repository.saveAndFlush(reductionplan);
+		reductionplanIoOperationRepository.saveAndFlush(reductionplan);
 		return reductionplan.getId();
 	}
 
 	private void checkReductionplanIntoDb(int id) throws OHServiceException {
-		ReductionPlan foundReductionPlan = repository.findById(id).orElse(null);
+		ReductionPlan foundReductionPlan = reductionplanIoOperationRepository.findById(id).orElse(null);
 		assertThat(foundReductionPlan).isNotNull();
 		testsReductionplan.check(foundReductionPlan);
 	}

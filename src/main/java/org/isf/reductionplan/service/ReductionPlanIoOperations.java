@@ -40,11 +40,11 @@ import org.springframework.transaction.annotation.Transactional;
 @TranslateOHServiceException
 public class ReductionPlanIoOperations {
 
-	private final ReductionplanIoOperationRepository repository;
+	private final ReductionplanIoOperationRepository reductionplanIoOperationRepository;
 
 	public ReductionPlanIoOperations(ReductionplanIoOperationRepository reductionplanIoOperationRepository
 	) {
-		this.repository = reductionplanIoOperationRepository;
+		this.reductionplanIoOperationRepository = reductionplanIoOperationRepository;
 	}
 
 	/**
@@ -53,7 +53,7 @@ public class ReductionPlanIoOperations {
 	 * @throws OHServiceException
 	 */
 	public List<ReductionPlan> getReductionplan() throws OHServiceException {
-		return repository.findAll();
+		return reductionplanIoOperationRepository.findAll();
 	}
 
 	/**
@@ -63,22 +63,22 @@ public class ReductionPlanIoOperations {
 	 */
 
 	public List<ReductionPlan> findByIdIn(List<Integer> ids) {
-		return repository.findByIdIn(ids);
+		return reductionplanIoOperationRepository.findByIdIn(ids);
 	}
 
 	public List<ReductionPlan> getReductionPlan(String description) throws OHServiceException {
 
-		List<ReductionPlan> reductionPlans = repository.findByDescription(description);
+		List<ReductionPlan> reductionPlans = reductionplanIoOperationRepository.findByDescription(description);
 		return reductionPlans;
 	}
 
 	public ReductionPlan newReductionPlan(ReductionPlan reductionPlan) throws OHServiceException {
-		return repository.save(reductionPlan);
+		return reductionplanIoOperationRepository.save(reductionPlan);
 	}
 
 	public ReductionPlan updateReductionPlan(int rpId, ReductionPlan updatedReductionPlan) throws OHServiceException {
 
-		Optional<ReductionPlan> existingPlanOpt = repository.findById(rpId);
+		Optional<ReductionPlan> existingPlanOpt = reductionplanIoOperationRepository.findById(rpId);
 		if (existingPlanOpt.isPresent()) {
 			ReductionPlan existingPlan = existingPlanOpt.get();
 			existingPlan.setDescription(updatedReductionPlan.getDescription());
@@ -86,13 +86,13 @@ public class ReductionPlanIoOperations {
 			existingPlan.setMedicalRate(updatedReductionPlan.getMedicalRate());
 			existingPlan.setExamRate(updatedReductionPlan.getExamRate());
 			existingPlan.setOtherRate(updatedReductionPlan.getOtherRate());
-			return repository.save(existingPlan);
+			return reductionplanIoOperationRepository.save(existingPlan);
 		}
 		throw new OHServiceException(new OHExceptionMessage(null));
 	}
 
 	public void deleteReductionplan(ReductionPlan reductionplan) throws OHServiceException {
-		repository.delete(reductionplan);
+		reductionplanIoOperationRepository.delete(reductionplan);
 	}
 
 }
