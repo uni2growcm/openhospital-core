@@ -108,7 +108,7 @@ class Tests extends OHCoreTestCase {
 
 		// THEN: Verify that the results are correct
 		assertThat(result).isNotNull();
-		assertThat(result.size()).isEqualTo(2); // Both objects should be retrieved
+		assertThat(result.size()).isEqualTo(2);
 		assertThat(result).extracting(ReductionPlan::getDescription)
 						.containsExactlyInAnyOrder("Plan 1", "Plan 2");
 	}
@@ -116,8 +116,8 @@ class Tests extends OHCoreTestCase {
 	@Test
 	void testMgrGetReductionplanByDescription() throws Exception {
 		// given: Initialize and save a ReductionPlan
-		ReductionPlan reductionplan = testsReductionplan.setup(false); // Use setters
-		repository.save(reductionplan); // Save the entity in the database
+		ReductionPlan reductionplan = testsReductionplan.setup(false);
+		repository.save(reductionplan);
 
 		// when: Use the manager method to search by description
 		List<ReductionPlan> result = manager.getReductionplan(reductionplan.getDescription());
@@ -146,7 +146,7 @@ class Tests extends OHCoreTestCase {
 		ReductionPlan newReductionPlan = manager.newReductionplan(reductionplan);
 
 		// then:
-		assertThat(newReductionPlan.getId()).isGreaterThan(0); // Verify that the ID is generated
+		assertThat(newReductionPlan.getId()).isGreaterThan(0);
 		checkReductionplanIntoDb(newReductionPlan.getId());
 	}
 
@@ -167,9 +167,9 @@ class Tests extends OHCoreTestCase {
 	@Test
 	void testMgrValidationCodeEmpty() throws Exception {
 		assertThatThrownBy(() -> {
-			// Test without setting an rpId, the ID will be automatically generated
+
 			ReductionPlan reductionplan = testsReductionplan.setup(true);
-			reductionplan.setDescription("");  // Validate the empty description field
+			reductionplan.setDescription("");
 			manager.newReductionplan(reductionplan);
 		}).isInstanceOf(OHDataValidationException.class)
 						.has(new Condition<>(e -> ((OHServiceException) e).getMessages().size() == 1, "Expecting single validation error"));
@@ -179,7 +179,7 @@ class Tests extends OHCoreTestCase {
 	void testMgrValidationDescriptionEmpty() throws Exception {
 		assertThatThrownBy(() -> {
 			ReductionPlan reductionplan = testsReductionplan.setup(true);
-			reductionplan.setDescription("");  // Validate the empty description
+			reductionplan.setDescription("");
 			manager.newReductionplan(reductionplan);
 		}).isInstanceOf(OHDataValidationException.class)
 						.has(new Condition<>(e -> ((OHServiceException) e).getMessages().size() == 1, "Expecting single validation error"));
@@ -212,7 +212,7 @@ class Tests extends OHCoreTestCase {
 		ReductionPlan reductionplan = testsReductionplan.setup(true);
 		reductionplan.setId(1);
 		int hashCode = reductionplan.hashCode();
-		assertThat(hashCode).isEqualTo(23 * 133 + 1); // Check computed value
+		assertThat(hashCode).isEqualTo(23 * 133 + 1);
 		assertThat(reductionplan.hashCode()).isEqualTo(hashCode);
 	}
 
@@ -234,7 +234,7 @@ class Tests extends OHCoreTestCase {
 		testsReductionplan.check(reductionplan);
 	}
 
-	// Test avec les setters
+
 	@Test
 	public void testReductionplanUsingSetters() {
 		ReductionPlan reductionplan = testsReductionplan.setup(false);

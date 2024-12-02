@@ -82,12 +82,10 @@ public class ReductionPlan extends Auditable<String> implements Serializable {
 	@Transient
 	private volatile int hashcode;
 
-	// Default constructor
 	public ReductionPlan() {
 		super();
 	}
 
-	// Constructor with parameters
 	public ReductionPlan(int id, String description, double operationRate, double medicalRate,
 					double examRate, double otherRate
 	) {

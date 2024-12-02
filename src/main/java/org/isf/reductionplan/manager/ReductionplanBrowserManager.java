@@ -69,7 +69,7 @@ public class ReductionplanBrowserManager {
 	}
 
 	public List<ReductionPlan> getReductionplan(String description) throws OHServiceException {
-		return ioOperations.getReductionPlan(description); // Assurez-vous que description est passé ici
+		return ioOperations.getReductionPlan(description);
 	}
 	public List<ReductionPlan> getReductionplanByIds(List<Integer> ids) throws OHServiceException {
 		return ioOperations.findByIdIn(ids);
