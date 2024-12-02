@@ -43,7 +43,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 public class BillBrowserManager {
 
-	private AccountingIoOperations ioOperations;
+	private final AccountingIoOperations ioOperations;
 
 	public BillBrowserManager(AccountingIoOperations accountingIoOperations) {
 		this.ioOperations = accountingIoOperations;
@@ -180,7 +180,7 @@ public class BillBrowserManager {
 	 * @return the persisted Bill object
 	 * @throws OHServiceException
 	 */
-	private Bill newBill(Bill newBill) throws OHServiceException {
+	private final Bill newBill(Bill newBill) throws OHServiceException {
 		return ioOperations.newBill(newBill);
 	}
 
@@ -191,7 +191,7 @@ public class BillBrowserManager {
 	 * @param billItems the bill items to store.
 	 * @throws OHServiceException
 	 */
-	private void newBillItems(int billID, List<BillItems> billItems) throws OHServiceException {
+	private final void newBillItems(int billID, List<BillItems> billItems) throws OHServiceException {
 		ioOperations.newBillItems(ioOperations.getBill(billID), billItems);
 	}
 
@@ -202,7 +202,7 @@ public class BillBrowserManager {
 	 * @param payItems the bill payments.
 	 * @throws OHServiceException
 	 */
-	private void newBillPayments(int billID, List<BillPayments> payItems) throws OHServiceException {
+	private final void newBillPayments(int billID, List<BillPayments> payItems) throws OHServiceException {
 		ioOperations.newBillPayments(ioOperations.getBill(billID), payItems);
 	}
 
@@ -234,7 +234,7 @@ public class BillBrowserManager {
 	 * @return the updated Bill object
 	 * @throws OHServiceException
 	 */
-	private Bill updateBill(Bill updateBill) throws OHServiceException {
+	private final Bill updateBill(Bill updateBill) throws OHServiceException {
 		return ioOperations.updateBill(updateBill);
 	}
 
@@ -368,21 +368,6 @@ public class BillBrowserManager {
 	 * 
 	 * @param dateFrom
 	 * @param dateTo
-	 * @param username == guarantor
-	 * @param billItem
-	 * @return
-	 * @throws OHServiceException
-	 */
-
-	public List<Bill> getBillsWithGuarantor(LocalDateTime dateFrom, LocalDateTime dateTo, User guarantor) throws OHServiceException {
-		return ioOperations.getBillsBetweenDatesWhereGuarantor(dateFrom, dateTo, guarantor);
-	}
-
-	/**
-	 * Get the bills list with a given billItem
-	 * 
-	 * @param dateFrom
-	 * @param dateTo
 	 * @param patient
 	 * @param username == guarantor
 	 * @param billItem
@@ -391,10 +376,11 @@ public class BillBrowserManager {
 	 */
 	public List<Bill> getBillsWithPatientAndGuarantor(LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient, User guarantor) throws OHServiceException {
 		if (patient == null) {
-			throw new IllegalArgumentException("Patient cannot be null");
+			return ioOperations.getBillsBetweenDatesWhereGuarantor(dateFrom, dateTo, guarantor);
 		}
 		return ioOperations.getBillsBetweenDatesWherePatientAndGuarantor(dateFrom, dateTo, patient, guarantor);
 	}
+	
 	/**
 	 * Get the bills list with a given billItem
 	 * 
@@ -406,14 +392,14 @@ public class BillBrowserManager {
 	 * @return
 	 * @throws OHServiceException
 	 */
-
 	public List<BillPayments> getPaymentsWithPatientGuarantor(LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient, User guarantor)
 					throws OHServiceException {
 		if (patient == null) {
-			throw new IllegalArgumentException("Patient cannot be null");
+			return ioOperations.getPaymentsBetweenDatesWhereGuarantor(dateFrom, dateTo, guarantor);
 		}
 		return ioOperations.getPaymentsBetweenDatesWherePatientAndGuarantor(dateFrom, dateTo, patient, guarantor);
 	}
+
 	/**
 	 * Get the bills list with a given billItem
 	 * 
@@ -432,19 +418,4 @@ public class BillBrowserManager {
 		}
 		return ioOperations.getBillsWithGuarantor(billPayments, guarantor);
 	}
-	/**
-	 * Get the bills list with a given billItem
-	 * 
-	 * @param dateFrom
-	 * @param dateTo
-	 * @param patient
-	 * @param username == guarantor
-	 * @param billItem
-	 * @return
-	 * @throws OHServiceException
-	 */
-	public List<BillPayments> getPaymentsWithGuarantor(LocalDateTime dateFrom, LocalDateTime dateTo, User guarantor) throws OHServiceException {
-		return ioOperations.getPaymentsBetweenDatesWhereGuarantor(dateFrom, dateTo, guarantor);
-	}
-
 }
