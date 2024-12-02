@@ -395,6 +395,17 @@ public class BillBrowserManager {
 		}
 		return ioOperations.getBillsBetweenDatesWherePatientAndGuarantor(dateFrom, dateTo, patient, guarantor);
 	}
+	/**
+	 * Get the bills list with a given billItem
+	 * 
+	 * @param dateFrom
+	 * @param dateTo
+	 * @param patient
+	 * @param username == guarantor
+	 * @param billItem
+	 * @return
+	 * @throws OHServiceException
+	 */
 
 	public List<BillPayments> getPaymentsWithPatientGuarantor(LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient, User guarantor)
 					throws OHServiceException {
@@ -403,6 +414,17 @@ public class BillBrowserManager {
 		}
 		return ioOperations.getPaymentsBetweenDatesWherePatientAndGuarantor(dateFrom, dateTo, patient, guarantor);
 	}
+	/**
+	 * Get the bills list with a given billItem
+	 * 
+	 * @param dateFrom
+	 * @param dateTo
+	 * @param patient
+	 * @param username == guarantor
+	 * @param billItem
+	 * @return
+	 * @throws OHServiceException
+	 */
 
 	public List<Bill> getBillsWithGuarantor(List<BillPayments> billPayments, User guarantor) throws OHServiceException {
 		if (billPayments.isEmpty()) {
@@ -410,10 +432,19 @@ public class BillBrowserManager {
 		}
 		return ioOperations.getBillsWithGuarantor(billPayments, guarantor);
 	}
-
+	/**
+	 * Get the bills list with a given billItem
+	 * 
+	 * @param dateFrom
+	 * @param dateTo
+	 * @param patient
+	 * @param username == guarantor
+	 * @param billItem
+	 * @return
+	 * @throws OHServiceException
+	 */
 	public List<BillPayments> getPaymentsWithGuarantor(LocalDateTime dateFrom, LocalDateTime dateTo, User guarantor) throws OHServiceException {
-	    return ioOperations.getPaymentsBetweenDatesWhereGuarantor(dateFrom, dateTo, guarantor);
+		return ioOperations.getPaymentsBetweenDatesWhereGuarantor(dateFrom, dateTo, guarantor);
 	}
-
 
 }

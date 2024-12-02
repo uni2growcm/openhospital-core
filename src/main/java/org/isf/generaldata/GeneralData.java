@@ -36,6 +36,7 @@ public final class GeneralData extends ConfigurationProperties {
 	public static boolean DEMODATA;
 	public static boolean APISERVER;
 
+	public static boolean ALLOWBILLGUARANTOR;
 	public static String LANGUAGE;
 	public static boolean AUTOMATICLOT_IN;
 	public static boolean AUTOMATICLOT_OUT;
@@ -149,7 +150,6 @@ public final class GeneralData extends ConfigurationProperties {
 	public static final int IMAGE_THUMBNAIL_MAX_WIDTH = 140;
 	public static final int MAX_PROFILE_IMAGE_FILE_SIZE_BYTES = 32768;
 	public static final String DEFAULT_PARAMSURL = "";
-	public static final boolean ALLOWBILLGUARANTOR = false;
 
 	private static GeneralData mySingleData;
 
@@ -159,6 +159,7 @@ public final class GeneralData extends ConfigurationProperties {
 
 	private GeneralData(String fileProperties) {
 		super(fileProperties, EXIT_ON_FAIL);
+		ALLOWBILLGUARANTOR = myGetProperty("ALLOWBILLGUARANTOR", DEFAULT_ALLOWBILLGUARANTOR);
 		SINGLEUSER = myGetProperty("SINGLEUSER", DEFAULT_SINGLEUSER);
 		USERSLISTLOGIN = myGetProperty("USERSLISTLOGIN", DEFAULT_USERSLISTLOGIN);
 		MODE = myGetProperty("MODE", DEFAULT_MODE);

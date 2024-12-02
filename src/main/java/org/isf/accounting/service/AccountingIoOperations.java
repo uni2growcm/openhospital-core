@@ -330,41 +330,76 @@ public class AccountingIoOperations {
 		return this.billRepository.countAllActiveBills();
 	}
 
-	/*
-	 * public List<Bill> getBillsBetweenDatesWherePatientAndGuarantor(LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient, User guarantor) throws
-	 * OHServiceException { return billRepository.findByDateAndPatientAndGuarantor(TimeTools.getBeginningOfDay(dateFrom),
-	 * TimeTools.getBeginningOfNextDay(dateTo), patient.getCode(), guarantor.getUserName());
-	 * 
-	 * }
+	/**
+	 * Return the bill list which date between dateFrom and dateTo and containing given billItem
+	 *
+	 * @param dateFrom
+	 * @param dateTo
+	 * @param patient
+	 * @param guarantor
+	 * @param billItem
+	 * @return the bill list
+	 * @throws OHServiceException
 	 */
-	public List<Bill> getBillsBetweenDatesWherePatientAndGuarantor(LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient, User guarantor) throws OHServiceException {
-	    if (patient == null) {
-	        throw new IllegalArgumentException("Patient cannot be null");
-	    }
-	    return billRepository.findByDateAndPatientAndGuarantor(TimeTools.getBeginningOfDay(dateFrom), TimeTools.getBeginningOfNextDay(dateTo), patient.getCode(), guarantor.getUserName());
+
+	public List<Bill> getBillsBetweenDatesWherePatientAndGuarantor(LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient, User guarantor)
+					throws OHServiceException {
+		if (patient == null) {
+			throw new IllegalArgumentException("Patient cannot be null");
+		}
+		return billRepository.findByDateAndPatientAndGuarantor(TimeTools.getBeginningOfDay(dateFrom), TimeTools.getBeginningOfNextDay(dateTo),
+						patient.getCode(), guarantor.getUserName());
 	}
 
-
-	
-	  public List<Bill> getBillsBetweenDatesWhereGuarantor(LocalDateTime dateFrom, LocalDateTime dateTo, User guarantor) throws OHServiceException { return
-	  billRepository.findByDateAndGuarantor(TimeTools.getBeginningOfDay(dateFrom), TimeTools.getBeginningOfNextDay(dateTo), guarantor.getUserName());
-	  
-	  }
-	 
-
-	/*
-	 * public List<BillPayments> getPaymentsBetweenDatesWherePatientAndGuarantor(LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient, User guarantor)
-	 * throws OHServiceException { return billPaymentRepository.findPaymentsByFilters(TimeTools.getBeginningOfDay(dateFrom),
-	 * TimeTools.getBeginningOfNextDay(dateTo), patient.getCode(), guarantor.getUserName());
-	 * 
-	 * }
+	/**
+	 * Return the bill list which date between dateFrom and dateTo and containing given billItem
+	 *
+	 * @param dateFrom
+	 * @param dateTo
+	 * @param patient
+	 * @param guarantor
+	 * @param billItem
+	 * @return the bill list
+	 * @throws OHServiceException
 	 */
-	public List<BillPayments> getPaymentsBetweenDatesWherePatientAndGuarantor(LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient, User guarantor) throws OHServiceException {
-	    if (patient == null) {
-	        throw new IllegalArgumentException("Patient cannot be null");
-	    }
-	    return billPaymentRepository.findPaymentsByFilters(TimeTools.getBeginningOfDay(dateFrom), TimeTools.getBeginningOfNextDay(dateTo), patient.getCode(), guarantor.getUserName());
+
+	public List<Bill> getBillsBetweenDatesWhereGuarantor(LocalDateTime dateFrom, LocalDateTime dateTo, User guarantor) throws OHServiceException {
+		return billRepository.findByDateAndGuarantor(TimeTools.getBeginningOfDay(dateFrom), TimeTools.getBeginningOfNextDay(dateTo), guarantor.getUserName());
+
 	}
+
+	/**
+	 * Return the bill list which date between dateFrom and dateTo and containing given billItem
+	 *
+	 * @param dateFrom
+	 * @param dateTo
+	 * @param patient
+	 * @param guarantor
+	 * @param billpayments
+	 * @return the bill list
+	 * @throws OHServiceException
+	 */
+
+	public List<BillPayments> getPaymentsBetweenDatesWherePatientAndGuarantor(LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient, User guarantor)
+					throws OHServiceException {
+		if (patient == null) {
+			throw new IllegalArgumentException("Patient cannot be null");
+		}
+		return billPaymentRepository.findPaymentsByFilters(TimeTools.getBeginningOfDay(dateFrom), TimeTools.getBeginningOfNextDay(dateTo), patient.getCode(),
+						guarantor.getUserName());
+	}
+
+	/**
+	 * Return the bill list which date between dateFrom and dateTo and containing given billItem
+	 *
+	 * @param dateFrom
+	 * @param dateTo
+	 * @param patient
+	 * @param guarantor
+	 * @param billpayments
+	 * @return the bill list
+	 * @throws OHServiceException
+	 */
 
 	public List<Bill> getBillsWithGuarantor(List<BillPayments> payments, User guarantor) throws OHServiceException {
 		Set<Bill> bills = new TreeSet<>((o1, o2) -> o1.getId() == o2.getId() ? 0 : -1);
@@ -376,9 +411,22 @@ public class AccountingIoOperations {
 		}
 		return new ArrayList<>(bills);
 	}
-	
+
+	/**
+	 * Return the bill list which date between dateFrom and dateTo and containing given billItem
+	 *
+	 * @param dateFrom
+	 * @param dateTo
+	 * @param patient
+	 * @param guarantor
+	 * @param billpayments
+	 * @return the bill list
+	 * @throws OHServiceException
+	 */
+
 	public List<BillPayments> getPaymentsBetweenDatesWhereGuarantor(LocalDateTime dateFrom, LocalDateTime dateTo, User guarantor) throws OHServiceException {
-	    return billPaymentRepository.findPaymentsByGuarantor(TimeTools.getBeginningOfDay(dateFrom), TimeTools.getBeginningOfNextDay(dateTo), guarantor.getUserName());
+		return billPaymentRepository.findPaymentsByGuarantor(TimeTools.getBeginningOfDay(dateFrom), TimeTools.getBeginningOfNextDay(dateTo),
+						guarantor.getUserName());
 	}
 
 }
