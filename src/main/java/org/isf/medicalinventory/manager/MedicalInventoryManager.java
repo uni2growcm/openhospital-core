@@ -58,24 +58,24 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 public class MedicalInventoryManager {
 
-	private MedicalInventoryIoOperation ioOperations;
+	private final MedicalInventoryIoOperation ioOperations;
 
-	private MedicalInventoryRowManager medicalInventoryRowManager;
+	private final MedicalInventoryRowManager medicalInventoryRowManager;
 
-	private MovStockInsertingManager movStockInsertingManager;
+	private final MovStockInsertingManager movStockInsertingManager;
 
-	private MovBrowserManager movBrowserManager;
+	private final MovBrowserManager movBrowserManager;
 
-	private MedicalDsrStockMovementTypeBrowserManager medicalDsrStockMovementTypeBrowserManager;
+	private final MedicalDsrStockMovementTypeBrowserManager medicalDsrStockMovementTypeBrowserManager;
 
-	private SupplierBrowserManager supplierManager;
+	private final SupplierBrowserManager supplierManager;
 
-	private WardBrowserManager wardManager;
+	private final WardBrowserManager wardManager;
 
 	public MedicalInventoryManager(MedicalInventoryIoOperation medicalInventoryIoOperation, MedicalInventoryRowManager medicalInventoryRowManager,
-					MedicalDsrStockMovementTypeBrowserManager medicalDsrStockMovementTypeBrowserManager,
-					SupplierBrowserManager supplierManager, MovStockInsertingManager movStockInsertingManager, WardBrowserManager wardManager,
-					MovBrowserManager movBrowserManager) {
+		MedicalDsrStockMovementTypeBrowserManager medicalDsrStockMovementTypeBrowserManager,
+		SupplierBrowserManager supplierManager, MovStockInsertingManager movStockInsertingManager, WardBrowserManager wardManager,
+		MovBrowserManager movBrowserManager) {
 		this.ioOperations = medicalInventoryIoOperation;
 		this.medicalInventoryRowManager = medicalInventoryRowManager;
 		this.medicalDsrStockMovementTypeBrowserManager = medicalDsrStockMovementTypeBrowserManager;
@@ -88,7 +88,7 @@ public class MedicalInventoryManager {
 	/**
 	 * Insert a new {@link MedicalInventory}.
 	 *
-	 * @param medicalInventory - the {@link MedicalInventory} to insert.
+	 * @param medicalInventory the {@link MedicalInventory} to insert.
 	 * @return the newly persisted {@link MedicalInventory} object.
 	 * @throws OHServiceException
 	 */
@@ -101,7 +101,7 @@ public class MedicalInventoryManager {
 	/**
 	 * Update an existing {@link MedicalInventory}.
 	 *
-	 * @param medicalInventory - the {@link MedicalInventory} to update.
+	 * @param medicalInventory the {@link MedicalInventory} to update.
 	 * @return the updated {@link MedicalInventory} object.
 	 * @throws OHServiceException
 	 */
@@ -116,7 +116,7 @@ public class MedicalInventoryManager {
 	/**
 	 * Check if the reference number is already used.
 	 * 
-	 * @param reference - the {@link MedicalInventory} reference.
+	 * @param reference the {@link MedicalInventory} reference.
 	 * @return {@code true} if the code is already in use, {@code false} otherwise.
 	 * @throws OHServiceException
 	 */
@@ -127,8 +127,8 @@ public class MedicalInventoryManager {
 	/**
 	 * Return a list of {@link MedicalInventory}s for passed params.
 	 *
-	 * @param status - the {@link MedicalInventory} status.
-	 * @param wardCode - the {@link Ward} code.
+	 * @param status the {@link MedicalInventory} status.
+	 * @param wardCode the {@link Ward} code.
 	 * @return the list of {@link MedicalInventory}s. It could be {@code empty}.
 	 * @throws OHServiceException
 	 */
@@ -139,8 +139,8 @@ public class MedicalInventoryManager {
 	/**
 	 * Return a list {@link MedicalInventory}s for passed params.
 	 *
-	 * @param status - the {@link MedicalInventory} status.
-	 * @param inventoryType - the {@link MedicalInventory} type.
+	 * @param status the {@link MedicalInventory} status.
+	 * @param inventoryType the {@link MedicalInventory} type.
 	 * @return the list of {@link MedicalInventory}s. It could be {@code empty}.
 	 * @throws OHServiceException
 	 */
@@ -161,15 +161,15 @@ public class MedicalInventoryManager {
 	/**
 	 * Return a list of {@link MedicalInventory}s for passed params.
 	 * 
-	 * @param dateFrom - the lowest date for the range.
-	 * @param dateTo - the highest date for the range.
-	 * @param status - the {@link MedicalInventory} status.
-	 * @param type - the {@link MedicalInventory} type.
+	 * @param dateFrom the lowest date for the range.
+	 * @param dateTo the highest date for the range.
+	 * @param status the {@link MedicalInventory} status.
+	 * @param type the {@link MedicalInventory} type.
 	 * @return the list of {@link MedicalInventory}s. It could be {@code empty}.
 	 * @throws OHServiceException
 	 */
 	public List<MedicalInventory> getMedicalInventoryByParams(LocalDateTime dateFrom, LocalDateTime dateTo, String status, String type)
-					throws OHServiceException {
+		throws OHServiceException {
 		dateFrom = TimeTools.getBeginningOfDay(dateFrom);
 		dateTo = TimeTools.getBeginningOfNextDay(dateTo);
 		return ioOperations.getMedicalInventoryByParams(dateFrom, dateTo, status, type);
@@ -178,17 +178,17 @@ public class MedicalInventoryManager {
 	/**
 	 * Return a list of {@link MedicalInventory}s for passed params.
 	 * 
-	 * @param dateFrom - the lower date for the range.
-	 * @param dateTo - the highest date for the range.
-	 * @param status - the {@link MedicalInventory} status.
-	 * @param type - the {@link MedicalInventory} type.
-	 * @param page - the page number.
-	 * @param size - the page size.
+	 * @param dateFrom the lower date for the range.
+	 * @param dateTo the highest date for the range.
+	 * @param status the {@link MedicalInventory} status.
+	 * @param type the {@link MedicalInventory} type.
+	 * @param page the page number.
+	 * @param size the page size.
 	 * @return the list of {@link MedicalInventory}s. It could be {@code empty}.
 	 * @throws OHServiceException
 	 */
 	public Page<MedicalInventory> getMedicalInventoryByParamsPageable(LocalDateTime dateFrom, LocalDateTime dateTo, String status, String type, int page,
-					int size) throws OHServiceException {
+		int size) throws OHServiceException {
 		dateFrom = TimeTools.getBeginningOfDay(dateFrom);
 		dateTo = TimeTools.getBeginningOfNextDay(dateTo);
 		return ioOperations.getMedicalInventoryByParamsPageable(dateFrom, dateTo, status, type, page, size);
@@ -197,7 +197,7 @@ public class MedicalInventoryManager {
 	/**
 	 * Fetch {@link MedicalInventory} with param.
 	 * 
-	 * @param inventoryId - the {@link MedicalInventory} id.
+	 * @param inventoryId the {@link MedicalInventory} id.
 	 * @return {@link MedicalInventory}. It could be {@code null}.
 	 * @throws OHServiceException
 	 */
@@ -208,7 +208,7 @@ public class MedicalInventoryManager {
 	/**
 	 * Fetch {@link MedicalInventory} with param.
 	 * 
-	 * @param reference - the {@link MedicalInventory} reference.
+	 * @param reference the {@link MedicalInventory} reference.
 	 * @return {@link MedicalInventory}. It could be {@code null}.
 	 * @throws OHServiceException
 	 */
@@ -243,12 +243,12 @@ public class MedicalInventoryManager {
 	/**
 	 * Validate the Inventory rows of inventory.
 	 *
-	 * @param inventory - The {@link MedicalInventory}
+	 * @param inventory the {@link MedicalInventory}
 	 * @param inventoryRowSearchList- The list of {@link MedicalInventory}
 	 * @throws OHServiceException
 	 */
 	public void validateMedicalInventoryRow(MedicalInventory inventory, List<MedicalInventoryRow> inventoryRowSearchList)
-					throws OHServiceException {
+		throws OHServiceException {
 		LocalDateTime movFrom = inventory.getInventoryDate();
 		LocalDateTime movTo = TimeTools.getNow();
 		StringBuilder medDescriptionForLotUpdated = new StringBuilder("\n"); // initial new line
@@ -262,9 +262,9 @@ public class MedicalInventoryManager {
 		boolean allMedicals = true;
 		List<Movement> movs = new ArrayList<>();
 		List<Medical> inventoryMedicalsList = inventoryRowSearchList.stream()
-						.map(MedicalInventoryRow::getMedical)
-						.distinct()
-						.collect(Collectors.toList());
+			.map(MedicalInventoryRow::getMedical)
+			.distinct()
+			.collect(Collectors.toList());
 		if (allMedicals) {
 			// Fetch all movements without filtering by medical code
 			movs.addAll(movBrowserManager.getMovements(null, null, null, null, movFrom, movTo, null, null, null, null));
@@ -291,15 +291,15 @@ public class MedicalInventoryManager {
 			double mainStoreQty = 0.0;
 			// Fetch also empty lots because some movements may have discharged them completely
 			Optional<Lot> optLot = movStockInsertingManager.getLotByMedical(medical, false).stream().filter(l -> l.getCode().equals(lotCodeOfMovement))
-							.findFirst();
+				.findFirst();
 			if (optLot.isPresent()) {
-				mainStoreQty = optLot.get().getMainStoreQuantity();	
+				mainStoreQty = optLot.get().getMainStoreQuantity();
 			}
 
 			// Search for the specific Lot and Medical in inventoryRowSearchList (Lot should be enough)
 			Optional<MedicalInventoryRow> matchingRow = inventoryRowSearchList.stream()
-							.filter(row -> row.getLot().getCode().equals(lotCodeOfMovement) && row.getMedical().getCode().equals(medicalCode))
-							.findFirst();
+				.filter(row -> row.getLot().getCode().equals(lotCodeOfMovement) && row.getMedical().getCode().equals(medicalCode))
+				.findFirst();
 
 			if (matchingRow.isPresent()) {
 				MedicalInventoryRow medicalInventoryRow = matchingRow.get();
@@ -307,10 +307,10 @@ public class MedicalInventoryManager {
 				if (mainStoreQty != theoQty) {
 					lotUpdated = true;
 					medDescriptionForLotUpdated
-									.append("\n")
-									.append(MessageBundle.formatMessage(
-													"angal.inventory.theoreticalqtyhavebeenupdatedforsomemedical.detail.fmt.msg",
-													medicalDesc, lotInfo, theoQty, mainStoreQty, mainStoreQty - theoQty));
+						.append("\n")
+						.append(MessageBundle.formatMessage(
+							"angal.inventory.theoreticalqtyhavebeenupdatedforsomemedical.detail.fmt.msg",
+							medicalDesc, lotInfo, theoQty, mainStoreQty, mainStoreQty - theoQty));
 
 				}
 			} else {
@@ -319,36 +319,36 @@ public class MedicalInventoryManager {
 					// New medical
 					medicalAdded = true;
 					medDescriptionForNewMedical
-									.append("\n")
-									.append(MessageBundle.formatMessage(
-													"angal.inventory.newmedicalshavebeenfound.detail.fmt.msg",
-													medicalDesc, lotInfo, mainStoreQty));
+						.append("\n")
+						.append(MessageBundle.formatMessage(
+							"angal.inventory.newmedicalshavebeenfound.detail.fmt.msg",
+							medicalDesc, lotInfo, mainStoreQty));
 				} else {
 					// New Lot
 					lotAdded = true;
 					medDescriptionForNewLot
-									.append("\n")
-									.append(MessageBundle.formatMessage(
-													"angal.inventory.newlotshavebeenaddedforsomemedical.detail.fmt.msg",
-													medicalDesc, lotInfo, mainStoreQty));
+						.append("\n")
+						.append(MessageBundle.formatMessage(
+							"angal.inventory.newlotshavebeenaddedforsomemedical.detail.fmt.msg",
+							medicalDesc, lotInfo, mainStoreQty));
 				}
 			}
 		}
 		List<OHExceptionMessage> errors = new ArrayList<>();
 		if (lotUpdated) {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.inventory.validate.btn"),
-							MessageBundle.formatMessage("angal.inventory.theoreticalqtyhavebeenupdatedforsomemedical.fmt.msg", medDescriptionForLotUpdated),
-							OHSeverityLevel.INFO));
+				MessageBundle.formatMessage("angal.inventory.theoreticalqtyhavebeenupdatedforsomemedical.fmt.msg", medDescriptionForLotUpdated),
+				OHSeverityLevel.INFO));
 		}
 		if (lotAdded) {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.inventory.validate.btn"),
-							MessageBundle.formatMessage("angal.inventory.newlotshavebeenaddedforsomemedical.fmt.msg", medDescriptionForNewLot),
-							OHSeverityLevel.INFO));
+				MessageBundle.formatMessage("angal.inventory.newlotshavebeenaddedforsomemedical.fmt.msg", medDescriptionForNewLot),
+				OHSeverityLevel.INFO));
 		}
 		if (medicalAdded) {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.inventory.validate.btn"),
-							MessageBundle.formatMessage("angal.inventory.newmedicalshavebeenfound.fmt.msg", medDescriptionForNewMedical),
-							OHSeverityLevel.INFO));
+				MessageBundle.formatMessage("angal.inventory.newmedicalshavebeenfound.fmt.msg", medDescriptionForNewMedical),
+				OHSeverityLevel.INFO));
 		}
 		if (!errors.isEmpty()) {
 			throw new OHDataValidationException(errors);
@@ -358,7 +358,7 @@ public class MedicalInventoryManager {
 	/**
 	 * Marks an inventory as deleted by changing its status.
 	 * 
-	 * @param medicalInventory - the medicalInventory of the inventory to delete.
+	 * @param medicalInventory the medicalInventory of the inventory to delete.
 	 * @throws OHServiceException if an error occurs during the operation.
 	 */
 	public void deleteInventory(MedicalInventory medicalInventory) throws OHServiceException {
@@ -379,7 +379,7 @@ public class MedicalInventoryManager {
 	/**
 	 * Confirm the Inventory rows of inventory.
 	 *
-	 * @param inventory - The {@link MedicalInventory}
+	 * @param inventory the {@link MedicalInventory}
 	 * @param inventoryRowSearchList- The list of {@link MedicalInventory}
 	 * @return List {@link Movement}. It could be {@code empty}.
 	 * @throws OHServiceException
@@ -388,7 +388,7 @@ public class MedicalInventoryManager {
 	public List<Movement> confirmMedicalInventoryRow(MedicalInventory inventory, List<MedicalInventoryRow> inventoryRowSearchList) throws OHServiceException {
 		// validate the inventory
 		this.validateMedicalInventoryRow(inventory, inventoryRowSearchList);
-		
+
 		// get general info
 		String referenceNumber = inventory.getInventoryReference();
 		// TODO: to explore the possibility to allow charges and discharges with same referenceNumber
@@ -449,7 +449,7 @@ public class MedicalInventoryManager {
 	/**
 	 * Actualize the {@link MedicalInventory}.
 	 *
-	 * @param inventory - The {@link MedicalInventory}
+	 * @param inventory the {@link MedicalInventory}
 	 * @return {@link MedicalInventory}. It could be {@code null}.
 	 * @throws OHServiceException
 	 */
@@ -463,9 +463,9 @@ public class MedicalInventoryManager {
 		boolean allMedicals = true;
 		List<Movement> movs = new ArrayList<>();
 		List<Medical> inventoryMedicalsList = inventoryRowList.stream()
-						.map(MedicalInventoryRow::getMedical)
-						.distinct()
-						.collect(Collectors.toList());
+			.map(MedicalInventoryRow::getMedical)
+			.distinct()
+			.collect(Collectors.toList());
 		if (allMedicals) {
 			// Fetch all movements without filtering by medical code
 			movs.addAll(movBrowserManager.getMovements(null, null, null, null, movFrom, movTo, null, null, null, null));
@@ -488,13 +488,13 @@ public class MedicalInventoryManager {
 			Integer medicalCode = medical.getCode();
 			// Fetch also empty lots because some movements may have discharged them completely
 			Optional<Lot> optLot = movStockInsertingManager.getLotByMedical(medical, false).stream().filter(l -> l.getCode().equals(lotCodeOfMovement))
-							.findFirst();
+				.findFirst();
 			double mainStoreQty = optLot.get().getMainStoreQuantity();
 
 			// Search for the specific Lot and Medical in inventoryRowSearchList (Lot should be enough)
 			Optional<MedicalInventoryRow> matchingRow = inventoryRowList.stream()
-							.filter(row -> row.getLot().getCode().equals(lotCodeOfMovement) && row.getMedical().getCode().equals(medicalCode))
-							.findFirst();
+				.filter(row -> row.getLot().getCode().equals(lotCodeOfMovement) && row.getMedical().getCode().equals(medicalCode))
+				.findFirst();
 
 			if (matchingRow.isPresent()) {
 				MedicalInventoryRow medicalInventoryRow = matchingRow.get();
@@ -508,7 +508,7 @@ public class MedicalInventoryManager {
 				// TODO: to decide if to give control to the user about this
 				double realQty = mainStoreQty;
 				MedicalInventoryRow newMedicalInventoryRow = new MedicalInventoryRow(null, mainStoreQty, realQty, inventory, medical,
-								lot);
+					lot);
 				medicalInventoryRowManager.newMedicalInventoryRow(newMedicalInventoryRow);
 			}
 		}

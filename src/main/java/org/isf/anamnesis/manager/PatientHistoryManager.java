@@ -28,7 +28,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class PatientHistoryManager {
 
-	private PatientHistoryIoOperations ioOperations;
+	private final PatientHistoryIoOperations ioOperations;
 
 	public PatientHistoryManager(PatientHistoryIoOperations patientHistoryIoOperations) {
 		this.ioOperations = patientHistoryIoOperations;

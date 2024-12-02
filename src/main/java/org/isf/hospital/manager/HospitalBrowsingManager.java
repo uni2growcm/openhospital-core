@@ -27,15 +27,14 @@ import org.isf.utils.exception.OHServiceException;
 import org.springframework.stereotype.Component;
 
 /**
- * Class that provides gui separation from database operations and gives some
- * useful logic manipulations of the dynamic data (memory)
+ * Class that provides gui separation from database operations and gives some useful logic manipulations of the dynamic data (memory)
  *
  * @author bob
  */
 @Component
 public class HospitalBrowsingManager {
 
-	private HospitalIoOperations ioOperations;
+	private final HospitalIoOperations ioOperations;
 
 	public HospitalBrowsingManager(HospitalIoOperations hospitalIoOperations) {
 		this.ioOperations = hospitalIoOperations;
@@ -71,4 +70,3 @@ public class HospitalBrowsingManager {
 		return ioOperations.updateHospital(hospital);
 	}
 }
-	
