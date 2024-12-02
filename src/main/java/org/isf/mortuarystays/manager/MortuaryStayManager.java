@@ -37,7 +37,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class MortuaryStayManager {
 
-	private MortuaryStayIoOperations ioOperations;
+	private final MortuaryStayIoOperations ioOperations;
 
 	public MortuaryStayManager(MortuaryStayIoOperations ioOperations) {
 		this.ioOperations = ioOperations;
