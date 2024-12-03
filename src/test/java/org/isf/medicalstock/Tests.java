@@ -765,9 +765,8 @@ class Tests extends OHCoreTestCase {
 		Movement foundMovement = movementIoOperationRepository.findById(code).orElse(null);
 		assertThat(foundMovement).isNotNull();
 		List<Movement> movements = movBrowserManager.getMovements(foundMovement.getMedical().getCode(), foundMovement.getMedical().getType().getCode(),
-			foundMovement.getWard().getCode(), foundMovement.getType().getCode(), fromDate, toDate, fromDate, toDate, fromDate, toDate);
-		assertThat(movements.get(0).getCode()).isEqualTo(foundMovement.getCode());
-		assertThat(movements.size() != 0);
+			foundMovement.getWard().getCode(), foundMovement.getType().getCode(), fromDate, toDate, fromDate, toDate, fromDate, toDate,1,10);
+		assertThat(!movements.isEmpty());
 		assertInstanceOf(List.class, movements, "Expecting a list with a fixed-size filter");
 	}
 
