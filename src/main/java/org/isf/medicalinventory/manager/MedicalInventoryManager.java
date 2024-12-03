@@ -23,8 +23,10 @@ package org.isf.medicalinventory.manager;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -49,6 +51,7 @@ import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.model.OHExceptionMessage;
 import org.isf.utils.exception.model.OHSeverityLevel;
 import org.isf.utils.time.TimeTools;
+import org.isf.utils.validator.DefaultSorter;
 import org.isf.ward.manager.WardBrowserManager;
 import org.isf.ward.model.Ward;
 import org.springframework.data.domain.Page;
@@ -71,6 +74,8 @@ public class MedicalInventoryManager {
 	private final SupplierBrowserManager supplierManager;
 
 	private final WardBrowserManager wardManager;
+	
+	protected Map<String, String> statusHashMap;
 
 	public MedicalInventoryManager(MedicalInventoryIoOperation medicalInventoryIoOperation, MedicalInventoryRowManager medicalInventoryRowManager,
 		MedicalDsrStockMovementTypeBrowserManager medicalDsrStockMovementTypeBrowserManager,
@@ -513,5 +518,48 @@ public class MedicalInventoryManager {
 			}
 		}
 		return this.updateMedicalInventory(inventory, true);
+	}
+	
+	private void buildStatusHashMap() {
+		statusHashMap = new HashMap<>(4);
+		statusHashMap.put("canceled", MessageBundle.getMessage("angal.inventory.status.canceled.txt"));
+		statusHashMap.put("draft", MessageBundle.getMessage("angal.inventory.status.draft.txt"));
+		statusHashMap.put("done", MessageBundle.getMessage("angal.inventory.status.done.txt"));
+		statusHashMap.put("validated", MessageBundle.getMessage("angal.inventory.status.validated.txt"));
+	}
+
+	/**
+	 * Return a list of status:
+	 * draft,
+	 * done,
+	 * canceled,
+	 * validated
+	 *
+	 * @return
+	 */
+	public List<String> getStatusList() {
+		if (statusHashMap == null) {
+			buildStatusHashMap();
+		}
+		List<String> statusList = new ArrayList<>(statusHashMap.values());
+		statusList.sort(new DefaultSorter(MessageBundle.getMessage("angal.inventory.status.draft.txt")));
+		return statusList;
+	}
+	
+	/**
+	 * Return a value of the key on statusHashMap.
+	 * @param key - the key of status
+	 * @return the value of the key or empty string if key is not on statusHashMap.
+	 */
+	public String getStatusByKey(String key) {
+		if (statusHashMap == null) {
+			buildStatusHashMap();
+		}
+		for (Map.Entry<String, String> entry : statusHashMap.entrySet()) {
+			if (entry.getKey().equals(key)) {
+				return entry.getValue();
+			}
+		}
+		return "";
 	}
 }
