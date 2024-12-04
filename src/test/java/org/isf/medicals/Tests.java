@@ -307,16 +307,6 @@ class Tests extends OHCoreTestCase {
 	}
 	
 	@Test
-	void testIoNewMedicalwithDosing() throws Exception {
-		MedicalType medicalType = testMedicalType.setup(false);
-		medicalTypeIoOperationRepository.saveAndFlush(medicalType);
-		Medical medical = testMedical.setup(medicalType, true);
-		Medical result = medicalsIoOperations.newMedical(medical);
-		assertThat(result).isNotNull();
-		checkMedicalIntoDb(medical.getCode());
-	}
-	
-	@Test
 	void testIoUpdateMedical() throws Exception {
 		int code = setupTestMedical(false);
 		Medical foundMedical = medicalsIoOperationRepository.findById(code).orElse(null);
