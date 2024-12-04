@@ -67,7 +67,7 @@ public class ReductionPlanIoOperations {
 		return reductionplanIoOperationRepository.findByIdIn(ids);
 	}
 
-	public List<ReductionPlan> getReductionPlan(String description) throws OHServiceException {
+	public List<ReductionPlan> getByDescription(String description) throws OHServiceException {
 
 		List<ReductionPlan> reductionPlans = reductionplanIoOperationRepository.findByDescription(description);
 		return reductionPlans;
