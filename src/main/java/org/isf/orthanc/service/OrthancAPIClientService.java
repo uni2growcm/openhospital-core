@@ -33,6 +33,8 @@ import org.isf.orthanc.model.InstanceResponse;
 import org.isf.orthanc.model.Query;
 import org.isf.orthanc.model.SeriesResponse;
 import org.isf.orthanc.model.StudyResponse;
+import org.isf.utils.exception.OHInternalServerException;
+import org.isf.utils.exception.OHRestClientException;
 import org.isf.utils.exception.OHServiceException;
 import org.springframework.stereotype.Service;
 
@@ -56,9 +58,10 @@ public class OrthancAPIClientService {
 	 *
 	 * @return <code>true</code> if connection successfully established, <code>false</code> otherwise
 	 * @throws OHServiceException see when {@link #getClient()} throws this exception
+	 * @throws OHRestClientException when 4xx or 5xx errors is thrown by Feign
 	 */
-	public boolean testConnection() throws OHServiceException {
-		String time = getClient().testConnection();
+	public boolean testConnection() throws OHServiceException, OHRestClientException {
+		String time = feignClientFactory.createClient(true).testConnection();
 
 		return time != null && !time.isEmpty() ;
 	}
@@ -67,10 +70,11 @@ public class OrthancAPIClientService {
 	 * Get Feign instance
 	 *
 	 * @return instance of {@link OrthancAPIClient}
-	 * @throws OHServiceException see when {@link OrthancFeignClientFactory#createClient()} throws this exception
+	 * @throws OHServiceException see when {@link OrthancFeignClientFactory#createClient(boolean)} throws this exception
+	 * @throws OHRestClientException when 4xx or 5xx errors is thrown by Feign
 	 */
-	public OrthancAPIClient getClient() throws OHServiceException {
-		return feignClientFactory.createClient();
+	public OrthancAPIClient getClient() throws OHServiceException, OHRestClientException {
+		return feignClientFactory.createClient(false);
 	}
 
 	/**
@@ -78,8 +82,9 @@ public class OrthancAPIClientService {
 	 *
 	 * @return The list of studies
 	 * @throws OHServiceException see when {@link #getClient()} throws this exception
+	 * @throws OHRestClientException when 4xx or 5xx errors is thrown by Feign
 	 */
-	public List<StudyResponse> getAllStudies() throws OHServiceException {
+	public List<StudyResponse> getAllStudies() throws OHServiceException, OHRestClientException {
 		return getClient().getAllStudies();
 	}
 
@@ -91,8 +96,9 @@ public class OrthancAPIClientService {
 	 *
 	 * @return The list of studies related to the given patient ID
 	 * @throws OHServiceException see when {@link #getClient()} throws this exception
+	 * @throws OHRestClientException when 4xx or 5xx errors is thrown by Feign
 	 */
-	public List<StudyResponse> getPatientStudiesById(String patientId) throws OHServiceException {
+	public List<StudyResponse> getPatientStudiesById(String patientId) throws OHServiceException, OHRestClientException {
 		FindRequest request = new FindRequest(
 			FindRequestLevel.Study.name(),
 			true,
@@ -109,8 +115,9 @@ public class OrthancAPIClientService {
 	 *
 	 * @return The list of studies related to the given patient ID
 	 * @throws OHServiceException see when {@link #getClient()} throws this exception
+	 * @throws OHRestClientException when 4xx or 5xx errors is thrown by Feign
 	 */
-	public List<StudyResponse> getPatientStudiesByUuid(String patientUUID) throws OHServiceException {
+	public List<StudyResponse> getPatientStudiesByUuid(String patientUUID) throws OHServiceException, OHRestClientException {
 		return getClient().getPatientStudiesByUuid(patientUUID);
 	}
 
@@ -120,8 +127,9 @@ public class OrthancAPIClientService {
 	 * @param studyId Study UUID
 	 * @return the study that matched the provided UUID
 	 * @throws OHServiceException see when {@link #getClient()} throws this exception
+	 * @throws OHRestClientException when 4xx or 5xx errors is thrown by Feign
 	 */
-	public StudyResponse getStudyById(String studyId) throws OHServiceException {
+	public StudyResponse getStudyById(String studyId) throws OHServiceException, OHRestClientException {
 		return getClient().getStudyById(studyId);
 	}
 
@@ -131,8 +139,9 @@ public class OrthancAPIClientService {
 	 * @param studyId Study UUID
 	 * @return the list of study's series
 	 * @throws OHServiceException see when {@link #getClient()} throws this exception
+	 * @throws OHRestClientException when 4xx or 5xx errors is thrown by Feign
 	 */
-	public List<SeriesResponse> getStudySeries(String studyId) throws OHServiceException {
+	public List<SeriesResponse> getStudySeries(String studyId) throws OHServiceException, OHRestClientException {
 		return getClient().getStudySeries(studyId);
 	}
 
@@ -142,8 +151,9 @@ public class OrthancAPIClientService {
 	 * @param seriesId Series UUID
 	 * @return the series that matched the provided UUID
 	 * @throws OHServiceException see when {@link #getClient()} throws this exception
+	 * @throws OHRestClientException when 4xx or 5xx errors is thrown by Feign
 	 */
-	public SeriesResponse getSeriesById(String seriesId) throws OHServiceException {
+	public SeriesResponse getSeriesById(String seriesId) throws OHServiceException,OHRestClientException {
 		return getClient().getSeriesById(seriesId);
 	}
 
@@ -153,8 +163,9 @@ public class OrthancAPIClientService {
 	 * @param seriesId Series UUID
 	 * @return the list of series' instances
 	 * @throws OHServiceException see when {@link #getClient()} throws this exception
+	 * @throws OHRestClientException when 4xx or 5xx errors is thrown by Feign
 	 */
-	public List<InstanceResponse> getSeriesInstances(String seriesId) throws OHServiceException {
+	public List<InstanceResponse> getSeriesInstances(String seriesId) throws OHServiceException,OHRestClientException {
 		return getClient().getSeriesInstances(seriesId);
 	}
 
@@ -164,8 +175,9 @@ public class OrthancAPIClientService {
 	 * @param instanceId Instance UUID
 	 * @return the instance that matched the provided UUID
 	 * @throws OHServiceException see when {@link #getClient()} throws this exception
+	 * @throws OHRestClientException when 4xx or 5xx errors is thrown by Feign
 	 */
-	public InstanceResponse getInstanceById(String instanceId) throws OHServiceException {
+	public InstanceResponse getInstanceById(String instanceId) throws OHServiceException,OHRestClientException {
 		return getClient().getInstanceById(instanceId);
 	}
 
@@ -175,8 +187,9 @@ public class OrthancAPIClientService {
 	 * @param instanceId Instance UUID
 	 * @return the instance preview image in PNG format
 	 * @throws OHServiceException see when {@link #getClient()} throws this exception
+	 * @throws OHRestClientException when 4xx or 5xx errors is thrown by Feign
 	 */
-	public byte[] getInstancePreview(String instanceId) throws OHServiceException {
+	public byte[] getInstancePreview(String instanceId) throws OHServiceException, OHRestClientException {
 		// TODO: Better handle the file download to avoid {@link OutOfMemoryError} error
 
 		try (Response response = getClient().getInstancePreview(instanceId)) {

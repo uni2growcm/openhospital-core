@@ -93,6 +93,9 @@ public class BaseResponse {
 	 * @return {@link LocalDateTime} instance
 	 */
 	public LocalDateTime getLastUpdateInstance() {
+		if (lastUpdate == null || lastUpdate.isEmpty()) {
+			return  null;
+		}
 		return LocalDateTime.parse(lastUpdate, DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss"));
 	}
 }
