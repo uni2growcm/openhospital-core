@@ -81,6 +81,10 @@ public class Patient {
 	 * @return {@link LocalDate} instance
 	 */
 	public LocalDate getBirthDateInstance() {
+		if (birthDate == null || birthDate.isEmpty()) {
+			return  null;
+		}
+
 		return LocalDate.parse(birthDate, DateTimeFormatter.ofPattern("yyyyMMdd"));
 	}
 

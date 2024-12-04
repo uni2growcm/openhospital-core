@@ -127,6 +127,10 @@ public class Study {
 	 * @return {@link LocalDate} instance
 	 */
 	public LocalDate getDateInstance() {
+		if (date == null || date.isEmpty()) {
+			return  null;
+		}
+
 		return LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyyMMdd"));
 	}
 
@@ -135,6 +139,10 @@ public class Study {
 	 * @return {@link LocalTime} instance
 	 */
 	public LocalTime getTimeInstance() {
+		if (time == null || time.isEmpty()) {
+			return  null;
+		}
+
 		return LocalTime.parse(time, DateTimeFormatter.ofPattern("HHmmss"));
 	}
 

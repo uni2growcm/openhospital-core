@@ -114,6 +114,10 @@ public class Instance {
 	 * @return {@link LocalDate} instance
 	 */
 	public LocalDate getCreationDateInstance() {
+		if (creationDate == null || creationDate.isEmpty()) {
+			return  null;
+		}
+
 		return LocalDate.parse(creationDate, DateTimeFormatter.ofPattern("yyyyMMdd"));
 	}
 
@@ -122,6 +126,10 @@ public class Instance {
 	 * @return {@link LocalTime} instance
 	 */
 	public LocalTime getCreationTimeInstance() {
+		if (creationTime == null || creationTime.isEmpty()) {
+			return  null;
+		}
+
 		return LocalTime.parse(creationTime, DateTimeFormatter.ofPattern("HHmmss"));
 	}
 }
