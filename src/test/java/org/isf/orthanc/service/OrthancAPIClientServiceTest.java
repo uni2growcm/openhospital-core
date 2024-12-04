@@ -22,6 +22,7 @@
 package org.isf.orthanc.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -30,7 +31,9 @@ import org.isf.OHCoreTestCase;
 import org.isf.orthanc.model.InstanceResponse;
 import org.isf.orthanc.model.SeriesResponse;
 import org.isf.orthanc.model.StudyResponse;
+import org.isf.utils.exception.OHNotFoundException;
 import org.isf.utils.exception.OHServiceException;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +50,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author Silevester D.
  * @since 1.15
  */
-//@Disabled("Disabled because ORTHANC may not be properly configured")
+@Disabled("Disabled because ORTHANC may not be properly configured")
 public class OrthancAPIClientServiceTest extends OHCoreTestCase {
 
 	@Autowired
@@ -97,6 +100,13 @@ public class OrthancAPIClientServiceTest extends OHCoreTestCase {
 		assertThat(studies).isNotNull();
 		assertThat(studies.getStudy()).isNotNull();
 		assertThat(studies.getLastUpdateInstance()).isInstanceOf(LocalDateTime.class);
+	}
+
+	@Test
+	@DisplayName("Should throw OHServiceException when trying to get study using a wrong ID")
+	void testGetStudyWithWrongIdThrowsException() {
+		assertThatThrownBy(() -> service.getStudyById("8fb3d973-4449ad4-c21bb79d-81c41b56-b9412373"))
+			.isInstanceOf(OHNotFoundException.class);
 	}
 
 	@Test

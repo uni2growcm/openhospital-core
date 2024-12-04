@@ -22,6 +22,7 @@
 package org.isf.orthanc.client;
 
 import org.isf.generaldata.OrthancConfig;
+import org.isf.orthanc.utils.CustomErrorDecoder;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.model.OHExceptionMessage;
 import org.springframework.cloud.openfeign.support.SpringMvcContract;
@@ -53,18 +54,19 @@ public class OrthancFeignClientFactory {
 	 * @return an instance of {@link OrthancAPIClient}
 	 * @throws OHServiceException When ORTHANC not properly configured
 	 */
-	public OrthancAPIClient createClient() throws OHServiceException {
+	public OrthancAPIClient createClient(boolean reset) throws OHServiceException {
 		if (!validateConfiguration()) {
 			throw new OHServiceException(new OHExceptionMessage("ORTHANC server is not properly configured"));
 		}
 
-		if (client != null) return client;
+		if (client != null && !reset) return client;
 
 		client = Feign.builder()
 			.encoder(new GsonEncoder())
 			.decoder(new GsonDecoder())
 			.requestInterceptor(new BasicAuthRequestInterceptor(OrthancConfig.ORTHANC_USERNAME, OrthancConfig.ORTHANC_PASSWORD))
 			.logger(new Slf4jLogger(OrthancAPIClient.class))
+			.errorDecoder(new CustomErrorDecoder())
 			.logLevel(Logger.Level.FULL)
 			.contract(new SpringMvcContract())
 			.target(OrthancAPIClient.class, OrthancConfig.ORTHANC_BASE_URL);
