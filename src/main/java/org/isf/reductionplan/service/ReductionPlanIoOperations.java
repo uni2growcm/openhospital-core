@@ -73,7 +73,7 @@ public class ReductionPlanIoOperations {
 		return reductionPlans;
 	}
 
-	public ReductionPlan newReductionPlan(ReductionPlan reductionPlan) throws OHServiceException {
+	public ReductionPlan add(ReductionPlan reductionPlan) throws OHServiceException {
 		return reductionplanIoOperationRepository.save(reductionPlan);
 	}
 
