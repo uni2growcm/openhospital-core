@@ -760,14 +760,14 @@ class Tests extends OHCoreTestCase {
 	void testGetMovements(boolean in, boolean out, boolean toward) throws Exception {
 		setGeneralData(in, out, toward);
 		LocalDateTime fromDate = LocalDateTime.of(2000, 1, 1, 0, 0, 0);
-		LocalDateTime toDate = LocalDateTime.of(2000, 3, 3, 0, 0, 0);
+		LocalDateTime toDate = LocalDateTime.of(2001, 3, 3, 0, 0, 0);
 		int code = setupTestMovement(false);
 		Movement foundMovement = movementIoOperationRepository.findById(code).orElse(null);
 		assertThat(foundMovement).isNotNull();
 		List<Movement> movements = movBrowserManager.getMovements(foundMovement.getMedical().getCode(), foundMovement.getMedical().getType().getCode(),
-			foundMovement.getWard().getCode(), foundMovement.getType().getCode(), fromDate, toDate, fromDate, toDate, fromDate, toDate,1,10);
-		assertThat(!movements.isEmpty());
-		assertInstanceOf(List.class, movements, "Expecting a list with a fixed-size filter");
+			foundMovement.getWard().getCode(), foundMovement.getType().getCode(), fromDate, toDate, fromDate, toDate, fromDate, toDate,0,10);
+		assertThat(movements.size()).isGreaterThan(0);
+		assertThat(movements.get(0).getCode()).isEqualTo(foundMovement.getCode());
 	}
 
 	@ParameterizedTest(name = "Test with AUTOMATICLOT_IN={0}, AUTOMATICLOT_OUT={1}, AUTOMATICLOTWARD_TOWARD={2}")
