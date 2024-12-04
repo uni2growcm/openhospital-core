@@ -108,13 +108,13 @@ class Tests extends OHCoreTestCase {
 		testUser = new TestUser();
 		testUserGroup = new TestUserGroup();
 	}
-	
-	@BeforeEach void setUp() { 
+
+	@BeforeEach 
+	void setUp() { 
 		MockitoAnnotations.openMocks(this);
-		cleanH2InMemoryDb(); 
+		cleanH2InMemoryDb();
 	}
 	
-
 	@Test
 	void testBillGets() throws Exception {
 		int id = setupTestBill(false);

@@ -261,6 +261,7 @@ public class AccountingIoOperations {
 	}
 
 	/**
+	 * 
 	 * @param patID
 	 * @return
 	 * @throws OHServiceException
@@ -270,6 +271,7 @@ public class AccountingIoOperations {
 	}
 
 	/**
+	 * 
 	 * @param patID
 	 * @return
 	 * @throws OHServiceException
@@ -279,7 +281,7 @@ public class AccountingIoOperations {
 	}
 
 	/**
-	 * Return distinct BillItems 
+	 * Return distinct BillItems
 	 * added by u2g
 	 * @return BillItems list
 	 * @throws OHServiceException
@@ -290,6 +292,7 @@ public class AccountingIoOperations {
 
 	/**
 	 * Return the bill list which date between dateFrom and dateTo and containing given billItem
+	 * 
 	 * @param dateFrom
 	 * @param dateTo
 	 * @param billItem
@@ -306,6 +309,7 @@ public class AccountingIoOperations {
 
 	/**
 	 * Count active {@link Bill}s
+	 * 
 	 * @return the number of recorded {@link Bill}s
 	 * @throws OHServiceException
 	 */
