@@ -64,12 +64,12 @@ public class ReductionplanBrowserManager {
 	 * Returns the list of {@link ReductionPlan}s in the DB.
 	 * @return the list of {@link ReductionPlan}s
 	 */
-	public List<ReductionPlan> getReductionplan() throws OHServiceException {
-		return reductionPlanIoOperations.getReductionplan();
+	public List<ReductionPlan> getAll() throws OHServiceException {
+		return reductionPlanIoOperations.getAll();
 	}
 
-	public List<ReductionPlan> getReductionplan(String description) throws OHServiceException {
-		return reductionPlanIoOperations.getReductionPlan(description);
+	public List<ReductionPlan> getByDescription(String description) throws OHServiceException {
+		return reductionPlanIoOperations.getByDescription(description);
 	}
 	public List<ReductionPlan> getReductionplanByIds(List<Integer> ids) throws OHServiceException {
 		return reductionPlanIoOperations.findByIdIn(ids);
@@ -80,9 +80,9 @@ public class ReductionplanBrowserManager {
 	 * @param reductionplan - the {@link ReductionPlan} object to insert
 	 * @return the newly inserted {@link Vaccine} object.
 	 */
-	public ReductionPlan newReductionplan(ReductionPlan reductionplan) throws OHServiceException {
+	public ReductionPlan add(ReductionPlan reductionplan) throws OHServiceException {
 		validateReductionplan(reductionplan);
-		return reductionPlanIoOperations.newReductionPlan(reductionplan);
+		return reductionPlanIoOperations.add(reductionplan);
 	}
 
 	/**
