@@ -257,7 +257,7 @@ public class PatientBrowserManager {
 	 * Method that logically deletes a {@link Patient} (not physically deleted).
 	 *
 	 * @param patient
-	 *            - the {@link Patient} to be deleted
+	 *            the {@link Patient} to be deleted
 	 * @throws OHServiceException
 	 */
 	public void deletePatient(Patient patient) throws OHServiceException {
