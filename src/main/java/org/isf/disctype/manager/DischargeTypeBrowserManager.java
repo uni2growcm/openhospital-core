@@ -35,7 +35,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class DischargeTypeBrowserManager {
 
-	private DischargeTypeIoOperation ioOperations;
+	private final DischargeTypeIoOperation ioOperations;
 
 	public DischargeTypeBrowserManager(DischargeTypeIoOperation dischargeTypeIoOperation) {
 		this.ioOperations = dischargeTypeIoOperation;

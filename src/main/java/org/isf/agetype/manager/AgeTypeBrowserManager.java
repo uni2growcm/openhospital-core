@@ -35,7 +35,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class AgeTypeBrowserManager {
 
-	private AgeTypeIoOperations ioOperations;
+	private final AgeTypeIoOperations ioOperations;
 
 	public AgeTypeBrowserManager(AgeTypeIoOperations ageTypeIoOperations) {
 		this.ioOperations = ageTypeIoOperations;
@@ -92,7 +92,7 @@ public class AgeTypeBrowserManager {
 	public AgeType getTypeByCode(int index) throws OHServiceException {
 		return ioOperations.getAgeTypeByCode(index);
 	}
-	
+
 	/**
 	 * Gets the {@link AgeType} from the code.
 	 *

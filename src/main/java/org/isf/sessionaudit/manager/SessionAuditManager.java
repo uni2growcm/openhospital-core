@@ -34,7 +34,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class SessionAuditManager {
 
-	private SessionAuditIoOperation ioOperation;
+	private final SessionAuditIoOperation ioOperation;
 
 	public SessionAuditManager(SessionAuditIoOperation sessionAuditIoOperation) {
 		this.ioOperation = sessionAuditIoOperation;
