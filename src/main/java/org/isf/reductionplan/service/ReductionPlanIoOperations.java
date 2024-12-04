@@ -25,6 +25,7 @@ package org.isf.reductionplan.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.isf.generaldata.MessageBundle;
 import org.isf.reductionplan.model.ReductionPlan;
 import org.isf.utils.db.TranslateOHServiceException;
 import org.isf.utils.exception.OHServiceException;
@@ -88,7 +89,7 @@ public class ReductionPlanIoOperations {
 			existingPlan.setOtherRate(updatedReductionPlan.getOtherRate());
 			return reductionplanIoOperationRepository.save(existingPlan);
 		}
-		throw new OHServiceException(new OHExceptionMessage(null));
+		throw new OHServiceException(new OHExceptionMessage(MessageBundle.getMessage("angal.reductionplan.notfound.msg")));
 	}
 
 	public void deleteReductionplan(ReductionPlan reductionplan) throws OHServiceException {

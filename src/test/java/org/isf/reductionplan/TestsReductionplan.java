@@ -28,11 +28,11 @@ import org.isf.reductionplan.model.ReductionPlan;
 
 class TestsReductionplan {
 
-	private final String description = "Plan de réduction test";
-	private final double operationRate = 20.5f;
-	private final double medicalRate = 15.0f;
-	private final double examRate = 10.0f;
-	private final double otherRate = 5.5f;
+	private  String description = "ReductionPlan Test ";
+	private  double operationRate = 20.5f;
+	private  double medicalRate = 15.0f;
+	private  double examRate = 10.0f;
+	private  double otherRate = 5.5f;
 
 	public ReductionPlan setup(boolean usingConstructor) {
 		if (usingConstructor) {
