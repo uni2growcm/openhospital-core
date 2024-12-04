@@ -598,9 +598,8 @@ public class MedicalStockIoOperations {
 		LocalDateTime lotDueFrom,
 		LocalDateTime lotDueTo,
 		Pageable pageable) throws OHServiceException {
-		List<Movement> movementList = new ArrayList<>();
 
-		List<Integer> pMovementCode = movRepository.findMovementWhereData(medicalCode, medicalType, wardId, movType,
+		return movRepository.findMovementWhereData(medicalCode, medicalType, wardId, movType,
 			TimeTools.truncateToSeconds(movFrom),
 			TimeTools.truncateToSeconds(movTo),
 			TimeTools.truncateToSeconds(lotPrepFrom),
@@ -608,15 +607,6 @@ public class MedicalStockIoOperations {
 			TimeTools.truncateToSeconds(lotDueFrom),
 			TimeTools.truncateToSeconds(lotDueTo),
 			pageable);
-		for (int i = 0; i < pMovementCode.size(); i++) {
-			Integer code = pMovementCode.get(i);
-			Movement movement = movRepository.findById(code).orElse(null);
-			if (movement == null) {
-				throw new OHServiceException(new OHExceptionMessage("Movement '" + code + "' not found."));
-			}
-			movementList.add(i, movement);
-		}
-		return movementList;
 	}
 	/**
 	 * Retrieves {@link Movement}s for printing using specified filtering criteria.

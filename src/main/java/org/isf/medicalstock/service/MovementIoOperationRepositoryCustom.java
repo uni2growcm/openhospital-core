@@ -24,6 +24,7 @@ package org.isf.medicalstock.service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.isf.medicalstock.model.Movement;
 import org.isf.medicalstock.service.MedicalStockIoOperations.MovementOrder;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -37,7 +38,7 @@ public interface MovementIoOperationRepositoryCustom {
 			LocalDateTime movFrom, LocalDateTime movTo, LocalDateTime lotPrepFrom,
 			LocalDateTime lotPrepTo, LocalDateTime lotDueFrom, LocalDateTime lotDueTo);
 
-	List<Integer> findMovementWhereData(
+	List<Movement> findMovementWhereData(
 		Integer medicalCode, String medicalType, String wardId, String movType, LocalDateTime movFrom,
 		LocalDateTime movTo, LocalDateTime lotPrepFrom, LocalDateTime lotPrepTo, LocalDateTime lotDueFrom,
 		LocalDateTime lotDueTo, Pageable pageable);

@@ -41,7 +41,6 @@ import org.isf.medicalstock.service.MedicalStockIoOperations.MovementOrder;
 import org.isf.medstockmovtype.model.MovementType;
 import org.isf.medtype.model.MedicalType;
 import org.isf.utils.time.TimeTools;
-import org.springframework.data.domain.PageRequest;
 import org.isf.ward.model.Ward;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
@@ -86,7 +85,7 @@ public class MovementIoOperationRepositoryImpl implements MovementIoOperationRep
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Integer> findMovementWhereData(
+	public List<Movement> findMovementWhereData(
 		Integer medicalCode,
 		String medicalType,
 		String wardId,
@@ -190,7 +189,7 @@ public class MovementIoOperationRepositoryImpl implements MovementIoOperationRep
 		return entityManager.createQuery(query).getResultList();
 	}
 
-	private List<Integer> getMovementWhereData(
+	private List<Movement> getMovementWhereData(
 		Integer medicalCode,
 		String medicalType,
 		String wardId,
@@ -204,38 +203,37 @@ public class MovementIoOperationRepositoryImpl implements MovementIoOperationRep
 		Pageable pageable) {
 
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-		CriteriaQuery<Integer> query = builder.createQuery(Integer.class);
+		CriteriaQuery<Movement> query = builder.createQuery(Movement.class);
 		Root<Movement> root = query.from(Movement.class);
-		query.select(root.<Integer> get(CODE));
 
 		List<Predicate> predicates = new ArrayList<>();
 
 		if (medicalCode != null) {
-			predicates.add(builder.equal(root.<Medical> get(MEDICAL).<String> get(CODE), medicalCode));
+			predicates.add(builder.equal(root.<Medical>get(MEDICAL).<String>get(CODE), medicalCode));
 		}
 		if (medicalType != null) {
-			predicates.add(builder.equal(root.<Medical> get(MEDICAL).<MedicalType> get(TYPE).<String> get(CODE), medicalType));
+			predicates.add(builder.equal(root.<Medical>get(MEDICAL).<MedicalType>get(TYPE).<String>get(CODE), medicalType));
 		}
 		if ((movFrom != null) && (movTo != null)) {
-			predicates.add(builder.between(root.<LocalDateTime> get(DATE), TimeTools.getBeginningOfDay(movFrom), TimeTools.getBeginningOfNextDay(movTo)));
+			predicates.add(builder.between(root.<LocalDateTime>get(DATE), TimeTools.getBeginningOfDay(movFrom), TimeTools.getBeginningOfNextDay(movTo)));
 		}
 		if ((lotPrepFrom != null) && (lotPrepTo != null)) {
-			predicates.add(builder.between(root.<Lot> get(LOT).<LocalDateTime> get("preparationDate"), TimeTools.getBeginningOfDay(lotPrepFrom),
-				TimeTools.getBeginningOfNextDay(lotPrepTo)));
+			predicates.add(builder.between(root.<Lot>get(LOT).<LocalDateTime>get("preparationDate"),
+				TimeTools.getBeginningOfDay(lotPrepFrom), TimeTools.getBeginningOfNextDay(lotPrepTo)));
 		}
 		if ((lotDueFrom != null) && (lotDueTo != null)) {
-			predicates.add(builder.between(root.<Lot> get(LOT).<LocalDateTime> get("dueDate"), TimeTools.getBeginningOfDay(lotDueFrom),
-				TimeTools.getBeginningOfNextDay(lotDueTo)));
+			predicates.add(builder.between(root.<Lot>get(LOT).<LocalDateTime>get("dueDate"),
+				TimeTools.getBeginningOfDay(lotDueFrom), TimeTools.getBeginningOfNextDay(lotDueTo)));
 		}
 		if ("+".equals(movType)) {
-			predicates.add(builder.equal(root.<MovementType> get(TYPE).<String> get(TYPE), movType));
+			predicates.add(builder.equal(root.<MovementType>get(TYPE).<String>get(TYPE), movType));
 		} else if ("-".equals(movType)) {
-			predicates.add(builder.equal(root.<MovementType> get(TYPE).<String> get(TYPE), movType));
+			predicates.add(builder.equal(root.<MovementType>get(TYPE).<String>get(TYPE), movType));
 		} else if (movType != null) {
-			predicates.add(builder.equal(root.<MovementType> get(TYPE).<String> get(CODE), movType));
+			predicates.add(builder.equal(root.<MovementType>get(TYPE).<String>get(CODE), movType));
 		}
 		if (wardId != null) {
-			predicates.add(builder.equal(root.<Ward> get(WARD).<String> get(CODE), wardId));
+			predicates.add(builder.equal(root.<Ward>get(WARD).<String>get(CODE), wardId));
 		}
 
 		List<Order> orderList = new ArrayList<>();
@@ -252,18 +250,17 @@ public class MovementIoOperationRepositoryImpl implements MovementIoOperationRep
 			orderList.add(builder.desc(root.get(REF_NO)));
 		}
 
-		query.where(predicates.toArray(new Predicate[0])).orderBy(orderList);
+		query.select(root).where(predicates.toArray(new Predicate[0])).orderBy(orderList);
 
-		TypedQuery<Integer> typedQuery = entityManager.createQuery(query);
+		TypedQuery<Movement> typedQuery = entityManager.createQuery(query);
 
 		int firstResult = pageable.getPageNumber() * pageable.getPageSize();
 		typedQuery.setFirstResult(firstResult);
 		typedQuery.setMaxResults(pageable.getPageSize());
 
-		List<Integer> result = typedQuery.getResultList();
-
-		return result;
+		return typedQuery.getResultList();
 	}
+
 
 
 	private List<Integer> getMovementForPrint(
