@@ -319,6 +319,7 @@ public class AccountingIoOperations {
 
 	/**
 	 * Return the bill list which date between dateFrom and dateTo and containing given billItem
+	 * 
 	 * @param dateFrom
 	 * @param dateTo
 	 * @param patient
@@ -339,6 +340,7 @@ public class AccountingIoOperations {
 
 	/**
 	 * Return the bill list which date between dateFrom and dateTo and containing given billItem
+	 * 
 	 * @param dateFrom
 	 * @param dateTo
 	 * @param patient
@@ -355,6 +357,7 @@ public class AccountingIoOperations {
 
 	/**
 	 * Return the bill list which date between dateFrom and dateTo and containing given billItem
+	 * 
 	 * @param dateFrom
 	 * @param dateTo
 	 * @param patient
@@ -398,6 +401,7 @@ public class AccountingIoOperations {
 
 	/**
 	 * Return the bill list which date between dateFrom and dateTo and containing given billItem
+	 * 
 	 * @param dateFrom
 	 * @param dateTo
 	 * @param patient
