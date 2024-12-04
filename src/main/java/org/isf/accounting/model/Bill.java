@@ -298,6 +298,5 @@ public class Bill extends Auditable<String> implements Cloneable, Comparable<Bil
 
 	public void setGuarantor(String userName) {
 		this.user = userName;
-		
 	}
 }
