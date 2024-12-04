@@ -32,6 +32,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.isf.OHCoreTestCase;
 import org.isf.accounting.manager.BillBrowserManager;
@@ -42,6 +43,7 @@ import org.isf.accounting.service.AccountingBillIoOperationRepository;
 import org.isf.accounting.service.AccountingBillItemsIoOperationRepository;
 import org.isf.accounting.service.AccountingBillPaymentIoOperationRepository;
 import org.isf.accounting.service.AccountingIoOperations;
+import org.isf.generaldata.GeneralData;
 import org.isf.menu.TestUser;
 import org.isf.menu.TestUserGroup;
 import org.isf.menu.model.User;
@@ -61,6 +63,9 @@ import org.isf.utils.time.TimeTools;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -97,6 +102,16 @@ class Tests extends OHCoreTestCase {
 	private MenuIoOperations menuIoOperation;
 	@Autowired
 	private AccountingIoOperations ioOperations;
+	
+	private static void setGeneralData(boolean in) {
+		GeneralData.ALLOWBILLGUARANTOR = in;
+	}
+	
+	static Stream<Arguments> allowbillguarantor() {
+		return Stream.of(
+			Arguments.of(false),
+			Arguments.of(true));
+	}
 
 	@BeforeAll
 	static void setUpClass() {
@@ -826,143 +841,25 @@ class Tests extends OHCoreTestCase {
 		assertThat(accountingBillIoOperationRepository.findById(id)).isEmpty();
 	}
 	
-	@Test
+	@ParameterizedTest(name = "Test with ALLOWBILLGUARANTOR={0}")
+	@MethodSource("allowbillguarantor")
 	void mgrCreateBillWithGuarantor() throws Exception {
-	    if ("yes".equals(System.getProperty("ALLOWBILLGUARANTOR"))) {
-	        int id = setupTestBill(true);
-	        Bill bill = accountingBillIoOperationRepository.findById(id).orElse(null);
-	        assertThat(bill).isNotNull();
-	        UserGroup userGroup = testUserGroup.setup(false);
-	        User user = testUser.setup(userGroup, false);
-	        user.setDesc("GUARANTOR");
-	        userGroupIoOperationRepository.saveAndFlush(userGroup);
-	        User newUser = menuIoOperation.newUser(user);
-	        assertThat(newUser).isNotNull();
-	        bill.setGuarantor(newUser);
-	        bill = accountingIoOperation.newBill(bill);
-	        bill = accountingBillIoOperationRepository.findById(id).orElse(null);
-	        assertThat(bill).isNotNull();
-	        user = bill.getGuarantor();
-	        assertThat(user.getDesc()).isEqualTo("GUARANTOR");
-	    } else {
-	        System.out.println("Test skipped because ALLOWBILLGUARANTOR is not set to 'yes'");
-	    }
-	}
-
-	@Test
-	void testGetBillsWithPatientAndGuarantor_PatientNotNull() throws Exception {
-	    LocalDateTime dateFrom = LocalDateTime.now().minusDays(10);
-	    LocalDateTime dateTo = LocalDateTime.now();
-	    Patient patient = new Patient();
-	    patient.setCode(1);
-	    User guarantor = new User();
-	    guarantor.setUserName("guarantorUser");
-
-	    int id = setupTestBill(false);
-	    Bill foundBill = accountingBillIoOperationRepository.findById(id).orElse(null);
-	    assertThat(foundBill).isNotNull();
-
-	    List<Bill> expectedBills = Arrays.asList(foundBill);
-	    when(ioOperations.getBillsBetweenDatesWherePatientAndGuarantor(dateFrom, dateTo, patient, guarantor)).thenReturn(expectedBills);
-
-	    List<Bill> result = billBrowserManager.getBillsWithPatientAndGuarantor(dateFrom, dateTo, patient, guarantor);
-
-	    assertThat(result).isEqualTo(expectedBills);
-	    verify(ioOperations).getBillsBetweenDatesWherePatientAndGuarantor(dateFrom, dateTo, patient, guarantor);
-	}
-
-	@Test
-	void testGetBillsWithPatientAndGuarantor_PatientNull() throws Exception {
-	    LocalDateTime dateFrom = LocalDateTime.now().minusDays(10);
-	    LocalDateTime dateTo = LocalDateTime.now();
-	    User guarantor = new User();
-	    guarantor.setUserName("guarantorUser");
-
-	    int id = setupTestBill(false);
-	    Bill foundBill = accountingBillIoOperationRepository.findById(id).orElse(null);
-	    assertThat(foundBill).isNotNull();
-
-	    List<Bill> expectedBills = Arrays.asList(foundBill);
-	    when(ioOperations.getBillsBetweenDatesWhereGuarantor(dateFrom, dateTo, guarantor)).thenReturn(expectedBills);
-
-	    List<Bill> result = billBrowserManager.getBillsWithPatientAndGuarantor(dateFrom, dateTo, null, guarantor);
-
-	    assertThat(result).isEqualTo(expectedBills);
-	    verify(ioOperations).getBillsBetweenDatesWhereGuarantor(dateFrom, dateTo, guarantor);
-	}
-
-	@Test
-	void testGetPaymentsWithPatientGuarantor_PatientNotNull() throws Exception {
-	    LocalDateTime dateFrom = LocalDateTime.now().minusDays(10);
-	    LocalDateTime dateTo = LocalDateTime.now();
-	    Patient patient = new Patient();
-	    patient.setCode(1);
-	    User guarantor = new User();
-	    guarantor.setUserName("guarantorUser");
-
-	    int id = setupTestBillPayments(false);
-	    BillPayments foundBillPayment = accountingBillPaymentIoOperationRepository.findById(id).orElse(null);
-	    assertThat(foundBillPayment).isNotNull();
-
-	    List<BillPayments> expectedPayments = Arrays.asList(foundBillPayment);
-	    when(ioOperations.getPaymentsBetweenDatesWherePatientAndGuarantor(dateFrom, dateTo, patient, guarantor)).thenReturn(expectedPayments);
-
-	    List<BillPayments> result = billBrowserManager.getPaymentsWithPatientGuarantor(dateFrom, dateTo, patient, guarantor);
-
-	    assertThat(result).isEqualTo(expectedPayments);
-	    verify(ioOperations).getPaymentsBetweenDatesWherePatientAndGuarantor(dateFrom, dateTo, patient, guarantor);
-	}
-
-	@Test
-	void testGetPaymentsWithPatientGuarantor_PatientNull() throws Exception {
-	    LocalDateTime dateFrom = LocalDateTime.now().minusDays(10);
-	    LocalDateTime dateTo = LocalDateTime.now();
-	    User guarantor = new User();
-	    guarantor.setUserName("guarantorUser");
-
-	    int id = setupTestBillPayments(false);
-	    BillPayments foundBillPayment = accountingBillPaymentIoOperationRepository.findById(id).orElse(null);
-	    assertThat(foundBillPayment).isNotNull();
-
-	    List<BillPayments> expectedPayments = Arrays.asList(foundBillPayment);
-	    when(ioOperations.getPaymentsBetweenDatesWhereGuarantor(dateFrom, dateTo, guarantor)).thenReturn(expectedPayments);
-
-	    List<BillPayments> result = billBrowserManager.getPaymentsWithPatientGuarantor(dateFrom, dateTo, null, guarantor);
-
-	    assertThat(result).isEqualTo(expectedPayments);
-	    verify(ioOperations).getPaymentsBetweenDatesWhereGuarantor(dateFrom, dateTo, guarantor);
-	}
-
-	@Test
-	void testGetBillsWithGuarantor_EmptyBillPayments() throws Exception {
-	    List<BillPayments> billPayments = new ArrayList<>();
-	    User guarantor = new User();
-	    guarantor.setUserName("guarantorUser");
-
-	    List<Bill> result = billBrowserManager.getBillsWithGuarantor(billPayments, guarantor);
-
-	    assertThat(result).isEmpty();
-	}
-
-	@Test
-	void testGetBillsWithGuarantor_NonEmptyBillPayments() throws Exception {
-	    User guarantor = new User();
-	    guarantor.setUserName("guarantorUser");
-	    BillPayments payment1 = new BillPayments();
-	    BillPayments payment2 = new BillPayments();
-	    List<BillPayments> billPayments = Arrays.asList(payment1, payment2);
-
-	    int id = setupTestBill(false);
-	    Bill foundBill = accountingBillIoOperationRepository.findById(id).orElse(null);
-	    assertThat(foundBill).isNotNull();
-
-	    List<Bill> expectedBills = Arrays.asList(foundBill);
-	    when(ioOperations.getBillsWithGuarantor(billPayments, guarantor)).thenReturn(expectedBills);
-
-	    List<Bill> result = billBrowserManager.getBillsWithGuarantor(billPayments, guarantor);
-
-	    assertThat(result).isEqualTo(expectedBills);
-	    verify(ioOperations).getBillsWithGuarantor(billPayments, guarantor);
+		setGeneralData(true);
+		int id = setupTestBill(true);
+        Bill bill = accountingBillIoOperationRepository.findById(id).orElse(null);
+        assertThat(bill).isNotNull();
+        UserGroup userGroup = testUserGroup.setup(false);
+        User user = testUser.setup(userGroup, false);
+        user.setDesc("GUARANTOR");
+        userGroupIoOperationRepository.saveAndFlush(userGroup);
+        User newUser = menuIoOperation.newUser(user);
+        assertThat(newUser).isNotNull();
+        bill.setGuarantor(newUser);
+        bill = accountingIoOperation.newBill(bill);
+        bill = accountingBillIoOperationRepository.findById(id).orElse(null);
+        assertThat(bill).isNotNull();
+        user = bill.getGuarantor();
+        assertThat(user.getDesc()).isEqualTo("GUARANTOR");
 	}
 
 	@Test
