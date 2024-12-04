@@ -114,7 +114,7 @@ class Tests extends OHCoreTestCase {
 		MockitoAnnotations.openMocks(this);
 		cleanH2InMemoryDb();
 	}
-	
+
 	@Test
 	void testBillGets() throws Exception {
 		int id = setupTestBill(false);
