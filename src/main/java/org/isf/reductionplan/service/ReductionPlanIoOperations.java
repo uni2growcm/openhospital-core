@@ -53,7 +53,7 @@ public class ReductionPlanIoOperations {
 	 * @return the list of {@link ReductionPlan}s
 	 * @throws OHServiceException
 	 */
-	public List<ReductionPlan> getReductionplan() throws OHServiceException {
+	public List<ReductionPlan> getAll() throws OHServiceException {
 		return reductionplanIoOperationRepository.findAll();
 	}
 
