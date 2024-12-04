@@ -95,6 +95,7 @@ class Tests extends OHCoreTestCase {
 	private UserGroupIoOperationRepository userGroupIoOperationRepository;
 	@Autowired
 	private MenuIoOperations menuIoOperation;
+	@Autowired
 	private AccountingIoOperations ioOperations;
 
 	@BeforeAll
@@ -108,8 +109,10 @@ class Tests extends OHCoreTestCase {
 		testUserGroup = new TestUserGroup();
 	}
 	
-	@BeforeEach void setUp() { MockitoAnnotations.openMocks(this); // Initialisation des mocks 
-	cleanH2InMemoryDb(); }
+	@BeforeEach void setUp() { 
+		MockitoAnnotations.openMocks(this);
+		cleanH2InMemoryDb(); 
+	}
 	
 
 	@Test
@@ -888,8 +891,6 @@ class Tests extends OHCoreTestCase {
 	    verify(ioOperations).getBillsBetweenDatesWhereGuarantor(dateFrom, dateTo, guarantor);
 	}
 
-
-//test pour getPaymentsWithPatientGuarantor
 	@Test
 	void testGetPaymentsWithPatientGuarantor_PatientNotNull() throws Exception {
 	    LocalDateTime dateFrom = LocalDateTime.now().minusDays(10);
@@ -932,7 +933,6 @@ class Tests extends OHCoreTestCase {
 	    verify(ioOperations).getPaymentsBetweenDatesWhereGuarantor(dateFrom, dateTo, guarantor);
 	}
 
-	//tesst pour getBillsWithGuarantor
 	@Test
 	void testGetBillsWithGuarantor_EmptyBillPayments() throws Exception {
 	    List<BillPayments> billPayments = new ArrayList<>();

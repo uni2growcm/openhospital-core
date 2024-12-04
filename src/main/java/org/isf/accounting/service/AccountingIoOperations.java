@@ -51,8 +51,8 @@ public class AccountingIoOperations {
 	private AccountingBillItemsIoOperationRepository billItemsRepository;
 
 	public AccountingIoOperations(AccountingBillIoOperationRepository accountingBillIoOperationRepository,
-					AccountingBillPaymentIoOperationRepository accountingBillPaymentIoOperationRepository,
-					AccountingBillItemsIoOperationRepository accountingBillItemsIoOperationRepository) {
+								  AccountingBillPaymentIoOperationRepository accountingBillPaymentIoOperationRepository,
+								  AccountingBillItemsIoOperationRepository accountingBillItemsIoOperationRepository) {
 		this.billRepository = accountingBillIoOperationRepository;
 		this.billPaymentRepository = accountingBillPaymentIoOperationRepository;
 		this.billItemsRepository = accountingBillItemsIoOperationRepository;
@@ -103,7 +103,8 @@ public class AccountingIoOperations {
 	}
 
 	/**
-	 * Returns the {@link BillItems} associated to the specified {@link Bill} id or all the stored {@link BillItems} if no id is provided.
+	 * Returns the {@link BillItems} associated to the specified {@link Bill} id or all 
+	 * the stored {@link BillItems} if no id is provided.
 	 * @param billID the bill id or {@code 0}.
 	 * @return a list of {@link BillItems} associated to the bill id or all the stored bill items.
 	 * @throws OHServiceException if an error occurs retrieving the bill items.
@@ -127,7 +128,8 @@ public class AccountingIoOperations {
 	}
 
 	/**
-	 * Retrieves all the {@link BillPayments} for the specified {@link Bill} id, or all the stored {@link BillPayments} if no id is indicated.
+	 * Retrieves all the {@link BillPayments} for the specified {@link Bill} id, or all 
+	 * the stored {@link BillPayments} if no id is indicated.
 	 * @param billID the bill id or {@code 0}.
 	 * @return the list of bill payments.
 	 * @throws OHServiceException if an error occurs retrieving the bill payments.
@@ -189,7 +191,8 @@ public class AccountingIoOperations {
 	}
 
 	/**
-	 * Deletes the specified {@link Bill}. If the argument is NULL then an error is thrown. If the Bill is not found it is silently ignored.
+	 * Deletes the specified {@link Bill}. If the argument is NULL then an error is thrown.
+	 * If the Bill is not found it is silently ignored.
 	 * @param deleteBill the bill to delete.
 	 * @throws OHServiceException if an error occurs deleting the bill.
 	 */
@@ -276,7 +279,8 @@ public class AccountingIoOperations {
 	}
 
 	/**
-	 * Return distinct BillItems added by u2g
+	 * Return distinct BillItems 
+	 * added by u2g
 	 * @return BillItems list
 	 * @throws OHServiceException
 	 */

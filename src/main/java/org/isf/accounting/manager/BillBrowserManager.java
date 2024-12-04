@@ -180,8 +180,7 @@ public class BillBrowserManager {
 	 * @return the persisted Bill object
 	 * @throws OHServiceException
 	 */
-	private final Bill newBill(Bill newBill) throws 
-OHServiceException {
+	private Bill newBill(Bill newBill) throws OHServiceException {
 		return ioOperations.newBill(newBill);
 	}
 
@@ -192,8 +191,7 @@ OHServiceException {
 	 * @param billItems the bill items to store.
 	 * @throws OHServiceException
 	 */
-	private final void newBillItems(int billID, List<BillItems> billItems) 
-throws OHServiceException {
+	private void newBillItems(int billID, List<BillItems> billItems) throws OHServiceException {
 		ioOperations.newBillItems(ioOperations.getBill(billID), billItems);
 	}
 
@@ -204,8 +202,7 @@ throws OHServiceException {
 	 * @param payItems the bill payments.
 	 * @throws OHServiceException
 	 */
-	private final void newBillPayments(int billID, List<BillPayments> payItems) 
-throws OHServiceException {
+	private void newBillPayments(int billID, List<BillPayments> payItems) throws OHServiceException {
 		ioOperations.newBillPayments(ioOperations.getBill(billID), payItems);
 	}
 
@@ -237,8 +234,7 @@ throws OHServiceException {
 	 * @return the updated Bill object
 	 * @throws OHServiceException
 	 */
-	private final Bill updateBill(Bill updateBill) throws 
-OHServiceException {
+	private Bill updateBill(Bill updateBill) throws OHServiceException {
 		return ioOperations.updateBill(updateBill);
 	}
 
@@ -249,8 +245,7 @@ OHServiceException {
 	 * @return the list of pending bills or {@code null} if an error occurred.
 	 * @throws OHServiceException
 	 */
-	public List<Bill> getPendingBills(int patID) throws 
-OHServiceException {
+	public List<Bill> getPendingBills(int patID) throws OHServiceException {
 		return ioOperations.getPendingBills(patID);
 	}
 
@@ -261,8 +256,7 @@ OHServiceException {
 	 * @return the {@link Bill} or {@code null} if an error occurred.
 	 * @throws OHServiceException
 	 */
-	public Bill getBill(int billID) throws 
-OHServiceException {
+	public Bill getBill(int billID) throws OHServiceException {
 		return ioOperations.getBill(billID);
 	}
 
@@ -282,8 +276,7 @@ OHServiceException {
 	 * @param deleteBill the bill to delete.
 	 * @throws OHServiceException
 	 */
-	public void deleteBill(Bill deleteBill) throws 
-OHServiceException {
+	public void deleteBill(Bill deleteBill) throws OHServiceException {
 		ioOperations.deleteBill(deleteBill);
 	}
 
@@ -295,8 +288,7 @@ OHServiceException {
 	 * @return a list of retrieved {@link Bill}s or {@code null} if an error occurred.
 	 * @throws OHServiceException
 	 */
-	public List<Bill> getBills(LocalDateTime dateFrom, LocalDateTime dateTo) throws 
-OHServiceException {
+	public List<Bill> getBills(LocalDateTime dateFrom, LocalDateTime dateTo) throws OHServiceException {
 		return ioOperations.getBillsBetweenDates(dateFrom, dateTo);
 	}
 
