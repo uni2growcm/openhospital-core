@@ -77,20 +77,14 @@ public class ReductionPlanIoOperations {
 		return reductionplanIoOperationRepository.save(reductionPlan);
 	}
 
-	public ReductionPlan updateReductionPlan(int rpId, ReductionPlan updatedReductionPlan) throws OHServiceException {
-
+	public ReductionPlan updateReductionPlan(ReductionPlan reductionPlan) throws OHServiceException {
 		Optional<ReductionPlan> existingPlanOpt = reductionplanIoOperationRepository.findById(rpId);
-		if (existingPlanOpt.isPresent()) {
-			ReductionPlan existingPlan = existingPlanOpt.get();
-			existingPlan.setDescription(updatedReductionPlan.getDescription());
-			existingPlan.setOperationRate(updatedReductionPlan.getOperationRate());
-			existingPlan.setMedicalRate(updatedReductionPlan.getMedicalRate());
-			existingPlan.setExamRate(updatedReductionPlan.getExamRate());
-			existingPlan.setOtherRate(updatedReductionPlan.getOtherRate());
-			return reductionplanIoOperationRepository.save(existingPlan);
+		
+		if (existingPlanOpt.isEmpty()) {
+		    throw new OHServiceException(new OHExceptionMessage(MessageBundle.getMessage("angal.reductionplan.notfound.msg")));
 		}
-		throw new OHServiceException(new OHExceptionMessage(MessageBundle.getMessage("angal.reductionplan.notfound.msg")));
-	}
+		
+		return reductionplanIoOperationRepository.save(reductionPlan);
 
 	public void deleteReductionplan(ReductionPlan reductionplan) throws OHServiceException {
 		reductionplanIoOperationRepository.delete(reductionplan);
