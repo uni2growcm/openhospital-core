@@ -69,7 +69,6 @@ public interface AccountingBillIoOperationRepository extends JpaRepository<Bill,
 	long countAllActiveBills();
 
 	/**
-	 * Return the bills for date between dateFrom and dateFrom to dateTo and containing items with description desc
 	 *
 	 * @param dateFrom
 	 * @param dateTo
@@ -78,13 +77,8 @@ public interface AccountingBillIoOperationRepository extends JpaRepository<Bill,
 	 * @param desc
 	 * @return the bill list
 	 */
-
-	@Query(value = "select b from Bill b where b.billPatient.id = :patientCode and b.date >= :dateFrom and b.date < :dateTo and b.guarantor.userName = :guarantor")
-	List<Bill> findByDateAndPatientAndGuarantor(@Param("dateFrom") LocalDateTime dateFrom, @Param("dateTo") LocalDateTime dateTo,
-					@Param("patientCode") Integer patientCode, @Param("guarantor") String guarantor);
-
+	List<Bill> findByDateBetweenAndBillPatientCodeAndGuarantorUserName(LocalDateTime dateFrom, LocalDateTime dateTo, Integer patientCode, String username);
 	/**
-	 * Return the bills for date between dateFrom and dateFrom to dateTo and containing items with description desc
 	 *
 	 * @param dateFrom
 	 * @param dateTo
@@ -92,8 +86,6 @@ public interface AccountingBillIoOperationRepository extends JpaRepository<Bill,
 	 * @param desc
 	 * @return the bill list
 	 */
-
-	@Query(value = "select b from Bill b where b.date >= :dateFrom and b.date < :dateTo and b.guarantor.userName = :guarantor")
-	List<Bill> findByDateAndGuarantor(@Param("dateFrom") LocalDateTime dateFrom, @Param("dateTo") LocalDateTime dateTo, @Param("guarantor") String guarantor);
+	List<Bill> findByDateBetweenAndGuarantorUserName(LocalDateTime dateFrom, LocalDateTime dateTo, String userName);
 
 }
