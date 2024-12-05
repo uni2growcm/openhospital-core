@@ -68,24 +68,7 @@ public interface AccountingBillIoOperationRepository extends JpaRepository<Bill,
 	@Query("select count(b) from Bill b where active=1")
 	long countAllActiveBills();
 
-	/**
-	 *
-	 * @param dateFrom
-	 * @param dateTo
-	 * @param patient
-	 * @param guarantor
-	 * @param desc
-	 * @return the bill list
-	 */
 	List<Bill> findByDateBetweenAndBillPatientCodeAndGuarantorUserName(LocalDateTime dateFrom, LocalDateTime dateTo, Integer patientCode, String username);
-	/**
-	 *
-	 * @param dateFrom
-	 * @param dateTo
-	 * @param guarantor
-	 * @param desc
-	 * @return the bill list
-	 */
-	List<Bill> findByDateBetweenAndGuarantorUserName(LocalDateTime dateFrom, LocalDateTime dateTo, String userName);
 
+	List<Bill> findByDateBetweenAndGuarantorUserName(LocalDateTime dateFrom, LocalDateTime dateTo, String userName);
 }
