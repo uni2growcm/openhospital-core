@@ -23,13 +23,10 @@
 package org.isf.reductionplan.service;
 
 import java.util.List;
-import java.util.Optional;
 
-import org.isf.generaldata.MessageBundle;
 import org.isf.reductionplan.model.ReductionPlan;
 import org.isf.utils.db.TranslateOHServiceException;
 import org.isf.utils.exception.OHServiceException;
-import org.isf.utils.exception.model.OHExceptionMessage;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,51 +40,23 @@ public class ReductionPlanIoOperations {
 
 	private final ReductionplanIoOperationRepository reductionplanIoOperationRepository;
 
-	public ReductionPlanIoOperations(ReductionplanIoOperationRepository reductionplanIoOperationRepository
-	) {
+	public ReductionPlanIoOperations(ReductionplanIoOperationRepository reductionplanIoOperationRepository) {
 		this.reductionplanIoOperationRepository = reductionplanIoOperationRepository;
 	}
 
 	/**
-	 * Return the list of {@link ReductionPlan}s in the DB
-	 * @return the list of {@link ReductionPlan}s
-	 * @throws OHServiceException
+	 * Get all reduction plans
+	 *
+	 * @return The list of {@link ReductionPlan}s
+	 * @throws OHServiceException When failed to get all reduction plans
 	 */
 	public List<ReductionPlan> getAll() throws OHServiceException {
 		return reductionplanIoOperationRepository.findAll();
 	}
 
-	/**
-	 * Return the list of {@link ReductionPlan}s in the DB
-	 * @return the list of {@link ReductionPlan}s
-	 * @throws OHServiceException
-	 */
-
-	public List<ReductionPlan> findByIdIn(List<Integer> ids) {
-		return reductionplanIoOperationRepository.findByIdIn(ids);
-	}
-
 	public List<ReductionPlan> getByDescription(String description) throws OHServiceException {
-
-		List<ReductionPlan> reductionPlans = reductionplanIoOperationRepository.findByDescription(description);
-		return reductionPlans;
+		return reductionplanIoOperationRepository.findByDescription(description);
 	}
 
-	public ReductionPlan add(ReductionPlan reductionPlan) throws OHServiceException {
-		return reductionplanIoOperationRepository.save(reductionPlan);
-	}
-
-	public ReductionPlan updateReductionPlan(ReductionPlan reductionPlan) throws OHServiceException {
-		Optional<ReductionPlan> existingPlanOpt = reductionplanIoOperationRepository.findById(rpId);
-		
-		if (existingPlanOpt.isEmpty()) {
-		    throw new OHServiceException(new OHExceptionMessage(MessageBundle.getMessage("angal.reductionplan.notfound.msg")));
-		}
-		
-		return reductionplanIoOperationRepository.save(reductionPlan);
-
-	public void deleteReductionplan(ReductionPlan reductionplan) throws OHServiceException {
-		reductionplanIoOperationRepository.delete(reductionplan);
-	}
 
 }

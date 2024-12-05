@@ -20,16 +20,25 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.isf.reductionplan.service;
+package org.isf.reductionplan.model;
 
-import java.util.List;
-import java.util.Optional;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import org.isf.reductionplan.model.ReductionPlan;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import org.junit.jupiter.api.Test;
 
-@Repository
-public interface ReductionplanIoOperationRepository extends JpaRepository<ReductionPlan, Integer> {
-	List<ReductionPlan> findByDescription(String description);
+public class ReductionPlanTest {
+
+	@Test
+	void testReductionplanHashCodeCaching() {
+		// GIVEN
+		ReductionPlan reductionPlan = new ReductionPlan("Test Description", 1.0, 2.0, 3.0, 4.0);
+		reductionPlan.setId(1);
+
+		// WHEN
+		int firstHashCode = reductionPlan.hashCode();
+		int secondHashCode = reductionPlan.hashCode();
+
+		// THEN
+		assertThat(firstHashCode).isEqualTo(secondHashCode);
+	}
 }

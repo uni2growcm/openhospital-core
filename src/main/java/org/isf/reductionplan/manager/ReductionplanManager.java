@@ -20,16 +20,34 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.isf.reductionplan.service;
+package org.isf.reductionplan.manager;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.isf.reductionplan.model.ReductionPlan;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import org.isf.reductionplan.service.ReductionPlanIoOperations;
+import org.isf.utils.exception.OHServiceException;
+import org.springframework.stereotype.Component;
 
-@Repository
-public interface ReductionplanIoOperationRepository extends JpaRepository<ReductionPlan, Integer> {
-	List<ReductionPlan> findByDescription(String description);
+@Component
+public class ReductionplanManager {
+
+	private final ReductionPlanIoOperations reductionPlanIoOperations;
+
+	public ReductionplanManager(ReductionPlanIoOperations reductionPlanIoOperations) {
+		this.reductionPlanIoOperations = reductionPlanIoOperations;
+	}
+
+	/**
+	 * Get all reduction plans
+	 * @return The list of {@link ReductionPlan}s
+	 * @throws OHServiceException When failed to get all reduction plans
+	 */
+	public List<ReductionPlan> getAll() throws OHServiceException {
+		return reductionPlanIoOperations.getAll();
+	}
+
+	public List<ReductionPlan> getByDescription(String description) throws OHServiceException {
+		return reductionPlanIoOperations.getByDescription(description);
+	}
 }
