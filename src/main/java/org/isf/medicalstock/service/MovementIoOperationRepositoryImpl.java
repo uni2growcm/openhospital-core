@@ -261,8 +261,6 @@ public class MovementIoOperationRepositoryImpl implements MovementIoOperationRep
 		return typedQuery.getResultList();
 	}
 
-
-
 	private List<Integer> getMovementForPrint(
 					String medicalDescription,
 					String medicalTypeCode,

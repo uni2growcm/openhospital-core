@@ -570,6 +570,7 @@ public class MedicalStockIoOperations {
 		}
 		return pMovement;
 	}
+
 	/**
 	 * Retrieves all the stored {@link Movement} with the specified criteria.
 	 * @param medicalCode the {@link Medical} code (optional).
@@ -608,6 +609,7 @@ public class MedicalStockIoOperations {
 			TimeTools.truncateToSeconds(lotDueTo),
 			pageable);
 	}
+
 	/**
 	 * Retrieves {@link Movement}s for printing using specified filtering criteria.
 	 * 

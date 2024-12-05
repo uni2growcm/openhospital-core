@@ -23,7 +23,6 @@ package org.isf.medicalstock;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.lang.reflect.InvocationTargetException;
@@ -756,7 +755,7 @@ class Tests extends OHCoreTestCase {
 
 	@ParameterizedTest(name = "Test with AUTOMATICLOT_IN={0}, AUTOMATICLOT_OUT={1}, AUTOMATICLOTWARD_TOWARD={2}")
 	@MethodSource("automaticlot")
-	@DisplayName("Test the getMovements method with the pageable parameter and it should return a filtered page")
+	@DisplayName("Should return the first page of movements matching the given filters")
 	void testGetMovements(boolean in, boolean out, boolean toward) throws Exception {
 		setGeneralData(in, out, toward);
 		LocalDateTime fromDate = LocalDateTime.of(2000, 1, 1, 0, 0, 0);
