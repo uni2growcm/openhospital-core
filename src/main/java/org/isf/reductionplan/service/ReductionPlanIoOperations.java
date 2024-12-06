@@ -30,9 +30,6 @@ import org.isf.utils.exception.OHServiceException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * @author Mwithi
- */
 @Service
 @Transactional(rollbackFor = OHServiceException.class)
 @TranslateOHServiceException
@@ -46,7 +43,6 @@ public class ReductionPlanIoOperations {
 
 	/**
 	 * Get all reduction plans
-	 *
 	 * @return The list of {@link ReductionPlan}s
 	 * @throws OHServiceException When failed to get all reduction plans
 	 */
@@ -54,9 +50,12 @@ public class ReductionPlanIoOperations {
 		return reductionplanIoOperationRepository.findAll();
 	}
 
+	/**
+	 * Get  reduction plans by description
+	 * @return The list of {@link ReductionPlan}s
+	 * @throws OHServiceException When failed to get  reduction plans by description
+	 */
 	public List<ReductionPlan> getByDescription(String description) throws OHServiceException {
 		return reductionplanIoOperationRepository.findByDescription(description);
 	}
-
-
 }

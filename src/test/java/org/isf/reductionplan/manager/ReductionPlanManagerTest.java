@@ -72,8 +72,4 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 
 		assertThat(existingReductionPlan.size()).isEqualTo(reductionPlans.size());
 	}
-
-
-
-
 }
