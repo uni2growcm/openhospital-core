@@ -432,16 +432,16 @@ class Tests extends OHCoreTestCase {
 		Medical foundMedical = medicalsIoOperationRepository.findById(code).orElse(null);
 		assertThat(foundMedical).isNotNull();
 		foundMedical.setDescription("Update");
-		foundMedical.setConditioning("packaging 3");
+		foundMedical.setConditioning("packet 3");
 		foundMedical.setDosing("per 3 for 1day");
 		foundMedical.setShape("form");
 		assertThat(medicalBrowsingManager.updateMedical(foundMedical)).isNotNull();
 		Medical updatedMedical = medicalsIoOperationRepository.findById(code).orElse(null);
 		assertThat(updatedMedical).isNotNull();
 		assertThat(updatedMedical.getDescription()).isEqualTo("Update");
-		assertThat(updatedMedical.getConditioning()).isEqualTo("Conditioning");
-		assertThat(updatedMedical.getDosing()).isEqualTo("Dosing");
-		assertThat(updatedMedical.getShape()).isEqualTo("Shape");
+		assertThat(updatedMedical.getConditioning()).isEqualTo("packet 3");
+		assertThat(updatedMedical.getDosing()).isEqualTo("per 3 for 1day");
+		assertThat(updatedMedical.getShape()).isEqualTo("form");
 	}
 
 	@Test
