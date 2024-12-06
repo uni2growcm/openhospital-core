@@ -1,4 +1,3 @@
-
 /*
  * Open Hospital (www.open-hospital.org)
  * Copyright © 2006-2024 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
@@ -96,7 +95,14 @@ public class ReductionPlan extends Auditable<String> implements Serializable {
 		this.medicalRate = medicalRate;
 		this.examRate = examRate;
 		this.otherRate = otherRate;
+	}
 
+	public ReductionPlan(String description, double operationRate, double medicalRate, double examRate, double otherRate) {
+		this.description = description;
+		this.operationRate = operationRate;
+		this.medicalRate = medicalRate;
+		this.examRate = examRate;
+		this.otherRate = otherRate;
 	}
 
 	public int getId() {
@@ -143,14 +149,6 @@ public class ReductionPlan extends Auditable<String> implements Serializable {
 	}
 
 	public void setOtherRate(double otherRate) {
-		this.otherRate = otherRate;
-	}
-
-	public ReductionPlan(String description, double operationRate, double medicalRate, double examRate, double otherRate) {
-		this.description = description;
-		this.operationRate = operationRate;
-		this.medicalRate = medicalRate;
-		this.examRate = examRate;
 		this.otherRate = otherRate;
 	}
 
