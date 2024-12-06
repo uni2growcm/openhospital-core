@@ -318,68 +318,67 @@ public class AccountingIoOperations {
 	}
 
 	/**
-	 * 
+	 * Get the bills list with a given billItem
 	 * @param dateFrom start date
 	 * @param dateTo end date
-	 * @param patient
+	 * @param patient target patient
 	 * @param guarantor the user acting as the guarantor for the bills.
-	 * @return the bill list
+	 * @return a list of invoices for a specific guarantor based on the invoice payments provided. If the payment list is empty, it returns an empty list.
 	 * @throws OHServiceException when the calls to internal methods fail.
 	 */
 	public List<Bill> getBillsBetweenDatesWherePatientAndGuarantor(LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient, User guarantor)
-					throws OHServiceException {
-		if (patient == null) {
-			throw new IllegalArgumentException("Patient cannot be null");
-		}
-		return billRepository.findByDateBetweenAndBillPatientCodeAndGuarantorUserName(TimeTools.getBeginningOfDay(dateFrom), TimeTools.getBeginningOfNextDay(dateTo),
-						patient.getCode(), guarantor.getUserName());
-	}
+			        throws OHServiceException {
+			    if (patient == null) {
+			        throw new IllegalArgumentException("Patient cannot be null");
+			    }
+			    
+			    return billRepository.findByDateBetweenAndBillPatientCodeAndGuarantorUserName(
+			        TimeTools.getBeginningOfDay(dateFrom), TimeTools.getBeginningOfNextDay(dateTo),
+			        patient.getCode(), guarantor.getUserName());
+			}
 
 	/**
-	 * 
+	 * Get the bills list with a given billItem
 	 * @param dateFrom start date
 	 * @param dateTo end date
-	 * @param patient
 	 * @param guarantor the user acting as the guarantor for the bills.
-	 * @return the bill list
+	 * @return a list of invoices (List<Bill>) for a specific guarantor in a given date range.
 	 * @throws OHServiceException when the calls to internal methods fail.
 	 */
 	public List<Bill> getBillsBetweenDatesWhereGuarantor(LocalDateTime dateFrom, LocalDateTime dateTo, User guarantor) throws OHServiceException {
-	    return billRepository.findByDateBetweenAndGuarantorUserName(TimeTools.getBeginningOfDay(dateFrom), TimeTools.getBeginningOfNextDay(dateTo), guarantor.getUserName());
+	    return billRepository.findByDateBetweenAndGuarantorUserName(
+	        TimeTools.getBeginningOfDay(dateFrom), TimeTools.getBeginningOfNextDay(dateTo), 
+	        guarantor.getUserName());
 	}
 
-
 	/**
-	 * 
+	 * Get the bills list with a given billItem
 	 * @param dateFrom start date
 	 * @param dateTo end date
-	 * @param patient
+	 * @param patient target patient
 	 * @param guarantor the user acting as the guarantor for the bills.
-	 * @return the bill list
-	 * @throws OHServiceException when the calls to internal methods fail.
+	 * @return a list of bill payments (List<BillPayments>) for a specific patient and guarantor within a given date range.
+	 * @throws OHServiceException When failed to filter payments
 	 */
-	public List<BillPayments> getPaymentsBetweenDatesWherePatientAndGuarantor(LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient, User guarantor)
-					throws OHServiceException {
+	public List<BillPayments> getPaymentsByDatesPatientAndGuarantor(LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient, User guarantor) throws OHServiceException {
 		if (patient == null) {
 			throw new IllegalArgumentException("Patient cannot be null");
 		}
-		return billPaymentRepository.findPaymentsByFilters(TimeTools.getBeginningOfDay(dateFrom), TimeTools.getBeginningOfNextDay(dateTo), patient.getCode(),
-						guarantor.getUserName());
+
+		return billPaymentRepository.findPaymentsByFilters(TimeTools.getBeginningOfDay(dateFrom), TimeTools.getBeginningOfNextDay(dateTo), patient.getCode(), guarantor.getUserName());
 	}
 
 	/**
-	 * 
-	 * @param dateFrom start date
-	 * @param dateTo end date
-	 * @param patient
+	 * Get the bills list with a given billItem
 	 * @param guarantor the user acting as the guarantor for the bills.
-	 * @return the bill list
+	 * @return a list of bill payments (List<BillPayments>) for a specific patient and guarantor within a given date range.
 	 * @throws OHServiceException when the calls to internal methods fail.
 	 */
-	public List<Bill> getBillsWithGuarantor(List<BillPayments> payments, User guarantor) throws OHServiceException {
+	public List<Bill> getBillsByGuarantor(List<BillPayments> payments, User guarantor) throws OHServiceException {
 		Set<Bill> bills = new TreeSet<>((o1, o2) -> o1.getId() == o2.getId() ? 0 : -1);
 		for (BillPayments bp : payments) {
 			Bill bill = bp.getBill();
+			
 			if (bill.getGuarantor().equals(guarantor)) {
 				bills.add(bill);
 			}
@@ -388,12 +387,11 @@ public class AccountingIoOperations {
 	}
 
 	/**
-	 * 
+	 * Get the bills list with a given billItem
 	 * @param dateFrom start date
 	 * @param dateTo end date
-	 * @param patient
 	 * @param guarantor the user acting as the guarantor for the bills.
-	 * @return the bill list
+	 * @return a list of bill payments (List<BillPayments>) for a specific guarantor within a given date range.
 	 * @throws OHServiceException when the calls to internal methods fail.
 	 */
 	public List<BillPayments> getPaymentsBetweenDatesWhereGuarantor(LocalDateTime dateFrom, LocalDateTime dateTo, User guarantor) throws OHServiceException {

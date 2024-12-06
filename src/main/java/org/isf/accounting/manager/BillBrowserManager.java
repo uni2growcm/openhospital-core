@@ -352,7 +352,7 @@ public class BillBrowserManager {
 
 	/**
 	 * Get the bills list with a given billItem
-	 * 
+	 *
 	 * @param dateFrom
 	 * @param dateTo
 	 * @param billItem
@@ -364,51 +364,55 @@ public class BillBrowserManager {
 	}
 
 	/**
-	 * Get the bills list with a given billItem
-	 * @param dateFrom start date
-	 * @param dateTo end date
-	 * @param patient
-	 * @param guarantor the user acting as the guarantor for the bills.  
-	 * @return
+	 * Get the bills filtered by date, patient and guarantor
+	 *
+	 * @param dateFrom Start date
+	 * @param dateTo End date
+	 * @param patient Target patient
+	 * @param guarantor The user acting as the guarantor for the bills.
+	 * @return {@link  List} of {@link Bill}s matching the filter,
+	 * or empty list if no match found
 	 * @throws OHServiceException when the calls to internal methods fail.
 	 */
-	public List<Bill> getBillsByPatientAndGuarantor(LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient, User guarantor) throws OHServiceException {
+	public List<Bill> getBillsByDatePatientAndGuarantor(LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient, User guarantor) throws OHServiceException {
 		if (patient == null) {
 			return ioOperations.getBillsBetweenDatesWhereGuarantor(dateFrom, dateTo, guarantor);
 		}
+
 		return ioOperations.getBillsBetweenDatesWherePatientAndGuarantor(dateFrom, dateTo, patient, guarantor);
 	}
 	
 	/**
 	 * Get the bills list with a given billItem
-	 * @param dateFrom start date
-	 * @param dateTo end date
-	 * @param patient
-	 * @param guarantor the user acting as the guarantor for the bills.
-	 * @return
+	 *
+	 * @param dateFrom Start date
+	 * @param dateTo End date
+	 * @param patient Target patient
+	 * @param guarantor The user acting as the guarantor for the bills.
+	 * @return {@link  List} of {@link Bill}s matching the filter,
+	 * or empty list if no match found
 	 * @throws OHServiceException when the calls to internal methods fail.
 	 */
-	public List<BillPayments> getPaymentsByPatientGuarantor(LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient, User guarantor)
-					throws OHServiceException {
+	public List<BillPayments> getPaymentsByDatePatientAndGuarantor(LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient, User guarantor) throws OHServiceException {
 		if (patient == null) {
 			return ioOperations.getPaymentsBetweenDatesWhereGuarantor(dateFrom, dateTo, guarantor);
 		}
-		return ioOperations.getPaymentsBetweenDatesWherePatientAndGuarantor(dateFrom, dateTo, patient, guarantor);
+
+		return ioOperations.getPaymentsByDatesPatientAndGuarantor(dateFrom, dateTo, patient, guarantor);
 	}
 	
 	/**
 	 * Get the bills list with a given billItem
-	 * @param dateFrom start date
-	 * @param dateTo end date
-	 * @param patient
+	 *
 	 * @param guarantor the user acting as the guarantor for the bills.
-	 * @return
+	 * @return a list of Bills corresponding to the guarantor (User guarantor) based on bill payments (List<BillPayments>). If no bill payment is provided, it returns an empty list
 	 * @throws OHServiceException when the calls to internal methods fail.
 	 */
 	public List<Bill> getBillsByGuarantor(List<BillPayments> billPayments, User guarantor) throws OHServiceException {
 		if (billPayments.isEmpty()) {
 			return new ArrayList<>();
 		}
-		return ioOperations.getBillsWithGuarantor(billPayments, guarantor);
+
+		return ioOperations.getBillsByGuarantor(billPayments, guarantor);
 	}
 }
