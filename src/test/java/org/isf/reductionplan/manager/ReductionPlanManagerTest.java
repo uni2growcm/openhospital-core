@@ -45,7 +45,7 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 	ReductionplanIoOperationRepository repository;
 
 	@Autowired
-	ReductionplanManager manager;
+	ReductionPlanManager manager;
 
 	@BeforeEach
 	void setUp() {
@@ -71,5 +71,30 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 		List<ReductionPlan> existingReductionPlan = manager.getAll();
 
 		assertThat(existingReductionPlan.size()).isEqualTo(reductionPlans.size());
+	}
+
+	private List<ReductionPlan> generateFixturesWithSameDescription(int number, String description) {
+		return IntStream.range(0, number).mapToObj(i -> new ReductionPlan(
+						description,
+						1.0 * i,
+						2.0 * i,
+						3.0 * i,
+						3.0 * i
+		)).toList();
+	}
+	@Test
+	@DisplayName("Should get all reduction plans by description")
+	void testGetByDescription() throws Exception {
+		String description = "Description 0";
+		List<ReductionPlan> reductionPlans = generateFixturesWithSameDescription(2, description);
+
+		repository.saveAllAndFlush(reductionPlans);
+
+		List<ReductionPlan> existingReductionPlans = manager.getByDescription(description);
+
+		assertThat(existingReductionPlans).isNotNull();
+		assertThat(existingReductionPlans.size()).isEqualTo(2);
+		existingReductionPlans.forEach(plan ->
+						assertThat(plan.getDescription()).isEqualTo(description));
 	}
 }

@@ -30,11 +30,11 @@ import org.isf.utils.exception.OHServiceException;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ReductionplanManager {
+public class ReductionPlanManager {
 
 	private final ReductionPlanIoOperations reductionPlanIoOperations;
 
-	public ReductionplanManager(ReductionPlanIoOperations reductionPlanIoOperations) {
+	public ReductionPlanManager(ReductionPlanIoOperations reductionPlanIoOperations) {
 		this.reductionPlanIoOperations = reductionPlanIoOperations;
 	}
 
