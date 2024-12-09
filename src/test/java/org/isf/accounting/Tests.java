@@ -57,20 +57,17 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.data.Offset.offset;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 class Tests extends OHCoreTestCase {
 
@@ -104,10 +101,10 @@ class Tests extends OHCoreTestCase {
 	@Autowired
 	private UserGroupIoOperationRepository userGroupIoOperationRepository;
 
-	@Autowired
-	private MenuIoOperations menuIoOperation;
-	@Autowired
-	private AccountingIoOperations ioOperations;
+	@Repository
+	public interface BillRepository extends JpaRepository<Bill, Integer> {
+	    // Vous n'avez pas besoin de méthodes supplémentaires ici, JpaRepository fournit déjà les méthodes CRUD de base.
+	}
 
 	private static void setGeneralData(boolean in) {
 		GeneralData.ALLOWBILLGUARANTOR = in;
@@ -894,55 +891,38 @@ class Tests extends OHCoreTestCase {
 	@Test
 	@DisplayName("Should get payments filtered by a guarantor and patient")
 	void testGetPaymentsByDatePatientAndGuarantor() throws Exception {
-		// Initialisation des dates
-		LocalDateTime dateFrom = LocalDateTime.of(2024, 12, 1, 0, 0);
-		LocalDateTime dateTo = LocalDateTime.of(2024, 12, 31, 23, 59);
+	 
+	    LocalDateTime dateFrom = LocalDateTime.now().minusMinutes(10);
+	    LocalDateTime dateTo = LocalDateTime.now().plusHours(1);
 
-		// Vérifier que les dates ne sont pas nulles
-		assertThat(dateFrom).isNotNull();
-		assertThat(dateTo).isNotNull();
-
-		// Initialisation des objets Patient et User
-		Patient patient = new Patient();
-		patient.setCode(123);
-		User guarantor = new User();
-		guarantor.setUserName("Guarantor");
-
-		// Initialisation des objets Bill
-		Bill bill1 = new Bill();
-		bill1.setBillPatient(patient);
-		bill1.setGuarantor(guarantor);
-
-		Bill bill2 = new Bill();
-		bill2.setBillPatient(patient);
-
-		// Initialisation des objets BillPayments
-		BillPayments payment1 = new BillPayments();
-		payment1.setBill(bill1);
-
-		BillPayments payment2 = new BillPayments();
-		payment2.setBill(bill2);
-
-		// Listes de paiements pour les mocks
-		List<BillPayments> paymentsForPatientAndGuarantor = Arrays.asList(payment1);
-		List<BillPayments> paymentsForGuarantor = Arrays.asList(payment2);
-
-		// Mock des méthodes du repository
-		when(ioOperations.getPaymentsBetweenDatesWhereGuarantor(any(LocalDateTime.class), any(LocalDateTime.class), eq(guarantor)))
-			.thenReturn(paymentsForGuarantor);
-
-		when(ioOperations.getPaymentsByDatesPatientAndGuarantor(any(LocalDateTime.class), any(LocalDateTime.class), eq(patient), eq(guarantor)))
-			.thenReturn(paymentsForPatientAndGuarantor);
-
-		// Test lorsque le patient est null
-		List<BillPayments> result = billBrowserManager.getPaymentsByDatePatientAndGuarantor(dateFrom, dateTo, null, guarantor);
-		assertThat(result).containsAll(paymentsForGuarantor);
-		verify(ioOperations).getPaymentsBetweenDatesWhereGuarantor(any(LocalDateTime.class), any(LocalDateTime.class), eq(guarantor));
-
-		// Test lorsque le patient n'est pas null
-		result = billBrowserManager.getPaymentsByDatePatientAndGuarantor(dateFrom, dateTo, patient, guarantor);
-		assertThat(result).containsAll(paymentsForPatientAndGuarantor);
-		verify(ioOperations).getPaymentsByDatesPatientAndGuarantor(any(LocalDateTime.class), any(LocalDateTime.class), eq(patient), eq(guarantor));
+		Patient patient = testPatient.setup(false);
+		PriceList priceList = testPriceList.setup(false);
+		priceListIoOperationRepository.saveAndFlush(priceList);
+		patientIoOperationRepository.saveAndFlush(patient);
+		Bill bill = testBill.setup(priceList, patient, null, false);
+		BillItems insertBillItem = testBillItems.setup(bill, false);
+		BillPayments insertBillPayment = testBillPayments.setup(bill, false);
+		insertBillPayment.setDate(LocalDateTime.now());
+		insertBillPayment.setDate(TimeTools.getNow());
+		List<BillItems> billItems = new ArrayList<>();
+		billItems.add(insertBillItem);
+		List<BillPayments> billPayments = new ArrayList<>();
+		billPayments.add(insertBillPayment);
+		UserGroup userGroup = testUserGroup.setup(true);
+		userGroupIoOperationRepository.saveAndFlush(userGroup);
+		User guarantor = testUser.setup(userGroup, true);
+		guarantor.setUserName("guarantor");
+		userIoOperationRepository.saveAndFlush(guarantor);
+		bill.setGuarantor(guarantor);
+		bill.setDate(LocalDateTime.now());
+		bill = billBrowserManager.newBill(
+			bill,
+			billItems,
+			billPayments);
+		assertThat(bill).isNotNull();
+		List<BillPayments> billPaymentsList = billBrowserManager.getPaymentsByDatePatientAndGuarantor(dateFrom, dateTo, patient, guarantor);
+		assertThat(billPaymentsList).isNotEmpty();
+		assertThat(billPaymentsList.size()).isEqualTo(1);
 	}
 
 	private int setupTestBill(boolean usingSet) throws OHException {

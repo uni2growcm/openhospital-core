@@ -394,13 +394,15 @@ public class BillBrowserManager {
 	 * @throws OHServiceException when the calls to internal methods fail.
 	 */
 	public List<BillPayments> getPaymentsByDatePatientAndGuarantor(LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient, User guarantor) throws OHServiceException {
-		if (patient == null) {
-			return ioOperations.getPaymentsBetweenDatesWhereGuarantor(dateFrom, dateTo, guarantor);
-		}
-
-		return ioOperations.getPaymentsByDatesPatientAndGuarantor(dateFrom, dateTo, patient, guarantor);
+	    if (dateFrom == null || dateTo == null) {
+	        throw new IllegalArgumentException("Date cannot be null");
+	    }
+	    if (patient == null) {
+	        return ioOperations.getPaymentsBetweenDatesWhereGuarantor(dateFrom, dateTo, guarantor);
+	    }
+	    return ioOperations.getPaymentsByDatesPatientAndGuarantor(dateFrom, dateTo, patient, guarantor);
 	}
-	
+
 	/**
 	 * Get the bills list with a given billItem
 	 *
