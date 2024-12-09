@@ -246,8 +246,7 @@ public class MovementIoOperationRepositoryImpl implements MovementIoOperationRep
 				}
 			});
 		} else {
-			orderList.add(builder.desc(root.get(CODE)));
-			orderList.add(builder.desc(root.get(REF_NO)));
+			orderList.add(builder.asc(root.get(DATE)));
 		}
 
 		query.select(root).where(predicates.toArray(new Predicate[0])).orderBy(orderList);
