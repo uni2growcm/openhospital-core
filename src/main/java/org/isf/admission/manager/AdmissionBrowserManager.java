@@ -538,4 +538,16 @@ public class AdmissionBrowserManager {
 						|| (diseaseOut3 != null && diseaseOut1.getCode().equals(diseaseOut3.getCode()))
 						|| (diseaseOut2 != null && diseaseOut3 != null && diseaseOut2.getCode().equals(diseaseOut3.getCode()));
 	}
+	
+	/**
+	 * Returns all patients based on the sex.
+	 *
+	 * @param sex - the sex of the patient.
+	 * @return the filtered patient list.
+	 * @throws OHServiceException if an error occurs during database request.
+	 */
+	public List<AdmittedPatient> getAdmittedPatientBySex(char sex)
+					throws OHServiceException {
+		return ioOperations.getAdmittedPatientBySex(sex);
+	}
 }
