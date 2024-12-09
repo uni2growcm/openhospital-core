@@ -80,7 +80,7 @@ public class Patient {
 	 * Parse birthdate into LocalDate
 	 * @return {@link LocalDate} instance
 	 */
-	public LocalDate getBirthDateInstance() {
+	public LocalDate birthDateToLocalDate() {
 		if (birthDate == null || birthDate.isEmpty()) {
 			return  null;
 		}
