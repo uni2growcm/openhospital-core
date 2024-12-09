@@ -82,6 +82,7 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 						3.0 * i
 		)).toList();
 	}
+
 	@Test
 	@DisplayName("Should get all reduction plans by description")
 	void testGetByDescription() throws Exception {
