@@ -62,6 +62,16 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 		)).toList();
 	}
 
+	private List<ReductionPlan> generateFixturesWithSameDescription(int number, String description) {
+		return IntStream.range(0, number).mapToObj(i -> new ReductionPlan(
+						description,
+						1.0 * i,
+						2.0 * i,
+						3.0 * i,
+						3.0 * i
+		)).toList();
+	}
+
 	@Test
 	@DisplayName("Should get all reduction plans")
 	void testGetAll() throws Exception {
@@ -71,16 +81,6 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 		List<ReductionPlan> existingReductionPlan = manager.getAll();
 
 		assertThat(existingReductionPlan.size()).isEqualTo(reductionPlans.size());
-	}
-
-	private List<ReductionPlan> generateFixturesWithSameDescription(int number, String description) {
-		return IntStream.range(0, number).mapToObj(i -> new ReductionPlan(
-						description,
-						1.0 * i,
-						2.0 * i,
-						3.0 * i,
-						3.0 * i
-		)).toList();
 	}
 
 	@Test
