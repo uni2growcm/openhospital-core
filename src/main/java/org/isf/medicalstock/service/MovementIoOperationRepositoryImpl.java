@@ -237,17 +237,8 @@ public class MovementIoOperationRepositoryImpl implements MovementIoOperationRep
 		}
 
 		List<Order> orderList = new ArrayList<>();
-		if (pageable.getSort() != null) {
-			pageable.getSort().forEach(order -> {
-				if (order.isAscending()) {
-					orderList.add(builder.asc(root.get(order.getProperty())));
-				} else {
-					orderList.add(builder.desc(root.get(order.getProperty())));
-				}
-			});
-		} else {
-			orderList.add(builder.asc(root.get(DATE)));
-		}
+
+		orderList.add(builder.desc(root.<LocalDateTime>get(DATE)));
 
 		query.select(root).where(predicates.toArray(new Predicate[0])).orderBy(orderList);
 
