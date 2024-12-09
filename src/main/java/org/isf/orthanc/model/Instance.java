@@ -113,7 +113,7 @@ public class Instance {
 	 * Parse instance creation date into LocalDate
 	 * @return {@link LocalDate} instance
 	 */
-	public LocalDate getCreationDateInstance() {
+	public LocalDate creationDateToLocalDate() {
 		if (creationDate == null || creationDate.isEmpty()) {
 			return  null;
 		}
@@ -125,7 +125,7 @@ public class Instance {
 	 * Parse instance creation time into LocalTime
 	 * @return {@link LocalTime} instance
 	 */
-	public LocalTime getCreationTimeInstance() {
+	public LocalTime creationTimeToLocalTime() {
 		if (creationTime == null || creationTime.isEmpty()) {
 			return  null;
 		}

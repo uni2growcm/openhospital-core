@@ -99,7 +99,7 @@ public class OrthancAPIClientServiceTest extends OHCoreTestCase {
 
 		assertThat(studies).isNotNull();
 		assertThat(studies.getStudy()).isNotNull();
-		assertThat(studies.getLastUpdateInstance()).isInstanceOf(LocalDateTime.class);
+		assertThat(studies.lastUpdateToLocalDateTime()).isInstanceOf(LocalDateTime.class);
 	}
 
 	@Test

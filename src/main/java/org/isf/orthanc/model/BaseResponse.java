@@ -92,7 +92,7 @@ public class BaseResponse {
 	 *
 	 * @return {@link LocalDateTime} instance
 	 */
-	public LocalDateTime getLastUpdateInstance() {
+	public LocalDateTime lastUpdateToLocalDateTime() {
 		if (lastUpdate == null || lastUpdate.isEmpty()) {
 			return  null;
 		}

@@ -126,7 +126,7 @@ public class Study {
 	 * Parse study date into LocalDate
 	 * @return {@link LocalDate} instance
 	 */
-	public LocalDate getDateInstance() {
+	public LocalDate dateToLocalDate() {
 		if (date == null || date.isEmpty()) {
 			return  null;
 		}
@@ -138,7 +138,7 @@ public class Study {
 	 * Parse study time into LocalTime
 	 * @return {@link LocalTime} instance
 	 */
-	public LocalTime getTimeInstance() {
+	public LocalTime timeToLocalTime() {
 		if (time == null || time.isEmpty()) {
 			return  null;
 		}
