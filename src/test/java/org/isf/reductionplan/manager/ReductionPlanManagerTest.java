@@ -52,30 +52,21 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 		cleanH2InMemoryDb();
 	}
 
-	private List<ReductionPlan> generateFixtures(int number) {
+	private List<ReductionPlan> generateFixtures(int number, String fixedDescription) {
 		return IntStream.range(0, number).mapToObj(i -> new ReductionPlan(
-						"Description " + i,
-						1.0 * i,
-						2.0 * i,
-						3.0 * i,
-						3.0 * i
-		)).toList();
-	}
+						fixedDescription != null ? fixedDescription : "Description " + i,
+						1.0 + i,
+						2.0 + i,
+						3.0 + i,
+						3.0 + i
 
-	private List<ReductionPlan> generateFixturesWithSameDescription(int number, String description) {
-		return IntStream.range(0, number).mapToObj(i -> new ReductionPlan(
-						description,
-						1.0 * i,
-						2.0 * i,
-						3.0 * i,
-						3.0 * i
 		)).toList();
 	}
 
 	@Test
 	@DisplayName("Should get all reduction plans")
 	void testGetAll() throws Exception {
-		List<ReductionPlan> reductionPlans = generateFixtures(2);
+		List<ReductionPlan> reductionPlans = generateFixtures(2, null);
 		repository.saveAllAndFlush(reductionPlans);
 
 		List<ReductionPlan> existingReductionPlan = manager.getAll();
@@ -86,8 +77,8 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 	@Test
 	@DisplayName("Should get all reduction plans by description")
 	void testGetByDescription() throws Exception {
-		String description = "Description 0";
-		List<ReductionPlan> reductionPlans = generateFixturesWithSameDescription(2, description);
+		String description = "Fixed Description";
+		List<ReductionPlan> reductionPlans = generateFixtures(2, description);
 
 		repository.saveAllAndFlush(reductionPlans);
 
