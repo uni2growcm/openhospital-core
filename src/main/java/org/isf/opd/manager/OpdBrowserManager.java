@@ -40,6 +40,8 @@ import org.isf.utils.pagination.PagedResponse;
 import org.isf.ward.model.Ward;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 /**
@@ -163,6 +165,19 @@ public class OpdBrowserManager {
 	}
 
 	/**
+	 * Return all Opds of today or since one week ago
+	 *
+	 * @param oneWeek - if {@code true} return the last week, only today otherwise.
+	 * @param page page start index
+	 * @param size page size
+	 * @return the list of Opds. It could be {@code null}.
+	 * @throws OHServiceException when fail to fetch paginated opd list
+	 */
+	public List<Opd> getOpd(boolean oneWeek, int page, int size) throws OHServiceException {
+		return ioOperations.getOpdList(oneWeek, page, size);
+	}
+
+	/**
 	 * Return all Opds within specified dates and parameters
 	 * 
 	 * @param ward
@@ -183,6 +198,28 @@ public class OpdBrowserManager {
 	}
 
 	/**
+	 * Return all Opds within specified dates and parameters
+	 *
+	 * @param ward
+	 * @param diseaseTypeCode
+	 * @param diseaseCode
+	 * @param dateFrom
+	 * @param dateTo
+	 * @param ageFrom
+	 * @param ageTo
+	 * @param sex
+	 * @param newPatient
+	 * @param user
+	 * @param page page start index
+	 * @param size page size
+	 * @return the list of Opds. It could be {@code null}.
+	 * @throws OHServiceException when fail to fetch paginated opd list
+	 */
+	public List<Opd> getOpd(Ward ward, String diseaseTypeCode, String diseaseCode, LocalDate dateFrom, LocalDate dateTo, int ageFrom, int ageTo, char sex, char newPatient, String user, int page, int size) throws OHServiceException {
+		return ioOperations.getOpdListP(ward, diseaseTypeCode, diseaseCode, dateFrom, dateTo, ageFrom, ageTo, sex,newPatient, user, page, size);
+	}
+
+	/**
 	 * Returns all {@link Opd}s associated to specified patient ID
 	 *
 	 * @param patientcode - the patient ID
@@ -192,6 +229,21 @@ public class OpdBrowserManager {
 	 */
 	public List<Opd> getOpdList(int patientcode) throws OHServiceException {
 		return ioOperations.getOpdList(patientcode);
+	}
+
+	/**
+	 * Returns all {@link Opd}s associated to specified patient ID
+	 *
+	 * @param patientcode - the patient ID
+	 * @param page page start index
+	 * @param size page size
+	 * @return the list of {@link Opd}s associated to specified patient ID.
+	 * the whole list of {@link Opd}s if {@code 0} is passed.
+	 * @throws OHServiceException when fail to catch paginated opd list
+	 */
+	public List<Opd> getOpdList(int patientcode, int page, int size) throws OHServiceException {
+		Pageable pageable = PageRequest.of(page, size);
+		return ioOperations.getOpdList(patientcode, pageable);
 	}
 
 	/**
@@ -280,6 +332,19 @@ public class OpdBrowserManager {
 	 */
 	public List<Opd> getOpdByProgYear(int code) {
 		return ioOperations.getOpdByProgYear(code);
+	}
+
+	/**
+	 * Get a list of OPD with specified Progressive in Year number
+	 *
+	 * @param code - the OPD code
+	 * @param page page start index
+	 * @param size page size
+	 * @return a list of OPD or an empty list
+	 */
+	public List<Opd> getOpdByProgYear(int code, int page, int size) {
+		Pageable pageable = PageRequest.of(page, size);
+		return ioOperations.getOpdByProgYear(code, pageable);
 	}
 
 	/**

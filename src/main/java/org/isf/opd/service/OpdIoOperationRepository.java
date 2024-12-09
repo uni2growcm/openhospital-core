@@ -41,6 +41,9 @@ public interface OpdIoOperationRepository extends JpaRepository<Opd, Integer>, O
 	@Query("select o from Opd o order by o.prog_year")
 	List<Opd> findAllOrderByProgYearDesc();
 
+	@Query("select o from Opd o where o.prog_year = :prog_year")
+	List<Opd> findByProgYear(@Param("prog_year") Integer prog_year);
+
 	@Query("select o from Opd o where o.patient.code = :code order by o.prog_year")
 	List<Opd> findAllByPatient_CodeOrderByProgYearDesc(@Param("code") Integer code);
 
@@ -52,8 +55,7 @@ public interface OpdIoOperationRepository extends JpaRepository<Opd, Integer>, O
 
 	List<Opd> findTop1ByPatient_CodeOrderByDateDesc(Integer code);
 
-	@Query("select o from Opd o where o.prog_year = :prog_year")
-	List<Opd> findByProgYear(@Param("prog_year") Integer prog_year);
+	Page<Opd> findByProgYear(Integer progYear, Pageable pageable);
 
 	@Query(value = "select op from Opd op where op.prog_year = :prog_year and op.date >= :dateVisitFrom and op.date < :dateVisitTo")
 	List<Opd> findByProgYearAndDateBetween(@Param("prog_year") Integer prog_year, @Param("dateVisitFrom") LocalDateTime dateVisitFrom,
