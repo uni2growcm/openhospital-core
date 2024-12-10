@@ -155,8 +155,7 @@ public class AdmissionIoOperationRepositoryImpl implements AdmissionIoOperationR
 		return terms;
 	}
 
-	@Override
-	public List<AdmittedPatient> findPatientAdmissionsBySexe(char sex) throws OHServiceException {
+	public List<AdmittedPatient> findPatientAdmissionsBySex(char sex) throws OHServiceException {
 		List<AdmittedPatient> admittedPatients = new ArrayList<>();
 		Query nativeQuery = this.entityManager.createNativeQuery(nativeQuerySexe, "AdmittedPatient");
 		nativeQuery.setParameter("param0", sex);

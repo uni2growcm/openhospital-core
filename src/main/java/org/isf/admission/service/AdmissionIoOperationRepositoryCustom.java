@@ -39,6 +39,6 @@ public interface AdmissionIoOperationRepositoryCustom {
 	record PatientAdmission(Integer patientId, Integer admissionId) {
 
 	}
-	List<AdmittedPatient> findPatientAdmissionsBySexe(char sex)throws OHServiceException;
+	List<AdmittedPatient> findPatientAdmissionsBySex(char sex)throws OHServiceException;
 
 }

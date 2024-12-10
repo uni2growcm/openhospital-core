@@ -548,6 +548,6 @@ public class AdmissionBrowserManager {
 	 */
 	public List<AdmittedPatient> getAdmittedPatientsBySex(char sex)
 					throws OHServiceException {
-		return ioOperations.getAdmittedPatientBySex(sex);
+		return ioOperations.getAdmittedPatientsBySex(sex);
 	}
 }
