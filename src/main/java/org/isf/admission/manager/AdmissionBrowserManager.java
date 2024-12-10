@@ -540,11 +540,11 @@ public class AdmissionBrowserManager {
 	}
 	
 	/**
-	 * Returns all patients based on the sex.
+	 * Get patients filtered by sex
 	 *
-	 * @param sex - the sex of the patient.
-	 * @return the filtered patient list.
-	 * @throws OHServiceException if an error occurs during database request.
+	 * @param sex The sex to consider.
+	 * @return {@link List} of {@link AdmittedPatient}s matching the given sex, or empty list of no match.
+	 * @throws OHServiceException When error occurs during database request.
 	 */
 	public List<AdmittedPatient> getAdmittedPatientBySex(char sex)
 					throws OHServiceException {
