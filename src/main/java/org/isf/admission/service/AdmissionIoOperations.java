@@ -400,7 +400,7 @@ public class AdmissionIoOperations {
 	 * @return the filtered patient list.
 	 * @throws OHServiceException if an error occurs during database request.
 	 */
-	public List<AdmittedPatient> getAdmittedPatientBySex(char sex) throws OHServiceException {
+	public List<AdmittedPatient> getAdmittedPatientsBySex(char sex) throws OHServiceException {
 		return repository.findPatientAdmissionsBySexe(sex);
 	}
 }
