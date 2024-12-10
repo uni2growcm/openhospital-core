@@ -376,10 +376,10 @@ public class BillBrowserManager {
 	 */
 	public List<Bill> getBillsByDatePatientAndGuarantor(LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient, User guarantor) throws OHServiceException {
 		if (patient == null) {
-			return ioOperations.getBillsBetweenDatesWhereGuarantor(dateFrom, dateTo, guarantor);
+			return ioOperations.getBillsByDatesAndGuarantor(dateFrom, dateTo, guarantor);
 		}
 
-		return ioOperations.getBillsBetweenDatesWherePatientAndGuarantor(dateFrom, dateTo, patient, guarantor);
+		return ioOperations.getBillsByDatesPatientAndGuarantor(dateFrom, dateTo, patient, guarantor);
 	}
 	
 	/**
@@ -398,7 +398,7 @@ public class BillBrowserManager {
 	        throw new IllegalArgumentException("Date cannot be null");
 	    }
 	    if (patient == null) {
-	        return ioOperations.getPaymentsBetweenDatesWhereGuarantor(dateFrom, dateTo, guarantor);
+	        return ioOperations.getPaymentsByDatesAndGuarantor(dateFrom, dateTo, guarantor);
 	    }
 	    return ioOperations.getPaymentsByDatesPatientAndGuarantor(dateFrom, dateTo, patient, guarantor);
 	}

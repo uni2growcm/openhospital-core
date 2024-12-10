@@ -30,12 +30,10 @@ import org.isf.accounting.service.AccountingBillIoOperationRepository;
 import org.isf.accounting.service.AccountingBillItemsIoOperationRepository;
 import org.isf.accounting.service.AccountingBillPaymentIoOperationRepository;
 import org.isf.accounting.service.AccountingIoOperations;
-import org.isf.generaldata.GeneralData;
 import org.isf.menu.TestUser;
 import org.isf.menu.TestUserGroup;
 import org.isf.menu.model.User;
 import org.isf.menu.model.UserGroup;
-import org.isf.menu.service.MenuIoOperations;
 import org.isf.menu.service.UserGroupIoOperationRepository;
 import org.isf.menu.service.UserIoOperationRepository;
 import org.isf.patient.TestPatient;
@@ -57,8 +55,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -69,7 +65,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.data.Offset.offset;
 
-class Tests extends OHCoreTestCase {
+class Tests<BillRepository> extends OHCoreTestCase {
 
 	private static TestBill testBill;
 	private static TestBillItems testBillItems;
@@ -100,15 +96,6 @@ class Tests extends OHCoreTestCase {
 
 	@Autowired
 	private UserGroupIoOperationRepository userGroupIoOperationRepository;
-
-	@Repository
-	public interface BillRepository extends JpaRepository<Bill, Integer> {
-	    // Vous n'avez pas besoin de méthodes supplémentaires ici, JpaRepository fournit déjà les méthodes CRUD de base.
-	}
-
-	private static void setGeneralData(boolean in) {
-		GeneralData.ALLOWBILLGUARANTOR = in;
-	}
 
 	static Stream<Arguments> allowbillguarantor() {
 		return Stream.of(
@@ -888,43 +875,35 @@ class Tests extends OHCoreTestCase {
 		assertThat(guarantorBills.get(0).getGuarantor()).isEqualTo(user);
 	}
 
-	@Test
-	@DisplayName("Should get payments filtered by a guarantor and patient")
-	void testGetPaymentsByDatePatientAndGuarantor() throws Exception {
-	 
-	    LocalDateTime dateFrom = LocalDateTime.now().minusMinutes(10);
-	    LocalDateTime dateTo = LocalDateTime.now().plusHours(1);
-
-		Patient patient = testPatient.setup(false);
-		PriceList priceList = testPriceList.setup(false);
-		priceListIoOperationRepository.saveAndFlush(priceList);
-		patientIoOperationRepository.saveAndFlush(patient);
-		Bill bill = testBill.setup(priceList, patient, null, false);
-		BillItems insertBillItem = testBillItems.setup(bill, false);
-		BillPayments insertBillPayment = testBillPayments.setup(bill, false);
-		insertBillPayment.setDate(LocalDateTime.now());
-		insertBillPayment.setDate(TimeTools.getNow());
-		List<BillItems> billItems = new ArrayList<>();
-		billItems.add(insertBillItem);
-		List<BillPayments> billPayments = new ArrayList<>();
-		billPayments.add(insertBillPayment);
-		UserGroup userGroup = testUserGroup.setup(true);
-		userGroupIoOperationRepository.saveAndFlush(userGroup);
-		User guarantor = testUser.setup(userGroup, true);
-		guarantor.setUserName("guarantor");
-		userIoOperationRepository.saveAndFlush(guarantor);
-		bill.setGuarantor(guarantor);
-		bill.setDate(LocalDateTime.now());
-		bill = billBrowserManager.newBill(
-			bill,
-			billItems,
-			billPayments);
-		assertThat(bill).isNotNull();
-		List<BillPayments> billPaymentsList = billBrowserManager.getPaymentsByDatePatientAndGuarantor(dateFrom, dateTo, patient, guarantor);
-		assertThat(billPaymentsList).isNotEmpty();
-		assertThat(billPaymentsList.size()).isEqualTo(1);
-	}
-
+	  @Test
+	  @DisplayName("Should get payments filtered by a guarantor and patient") void testGetPaymentsByDatePatientAndGuarantor() throws Exception {
+	  LocalDateTime dateFrom = LocalDateTime.now().minusMinutes(10); LocalDateTime dateTo = LocalDateTime.now().plusHours(1);
+	  
+	  int code = setupTestBill(true);
+	  Bill bill = billBrowserManager.getBill(code);
+	  checkBillIntoDb(code);
+	  BillItems insertBillItem = testBillItems.setup(bill, false);
+	  BillPayments insertBillPayment = testBillPayments.setup(bill, false);
+	  insertBillPayment.setDate(TimeTools.getNow());
+	  List<BillItems> billItems = new ArrayList<>();
+	  billItems.add(insertBillItem);
+	  List<BillPayments> billPayments = new ArrayList<>();
+	  billPayments.add(insertBillPayment);
+	  UserGroup userGroup = testUserGroup.setup(true);
+	  userGroupIoOperationRepository.saveAndFlush(userGroup);
+	  User guarantor = testUser.setup(userGroup, true);
+	  guarantor.setUserName("guarantor");
+	  userIoOperationRepository.saveAndFlush(guarantor);
+	  bill.setGuarantor(guarantor);
+	  bill.setDate(LocalDateTime.now());
+	  bill = billBrowserManager.newBill(bill, billItems, billPayments);
+	  assertThat(bill).isNotNull();
+	  Patient patient = bill.getBillPatient();
+	  List<BillPayments> billPaymentsList = billBrowserManager.getPaymentsByDatePatientAndGuarantor(dateFrom, dateTo, patient, guarantor); 
+	  assertThat(billPaymentsList).isNotEmpty();
+	  assertThat(billPaymentsList.size()).isEqualTo(1); 
+	  }
+	
 	private int setupTestBill(boolean usingSet) throws OHException {
 		Patient patient = testPatient.setup(false);
 		PriceList priceList = testPriceList.setup(false);
