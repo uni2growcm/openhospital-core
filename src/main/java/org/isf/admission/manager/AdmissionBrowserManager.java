@@ -546,7 +546,7 @@ public class AdmissionBrowserManager {
 	 * @return {@link List} of {@link AdmittedPatient}s matching the given sex, or empty list of no match.
 	 * @throws OHServiceException When error occurs during database request.
 	 */
-	public List<AdmittedPatient> getAdmittedPatientBySex(char sex)
+	public List<AdmittedPatient> getAdmittedPatientsBySex(char sex)
 					throws OHServiceException {
 		return ioOperations.getAdmittedPatientBySex(sex);
 	}
