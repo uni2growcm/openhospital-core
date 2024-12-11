@@ -392,15 +392,15 @@ public class AdmissionIoOperations {
 	public long countAllActiveAdmissions() {
 		return this.repository.countAllActiveNotDeletedAdmissions();
 	}
-
+	
 	/**
-	 * Returns all patients with the sex.
+	 * Get patients filtered by sex.
 	 *
-	 * @param sex the sex to use for filter the patient list.
-	 * @return the filtered patient list.
-	 * @throws OHServiceException if an error occurs during database request.
+	 * @param sex The sex to consider.
+	 * @return {@link List} of {@link Admission}s matching the given sex, or empty list of no match.
+	 * @throws OHServiceException When error occurs during database request.
 	 */
-	public List<AdmittedPatient> getAdmittedPatientsBySex(char sex) throws OHServiceException {
-		return repository.findPatientAdmissionsBySex(sex);
+	public List<Admission> getAdmissionsBySex(char sex) throws OHServiceException {
+		return repository.findAllBySex(sex);
 	}
 }

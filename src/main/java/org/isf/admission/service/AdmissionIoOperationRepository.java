@@ -25,6 +25,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.isf.admission.model.Admission;
+import org.isf.admission.model.AdmittedPatient;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -67,4 +68,8 @@ public interface AdmissionIoOperationRepository extends JpaRepository<Admission,
 
 	@Query("select count(a) from Admission a where active=1 and deleted not like 'Y'")
 	long countAllActiveNotDeletedAdmissions();
+	
+	@Query(value = "select a FROM Admission a WHERE a.admitted =1 and a.patient.sex = :sex and a.deleted = 'N'")
+	List<Admission> findAllBySex(@Param("sex") Character sex);
+	
 }

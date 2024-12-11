@@ -55,11 +55,6 @@ public class AdmissionIoOperationRepositoryImpl implements AdmissionIoOperationR
 					+ " left join (select * from OH_ADMISSION where ADM_IN = 1 and ( (ADM_DELETED='N') or (ADM_DELETED is null ) ) order by ADM_ID desc) as a on p.PAT_ID = a.ADM_PAT_ID "
 					+ " where p.PAT_ID = :param0 "
 					+ " and ( ( p.PAT_DELETED='N' ) or ( p.PAT_DELETED is null ) )";
-	
-	private static String nativeQuerySexe = "SELECT * from OH_PATIENT as p  "
-					+ " left join (select * from OH_ADMISSION where ADM_IN = 1 and ( (ADM_DELETED='N') or (ADM_DELETED is null ) ) order by ADM_ID desc) as a on p.PAT_ID = a.ADM_PAT_ID "
-					+ " where p.PAT_SEX = :param0 "
-					+ " and ( ( p.PAT_DELETED='N' ) or ( p.PAT_DELETED is null ) )";
 
 	private static final String YYYY_MM_DD = "yyyy-MM-dd";
 
@@ -153,13 +148,6 @@ public class AdmissionIoOperationRepositoryImpl implements AdmissionIoOperationR
 			terms = searchTerms.split(" ");
 		}
 		return terms;
-	}
-
-	public List<AdmittedPatient> findPatientAdmissionsBySex(char sex) throws OHServiceException {
-		List<AdmittedPatient> admittedPatients = new ArrayList<>();
-		Query nativeQuery = this.entityManager.createNativeQuery(nativeQuerySexe, "AdmittedPatient");
-		nativeQuery.setParameter("param0", sex);
-		return parseResultSet(admittedPatients, nativeQuery);
 	}
 
 }
