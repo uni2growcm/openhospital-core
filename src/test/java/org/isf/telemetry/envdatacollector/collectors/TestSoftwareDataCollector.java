@@ -80,6 +80,6 @@ class TestSoftwareDataCollector extends OHCoreTestCase {
 		when(connectionMock.getMetaData()).thenReturn(databaseMetaDataMock);
 		Map<String, String> data = softwareDataCollector.retrieveData();
 		assertThat(data).isNotNull();
-		assertThat(data).hasSize(41);
+		assertThat(data).hasSize(42);
 	}
 }
