@@ -406,8 +406,6 @@ public class BillBrowserManager {
 	/**
 	    * Get the bills payments filtered by guarantor
 	    * 
-		* @param dateFrom start date
-		* @param dateTo end date
 		* @param guarantor the user acting as the guarantor for the bills.
 		* @return The {@link List} of{@link BillPayments} matching the filters, or an empty list if no match
 		* @throws OHServiceException when failed to execute the query.
