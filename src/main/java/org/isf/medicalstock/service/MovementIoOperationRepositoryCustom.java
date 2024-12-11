@@ -43,6 +43,10 @@ public interface MovementIoOperationRepositoryCustom {
 		LocalDateTime movTo, LocalDateTime lotPrepFrom, LocalDateTime lotPrepTo, LocalDateTime lotDueFrom,
 		LocalDateTime lotDueTo, Pageable pageable);
 
+	long coutTotalMovements (Integer medicalCode, String medicalType, String wardId, String movType,
+		LocalDateTime movFrom, LocalDateTime movTo, LocalDateTime lotPrepFrom,
+		LocalDateTime lotPrepTo, LocalDateTime lotDueFrom, LocalDateTime lotDueTo);
+
 	List<Integer> findMovementForPrint(String medicalDescription, String medicalTypeCode, String wardId,
 			String movType, LocalDateTime movFrom, LocalDateTime movTo, String lotCode, MovementOrder order);
 }

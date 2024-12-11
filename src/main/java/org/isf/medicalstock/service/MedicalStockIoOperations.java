@@ -618,6 +618,53 @@ public class MedicalStockIoOperations {
 	}
 
 	/**
+	 * Count all the stored {@link Movement} with the specified criteria.
+	 *
+	 * @param medicalCode the {@link Medical} code (optional).
+	 * @param medicalType the {@link MedicalType} code (optional).
+	 * @param wardId the {@link Ward} id (optional).
+	 * @param movType the {@link MovementType} code or {@code "+"}/{@code "-"} for all charge/discharge types (optional).
+	 * @param movFrom the lower bound for the movement date range (optional).
+	 * @param movTo the upper bound for the movement date range (optional).
+	 * @param lotPrepFrom the lower bound for the lot preparation date range (optional).
+	 * @param lotPrepTo the upper bound for the lot preparation date range (optional).
+	 * @param lotDueFrom the lower bound for the lot due date range (optional).
+	 * @param lotDueTo the lower bound for the lot due date range (optional).
+	 * @return number of all movements.
+	 * @throws OHServiceException
+	 */
+	public long countTotalMovements(
+		Integer medicalCode,
+		String medicalType,
+		String wardId,
+		String movType,
+		LocalDateTime movFrom,
+		LocalDateTime movTo,
+		LocalDateTime lotPrepFrom,
+		LocalDateTime lotPrepTo,
+		LocalDateTime lotDueFrom,
+		LocalDateTime lotDueTo
+	) throws OHServiceException {
+		List<Movement> pMovement = new ArrayList<>();
+
+		movFrom = movFrom.withHour(0).withMinute(0);
+		movTo = movTo.withHour(23).withMinute(59);
+
+		return movRepository.coutTotalMovements(
+			medicalCode,
+			medicalType,
+			wardId,
+			movType,
+			TimeTools.truncateToSeconds(movFrom),
+			TimeTools.truncateToSeconds(movTo),
+			TimeTools.truncateToSeconds(lotPrepFrom),
+			TimeTools.truncateToSeconds(lotPrepTo),
+			TimeTools.truncateToSeconds(lotDueFrom),
+			TimeTools.truncateToSeconds(lotDueTo)
+		);
+	}
+
+	/**
 	 * Retrieves {@link Movement}s for printing using specified filtering criteria.
 	 * 
 	 * @param medicalDescription the medical description.

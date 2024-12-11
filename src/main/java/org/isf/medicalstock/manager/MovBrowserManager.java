@@ -197,6 +197,30 @@ public class MovBrowserManager {
 		return ioOperations.getMovements(medicalCode, medicalType, wardId, movType, movFrom, movTo, lotPrepFrom, lotPrepTo, lotDueFrom, lotDueTo, pageable);
 	}
 
+	public long countTotalMovements(Integer medicalCode, String medicalType,
+		String wardId, String movType, LocalDateTime movFrom, LocalDateTime movTo,
+		LocalDateTime lotPrepFrom, LocalDateTime lotPrepTo,
+		LocalDateTime lotDueFrom, LocalDateTime lotDueTo) throws OHServiceException {
+
+		if (medicalCode == null &&
+			medicalType == null &&
+			movType == null &&
+			movFrom == null &&
+			movTo == null &&
+			lotPrepFrom == null &&
+			lotPrepTo == null &&
+			lotDueFrom == null &&
+			lotDueTo == null) {
+			return getMovements().size();
+		}
+
+		check(movFrom, movTo, "angal.medicalstock.chooseavalidmovementdate.msg");
+		check(lotPrepFrom, lotPrepTo, "angal.medicalstock.chooseavalidmovementdate.msg");
+		check(lotDueFrom, lotDueTo, "angal.medicalstock.chooseavalidduedate.msg");
+
+		return ioOperations.countTotalMovements(medicalCode, medicalType, wardId, movType, movFrom, movTo, lotPrepFrom, lotPrepTo, lotDueFrom, lotDueTo);
+	}
+
 	private void check(LocalDateTime from, LocalDateTime to, String errMsgKey) throws OHDataValidationException {
 		if (from == null || to == null) {
 			if (!(from == null && to == null)) {
