@@ -550,8 +550,12 @@ public class MedicalStockIoOperations {
 		LocalDateTime lotPrepFrom,
 		LocalDateTime lotPrepTo,
 		LocalDateTime lotDueFrom,
-		LocalDateTime lotDueTo) throws OHServiceException {
+		LocalDateTime lotDueTo
+	) throws OHServiceException {
 		List<Movement> pMovement = new ArrayList<>();
+
+		movFrom = movFrom.withHour(0).withMinute(0);
+		movTo = movTo.withHour(23).withMinute(59);
 
 		List<Integer> pMovementCode = movRepository.findMovementWhereData(medicalCode, medicalType, wardId, movType,
 			TimeTools.truncateToSeconds(movFrom),
@@ -598,7 +602,10 @@ public class MedicalStockIoOperations {
 		LocalDateTime lotPrepTo,
 		LocalDateTime lotDueFrom,
 		LocalDateTime lotDueTo,
-		Pageable pageable) throws OHServiceException {
+		Pageable pageable
+	) throws OHServiceException {
+		movFrom = movFrom.withHour(0).withMinute(0);
+		movTo = movTo.withHour(23).withMinute(59);
 
 		return movRepository.findMovementWhereData(medicalCode, medicalType, wardId, movType,
 			TimeTools.truncateToSeconds(movFrom),
