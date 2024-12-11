@@ -383,7 +383,7 @@ public class BillBrowserManager {
 	}
 	
 	/**
-	 * Get the bills list with a given billItem
+	 * Get the bills payments filtered by date patient  and guarantor
 	 *
 	 * @param dateFrom Start date
 	 * @param dateTo End date
@@ -404,12 +404,14 @@ public class BillBrowserManager {
 	}
 
 	/**
-	 * Get the bills list with a given billItem
-	 *
-	 * @param guarantor the user acting as the guarantor for the bills.
-	 * @return a list of Bills corresponding to the guarantor (User guarantor) based on bill payments (List<BillPayments>). If no bill payment is provided, it returns an empty list
-	 * @throws OHServiceException when the calls to internal methods fail.
-	 */
+	    * Get the bills payments filtered by guarantor
+	    * 
+		* @param dateFrom start date
+		* @param dateTo end date
+		* @param guarantor the user acting as the guarantor for the bills.
+		* @return The {@link List} of{@link BillPayments} matching the filters, or an empty list if no match
+		* @throws OHServiceException when failed to execute the query.
+		*/
 	public List<Bill> getBillsByGuarantor(List<BillPayments> billPayments, User guarantor) throws OHServiceException {
 		if (billPayments.isEmpty()) {
 			return new ArrayList<>();
