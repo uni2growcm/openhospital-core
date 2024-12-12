@@ -631,7 +631,7 @@ public class MedicalStockIoOperations {
 	 * @param lotDueFrom the lower bound for the lot due date range (optional).
 	 * @param lotDueTo the lower bound for the lot due date range (optional).
 	 * @return number of all movements.
-	 * @throws OHServiceException
+	 * @throws OHServiceException when filter conditions are not respected
 	 */
 	public long countTotalMovements(
 		Integer medicalCode,
@@ -645,12 +645,10 @@ public class MedicalStockIoOperations {
 		LocalDateTime lotDueFrom,
 		LocalDateTime lotDueTo
 	) throws OHServiceException {
-		List<Movement> pMovement = new ArrayList<>();
-
 		movFrom = movFrom.withHour(0).withMinute(0);
 		movTo = movTo.withHour(23).withMinute(59);
 
-		return movRepository.coutTotalMovements(
+		return movRepository.getCountTotalMovements(
 			medicalCode,
 			medicalType,
 			wardId,

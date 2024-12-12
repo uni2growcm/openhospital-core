@@ -200,7 +200,8 @@ public class MovBrowserManager {
 	public long countTotalMovements(Integer medicalCode, String medicalType,
 		String wardId, String movType, LocalDateTime movFrom, LocalDateTime movTo,
 		LocalDateTime lotPrepFrom, LocalDateTime lotPrepTo,
-		LocalDateTime lotDueFrom, LocalDateTime lotDueTo) throws OHServiceException {
+		LocalDateTime lotDueFrom, LocalDateTime lotDueTo
+	) throws OHServiceException {
 
 		if (medicalCode == null &&
 			medicalType == null &&

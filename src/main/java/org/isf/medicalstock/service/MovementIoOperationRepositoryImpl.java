@@ -83,7 +83,6 @@ public class MovementIoOperationRepositoryImpl implements MovementIoOperationRep
 						lotPrepFrom, lotPrepTo, lotDueFrom, lotDueTo);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<Movement> findMovementWhereData(
 		Integer medicalCode,
@@ -101,24 +100,6 @@ public class MovementIoOperationRepositoryImpl implements MovementIoOperationRep
 			lotPrepFrom, lotPrepTo, lotDueFrom, lotDueTo, pageable);
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public long coutTotalMovements(
-		Integer medicalCode,
-		String medicalType,
-		String wardId,
-		String movType,
-		LocalDateTime movFrom,
-		LocalDateTime movTo,
-		LocalDateTime lotPrepFrom,
-		LocalDateTime lotPrepTo,
-		LocalDateTime lotDueFrom,
-		LocalDateTime lotDueTo
-	) {
-		return getCountTotalMovements(medicalCode, medicalType, wardId, movType, movFrom, movTo, lotPrepFrom, lotPrepTo, lotDueFrom, lotDueTo);
-	}
-
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<Integer> findMovementForPrint(
 					String medicalDescription,
@@ -268,7 +249,8 @@ public class MovementIoOperationRepositoryImpl implements MovementIoOperationRep
 		return typedQuery.getResultList();
 	}
 
-	private Long getCountTotalMovements(
+	@Override
+	public long getCountTotalMovements(
 		Integer medicalCode,
 		String medicalType,
 		String wardId,
