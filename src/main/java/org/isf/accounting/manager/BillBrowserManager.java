@@ -375,11 +375,7 @@ public class BillBrowserManager {
 	 * @throws OHServiceException when the calls to internal methods fail.
 	 */
 	public List<Bill> getBillsByDatePatientAndGuarantor(LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient, User guarantor) throws OHServiceException {
-		if (patient == null) {
-			return ioOperations.getBillsByDatesAndGuarantor(dateFrom, dateTo, guarantor);
-		}
-
-		return ioOperations.getBillsByDatesPatientAndGuarantor(dateFrom, dateTo, patient, guarantor);
+		return patient == null ? ioOperations.getBillsByDatesAndGuarantor(dateFrom, dateTo, guarantor) : ioOperations.getBillsByDatesPatientAndGuarantor(dateFrom, dateTo, patient, guarantor);
 	}
 	
 	/**
@@ -397,10 +393,7 @@ public class BillBrowserManager {
 	    if (dateFrom == null || dateTo == null) {
 	        throw new IllegalArgumentException("Date cannot be null");
 	    }
-	    if (patient == null) {
-	        return ioOperations.getPaymentsByDatesAndGuarantor(dateFrom, dateTo, guarantor);
-	    }
-	    return ioOperations.getPaymentsByDatesPatientAndGuarantor(dateFrom, dateTo, patient, guarantor);
+	    return patient == null ? ioOperations.getPaymentsByDatesAndGuarantor(dateFrom, dateTo, guarantor) : ioOperations.getPaymentsByDatesPatientAndGuarantor(dateFrom, dateTo, patient, guarantor);
 	}
 
 	/**
@@ -411,10 +404,6 @@ public class BillBrowserManager {
 		* @throws OHServiceException when failed to execute the query.
 		*/
 	public List<Bill> getBillsByGuarantor(List<BillPayments> billPayments, User guarantor) throws OHServiceException {
-		if (billPayments.isEmpty()) {
-			return new ArrayList<>();
-		}
-
-		return ioOperations.getBillsByGuarantor(billPayments, guarantor);
+		return billPayments.isEmpty() ? new ArrayList<>() : ioOperations.getBillsByGuarantor(billPayments, guarantor);
 	}
 }
