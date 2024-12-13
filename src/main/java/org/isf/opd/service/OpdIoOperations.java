@@ -361,4 +361,35 @@ public class OpdIoOperations {
 		int end = Math.min(start + pageRequest.getPageSize(), ops.size());
 		return ops.subList(start, end);
 	}
+
+
+	/**
+	 * Count total number of {@link Opd}s within specified dates and parameters.
+	 *
+	 * @param ward
+	 * @param diseaseTypeCode
+	 * @param diseaseCode
+	 * @param dateFrom
+	 * @param dateTo
+	 * @param ageFrom
+	 * @param ageTo
+	 * @param sex
+	 * @param newPatient
+	 * @param user
+	 * @return a {@link List} of {@link Opd}s.
+	 * @throws OHServiceException
+	 */
+	public Long countAllOpds(
+		String ward,
+		String diseaseTypeCode,
+		String diseaseCode,
+		LocalDate dateFrom,
+		LocalDate dateTo,
+		int ageFrom,
+		int ageTo,
+		char sex,
+		char newPatient,
+		String user) throws OHServiceException {
+		return repository.countByFilters(ward, diseaseTypeCode, diseaseCode, dateFrom, dateTo, ageFrom, ageTo, sex, newPatient, user);
+	}
 }

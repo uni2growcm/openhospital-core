@@ -368,4 +368,45 @@ public class OpdBrowserManager {
 	public PagedResponse<Opd> getOpdPageable(Ward ward, String diseaseTypeCode, String diseaseCode, LocalDate dateFrom, LocalDate dateTo, int ageFrom, int ageTo, char sex, char newPatient, int page, int size) throws OHServiceException {
 		return ioOperations.getOpdListPageable(ward, diseaseTypeCode, diseaseCode, dateFrom, dateTo, ageFrom, ageTo, sex, newPatient, null, page, size);
 	}
+
+	/**
+	 * Counts all {@link Opd}s within specified dates and parameters.
+	 *
+	 * @param ward
+	 * @param diseaseTypeCode
+	 * @param diseaseCode
+	 * @param dateFrom
+	 * @param dateTo
+	 * @param ageFrom
+	 * @param ageTo
+	 * @param sex
+	 * @param newPatient
+	 * @param user
+	 * @return the total count of {@link Opd}s.
+	 * @throws OHServiceException when fail to count all opds within parameters
+	 */
+	public long countAllOpds(
+		Ward ward,
+		String diseaseTypeCode,
+		String diseaseCode,
+		LocalDate dateFrom,
+		LocalDate dateTo,
+		int ageFrom,
+		int ageTo,
+		char sex,
+		char newPatient,
+		String user) throws OHServiceException {
+		return ioOperations.countAllOpds(
+			ward != null ? ward.getCode() : null,
+				diseaseTypeCode,
+				diseaseCode,
+				dateFrom,
+				dateTo,
+				ageFrom,
+				ageTo,
+				sex,
+				newPatient,
+				user
+		);
+	}
 }

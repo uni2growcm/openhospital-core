@@ -21,6 +21,7 @@
  */
 package org.isf.opd.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -82,6 +83,19 @@ public interface OpdIoOperationRepository extends JpaRepository<Opd, Integer>, O
 
 	@Query(value = "SELECT OPD_CREATED_DATE FROM OH_OPD O WHERE OPD_ACTIVE=1 ORDER BY OPD_ID DESC LIMIT 1", nativeQuery = true)
 	LocalDateTime lastOpdCreationDate();
+
+	long countByFilters(
+		String wardCode,
+		String diseaseTypeCode,
+		String diseaseCode,
+		LocalDate dateFrom,
+		LocalDate dateTo,
+		int ageFrom,
+		int ageTo,
+		char sex,
+		char newPatient,
+		String user
+	);
 
 	@Query("select count(o) from Opd o where active=1")
 	long countAllActiveOpds();
