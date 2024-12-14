@@ -21,7 +21,6 @@
  */
 package org.isf.opd.service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -42,9 +41,6 @@ public interface OpdIoOperationRepository extends JpaRepository<Opd, Integer>, O
 	@Query("select o from Opd o order by o.prog_year")
 	List<Opd> findAllOrderByProgYearDesc();
 
-	@Query("select o from Opd o where o.prog_year = :prog_year")
-	List<Opd> findByProgYear(@Param("prog_year") Integer prog_year);
-
 	@Query("select o from Opd o where o.patient.code = :code order by o.prog_year")
 	List<Opd> findAllByPatient_CodeOrderByProgYearDesc(@Param("code") Integer code);
 
@@ -56,7 +52,8 @@ public interface OpdIoOperationRepository extends JpaRepository<Opd, Integer>, O
 
 	List<Opd> findTop1ByPatient_CodeOrderByDateDesc(Integer code);
 
-	Page<Opd> findByProgYear(Integer progYear, Pageable pageable);
+	@Query("select o from Opd o where o.prog_year = :prog_year")
+	List<Opd> findByProgYear(@Param("prog_year") Integer prog_year);
 
 	@Query(value = "select op from Opd op where op.prog_year = :prog_year and op.date >= :dateVisitFrom and op.date < :dateVisitTo")
 	List<Opd> findByProgYearAndDateBetween(@Param("prog_year") Integer prog_year, @Param("dateVisitFrom") LocalDateTime dateVisitFrom,
@@ -83,19 +80,6 @@ public interface OpdIoOperationRepository extends JpaRepository<Opd, Integer>, O
 
 	@Query(value = "SELECT OPD_CREATED_DATE FROM OH_OPD O WHERE OPD_ACTIVE=1 ORDER BY OPD_ID DESC LIMIT 1", nativeQuery = true)
 	LocalDateTime lastOpdCreationDate();
-
-	long countByFilters(
-		String wardCode,
-		String diseaseTypeCode,
-		String diseaseCode,
-		LocalDate dateFrom,
-		LocalDate dateTo,
-		int ageFrom,
-		int ageTo,
-		char sex,
-		char newPatient,
-		String user
-	);
 
 	@Query("select count(o) from Opd o where active=1")
 	long countAllActiveOpds();
