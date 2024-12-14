@@ -40,6 +40,8 @@ import org.isf.utils.pagination.PagedResponse;
 import org.isf.ward.model.Ward;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 /**
@@ -163,6 +165,20 @@ public class OpdBrowserManager {
 	}
 
 	/**
+	 * Return all Opds of today or since one week ago
+	 *
+	 * @param oneWeek - if {@code true} return the last week, only today otherwise.
+	 * @param page
+	 * @param size
+	 * @return the list of Opds. It could be {@code null}.
+	 * @throws OHServiceException
+	 */
+	public List<Opd> getOpd(boolean oneWeek, int page, int size) throws OHServiceException {
+		Pageable pageable = PageRequest.of(page, size);
+		return ioOperations.getOpdList(oneWeek, pageable);
+	}
+
+	/**
 	 * Return all Opds within specified dates and parameters
 	 * 
 	 * @param ward
@@ -180,6 +196,29 @@ public class OpdBrowserManager {
 	 */
 	public List<Opd> getOpd(Ward ward, String diseaseTypeCode, String diseaseCode, LocalDate dateFrom, LocalDate dateTo, int ageFrom, int ageTo, char sex, char newPatient, String user) throws OHServiceException {
 		return ioOperations.getOpdList(ward, diseaseTypeCode, diseaseCode, dateFrom, dateTo, ageFrom, ageTo, sex,newPatient, user);
+	}
+
+	/**
+	 * Return all Opds within specified dates and parameters
+	 *
+	 * @param ward
+	 * @param diseaseTypeCode
+	 * @param diseaseCode
+	 * @param dateFrom
+	 * @param dateTo
+	 * @param ageFrom
+	 * @param ageTo
+	 * @param sex
+	 * @param newPatient
+	 * @param user
+	 * @param page
+	 * @param size
+	 * @return the list of Opds. It could be {@code null}.
+	 * @throws OHServiceException
+	 */
+	public List<Opd> getOpd(Ward ward, String diseaseTypeCode, String diseaseCode, LocalDate dateFrom, LocalDate dateTo, int ageFrom, int ageTo, char sex, char newPatient, String user, int page, int size) throws OHServiceException {
+		Pageable pageable = PageRequest.of(page, size);
+		return ioOperations.getOpdList(ward, diseaseTypeCode, diseaseCode, dateFrom, dateTo, ageFrom, ageTo, sex,newPatient, user, pageable);
 	}
 
 	/**
