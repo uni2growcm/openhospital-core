@@ -354,7 +354,7 @@ public class OpdIoOperations {
 	}
 
 	/**
-	 * Retrieves a page of {@link Opd}s within specified dates and parameters.
+	 * Returns the total number of {@link Opd}s within specified dates and parameters
 	 *
 	 * @param ward
 	 * @param diseaseTypeCode
@@ -366,7 +366,7 @@ public class OpdIoOperations {
 	 * @param sex
 	 * @param newPatient
 	 * @param user
-	 * @return a {@link PagedResponse} object that contains the {@link Opd}s.
+	 * @return the total number of {@link Opd}s.
 	 * @throws OHServiceException
 	 */
 	public long countTotalOpds(Ward ward, String diseaseTypeCode, String diseaseCode, LocalDate dateFrom, LocalDate dateTo, int ageFrom, int ageTo, char sex, char newPatient, String user)throws OHServiceException {

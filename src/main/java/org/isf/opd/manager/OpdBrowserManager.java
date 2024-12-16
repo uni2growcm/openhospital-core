@@ -372,7 +372,7 @@ public class OpdBrowserManager {
 	}
 
 	/**
-	 * Returns {@link List} of {@link Opd}s associated to specified patient ID with page info.
+	 * Returns the total number of {@link Opd}s within specified dates and parameters
 	 *
 	 * @param ward - the ward of opd
 	 * @param diseaseTypeCode - the disease type
@@ -384,8 +384,7 @@ public class OpdBrowserManager {
 	 * @param sex
 	 * @param newPatient
 	 * @param user
-	 * @return the list of {@link Opd}s associated to specified patient ID.
-	 * the whole list of {@link Opd}s if {@code 0} is passed.
+	 * @return the total number of {@link Opd}s
 	 * @throws OHServiceException
 	 */
 	public long countTotalOpds(Ward ward, String diseaseTypeCode, String diseaseCode, LocalDate dateFrom, LocalDate dateTo, int ageFrom, int ageTo, char sex, char newPatient, String user) throws OHServiceException {
