@@ -63,6 +63,8 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 class Tests extends OHCoreTestCase {
 
@@ -151,12 +153,51 @@ class Tests extends OHCoreTestCase {
 
 	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
 	@MethodSource("opdExtended")
+	void testIoGetOpdListPageable(boolean opdExtended) throws Exception {
+		GeneralData.OPDEXTENDED = opdExtended;
+		int code = setupTestOpd(false);
+		Opd foundOpd = opdIoOperationRepository.findById(code).orElse(null);
+		assertThat(foundOpd).isNotNull();
+		int page = setupTestPage(true);
+		int size = setupTestSize(true);
+		Pageable pageable = PageRequest.of(page, size);
+		List<Opd> opds = opdIoOperation.getOpdList(
+			foundOpd.getWard(),
+			foundOpd.getDisease().getType().getCode(),
+			foundOpd.getDisease().getCode(),
+			foundOpd.getDate().toLocalDate(),
+			foundOpd.getDate().toLocalDate(),
+			foundOpd.getAge() - 1,
+			foundOpd.getAge() + 1,
+			foundOpd.getSex(),
+			foundOpd.getNewPatient(),
+			foundOpd.getUserID(),
+			pageable);
+		assertThat(opds.get(opds.size() - 1).getCode()).isEqualTo(foundOpd.getCode());
+	}
+
+	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
+	@MethodSource("opdExtended")
 	void testIoGetOpdListPatientId(boolean opdExtended) throws Exception {
 		GeneralData.OPDEXTENDED = opdExtended;
 		int code = setupTestOpd(false);
 		Opd foundOpd = opdIoOperationRepository.findById(code).orElse(null);
 		assertThat(foundOpd).isNotNull();
 		List<Opd> opds = opdIoOperation.getOpdList(foundOpd.getPatient().getCode());
+		assertThat(opds.get(opds.size() - 1).getCode()).isEqualTo(foundOpd.getCode());
+	}
+
+	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
+	@MethodSource("opdExtended")
+	void testIoGetOpdListPatientIdPageable(boolean opdExtended) throws Exception {
+		GeneralData.OPDEXTENDED = opdExtended;
+		int code = setupTestOpd(false);
+		Opd foundOpd = opdIoOperationRepository.findById(code).orElse(null);
+		assertThat(foundOpd).isNotNull();
+		int page = setupTestPage(true);
+		int size = setupTestSize(true);
+		Pageable pageable = PageRequest.of(page, size);
+		List<Opd> opds = opdIoOperation.getOpdList(foundOpd.getPatient().getCode(), pageable);
 		assertThat(opds.get(opds.size() - 1).getCode()).isEqualTo(foundOpd.getCode());
 	}
 
@@ -187,6 +228,40 @@ class Tests extends OHCoreTestCase {
 		opdIoOperationRepository.saveAndFlush(opd);
 
 		List<Opd> opds = opdIoOperation.getOpdList(0);
+		assertThat(opds.get(opds.size() - 1).getCode()).isEqualTo(opd.getCode());
+	}
+
+	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
+	@MethodSource("opdExtended")
+	void testIoGetOpdListPatientIdZeroPageable(boolean opdExtended) throws Exception {
+		GeneralData.OPDEXTENDED = opdExtended;		Patient patient = testPatient.setup(false);
+		DiseaseType diseaseType = testDiseaseType.setup(false);
+
+		Disease disease = testDisease.setup(diseaseType, false);
+		disease.setCode("angal.opd.alldiseases.txt");
+		disease.getType().setCode("angal.common.alltypes.txt");
+
+		Ward ward = testWard.setup(false);
+
+		Visit nextVisit = testVisit.setup(patient, true, ward);
+
+		Opd opd = testOpd.setup(patient, disease, ward, nextVisit, true);
+		LocalDate now = LocalDate.now();
+		opd.setDate(now.atStartOfDay());
+
+		patientIoOperationRepository.saveAndFlush(patient);
+		diseaseTypeIoOperationRepository.saveAndFlush(diseaseType);
+		diseaseIoOperationRepository.saveAndFlush(disease);
+		wardIoOperationRepository.saveAndFlush(ward);
+		visitsIoOperationRepository.saveAndFlush(nextVisit);
+
+		opdIoOperationRepository.saveAndFlush(opd);
+
+		int page = setupTestPage(true);
+		int size = setupTestSize(true);
+		Pageable pageable = PageRequest.of(page, size);
+
+		List<Opd> opds = opdIoOperation.getOpdList(0, pageable);
 		assertThat(opds.get(opds.size() - 1).getCode()).isEqualTo(opd.getCode());
 	}
 
@@ -247,6 +322,65 @@ class Tests extends OHCoreTestCase {
 
 	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
 	@MethodSource("opdExtended")
+	void testIoGetOpdListTodayPageable(boolean opdExtended) throws Exception {
+		GeneralData.OPDEXTENDED = opdExtended;
+
+		Patient patient = testPatient.setup(false);
+		DiseaseType diseaseType = testDiseaseType.setup(false);
+
+		Disease disease = testDisease.setup(diseaseType, false);
+		disease.setCode("angal.opd.alldiseases.txt");
+		disease.getType().setCode("angal.common.alltypes.txt");
+
+		Ward ward = testWard.setup(false);
+
+		Visit nextVisit = testVisit.setup(patient, true, ward);
+
+		Opd opd = testOpd.setup(patient, disease, ward, nextVisit, true);
+		// set date to be today
+		LocalDate today = LocalDate.now();
+		opd.setDate(today.atStartOfDay());
+
+		patientIoOperationRepository.saveAndFlush(patient);
+		diseaseTypeIoOperationRepository.saveAndFlush(diseaseType);
+		diseaseIoOperationRepository.saveAndFlush(disease);
+		wardIoOperationRepository.saveAndFlush(ward);
+		visitsIoOperationRepository.saveAndFlush(nextVisit);
+
+		opdIoOperationRepository.saveAndFlush(opd);
+		Patient patient2 = testPatient.setup(false);
+		DiseaseType diseaseType2 = testDiseaseType.setup(false);
+
+		Disease disease2 = testDisease.setup(diseaseType2, false);
+		disease2.setCode("299");
+
+		Ward ward2 = testWard.setup(false);
+		ward2.setCode("ZZ");
+
+		Visit nextVisit2 = testVisit.setup(patient, true, ward2);
+
+		Opd opd2 = testOpd.setup(patient2, disease2, ward2, nextVisit2, true);
+		// set date to be 14 days ago (not within the TODAY test)
+		opd2.setDate(today.minusDays(14).atStartOfDay());
+
+		patientIoOperationRepository.saveAndFlush(patient2);
+		diseaseTypeIoOperationRepository.saveAndFlush(diseaseType2);
+		diseaseIoOperationRepository.saveAndFlush(disease2);
+		wardIoOperationRepository.saveAndFlush(ward2);
+		visitsIoOperationRepository.saveAndFlush(nextVisit2);
+		opdIoOperationRepository.saveAndFlush(opd2);
+
+		int page = setupTestPage(true);
+		int size = setupTestSize(true);
+		Pageable pageable = PageRequest.of(page,size);
+
+		List<Opd> opds = opdIoOperation.getOpdList(false, pageable);
+		assertThat(opds).hasSize(1);
+		assertThat(opds.get(opds.size() - 1).getCode()).isEqualTo(opd.getCode());
+	}
+
+	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
+	@MethodSource("opdExtended")
 	void testIoGetOpdListLastWeek(boolean opdExtended) throws Exception {
 		GeneralData.OPDEXTENDED = opdExtended;
 		Patient patient = testPatient.setup(false);
@@ -297,6 +431,68 @@ class Tests extends OHCoreTestCase {
 		wardIoOperationRepository.saveAndFlush(ward2);
 		visitsIoOperationRepository.saveAndFlush(nextVisit2);
 		opdIoOperationRepository.saveAndFlush(opd2);
+
+		List<Opd> opds = opdIoOperation.getOpdList(true);
+		assertThat(opds).hasSize(1);
+		assertThat(opds.get(opds.size() - 1).getCode()).isEqualTo(opd.getCode());
+	}
+
+	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
+	@MethodSource("opdExtended")
+	void testIoGetOpdListLastWeekPageable(boolean opdExtended) throws Exception {
+		GeneralData.OPDEXTENDED = opdExtended;
+		Patient patient = testPatient.setup(false);
+		DiseaseType diseaseType = testDiseaseType.setup(false);
+
+		Disease disease = testDisease.setup(diseaseType, false);
+		disease.setCode("angal.opd.alldiseases.txt");
+		disease.getType().setCode("angal.common.alltypes.txt");
+
+		Ward ward = testWard.setup(false);
+
+		Visit nextVisit = testVisit.setup(patient, true, ward);
+
+		Opd opd = testOpd.setup(patient, disease, ward, nextVisit, true);
+		LocalDate date = LocalDate.now();
+		// set date to be 3 days ago (within last week)
+		date = date.minusDays(3);
+		opd.setDate(date.atStartOfDay());
+
+		patientIoOperationRepository.saveAndFlush(patient);
+		diseaseTypeIoOperationRepository.saveAndFlush(diseaseType);
+		diseaseIoOperationRepository.saveAndFlush(disease);
+		wardIoOperationRepository.saveAndFlush(ward);
+		visitsIoOperationRepository.saveAndFlush(nextVisit);
+
+		opdIoOperationRepository.saveAndFlush(opd);
+
+		Patient patient2 = testPatient.setup(false);
+		DiseaseType diseaseType2 = testDiseaseType.setup(false);
+
+		Disease disease2 = testDisease.setup(diseaseType2, false);
+		disease2.setCode("499");
+
+		Ward ward2 = testWard.setup(false);
+		ward2.setCode("ZZ");
+
+		Visit nextVisit2 = testVisit.setup(patient, true, ward2);
+
+		Opd opd2 = testOpd.setup(patient2, disease2, ward2, nextVisit2, true);
+		LocalDate date2 = LocalDate.now();
+		// set date to be 13 days aga (not within last week)
+		date2 = date2.minusDays(13);
+		opd2.setDate(date2.atStartOfDay());
+
+		patientIoOperationRepository.saveAndFlush(patient2);
+		diseaseTypeIoOperationRepository.saveAndFlush(diseaseType2);
+		diseaseIoOperationRepository.saveAndFlush(disease2);
+		wardIoOperationRepository.saveAndFlush(ward2);
+		visitsIoOperationRepository.saveAndFlush(nextVisit2);
+		opdIoOperationRepository.saveAndFlush(opd2);
+
+		int page = setupTestPage(true);
+		int size = setupTestSize(true);
+		Pageable pageable = PageRequest.of(page,size);
 
 		List<Opd> opds = opdIoOperation.getOpdList(true);
 		assertThat(opds).hasSize(1);
@@ -490,6 +686,19 @@ class Tests extends OHCoreTestCase {
 
 	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
 	@MethodSource("opdExtended")
+	void testMgrGetOpdListPatientIdPageable(boolean opdExtended) throws Exception {
+		GeneralData.OPDEXTENDED = opdExtended;
+		int code = setupTestOpd(false);
+		int page = setupTestPage(true);
+		int size = setupTestSize(true);
+		Opd foundOpd = opdIoOperationRepository.findById(code).orElse(null);
+		assertThat(foundOpd).isNotNull();
+		List<Opd> opds = opdBrowserManager.getOpdList(foundOpd.getPatient().getCode(), page, size);
+		assertThat(opds.get(opds.size() - 1).getCode()).isEqualTo(foundOpd.getCode());
+	}
+
+	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
+	@MethodSource("opdExtended")
 	void testMgrGetOpdListPatientIdZero(boolean opdExtended) throws Exception {
 		GeneralData.OPDEXTENDED = opdExtended;
 		Patient patient = testPatient.setup(false);
@@ -516,6 +725,40 @@ class Tests extends OHCoreTestCase {
 		opdIoOperationRepository.saveAndFlush(opd);
 
 		List<Opd> opds = opdBrowserManager.getOpdList(0);
+		assertThat(opds.get(opds.size() - 1).getCode()).isEqualTo(opd.getCode());
+	}
+
+	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
+	@MethodSource("opdExtended")
+	void testMgrGetOpdListPatientIdZeroPgeable(boolean opdExtended) throws Exception {
+		GeneralData.OPDEXTENDED = opdExtended;
+		Patient patient = testPatient.setup(false);
+		DiseaseType diseaseType = testDiseaseType.setup(false);
+
+		int page = setupTestPage(true);
+		int size = setupTestSize(true);
+
+		Disease disease = testDisease.setup(diseaseType, false);
+		disease.setCode("angal.opd.alldiseases.txt");
+		disease.getType().setCode("angal.common.alltypes.txt");
+
+		Ward ward = testWard.setup(false);
+
+		Visit nextVisit = testVisit.setup(patient, true, ward);
+
+		Opd opd = testOpd.setup(patient, disease, ward, nextVisit, true);
+		LocalDate now = LocalDate.now();
+		opd.setDate(now.atStartOfDay());
+
+		patientIoOperationRepository.saveAndFlush(patient);
+		diseaseTypeIoOperationRepository.saveAndFlush(diseaseType);
+		diseaseIoOperationRepository.saveAndFlush(disease);
+		wardIoOperationRepository.saveAndFlush(ward);
+		visitsIoOperationRepository.saveAndFlush(nextVisit);
+
+		opdIoOperationRepository.saveAndFlush(opd);
+
+		List<Opd> opds = opdBrowserManager.getOpdList(0, page, size);
 		assertThat(opds.get(opds.size() - 1).getCode()).isEqualTo(opd.getCode());
 	}
 
@@ -580,6 +823,68 @@ class Tests extends OHCoreTestCase {
 
 	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
 	@MethodSource("opdExtended")
+	void testMgrGetOpdTodayPageable(boolean opdExtended) throws Exception {
+		GeneralData.OPDEXTENDED = opdExtended;
+
+		Patient patient = testPatient.setup(false);
+		DiseaseType diseaseType = testDiseaseType.setup(false);
+
+		Disease disease = testDisease.setup(diseaseType, false);
+		disease.setCode("angal.opd.alldiseases.txt");
+		disease.getType().setCode("angal.common.alltypes.txt");
+
+		Ward ward = testWard.setup(false);
+
+		Visit nextVisit = testVisit.setup(patient, true, ward);
+
+		Opd opd = testOpd.setup(patient, disease, ward, nextVisit, true);
+		// set date to be today
+		LocalDate today = LocalDate.now();
+		opd.setDate(today.atStartOfDay());
+
+		patientIoOperationRepository.saveAndFlush(patient);
+		diseaseTypeIoOperationRepository.saveAndFlush(diseaseType);
+		diseaseIoOperationRepository.saveAndFlush(disease);
+		wardIoOperationRepository.saveAndFlush(ward);
+		visitsIoOperationRepository.saveAndFlush(nextVisit);
+
+		opdIoOperationRepository.saveAndFlush(opd);
+
+		Patient patient2 = testPatient.setup(false);
+		DiseaseType diseaseType2 = testDiseaseType.setup(false);
+		diseaseType2.setCode("AZ");
+
+		Disease disease2 = testDisease.setup(diseaseType2, false);
+		disease2.setCode("399");
+
+		Ward ward2 = testWard.setup(false);
+		ward2.setCode("ZZ");
+
+		Visit nextVisit2 = testVisit.setup(patient, true, ward2);
+
+		Opd opd2 = testOpd.setup(patient2, disease2, ward2, nextVisit2, true);
+		LocalDate now = LocalDate.now();
+		// set date to be 14 days ago (not within the TODAY test)
+		now = now.minusDays(14);
+		opd2.setDate(now.atStartOfDay());
+
+		patientIoOperationRepository.saveAndFlush(patient2);
+		diseaseTypeIoOperationRepository.saveAndFlush(diseaseType2);
+		diseaseIoOperationRepository.saveAndFlush(disease2);
+		wardIoOperationRepository.saveAndFlush(ward2);
+		visitsIoOperationRepository.saveAndFlush(nextVisit2);
+		opdIoOperationRepository.saveAndFlush(opd2);
+
+		int page = setupTestPage(true);
+		int size = setupTestSize(true);
+
+		List<Opd> opds = opdBrowserManager.getOpd(false, page, size);
+		assertThat(opds).hasSize(1);
+		assertThat(opds.get(opds.size() - 1).getCode()).isEqualTo(opd.getCode());
+	}
+
+	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
+	@MethodSource("opdExtended")
 	void testMgrGetOpdLastWeek(boolean opdExtended) throws Exception {
 		GeneralData.OPDEXTENDED = opdExtended;
 		Patient patient = testPatient.setup(false);
@@ -632,6 +937,67 @@ class Tests extends OHCoreTestCase {
 		opdIoOperationRepository.saveAndFlush(opd2);
 
 		List<Opd> opds = opdBrowserManager.getOpd(true);
+		assertThat(opds).hasSize(1);
+		assertThat(opds.get(opds.size() - 1).getCode()).isEqualTo(opd.getCode());
+	}
+
+	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
+	@MethodSource("opdExtended")
+	void testMgrGetOpdLastWeekPageable(boolean opdExtended) throws Exception {
+		GeneralData.OPDEXTENDED = opdExtended;
+		Patient patient = testPatient.setup(false);
+		DiseaseType diseaseType = testDiseaseType.setup(false);
+
+		Disease disease = testDisease.setup(diseaseType, false);
+		disease.setCode("angal.opd.alldiseases.txt");
+		disease.getType().setCode("angal.common.alltypes.txt");
+
+		Ward ward = testWard.setup(false);
+
+		Visit nextVisit = testVisit.setup(patient, true, ward);
+
+		Opd opd = testOpd.setup(patient, disease, ward, nextVisit, true);
+		LocalDate date = LocalDate.now();
+		// set date to be 3 days ago (within last week)
+		date = date.minusDays(3);
+		opd.setDate(date.atStartOfDay());
+
+		patientIoOperationRepository.saveAndFlush(patient);
+		diseaseTypeIoOperationRepository.saveAndFlush(diseaseType);
+		diseaseIoOperationRepository.saveAndFlush(disease);
+		wardIoOperationRepository.saveAndFlush(ward);
+		visitsIoOperationRepository.saveAndFlush(nextVisit);
+
+		opdIoOperationRepository.saveAndFlush(opd);
+
+		Patient patient2 = testPatient.setup(false);
+		DiseaseType diseaseType2 = testDiseaseType.setup(false);
+
+		Disease disease2 = testDisease.setup(diseaseType2, false);
+		disease2.setCode("799");
+
+		Ward ward2 = testWard.setup(false);
+		ward2.setCode("ZZ");
+
+		Visit nextVisit2 = testVisit.setup(patient, true, ward2);
+
+		Opd opd2 = testOpd.setup(patient2, disease2, ward2, nextVisit2, true);
+		LocalDate date2 = LocalDate.now();
+		// set date to be 13 days ago (not within last week)
+		date2 = date2.minusDays(13);
+		opd2.setDate(date2.atStartOfDay());
+
+		patientIoOperationRepository.saveAndFlush(patient2);
+		diseaseTypeIoOperationRepository.saveAndFlush(diseaseType2);
+		diseaseIoOperationRepository.saveAndFlush(disease2);
+		wardIoOperationRepository.saveAndFlush(ward2);
+		visitsIoOperationRepository.saveAndFlush(nextVisit2);
+		opdIoOperationRepository.saveAndFlush(opd2);
+
+		int page = setupTestPage(true);
+		int size = setupTestSize(true);
+
+		List<Opd> opds = opdBrowserManager.getOpd(true, page, size);
 		assertThat(opds).hasSize(1);
 		assertThat(opds.get(opds.size() - 1).getCode()).isEqualTo(opd.getCode());
 	}
@@ -1250,6 +1616,16 @@ class Tests extends OHCoreTestCase {
 		Patient patient = testPatient.setup(usingSet);
 		patientIoOperationRepository.saveAndFlush(patient);
 		return patient;
+	}
+
+	private int setupTestPage(boolean usingSet) throws Exception {
+		int page = 0;
+		return page;
+	}
+
+	private int setupTestSize(boolean usingSet) throws Exception {
+		int size = 4;
+		return size;
 	}
 
 	private int setupTestOpd(boolean usingSet) throws Exception {

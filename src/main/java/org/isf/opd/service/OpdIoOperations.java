@@ -179,6 +179,25 @@ public class OpdIoOperations {
 	}
 
 	/**
+	 * Return all {@link Opd}s associated to specified patient ID.
+	 *
+	 * @param patID - the patient ID
+	 * @param pageable
+	 * @return the list of {@link Opd}s associated to specified patient ID.
+	 * 		   the whole list of {@link Opd}s if {@code 0} is passed.
+	 * @throws OHServiceException
+	 */
+	public List<Opd> getOpdList(int patID, Pageable pageable) throws OHServiceException {
+		Page<Opd> page;
+		if(patID == 0) {
+			page = repository.findAllOrderByProgYearDescPageable(pageable);}
+		else{
+			page = repository.findAllByPatient_CodeOrderByProgYearDescPageable(patID, pageable);
+		}
+		return page.getContent();
+	}
+
+	/**
 	 * Insert a new {@link Opd} into the db.
 	 * 
 	 * @param opd - an {@link Opd}
@@ -279,6 +298,16 @@ public class OpdIoOperations {
 	}
 
 	/**
+	 * Get a list of {@link Opd}s with the specified Progressive in Year number.
+	 * @param code - the OPD code
+	 * @param pageable
+	 * @return a list of OPD or an empty list
+	 */
+	public List<Opd> getOpdByProgYear(Integer code, Pageable pageable) {
+		return repository.findByProgYear(code, pageable).getContent();
+	}
+
+	/**
 	 * Retrieves a page of {@link Opd}s within specified dates and parameters.
 	 * 
 	 * @param ward
@@ -322,5 +351,25 @@ public class OpdIoOperations {
 		data.setData(pages.getContent());
 		data.setPageInfo(PageInfo.from(pages));
 		return data;
+	}
+
+	/**
+	 * Retrieves a page of {@link Opd}s within specified dates and parameters.
+	 *
+	 * @param ward
+	 * @param diseaseTypeCode
+	 * @param diseaseCode
+	 * @param dateFrom
+	 * @param dateTo
+	 * @param ageFrom
+	 * @param ageTo
+	 * @param sex
+	 * @param newPatient
+	 * @param user
+	 * @return a {@link PagedResponse} object that contains the {@link Opd}s.
+	 * @throws OHServiceException
+	 */
+	public long countTotalOpds(Ward ward, String diseaseTypeCode, String diseaseCode, LocalDate dateFrom, LocalDate dateTo, int ageFrom, int ageTo, char sex, char newPatient, String user)throws OHServiceException {
+		return repository.getCountTotalMovements(ward, diseaseTypeCode, diseaseCode, dateFrom, dateTo, ageFrom, ageTo, sex, newPatient, user);
 	}
 }

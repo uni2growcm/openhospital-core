@@ -27,6 +27,7 @@ import java.util.List;
 import org.isf.opd.model.Opd;
 import org.isf.ward.model.Ward;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Pageable;
 
 public interface OpdIoOperationRepositoryCustom {
 
@@ -34,6 +35,8 @@ public interface OpdIoOperationRepositoryCustom {
 			char newPatient, String user);
 
 	List<Opd> findAllOpdWhereParams(Ward ward, String diseaseTypeCode, String diseaseCode, LocalDate dateFrom, LocalDate dateTo, int ageFrom, int ageTo, char sex,
-									char newPatient, String user, Pageable pageable);
+			char newPatient, String user, Pageable pageable);
 
+	long getCountTotalMovements(Ward ward, String diseaseTypeCode, String diseaseCode, LocalDate dateFrom, LocalDate dateTo, int ageFrom, int ageTo, char sex,
+			char newPatient, String user);
 }
