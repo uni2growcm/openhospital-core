@@ -634,6 +634,27 @@ class Tests extends OHCoreTestCase {
 
 	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
 	@MethodSource("opdExtended")
+	void testIoCountTotalOpds(boolean opdExtended) throws Exception{
+		GeneralData.OPDEXTENDED = opdExtended;
+		int code = setupTestOpd(false);
+		Opd foundOpd = opdIoOperationRepository.findById(code).orElse(null);
+		assertThat(foundOpd).isNotNull();
+		long opds = opdIoOperation.countTotalOpds(
+			foundOpd.getWard(),
+			foundOpd.getDisease().getType().getCode(),
+			foundOpd.getDisease().getCode(),
+			foundOpd.getDate().toLocalDate(),
+			foundOpd.getDate().toLocalDate(),
+			foundOpd.getAge() - 1,
+			foundOpd.getAge() + 1,
+			foundOpd.getSex(),
+			foundOpd.getNewPatient(),
+			foundOpd.getUserID());
+		assertThat(opds).isEqualTo(1);
+	}
+
+	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
+	@MethodSource("opdExtended")
 	void testListenerShouldUpdatePatientToMergedWhenPatientMergedEventArrive(boolean opdExtended) throws Exception {
 		GeneralData.OPDEXTENDED = opdExtended;
 		// given:
@@ -1002,6 +1023,7 @@ class Tests extends OHCoreTestCase {
 		assertThat(opds.get(opds.size() - 1).getCode()).isEqualTo(opd.getCode());
 	}
 
+
 	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
 	@MethodSource("opdExtended")
 	void testMgrNewOpd(boolean opdExtended) throws Exception {
@@ -1345,6 +1367,28 @@ class Tests extends OHCoreTestCase {
 				new Condition<Throwable>(
 					e -> ((OHServiceException) e).getMessages().size() == 1, "Expecting single validation error")
 			);
+	}
+
+
+	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
+	@MethodSource("opdExtended")
+	void testMgrCountTotalOpds(boolean opdExtended) throws Exception{
+		GeneralData.OPDEXTENDED = opdExtended;
+		int code = setupTestOpd(false);
+		Opd foundOpd = opdIoOperationRepository.findById(code).orElse(null);
+		assertThat(foundOpd).isNotNull();
+		long countOpd = opdBrowserManager.countTotalOpds(
+			foundOpd.getWard(),
+			foundOpd.getDisease().getType().getCode(),
+			foundOpd.getDisease().getCode(),
+			foundOpd.getDate().toLocalDate(),
+			foundOpd.getDate().toLocalDate(),
+			foundOpd.getAge() - 1,
+			foundOpd.getAge() + 1,
+			foundOpd.getSex(),
+			foundOpd.getNewPatient(),
+			foundOpd.getUserID());
+		assertThat(countOpd).isEqualTo(1);
 	}
 
 	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
