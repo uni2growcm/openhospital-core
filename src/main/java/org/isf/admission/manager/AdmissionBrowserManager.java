@@ -41,6 +41,7 @@ import org.isf.utils.exception.model.OHExceptionMessage;
 import org.isf.utils.pagination.PagedResponse;
 import org.isf.utils.time.TimeTools;
 import org.isf.ward.model.Ward;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
@@ -548,5 +549,20 @@ public class AdmissionBrowserManager {
 	 */
 	public List<Admission> getAdmissionsBySex(char sex) throws OHServiceException {
 		return ioOperations.getAdmissionsBySex(sex);
+	}
+	
+	public List<Admission> getAdmissionsBySex(char sex, String name) throws OHServiceException {
+		return ioOperations.getAdmissionsBySex(sex, name);
+	}
+	
+	/**
+	 * Get patients filtered by sex.
+	 *
+	 * @param sex The sex to consider.
+	 * @return {@link List} of {@link Admission}s matching the given sex, or empty list of no match.
+	 * @throws OHServiceException When error occurs during database request.
+	 */
+	public List<Admission> getAdmissionsBySex(char sex, int currentPage, int pageSize, String name) throws OHServiceException {
+		return ioOperations.getAdmissionsBySex(sex, currentPage, pageSize, name);
 	}
 }

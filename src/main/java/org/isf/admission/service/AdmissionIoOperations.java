@@ -28,6 +28,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.Hibernate;
@@ -47,6 +48,7 @@ import org.isf.utils.pagination.PageInfo;
 import org.isf.utils.pagination.PagedResponse;
 import org.isf.utils.time.TimeTools;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -402,5 +404,60 @@ public class AdmissionIoOperations {
 	 */
 	public List<Admission> getAdmissionsBySex(char sex) throws OHServiceException {
 		return repository.findAllBySex(sex);
+	}
+	
+	public List<Admission> getAdmissionsBySex(char sex, String name) throws OHServiceException {
+		List<Admission> results = new ArrayList<>();
+		for (Admission pregnancyPatient : repository.findAllBySex(sex)) {
+			if (!name.isEmpty()) {
+				String[] patterns = name.split(" ");
+				String searchName = pregnancyPatient.getPatient().getName().toLowerCase();
+				boolean patternFound = false;
+				for (String pattern : patterns) {
+					if (searchName.contains(pattern.toLowerCase())) {
+						patternFound = true;
+						break;
+					}
+				}
+				if (patternFound) {
+					results.add(pregnancyPatient);
+				}
+			} else {
+				results.add(pregnancyPatient);
+			}
+		}
+		return results;
+	}
+	
+	/**
+	 * Get patients filtered by sex.
+	 *
+	 * @param sex The sex to consider.
+	 * @param pageable.
+	 * @return {@link Page} of {@link Admission}s matching the given sex and pageable Object, or empty page of no match.
+	 * @throws OHServiceException When error occurs during database request.
+	 */
+	public List<Admission> getAdmissionsBySex(char sex, int currentPage, int pageSize, String name) throws OHServiceException {
+		Pageable pageable = PageRequest.of(currentPage, pageSize);
+		List<Admission> results = new ArrayList<>();
+		for (Admission pregnancyPatient : repository.findAllBySex(sex, pageable).getContent()) {
+			if (!name.isEmpty()) {
+				String[] patterns = name.split(" ");
+				String searchName = pregnancyPatient.getPatient().getName().toLowerCase();
+				boolean patternFound = false;
+				for (String pattern : patterns) {
+					if (searchName.contains(pattern.toLowerCase())) {
+						patternFound = true;
+						break;
+					}
+				}
+				if (patternFound) {
+					results.add(pregnancyPatient);
+				}
+			} else {
+				results.add(pregnancyPatient);
+			}
+		}
+		return results;
 	}
 }
