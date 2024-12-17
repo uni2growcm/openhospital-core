@@ -224,42 +224,35 @@ public class OpdIoOperationRepositoryImpl implements OpdIoOperationRepositoryCus
 		char newPatient,
 		String user) {
 
-		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-		CriteriaQuery<Long> countQuery = builder.createQuery(Long.class);
-		Root<Opd> root = countQuery.from(Opd.class);
-
+		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+		CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
+		Root<Opd> opd = countQuery.from(Opd.class);
 		List<Predicate> predicates = new ArrayList<>();
 
 		if (ward != null) {
-			predicates.add(builder.equal(root.<Ward>get("ward"), ward));
+			predicates.add(cb.equal(opd.join("ward").get("code"), ward.getCode()));
 		}
-		if (diseaseTypeCode != null) {
-			predicates.add(builder.equal(root.<Disease>get("diseaseTypeCode"), diseaseTypeCode));
+		if (diseaseTypeCode != null && !diseaseTypeCode.equals("")) {
+			predicates.add(cb.equal(opd.join("disease").join("diseaseType").get("code"), diseaseTypeCode));
 		}
-		if (diseaseCode != null) {
-			predicates.add(builder.equal(root.<Disease>get("diseaseCode"), diseaseCode));
+		if (diseaseCode != null && !diseaseCode.equals("")) {
+			predicates.add(cb.equal(opd.join("disease").get("code"), diseaseCode));
 		}
-		if (dateFrom != null && dateTo != null) {
-			predicates.add(builder.between(root.<LocalDate>get("date"), dateFrom, dateTo));
+		if (ageFrom != 0 || ageTo != 0) {
+			predicates.add(cb.between(opd.<Integer>get("age"), ageFrom, ageTo));
 		}
-		if (ageFrom >= 0 && ageTo >= 0) {
-			predicates.add(builder.between(root.<Integer>get("age"), ageFrom, ageTo));
+		if (sex != 'A') {
+			predicates.add(cb.equal(opd.get("sex"), sex));
 		}
-		if (sex != '\0') {
-			predicates.add(builder.equal(root.<Character>get("sex"), sex));
-		}
-		if (newPatient != '\0') {
-			predicates.add(builder.equal(root.<Character>get("newPatient"), newPatient));
+		if (newPatient != 'A') {
+			predicates.add(cb.equal(opd.get("newPatient"), newPatient));
 		}
 		if (user != null) {
-			predicates.add(builder.equal(root.<String>get("user"), user));
+			predicates.add(cb.equal(opd.get("userID"), user));
 		}
-
-		countQuery.select(builder.count(root)).where(predicates.toArray(new Predicate[0]));
+		predicates.add(cb.between(opd.<LocalDateTime>get("date"), dateFrom.atStartOfDay(), dateTo.plusDays(1).atStartOfDay()));
+		countQuery.select(cb.count(opd)).where(predicates.toArray(new Predicate[0]));
 
 		return entityManager.createQuery(countQuery).getSingleResult();
 	}
-
-
-
 }
