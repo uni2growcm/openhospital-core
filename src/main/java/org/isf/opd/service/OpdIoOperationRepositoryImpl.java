@@ -47,7 +47,7 @@ public class OpdIoOperationRepositoryImpl implements OpdIoOperationRepositoryCus
 	@PersistenceContext
 	private EntityManager entityManager;
 
-	@SuppressWarnings("unchecked")	
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<Opd> findAllOpdWhereParams(
 			Ward ward,
@@ -129,8 +129,8 @@ public class OpdIoOperationRepositoryImpl implements OpdIoOperationRepositoryCus
 		Ward ward,
 		String diseaseTypeCode,
 		String diseaseCode,
-		LocalDate dateFrom,
-		LocalDate dateTo,
+		LocalDateTime dateFrom,
+		LocalDateTime dateTo,
 		int ageFrom,
 		int ageTo,
 		char sex,
@@ -159,8 +159,8 @@ public class OpdIoOperationRepositoryImpl implements OpdIoOperationRepositoryCus
 		Ward ward,
 		String diseaseTypeCode,
 		String diseaseCode,
-		LocalDate dateFrom,
-		LocalDate dateTo,
+		LocalDateTime dateFrom,
+		LocalDateTime dateTo,
 		int ageFrom,
 		int ageTo,
 		char sex,
@@ -196,7 +196,7 @@ public class OpdIoOperationRepositoryImpl implements OpdIoOperationRepositoryCus
 		if (user != null) {
 			predicates.add(cb.equal(opd.get("userID"), user));
 		}
-		predicates.add(cb.between(opd.<LocalDateTime>get("date"), dateFrom.atStartOfDay(), dateTo.plusDays(1).atStartOfDay()));
+		predicates.add(cb.between(opd.<LocalDateTime>get("date"), dateFrom, dateTo.plusDays(1)));
 
 		query.where(cb.and(predicates.toArray(new Predicate[0])));
 
@@ -212,12 +212,12 @@ public class OpdIoOperationRepositoryImpl implements OpdIoOperationRepositoryCus
 	}
 
 	@Override
-	public long getCountTotalMovements(
+	public long getCountTotalOpds(
 		Ward ward,
 		String diseaseTypeCode,
 		String diseaseCode,
-		LocalDate dateFrom,
-		LocalDate dateTo,
+		LocalDateTime dateFrom,
+		LocalDateTime dateTo,
 		int ageFrom,
 		int ageTo,
 		char sex,
@@ -250,7 +250,7 @@ public class OpdIoOperationRepositoryImpl implements OpdIoOperationRepositoryCus
 		if (user != null) {
 			predicates.add(cb.equal(opd.get("userID"), user));
 		}
-		predicates.add(cb.between(opd.<LocalDateTime>get("date"), dateFrom.atStartOfDay(), dateTo.plusDays(1).atStartOfDay()));
+		predicates.add(cb.between(opd.<LocalDateTime>get("date"), dateFrom, dateTo.plusDays(1)));
 		countQuery.select(cb.count(opd)).where(predicates.toArray(new Predicate[0]));
 
 		return entityManager.createQuery(countQuery).getSingleResult();

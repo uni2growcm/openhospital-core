@@ -388,6 +388,15 @@ public class OpdBrowserManager {
 	 * @throws OHServiceException
 	 */
 	public long countTotalOpds(Ward ward, String diseaseTypeCode, String diseaseCode, LocalDate dateFrom, LocalDate dateTo, int ageFrom, int ageTo, char sex, char newPatient, String user) throws OHServiceException {
+		if (ward == null && diseaseTypeCode == null && diseaseCode == null && dateFrom == null && dateTo == null &&
+			ageFrom == 0 && ageTo == 0 && sex == '\0' && newPatient == '\0' && user == null) {
+				return ioOperations.getOpdList(false).size();
+		}
+
 		return ioOperations.countTotalOpds(ward, diseaseTypeCode, diseaseCode, dateFrom, dateTo, ageFrom, ageTo, sex, newPatient, user);
+	}
+
+	public long countTotalOpds() throws OHServiceException {
+		return countTotalOpds(null, null, null, null, null, 0, 0, '\0', '\0', null);
 	}
 }

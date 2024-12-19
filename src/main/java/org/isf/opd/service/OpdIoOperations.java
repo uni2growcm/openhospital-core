@@ -23,6 +23,7 @@ package org.isf.opd.service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -163,7 +164,9 @@ public class OpdIoOperations {
 		char newPatient,
 		String user,
 		Pageable pageable) throws OHServiceException {
-		return repository.findAllOpdWhereParams(ward, diseaseTypeCode, diseaseCode, dateFrom, dateTo, ageFrom, ageTo, sex, newPatient, user, pageable);
+		LocalDateTime startOfDay = dateFrom.atStartOfDay(); // 00:00:00
+		LocalDateTime endOfDay = dateTo.atTime(LocalTime.MAX); // 23:59:59
+		return repository.findAllOpdWhereParams(ward, diseaseTypeCode, diseaseCode, startOfDay, endOfDay, ageFrom, ageTo, sex, newPatient, user, pageable);
 	}
 
 	/**
@@ -370,6 +373,8 @@ public class OpdIoOperations {
 	 * @throws OHServiceException
 	 */
 	public long countTotalOpds(Ward ward, String diseaseTypeCode, String diseaseCode, LocalDate dateFrom, LocalDate dateTo, int ageFrom, int ageTo, char sex, char newPatient, String user)throws OHServiceException {
-		return repository.getCountTotalMovements(ward, diseaseTypeCode, diseaseCode, dateFrom, dateTo, ageFrom, ageTo, sex, newPatient, user);
+		LocalDateTime startOfDay = dateFrom.atStartOfDay(); // 00:00:00
+		LocalDateTime endOfDay = dateTo.atTime(LocalTime.MAX); // 23:59:59
+		return repository.getCountTotalOpds(ward, diseaseTypeCode, diseaseCode, startOfDay, endOfDay, ageFrom, ageTo, sex, newPatient, user);
 	}
 }
