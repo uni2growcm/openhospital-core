@@ -93,5 +93,4 @@ public interface MedicalsIoOperationRepository extends JpaRepository<Medical, In
 
 	@Query(value = "SELECT m FROM Medical m")
 	Page<Medical> findAllPageable(Pageable pageable);
-	
 }

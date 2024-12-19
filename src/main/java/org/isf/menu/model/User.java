@@ -186,5 +186,4 @@ public class User extends Auditable<String> {
 
 		return this.hashCode;
 	}
-
 }//class User
