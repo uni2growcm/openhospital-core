@@ -8,11 +8,11 @@ import java.util.List;
 
 @Repository
 public interface PregnancyIoOperationRepositoryCustom {
-	List<Admission> findPregnancyPatientBySexAndName(String name, String sex);
+	List<Admission> findPregnancyPatientBySexAndName(String name, Character sex);
 
-	List<Admission> findPregnancyPatientBySexAndName(String name, String sex, Pageable pageable);
+	List<Admission> findPregnancyPatientBySexAndName(String name, Character sex, Pageable pageable);
 
-	List<Admission> findPregnancyPatientBySex(String sex);
+	List<Admission> findPregnancyPatientBySex(Character sex);
 
-	Long getCountTotalPregnancyPatient(String name, String sex);
+	Long getCountTotalPregnancyPatient(String name, Character sex);
 }

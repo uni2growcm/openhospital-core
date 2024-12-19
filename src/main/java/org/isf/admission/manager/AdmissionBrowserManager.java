@@ -540,29 +540,4 @@ public class AdmissionBrowserManager {
 						|| (diseaseOut2 != null && diseaseOut3 != null && diseaseOut2.getCode().equals(diseaseOut3.getCode()));
 	}
 	
-	/**
-	 * Get patients filtered by sex.
-	 *
-	 * @param sex The sex to consider.
-	 * @return {@link List} of {@link Admission}s matching the given sex, or empty list of no match.
-	 * @throws OHServiceException When error occurs during database request.
-	 */
-	public List<Admission> getAdmissionsBySex(char sex) throws OHServiceException {
-		return ioOperations.getAdmissionsBySex(sex);
-	}
-	
-	public List<Admission> getAdmissionsBySex(char sex, String name) throws OHServiceException {
-		return ioOperations.getAdmissionsBySex(sex, name);
-	}
-	
-	/**
-	 * Get patients filtered by sex.
-	 *
-	 * @param sex The sex to consider.
-	 * @return {@link List} of {@link Admission}s matching the given sex, or empty list of no match.
-	 * @throws OHServiceException When error occurs during database request.
-	 */
-	public List<Admission> getAdmissionsBySex(char sex, int currentPage, int pageSize, String name) throws OHServiceException {
-		return ioOperations.getAdmissionsBySex(sex, currentPage, pageSize, name);
-	}
 }

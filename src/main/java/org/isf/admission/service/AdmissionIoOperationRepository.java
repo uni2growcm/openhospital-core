@@ -68,11 +68,4 @@ public interface AdmissionIoOperationRepository extends JpaRepository<Admission,
 
 	@Query("select count(a) from Admission a where active=1 and deleted not like 'Y'")
 	long countAllActiveNotDeletedAdmissions();
-	
-	@Query(value = "select a FROM Admission a WHERE a.admitted =1 and a.patient.sex = :sex and a.deleted = 'N'")
-	List<Admission> findAllBySex(@Param("sex") Character sex);
-	
-	@Query(value = "select a FROM Admission a WHERE a.admitted =1 and a.patient.sex = :sex and a.deleted = 'N'")
-	Page<Admission> findAllBySex(@Param("sex") Character sex, Pageable pageable );
-	
 }

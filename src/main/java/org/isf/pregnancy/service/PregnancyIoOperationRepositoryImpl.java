@@ -22,21 +22,21 @@ public class PregnancyIoOperationRepositoryImpl implements PregnancyIoOperationR
 	private EntityManager entityManager;
 
 	@Override
-	public List<Admission> findPregnancyPatientBySexAndName(String name, String sex) {
+	public List<Admission> findPregnancyPatientBySexAndName(String name, Character sex) {
 		return getPregnancyPatientBySexAndName(name, sex);
 	}
 
 	@Override
-	public List<Admission> findPregnancyPatientBySexAndName(String name, String sex, Pageable pageable) {
+	public List<Admission> findPregnancyPatientBySexAndName(String name, Character sex, Pageable pageable) {
 		return getPregnancyPatientBySexAndName(name, sex, pageable);
 	}
 
 	@Override
-	public List<Admission> findPregnancyPatientBySex(String sex) {
+	public List<Admission> findPregnancyPatientBySex(Character sex) {
 		return getPregnancyPatientBySex(sex);
 	}
 
-	private List<Admission> getPregnancyPatientBySex(String sex) {
+	private List<Admission> getPregnancyPatientBySex(Character sex) {
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<Admission> query = builder.createQuery(Admission.class);
 		Root<Admission> root = query.from(Admission.class);
@@ -61,7 +61,7 @@ public class PregnancyIoOperationRepositoryImpl implements PregnancyIoOperationR
 		return entityManager.createQuery(query).getResultList();
 	}
 
-	private List<Admission> getPregnancyPatientBySexAndName(String name, String sex) {
+	private List<Admission> getPregnancyPatientBySexAndName(String name, Character sex) {
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<Admission> query = builder.createQuery(Admission.class);
 		Root<Admission> root = query.from(Admission.class);
@@ -89,7 +89,7 @@ public class PregnancyIoOperationRepositoryImpl implements PregnancyIoOperationR
 		return entityManager.createQuery(query).getResultList();
 	}
 
-	private List<Admission> getPregnancyPatientBySexAndName(String name, String sex, Pageable pageable) {
+	private List<Admission> getPregnancyPatientBySexAndName(String name, Character sex, Pageable pageable) {
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<Admission> query = builder.createQuery(Admission.class);
 		Root<Admission> root = query.from(Admission.class);
@@ -125,7 +125,7 @@ public class PregnancyIoOperationRepositoryImpl implements PregnancyIoOperationR
 	}
 
 	@Override
-	public Long getCountTotalPregnancyPatient(String name, String sex) {
+	public Long getCountTotalPregnancyPatient(String name, Character sex) {
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<Long> countQuery = builder.createQuery(Long.class);
 		Root<Admission> root = countQuery.from(Admission.class);
