@@ -41,7 +41,6 @@ import org.isf.utils.exception.model.OHExceptionMessage;
 import org.isf.utils.pagination.PagedResponse;
 import org.isf.utils.time.TimeTools;
 import org.isf.ward.model.Ward;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
@@ -539,5 +538,4 @@ public class AdmissionBrowserManager {
 						|| (diseaseOut3 != null && diseaseOut1.getCode().equals(diseaseOut3.getCode()))
 						|| (diseaseOut2 != null && diseaseOut3 != null && diseaseOut2.getCode().equals(diseaseOut3.getCode()));
 	}
-	
 }

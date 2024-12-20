@@ -37,6 +37,5 @@ public interface AdmissionIoOperationRepositoryCustom {
 	 * @param admissionId
 	 */
 	record PatientAdmission(Integer patientId, Integer admissionId) {
-
 	}
 }

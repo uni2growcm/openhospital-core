@@ -28,7 +28,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.Hibernate;
@@ -48,7 +47,6 @@ import org.isf.utils.pagination.PageInfo;
 import org.isf.utils.pagination.PagedResponse;
 import org.isf.utils.time.TimeTools;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
