@@ -166,8 +166,8 @@ public class OpdIoOperationRepositoryImpl implements OpdIoOperationRepositoryCus
 		char sex,
 		char newPatient,
 		String user,
-		Pageable pageable) {
-
+		Pageable pageable
+	) {
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		CriteriaQuery<Opd> query = cb.createQuery(Opd.class);
 		Root<Opd> opd = query.from(Opd.class);

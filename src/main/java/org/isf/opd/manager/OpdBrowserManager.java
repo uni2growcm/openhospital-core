@@ -167,11 +167,11 @@ public class OpdBrowserManager {
 	/**
 	 * Return all Opds of today or since one week ago
 	 *
-	 * @param oneWeek - if {@code true} return the last week, only today otherwise.
-	 * @param page
-	 * @param size
-	 * @return the list of Opds. It could be {@code null}.
-	 * @throws OHServiceException
+	 * @param oneWeek - if {@code true} return the last week, only today otherwise .
+	 * @param page the page to be fetched
+	 * @param size the number of OPDs to be fetched per page
+	 * @return the list of OPDs. It could be {@code null}.
+	 * @throws OHServiceException when fails to fetch paginated OPDs
 	 */
 	public List<Opd> getOpd(boolean oneWeek, int page, int size) throws OHServiceException {
 		Pageable pageable = PageRequest.of(page, size);
@@ -211,10 +211,10 @@ public class OpdBrowserManager {
 	 * @param sex
 	 * @param newPatient
 	 * @param user
-	 * @param page
-	 * @param size
+	 * @param page the page to be fetched
+	 * @param size the number of OPD to be fetched per page
 	 * @return the list of Opds. It could be {@code null}.
-	 * @throws OHServiceException
+	 * @throws OHServiceException when fails to fetch paginated OPDs
 	 */
 	public List<Opd> getOpd(Ward ward, String diseaseTypeCode, String diseaseCode, LocalDate dateFrom, LocalDate dateTo, int ageFrom, int ageTo, char sex, char newPatient, String user, int page, int size) throws OHServiceException {
 		Pageable pageable = PageRequest.of(page, size);
@@ -237,11 +237,11 @@ public class OpdBrowserManager {
 	 * Returns all {@link Opd}s associated to specified patient ID
 	 *
 	 * @param patientcode - the patient ID
-	 * @param page
-	 * @param size
+	 * @param page the page to be fetched
+	 * @param size the number of OPDs to be fetched per page
 	 * @return the list of {@link Opd}s associated to specified patient ID.
 	 * the whole list of {@link Opd}s if {@code 0} is passed.
-	 * @throws OHServiceException
+	 * @throws OHServiceException when fails to fetched paginated OPDs
 	 */
 	public List<Opd> getOpdList(int patientcode, int page, int size) throws OHServiceException {
 		Pageable pageable = PageRequest.of(page, size);
@@ -340,8 +340,8 @@ public class OpdBrowserManager {
 	 * Get a list of OPD with specified Progressive in Year number
 	 *
 	 * @param code - the OPD code
-	 * @param page
-	 * @param size
+	 * @param page the page to be fetched
+	 * @param size the number of OPDs per page
 	 * @return a list of OPD or an empty list
 	 */
 	public List<Opd> getOpdByProgYear(int code, int page, int size) {
@@ -361,11 +361,11 @@ public class OpdBrowserManager {
 	 * @param ageTo
 	 * @param sex
 	 * @param newPatient
-	 * @param page
-	 * @param size
+	 * @param page the page to be fetched
+	 * @param size the number of OPDs to be fetched per page
 	 * @return the list of {@link Opd}s associated to specified patient ID.
 	 * the whole list of {@link Opd}s if {@code 0} is passed.
-	 * @throws OHServiceException
+	 * @throws OHServiceException when fails to fetched paginated OPDs
 	 */
 	public PagedResponse<Opd> getOpdPageable(Ward ward, String diseaseTypeCode, String diseaseCode, LocalDate dateFrom, LocalDate dateTo, int ageFrom, int ageTo, char sex, char newPatient, int page, int size) throws OHServiceException {
 		return ioOperations.getOpdListPageable(ward, diseaseTypeCode, diseaseCode, dateFrom, dateTo, ageFrom, ageTo, sex, newPatient, null, page, size);
@@ -385,7 +385,7 @@ public class OpdBrowserManager {
 	 * @param newPatient
 	 * @param user
 	 * @return the total number of {@link Opd}s
-	 * @throws OHServiceException
+	 * @throws OHServiceException when fails to count fetched OPDs
 	 */
 	public long countTotalOpds(Ward ward, String diseaseTypeCode, String diseaseCode, LocalDate dateFrom, LocalDate dateTo, int ageFrom, int ageTo, char sex, char newPatient, String user) throws OHServiceException {
 		if (ward == null && diseaseTypeCode == null && diseaseCode == null && dateFrom == null && dateTo == null &&

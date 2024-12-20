@@ -73,9 +73,9 @@ public class OpdIoOperations {
 	 * Return all {@link Opd}s for today or one week ago.
 	 *
 	 * @param oneWeek - if {@code true} return the last week, only today otherwise.
-	 * @param pageable
-	 * @return the list of Opds. It could be {@code empty}.
-	 * @throws OHServiceException
+	 * @param pageable to fetch paginated OPD list
+	 * @return the list of OPDs. It could be {@code empty}.
+	 * @throws OHServiceException when fails to fetch paginated OPDs
 	 */
 	public List<Opd> getOpdList(boolean oneWeek, Pageable pageable) throws OHServiceException {
 		LocalDate dateTo = LocalDate.now();
@@ -148,9 +148,9 @@ public class OpdIoOperations {
 	 * @param sex
 	 * @param newPatient
 	 * @param user
-	 * @param pageable
+	 * @param pageable to fetch paginated OPD list
 	 * @return the list of Opds. It could be {@code empty}.
-	 * @throws OHServiceException
+	 * @throws OHServiceException when fails to fetch paginated OPDs
 	 */
 	public List<Opd> getOpdList(
 		Ward ward,
@@ -185,10 +185,10 @@ public class OpdIoOperations {
 	 * Return all {@link Opd}s associated to specified patient ID.
 	 *
 	 * @param patID - the patient ID
-	 * @param pageable
+	 * @param pageable to fetch paginated OPD list
 	 * @return the list of {@link Opd}s associated to specified patient ID.
 	 * 		   the whole list of {@link Opd}s if {@code 0} is passed.
-	 * @throws OHServiceException
+	 * @throws OHServiceException when fails to Fetch OPDs with pagination
 	 */
 	public List<Opd> getOpdList(int patID, Pageable pageable) throws OHServiceException {
 		Page<Opd> page;
@@ -303,7 +303,7 @@ public class OpdIoOperations {
 	/**
 	 * Get a list of {@link Opd}s with the specified Progressive in Year number.
 	 * @param code - the OPD code
-	 * @param pageable
+	 * @param pageable to fetch paginated OPD list
 	 * @return a list of OPD or an empty list
 	 */
 	public List<Opd> getOpdByProgYear(Integer code, Pageable pageable) {
@@ -370,7 +370,7 @@ public class OpdIoOperations {
 	 * @param newPatient
 	 * @param user
 	 * @return the total number of {@link Opd}s.
-	 * @throws OHServiceException
+	 * @throws OHServiceException when fails to count fetched OPDs
 	 */
 	public long countTotalOpds(Ward ward, String diseaseTypeCode, String diseaseCode, LocalDate dateFrom, LocalDate dateTo, int ageFrom, int ageTo, char sex, char newPatient, String user)throws OHServiceException {
 		LocalDateTime startOfDay = dateFrom.atStartOfDay(); // 00:00:00
