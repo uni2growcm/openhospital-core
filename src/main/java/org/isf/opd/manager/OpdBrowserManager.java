@@ -165,20 +165,6 @@ public class OpdBrowserManager {
 	}
 
 	/**
-	 * Return all Opds of today or since one week ago
-	 *
-	 * @param oneWeek - if {@code true} return the last week, only today otherwise .
-	 * @param page the page to be fetched
-	 * @param size the number of OPDs to be fetched per page
-	 * @return the list of OPDs. It could be {@code null}.
-	 * @throws OHServiceException when fails to fetch paginated OPDs
-	 */
-	public List<Opd> getOpd(boolean oneWeek, int page, int size) throws OHServiceException {
-		Pageable pageable = PageRequest.of(page, size);
-		return ioOperations.getOpdList(oneWeek, pageable);
-	}
-
-	/**
 	 * Return all Opds within specified dates and parameters
 	 * 
 	 * @param ward

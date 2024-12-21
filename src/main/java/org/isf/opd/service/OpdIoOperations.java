@@ -70,24 +70,6 @@ public class OpdIoOperations {
 	}
 
 	/**
-	 * Return all {@link Opd}s for today or one week ago.
-	 *
-	 * @param oneWeek - if {@code true} return the last week, only today otherwise.
-	 * @param pageable to fetch paginated OPD list
-	 * @return the list of OPDs. It could be {@code empty}.
-	 * @throws OHServiceException when fails to fetch paginated OPDs
-	 */
-	public List<Opd> getOpdList(boolean oneWeek, Pageable pageable) throws OHServiceException {
-		LocalDate dateTo = LocalDate.now();
-		LocalDate dateFrom = LocalDate.now();
-		if (oneWeek) {
-			dateFrom = LocalDate.now().minusWeeks(1);
-		}
-		return getOpdList(null, MessageBundle.getMessage("angal.common.alltypes.txt"), MessageBundle.getMessage("angal.opd.alldiseases.txt"), dateFrom, dateTo,
-			0, 0, 'A', 'A', null, pageable);
-	}
-
-	/**
 	 * Retrieves creation date of the last Opd
 	 * @return creation date of the last Opd
 	 */
@@ -193,9 +175,9 @@ public class OpdIoOperations {
 	public List<Opd> getOpdList(int patID, Pageable pageable) throws OHServiceException {
 		Page<Opd> page;
 		if(patID == 0) {
-			page = repository.findAllOrderByProgYearDescPageable(pageable);}
+			page = repository.findAllByOrderByDateDesc(pageable);}
 		else{
-			page = repository.findAllByPatient_CodeOrderByProgYearDescPageable(patID, pageable);
+			page = repository.findAllByPatient_CodeOrderByDateDesc(patID, pageable);
 		}
 		return page.getContent();
 	}
