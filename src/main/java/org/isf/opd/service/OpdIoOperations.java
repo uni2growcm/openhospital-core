@@ -287,7 +287,6 @@ public class OpdIoOperations {
 	 * @param code - the OPD code
 	 * @param pageable to fetch paginated OPD list
 	 * @return a list of OPD or an empty list
-	 * @throws OHServiceException when fails to fetch paginated OPDs
 	 */
 	public List<Opd> getOpdByProgYear(Integer code, Pageable pageable) {
 		return repository.findByProgYear(code, pageable).getContent();
