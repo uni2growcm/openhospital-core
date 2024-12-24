@@ -36,7 +36,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class DicomTypeBrowserManager {
 
-	private DicomTypeIoOperation ioOperations;
+	private final DicomTypeIoOperation ioOperations;
 
 	public DicomTypeBrowserManager(DicomTypeIoOperation dicomTypeIoOperation) {
 		this.ioOperations = dicomTypeIoOperation;

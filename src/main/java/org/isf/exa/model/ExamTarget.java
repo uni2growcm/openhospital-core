@@ -19,26 +19,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.isf.exa.service;
+package org.isf.exa.model;
 
-import java.util.List;
-
-import org.isf.exa.model.Exam;
-import org.isf.exa.model.ExamTarget;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.stereotype.Repository;
-
-@Repository
-public interface ExamIoOperationRepository extends JpaRepository<Exam, String> {
-
-	List<Exam> findByOrderByDescriptionAscDescriptionAsc();
-
-	List<Exam> findByDescriptionContainingOrderByExamtypeDescriptionAscDescriptionAsc(String description);
-
-	List<Exam> findByExamtype_DescriptionContainingOrderByExamtypeDescriptionAscDescriptionAsc(String description);
-
-	List<Exam> findByTargetOrderByDescriptionAsc(ExamTarget target);
-
-	List<Exam> findByTargetAndExamtypeDescriptionOrderByDescriptionAsc(ExamTarget target, String examType);
+public enum ExamTarget {
+	no, prenatal, postnatal, both
 }
