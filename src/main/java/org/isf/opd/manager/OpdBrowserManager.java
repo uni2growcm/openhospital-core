@@ -347,11 +347,11 @@ public class OpdBrowserManager {
 	 * @param ageTo
 	 * @param sex
 	 * @param newPatient
-	 * @param page the page to be fetched
-	 * @param size the number of OPDs to be fetched per page
+	 * @param page
+	 * @param size
 	 * @return the list of {@link Opd}s associated to specified patient ID.
 	 * the whole list of {@link Opd}s if {@code 0} is passed.
-	 * @throws OHServiceException when fails to fetched paginated OPDs
+	 * @throws OHServiceException
 	 */
 	public PagedResponse<Opd> getOpdPageable(Ward ward, String diseaseTypeCode, String diseaseCode, LocalDate dateFrom, LocalDate dateTo, int ageFrom, int ageTo, char sex, char newPatient, int page, int size) throws OHServiceException {
 		return ioOperations.getOpdListPageable(ward, diseaseTypeCode, diseaseCode, dateFrom, dateTo, ageFrom, ageTo, sex, newPatient, null, page, size);
