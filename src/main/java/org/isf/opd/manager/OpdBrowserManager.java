@@ -386,4 +386,26 @@ public class OpdBrowserManager {
 	public long countTotalOpds() throws OHServiceException {
 		return countTotalOpds(null, null, null, null, null, 0, 0, '\0', '\0', null);
 	}
+
+	/**
+	 * Returns the total number of {@link Opd}s with specified Progressive in Year number
+	 *
+	 * @param code - the OPD code
+	 * @return the total number of {@link Opd}s
+	 * @throws OHServiceException when fails to count fetched OPDs
+	 */
+	public long countByProgYear(int code) {
+		return ioOperations.countByProgYear(code);
+	}
+
+	/**
+	 * Returns the total number of {@link Opd}s associated to specified patient ID
+	 *
+	 * @param patientcode the patient ID
+	 * @return the total number of {@link Opd}s
+	 * @throws OHServiceException when fails to count fetched OPDs
+	 */
+	public long countByPatientId(int patientcode) throws OHServiceException {
+		return ioOperations.countByPatientId(patientcode);
+	}
 }

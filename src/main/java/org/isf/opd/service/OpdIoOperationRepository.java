@@ -87,4 +87,9 @@ public interface OpdIoOperationRepository extends JpaRepository<Opd, Integer>, O
 
 	@Query("select count(o) from Opd o where active=1")
 	long countAllActiveOpds();
+
+	@Query("select count(o) from Opd o where o.prog_year = :prog_year")
+	long countByProgYear(@Param("prog_year") Integer prog_year);
+
+	long countByPatient_CodeOrderByDateDesc(Integer code);
 }

@@ -145,7 +145,8 @@ public class OpdIoOperations {
 		char sex,
 		char newPatient,
 		String user,
-		Pageable pageable) throws OHServiceException {
+		Pageable pageable
+	) throws OHServiceException {
 		LocalDateTime startOfDay = dateFrom.atStartOfDay(); // 00:00:00
 		LocalDateTime endOfDay = dateTo.atTime(LocalTime.MAX); // 23:59:59
 		return repository.findAllOpdWhereParams(ward, diseaseTypeCode, diseaseCode, startOfDay, endOfDay, ageFrom, ageTo, sex, newPatient, user, pageable);
@@ -358,5 +359,27 @@ public class OpdIoOperations {
 		LocalDateTime startOfDay = dateFrom.atStartOfDay(); // 00:00:00
 		LocalDateTime endOfDay = dateTo.atTime(LocalTime.MAX); // 23:59:59
 		return repository.getCountTotalOpds(ward, diseaseTypeCode, diseaseCode, startOfDay, endOfDay, ageFrom, ageTo, sex, newPatient, user);
+	}
+
+	/**
+	 * Returns the total number of {@link Opd}s with specified Progressive in Year number
+	 *
+	 * @param code - the OPD code
+	 * @return the total number of {@link Opd}s
+	 * @throws OHServiceException when fails to count fetched OPDs
+	 */
+	public long countByProgYear(int code) {
+		return repository.countByProgYear(code);
+	}
+
+	/**
+	 * Returns the total number of {@link Opd}s associated to specified patient ID
+	 *
+	 * @param patientcode the patient ID
+	 * @return the total number of {@link Opd}s
+	 * @throws OHServiceException when fails to count fetched OPDs
+	 */
+	public long countByPatientId(int patientcode) throws OHServiceException {
+		return repository.countByPatient_CodeOrderByDateDesc(patientcode);
 	}
 }
