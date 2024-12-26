@@ -120,16 +120,16 @@ public class OpdIoOperations {
 	/**
 	 * Return all {@link Opd}s within specified dates and parameters.
 	 *
-	 * @param ward
-	 * @param diseaseTypeCode
-	 * @param diseaseCode
-	 * @param dateFrom
-	 * @param dateTo
-	 * @param ageFrom
-	 * @param ageTo
-	 * @param sex
-	 * @param newPatient
-	 * @param user
+	 * @param ward the ward to consider
+	 * @param diseaseTypeCode the code of the disease type
+	 * @param diseaseCode the code of the disease
+	 * @param dateFrom the starting date
+	 * @param dateTo the ending date
+	 * @param ageFrom the starting age
+	 * @param ageTo the ending age
+	 * @param sex the sex to condider
+	 * @param newPatient if patient is new
+	 * @param user the user to consider
 	 * @param pageable to fetch paginated OPD list
 	 * @return the list of Opds. It could be {@code empty}.
 	 * @throws OHServiceException when fails to fetch paginated OPDs
@@ -170,7 +170,7 @@ public class OpdIoOperations {
 	 * @param patID - the patient ID
 	 * @param pageable to fetch paginated OPD list
 	 * @return the list of {@link Opd}s associated to specified patient ID.
-	 * 		   the whole list of {@link Opd}s if {@code 0} is passed.
+	 * the whole list of {@link Opd}s if {@code 0} is passed.
 	 * @throws OHServiceException when fails to Fetch OPDs with pagination
 	 */
 	public List<Opd> getOpdList(int patID, Pageable pageable) throws OHServiceException {
@@ -342,16 +342,16 @@ public class OpdIoOperations {
 	/**
 	 * Returns the total number of {@link Opd}s within specified dates and parameters
 	 *
-	 * @param ward
-	 * @param diseaseTypeCode
-	 * @param diseaseCode
-	 * @param dateFrom
-	 * @param dateTo
-	 * @param ageFrom
-	 * @param ageTo
-	 * @param sex
-	 * @param newPatient
-	 * @param user
+	 * @param ward the ward to consider
+	 * @param diseaseTypeCode the code of the disease type
+	 * @param diseaseCode the code of the disease
+	 * @param dateFrom the starting date
+	 * @param dateTo the ending date
+	 * @param ageFrom the starting age
+	 * @param ageTo the ending age
+	 * @param sex the sex to consider
+	 * @param newPatient if patient is new
+	 * @param user the user to consider
 	 * @return the total number of {@link Opd}s.
 	 * @throws OHServiceException when fails to count fetched OPDs
 	 */

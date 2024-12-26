@@ -138,36 +138,6 @@ public class OpdIoOperationRepositoryImpl implements OpdIoOperationRepositoryCus
 		String user,
 		Pageable pageable) {
 
-		TypedQuery<Opd> query = getPaginatedOpdQuery(
-			ward,
-			diseaseTypeCode,
-			diseaseCode,
-			dateFrom,
-			dateTo,
-			ageFrom,
-			ageTo,
-			sex,
-			newPatient,
-			user,
-			pageable
-		);
-
-		return query.getResultList();
-	}
-
-	private TypedQuery<Opd> getPaginatedOpdQuery(
-		Ward ward,
-		String diseaseTypeCode,
-		String diseaseCode,
-		LocalDateTime dateFrom,
-		LocalDateTime dateTo,
-		int ageFrom,
-		int ageTo,
-		char sex,
-		char newPatient,
-		String user,
-		Pageable pageable
-	) {
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		CriteriaQuery<Opd> query = cb.createQuery(Opd.class);
 		Root<Opd> opd = query.from(Opd.class);
@@ -208,7 +178,7 @@ public class OpdIoOperationRepositoryImpl implements OpdIoOperationRepositoryCus
 		typedQuery.setFirstResult(firstResult);
 		typedQuery.setMaxResults(pageable.getPageSize());
 
-		return typedQuery;
+		return typedQuery.getResultList();
 	}
 
 	@Override
