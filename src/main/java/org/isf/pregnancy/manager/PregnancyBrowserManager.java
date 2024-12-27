@@ -5,6 +5,7 @@ import java.util.List;
 import org.isf.admission.manager.AdmissionBrowserManager;
 import org.isf.admission.model.Admission;
 import org.isf.pregnancy.service.PregnancyIoOperations;
+import org.isf.utils.exception.OHServiceException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
@@ -23,8 +24,9 @@ public class PregnancyBrowserManager {
 	 *
 	 * @param sex The sex to consider.
 	 * @return {@link List} of {@link Admission}s matching the given sex, or empty list of no match.
+	 * @throws OHServiceException if an error occurs during database request.
 	 */
-	public List<Admission> getPregnancyPatientBySex(Character sex) {
+	public List<Admission> getPregnancyPatientBySex(Character sex) throws OHServiceException {
 		return pregnancyIoOperations.getPregnancyPatientBySex(sex);
 	}
 	
@@ -34,8 +36,9 @@ public class PregnancyBrowserManager {
      * @param name The name to consider.
 	 * @param sex The sex to consider.
 	 * @return {@link List} of {@link Admission}s matching the given name and sex, or empty list of no match.
+	 * @throws OHServiceException if an error occurs during database request.
 	 */
-	public List<Admission> getPregnancyPatientBySexAndName(String name, Character sex) {
+	public List<Admission> getPregnancyPatientBySexAndName(String name, Character sex) throws OHServiceException {
 		return pregnancyIoOperations.getPregnancyPatientBySexAndName(name, sex);
 	}
 	
@@ -45,8 +48,9 @@ public class PregnancyBrowserManager {
 	 * @param name The name to consider.
 	 * @param sex The sex to consider.
 	 * @return {@link Long} of {@link Admission}s matching the given name and sex, or empty list of no match.
+	 * @throws OHServiceException if an error occurs during database request.
 	 */
-	public Long CountTotalPregnancyPatient(String name, Character sex) {
+	public Long CountTotalPregnancyPatient(String name, Character sex) throws OHServiceException {
 		return pregnancyIoOperations.getCountTotalPregnancyPatient(name, sex);
 	}
 
@@ -58,8 +62,9 @@ public class PregnancyBrowserManager {
 	 * @param page The page to consider.
 	 * @param size The size to consider.
 	 * @return {@link List} of {@link Admission}s matching the given name, sex, page and size, or empty list of no match.
+	 * @throws OHServiceException if an error occurs during database request.
 	 */
-	public List<Admission> getPregnancyPatientBySexAndName(String name, Character sex, int page, int size) {
+	public List<Admission> getPregnancyPatientBySexAndName(String name, Character sex, int page, int size) throws OHServiceException {
 		Pageable pageable = PageRequest.of(page, size);
 		return pregnancyIoOperations.getPregnancyPatientBySexAndName(name, sex, pageable);
 	}

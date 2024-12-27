@@ -6,6 +6,7 @@ import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.*;
 import jakarta.transaction.Transactional;
 import org.isf.admission.model.Admission;
+import org.isf.utils.exception.OHServiceException;
 import org.springframework.data.domain.Pageable;
 
 import java.util.ArrayList;
