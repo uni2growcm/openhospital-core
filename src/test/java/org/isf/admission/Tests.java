@@ -1635,7 +1635,7 @@ class Tests extends OHCoreTestCase {
 
 	@Test
 	@DisplayName("Should count Admissions filtered by sex and name")
-	void testMgrCountAdmittedPatientsBySexAndNamePaged() throws OHException {
+	void testMgrCountAdmittedPatientsBySexAndNamePaged() throws OHException, OHServiceException {
 		List<Admission> admissions = setupTestAdmissions(6, false);
 
 		String name = admissions.get(2).getPatient().getSecondName();

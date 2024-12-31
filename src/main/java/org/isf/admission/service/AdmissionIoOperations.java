@@ -375,8 +375,9 @@ public class AdmissionIoOperations {
 	 * @param sex Patient sex
 	 * @param pageable Page options
 	 * @return The paged list of {@link Admission} matching the filter
+	 * @throws OHServiceException When failed to get admissions
 	 */
-	public Page<Admission> getAdmittedPatientsBySexPaged(char sex, Pageable pageable) {
+	public Page<Admission> getAdmittedPatientsBySexPaged(char sex, Pageable pageable) throws OHServiceException {
 		return repository.findAllByPatientSexAndAdmittedAndDeleted(sex, 1, 'N', pageable);
 	}
 
@@ -386,8 +387,9 @@ public class AdmissionIoOperations {
 	 * @param name Patient name
 	 * @param pageable Page options
 	 * @return The paged list of {@link Admission} matching the filter
+	 * @throws OHServiceException When failed to get admissions
 	 */
-	public Page<Admission> getAdmittedPatientsBySexAndNamePaged(char sex, String name, Pageable pageable) {
+	public Page<Admission> getAdmittedPatientsBySexAndNamePaged(char sex, String name, Pageable pageable) throws OHServiceException {
 		return repository.findAllByPatientSexAndPatientNameContainsAndAdmittedAndDeleted(sex, name, 1, 'N', pageable);
 	}
 
@@ -396,8 +398,9 @@ public class AdmissionIoOperations {
 	 * @param sex Patient sex
 	 * @param name Patient name
 	 * @return The number of admitted patient matching the filter
+	 * @throws OHServiceException When failed to count admissions
 	 */
-	public int countAdmittedPatientsBySexAndNamePaged(char sex, String name) {
+	public int countAdmittedPatientsBySexAndNamePaged(char sex, String name) throws OHServiceException {
 		return repository.countAllByPatientSexAndPatientNameContainsAndAdmittedAndDeleted(sex, name, 1, 'N');
 	}
 }
