@@ -26,7 +26,7 @@ public class PregnancyBrowserManager {
 	 * @return {@link List} of {@link Admission}s matching the given sex, or empty list of no match.
 	 * @throws OHServiceException if an error occurs during database request.
 	 */
-	public List<Admission> getPregnancyPatientBySex(Character sex) throws OHServiceException {
+	public List<Admission> getPatientsBySex(Character sex) throws OHServiceException {
 		return pregnancyIoOperations.getPregnancyPatientBySex(sex);
 	}
 	
