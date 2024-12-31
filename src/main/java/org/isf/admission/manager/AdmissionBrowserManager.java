@@ -41,15 +41,17 @@ import org.isf.utils.exception.model.OHExceptionMessage;
 import org.isf.utils.pagination.PagedResponse;
 import org.isf.utils.time.TimeTools;
 import org.isf.ward.model.Ward;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 @Component
 public class AdmissionBrowserManager {
 
-	private AdmissionIoOperations ioOperations;
+	private final AdmissionIoOperations ioOperations;
 
-	private DiseaseBrowserManager diseaseManager;
+	private final DiseaseBrowserManager diseaseManager;
 
 	public AdmissionBrowserManager(AdmissionIoOperations admissionIoOperations, DiseaseBrowserManager diseaseBrowserManager) {
 		this.ioOperations = admissionIoOperations;
@@ -58,7 +60,6 @@ public class AdmissionBrowserManager {
 
 	/**
 	 * Returns all patients with ward in which they are admitted.
-	 *
 	 * @return the patient list with associated ward or {@code null} if the operation fails.
 	 * @throws OHServiceException
 	 */
@@ -68,7 +69,6 @@ public class AdmissionBrowserManager {
 
 	/**
 	 * Returns all patients with ward in which they are admitted filtering the list using the passed search term.
-	 *
 	 * @param searchTerms the search terms to use for filter the patient list, {@code null} if no filter have to be applied.
 	 * @return the filtered patient list or {@code null} if the operation fails.
 	 * @throws OHServiceException
@@ -79,7 +79,6 @@ public class AdmissionBrowserManager {
 
 	/**
 	 * Returns all patients based on the applied filters.
-	 *
 	 * @param admissionRange (two-dimensions array) the patient admission dates range, both {@code null} if no filter have to be applied.
 	 * @param dischargeRange (two-dimensions array) the patient admission dates range, both {@code null} if no filter have to be applied.
 	 * @param searchTerms the search terms to use for filter the patient list, {@code null} if no filter have to be applied.
@@ -87,7 +86,7 @@ public class AdmissionBrowserManager {
 	 * @throws OHServiceException if an error occurs during database request.
 	 */
 	public List<AdmittedPatient> getAdmittedPatients(LocalDateTime[] admissionRange, LocalDateTime[] dischargeRange, String searchTerms)
-					throws OHServiceException {
+		throws OHServiceException {
 		return ioOperations.getAdmittedPatients(searchTerms, admissionRange, dischargeRange);
 	}
 
@@ -97,7 +96,6 @@ public class AdmissionBrowserManager {
 
 	/**
 	 * Returns the admission with the selected id.
-	 *
 	 * @param id the admission id.
 	 * @return the admission with the specified id, {@code null} otherwise.
 	 * @throws OHServiceException
@@ -108,7 +106,6 @@ public class AdmissionBrowserManager {
 
 	/**
 	 * Returns the only one admission without admission date (or null if none) for the specified patient.
-	 *
 	 * @param patient the patient target of the admission.
 	 * @return the patient admission or {@code null} if the operation fails.
 	 */
@@ -118,7 +115,6 @@ public class AdmissionBrowserManager {
 
 	/**
 	 * Returns all the admissions for the specified patient.
-	 *
 	 * @param patient the patient.
 	 * @return the admission list or {@code null} if the operation fails.
 	 * @throws OHServiceException
@@ -128,9 +124,7 @@ public class AdmissionBrowserManager {
 	}
 
 	/**
-	 * Method that returns the list of Admissions not logically deleted
-	 * within the specified date range, divided by pages
-	 *
+	 * Method that returns the list of Admissions not logically deleted within the specified date range, divided by pages
 	 * @param dateFrom
 	 * @param dateTo
 	 * @param page
@@ -143,9 +137,7 @@ public class AdmissionBrowserManager {
 	}
 
 	/**
-	 * Method that returns the list of Admissions not logically deleted
-	 * within the specified date range
-	 *
+	 * Method that returns the list of Admissions not logically deleted within the specified date range
 	 * @param dateFrom
 	 * @param dateTo
 	 * @return the list of Admissions (could be empty)
@@ -156,8 +148,7 @@ public class AdmissionBrowserManager {
 	}
 
 	/**
-	 * Method that returns the list of completed Admissions (Discharges) not logically deleted
-	 * within the specified date range, divided by pages
+	 * Method that returns the list of completed Admissions (Discharges) not logically deleted within the specified date range, divided by pages
 	 * @param dateFrom
 	 * @param dateTo
 	 * @param page
@@ -171,7 +162,6 @@ public class AdmissionBrowserManager {
 
 	/**
 	 * Returns the next prog in the year for a certain ward.
-	 *
 	 * @param wardId the ward id.
 	 * @return the next prog
 	 * @throws OHServiceException
@@ -182,7 +172,6 @@ public class AdmissionBrowserManager {
 
 	/**
 	 * Lists the {@link AdmissionType}s.
-	 *
 	 * @return the admission types  or {@code null} if the operation fails.
 	 * @throws OHServiceException
 	 */
@@ -192,7 +181,6 @@ public class AdmissionBrowserManager {
 
 	/**
 	 * Lists the {@link DischargeType}s.
-	 *
 	 * @return the discharge types  or {@code null} if the operation fails.
 	 * @throws OHServiceException
 	 */
@@ -202,7 +190,6 @@ public class AdmissionBrowserManager {
 
 	/**
 	 * Inserts a new admission.
-	 *
 	 * @param admission the admission to insert.
 	 * @return {@code true} if the admission has been successfully inserted, {@code false} otherwise.
 	 * @throws OHServiceException
@@ -214,7 +201,6 @@ public class AdmissionBrowserManager {
 
 	/**
 	 * Inserts a new {@link Admission} and the returns the generated id.
-	 *
 	 * @param admission the admission to insert.
 	 * @return the generated id or {@code null} if the operation fails.
 	 * @throws OHServiceException
@@ -226,7 +212,6 @@ public class AdmissionBrowserManager {
 
 	/**
 	 * Updates the specified {@link Admission} object.
-	 *
 	 * @param admission the admission object to update.
 	 * @return {@code true} if has been updated, {@code false} otherwise.
 	 * @throws OHServiceException
@@ -238,7 +223,6 @@ public class AdmissionBrowserManager {
 
 	/**
 	 * Sets an admission record as deleted.
-	 *
 	 * @param admissionId the admission id.
 	 * @return return the "deleted" admission or null if the admission is not found
 	 * @throws OHServiceException
@@ -249,7 +233,6 @@ public class AdmissionBrowserManager {
 
 	/**
 	 * Counts the number of used bed for the specified ward.
-	 *
 	 * @param wardId the ward id.
 	 * @return the number of used beds.
 	 * @throws OHServiceException
@@ -260,7 +243,6 @@ public class AdmissionBrowserManager {
 
 	/**
 	 * Deletes the patient photo.
-	 *
 	 * @param id the patient id.
 	 * @return the updated patient object or null if not found
 	 * @throws OHServiceException
@@ -271,7 +253,6 @@ public class AdmissionBrowserManager {
 
 	/**
 	 * Verify if the object is valid for CRUD and return a list of errors, if any
-	 *
 	 * @param admission
 	 * @param insert {@code true} or updated {@code false}
 	 * @throws OHDataValidationException
@@ -322,7 +303,7 @@ public class AdmissionBrowserManager {
 					continue;
 				}
 				if ((ad.getAdmDate().isBefore(dateIn) || ad.getAdmDate().isEqual(dateIn))
-								&& (ad.getDisDate() != null && ad.getDisDate().isAfter(dateIn))) {
+					&& (ad.getDisDate() != null && ad.getDisDate().isAfter(dateIn))) {
 					errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.admission.ininserteddatepatientwasalreadyadmitted.msg")));
 				}
 			}
@@ -392,8 +373,8 @@ public class AdmissionBrowserManager {
 				}
 				if (invalidDate) {
 					errors.add(new OHExceptionMessage(MessageBundle.formatMessage("angal.admission.invalidadmissionperiod.fmt.msg",
-									DateTimeFormatter.ISO_LOCAL_DATE.format(invalidStart),
-									DateTimeFormatter.ISO_LOCAL_DATE.format(invalidEnd))));
+						DateTimeFormatter.ISO_LOCAL_DATE.format(invalidStart),
+						DateTimeFormatter.ISO_LOCAL_DATE.format(invalidEnd))));
 				}
 			}
 		}
@@ -522,8 +503,8 @@ public class AdmissionBrowserManager {
 					limit = admission.getDisDate();
 				}
 				if (ctrl2Date != null && abortDate.isBefore(ctrl2Date) || ctrl1Date != null && abortDate.isBefore(ctrl1Date)
-								|| abortDate.isBefore(visitDate)
-								|| abortDate.isAfter(limit)) {
+					|| abortDate.isBefore(visitDate)
+					|| abortDate.isAfter(limit)) {
 					errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.admission.pleaseinsertavalidabortdate.msg")));
 				}
 			}
@@ -535,7 +516,45 @@ public class AdmissionBrowserManager {
 
 	private boolean checkDuplicatedDiseaseOut(Disease diseaseOut1, Disease diseaseOut2, Disease diseaseOut3) {
 		return (diseaseOut2 != null && diseaseOut1.getCode().equals(diseaseOut2.getCode()))
-						|| (diseaseOut3 != null && diseaseOut1.getCode().equals(diseaseOut3.getCode()))
-						|| (diseaseOut2 != null && diseaseOut3 != null && diseaseOut2.getCode().equals(diseaseOut3.getCode()));
+			|| (diseaseOut3 != null && diseaseOut1.getCode().equals(diseaseOut3.getCode()))
+			|| (diseaseOut2 != null && diseaseOut3 != null && diseaseOut2.getCode().equals(diseaseOut3.getCode()));
+	}
+
+	/**
+	 * Get admitted patients by sex
+	 *
+	 * @param sex Patient sex
+	 * @param size Page size
+	 * @param page Page number
+	 * @return The paged list of {@link Admission} matching the filter
+	 */
+	public Page<Admission> getAdmittedPatientsBySexPaged(char sex, int size, int page) {
+		Pageable pageable = PageRequest.of(page, size);
+		return ioOperations.getAdmittedPatientsBySexPaged(sex, pageable);
+	}
+
+	/**
+	 * Get admitted patients by sex and name
+	 *
+	 * @param sex Patient sex
+	 * @param name Patient name
+	 * @param size Page size
+	 * @param page Page number
+	 * @return The paged list of {@link Admission} matching the filter
+	 */
+	public Page<Admission> getAdmittedPatientsBySexAndNamePaged(char sex, String name, int size, int page) {
+		Pageable pageable = PageRequest.of(page, size);
+		return ioOperations.getAdmittedPatientsBySexAndNamePaged(sex, name, pageable);
+	}
+
+	/**
+	 * Count admitted patients by sex and name
+	 *
+	 * @param sex Patient sex
+	 * @param name Patient name
+	 * @return The number of admitted patients matching the filter
+	 */
+	public int countAdmittedPatientsBySexAndName(char sex, String name) {
+		return ioOperations.countAdmittedPatientsBySexAndNamePaged(sex, name);
 	}
 }
