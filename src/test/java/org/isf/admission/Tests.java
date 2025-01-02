@@ -1600,7 +1600,7 @@ class Tests extends OHCoreTestCase {
 		assertThat(count).isEqualTo(1);
 	}
 
-	@DisplayName("Should get paged admitted patients filtered by sex")
+	@DisplayName("Should get pages admitted patients filtered by sex")
 	@Test
 	void testMgrGetAdmittedPatientsBySexPaged() throws Exception {
 		List<Admission> admissions = setupTestAdmissions(10, false);
