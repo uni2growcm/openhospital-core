@@ -1612,7 +1612,7 @@ class Tests extends OHCoreTestCase {
 		assertThat(savedAdmissions.get(0)).isEqualTo(admissions.get(2));
 	}
 
-	@DisplayName("Should get paged admitted patients filtered by sex and name")
+	@DisplayName("Should get pages admitted patients filtered by sex and name")
 	@Test
 	void testMgrGetAdmittedPatientsBySexAndNamePaged() throws Exception {
 		List<Admission> admissions = setupTestAdmissions(6, false);
