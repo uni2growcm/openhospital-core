@@ -62,7 +62,7 @@ public class SupplierBrowserManager {
 	/**
 	 * Returns the {@link HashMap} of all {@link Supplier}'s ids and names.
 	 *
-	 * @param all - if {@code true} it will return deleted ones also
+	 * @param all if {@code true} it will return deleted ones also
 	 * @return the {@link HashMap} of all {@link Supplier}'s ids and names.
 	 * @throws OHServiceException When failed to get suppliers
 	 */

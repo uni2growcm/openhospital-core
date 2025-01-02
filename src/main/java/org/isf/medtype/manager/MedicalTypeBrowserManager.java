@@ -39,7 +39,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class MedicalTypeBrowserManager {
 
-	private MedicalTypeIoOperation ioOperations;
+	private final MedicalTypeIoOperation ioOperations;
 
 	public MedicalTypeBrowserManager(MedicalTypeIoOperation medicalTypeIoOperation) {
 		this.ioOperations = medicalTypeIoOperation;
@@ -82,7 +82,7 @@ public class MedicalTypeBrowserManager {
 	public List<MedicalType> getMedicalType() throws OHServiceException {
 		return ioOperations.getMedicalTypes();
 	}
-	
+
 	/**
 	 * Retrieves all the non deleted {@link MedicalType}s.
 	 *
