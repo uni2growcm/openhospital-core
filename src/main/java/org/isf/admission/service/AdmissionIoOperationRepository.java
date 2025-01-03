@@ -71,12 +71,4 @@ public interface AdmissionIoOperationRepository extends JpaRepository<Admission,
 	Page<Admission> findAllByPatientSexAndPatientNameContainsAndAdmittedAndDeleted(
 		char sex, String patientName, int admitted, char deleted, Pageable pageable
 	);
-
-	int countAllByPatientSexAndPatientNameContainsAndAdmittedAndDeleted(
-		char sex, String patientName, int admitted, char deleted
-	);
-
-	Page<Admission> findAllByPatientSexAndAdmittedAndDeleted(
-		char sex, int admitted, char deleted, Pageable pageable
-	);
 }

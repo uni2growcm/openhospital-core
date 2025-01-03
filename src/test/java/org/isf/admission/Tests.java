@@ -1600,18 +1600,6 @@ class Tests extends OHCoreTestCase {
 		assertThat(count).isEqualTo(1);
 	}
 
-	@DisplayName("Should get pages admitted patients filtered by sex")
-	@Test
-	void testMgrGetAdmittedPatientsBySexPaged() throws Exception {
-		List<Admission> admissions = setupTestAdmissions(10, false);
-		Page<Admission> savedAdmissionsPaged = admissionBrowserManager.getAdmittedPatientsBySexPaged('F', 2, 0);
-		List<Admission> savedAdmissions = savedAdmissionsPaged.get().toList();
-
-		assertThat(savedAdmissionsPaged.getTotalPages()).isEqualTo(2);
-		assertThat(savedAdmissionsPaged.getTotalElements()).isEqualTo(4);
-		assertThat(savedAdmissions.get(0)).isEqualTo(admissions.get(2));
-	}
-
 	@DisplayName("Should get pages admitted patients filtered by sex and name")
 	@Test
 	void testMgrGetAdmittedPatientsBySexAndNamePaged() throws Exception {
@@ -1631,18 +1619,6 @@ class Tests extends OHCoreTestCase {
 		assertThat(savedAdmissionsPaged.getTotalPages()).isEqualTo(2);
 		assertThat(savedAdmissionsPaged.getTotalElements()).isEqualTo(2);
 		assertThat(savedAdmissions.get(0)).isEqualTo(admissions.get(2));
-	}
-
-	@Test
-	@DisplayName("Should count Admissions filtered by sex and name")
-	void testMgrCountAdmittedPatientsBySexAndNamePaged() throws OHException, OHServiceException {
-		List<Admission> admissions = setupTestAdmissions(6, false);
-
-		String name = admissions.get(2).getPatient().getSecondName();
-		String keywords = name.substring(0, name.length() - 2);
-		int totalAdmissions = admissionBrowserManager.countAdmittedPatientsBySexAndName('F', keywords);
-
-		assertThat(totalAdmissions).isEqualTo(2);
 	}
 
 	class MyAdmissionIoOperationRepositoryCustom implements AdmissionIoOperationRepositoryCustom {

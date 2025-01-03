@@ -540,20 +540,6 @@ public class AdmissionBrowserManager {
 	}
 
 	/**
-	 * Get admitted patients by sex
-	 *
-	 * @param sex Patient sex
-	 * @param size Page size
-	 * @param page Page number
-	 * @return The paged list of {@link Admission} matching the filter
-	 * @throws OHServiceException When failed to get admissions
-	 */
-	public Page<Admission> getAdmittedPatientsBySexPaged(char sex, int size, int page) throws OHServiceException {
-		Pageable pageable = PageRequest.of(page, size);
-		return ioOperations.getAdmittedPatientsBySexPaged(sex, pageable);
-	}
-
-	/**
 	 * Get admitted patients by sex and name
 	 *
 	 * @param sex Patient sex
@@ -566,17 +552,5 @@ public class AdmissionBrowserManager {
 	public Page<Admission> getAdmittedPatientsBySexAndNamePaged(char sex, String name, int size, int page) throws OHServiceException {
 		Pageable pageable = PageRequest.of(page, size);
 		return ioOperations.getAdmittedPatientsBySexAndNamePaged(sex, name, pageable);
-	}
-
-	/**
-	 * Count admitted patients by sex and name
-	 *
-	 * @param sex Patient sex
-	 * @param name Patient name
-	 * @return The number of admitted patients matching the filter
-	 * @throws OHServiceException When failed to count admissions
-	 */
-	public int countAdmittedPatientsBySexAndName(char sex, String name) throws OHServiceException {
-		return ioOperations.countAdmittedPatientsBySexAndNamePaged(sex, name);
 	}
 }
