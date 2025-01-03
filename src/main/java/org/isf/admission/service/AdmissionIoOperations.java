@@ -379,6 +379,6 @@ public class AdmissionIoOperations {
 	 * @throws OHServiceException When failed to get admissions
 	 */
 	public Page<Admission> getAdmittedPatientsBySexAndNamePaged(char sex, String name, Pageable pageable) throws OHServiceException {
-		return repository.findAllByPatientSexAndPatientNameContainsAndAdmittedAndDeleted(sex, name, 1, 'N', pageable);
+		return repository.findAllByPatientSexAndPatientNameContainsAndDeleted(sex, name, 'N', pageable);
 	}
 }

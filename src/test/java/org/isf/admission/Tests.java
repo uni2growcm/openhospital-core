@@ -1604,21 +1604,21 @@ class Tests extends OHCoreTestCase {
 	@Test
 	void testMgrGetAdmittedPatientsBySexAndNamePaged() throws Exception {
 		List<Admission> admissions = setupTestAdmissions(6, false);
-		Page<Admission> savedAdmissionsPaged = admissionBrowserManager.getAdmittedPatientsBySexAndNamePaged('F', admissions.get(2).getPatient().getName(), 2, 0);
+		Page<Admission> savedAdmissionsPaged = admissionBrowserManager.getAdmittedPatientsBySexAndNamePaged('F', admissions.get(0).getPatient().getName(), 2, 0);
 		List<Admission> savedAdmissions = savedAdmissionsPaged.get().toList();
 
 		assertThat(savedAdmissionsPaged.getTotalPages()).isEqualTo(1);
 		assertThat(savedAdmissionsPaged.getTotalElements()).isEqualTo(1);
-		assertThat(savedAdmissions.get(0)).isEqualTo(admissions.get(2));
+		assertThat(savedAdmissions.get(0)).isEqualTo(admissions.get(0));
 
-		String name = admissions.get(2).getPatient().getSecondName();
+		String name = admissions.get(0).getPatient().getSecondName();
 		String keywords = name.substring(0, name.length() - 2);
 		savedAdmissionsPaged = admissionBrowserManager.getAdmittedPatientsBySexAndNamePaged('F', keywords, 1, 0);
 		savedAdmissions = savedAdmissionsPaged.get().toList();
 
-		assertThat(savedAdmissionsPaged.getTotalPages()).isEqualTo(2);
-		assertThat(savedAdmissionsPaged.getTotalElements()).isEqualTo(2);
-		assertThat(savedAdmissions.get(0)).isEqualTo(admissions.get(2));
+		assertThat(savedAdmissionsPaged.getTotalPages()).isEqualTo(3);
+		assertThat(savedAdmissionsPaged.getTotalElements()).isEqualTo(3);
+		assertThat(savedAdmissions.get(0)).isEqualTo(admissions.get(0));
 	}
 
 	class MyAdmissionIoOperationRepositoryCustom implements AdmissionIoOperationRepositoryCustom {
@@ -1715,9 +1715,6 @@ class Tests extends OHCoreTestCase {
 		deliveryTypeIoOperationRepository.saveAndFlush(deliveryType);
 		deliveryResultIoOperationRepository.saveAndFlush(deliveryResult);
 
-		AtomicBoolean femalePatientDischarged = new AtomicBoolean(false);
-		AtomicBoolean malePatientDischarged = new AtomicBoolean(false);
-
 		String secondName = "Second Name";
 
 		return IntStream.range(0, number).mapToObj(i -> {
@@ -1747,16 +1744,6 @@ class Tests extends OHCoreTestCase {
 					diseaseOut2, diseaseOut3, operation, dischargeType, pregnantTreatmentType,
 					deliveryType, deliveryResult, false
 				);
-
-				if (patient.getSex() == 'F' && !femalePatientDischarged.get()) {
-					admission.setAdmitted(0);
-					femalePatientDischarged.set(true);
-				}
-
-				if (patient.getSex() == 'M' && !malePatientDischarged.get()) {
-					admission.setAdmitted(0);
-					malePatientDischarged.set(true);
-				}
 			} catch (OHException e) {
 				throw new RuntimeException(e);
 			}
