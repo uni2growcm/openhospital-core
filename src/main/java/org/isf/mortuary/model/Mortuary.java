@@ -1,3 +1,25 @@
+/*
+ * Open Hospital (www.open-hospital.org)
+ * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ *
+ * Open Hospital is a free and open source software for healthcare data management.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * https://www.gnu.org/licenses/gpl-3.0-standalone.html
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package org.isf.mortuary.model;
 
 import java.text.DateFormat;
@@ -223,85 +245,85 @@ public class Mortuary {
 		this.familyNest = familyNest;
 	}
 
-	@Override
-	public String toString() {
-		return "Mortuary{" +
-			"id=" + id +
-			", place='" + place + '\'' +
-			", patient=" + patient +
-			", idPatient=" + idPatient +
-			", idCause=" + idCause +
-			", provenance='" + provenance + '\'' +
-			", deathDate=" + deathDate +
-			", enteredDate=" + enteredDate +
-			", releaseDate=" + releaseDate +
-			", provisionalReleaseDate=" + provisionalReleaseDate +
-			", cause=" + deathReason +
-			", declaringName='" + declaringName + '\'' +
-			", declaringPhone='" + declaringPhone + '\'' +
-			", declaringNest='" + declaringNest + '\'' +
-			", familyName='" + familyName + '\'' +
-			", familyPhone='" + familyPhone + '\'' +
-			", familyNest='" + familyNest + '\'' +
-			", locker='" + locker + '\'' +
-			'}';
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((deathDate == null) ? 0 : deathDate.hashCode());
-		result = prime * result + ((enteredDate == null) ? 0 : enteredDate.hashCode());
-		result = prime * result + ((releaseDate == null) ? 0 : releaseDate.hashCode());
-		result = prime * result + ((provisionalReleaseDate == null) ? 0 : provisionalReleaseDate.hashCode());
-		result = prime * result + id;
-		result = prime * result + idCause;
-		result = prime * result + idPatient;
-		result = prime * result + ((place == null) ? 0 : place.hashCode());
-		result = prime * result + ((declaringNest == null) ? 0 : declaringNest.hashCode());
-		result = prime * result + ((declaringName == null) ? 0 : declaringName.hashCode());
-		result = prime * result + ((patient.getSecondName() == null) ? 0 : patient.getSecondName().hashCode());
-		result = prime * result + ((provenance == null) ? 0 : provenance.hashCode());
-		result = prime * result + ((declaringPhone == null) ? 0 : declaringPhone.hashCode());
-		return result;
-	}
-
-	public boolean equals(Mortuary other) {
-		SimpleDateFormat fmt = new SimpleDateFormat("dd/MM/yyyy");
-		String decesold = fmt.format(other.deathDate);
-		String deces = fmt.format(deathDate);
-		String entreeold = fmt.format(other.enteredDate);
-		String entree = fmt.format(enteredDate);
-		String sortieold = fmt.format(other.provisionalReleaseDate);
-		String sortie = fmt.format(provisionalReleaseDate);
-		if (!deces.equals(decesold))
-			return false;
-		if (!entree.equals(entreeold))
-			return false;
-		if (!sortie.equals(sortieold))
-			return false;
-		if (idCause != other.idCause)
-			return false;
-		if (idPatient != other.idPatient)
-			return false;
-		if (!place.equals(other.place))
-			return false;
-		if (!declaringNest.equals(other.declaringNest))
-			return false;
-		if (!declaringName.equals(other.declaringName))
-			return false;
-		if (!patient.getSecondName() .equals(other.patient.getSecondName() ))
-			return false;
-		if (!provenance.equals(other.provenance))
-			return false;
-		if (!declaringPhone.equals(other.declaringPhone))
-			return false;
-		return true;
-	}
-
-	public static String calendarToString(LocalDate date){
-		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-		return dateFormat.format(date);
-	}
+//	@Override
+//	public String toString() {
+//		return "Mortuary{" +
+//			"id=" + id +
+//			", place='" + place + '\'' +
+//			", patient=" + patient +
+//			", idPatient=" + idPatient +
+//			", idCause=" + idCause +
+//			", provenance='" + provenance + '\'' +
+//			", deathDate=" + deathDate +
+//			", enteredDate=" + enteredDate +
+//			", releaseDate=" + releaseDate +
+//			", provisionalReleaseDate=" + provisionalReleaseDate +
+//			", cause=" + deathReason +
+//			", declaringName='" + declaringName + '\'' +
+//			", declaringPhone='" + declaringPhone + '\'' +
+//			", declaringNest='" + declaringNest + '\'' +
+//			", familyName='" + familyName + '\'' +
+//			", familyPhone='" + familyPhone + '\'' +
+//			", familyNest='" + familyNest + '\'' +
+//			", locker='" + locker + '\'' +
+//			'}';
+//	}
+//
+//	@Override
+//	public int hashCode() {
+//		final int prime = 31;
+//		int result = 1;
+//		result = prime * result + ((deathDate == null) ? 0 : deathDate.hashCode());
+//		result = prime * result + ((enteredDate == null) ? 0 : enteredDate.hashCode());
+//		result = prime * result + ((releaseDate == null) ? 0 : releaseDate.hashCode());
+//		result = prime * result + ((provisionalReleaseDate == null) ? 0 : provisionalReleaseDate.hashCode());
+//		result = prime * result + id;
+//		result = prime * result + idCause;
+//		result = prime * result + idPatient;
+//		result = prime * result + ((place == null) ? 0 : place.hashCode());
+//		result = prime * result + ((declaringNest == null) ? 0 : declaringNest.hashCode());
+//		result = prime * result + ((declaringName == null) ? 0 : declaringName.hashCode());
+//		result = prime * result + ((patient.getSecondName() == null) ? 0 : patient.getSecondName().hashCode());
+//		result = prime * result + ((provenance == null) ? 0 : provenance.hashCode());
+//		result = prime * result + ((declaringPhone == null) ? 0 : declaringPhone.hashCode());
+//		return result;
+//	}
+//
+//	public boolean equals(Mortuary other) {
+//		SimpleDateFormat fmt = new SimpleDateFormat("dd/MM/yyyy");
+//		String decesold = fmt.format(other.deathDate);
+//		String deces = fmt.format(deathDate);
+//		String entreeold = fmt.format(other.enteredDate);
+//		String entree = fmt.format(enteredDate);
+//		String sortieold = fmt.format(other.provisionalReleaseDate);
+//		String sortie = fmt.format(provisionalReleaseDate);
+//		if (!deces.equals(decesold))
+//			return false;
+//		if (!entree.equals(entreeold))
+//			return false;
+//		if (!sortie.equals(sortieold))
+//			return false;
+//		if (idCause != other.idCause)
+//			return false;
+//		if (idPatient != other.idPatient)
+//			return false;
+//		if (!place.equals(other.place))
+//			return false;
+//		if (!declaringNest.equals(other.declaringNest))
+//			return false;
+//		if (!declaringName.equals(other.declaringName))
+//			return false;
+//		if (!patient.getSecondName() .equals(other.patient.getSecondName() ))
+//			return false;
+//		if (!provenance.equals(other.provenance))
+//			return false;
+//		if (!declaringPhone.equals(other.declaringPhone))
+//			return false;
+//		return true;
+//	}
+//
+//	public static String calendarToString(LocalDate date){
+//		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+//		return dateFormat.format(date);
+//	}
 }
