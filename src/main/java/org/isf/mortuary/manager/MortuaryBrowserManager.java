@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class MortuaryBrowserManager {
 
-	@Autowired
 	private final MortuaryIoOperations mortuaryIoOperations;
 
 	public MortuaryBrowserManager(MortuaryIoOperations mortuaryIoOperations) {

@@ -14,24 +14,24 @@ import jakarta.persistence.Table;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
-@Table(name = "OH_CAUSE")
+@Table(name = "OH_DEATHREASON")
 @EntityListeners(AuditingEntityListener.class)
-@AttributeOverride(name = "createdBy", column = @Column(name = "CS_CREATED_BY", updatable = false))
-@AttributeOverride(name = "createdDate", column = @Column(name = "CS_CREATED_DATE", updatable = false))
-@AttributeOverride(name = "lastModifiedBy", column = @Column(name = "CS_LAST_MODIFIED_BY"))
-@AttributeOverride(name = "lastModifiedDate", column = @Column(name = "CS_LAST_MODIFIED_DATE"))
-@AttributeOverride(name = "active", column = @Column(name = "CS_ACTIVE"))
+@AttributeOverride(name = "createdBy", column = @Column(name = "DR_CREATED_BY", updatable = false))
+@AttributeOverride(name = "createdDate", column = @Column(name = "DR_CREATED_DATE", updatable = false))
+@AttributeOverride(name = "lastModifiedBy", column = @Column(name = "DR_LAST_MODIFIED_BY"))
+@AttributeOverride(name = "lastModifiedDate", column = @Column(name = "DR_LAST_MODIFIED_DATE"))
+@AttributeOverride(name = "active", column = @Column(name = "DR_ACTIVE"))
 public class DeathReason {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "CS_ID")
+	@Column(name = "DR_ID")
 	private int id;
 
-	@Column(name = "CS_CODE")
+	@Column(name = "DR_CODE")
 	private String code;
 
-	@Column(name = "CS_DESC")
+	@Column(name = "DR_DESC")
 	private String description;
 
 	public DeathReason() {

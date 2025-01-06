@@ -8,6 +8,7 @@ import org.isf.mortuary.model.DeathReason;
 import org.isf.mortuary.model.Mortuary;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.time.TimeTools;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +20,7 @@ public class DeathReasonIoOperations {
 	public DeathReasonIoOperations() {
 	}
 
+	@Autowired
 	public DeathReasonIoOperations(DeathReasonRepository deathReasonRepository) {
 		this.deathReasonRepository = deathReasonRepository;
 	}

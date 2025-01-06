@@ -9,12 +9,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MortuaryRepositoryCustom {
-
-	List<Mortuary> getMortuariesWhereData(
-		String patientName,
-		String deathReason,
-		String ward,
-		LocalDateTime movFrom,
-		LocalDateTime movTo
-	);
 }

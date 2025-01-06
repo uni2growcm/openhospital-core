@@ -44,7 +44,7 @@ public class Mortuary {
 	@Column(name = "MRT_PAT_ID")
 	private int idPatient;
 
-	@Column(name = "MRT_CS_ID")
+	@Column(name = "MRT_DR_ID")
 	private int idCause;
 
 	@Column(name = "MRT_PROVENANCE")
@@ -63,8 +63,8 @@ public class Mortuary {
 	private LocalDate provisionalReleaseDate;
 
 	@ManyToOne
-	@JoinColumn(name = "MRT_CS_ID", insertable=false, updatable=false)
-	private DeathReason cause;
+	@JoinColumn(name = "MRT_DR_ID", insertable=false, updatable=false)
+	private DeathReason deathReason;
 
 	@Column(name = "MRT_DECLARING_NAME")
 	private String declaringName;
@@ -92,7 +92,7 @@ public class Mortuary {
 	}
 
 	public Mortuary(int id, String place, Patient patient, int idPatient, int idCause, String provenance, LocalDate deathDate, LocalDate enteredDate,
-		LocalDate releaseDate, LocalDate provisionalReleaseDate, DeathReason cause, String declaringName, String declaringPhone, String declaringNest,
+		LocalDate releaseDate, LocalDate provisionalReleaseDate, DeathReason deathReason, String declaringName, String declaringPhone, String declaringNest,
 		String familyName, String familyPhone, String familyNest, String locker) {
 		this.id = id;
 		this.place = place;
@@ -104,7 +104,7 @@ public class Mortuary {
 		this.enteredDate = enteredDate;
 		this.releaseDate = releaseDate;
 		this.provisionalReleaseDate = provisionalReleaseDate;
-		this.cause = cause;
+		this.deathReason = deathReason;
 		this.declaringName = declaringName;
 		this.declaringPhone = declaringPhone;
 		this.declaringNest = declaringNest;
@@ -156,11 +156,11 @@ public class Mortuary {
 	public void setProvenance(String provenance) {
 		this.provenance = provenance;
 	}
-	public DeathReason getCause() {
-		return cause;
+	public DeathReason getDeathReason() {
+		return deathReason;
 	}
-	public void setCause(DeathReason cause) {
-		this.cause = cause;
+	public void setDeathReason(DeathReason deathReason) {
+		this.deathReason = deathReason;
 	}
 	public String getDeclaringName() {
 		return declaringName;
@@ -236,7 +236,7 @@ public class Mortuary {
 			", enteredDate=" + enteredDate +
 			", releaseDate=" + releaseDate +
 			", provisionalReleaseDate=" + provisionalReleaseDate +
-			", cause=" + cause +
+			", cause=" + deathReason +
 			", declaringName='" + declaringName + '\'' +
 			", declaringPhone='" + declaringPhone + '\'' +
 			", declaringNest='" + declaringNest + '\'' +
@@ -304,5 +304,4 @@ public class Mortuary {
 		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 		return dateFormat.format(date);
 	}
-
 }
