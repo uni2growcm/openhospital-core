@@ -108,3 +108,4 @@ source step_a111_add_missing_lock_columns.sql;
 source step_a112_users_and_groups_soft_deletion.sql;
 source step_a113_alter_table_medicalinventory.sql;
 source step_a114_medical_type_soft_deletion.sql;
+source u2g_update/step_x_add_pregnancycare_menuitem_and_privilege_for_groupmenu.sql;
