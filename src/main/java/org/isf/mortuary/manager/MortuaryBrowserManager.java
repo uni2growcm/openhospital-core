@@ -6,6 +6,7 @@ import java.util.List;
 import org.isf.mortuary.model.Mortuary;
 import org.isf.mortuary.service.MortuaryIoOperations;
 import org.isf.utils.exception.OHException;
+import org.isf.utils.time.TimeTools;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -39,8 +40,10 @@ public class MortuaryBrowserManager {
 	public List<Mortuary> getMortuariesWhereData(
 		String patientName,
 		String provenance,
+		LocalDateTime dateFrom,
+		LocalDateTime dateTo,
 		String deathReason
 	) {
-		return mortuaryIoOperations.getMortuariesWhereData(patientName, provenance, deathReason);
+		return mortuaryIoOperations.getMortuariesWhereData(patientName, provenance, TimeTools.truncateToSeconds(dateFrom),TimeTools.truncateToSeconds(dateFrom), deathReason);
 	}
 }

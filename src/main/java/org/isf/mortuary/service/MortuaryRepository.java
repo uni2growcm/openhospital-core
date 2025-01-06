@@ -22,11 +22,9 @@
 
 package org.isf.mortuary.service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.isf.mortuary.model.Mortuary;
-import org.isf.ward.model.Ward;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -37,11 +35,4 @@ public interface MortuaryRepository extends JpaRepository<Mortuary, Integer>, Mo
 
 	@Query("select m from Mortuary m where m.patient.name = :patientName")
 	List<Mortuary> getMortuariesWhereData(@Param("patientName") String patientName);
-
-	@Query("select m from Mortuary m where m.patient.name = :patientName and m.provenance = :provenance and m.deathReason.description = :deathReason")
-	List<Mortuary> findAllWhereData(
-		@Param("patientName") String patientName,
-		@Param("provenance") String provenance,
-		@Param("deathReason") String deathReason
-	);
 }

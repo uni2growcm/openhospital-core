@@ -28,5 +28,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface DeathReasonRepository extends JpaRepository<DeathReason, Integer> {
-
 }

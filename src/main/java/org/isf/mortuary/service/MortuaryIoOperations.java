@@ -29,7 +29,6 @@ import org.isf.mortuary.model.Mortuary;
 import org.isf.utils.db.TranslateOHServiceException;
 import org.isf.utils.exception.OHException;
 import org.isf.utils.exception.OHServiceException;
-import org.isf.utils.time.TimeTools;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -86,25 +85,6 @@ public class MortuaryIoOperations {
 		mortuaryRepository.delete(mortuary);
 	}
 
-//	public List<Mortuary> getMortuariesWhereData(
-//		String patientName,
-//		String deathReason,
-//		String ward,
-//		LocalDateTime movFrom,
-//		LocalDateTime movTo
-//	) throws OHServiceException {
-//		movFrom = movFrom.withHour(0).withMinute(0);
-//		movTo = movTo.withHour(23).withMinute(59);
-//
-//		return mortuaryRepository.getMortuariesWhereData(
-//			patientName,
-//			deathReason,
-//			ward,
-//			TimeTools.truncateToSeconds(movFrom),
-//			TimeTools.truncateToSeconds(movTo)
-//		);
-//	}
-
 	public List<Mortuary> getMortuariesWhereData(String patientName) {
 		return mortuaryRepository.getMortuariesWhereData(patientName);
 	}
@@ -112,8 +92,10 @@ public class MortuaryIoOperations {
 	public List<Mortuary> getMortuariesWhereData(
 		String patientName,
 		String provenance,
+		LocalDateTime dateFrom,
+		LocalDateTime dateTo,
 		String deathReason
-	){
-		return mortuaryRepository.findAllWhereData(patientName, provenance, deathReason);
+	) {
+		return mortuaryRepository.findAllWhereData(patientName, provenance, dateFrom, dateTo,deathReason);
 	}
 }
