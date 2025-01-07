@@ -58,4 +58,23 @@ public class ReductionPlanIoOperations {
 	public List<ReductionPlan> getByDescription(String description) throws OHServiceException {
 		return reductionplanIoOperationRepository.findByDescription(description);
 	}
+
+	/**
+	 * Save a {@link ReductionPlan}
+	 * @param reductionPlan the {@link ReductionPlan} to insert
+	 * @return the newly persisted {@link ReductionPlan} object
+	 * @throws OHServiceException when failed to save {@link ReductionPlan}
+	 */
+	public ReductionPlan save(ReductionPlan reductionPlan) throws OHServiceException {
+		return reductionplanIoOperationRepository.save(reductionPlan);
+	}
+
+	/**
+	 * Delete a {@link ReductionPlan}
+	 * @param reductionPlan the {@link ReductionPlan} to delete
+	 * @throws OHServiceException when failed to delete {@link ReductionPlan}
+	 */
+	public void delete(ReductionPlan reductionPlan) throws OHServiceException {
+		reductionplanIoOperationRepository.delete(reductionPlan);
+	}
 }

@@ -55,4 +55,33 @@ public class ReductionPlanManager {
 	public List<ReductionPlan> getByDescription(String description) throws OHServiceException {
 		return reductionPlanIoOperations.getByDescription(description);
 	}
+
+	/**
+	 * Save a {@link ReductionPlan}
+	 * @param reductionPlan the {@link ReductionPlan} to insert
+	 * @return the newly persisted {@link ReductionPlan} object
+	 * @throws OHServiceException when failed to save {@link ReductionPlan}
+	 */
+	public ReductionPlan save(ReductionPlan reductionPlan) throws OHServiceException {
+		return reductionPlanIoOperations.save(reductionPlan);
+	}
+
+	/**
+	 * Update a {@link ReductionPlan}
+	 * @param reductionPlan the {@link ReductionPlan} to update
+	 * @return the update persisted {@link ReductionPlan} object
+	 * @throws OHServiceException when failed to update {@link ReductionPlan}
+	 */
+	public ReductionPlan update(ReductionPlan reductionPlan) throws OHServiceException {
+		return reductionPlanIoOperations.save(reductionPlan);
+	}
+
+	/**
+	 * Delete a {@link ReductionPlan}
+	 * @param reductionPlan the {@link ReductionPlan} to delete
+	 * @throws OHServiceException when failed to delete {@link ReductionPlan}
+	 */
+	public void delete(ReductionPlan reductionPlan) throws OHServiceException {
+		reductionPlanIoOperations.delete(reductionPlan);
+	}
 }

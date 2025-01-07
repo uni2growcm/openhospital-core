@@ -24,6 +24,7 @@ package org.isf.reductionplan.model;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.List;
 
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
@@ -32,6 +33,7 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import jakarta.persistence.Version;
@@ -80,6 +82,18 @@ public class ReductionPlan extends Auditable<String> implements Serializable {
 
 	@Transient
 	private volatile int hashcode;
+
+	@OneToMany
+	private List<ExamReduction> examReductionList;
+
+	@OneToMany
+	private List<MedicalReduction> medicalReductionList;
+
+	@OneToMany
+	private List<OperationReduction> operationReductionList;
+
+	@OneToMany
+	private List<PriceOtherReduction> priceOtherReductionList;
 
 	public ReductionPlan() {
 		super();
@@ -158,6 +172,38 @@ public class ReductionPlan extends Auditable<String> implements Serializable {
 
 	public void setLock(int lock) {
 		this.lock = lock;
+	}
+
+	public List<ExamReduction> getExamReductionList() {
+		return examReductionList;
+	}
+
+	public void setExamReductionList(List<ExamReduction> examReductionList) {
+		this.examReductionList = examReductionList;
+	}
+
+	public List<MedicalReduction> getMedicalReductionList() {
+		return medicalReductionList;
+	}
+
+	public void setMedicalReductionList(List<MedicalReduction> medicalReductionList) {
+		this.medicalReductionList = medicalReductionList;
+	}
+
+	public List<OperationReduction> getOperationReductionList() {
+		return operationReductionList;
+	}
+
+	public void setOperationReductionList(List<OperationReduction> operationReductionList) {
+		this.operationReductionList = operationReductionList;
+	}
+
+	public List<PriceOtherReduction> getPriceOtherReductionList() {
+		return priceOtherReductionList;
+	}
+
+	public void setPriceOtherReductionList(List<PriceOtherReduction> priceOtherReductionList) {
+		this.priceOtherReductionList = priceOtherReductionList;
 	}
 
 	@Override
