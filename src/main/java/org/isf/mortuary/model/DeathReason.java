@@ -22,8 +22,6 @@
 
 package org.isf.mortuary.model;
 
-import java.util.GregorianCalendar;
-
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -57,7 +55,6 @@ public class DeathReason {
 	private String description;
 
 	public DeathReason() {
-
 	}
 
 	public DeathReason(int id, String code, String description) {

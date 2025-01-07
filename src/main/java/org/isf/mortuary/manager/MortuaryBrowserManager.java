@@ -1,3 +1,25 @@
+/*
+ * Open Hospital (www.open-hospital.org)
+ * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ *
+ * Open Hospital is a free and open source software for healthcare data management.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * https://www.gnu.org/licenses/gpl-3.0-standalone.html
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package org.isf.mortuary.manager;
 
 import java.time.LocalDateTime;
@@ -6,7 +28,10 @@ import java.util.List;
 import org.isf.mortuary.model.Mortuary;
 import org.isf.mortuary.service.MortuaryIoOperations;
 import org.isf.utils.exception.OHException;
+import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.time.TimeTools;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -21,7 +46,7 @@ public class MortuaryBrowserManager {
 		return mortuaryIoOperations.add(Mortuary);
 	}
 
-	public List<Mortuary> getAll() throws OHException{
+	public List<Mortuary> getAll() throws OHException {
 		return mortuaryIoOperations.getAll();
 	}
 
@@ -33,17 +58,96 @@ public class MortuaryBrowserManager {
 		mortuaryIoOperations.delete(mortuary);
 	}
 
-	public List<Mortuary> getMortuariesWhereData(String patientName) {
-		return mortuaryIoOperations.getMortuariesWhereData(patientName);
-	}
-
+	/**
+	 * Retrieves all the {@link Mortuary}s with the specified criteria.<br>
+	 * <br>
+	 * @param patientName the patient name.
+	 * @param provenance the provenance.
+	 * @param dateFrom the lower bound for the mortuary date range.
+	 * @param dateTo the upper bound for the mortuary date range.
+	 * @param deathReason the reason of death.
+	 * @param inputOrOutput the value that determines the date to be set in the interval.
+	 * @return the retrieved mortuaries.
+	 */
 	public List<Mortuary> getMortuariesWhereData(
 		String patientName,
 		String provenance,
 		LocalDateTime dateFrom,
 		LocalDateTime dateTo,
-		String deathReason
+		String deathReason,
+		String inputOrOutput
 	) {
-		return mortuaryIoOperations.getMortuariesWhereData(patientName, provenance, TimeTools.truncateToSeconds(dateFrom),TimeTools.truncateToSeconds(dateFrom), deathReason);
+		return mortuaryIoOperations.getMortuariesWhereData(
+			patientName,
+			provenance,
+			TimeTools.truncateToSeconds(dateFrom),
+			TimeTools.truncateToSeconds(dateTo),
+			deathReason,
+			inputOrOutput
+		);
+	}
+
+	/**
+	 * Retrieves all the {@link Mortuary}s with the specified criteria.<br>
+	 * <br>
+	 * @param patientName the patient name.
+	 * @param provenance the provenance.
+	 * @param dateFrom the lower bound for the mortuary date range.
+	 * @param dateTo the upper bound for the mortuary date range.
+	 * @param deathReason the reason of death.
+	 * @param inputOrOutput the value that determines the date to be set in the interval.
+	 * @param page current page.
+	 * @param size the size of the page.
+	 * @return the retrieved a mortuaries page.
+	 */
+	public List<Mortuary> getMortuariesWhereDataPageable(
+		String patientName,
+		String provenance,
+		LocalDateTime dateFrom,
+		LocalDateTime dateTo,
+		String deathReason,
+		String inputOrOutput,
+		int page,
+		int size
+	) {
+		Pageable pageable = PageRequest.of(page, size);
+		return mortuaryIoOperations.getMortuariesWhereDataPageable(
+			patientName,
+			provenance,
+			dateFrom,
+			dateTo,
+			deathReason,
+			inputOrOutput,
+			pageable
+		);
+	}
+
+	/**
+	 * Retrieves all the {@link Mortuary}s with the specified criteria.<br>
+	 * <br>
+	 * @param patientName the patient name.
+	 * @param provenance the provenance.
+	 * @param dateFrom the lower bound for the mortuary date range.
+	 * @param dateTo the upper bound for the mortuary date range.
+	 * @param deathReason the reason of death.
+	 * @param inputOrOutput the value that determines the date to be set in the interval.
+	 * @return the number of mortuary.
+	 */
+	public long countTotalMovements(
+		String patientName,
+		String provenance,
+		LocalDateTime dateFrom,
+		LocalDateTime dateTo,
+		String deathReason,
+		String inputOrOutput
+	) throws OHServiceException {
+		return mortuaryIoOperations.countTotalMovements(
+			patientName,
+			provenance,
+			TimeTools.truncateToSeconds(dateFrom),
+			TimeTools.truncateToSeconds(dateTo),
+			deathReason,
+			inputOrOutput
+		);
 	}
 }

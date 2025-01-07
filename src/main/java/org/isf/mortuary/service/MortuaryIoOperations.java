@@ -29,6 +29,8 @@ import org.isf.mortuary.model.Mortuary;
 import org.isf.utils.db.TranslateOHServiceException;
 import org.isf.utils.exception.OHException;
 import org.isf.utils.exception.OHServiceException;
+import org.isf.utils.time.TimeTools;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,7 +57,6 @@ public class MortuaryIoOperations {
 
 	/**
 	 * Get all the {@link Mortuary}s.
-	 *
 	 * @return a list of deaths.
 	 * @throws OHException if an error occurs retrieving the deaths.
 	 */
@@ -64,20 +65,17 @@ public class MortuaryIoOperations {
 	}
 
 	/**
-	 *
 	 * method that update an existing {@link Mortuary} in the db
-	 *
 	 * @param mortuary - the {@link Mortuary} to update
 	 * @return {@link Mortuary} has been updated
 	 * @throws OHException
 	 */
-	public Mortuary update(Mortuary mortuary) throws OHException{
+	public Mortuary update(Mortuary mortuary) throws OHException {
 		return mortuaryRepository.save(mortuary);
 	}
 
 	/**
 	 * method that delete a death
-	 *
 	 * @param mortuary
 	 * @throws OHException
 	 */
@@ -85,17 +83,57 @@ public class MortuaryIoOperations {
 		mortuaryRepository.delete(mortuary);
 	}
 
-	public List<Mortuary> getMortuariesWhereData(String patientName) {
-		return mortuaryRepository.getMortuariesWhereData(patientName);
-	}
-
 	public List<Mortuary> getMortuariesWhereData(
 		String patientName,
 		String provenance,
 		LocalDateTime dateFrom,
 		LocalDateTime dateTo,
-		String deathReason
+		String deathReason,
+		String inputOrOutput
 	) {
-		return mortuaryRepository.findAllWhereData(patientName, provenance, dateFrom, dateTo,deathReason);
+		return mortuaryRepository.findAllWhereData(patientName, provenance, dateFrom, dateTo, deathReason, inputOrOutput);
+	}
+
+	public List<Mortuary> getMortuariesWhereDataPageable(
+		String patientName,
+		String provenance,
+		LocalDateTime dateFrom,
+		LocalDateTime dateTo,
+		String deathReason,
+		String inputOrOutput,
+		Pageable pageable
+	) {
+		return mortuaryRepository.findAllWhereDataPageable(
+			patientName,
+			provenance,
+			dateFrom,
+			dateTo,
+			deathReason,
+			inputOrOutput,
+			pageable
+		);
+	}
+
+	public long countTotalMovements(
+		String patientName,
+		String provenance,
+		LocalDateTime dateFrom,
+		LocalDateTime dateTo,
+		String deathReason,
+		String inputOrOutput
+	) {
+		if ((dateFrom != null) && (dateTo != null)) {
+			dateFrom = dateFrom.withHour(0).withMinute(0);
+			dateTo = dateTo.withHour(23).withMinute(59);
+		}
+
+		return mortuaryRepository.getCountTotalMovements(
+			patientName,
+			provenance,
+			TimeTools.truncateToSeconds(dateFrom),
+			TimeTools.truncateToSeconds(dateTo),
+			deathReason,
+			inputOrOutput
+		);
 	}
 }

@@ -40,14 +40,14 @@ public class DeathReasonIoOperations {
 
 	@Autowired
 	public DeathReasonIoOperations(DeathReasonRepository deathReasonRepository) {
-		this.deathReasonRepository = deathReasonRepository;
+		DeathReasonIoOperations.deathReasonRepository = deathReasonRepository;
 	}
 
 	public List<DeathReason> getAll() throws OHServiceException {
 		return deathReasonRepository.findAll();
 	}
 
-	public Optional<DeathReason> getById(int id) throws OHServiceException{
+	public Optional<DeathReason> getById(int id) throws OHServiceException {
 		return deathReasonRepository.findById(id);
 	}
 }

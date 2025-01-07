@@ -31,6 +31,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class DeathReasonManager {
+
 	private final DeathReasonIoOperations deathReasonIoOperations;
 
 	public DeathReasonManager(DeathReasonIoOperations deathReasonIoOperations) {
