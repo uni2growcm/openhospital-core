@@ -37,7 +37,6 @@ import org.springframework.stereotype.Component;
 
 /**
  * Class that provides gui separation from database operations and gives some useful logic manipulations of the dynamic data (memory)
- *
  * @author bob 19-dec-2005 14-jan-2006
  */
 @Component
@@ -51,7 +50,6 @@ public class MedicalBrowsingManager {
 
 	/**
 	 * Returns the requested medical.
-	 *
 	 * @param code the medical code.
 	 * @return the retrieved medical.
 	 * @throws OHServiceException
@@ -62,7 +60,6 @@ public class MedicalBrowsingManager {
 
 	/**
 	 * Returns the requested medical.
-	 *
 	 * @param prod_code the medical prod_code.
 	 * @return the retrieved medical.
 	 * @throws OHServiceException
@@ -73,7 +70,6 @@ public class MedicalBrowsingManager {
 
 	/**
 	 * Returns all the medicals.
-	 *
 	 * @return all the medicals.
 	 * @throws OHServiceException
 	 */
@@ -95,7 +91,6 @@ public class MedicalBrowsingManager {
 
 	/**
 	 * Returns all the medicals sorted by Name.
-	 *
 	 * @return all the medicals.
 	 */
 	public List<Medical> getMedicalsSortedByName() throws OHServiceException {
@@ -104,7 +99,6 @@ public class MedicalBrowsingManager {
 
 	/**
 	 * Returns all the medicals sorted by code.
-	 *
 	 * @return all the medicals.
 	 */
 	public List<Medical> getMedicalsSortedByCode() throws OHServiceException {
@@ -113,7 +107,6 @@ public class MedicalBrowsingManager {
 
 	/**
 	 * Returns all the medicals with the specified description.
-	 *
 	 * @param description the medical description.
 	 * @return all the medicals with the specified description.
 	 * @throws OHServiceException
@@ -124,10 +117,9 @@ public class MedicalBrowsingManager {
 
 	/**
 	 * Returns all the medicals with the specified description.
-	 *
 	 * @param type the medical type description.
-	 * @return all the medicals with the specified description.
 	 * @param nameSorted if {@code true} return the list in alphabetical order, by code otherwise
+	 * @return all the medicals with the specified description.
 	 */
 	public List<Medical> getMedicals(String type, boolean nameSorted) throws OHServiceException {
 		return ioOperations.getMedicals(type, nameSorted);
@@ -135,7 +127,6 @@ public class MedicalBrowsingManager {
 
 	/**
 	 * Return all the medicals with the specified criteria.
-	 *
 	 * @param description the medical description or {@code null}
 	 * @param type the medical type or {@code null}.
 	 * @param critical {@code true} to include only medicals under critical level.
@@ -196,7 +187,6 @@ public class MedicalBrowsingManager {
 
 	/**
 	 * Deletes the specified medical.
-	 *
 	 * @param medical the medical to delete.
 	 * @throws OHServiceException
 	 */

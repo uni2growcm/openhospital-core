@@ -27,6 +27,7 @@ import java.util.List;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Order;
@@ -41,6 +42,7 @@ import org.isf.medstockmovtype.model.MovementType;
 import org.isf.medtype.model.MedicalType;
 import org.isf.utils.time.TimeTools;
 import org.isf.ward.model.Ward;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
@@ -81,7 +83,23 @@ public class MovementIoOperationRepositoryImpl implements MovementIoOperationRep
 						lotPrepFrom, lotPrepTo, lotDueFrom, lotDueTo);
 	}
 
-	@SuppressWarnings("unchecked")
+	@Override
+	public List<Movement> findMovementWhereData(
+		Integer medicalCode,
+		String medicalType,
+		String wardId,
+		String movType,
+		LocalDateTime movFrom,
+		LocalDateTime movTo,
+		LocalDateTime lotPrepFrom,
+		LocalDateTime lotPrepTo,
+		LocalDateTime lotDueFrom,
+		LocalDateTime lotDueTo,
+		Pageable pageable) {
+		return getMovementWhereData(medicalCode, medicalType, wardId, movType, movFrom, movTo,
+			lotPrepFrom, lotPrepTo, lotDueFrom, lotDueTo, pageable);
+	}
+
 	@Override
 	public List<Integer> findMovementForPrint(
 					String medicalDescription,
@@ -167,6 +185,119 @@ public class MovementIoOperationRepositoryImpl implements MovementIoOperationRep
 		orderList.add(builder.desc(root.get(REF_NO)));
 		query.where(predicates.toArray(new Predicate[] {})).orderBy(orderList);
 		return entityManager.createQuery(query).getResultList();
+	}
+
+	private List<Movement> getMovementWhereData(
+		Integer medicalCode,
+		String medicalType,
+		String wardId,
+		String movType,
+		LocalDateTime movFrom,
+		LocalDateTime movTo,
+		LocalDateTime lotPrepFrom,
+		LocalDateTime lotPrepTo,
+		LocalDateTime lotDueFrom,
+		LocalDateTime lotDueTo,
+		Pageable pageable) {
+
+		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+		CriteriaQuery<Movement> query = builder.createQuery(Movement.class);
+		Root<Movement> root = query.from(Movement.class);
+
+		List<Predicate> predicates = new ArrayList<>();
+
+		if (medicalCode != null) {
+			predicates.add(builder.equal(root.<Medical>get(MEDICAL).<String>get(CODE), medicalCode));
+		}
+		if (medicalType != null) {
+			predicates.add(builder.equal(root.<Medical>get(MEDICAL).<MedicalType>get(TYPE).<String>get(CODE), medicalType));
+		}
+		if ((movFrom != null) && (movTo != null)) {
+			predicates.add(builder.between(root.<LocalDateTime>get(DATE), TimeTools.getBeginningOfDay(movFrom), TimeTools.getBeginningOfNextDay(movTo)));
+		}
+		if ((lotPrepFrom != null) && (lotPrepTo != null)) {
+			predicates.add(builder.between(root.<Lot>get(LOT).<LocalDateTime>get("preparationDate"),
+				TimeTools.getBeginningOfDay(lotPrepFrom), TimeTools.getBeginningOfNextDay(lotPrepTo)));
+		}
+		if ((lotDueFrom != null) && (lotDueTo != null)) {
+			predicates.add(builder.between(root.<Lot>get(LOT).<LocalDateTime>get("dueDate"),
+				TimeTools.getBeginningOfDay(lotDueFrom), TimeTools.getBeginningOfNextDay(lotDueTo)));
+		}
+		if ("+".equals(movType)) {
+			predicates.add(builder.equal(root.<MovementType>get(TYPE).<String>get(TYPE), movType));
+		} else if ("-".equals(movType)) {
+			predicates.add(builder.equal(root.<MovementType>get(TYPE).<String>get(TYPE), movType));
+		} else if (movType != null) {
+			predicates.add(builder.equal(root.<MovementType>get(TYPE).<String>get(CODE), movType));
+		}
+		if (wardId != null) {
+			predicates.add(builder.equal(root.<Ward>get(WARD).<String>get(CODE), wardId));
+		}
+
+		List<Order> orderList = new ArrayList<>();
+
+		orderList.add(builder.desc(root.<LocalDateTime>get(DATE)));
+
+		query.select(root).where(predicates.toArray(new Predicate[0])).orderBy(orderList);
+
+		TypedQuery<Movement> typedQuery = entityManager.createQuery(query);
+
+		int firstResult = pageable.getPageNumber() * pageable.getPageSize();
+		typedQuery.setFirstResult(firstResult);
+		typedQuery.setMaxResults(pageable.getPageSize());
+
+		return typedQuery.getResultList();
+	}
+
+	@Override
+	public long getCountTotalMovements(
+		Integer medicalCode,
+		String medicalType,
+		String wardId,
+		String movType,
+		LocalDateTime movFrom,
+		LocalDateTime movTo,
+		LocalDateTime lotPrepFrom,
+		LocalDateTime lotPrepTo,
+		LocalDateTime lotDueFrom,
+		LocalDateTime lotDueTo) {
+
+		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+		CriteriaQuery<Long> countQuery = builder.createQuery(Long.class);
+		Root<Movement> root = countQuery.from(Movement.class);
+
+		List<Predicate> predicates = new ArrayList<>();
+		if (medicalCode != null) {
+			predicates.add(builder.equal(root.<Medical>get(MEDICAL).<String>get(CODE), medicalCode));
+		}
+		if (medicalType != null) {
+			predicates.add(builder.equal(root.<Medical>get(MEDICAL).<MedicalType>get(TYPE).<String>get(CODE), medicalType));
+		}
+		if ((movFrom != null) && (movTo != null)) {
+			predicates.add(builder.between(root.<LocalDateTime>get(DATE), TimeTools.getBeginningOfDay(movFrom), TimeTools.getBeginningOfNextDay(movTo)));
+		}
+		if ((lotPrepFrom != null) && (lotPrepTo != null)) {
+			predicates.add(builder.between(root.<Lot>get(LOT).<LocalDateTime>get("preparationDate"),
+				TimeTools.getBeginningOfDay(lotPrepFrom), TimeTools.getBeginningOfNextDay(lotPrepTo)));
+		}
+		if ((lotDueFrom != null) && (lotDueTo != null)) {
+			predicates.add(builder.between(root.<Lot>get(LOT).<LocalDateTime>get("dueDate"),
+				TimeTools.getBeginningOfDay(lotDueFrom), TimeTools.getBeginningOfNextDay(lotDueTo)));
+		}
+		if ("+".equals(movType)) {
+			predicates.add(builder.equal(root.<MovementType>get(TYPE).<String>get(TYPE), movType));
+		} else if ("-".equals(movType)) {
+			predicates.add(builder.equal(root.<MovementType>get(TYPE).<String>get(TYPE), movType));
+		} else if (movType != null) {
+			predicates.add(builder.equal(root.<MovementType>get(TYPE).<String>get(CODE), movType));
+		}
+		if (wardId != null) {
+			predicates.add(builder.equal(root.<Ward>get(WARD).<String>get(CODE), wardId));
+		}
+
+		countQuery.select(builder.count(root)).where(predicates.toArray(new Predicate[0]));
+
+		return entityManager.createQuery(countQuery).getSingleResult();
 	}
 
 	private List<Integer> getMovementForPrint(
