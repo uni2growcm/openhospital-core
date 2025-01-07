@@ -93,5 +93,9 @@ public interface MedicalsIoOperationRepository extends JpaRepository<Medical, In
 
 	@Query(value = "SELECT m FROM Medical m")
 	Page<Medical> findAllPageable(Pageable pageable);
-	
+
+	@Query(value = "SELECT m FROM Medical m WHERE m.type.description LIKE %:type% AND m.description LIKE %:description%")
+	Page<Medical> findAllByTypeDescriptionContainsAndDescriptionContains(
+		@Param("type") String type, @Param("description") String description, Pageable pageable
+	);
 }

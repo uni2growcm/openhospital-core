@@ -25,6 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
+import java.util.stream.IntStream;
 
 import org.isf.OHCoreTestCase;
 import org.isf.medicals.manager.MedicalBrowsingManager;
@@ -54,8 +55,10 @@ import org.isf.ward.model.Ward;
 import org.isf.ward.service.WardIoOperationRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 
 class Tests extends OHCoreTestCase {
 
@@ -385,6 +388,109 @@ class Tests extends OHCoreTestCase {
 	}
 
 	@Test
+	@DisplayName("Should return requested page of medical filtered by type and sorted by prod_code")
+	void testMgrGetMedicalsByTypeSortedByProdCodePageable() throws Exception {
+		List<Medical> savedMedicals = generateMedicals(10, true);
+
+		Page<Medical> medicals = medicalBrowsingManager.getMedicalsByTypeAndDescription(
+			savedMedicals.get(0).getType().getDescription(), null, false, 0, 3
+		);
+
+		assertThat(medicals.getTotalPages()).isEqualTo(4);
+		assertThat(medicals.getTotalElements()).isEqualTo(10);
+		assertThat(medicals.getContent().size()).isEqualTo(3);
+		assertThat(medicals.getContent().get(0).getProdCode()).isEqualTo(savedMedicals.get(0).getProdCode());
+
+		medicals = medicalBrowsingManager.getMedicalsByTypeAndDescription(
+			savedMedicals.get(0).getType().getDescription(), null, false, 3, 3
+		);
+
+		assertThat(medicals.getTotalPages()).isEqualTo(4);
+		assertThat(medicals.getTotalElements()).isEqualTo(10);
+		assertThat(medicals.getContent().size()).isEqualTo(1);
+		assertThat(medicals.getContent().get(0).getProdCode()).isEqualTo(savedMedicals.get(9).getProdCode());
+
+		medicalsIoOperationRepository.deleteAll();
+
+		savedMedicals = generateMedicals(5, false);
+
+		medicals = medicalBrowsingManager.getMedicalsByTypeAndDescription(
+			savedMedicals.get(0).getType().getDescription(), null, false, 0, 2
+		);
+
+		assertThat(medicals.getTotalPages()).isEqualTo(3);
+		assertThat(medicals.getTotalElements()).isEqualTo(5);
+		assertThat(medicals.getContent().size()).isEqualTo(2);
+		assertThat(medicals.getContent().get(0).getProdCode()).isEqualTo(savedMedicals.get(0).getProdCode());
+
+		String typeCode = savedMedicals.get(0).getType().getDescription();
+		String keyword = typeCode.substring(0, typeCode.length() - 2);
+
+		medicals = medicalBrowsingManager.getMedicalsByTypeAndDescription(keyword, null, false, 2, 2);
+
+		assertThat(medicals.getTotalPages()).isEqualTo(3);
+		assertThat(medicals.getTotalElements()).isEqualTo(5);
+		assertThat(medicals.getContent().size()).isEqualTo(1);
+		assertThat(medicals.getContent().get(0).getProdCode()).isEqualTo(savedMedicals.get(4).getProdCode());
+	}
+
+	@Test
+	@DisplayName("Should return requested page of medical filtered by description")
+	void testMgrGetMedicalsByDescriptionPageable() throws Exception {
+		List<Medical> savedMedicals = generateMedicals(10, true);
+
+		Page<Medical> medicals = medicalBrowsingManager.getMedicalsByTypeAndDescription(
+			null, savedMedicals.get(0).getDescription(), false, 0, 3
+		);
+
+		assertThat(medicals.getTotalPages()).isEqualTo(1);
+		assertThat(medicals.getTotalElements()).isEqualTo(1);
+		assertThat(medicals.getContent().size()).isEqualTo(1);
+		assertThat(medicals.getContent().get(0).getDescription()).isEqualTo(savedMedicals.get(0).getDescription());
+
+		String description = savedMedicals.get(0).getDescription();
+		String keyword = description.substring(2, 10);
+
+		medicals = medicalBrowsingManager.getMedicalsByTypeAndDescription(null, keyword, false, 0, 3);
+
+		assertThat(medicals.getTotalPages()).isEqualTo(4);
+		assertThat(medicals.getTotalElements()).isEqualTo(10);
+		assertThat(medicals.getContent().size()).isEqualTo(3);
+		assertThat(medicals.getContent().get(0).getDescription()).isEqualTo(savedMedicals.get(0).getDescription());
+
+		medicals = medicalBrowsingManager.getMedicalsByTypeAndDescription(null, keyword, true, 1, 3);
+
+		assertThat(medicals.getTotalPages()).isEqualTo(4);
+		assertThat(medicals.getTotalElements()).isEqualTo(10);
+		assertThat(medicals.getContent().size()).isEqualTo(3);
+		assertThat(medicals.getContent().get(0).getDescription()).isEqualTo(savedMedicals.get(7).getDescription());
+	}
+
+	@Test
+	@DisplayName("Should return requested page of medical filtered by type and sorted by description")
+	void testMgrGetMedicalsByTypeSortedByDescriptionPageable() throws Exception {
+		List<Medical> savedMedicals = generateMedicals(7, true);
+
+		Page<Medical> medicals = medicalBrowsingManager.getMedicalsByTypeAndDescription(
+			savedMedicals.get(0).getType().getDescription(), null, true, 0, 2
+		);
+
+		assertThat(medicals.getTotalPages()).isEqualTo(4);
+		assertThat(medicals.getTotalElements()).isEqualTo(7);
+		assertThat(medicals.getContent().size()).isEqualTo(2);
+		assertThat(medicals.getContent().get(0).getDescription()).isEqualTo(savedMedicals.get(6).getDescription());
+
+		medicals = medicalBrowsingManager.getMedicalsByTypeAndDescription(
+			savedMedicals.get(0).getType().getDescription(), null, true, 3, 2
+		);
+
+		assertThat(medicals.getTotalPages()).isEqualTo(4);
+		assertThat(medicals.getTotalElements()).isEqualTo(7);
+		assertThat(medicals.getContent().size()).isEqualTo(1);
+		assertThat(medicals.getContent().get(0).getDescription()).isEqualTo(savedMedicals.get(0).getDescription());
+	}
+
+	@Test
 	void testMgrGetMedicalsWithTypeDescriptionSorted() throws Exception {
 		int code = setupTestMedical(false);
 		Medical foundMedical = medicalsIoOperationRepository.findById(code).orElse(null);
@@ -487,7 +593,7 @@ class Tests extends OHCoreTestCase {
 			movementIoOperationRepository.saveAndFlush(movement);
 			medicalBrowsingManager.deleteMedical(medical);
 		})
-						.isInstanceOf(OHDataIntegrityViolationException.class);
+			.isInstanceOf(OHDataIntegrityViolationException.class);
 	}
 
 	@Test
@@ -498,7 +604,7 @@ class Tests extends OHCoreTestCase {
 			medical.setMinqty(-1);
 			medicalBrowsingManager.validateMedical(medical, false, false);
 		})
-						.isInstanceOf(OHDataValidationException.class);
+			.isInstanceOf(OHDataValidationException.class);
 	}
 
 	@Test
@@ -509,7 +615,7 @@ class Tests extends OHCoreTestCase {
 			medical.setPcsperpck(-1);
 			medicalBrowsingManager.validateMedical(medical, false, false);
 		})
-						.isInstanceOf(OHDataValidationException.class);
+			.isInstanceOf(OHDataValidationException.class);
 	}
 
 	@Test
@@ -520,7 +626,7 @@ class Tests extends OHCoreTestCase {
 			medical.setDescription("");
 			medicalBrowsingManager.validateMedical(medical, false, false);
 		})
-						.isInstanceOf(OHDataValidationException.class);
+			.isInstanceOf(OHDataValidationException.class);
 	}
 
 	@Test
@@ -531,7 +637,7 @@ class Tests extends OHCoreTestCase {
 			assertThat(medical).isNotNull();
 			medicalBrowsingManager.validateMedical(medical, false, false);
 		})
-						.isInstanceOf(OHDataValidationException.class);
+			.isInstanceOf(OHDataValidationException.class);
 	}
 
 	@Test
@@ -543,7 +649,7 @@ class Tests extends OHCoreTestCase {
 			medical.setProdCode("");
 			medicalBrowsingManager.validateMedical(medical, false, false);
 		})
-						.isInstanceOf(OHDataValidationException.class);
+			.isInstanceOf(OHDataValidationException.class);
 	}
 
 	@Test
@@ -558,7 +664,7 @@ class Tests extends OHCoreTestCase {
 			medical.setType(medicalType);
 			medicalBrowsingManager.validateMedical(medical, false, false);
 		})
-						.isInstanceOf(OHDataValidationException.class);
+			.isInstanceOf(OHDataValidationException.class);
 	}
 
 	@Test
@@ -596,9 +702,9 @@ class Tests extends OHCoreTestCase {
 		Medical medical3 = new Medical(3, medicalType3, "TP3", "TestDescription2", 1, 3, 5, 4);
 
 		assertThat(medical)
-						.isEqualTo(medical)
-						.isNotEqualTo("someString")
-						.isNotEqualTo(medical2);
+			.isEqualTo(medical)
+			.isNotEqualTo("someString")
+			.isNotEqualTo(medical2);
 
 		medical2.setProdCode(null);
 		medical3.setProdCode(null);
@@ -639,11 +745,58 @@ class Tests extends OHCoreTestCase {
 	}
 
 	private int setupTestMedical(boolean usingSet) throws OHException {
+		return setupMedical(true).getCode();
+	}
+
+	private Medical setupMedical(boolean usingSet) throws OHException {
 		MedicalType medicalType = testMedicalType.setup(false);
 		Medical medical = testMedical.setup(medicalType, usingSet);
 		medicalTypeIoOperationRepository.saveAndFlush(medicalType);
 		medicalsIoOperationRepository.saveAndFlush(medical);
-		return medical.getCode();
+		return medical;
+	}
+
+	/**
+	 * Generate a list of medical
+	 * @param size The number if medical to generate
+	 * @param sameType Whether to use the same medical type for all the generated medicals or not
+	 * @return The list of generated {@link Medical}s
+	 */
+	private List<Medical> generateMedicals(int size, boolean sameType) {
+		String medicalTypeCode = "MT";
+
+		List<Medical> medicals = IntStream.range(0, size).mapToObj(i -> {
+			MedicalType medicalType;
+			try {
+				medicalType = testMedicalType.setup(false);
+			} catch (OHException e) {
+				throw new RuntimeException(e);
+			}
+
+			if (sameType) {
+				medicalType.setCode(medicalTypeCode);
+			} else {
+				medicalType.setCode(medicalTypeCode + i);
+			}
+			medicalType = medicalTypeIoOperationRepository.saveAndFlush(medicalType);
+
+			Medical medical = new Medical(
+				0,
+				medicalType,
+				"prod_code" + i,
+				(size - i) + "description" + i,
+				10,
+				4 + i,
+				2 * i,
+				1 + i
+			);
+
+			medical.setCode(null);
+
+			return medical;
+		}).toList();
+
+		return medicalsIoOperationRepository.saveAllAndFlush(medicals);
 	}
 
 	private void checkMedicalIntoDb(int code) throws OHException {

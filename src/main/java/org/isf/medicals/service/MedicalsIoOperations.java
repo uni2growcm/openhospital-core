@@ -34,24 +34,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * This class offers the io operations for recovering and managing
- * medical records from the database
- * 
- * @author bob 
- * 		   modified by alex:
- * 			- column product code
- * 			- column pieces per packet
- * 11-dec-2005
- * 14-jan-2006
+ * This class offers the io operations for recovering and managing medical records from the database
+ * @author bob modified by alex:
+ * - column product code
+ * - column pieces per packet 11-dec-2005 14-jan-2006
  */
 @Service
-@Transactional(rollbackFor=OHServiceException.class)
+@Transactional(rollbackFor = OHServiceException.class)
 @TranslateOHServiceException
 public class MedicalsIoOperations {
 
-	private MedicalsIoOperationRepository repository;
+	private final MedicalsIoOperationRepository repository;
 
-	private MovementIoOperationRepository moveRepository;
+	private final MovementIoOperationRepository moveRepository;
 
 	public MedicalsIoOperations(MedicalsIoOperationRepository medicalsIoOperationRepository, MovementIoOperationRepository movementIoOperationRepository) {
 		this.repository = medicalsIoOperationRepository;
@@ -67,7 +62,7 @@ public class MedicalsIoOperations {
 	public Medical getMedical(int code) throws OHServiceException {
 		return repository.findById(code).orElse(null);
 	}
-	
+
 	/**
 	 * Retrieves the specified {@link Medical}.
 	 * @param prod_code the medical prod_code.
@@ -88,8 +83,7 @@ public class MedicalsIoOperations {
 	}
 
 	/**
-	 * Retrieves all stored {@link Medical}s.
-	 * If a description value is provided, the medicals are filtered by the description.
+	 * Retrieves all stored {@link Medical}s. If a description value is provided, the medicals are filtered by the description.
 	 * @param description the medical description.
 	 * @return the stored medicals.
 	 * @throws OHServiceException if an error occurs retrieving the stored medicals.
@@ -100,10 +94,9 @@ public class MedicalsIoOperations {
 		}
 		return repository.findAllByOrderByDescription();
 	}
-	
+
 	/**
-	 * Retrieves all stored {@link Medical}s.
-	 * If a description value is provided the medicals are filtered.
+	 * Retrieves all stored {@link Medical}s. If a description value is provided the medicals are filtered.
 	 * @param type the medical type description.
 	 * @param nameSorted if {@code true} return the list in alphabetical order, by code otherwise
 	 * @return the stored medicals.
@@ -115,18 +108,39 @@ public class MedicalsIoOperations {
 		}
 		return getMedicals(nameSorted);
 	}
-	
+
 	/**
 	 * Returns the medicals pageable.
-	 *
 	 * @param page - the page number.
 	 * @param size - the page size.
 	 * @return the list of {@link Medical}s pageable. It could be {@code empty}.
-	 * @throws OHServiceException
+	 * @throws OHServiceException When failed to get medicals
 	 */
 	public Page<Medical> getMedicalsPageable(int page, int size) throws OHServiceException {
 		Pageable pageable = PageRequest.of(page, size);
 		return repository.findAllPageable(pageable);
+	}
+
+	/**
+	 * Retrieves all stored medicals by a given type description and medical description, sorted by description or medical code.
+	 * @param type Keywords to match medical type.
+	 * @param description Keywords to match medical description.
+	 * <p>
+	 * If <code>true</code>, medicals are sorted by description, otherwise, they are sorted by prod_code
+	 * </p>
+	 * @return The sorted List of medicals or empty list if none found.
+	 * @throws OHServiceException When failed to get medicals
+	 */
+	public Page<Medical> getMedicals(String type, String description, Pageable pageable) throws OHServiceException {
+		if (type == null) {
+			type = "";
+		}
+
+		if (description == null) {
+			description = "";
+		}
+
+		return repository.findAllByTypeDescriptionContainsAndDescriptionContains(type, description, pageable);
 	}
 
 	/**
@@ -171,7 +185,7 @@ public class MedicalsIoOperations {
 		}
 		return medicals;
 	}
-	
+
 	/**
 	 * Checks if the specified {@link Medical} exists or not.
 	 * @param medical - the medical to check.
@@ -185,7 +199,7 @@ public class MedicalsIoOperations {
 		}
 		return repository.findAllWhereDescriptionSoundsLike(medical.getDescription());
 	}
-	
+
 	/**
 	 * Checks if the specified {@link Medical} ProductCode exists or not.
 	 * @param medical - the medical to check.
@@ -202,7 +216,6 @@ public class MedicalsIoOperations {
 		}
 		return foundMedical != null;
 	}
-    
 
 	/**
 	 * Checks if the specified {@link Medical} exists or not.
@@ -220,7 +233,7 @@ public class MedicalsIoOperations {
 		}
 		return foundMedical != null;
 	}
-	
+
 	/**
 	 * Stores the specified {@link Medical}.
 	 * @param medical the medical to store.
@@ -248,7 +261,7 @@ public class MedicalsIoOperations {
 	 * @throws OHServiceException if an error occurs during the check.
 	 */
 	public boolean isMedicalReferencedInStockMovement(int code) throws OHServiceException {
-		return moveRepository.findAllByMedicalCode(code).size() > 0;
+		return !moveRepository.findAllByMedicalCode(code).isEmpty();
 	}
 
 	/**
@@ -262,10 +275,9 @@ public class MedicalsIoOperations {
 
 	/**
 	 * Retrieves all stored medicals, sorted by description or smart code.
-	 * @param nameSorted if true the found medicals are sorted by description, otherwise sorted by
-	 *                      prod_code and description.
+	 * @param nameSorted if true the found medicals are sorted by description, otherwise sorted by prod_code and description.
 	 * @return sorted List of medicals or empty list if none found.
-	 * @throws OHServiceException
+	 * @throws OHServiceException When failed to get medicals
 	 */
 	private List<Medical> getMedicals(boolean nameSorted) throws OHServiceException {
 		if (nameSorted) {
@@ -277,10 +289,9 @@ public class MedicalsIoOperations {
 	/**
 	 * Retrieves all stored medicals by a given type, sorted by description or smart code.
 	 * @param type the type the found medicals should have.
-	 * @param nameSorted if true the found medicals are sorted by description, otherwise sorted by
-	 *                      prod_code and description.
+	 * @param nameSorted if true the found medicals are sorted by description, otherwise sorted by prod_code and description.
 	 * @return sorted List of medicals or empty list if none found.
-	 * @throws OHServiceException
+	 * @throws OHServiceException When failed to get medicals
 	 */
 	private List<Medical> getMedicalsByType(String type, boolean nameSorted) throws OHServiceException {
 		if (nameSorted) {
@@ -288,5 +299,4 @@ public class MedicalsIoOperations {
 		}
 		return repository.findAllWhereTypeOrderBySmartCodeAndDescription(type);
 	}
-
 }
