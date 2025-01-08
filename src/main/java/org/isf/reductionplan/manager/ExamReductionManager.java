@@ -53,8 +53,8 @@ public class ExamReductionManager {
 	 * @return the list of {@link ExamReduction}s
 	 * @throws OHServiceException if the error happened during the get process
 	 */
-	public List<ExamReduction> getByReductionPlanId(int reductionPlanId) throws OHServiceException {
-		return examReductionIoOperations.getByReductionPlan(reductionPlanId);
+	public List<ExamReduction> getByReductionPlanId(int reductionPlanId, boolean deleted) throws OHServiceException {
+		return examReductionIoOperations.getByReductionPlan(reductionPlanId, deleted);
 	}
 
 	/**
@@ -62,7 +62,7 @@ public class ExamReductionManager {
 	 * @param examReduction the {@link ExamReduction} you want to delete
 	 * @throws OHServiceException if the error happened during the delete process
 	 */
-	public void delete(ExamReduction examReduction) throws OHServiceException {
-		examReductionIoOperations.delete(examReduction);
+	public ExamReduction delete(ExamReduction examReduction) throws OHServiceException {
+		return examReductionIoOperations.delete(examReduction);
 	}
 }

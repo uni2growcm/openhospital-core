@@ -24,6 +24,10 @@ package org.isf.reductionplan.manager;
 
 import java.util.List;
 
+import org.isf.reductionplan.model.ExamReduction;
+import org.isf.reductionplan.model.MedicalReduction;
+import org.isf.reductionplan.model.OperationReduction;
+import org.isf.reductionplan.model.PriceOtherReduction;
 import org.isf.reductionplan.model.ReductionPlan;
 import org.isf.reductionplan.service.ReductionPlanIoOperations;
 import org.isf.utils.exception.OHServiceException;
@@ -33,9 +37,19 @@ import org.springframework.stereotype.Component;
 public class ReductionPlanManager {
 
 	private final ReductionPlanIoOperations reductionPlanIoOperations;
+	private final ExamReductionManager examReductionManager;
+	private final MedicalReductionManager medicalReductionManager;
+	private final OperationReductionManager operationReductionManager;
+	private final PriceOtherReductionManager priceOtherReductionManager;
 
-	public ReductionPlanManager(ReductionPlanIoOperations reductionPlanIoOperations) {
+	public ReductionPlanManager(ReductionPlanIoOperations reductionPlanIoOperations, ExamReductionManager examReductionManager,
+		MedicalReductionManager medicalReductionManager, OperationReductionManager operationReductionManager,
+		PriceOtherReductionManager priceOtherReductionManager) {
 		this.reductionPlanIoOperations = reductionPlanIoOperations;
+		this.examReductionManager = examReductionManager;
+		this.medicalReductionManager = medicalReductionManager;
+		this.operationReductionManager = operationReductionManager;
+		this.priceOtherReductionManager = priceOtherReductionManager;
 	}
 
 	/**
@@ -43,8 +57,17 @@ public class ReductionPlanManager {
 	 * @return The list of {@link ReductionPlan}s
 	 * @throws OHServiceException When failed to get all reduction plans
 	 */
-	public List<ReductionPlan> getAll() throws OHServiceException {
-		return reductionPlanIoOperations.getAll();
+	public List<ReductionPlan> getAll(boolean deleted) throws OHServiceException {
+		return reductionPlanIoOperations.getAll(deleted);
+	}
+
+	/**
+	 * Get not deleted reduction plans
+	 * @return The list of {@link ReductionPlan}s not deleted
+	 * @throws OHServiceException When failed to get not deleted {@link ReductionPlan}s
+	 */
+	public List<ReductionPlan> getNotDeleted() throws OHServiceException {
+		return reductionPlanIoOperations.getNotDeleted();
 	}
 
 	/**
@@ -52,8 +75,8 @@ public class ReductionPlanManager {
 	 * @return The list of {@link ReductionPlan}s
 	 * @throws OHServiceException When failed to get  reduction plans by description
 	 */
-	public List<ReductionPlan> getByDescription(String description) throws OHServiceException {
-		return reductionPlanIoOperations.getByDescription(description);
+	public List<ReductionPlan> getByDescription(String description, boolean deleted) throws OHServiceException {
+		return reductionPlanIoOperations.getByDescription(description, deleted);
 	}
 
 	/**
@@ -81,7 +104,34 @@ public class ReductionPlanManager {
 	 * @param reductionPlan the {@link ReductionPlan} to delete
 	 * @throws OHServiceException when failed to delete {@link ReductionPlan}
 	 */
-	public void delete(ReductionPlan reductionPlan) throws OHServiceException {
-		reductionPlanIoOperations.delete(reductionPlan);
+	public ReductionPlan delete(ReductionPlan reductionPlan) throws OHServiceException {
+		reductionPlan = reductionPlanIoOperations.delete(reductionPlan);
+		List<ExamReduction> examReductionList = examReductionManager.getByReductionPlanId(reductionPlan.getId(), false);
+		List<MedicalReduction> medicalReductionList = medicalReductionManager.getByReductionPlanId(reductionPlan.getId(), false);
+		List<OperationReduction> operationReductionList = operationReductionManager.getByReductionPlanId(reductionPlan.getId(), false);
+		List<PriceOtherReduction> priceOtherReductionList = priceOtherReductionManager.getByReductionPlanId(reductionPlan.getId(), false);
+
+		if (!examReductionList.isEmpty()) {
+			for (ExamReduction examReduction : examReductionList) {
+				examReductionManager.delete(examReduction);
+			}
+		}
+		if (!medicalReductionList.isEmpty()) {
+			for (MedicalReduction medicalReduction : medicalReductionList) {
+				medicalReductionManager.delete(medicalReduction);
+			}
+		}
+		if (!operationReductionList.isEmpty()) {
+			for (OperationReduction operationReduction : operationReductionList) {
+				operationReductionManager.delete(operationReduction);
+			}
+		}
+		if (!priceOtherReductionList.isEmpty()) {
+			for (PriceOtherReduction priceOtherReduction : priceOtherReductionList) {
+				priceOtherReductionManager.delete(priceOtherReduction);
+			}
+		}
+
+		return reductionPlan;
 	}
 }

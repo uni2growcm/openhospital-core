@@ -54,11 +54,12 @@ public class OperationReductionIoOperation {
 	/**
 	 * fetch a list of {@link OperationReduction}s by {@link ReductionPlan}
 	 * @param reductionPlanId the {@link ReductionPlan} id
+	 * @param deleted if get deleted or not deleted data
 	 * @return the list of {@link OperationReduction}s
 	 * @throws OHServiceException if an error happened during the get process
 	 */
-	public List<OperationReduction> getByReductionPlan(int reductionPlanId) throws OHServiceException {
-		return repository.findByReductionPlanId(reductionPlanId);
+	public List<OperationReduction> getByReductionPlan(int reductionPlanId, boolean deleted) throws OHServiceException {
+		return repository.findByReductionPlanIdAndDeleted(reductionPlanId, deleted);
 	}
 
 	/**
@@ -66,7 +67,9 @@ public class OperationReductionIoOperation {
 	 * @param operationReduction the {@link OperationReduction} want to delete
 	 * @throws OHServiceException if an error happened during the delete process
 	 */
-	public void delete(OperationReduction operationReduction) throws OHServiceException {
-		repository.delete(operationReduction);
+	public OperationReduction delete(OperationReduction operationReduction) throws OHServiceException {
+		operationReduction = repository.findByIdAndDeleted(operationReduction.getId(), false);
+		operationReduction.setDeleted(true);
+		return repository.save(operationReduction);
 	}
 }

@@ -46,17 +46,26 @@ public class ReductionPlanIoOperations {
 	 * @return The list of {@link ReductionPlan}s
 	 * @throws OHServiceException When failed to get all reduction plans
 	 */
-	public List<ReductionPlan> getAll() throws OHServiceException {
-		return reductionplanIoOperationRepository.findAll();
+	public List<ReductionPlan> getAll(boolean deleted) throws OHServiceException {
+		return reductionplanIoOperationRepository.findByDeleted(deleted);
 	}
 
 	/**
-	 * Get  reduction plans by description
+	 * Get not deleted reduction plans
+	 * @return The list of {@link ReductionPlan}s not deleted
+	 * @throws OHServiceException when failed to get not deleted {@link ReductionPlan}s
+	 */
+	public List<ReductionPlan> getNotDeleted() throws OHServiceException {
+		return reductionplanIoOperationRepository.findByDeleted(false);
+	}
+
+	/**
+	 * Get reduction plans by description
 	 * @return The list of {@link ReductionPlan}s
 	 * @throws OHServiceException When failed to get  reduction plans by description
 	 */
-	public List<ReductionPlan> getByDescription(String description) throws OHServiceException {
-		return reductionplanIoOperationRepository.findByDescription(description);
+	public List<ReductionPlan> getByDescription(String description, boolean deleted) throws OHServiceException {
+		return reductionplanIoOperationRepository.findByDescriptionAndDeleted(description, deleted);
 	}
 
 	/**
@@ -74,7 +83,9 @@ public class ReductionPlanIoOperations {
 	 * @param reductionPlan the {@link ReductionPlan} to delete
 	 * @throws OHServiceException when failed to delete {@link ReductionPlan}
 	 */
-	public void delete(ReductionPlan reductionPlan) throws OHServiceException {
-		reductionplanIoOperationRepository.delete(reductionPlan);
+	public ReductionPlan delete(ReductionPlan reductionPlan) throws OHServiceException {
+		reductionPlan = reductionplanIoOperationRepository.findByIdAndDeleted(reductionPlan.getId(), false);
+		reductionPlan.setDeleted(true);
+		return reductionplanIoOperationRepository.save(reductionPlan);
 	}
 }

@@ -57,8 +57,8 @@ public class ExamReductionIoOperations {
 	 * @return the list of {@link ExamReduction}s
 	 * @throws OHServiceException if the error happened during the get process
 	 */
-	public List<ExamReduction> getByReductionPlan(int reductionPlanId) throws OHServiceException {
-		return repository.findByReductionPlanId(reductionPlanId);
+	public List<ExamReduction> getByReductionPlan(int reductionPlanId, boolean deleted) throws OHServiceException {
+		return repository.findByReductionPlanIdAndDeleted(reductionPlanId, deleted);
 	}
 
 	/**
@@ -66,7 +66,9 @@ public class ExamReductionIoOperations {
 	 * @param examReduction the {@link ExamReduction} you want to delete
 	 * @throws OHServiceException if the error happened during the delete process
 	 */
-	public void delete(ExamReduction examReduction) throws OHServiceException {
-		repository.delete(examReduction);
+	public ExamReduction delete(ExamReduction examReduction) throws OHServiceException {
+		examReduction = repository.findByIdAndDeleted(examReduction.getId(), false);
+		examReduction.setDeleted(true);
+		return repository.save(examReduction);
 	}
 }

@@ -76,24 +76,15 @@ public class ReductionPlan extends Auditable<String> implements Serializable {
 	@Column(name = "RP_OTHERRATE")
 	private double otherRate;
 
+	@Column(name = "RP_DELETED")
+	private boolean deleted = false;
+
 	@Version
 	@Column(name = "RP_LOCK")
 	private int lock;
 
 	@Transient
 	private volatile int hashcode;
-
-	@OneToMany
-	private List<ExamReduction> examReductionList;
-
-	@OneToMany
-	private List<MedicalReduction> medicalReductionList;
-
-	@OneToMany
-	private List<OperationReduction> operationReductionList;
-
-	@OneToMany
-	private List<PriceOtherReduction> priceOtherReductionList;
 
 	public ReductionPlan() {
 		super();
@@ -166,44 +157,18 @@ public class ReductionPlan extends Auditable<String> implements Serializable {
 		this.otherRate = otherRate;
 	}
 
+	public boolean isDeleted() {
+		return deleted;
+	}
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
+	}
 	public int getLock() {
 		return lock;
 	}
 
 	public void setLock(int lock) {
 		this.lock = lock;
-	}
-
-	public List<ExamReduction> getExamReductionList() {
-		return examReductionList;
-	}
-
-	public void setExamReductionList(List<ExamReduction> examReductionList) {
-		this.examReductionList = examReductionList;
-	}
-
-	public List<MedicalReduction> getMedicalReductionList() {
-		return medicalReductionList;
-	}
-
-	public void setMedicalReductionList(List<MedicalReduction> medicalReductionList) {
-		this.medicalReductionList = medicalReductionList;
-	}
-
-	public List<OperationReduction> getOperationReductionList() {
-		return operationReductionList;
-	}
-
-	public void setOperationReductionList(List<OperationReduction> operationReductionList) {
-		this.operationReductionList = operationReductionList;
-	}
-
-	public List<PriceOtherReduction> getPriceOtherReductionList() {
-		return priceOtherReductionList;
-	}
-
-	public void setPriceOtherReductionList(List<PriceOtherReduction> priceOtherReductionList) {
-		this.priceOtherReductionList = priceOtherReductionList;
 	}
 
 	@Override

@@ -50,11 +50,12 @@ public class OperationReductionManager {
 	/**
 	 * fetch a list of {@link OperationReduction}s by {@link ReductionPlan}
 	 * @param reductionPlanId the {@link ReductionPlan} id
+	 * @param deleted
 	 * @return the list of {@link OperationReduction}s
 	 * @throws OHServiceException if an error happened during the get process
 	 */
-	public List<OperationReduction> getByReductionPlanId(int reductionPlanId) throws OHServiceException {
-		return operationReductionIoOperation.getByReductionPlan(reductionPlanId);
+	public List<OperationReduction> getByReductionPlanId(int reductionPlanId, boolean deleted) throws OHServiceException {
+		return operationReductionIoOperation.getByReductionPlan(reductionPlanId, deleted);
 	}
 
 	/**
@@ -62,7 +63,7 @@ public class OperationReductionManager {
 	 * @param operationReduction the {@link OperationReduction} want to delete
 	 * @throws OHServiceException if an error happened during the delete process
 	 */
-	public void delete(OperationReduction operationReduction) throws OHServiceException {
-		operationReductionIoOperation.delete(operationReduction);
+	public OperationReduction delete(OperationReduction operationReduction) throws OHServiceException {
+		return operationReductionIoOperation.delete(operationReduction);
 	}
 }

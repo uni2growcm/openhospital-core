@@ -66,6 +66,10 @@ public class PriceOtherReduction {
 	@Column(name = "OTR_REDUCTIONRATE")
 	private double reductionRate;
 
+	@NotNull
+	@Column(name = "OTR_DELETED")
+	private boolean deleted = false;
+
 	@Version
 	@Column(name = "OTR_LOCK")
 	private int lock;
@@ -118,6 +122,14 @@ public class PriceOtherReduction {
 
 	public void setReductionRate(double reductionRate) {
 		this.reductionRate = reductionRate;
+	}
+
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted (boolean deleted) {
+		this.deleted = deleted;
 	}
 
 	public int getLock() {

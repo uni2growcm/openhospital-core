@@ -69,7 +69,7 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 		List<ReductionPlan> reductionPlans = generateFixtures(2, null);
 		repository.saveAllAndFlush(reductionPlans);
 
-		List<ReductionPlan> existingReductionPlan = manager.getAll();
+		List<ReductionPlan> existingReductionPlan = manager.getAll(false);
 
 		assertThat(existingReductionPlan.size()).isEqualTo(reductionPlans.size());
 	}
@@ -82,7 +82,7 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 
 		repository.saveAllAndFlush(reductionPlans);
 
-		List<ReductionPlan> existingReductionPlans = manager.getByDescription(description);
+		List<ReductionPlan> existingReductionPlans = manager.getByDescription(description, false);
 
 		assertThat(existingReductionPlans).isNotNull();
 		assertThat(existingReductionPlans.size()).isEqualTo(2);

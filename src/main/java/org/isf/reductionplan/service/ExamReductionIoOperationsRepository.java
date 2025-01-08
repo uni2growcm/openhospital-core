@@ -24,11 +24,11 @@ package org.isf.reductionplan.service;
 import java.util.List;
 
 import org.isf.reductionplan.model.ExamReduction;
-import org.isf.reductionplan.model.ReductionPlan;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ExamReductionIoOperationsRepository extends JpaRepository<ExamReduction, Integer> {
-	List<ExamReduction> findByReductionPlanId(int reductionPlanId);
+	List<ExamReduction> findByReductionPlanIdAndDeleted(int reductionPlanId, boolean deleted);
+	ExamReduction findByIdAndDeleted(int id, boolean deleted);
 }

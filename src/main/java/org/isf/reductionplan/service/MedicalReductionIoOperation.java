@@ -57,8 +57,8 @@ public class MedicalReductionIoOperation {
 	 * @return the list of {@link MedicalReduction}s
 	 * @throws OHServiceException if an error happened during the get process
 	 */
-	public List<MedicalReduction> getByReductionPlanId(int reductionPlanId) throws OHServiceException {
-		return repository.findByReductionPlanId(reductionPlanId);
+	public List<MedicalReduction> getByReductionPlanId(int reductionPlanId, boolean deleted) throws OHServiceException {
+		return repository.findByReductionPlanIdAndDeleted(reductionPlanId, deleted);
 	}
 
 	/**
@@ -66,7 +66,9 @@ public class MedicalReductionIoOperation {
 	 * @param medicalReduction the {@link MedicalReduction} want to delete
 	 * @throws OHServiceException if an error happened during the delete process
 	 */
-	public void delete(MedicalReduction medicalReduction) throws OHServiceException {
-		repository.delete(medicalReduction);
+	public MedicalReduction delete(MedicalReduction medicalReduction) throws OHServiceException {
+		medicalReduction = repository.findByIdAndDeleted(medicalReduction.getId(), false);
+		medicalReduction.setDeleted(true);
+		return repository.save(medicalReduction);
 	}
 }
