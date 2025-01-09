@@ -51,7 +51,7 @@ public interface MortuaryIoOperationsRepositoryCustom {
 		Pageable pageable
 	);
 
-	long getCountTotalMovements(String patientName,
+	long getCountTotalMortuaries(String patientName,
 		String provenance,
 		LocalDateTime dateFrom,
 		LocalDateTime dateTo,

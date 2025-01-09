@@ -83,6 +83,17 @@ public class MortuaryIoOperations {
 		mortuaryRepository.delete(mortuary);
 	}
 
+	/**
+	 * Retrieves all the {@link Mortuary}s with the specified criteria.<br>
+	 * <br>
+	 * @param patientName the patient name.
+	 * @param provenance the provenance.
+	 * @param dateFrom the lower bound for the mortuary date range.
+	 * @param dateTo the upper bound for the mortuary date range.
+	 * @param deathReason the reason of death.
+	 * @param inputOrOutput the value that determines the date to be set in the interval.
+	 * @return the retrieved mortuaries.
+	 */
 	public List<Mortuary> getMortuariesWhereData(
 		String patientName,
 		String provenance,
@@ -94,6 +105,18 @@ public class MortuaryIoOperations {
 		return mortuaryRepository.findAllWhereData(patientName, provenance, dateFrom, dateTo, deathReason, inputOrOutput);
 	}
 
+	/**
+	 * Retrieves a page of {@link Mortuary}s with the specified criteria.<br>
+	 * <br>
+	 * @param patientName the patient name.
+	 * @param provenance the provenance.
+	 * @param dateFrom the lower bound for the mortuary date range.
+	 * @param dateTo the upper bound for the mortuary date range.
+	 * @param deathReason the reason of death.
+	 * @param inputOrOutput the value that determines the date to be set in the interval.
+	 * @param pageable for pagination/.
+	 * @return the retrieved a mortuaries page.
+	 */
 	public List<Mortuary> getMortuariesWhereDataPageable(
 		String patientName,
 		String provenance,
@@ -114,7 +137,18 @@ public class MortuaryIoOperations {
 		);
 	}
 
-	public long countTotalMovements(
+	/**
+	 * Count all the {@link Mortuary}s with the specified criteria.<br>
+	 * <br>
+	 * @param patientName the patient name.
+	 * @param provenance the provenance.
+	 * @param dateFrom the lower bound for the mortuary date range.
+	 * @param dateTo the upper bound for the mortuary date range.
+	 * @param deathReason the reason of death.
+	 * @param inputOrOutput the value that determines the date to be set in the interval.
+	 * @return the number of mortuary.
+	 */
+	public long countTotalMortuaries(
 		String patientName,
 		String provenance,
 		LocalDateTime dateFrom,
@@ -127,7 +161,7 @@ public class MortuaryIoOperations {
 			dateTo = dateTo.withHour(23).withMinute(59);
 		}
 
-		return mortuaryRepository.getCountTotalMovements(
+		return mortuaryRepository.getCountTotalMortuaries(
 			patientName,
 			provenance,
 			TimeTools.truncateToSeconds(dateFrom),
@@ -135,5 +169,11 @@ public class MortuaryIoOperations {
 			deathReason,
 			inputOrOutput
 		);
+	}
+	public Mortuary save(Mortuary mortuary) {
+		return mortuaryRepository.save(mortuary);
+	}
+	public Mortuary findById(int id) {
+		return mortuaryRepository.findMortuaryById(id);
 	}
 }

@@ -24,8 +24,13 @@ package org.isf.mortuary.service;
 
 import org.isf.mortuary.model.DeathReason;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface DeathReasonRepository extends JpaRepository<DeathReason, Integer> {
+
+	@Query("select d from DeathReason d where d.id = :id")
+	DeathReason findDeathReasonById(@Param("id") int id);
 }

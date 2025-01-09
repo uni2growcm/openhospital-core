@@ -88,7 +88,7 @@ public class MortuaryBrowserManager {
 	}
 
 	/**
-	 * Retrieves all the {@link Mortuary}s with the specified criteria.<br>
+	 * Retrieves a page of {@link Mortuary}s with the specified criteria.<br>
 	 * <br>
 	 * @param patientName the patient name.
 	 * @param provenance the provenance.
@@ -123,7 +123,7 @@ public class MortuaryBrowserManager {
 	}
 
 	/**
-	 * Retrieves all the {@link Mortuary}s with the specified criteria.<br>
+	 * Count all the {@link Mortuary}s with the specified criteria.<br>
 	 * <br>
 	 * @param patientName the patient name.
 	 * @param provenance the provenance.
@@ -133,7 +133,7 @@ public class MortuaryBrowserManager {
 	 * @param inputOrOutput the value that determines the date to be set in the interval.
 	 * @return the number of mortuary.
 	 */
-	public long countTotalMovements(
+	public long countTotalMortuaries(
 		String patientName,
 		String provenance,
 		LocalDateTime dateFrom,
@@ -141,7 +141,7 @@ public class MortuaryBrowserManager {
 		String deathReason,
 		String inputOrOutput
 	) throws OHServiceException {
-		return mortuaryIoOperations.countTotalMovements(
+		return mortuaryIoOperations.countTotalMortuaries(
 			patientName,
 			provenance,
 			TimeTools.truncateToSeconds(dateFrom),

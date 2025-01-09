@@ -61,12 +61,6 @@ public class Mortuary {
 	@JoinColumn(name = "MRT_PAT_ID", insertable = false, updatable = false)
 	private Patient patient;
 
-	@Column(name = "MRT_PAT_ID")
-	private int idPatient;
-
-	@Column(name = "MRT_DR_ID")
-	private int idCause;
-
 	@Column(name = "MRT_PROVENANCE")
 	private String provenance;
 
@@ -111,14 +105,12 @@ public class Mortuary {
 		super();
 	}
 
-	public Mortuary(int id, String place, Patient patient, int idPatient, int idCause, String provenance, LocalDate deathDate, LocalDate enteredDate,
+	public Mortuary(int id, String place, Patient patient, String provenance, LocalDate deathDate, LocalDate enteredDate,
 		LocalDate releaseDate, LocalDate provisionalReleaseDate, DeathReason deathReason, String declaringName, String declaringPhone, String declaringNest,
 		String familyName, String familyPhone, String familyNest, String locker) {
 		this.id = id;
 		this.place = place;
 		this.patient = patient;
-		this.idPatient = idPatient;
-		this.idCause = idCause;
 		this.provenance = provenance;
 		this.deathDate = deathDate;
 		this.enteredDate = enteredDate;
@@ -134,18 +126,6 @@ public class Mortuary {
 		this.locker = locker;
 	}
 
-	public int getIdPatient() {
-		return idPatient;
-	}
-	public void setIdPatient(int idPatient) {
-		this.idPatient = idPatient;
-	}
-	public int getIdCause() {
-		return idCause;
-	}
-	public void setIdCause(int idCause) {
-		this.idCause = idCause;
-	}
 	public String getLocker() {
 		return locker;
 	}
@@ -249,8 +229,6 @@ public class Mortuary {
 			"id=" + id +
 			", place='" + place + '\'' +
 			", patient=" + patient +
-			", idPatient=" + idPatient +
-			", idCause=" + idCause +
 			", provenance='" + provenance + '\'' +
 			", deathDate=" + deathDate +
 			", enteredDate=" + enteredDate +

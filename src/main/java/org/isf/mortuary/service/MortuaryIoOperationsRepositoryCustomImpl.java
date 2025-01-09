@@ -54,6 +54,17 @@ public class MortuaryIoOperationsRepositoryCustomImpl implements MortuaryIoOpera
 	@PersistenceContext
 	private EntityManager entityManager;
 
+	/**
+	 * Retrieves all the {@link Mortuary}s with the specified criteria.<br>
+	 * <br>
+	 * @param patientName the patient name.
+	 * @param provenance the provenance.
+	 * @param dateFrom the lower bound for the mortuary date range.
+	 * @param dateTo the upper bound for the mortuary date range.
+	 * @param deathReason the reason of death.
+	 * @param inputOrOutput the value that determines the date to be set in the interval.
+	 * @return the retrieved mortuaries.
+	 */
 	@Override
 	public List<Mortuary> findAllWhereData(
 		String patientName,
@@ -92,6 +103,18 @@ public class MortuaryIoOperationsRepositoryCustomImpl implements MortuaryIoOpera
 		return entityManager.createQuery(query).getResultList();
 	}
 
+	/**
+	 * Retrieves a page of {@link Mortuary}s with the specified criteria.<br>
+	 * <br>
+	 * @param patientName the patient name.
+	 * @param provenance the provenance.
+	 * @param dateFrom the lower bound for the mortuary date range.
+	 * @param dateTo the upper bound for the mortuary date range.
+	 * @param deathReason the reason of death.
+	 * @param inputOrOutput the value that determines the date to be set in the interval.
+	 * @param pageable for pagination/.
+	 * @return the retrieved mortuaries.
+	 */
 	@Override
 	public List<Mortuary> findAllWhereDataPageable(
 		String patientName,
@@ -138,8 +161,19 @@ public class MortuaryIoOperationsRepositoryCustomImpl implements MortuaryIoOpera
 		return typedQuery.getResultList();
 	}
 
+	/**
+	 * Count all the {@link Mortuary}s with the specified criteria.<br>
+	 * <br>
+	 * @param patientName the patient name.
+	 * @param provenance the provenance.
+	 * @param dateFrom the lower bound for the mortuary date range.
+	 * @param dateTo the upper bound for the mortuary date range.
+	 * @param deathReason the reason of death.
+	 * @param inputOrOutput the value that determines the date to be set in the interval.
+	 * @return the number of mortuary.
+	 */
 	@Override
-	public long getCountTotalMovements(
+	public long getCountTotalMortuaries(
 		String patientName,
 		String provenance,
 		LocalDateTime dateFrom,

@@ -20,38 +20,40 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.isf.mortuary.service;
+package org.isf.mortuary.manager;
 
-import java.util.List;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.isf.mortuary.model.DeathReason;
-import org.isf.utils.exception.OHServiceException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.isf.utils.exception.OHException;
 
-@Service
-public class DeathReasonIoOperations {
+public class TestDeathReason {
 
-	private static DeathReasonRepository deathReasonRepository;
+	private final int id = 1;
+	private final String code = "CARD001";
+	private final String description = "Arrêt cardiaque";
 
-	public DeathReasonIoOperations() {
+	public DeathReason setup(boolean usingSet) throws OHException {
+		DeathReason deathReason;
+
+		if (usingSet) {
+			deathReason = new DeathReason();
+			setParameters(deathReason);
+		} else {
+			deathReason = new DeathReason(id, code, description);
+		}
+		return deathReason;
 	}
 
-	@Autowired
-	public DeathReasonIoOperations(DeathReasonRepository deathReasonRepository) {
-		DeathReasonIoOperations.deathReasonRepository = deathReasonRepository;
+	public void setParameters(DeathReason deathReason) {
+		deathReason.setId(id);
+		deathReason.setCode(code);
+		deathReason.setDescription(description);
 	}
 
-	public List<DeathReason> getAll() throws OHServiceException {
-		return deathReasonRepository.findAll();
-	}
-
-	public DeathReason getById(int id) throws OHServiceException {
-		return deathReasonRepository.findDeathReasonById(id);
-	}
-
-	public DeathReason add(DeathReason deathReason) {
-		return deathReasonRepository.save(deathReason);
+	public void check(DeathReason deathReason) {
+		assertThat(deathReason.getId()).isEqualTo(id);
+		assertThat(deathReason.getCode()).isEqualTo(code);
+		assertThat(deathReason.getDescription()).isEqualTo(description);
 	}
 }
-
