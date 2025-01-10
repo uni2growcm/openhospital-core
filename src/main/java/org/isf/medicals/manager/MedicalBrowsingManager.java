@@ -278,14 +278,19 @@ public class MedicalBrowsingManager {
 			throw new OHDataValidationException(errors);
 		}
 	}
-	
+
 	/**
-	 * Returns all the medicals with the specified description.
-	 * @param type Medical type description.
-	 * @param description Medical description.
-	 * @param nameSorted if {@code true} return the list in alphabetical order, by code otherwise
-	 * @return all the medicals with the specified description.
-	 * @throws OHServiceException When failed to get medicals
+	 * Retrieves a paginated list of medical records filtered by type and description,
+	 * with an option to sort the results either alphabetically by description or by production code.
+	 *
+	 * @param type The type of medical items to filter by. Can be {@code null} to ignore this filter.
+	 * @param description The description of medical items to filter by. Can be {@code null} to ignore this filter.
+	 * @param nameSorted  If {@code true}, sorts the results alphabetically by the description field.
+	 * If {@code false}, sorts the results by the production code field (ascending order).
+	 * @param page The page number (0-based index) to retrieve. Must be non-negative.
+	 * @param size The number of items per page. Must be greater than 0.
+	 * @return A {@link Page} containing the filtered and sorted medical records.
+	 * @throws OHServiceException If an error occurs while fetching medical records from the database.
 	 */
 	public Page<Medical> getMedicalsByTypeAndDescription(String type, String description, boolean nameSorted, int page, int size) throws OHServiceException {
 		Pageable pageable;

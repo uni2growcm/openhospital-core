@@ -653,6 +653,30 @@ class Tests extends OHCoreTestCase {
 		return medical;
 	}
 
+	private void checkMedicalIntoDb(int code) throws OHException {
+		Medical foundMedical = medicalsIoOperationRepository.findById(code).orElse(null);
+		assertThat(foundMedical).isNotNull();
+		testMedical.check(foundMedical);
+	}
+
+	private int setupTestMovement(boolean usingSet) throws OHException {
+		MedicalType medicalType = testMedicalType.setup(false);
+		Medical medical = testMedical.setup(medicalType, false);
+		MovementType movementType = testMovementType.setup(false);
+		Ward ward = testWard.setup(false);
+		Lot lot = testLot.setup(medical, false);
+		Supplier supplier = testSupplier.setup(false);
+		Movement movement = testMovement.setup(medical, movementType, ward, lot, supplier, usingSet);
+		wardIoOperationRepository.saveAndFlush(ward);
+		supplierIoOperationRepository.saveAndFlush(supplier);
+		medicalDsrStockMovementTypeIoOperationRepository.saveAndFlush(movementType);
+		medicalTypeIoOperationRepository.saveAndFlush(medicalType);
+		medicalsIoOperationRepository.saveAndFlush(medical);
+		lotIoOperationRepository.saveAndFlush(lot);
+		movementIoOperationRepository.saveAndFlush(movement);
+		return movement.getCode();
+	}
+	
 	@Test
 	@DisplayName("Should return requested page of medical filtered by type and sorted by prod_code")
 	void testMgrGetMedicalsByTypeSortedByProdCodePageable() throws Exception {
@@ -797,29 +821,5 @@ class Tests extends OHCoreTestCase {
 		}).toList();
 
 		return medicalsIoOperationRepository.saveAllAndFlush(medicals);
-	}
-
-	private void checkMedicalIntoDb(int code) throws OHException {
-		Medical foundMedical = medicalsIoOperationRepository.findById(code).orElse(null);
-		assertThat(foundMedical).isNotNull();
-		testMedical.check(foundMedical);
-	}
-
-	private int setupTestMovement(boolean usingSet) throws OHException {
-		MedicalType medicalType = testMedicalType.setup(false);
-		Medical medical = testMedical.setup(medicalType, false);
-		MovementType movementType = testMovementType.setup(false);
-		Ward ward = testWard.setup(false);
-		Lot lot = testLot.setup(medical, false);
-		Supplier supplier = testSupplier.setup(false);
-		Movement movement = testMovement.setup(medical, movementType, ward, lot, supplier, usingSet);
-		wardIoOperationRepository.saveAndFlush(ward);
-		supplierIoOperationRepository.saveAndFlush(supplier);
-		medicalDsrStockMovementTypeIoOperationRepository.saveAndFlush(movementType);
-		medicalTypeIoOperationRepository.saveAndFlush(medicalType);
-		medicalsIoOperationRepository.saveAndFlush(medical);
-		lotIoOperationRepository.saveAndFlush(lot);
-		movementIoOperationRepository.saveAndFlush(movement);
-		return movement.getCode();
 	}
 }
