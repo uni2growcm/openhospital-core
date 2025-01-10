@@ -108,6 +108,20 @@ public class MedicalsIoOperations {
 		}
 		return getMedicals(nameSorted);
 	}
+	
+	/**
+	 * Retrieves all stored medicals by a given type, sorted by description or smart code.
+	 * @param type the type the found medicals should have.
+	 * @param nameSorted if true the found medicals are sorted by description, otherwise sorted by prod_code and description.
+	 * @return sorted List of medicals or empty list if none found.
+	 * @throws OHServiceException When failed to get medicals
+	 */
+	private List<Medical> getMedicalsByType(String type, boolean nameSorted) throws OHServiceException {
+		if (nameSorted) {
+			return repository.findAllWhereTypeOrderByDescription(type);
+		}
+		return repository.findAllWhereTypeOrderBySmartCodeAndDescription(type);
+	}
 
 	/**
 	 * Returns the medicals pageable.
@@ -119,28 +133,6 @@ public class MedicalsIoOperations {
 	public Page<Medical> getMedicalsPageable(int page, int size) throws OHServiceException {
 		Pageable pageable = PageRequest.of(page, size);
 		return repository.findAllPageable(pageable);
-	}
-
-	/**
-	 * Retrieves all stored medicals by a given type description and medical description, sorted by description or medical code.
-	 * @param type Keywords to match medical type.
-	 * @param description Keywords to match medical description.
-	 * <p>
-	 * If <code>true</code>, medicals are sorted by description, otherwise, they are sorted by prod_code
-	 * </p>
-	 * @return The sorted List of medicals or empty list if none found.
-	 * @throws OHServiceException When failed to get medicals
-	 */
-	public Page<Medical> getMedicals(String type, String description, Pageable pageable) throws OHServiceException {
-		if (type == null) {
-			type = "";
-		}
-
-		if (description == null) {
-			description = "";
-		}
-
-		return repository.findAllByTypeDescriptionContainsAndDescriptionContains(type, description, pageable);
 	}
 
 	/**
@@ -285,18 +277,26 @@ public class MedicalsIoOperations {
 		}
 		return repository.findAllOrderBySmartCodeAndDescription();
 	}
-
+	
 	/**
-	 * Retrieves all stored medicals by a given type, sorted by description or smart code.
-	 * @param type the type the found medicals should have.
-	 * @param nameSorted if true the found medicals are sorted by description, otherwise sorted by prod_code and description.
-	 * @return sorted List of medicals or empty list if none found.
+	 * Retrieves all stored medicals by a given type description and medical description, sorted by description or medical code.
+	 * @param type Keywords to match medical type.
+	 * @param description Keywords to match medical description.
+	 * <p>
+	 * If <code>true</code>, medicals are sorted by description, otherwise, they are sorted by prod_code
+	 * </p>
+	 * @return The sorted List of medicals or empty list if none found.
 	 * @throws OHServiceException When failed to get medicals
 	 */
-	private List<Medical> getMedicalsByType(String type, boolean nameSorted) throws OHServiceException {
-		if (nameSorted) {
-			return repository.findAllWhereTypeOrderByDescription(type);
+	public Page<Medical> getMedicals(String type, String description, Pageable pageable) throws OHServiceException {
+		if (type == null) {
+			type = "";
 		}
-		return repository.findAllWhereTypeOrderBySmartCodeAndDescription(type);
+
+		if (description == null) {
+			description = "";
+		}
+
+		return repository.findAllByTypeDescriptionContainsAndDescriptionContains(type, description, pageable);
 	}
 }

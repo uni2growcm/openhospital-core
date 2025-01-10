@@ -128,26 +128,6 @@ public class MedicalBrowsingManager {
 	}
 
 	/**
-	 * Returns all the medicals with the specified description.
-	 * @param type Medical type description.
-	 * @param description Medical description.
-	 * @param nameSorted if {@code true} return the list in alphabetical order, by code otherwise
-	 * @return all the medicals with the specified description.
-	 * @throws OHServiceException When failed to get medicals
-	 */
-	public Page<Medical> getMedicalsByTypeAndDescription(String type, String description, boolean nameSorted, int page, int size) throws OHServiceException {
-		Pageable pageable;
-
-		if (nameSorted) {
-			pageable = PageRequest.of(page, size, Sort.by("description").ascending());
-		} else {
-			pageable = PageRequest.of(page, size, Sort.by("prod_code").ascending());
-		}
-
-		return ioOperations.getMedicals(type, description, pageable);
-	}
-
-	/**
 	 * Return all the medicals with the specified criteria.
 	 * @param description the medical description or {@code null}
 	 * @param type the medical type or {@code null}.
@@ -297,5 +277,25 @@ public class MedicalBrowsingManager {
 		if (!errors.isEmpty()) {
 			throw new OHDataValidationException(errors);
 		}
+	}
+	
+	/**
+	 * Returns all the medicals with the specified description.
+	 * @param type Medical type description.
+	 * @param description Medical description.
+	 * @param nameSorted if {@code true} return the list in alphabetical order, by code otherwise
+	 * @return all the medicals with the specified description.
+	 * @throws OHServiceException When failed to get medicals
+	 */
+	public Page<Medical> getMedicalsByTypeAndDescription(String type, String description, boolean nameSorted, int page, int size) throws OHServiceException {
+		Pageable pageable;
+
+		if (nameSorted) {
+			pageable = PageRequest.of(page, size, Sort.by("description").ascending());
+		} else {
+			pageable = PageRequest.of(page, size, Sort.by("prod_code").ascending());
+		}
+
+		return ioOperations.getMedicals(type, description, pageable);
 	}
 }

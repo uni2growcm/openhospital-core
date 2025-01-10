@@ -388,109 +388,6 @@ class Tests extends OHCoreTestCase {
 	}
 
 	@Test
-	@DisplayName("Should return requested page of medical filtered by type and sorted by prod_code")
-	void testMgrGetMedicalsByTypeSortedByProdCodePageable() throws Exception {
-		List<Medical> savedMedicals = generateMedicals(10, true);
-
-		Page<Medical> medicals = medicalBrowsingManager.getMedicalsByTypeAndDescription(
-			savedMedicals.get(0).getType().getDescription(), null, false, 0, 3
-		);
-
-		assertThat(medicals.getTotalPages()).isEqualTo(4);
-		assertThat(medicals.getTotalElements()).isEqualTo(10);
-		assertThat(medicals.getContent().size()).isEqualTo(3);
-		assertThat(medicals.getContent().get(0).getProdCode()).isEqualTo(savedMedicals.get(0).getProdCode());
-
-		medicals = medicalBrowsingManager.getMedicalsByTypeAndDescription(
-			savedMedicals.get(0).getType().getDescription(), null, false, 3, 3
-		);
-
-		assertThat(medicals.getTotalPages()).isEqualTo(4);
-		assertThat(medicals.getTotalElements()).isEqualTo(10);
-		assertThat(medicals.getContent().size()).isEqualTo(1);
-		assertThat(medicals.getContent().get(0).getProdCode()).isEqualTo(savedMedicals.get(9).getProdCode());
-
-		medicalsIoOperationRepository.deleteAll();
-
-		savedMedicals = generateMedicals(5, false);
-
-		medicals = medicalBrowsingManager.getMedicalsByTypeAndDescription(
-			savedMedicals.get(0).getType().getDescription(), null, false, 0, 2
-		);
-
-		assertThat(medicals.getTotalPages()).isEqualTo(3);
-		assertThat(medicals.getTotalElements()).isEqualTo(5);
-		assertThat(medicals.getContent().size()).isEqualTo(2);
-		assertThat(medicals.getContent().get(0).getProdCode()).isEqualTo(savedMedicals.get(0).getProdCode());
-
-		String typeCode = savedMedicals.get(0).getType().getDescription();
-		String keyword = typeCode.substring(0, typeCode.length() - 2);
-
-		medicals = medicalBrowsingManager.getMedicalsByTypeAndDescription(keyword, null, false, 2, 2);
-
-		assertThat(medicals.getTotalPages()).isEqualTo(3);
-		assertThat(medicals.getTotalElements()).isEqualTo(5);
-		assertThat(medicals.getContent().size()).isEqualTo(1);
-		assertThat(medicals.getContent().get(0).getProdCode()).isEqualTo(savedMedicals.get(4).getProdCode());
-	}
-
-	@Test
-	@DisplayName("Should return requested page of medical filtered by description")
-	void testMgrGetMedicalsByDescriptionPageable() throws Exception {
-		List<Medical> savedMedicals = generateMedicals(10, true);
-
-		Page<Medical> medicals = medicalBrowsingManager.getMedicalsByTypeAndDescription(
-			null, savedMedicals.get(0).getDescription(), false, 0, 3
-		);
-
-		assertThat(medicals.getTotalPages()).isEqualTo(1);
-		assertThat(medicals.getTotalElements()).isEqualTo(1);
-		assertThat(medicals.getContent().size()).isEqualTo(1);
-		assertThat(medicals.getContent().get(0).getDescription()).isEqualTo(savedMedicals.get(0).getDescription());
-
-		String description = savedMedicals.get(0).getDescription();
-		String keyword = description.substring(2, 10);
-
-		medicals = medicalBrowsingManager.getMedicalsByTypeAndDescription(null, keyword, false, 0, 3);
-
-		assertThat(medicals.getTotalPages()).isEqualTo(4);
-		assertThat(medicals.getTotalElements()).isEqualTo(10);
-		assertThat(medicals.getContent().size()).isEqualTo(3);
-		assertThat(medicals.getContent().get(0).getDescription()).isEqualTo(savedMedicals.get(0).getDescription());
-
-		medicals = medicalBrowsingManager.getMedicalsByTypeAndDescription(null, keyword, true, 1, 3);
-
-		assertThat(medicals.getTotalPages()).isEqualTo(4);
-		assertThat(medicals.getTotalElements()).isEqualTo(10);
-		assertThat(medicals.getContent().size()).isEqualTo(3);
-		assertThat(medicals.getContent().get(0).getDescription()).isEqualTo(savedMedicals.get(7).getDescription());
-	}
-
-	@Test
-	@DisplayName("Should return requested page of medical filtered by type and sorted by description")
-	void testMgrGetMedicalsByTypeSortedByDescriptionPageable() throws Exception {
-		List<Medical> savedMedicals = generateMedicals(7, true);
-
-		Page<Medical> medicals = medicalBrowsingManager.getMedicalsByTypeAndDescription(
-			savedMedicals.get(0).getType().getDescription(), null, true, 0, 2
-		);
-
-		assertThat(medicals.getTotalPages()).isEqualTo(4);
-		assertThat(medicals.getTotalElements()).isEqualTo(7);
-		assertThat(medicals.getContent().size()).isEqualTo(2);
-		assertThat(medicals.getContent().get(0).getDescription()).isEqualTo(savedMedicals.get(6).getDescription());
-
-		medicals = medicalBrowsingManager.getMedicalsByTypeAndDescription(
-			savedMedicals.get(0).getType().getDescription(), null, true, 3, 2
-		);
-
-		assertThat(medicals.getTotalPages()).isEqualTo(4);
-		assertThat(medicals.getTotalElements()).isEqualTo(7);
-		assertThat(medicals.getContent().size()).isEqualTo(1);
-		assertThat(medicals.getContent().get(0).getDescription()).isEqualTo(savedMedicals.get(0).getDescription());
-	}
-
-	@Test
 	void testMgrGetMedicalsWithTypeDescriptionSorted() throws Exception {
 		int code = setupTestMedical(false);
 		Medical foundMedical = medicalsIoOperationRepository.findById(code).orElse(null);
@@ -754,6 +651,109 @@ class Tests extends OHCoreTestCase {
 		medicalTypeIoOperationRepository.saveAndFlush(medicalType);
 		medicalsIoOperationRepository.saveAndFlush(medical);
 		return medical;
+	}
+
+	@Test
+	@DisplayName("Should return requested page of medical filtered by type and sorted by prod_code")
+	void testMgrGetMedicalsByTypeSortedByProdCodePageable() throws Exception {
+		List<Medical> savedMedicals = generateMedicals(10, true);
+
+		Page<Medical> medicals = medicalBrowsingManager.getMedicalsByTypeAndDescription(
+			savedMedicals.get(0).getType().getDescription(), null, false, 0, 3
+		);
+
+		assertThat(medicals.getTotalPages()).isEqualTo(4);
+		assertThat(medicals.getTotalElements()).isEqualTo(10);
+		assertThat(medicals.getContent().size()).isEqualTo(3);
+		assertThat(medicals.getContent().get(0).getProdCode()).isEqualTo(savedMedicals.get(0).getProdCode());
+
+		medicals = medicalBrowsingManager.getMedicalsByTypeAndDescription(
+			savedMedicals.get(0).getType().getDescription(), null, false, 3, 3
+		);
+
+		assertThat(medicals.getTotalPages()).isEqualTo(4);
+		assertThat(medicals.getTotalElements()).isEqualTo(10);
+		assertThat(medicals.getContent().size()).isEqualTo(1);
+		assertThat(medicals.getContent().get(0).getProdCode()).isEqualTo(savedMedicals.get(9).getProdCode());
+
+		medicalsIoOperationRepository.deleteAll();
+
+		savedMedicals = generateMedicals(5, false);
+
+		medicals = medicalBrowsingManager.getMedicalsByTypeAndDescription(
+			savedMedicals.get(0).getType().getDescription(), null, false, 0, 2
+		);
+
+		assertThat(medicals.getTotalPages()).isEqualTo(3);
+		assertThat(medicals.getTotalElements()).isEqualTo(5);
+		assertThat(medicals.getContent().size()).isEqualTo(2);
+		assertThat(medicals.getContent().get(0).getProdCode()).isEqualTo(savedMedicals.get(0).getProdCode());
+
+		String typeCode = savedMedicals.get(0).getType().getDescription();
+		String keyword = typeCode.substring(0, typeCode.length() - 2);
+
+		medicals = medicalBrowsingManager.getMedicalsByTypeAndDescription(keyword, null, false, 2, 2);
+
+		assertThat(medicals.getTotalPages()).isEqualTo(3);
+		assertThat(medicals.getTotalElements()).isEqualTo(5);
+		assertThat(medicals.getContent().size()).isEqualTo(1);
+		assertThat(medicals.getContent().get(0).getProdCode()).isEqualTo(savedMedicals.get(4).getProdCode());
+	}
+
+	@Test
+	@DisplayName("Should return requested page of medical filtered by description")
+	void testMgrGetMedicalsByDescriptionPageable() throws Exception {
+		List<Medical> savedMedicals = generateMedicals(10, true);
+
+		Page<Medical> medicals = medicalBrowsingManager.getMedicalsByTypeAndDescription(
+			null, savedMedicals.get(0).getDescription(), false, 0, 3
+		);
+
+		assertThat(medicals.getTotalPages()).isEqualTo(1);
+		assertThat(medicals.getTotalElements()).isEqualTo(1);
+		assertThat(medicals.getContent().size()).isEqualTo(1);
+		assertThat(medicals.getContent().get(0).getDescription()).isEqualTo(savedMedicals.get(0).getDescription());
+
+		String description = savedMedicals.get(0).getDescription();
+		String keyword = description.substring(2, 10);
+
+		medicals = medicalBrowsingManager.getMedicalsByTypeAndDescription(null, keyword, false, 0, 3);
+
+		assertThat(medicals.getTotalPages()).isEqualTo(4);
+		assertThat(medicals.getTotalElements()).isEqualTo(10);
+		assertThat(medicals.getContent().size()).isEqualTo(3);
+		assertThat(medicals.getContent().get(0).getDescription()).isEqualTo(savedMedicals.get(0).getDescription());
+
+		medicals = medicalBrowsingManager.getMedicalsByTypeAndDescription(null, keyword, true, 1, 3);
+
+		assertThat(medicals.getTotalPages()).isEqualTo(4);
+		assertThat(medicals.getTotalElements()).isEqualTo(10);
+		assertThat(medicals.getContent().size()).isEqualTo(3);
+		assertThat(medicals.getContent().get(0).getDescription()).isEqualTo(savedMedicals.get(7).getDescription());
+	}
+
+	@Test
+	@DisplayName("Should return requested page of medical filtered by type and sorted by description")
+	void testMgrGetMedicalsByTypeSortedByDescriptionPageable() throws Exception {
+		List<Medical> savedMedicals = generateMedicals(7, true);
+
+		Page<Medical> medicals = medicalBrowsingManager.getMedicalsByTypeAndDescription(
+			savedMedicals.get(0).getType().getDescription(), null, true, 0, 2
+		);
+
+		assertThat(medicals.getTotalPages()).isEqualTo(4);
+		assertThat(medicals.getTotalElements()).isEqualTo(7);
+		assertThat(medicals.getContent().size()).isEqualTo(2);
+		assertThat(medicals.getContent().get(0).getDescription()).isEqualTo(savedMedicals.get(6).getDescription());
+
+		medicals = medicalBrowsingManager.getMedicalsByTypeAndDescription(
+			savedMedicals.get(0).getType().getDescription(), null, true, 3, 2
+		);
+
+		assertThat(medicals.getTotalPages()).isEqualTo(4);
+		assertThat(medicals.getTotalElements()).isEqualTo(7);
+		assertThat(medicals.getContent().size()).isEqualTo(1);
+		assertThat(medicals.getContent().get(0).getDescription()).isEqualTo(savedMedicals.get(0).getDescription());
 	}
 
 	/**
