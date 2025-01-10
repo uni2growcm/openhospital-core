@@ -41,8 +41,8 @@ CREATE TABLE OH_MORTUARY (
 )ENGINE = INNODB DEFAULT CHARACTER SET utf8;
 
 -- Rearrange main menu
-UPDATE MENUITEM SET MNI_POSITION=12 WHERE MNI_ID_A="generaldata";
-UPDATE MENUITEM SET MNI_POSITION=13 WHERE MNI_ID_A="help";
+UPDATE OH_MENUITEM SET MNI_POSITION=12 WHERE MNI_ID_A="generaldata";
+UPDATE OH_MENUITEM SET MNI_POSITION=13 WHERE MNI_ID_A="help";
 
 --Add mortuary in the main menu
 INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('mortuary', 'angal.menu.btn.mortuary', 'angal.menu.mortuary', 'x', 'U', 'main', 'org.isf.mortuary.gui.MortuaryBrowser','N', 11);
