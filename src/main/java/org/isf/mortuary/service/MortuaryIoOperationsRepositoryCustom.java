@@ -25,14 +25,14 @@ package org.isf.mortuary.service;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.isf.mortuary.model.Mortuary;
+import org.isf.mortuary.model.Death;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MortuaryIoOperationsRepositoryCustom {
 
-	List<Mortuary> findAllWhereData(
+	List<Death> findAllWhereData(
 		String patientName,
 		String provenance,
 		LocalDateTime dateFrom,
@@ -41,7 +41,7 @@ public interface MortuaryIoOperationsRepositoryCustom {
 		String inputOrOutput
 	);
 
-	List<Mortuary> findAllWhereDataPageable(
+	List<Death> findAllWhereDataPageable(
 		String patientName,
 		String provenance,
 		LocalDateTime dateFrom,

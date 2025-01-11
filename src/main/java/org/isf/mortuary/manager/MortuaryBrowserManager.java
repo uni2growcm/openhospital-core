@@ -25,11 +25,12 @@ package org.isf.mortuary.manager;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.isf.mortuary.model.Mortuary;
+import org.isf.mortuary.model.Death;
 import org.isf.mortuary.service.MortuaryIoOperations;
 import org.isf.utils.exception.OHException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.time.TimeTools;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
@@ -42,24 +43,24 @@ public class MortuaryBrowserManager {
 	public MortuaryBrowserManager(MortuaryIoOperations mortuaryIoOperations) {
 		this.mortuaryIoOperations = mortuaryIoOperations;
 	}
-	public Mortuary add(Mortuary Mortuary) throws OHException {
+	public Death add(Death Mortuary) throws OHException {
 		return mortuaryIoOperations.add(Mortuary);
 	}
 
-	public List<Mortuary> getAll() throws OHException {
+	public List<Death> getAll() throws OHException {
 		return mortuaryIoOperations.getAll();
 	}
 
-	public Mortuary update(Mortuary mortuary) throws OHException {
+	public Death update(Death mortuary) throws OHException {
 		return mortuaryIoOperations.update(mortuary);
 	}
 
-	public void delete(Mortuary mortuary) throws OHException {
+	public void delete(Death mortuary) throws OHException {
 		mortuaryIoOperations.delete(mortuary);
 	}
 
 	/**
-	 * Retrieves all the {@link Mortuary}s with the specified criteria.<br>
+	 * Retrieves all the {@link Death}s with the specified criteria.<br>
 	 * <br>
 	 * @param patientName the patient name.
 	 * @param provenance the provenance.
@@ -69,7 +70,7 @@ public class MortuaryBrowserManager {
 	 * @param inputOrOutput the value that determines the date to be set in the interval.
 	 * @return the retrieved mortuaries.
 	 */
-	public List<Mortuary> getMortuariesWhereData(
+	public List<Death> getMortuariesWhereData(
 		String patientName,
 		String provenance,
 		LocalDateTime dateFrom,
@@ -88,7 +89,7 @@ public class MortuaryBrowserManager {
 	}
 
 	/**
-	 * Retrieves a page of {@link Mortuary}s with the specified criteria.<br>
+	 * Retrieves a page of {@link Death}s with the specified criteria.<br>
 	 * <br>
 	 * @param patientName the patient name.
 	 * @param provenance the provenance.
@@ -100,30 +101,29 @@ public class MortuaryBrowserManager {
 	 * @param size the size of the page.
 	 * @return the retrieved a mortuaries page.
 	 */
-	public List<Mortuary> getMortuariesWhereDataPageable(
+	public Page<Death> getMortuariesWhereDataPageable(
 		String patientName,
 		String provenance,
 		LocalDateTime dateFrom,
 		LocalDateTime dateTo,
-		String deathReason,
-		String inputOrOutput,
+		int deathReason,
 		int page,
 		int size
 	) {
 		Pageable pageable = PageRequest.of(page, size);
+		System.out.println(mortuaryIoOperations.findByPatientName(patientName).get(0).getPatient().getName());
 		return mortuaryIoOperations.getMortuariesWhereDataPageable(
 			patientName,
 			provenance,
 			dateFrom,
 			dateTo,
 			deathReason,
-			inputOrOutput,
 			pageable
 		);
 	}
 
 	/**
-	 * Count all the {@link Mortuary}s with the specified criteria.<br>
+	 * Count all the {@link Death}s with the specified criteria.<br>
 	 * <br>
 	 * @param patientName the patient name.
 	 * @param provenance the provenance.

@@ -36,32 +36,36 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Entity
 @Table(name = "OH_DEATHREASON")
 @EntityListeners(AuditingEntityListener.class)
-@AttributeOverride(name = "createdBy", column = @Column(name = "DR_CREATED_BY", updatable = false))
-@AttributeOverride(name = "createdDate", column = @Column(name = "DR_CREATED_DATE", updatable = false))
-@AttributeOverride(name = "lastModifiedBy", column = @Column(name = "DR_LAST_MODIFIED_BY"))
-@AttributeOverride(name = "lastModifiedDate", column = @Column(name = "DR_LAST_MODIFIED_DATE"))
-@AttributeOverride(name = "active", column = @Column(name = "DR_ACTIVE"))
+@AttributeOverride(name = "createdBy", column = @Column(name = "DTHR_CREATED_BY", updatable = false))
+@AttributeOverride(name = "createdDate", column = @Column(name = "DTHR_CREATED_DATE", updatable = false))
+@AttributeOverride(name = "lastModifiedBy", column = @Column(name = "DTHR_LAST_MODIFIED_BY"))
+@AttributeOverride(name = "lastModifiedDate", column = @Column(name = "DTHR_LAST_MODIFIED_DATE"))
+@AttributeOverride(name = "active", column = @Column(name = "DTHR_ACTIVE"))
 public class DeathReason {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "DR_ID")
+	@Column(name = "DTHR_ID")
 	private int id;
 
-	@Column(name = "DR_CODE")
+	@Column(name = "DTHR_CODE")
 	private String code;
 
-	@Column(name = "DR_DESC")
+	@Column(name = "DTHR_DESC")
 	private String description;
+
+	@Column(name = "DTHR_DELETED")
+	private boolean deleted;
 
 	public DeathReason() {
 	}
 
-	public DeathReason(int id, String code, String description) {
+	public DeathReason(int id, String code, String description, boolean deleted) {
 		super();
 		this.id = id;
 		this.code = code;
 		this.description = description;
+		this.deleted = deleted;
 	}
 
 	public int getId() {
@@ -81,6 +85,12 @@ public class DeathReason {
 	}
 	public void setDescription(String description) {
 		this.description = description;
+	}
+	public boolean getDeleted() {
+		return this.deleted;
+	}
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
 	}
 
 	@Override

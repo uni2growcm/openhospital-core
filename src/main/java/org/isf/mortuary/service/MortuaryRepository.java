@@ -22,14 +22,34 @@
 
 package org.isf.mortuary.service;
 
-import org.isf.mortuary.model.Mortuary;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import jakarta.persistence.Table;
+
+import org.isf.mortuary.model.Death;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface MortuaryRepository extends JpaRepository<Mortuary, Integer>, MortuaryIoOperationsRepositoryCustom {
-	@Query("select m from Mortuary m where m.id = :id")
-	Mortuary findMortuaryById(@Param("id")int id);
+public interface MortuaryRepository extends JpaRepository<Death, Integer>, MortuaryIoOperationsRepositoryCustom {
+	@Query("select d from Death d where d.id = :id")
+	Death findMortuaryById(@Param("id")int id);
+
+	@Query("select d from Death d where d.deathReason.description like %:name%")
+	List<Death> findByPatientName(@Param("name") String name);
+
+	@Query("select d from Death d where d.admissionDate >= :dateFrom and d.dischargeDate <= :dateTo ")
+	Page<Death> findAllWhereDatad(
+		@Param("name")String name,
+		@Param("ward")String ward,
+		@Param("dateFrom")LocalDateTime dateFrom,
+		@Param("dateTo")LocalDateTime dateTo,
+		@Param("deathReason")int deathReason,
+		Pageable pageable
+	);
 }

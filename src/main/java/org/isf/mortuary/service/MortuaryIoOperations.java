@@ -25,11 +25,12 @@ package org.isf.mortuary.service;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.isf.mortuary.model.Mortuary;
+import org.isf.mortuary.model.Death;
 import org.isf.utils.db.TranslateOHServiceException;
 import org.isf.utils.exception.OHException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.time.TimeTools;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,31 +47,31 @@ public class MortuaryIoOperations {
 	}
 
 	/**
-	 * Store the specified {@link Mortuary}.
+	 * Store the specified {@link Death}.
 	 * @param mortuary the death  to store.
-	 * @return {@link Mortuary} if the {@link Mortuary} has been stored, null otherwise.
+	 * @return {@link Death} if the {@link Death} has been stored, null otherwise.
 	 * @throws OHException if an error occurs during the store operation.
 	 */
-	public Mortuary add(Mortuary mortuary) throws OHException {
+	public Death add(Death mortuary) throws OHException {
 		return mortuaryRepository.save(mortuary);
 	}
 
 	/**
-	 * Get all the {@link Mortuary}s.
+	 * Get all the {@link Death}s.
 	 * @return a list of deaths.
 	 * @throws OHException if an error occurs retrieving the deaths.
 	 */
-	public List<Mortuary> getAll() throws OHException {
+	public List<Death> getAll() throws OHException {
 		return mortuaryRepository.findAll();
 	}
 
 	/**
-	 * method that update an existing {@link Mortuary} in the db
-	 * @param mortuary - the {@link Mortuary} to update
-	 * @return {@link Mortuary} has been updated
+	 * method that update an existing {@link Death} in the db
+	 * @param mortuary - the {@link Death} to update
+	 * @return {@link Death} has been updated
 	 * @throws OHException
 	 */
-	public Mortuary update(Mortuary mortuary) throws OHException {
+	public Death update(Death mortuary) throws OHException {
 		return mortuaryRepository.save(mortuary);
 	}
 
@@ -79,12 +80,12 @@ public class MortuaryIoOperations {
 	 * @param mortuary
 	 * @throws OHException
 	 */
-	public void delete(Mortuary mortuary) throws OHException {
+	public void delete(Death mortuary) throws OHException {
 		mortuaryRepository.delete(mortuary);
 	}
 
 	/**
-	 * Retrieves all the {@link Mortuary}s with the specified criteria.<br>
+	 * Retrieves all the {@link Death}s with the specified criteria.<br>
 	 * <br>
 	 * @param patientName the patient name.
 	 * @param provenance the provenance.
@@ -94,7 +95,7 @@ public class MortuaryIoOperations {
 	 * @param inputOrOutput the value that determines the date to be set in the interval.
 	 * @return the retrieved mortuaries.
 	 */
-	public List<Mortuary> getMortuariesWhereData(
+	public List<Death> getMortuariesWhereData(
 		String patientName,
 		String provenance,
 		LocalDateTime dateFrom,
@@ -106,7 +107,7 @@ public class MortuaryIoOperations {
 	}
 
 	/**
-	 * Retrieves a page of {@link Mortuary}s with the specified criteria.<br>
+	 * Retrieves a page of {@link Death}s with the specified criteria.<br>
 	 * <br>
 	 * @param patientName the patient name.
 	 * @param provenance the provenance.
@@ -117,28 +118,26 @@ public class MortuaryIoOperations {
 	 * @param pageable for pagination/.
 	 * @return the retrieved a mortuaries page.
 	 */
-	public List<Mortuary> getMortuariesWhereDataPageable(
+	public Page<Death> getMortuariesWhereDataPageable(
 		String patientName,
 		String provenance,
 		LocalDateTime dateFrom,
 		LocalDateTime dateTo,
-		String deathReason,
-		String inputOrOutput,
+		int deathReason,
 		Pageable pageable
 	) {
-		return mortuaryRepository.findAllWhereDataPageable(
+		return mortuaryRepository.findAllWhereDatad(
 			patientName,
 			provenance,
 			dateFrom,
 			dateTo,
 			deathReason,
-			inputOrOutput,
 			pageable
 		);
 	}
 
 	/**
-	 * Count all the {@link Mortuary}s with the specified criteria.<br>
+	 * Count all the {@link Death}s with the specified criteria.<br>
 	 * <br>
 	 * @param patientName the patient name.
 	 * @param provenance the provenance.
@@ -170,10 +169,14 @@ public class MortuaryIoOperations {
 			inputOrOutput
 		);
 	}
-	public Mortuary save(Mortuary mortuary) {
+
+	public List<Death> findByPatientName(String name) {
+		return mortuaryRepository.findByPatientName(name);
+	}
+	public Death save(Death mortuary) {
 		return mortuaryRepository.save(mortuary);
 	}
-	public Mortuary findById(int id) {
+	public Death findById(int id) {
 		return mortuaryRepository.findMortuaryById(id);
 	}
 }

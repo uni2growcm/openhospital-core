@@ -22,6 +22,8 @@
 
 package org.isf.mortuary.service;
 
+import java.util.List;
+
 import org.isf.mortuary.model.DeathReason;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -33,4 +35,7 @@ public interface DeathReasonRepository extends JpaRepository<DeathReason, Intege
 
 	@Query("select d from DeathReason d where d.id = :id")
 	DeathReason findDeathReasonById(@Param("id") int id);
+
+	@Query("select d from DeathReason d where d.deleted = :deleted ")
+	List<DeathReason> findByDeleted(boolean deleted);
 }

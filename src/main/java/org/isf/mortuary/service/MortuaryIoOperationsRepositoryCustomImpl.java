@@ -36,29 +36,30 @@ import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
+import org.isf.mortuary.model.Death;
 import org.isf.mortuary.model.DeathReason;
-import org.isf.mortuary.model.Mortuary;
 import org.isf.patient.model.Patient;
+import org.isf.ward.model.Ward;
 import org.springframework.data.domain.Pageable;
 
 public class MortuaryIoOperationsRepositoryCustomImpl implements MortuaryIoOperationsRepositoryCustom {
 
-	private final String PROVENANCE = "provenance";
+	private final String WARD = "ward";
 	private final String PATIENT = "patient";
 	private final String DEATHREASON = "deathReason";
 	private final String NAME = "name";
 	private final String DESCRIPTION = "description";
-	private final String DATETO = "releaseDate";
-	private final String DATEFROM = "enteredDate";
+	private final String DATETO = "dischargeDate";
+	private final String DATEFROM = "admissionDate";
 
 	@PersistenceContext
 	private EntityManager entityManager;
 
 	/**
-	 * Retrieves all the {@link Mortuary}s with the specified criteria.<br>
+	 * Retrieves all the {@link Death}s with the specified criteria.<br>
 	 * <br>
 	 * @param patientName the patient name.
-	 * @param provenance the provenance.
+	 * @param ward the ward.
 	 * @param dateFrom the lower bound for the mortuary date range.
 	 * @param dateTo the upper bound for the mortuary date range.
 	 * @param deathReason the reason of death.
@@ -66,27 +67,28 @@ public class MortuaryIoOperationsRepositoryCustomImpl implements MortuaryIoOpera
 	 * @return the retrieved mortuaries.
 	 */
 	@Override
-	public List<Mortuary> findAllWhereData(
+	public List<Death> findAllWhereData(
 		String patientName,
-		String provenance,
+		String ward,
 		LocalDateTime dateFrom,
 		LocalDateTime dateTo,
 		String deathReason,
 		String inputOrOutput
 	) {
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-		CriteriaQuery<Mortuary> query = builder.createQuery(Mortuary.class);
-		Root<Mortuary> root = query.from(Mortuary.class);
+		CriteriaQuery<Death> query = builder.createQuery(Death.class);
+		Root<Death> root = query.from(Death.class);
 
 		List<Predicate> predicates = new ArrayList<>();
-		Join<Mortuary, Patient> patientJoin = root.join(PATIENT, JoinType.LEFT);
-		Join<Mortuary, DeathReason> deathReasonJoin = root.join(DEATHREASON, JoinType.LEFT);
+		Join<Death, Patient> patientJoin = root.join(PATIENT, JoinType.LEFT);
+		Join<Death, DeathReason> deathReasonJoin = root.join(DEATHREASON, JoinType.LEFT);
+		Join<Death, Ward> wardJoin = root.join(WARD, JoinType.LEFT);
 
 		if (patientName != null) {
 			predicates.add(builder.like(patientJoin.get(NAME), "%" + patientName + "%"));
 		}
-		if (provenance != null) {
-			predicates.add(builder.equal(root.<String> get(PROVENANCE), provenance));
+		if (ward != null) {
+			predicates.add(builder.equal(wardJoin.get(DESCRIPTION), ward));
 		}
 		if (deathReason != null) {
 			predicates.add(builder.equal(deathReasonJoin.<String> get(DESCRIPTION), deathReason));
@@ -104,10 +106,10 @@ public class MortuaryIoOperationsRepositoryCustomImpl implements MortuaryIoOpera
 	}
 
 	/**
-	 * Retrieves a page of {@link Mortuary}s with the specified criteria.<br>
+	 * Retrieves a page of {@link Death}s with the specified criteria.<br>
 	 * <br>
 	 * @param patientName the patient name.
-	 * @param provenance the provenance.
+	 * @param ward the ward provenance.
 	 * @param dateFrom the lower bound for the mortuary date range.
 	 * @param dateTo the upper bound for the mortuary date range.
 	 * @param deathReason the reason of death.
@@ -116,9 +118,9 @@ public class MortuaryIoOperationsRepositoryCustomImpl implements MortuaryIoOpera
 	 * @return the retrieved mortuaries.
 	 */
 	@Override
-	public List<Mortuary> findAllWhereDataPageable(
+	public List<Death> findAllWhereDataPageable(
 		String patientName,
-		String provenance,
+		String ward,
 		LocalDateTime dateFrom,
 		LocalDateTime dateTo,
 		String deathReason,
@@ -126,18 +128,19 @@ public class MortuaryIoOperationsRepositoryCustomImpl implements MortuaryIoOpera
 		Pageable pageable
 	) {
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-		CriteriaQuery<Mortuary> query = builder.createQuery(Mortuary.class);
-		Root<Mortuary> root = query.from(Mortuary.class);
+		CriteriaQuery<Death> query = builder.createQuery(Death.class);
+		Root<Death> root = query.from(Death.class);
 
 		List<Predicate> predicates = new ArrayList<>();
-		Join<Mortuary, Patient> patientJoin = root.join(PATIENT, JoinType.LEFT);
-		Join<Mortuary, DeathReason> deathReasonJoin = root.join(DEATHREASON, JoinType.LEFT);
+		Join<Death, Patient> patientJoin = root.join(PATIENT, JoinType.LEFT);
+		Join<Death, DeathReason> deathReasonJoin = root.join(DEATHREASON, JoinType.LEFT);
+		Join<Death, Ward> wardJoin = root.join(WARD, JoinType.LEFT);
 
 		if (patientName != null) {
 			predicates.add(builder.like(patientJoin.get(NAME), "%" + patientName + "%"));
 		}
-		if (provenance != null) {
-			predicates.add(builder.equal(root.<String> get(PROVENANCE), provenance));
+		if (ward != null) {
+			predicates.add(builder.equal(wardJoin.get(DESCRIPTION), ward));
 		}
 		if (deathReason != null) {
 			predicates.add(builder.equal(deathReasonJoin.<String> get(DESCRIPTION), deathReason));
@@ -152,7 +155,7 @@ public class MortuaryIoOperationsRepositoryCustomImpl implements MortuaryIoOpera
 
 		query.select(root).where(predicates.toArray(new Predicate[] {}));
 
-		TypedQuery<Mortuary> typedQuery = entityManager.createQuery(query);
+		TypedQuery<Death> typedQuery = entityManager.createQuery(query);
 
 		int firstResult = pageable.getPageNumber() * pageable.getPageSize();
 		typedQuery.setFirstResult(firstResult);
@@ -162,10 +165,10 @@ public class MortuaryIoOperationsRepositoryCustomImpl implements MortuaryIoOpera
 	}
 
 	/**
-	 * Count all the {@link Mortuary}s with the specified criteria.<br>
+	 * Count all the {@link Death}s with the specified criteria.<br>
 	 * <br>
 	 * @param patientName the patient name.
-	 * @param provenance the provenance.
+	 * @param ward the ward provenance.
 	 * @param dateFrom the lower bound for the mortuary date range.
 	 * @param dateTo the upper bound for the mortuary date range.
 	 * @param deathReason the reason of death.
@@ -175,7 +178,7 @@ public class MortuaryIoOperationsRepositoryCustomImpl implements MortuaryIoOpera
 	@Override
 	public long getCountTotalMortuaries(
 		String patientName,
-		String provenance,
+		String ward,
 		LocalDateTime dateFrom,
 		LocalDateTime dateTo,
 		String deathReason,
@@ -183,17 +186,18 @@ public class MortuaryIoOperationsRepositoryCustomImpl implements MortuaryIoOpera
 	) {
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<Long> countQuery = builder.createQuery(Long.class);
-		Root<Mortuary> root = countQuery.from(Mortuary.class);
+		Root<Death> root = countQuery.from(Death.class);
 
 		List<Predicate> predicates = new ArrayList<>();
-		Join<Mortuary, Patient> patientJoin = root.join(PATIENT, JoinType.LEFT);
-		Join<Mortuary, DeathReason> deathReasonJoin = root.join(DEATHREASON, JoinType.LEFT);
+		Join<Death, Patient> patientJoin = root.join(PATIENT, JoinType.LEFT);
+		Join<Death, DeathReason> deathReasonJoin = root.join(DEATHREASON, JoinType.LEFT);
+		Join<Death, Ward> wardJoin = root.join(WARD, JoinType.LEFT);
 
 		if (patientName != null) {
 			predicates.add(builder.like(patientJoin.get(NAME), "%" + patientName + "%"));
 		}
-		if (provenance != null) {
-			predicates.add(builder.equal(root.<String> get(PROVENANCE), provenance));
+		if (ward != null) {
+			predicates.add(builder.equal(wardJoin.get(DESCRIPTION), ward));
 		}
 		if (deathReason != null) {
 			predicates.add(builder.equal(deathReasonJoin.<String> get(DESCRIPTION), deathReason));

@@ -23,6 +23,7 @@
 package org.isf.mortuary.model;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
@@ -37,100 +38,102 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 import org.isf.patient.model.Patient;
+import org.isf.ward.model.Ward;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
-@Table(name = "OH_MORTUARY")
+@Table(name = "OH_DEATH")
 @EntityListeners(AuditingEntityListener.class)
-@AttributeOverride(name = "createdBy", column = @Column(name = "MRT_CREATED_BY", updatable = false))
-@AttributeOverride(name = "createdDate", column = @Column(name = "MRT_CREATED_DATE", updatable = false))
-@AttributeOverride(name = "lastModifiedBy", column = @Column(name = "MRT_LAST_MODIFIED_BY"))
-@AttributeOverride(name = "lastModifiedDate", column = @Column(name = "MRT_LAST_MODIFIED_DATE"))
-@AttributeOverride(name = "active", column = @Column(name = "MRT_ACTIVE"))
-public class Mortuary {
+@AttributeOverride(name = "createdBy", column = @Column(name = "DTH_CREATED_BY", updatable = false))
+@AttributeOverride(name = "createdDate", column = @Column(name = "DTH_CREATED_DATE", updatable = false))
+@AttributeOverride(name = "lastModifiedBy", column = @Column(name = "DTH_LAST_MODIFIED_BY"))
+@AttributeOverride(name = "lastModifiedDate", column = @Column(name = "DTH_LAST_MODIFIED_DATE"))
+@AttributeOverride(name = "active", column = @Column(name = "DTH_ACTIVE"))
+public class Death {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "MRT_ID")
+	@Column(name = "DTH_ID")
 	private int id;
 
-	@Column(name = "MRT_PLACE")
+	@Column(name = "DTH_PLACE")
 	private String place;
 
 	@OneToOne
-	@JoinColumn(name = "MRT_PAT_ID", insertable = false, updatable = false)
+	@JoinColumn(name = "DTH_PAT_ID", insertable = false, updatable = false)
 	private Patient patient;
 
-	@Column(name = "MRT_PROVENANCE")
-	private String provenance;
+	@ManyToOne
+	@JoinColumn(name = "DTH_WRD_ID_A", insertable = false, updatable = false)
+	private Ward ward;
 
-	@Column(name = "MRT_DEATH_DATE")
-	private LocalDate deathDate;
+	@Column(name = "DTH_DATE")
+	private LocalDate date;
 
-	@Column(name = "MRT_ENTERED_DATE")
-	private LocalDate enteredDate;
+	@Column(name = "DTH_ADMISSION_DATE")
+	private LocalDateTime admissionDate;
 
-	@Column(name = "MRT_RELEASE_DATE")
-	private LocalDate releaseDate;
+	@Column(name = "DTH_DISCHARGE_DATE")
+	private LocalDateTime dischargeDate;
 
-	@Column(name = "MRT_PROVISIONAL_RELEASE_DATE")
-	private LocalDate provisionalReleaseDate;
+	@Column(name = "DTH_ESTIMATED_DISCHARGE_DATE")
+	private LocalDate estimatedDischargeDate;
 
 	@ManyToOne
-	@JoinColumn(name = "MRT_DR_ID", insertable = false, updatable = false)
+	@JoinColumn(name = "DTH_DTHR_ID", insertable = false, updatable = false)
 	private DeathReason deathReason;
 
-	@Column(name = "MRT_DECLARING_NAME")
+	@Column(name = "DTH_DECLARING_NAME")
 	private String declaringName;
 
-	@Column(name = "MRT_DECLARING_PHONE")
+	@Column(name = "DTH_DECLARING_PHONENUMBER")
 	private String declaringPhone;
 
-	@Column(name = "MRT_DECLARING_NEST")
-	private String declaringNest;
+	@Column(name = "DTH_DECLARING_NID")
+	private String declaringNid;
 
-	@Column(name = "MRT_FAMILY_NAME")
+	@Column(name = "DTH_FAMILY_NAME")
 	private String familyName;
 
-	@Column(name = "MRT_FAMILY_PHONE")
+	@Column(name = "DTH_FAMILY_PHONENUMBER")
 	private String familyPhone;
 
-	@Column(name = "MRT_FAMILY_NEST")
-	private String familyNest;
+	@Column(name = "DTH_FAMILY_NID")
+	private String familyNid;
 
-	@Column(name = "MRT_LOCKER")
-	private String locker;
+	@Column(name = "DTH_LOCKER_NUMBER")
+	private String lockerNumber;
 
-	public Mortuary() {
+	public Death() {
 		super();
 	}
 
-	public Mortuary(int id, String place, Patient patient, String provenance, LocalDate deathDate, LocalDate enteredDate,
-		LocalDate releaseDate, LocalDate provisionalReleaseDate, DeathReason deathReason, String declaringName, String declaringPhone, String declaringNest,
-		String familyName, String familyPhone, String familyNest, String locker) {
+	public Death(int id, String place, Patient patient, Ward ward, LocalDate date, LocalDateTime admissionDate,
+		LocalDateTime dischargeDate, LocalDate estimatedDischargeDate, DeathReason deathReason, String declaringName, String declaringPhone, String declaringNid,
+		String familyName, String familyPhone, String familyNid, String lockerNumber) {
 		this.id = id;
 		this.place = place;
 		this.patient = patient;
-		this.provenance = provenance;
-		this.deathDate = deathDate;
-		this.enteredDate = enteredDate;
-		this.releaseDate = releaseDate;
-		this.provisionalReleaseDate = provisionalReleaseDate;
+		this.ward = ward;
+		this.date = date;
+		this.admissionDate = admissionDate;
+		this.dischargeDate = dischargeDate;
+		this.estimatedDischargeDate = estimatedDischargeDate;
 		this.deathReason = deathReason;
 		this.declaringName = declaringName;
 		this.declaringPhone = declaringPhone;
-		this.declaringNest = declaringNest;
+		this.declaringNid = declaringNid;
 		this.familyName = familyName;
 		this.familyPhone = familyPhone;
-		this.familyNest = familyNest;
-		this.locker = locker;
+		this.familyNid = familyNid;
+		this.lockerNumber = lockerNumber;
 	}
 
-	public String getLocker() {
-		return locker;
+	public String getLockerNumber() {
+		return lockerNumber;
 	}
-	public void setLocker(String locker) {
-		this.locker = locker;
+	public void setLockerNumber(String lockerNumber) {
+		this.lockerNumber = lockerNumber;
 	}
 	public int getId() {
 		return id;
@@ -150,11 +153,11 @@ public class Mortuary {
 	public void setPatient(Patient patient) {
 		this.patient = patient;
 	}
-	public String getProvenance() {
-		return provenance;
+	public Ward getWard() {
+		return ward;
 	}
-	public void setProvenance(String provenance) {
-		this.provenance = provenance;
+	public void setWard(Ward ward) {
+		this.ward = ward;
 	}
 	public DeathReason getDeathReason() {
 		return deathReason;
@@ -174,35 +177,35 @@ public class Mortuary {
 	public void setDeclaringPhone(String declaringPhone) {
 		this.declaringPhone = declaringPhone;
 	}
-	public String getDeclaringNest() {
-		return declaringNest;
+	public String getDeclaringNid() {
+		return declaringNid;
 	}
-	public void setDeclaringNest(String declaringNest) {
-		this.declaringNest = declaringNest;
+	public void setDeclaringNid(String declaringNid) {
+		this.declaringNid = declaringNid;
 	}
-	public LocalDate getDeathDate() {
-		return deathDate;
+	public LocalDate getDate() {
+		return date;
 	}
-	public void setDeathDate(LocalDate deathDate) {
-		this.deathDate = deathDate;
+	public void setDate(LocalDate date) {
+		this.date = date;
 	}
-	public LocalDate getEnteredDate() {
-		return enteredDate;
+	public LocalDateTime getAdmissionDate() {
+		return admissionDate;
 	}
-	public void setEnteredDate(LocalDate enteredDate) {
-		this.enteredDate = enteredDate;
+	public void setAdmissionDate(LocalDateTime admissionDate) {
+		this.admissionDate = admissionDate;
 	}
-	public LocalDate getReleaseDate() {
-		return releaseDate;
+	public LocalDateTime getDischargeDate() {
+		return dischargeDate;
 	}
-	public void setReleaseDate(LocalDate releaseDate) {
-		this.releaseDate = releaseDate;
+	public void setDischargeDate(LocalDateTime dischargeDate) {
+		this.dischargeDate = dischargeDate;
 	}
-	public LocalDate getProvisionalReleaseDate() {
-		return provisionalReleaseDate;
+	public LocalDate getEstimatedDischargeDate() {
+		return estimatedDischargeDate;
 	}
-	public void setProvisionalReleaseDate(LocalDate dateSortieProvisoire) {
-		this.provisionalReleaseDate = dateSortieProvisoire;
+	public void setEstimatedDischargeDate(LocalDate dateSortieProvisoire) {
+		this.estimatedDischargeDate = dateSortieProvisoire;
 	}
 	public String getFamilyName() {
 		return familyName;
@@ -216,11 +219,11 @@ public class Mortuary {
 	public void setFamilyPhone(String familyPhone) {
 		this.familyPhone = familyPhone;
 	}
-	public String getFamilyNest() {
-		return familyNest;
+	public String getFamilyNid() {
+		return familyNid;
 	}
-	public void setFamilyNest(String familyNest) {
-		this.familyNest = familyNest;
+	public void setFamilyNid(String familyNid) {
+		this.familyNid = familyNid;
 	}
 
 	@Override
@@ -229,19 +232,19 @@ public class Mortuary {
 			"id=" + id +
 			", place='" + place + '\'' +
 			", patient=" + patient +
-			", provenance='" + provenance + '\'' +
-			", deathDate=" + deathDate +
-			", enteredDate=" + enteredDate +
-			", releaseDate=" + releaseDate +
-			", provisionalReleaseDate=" + provisionalReleaseDate +
+			", provenance='" + ward + '\'' +
+			", deathDate=" + date +
+			", enteredDate=" + admissionDate +
+			", releaseDate=" + dischargeDate +
+			", provisionalReleaseDate=" + estimatedDischargeDate +
 			", cause=" + deathReason +
 			", declaringName='" + declaringName + '\'' +
 			", declaringPhone='" + declaringPhone + '\'' +
-			", declaringNest='" + declaringNest + '\'' +
+			", declaringNest='" + declaringNid + '\'' +
 			", familyName='" + familyName + '\'' +
 			", familyPhone='" + familyPhone + '\'' +
-			", familyNest='" + familyNest + '\'' +
-			", locker='" + locker + '\'' +
+			", familyNest='" + familyNid + '\'' +
+			", locker='" + lockerNumber + '\'' +
 			'}';
 	}
 }

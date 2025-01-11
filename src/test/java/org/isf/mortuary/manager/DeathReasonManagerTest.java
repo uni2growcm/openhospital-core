@@ -55,13 +55,13 @@ public class DeathReasonManagerTest extends OHCoreTestCase {
 
 	@Test
 	void testGetById() throws Exception {
-		int id = setupTestMortuaryStays(false);
+		int id = setupTestDeathReason(false);
 		DeathReason foundDeathReason = deathReasonManager.getById(id);
 		assertThat(foundDeathReason).isNotNull();
 		assertThat(foundDeathReason.getId()).isEqualTo(id);
 	}
 
-	private int setupTestMortuaryStays(boolean usingSet) throws OHException {
+	private int setupTestDeathReason(boolean usingSet) throws OHException {
 		DeathReason deathReason = testDeathReason.setup(usingSet);
 		deathReasonIoOperations.add(deathReason);
 		return deathReason.getId();

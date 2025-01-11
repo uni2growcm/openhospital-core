@@ -24,21 +24,22 @@ package org.isf.mortuary.manager;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import org.isf.mortuary.model.DeathReason;
-import org.isf.mortuary.model.Mortuary;
+import org.isf.mortuary.model.Death;
 import org.isf.patient.model.Patient;
 import org.isf.utils.exception.OHException;
+import org.isf.ward.model.Ward;
 
 public class TestMortuary {
 
 	private final int id = 1;
 	private final String place = "Salle A1";
-	private final String provenance = "Urgences";
-	private final LocalDate deathDate = LocalDate.of(2024, 12, 01);
-	private final LocalDate enteredDate = LocalDate.of(2024, 12, 01);
-	private final LocalDate releaseDate = LocalDate.of(2024, 12, 05);
-	private final LocalDate provisionalReleaseDate = LocalDate.of(2024, 12, 04);
+	private final LocalDate deathDate = LocalDate.of(2024, 12, 1);
+	private final LocalDateTime enteredDate = LocalDateTime.of(2024, 12, 1, 0, 0, 0);
+	private final LocalDateTime releaseDate = LocalDateTime.of(2024, 12, 5, 0,0,0);
+	private final LocalDate provisionalReleaseDate = LocalDate.of(2024, 12, 4);
 	private final String declaringName = "John Doe";
 	private final String declaringPhone = "6543210001";
 	private final String declaringNest = "12345";
@@ -47,56 +48,55 @@ public class TestMortuary {
 	private final String familyNest = null;
 	private final String locker = "L-001";
 
-	public Mortuary setup(Patient patient, DeathReason deathReason, boolean usingSet) throws OHException {
-		Mortuary mortuary;
+	public Death setup(Patient patient, DeathReason deathReason, Ward ward, boolean usingSet) throws OHException {
+		Death mortuary;
 
 		if (usingSet) {
-			mortuary = new Mortuary();
-			setParameters(patient, deathReason, mortuary);
+			mortuary = new Death();
+			setParameters(patient, deathReason, ward, mortuary);
 		} else {
-			mortuary = new Mortuary(id, place, patient, provenance, deathDate, enteredDate,
+			mortuary = new Death(id, place, patient, ward, deathDate, enteredDate,
 				releaseDate, provisionalReleaseDate, deathReason, declaringName, declaringPhone, declaringNest,
 				familyName, familyPhone, familyNest, locker);
 		}
 		return mortuary;
 	}
 
-	public Mortuary setup(Patient patient, DeathReason deathReason, boolean usingSet, int id) throws OHException {
-		Mortuary mortuary;
+	public Death setup(Patient patient, DeathReason deathReason, Ward ward, boolean usingSet, int id) throws OHException {
+		Death mortuary;
 		if (usingSet) {
-			mortuary = new Mortuary();
-			setParameters(patient, deathReason, mortuary);
+			mortuary = new Death();
+			setParameters(patient, deathReason, ward,mortuary);
 		} else {
-			mortuary = new Mortuary(id, place, patient, provenance, deathDate, enteredDate,
+			mortuary = new Death(id, place, patient, ward, deathDate, enteredDate,
 				releaseDate, provisionalReleaseDate, deathReason, declaringName, declaringPhone, declaringNest,
 				familyName, familyPhone, familyNest, locker);
 		}
 		return mortuary;
 	}
 
-	public void setParameters(Patient patient, DeathReason deathReason, Mortuary mortuary) {
+	public void setParameters(Patient patient, DeathReason deathReason, Ward ward, Death mortuary) {
 		mortuary.setId(id);
-		mortuary.setProvenance(provenance);
+		mortuary.setWard(ward);
 		mortuary.setPlace(place);
 		mortuary.setPatient(patient);
 		mortuary.setDeathReason(deathReason);
-		mortuary.setDeathDate(deathDate);
-		mortuary.setEnteredDate(enteredDate);
-		mortuary.setReleaseDate(releaseDate);
-		mortuary.setProvisionalReleaseDate(provisionalReleaseDate);
+		mortuary.setDate(deathDate);
+		mortuary.setAdmissionDate(enteredDate);
+		mortuary.setDischargeDate(releaseDate);
+		mortuary.setEstimatedDischargeDate(provisionalReleaseDate);
 		mortuary.setDeclaringName(declaringName);
 		mortuary.setDeclaringPhone(declaringPhone);
-		mortuary.setDeclaringNest(declaringNest);
+		mortuary.setDeclaringNid(declaringNest);
 		mortuary.setFamilyName(familyName);
 		mortuary.setFamilyPhone(familyPhone);
-		mortuary.setFamilyNest(familyNest);
-		mortuary.setLocker(locker);
+		mortuary.setFamilyNid(familyNest);
+		mortuary.setLockerNumber(locker);
 	}
 
-	public void check(Mortuary mortuary) {
+	public void check(Death mortuary) {
 		assertThat(mortuary.getId()).isEqualTo(id);
-		assertThat(mortuary.getProvenance()).isEqualTo(provenance);
-		assertThat(mortuary.getDeathDate()).isEqualTo(deathDate);
+		assertThat(mortuary.getDate()).isEqualTo(deathDate);
 		assertThat(mortuary.getDeclaringName()).isEqualTo(declaringName);
 	}
 }

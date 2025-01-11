@@ -32,6 +32,7 @@ public class TestDeathReason {
 	private final int id = 1;
 	private final String code = "CARD001";
 	private final String description = "Arrêt cardiaque";
+	private final boolean deleted = false;
 
 	public DeathReason setup(boolean usingSet) throws OHException {
 		DeathReason deathReason;
@@ -40,7 +41,7 @@ public class TestDeathReason {
 			deathReason = new DeathReason();
 			setParameters(deathReason);
 		} else {
-			deathReason = new DeathReason(id, code, description);
+			deathReason = new DeathReason(id, code, description,false);
 		}
 		return deathReason;
 	}
@@ -49,6 +50,7 @@ public class TestDeathReason {
 		deathReason.setId(id);
 		deathReason.setCode(code);
 		deathReason.setDescription(description);
+		deathReason.setDeleted(deleted);
 	}
 
 	public void check(DeathReason deathReason) {
