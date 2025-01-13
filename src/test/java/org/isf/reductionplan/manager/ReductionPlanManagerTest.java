@@ -63,14 +63,16 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 	@DisplayName("Should get all reduction plans by description")
 	void testGetByDescription() throws Exception {
 		String description = "Fixed Description";
-		ReductionPlan reductionPlan = new ReductionPlan(description, 10, 10, 10, 10);
+		List<ReductionPlan> reductionPlans = ReductionPlanDataGenerate.generateReductionPlanFixtures(2, description);
 
-		repository.saveAndFlush(reductionPlan);
+		repository.saveAllAndFlush(reductionPlans);
 
-		ReductionPlan existingReductionPlans = manager.getByDescription(description, false);
+		List<ReductionPlan> existingReductionPlans = manager.getByDescription(description, false);
 
 		assertThat(existingReductionPlans).isNotNull();
-		assertThat(existingReductionPlans.getDescription()).isEqualTo(description);
+		assertThat(existingReductionPlans.size()).isEqualTo(2);
+		existingReductionPlans.forEach(plan ->
+			assertThat(plan.getDescription()).isEqualTo(description));
 	}
 
 	@Test
@@ -96,7 +98,7 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 		ReductionPlan reductionPlan = new ReductionPlan(description, 10, 10, 10, 10);
 		repository.saveAndFlush(reductionPlan);
 
-		ReductionPlan existingReductionPlan = manager.getByDescription(description, false);
+		ReductionPlan existingReductionPlan = manager.getByDescription(description, false).get(0);
 		existingReductionPlan.setDescription("update");
 		existingReductionPlan.setOperationRate(0.0);
 		existingReductionPlan.setMedicalRate(0.0);
@@ -120,7 +122,7 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 		ReductionPlan reductionPlan = new ReductionPlan(description, 10, 10, 10, 10);
 		repository.saveAndFlush(reductionPlan);
 
-		ReductionPlan existingReductionPlan = manager.getByDescription(description, false);
+		ReductionPlan existingReductionPlan = manager.getByDescription(description, false).get(0);
 
 		ReductionPlan deletedReductionPlan = manager.delete(existingReductionPlan);
 		assertThat(deletedReductionPlan.isDeleted()).isTrue();

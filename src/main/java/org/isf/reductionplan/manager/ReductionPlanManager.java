@@ -63,10 +63,10 @@ public class ReductionPlanManager {
 
 	/**
 	 * Get  reduction plans by description
-	 * @return a {@link ReductionPlan}
+	 * @return The list of {@link ReductionPlan}s
 	 * @throws OHServiceException When failed to get  reduction plans by description
 	 */
-	public ReductionPlan getByDescription(String description, boolean deleted) throws OHServiceException {
+	public List<ReductionPlan> getByDescription(String description, boolean deleted) throws OHServiceException {
 		return reductionPlanIoOperations.getByDescription(description, deleted);
 	}
 
