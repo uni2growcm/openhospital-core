@@ -71,7 +71,7 @@ public class MedicalReduction extends Auditable<String> {
 	private boolean deleted = false;
 
 	@Version
-	@Column(name="ER_LOCK")
+	@Column(name="MR_LOCK")
 	private int lock;
 
 	public MedicalReduction() {

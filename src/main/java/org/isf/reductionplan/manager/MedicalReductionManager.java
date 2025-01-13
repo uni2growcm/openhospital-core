@@ -66,4 +66,15 @@ public class MedicalReductionManager {
 	public MedicalReduction delete(MedicalReduction medicalReduction) throws OHServiceException {
 		return medicalReductionIoOperation.delete(medicalReduction);
 	}
+
+	/**
+	 * Delete a list of {@link MedicalReduction}s
+	 * @param medicalReductionList the list of {@link MedicalReduction}s to delete
+	 * @throws OHServiceException if the error happen during the delete process
+	 */
+	public void deleteBulk(List<MedicalReduction> medicalReductionList) throws OHServiceException {
+		for (MedicalReduction medicalReduction : medicalReductionList) {
+			delete(medicalReduction);
+		}
+	}
 }

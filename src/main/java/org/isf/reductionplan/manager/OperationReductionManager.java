@@ -23,6 +23,7 @@ package org.isf.reductionplan.manager;
 
 import java.util.List;
 
+import org.isf.reductionplan.model.MedicalReduction;
 import org.isf.reductionplan.model.OperationReduction;
 import org.isf.reductionplan.model.ReductionPlan;
 import org.isf.reductionplan.service.OperationReductionIoOperation;
@@ -65,5 +66,16 @@ public class OperationReductionManager {
 	 */
 	public OperationReduction delete(OperationReduction operationReduction) throws OHServiceException {
 		return operationReductionIoOperation.delete(operationReduction);
+	}
+
+	/**
+	 * Delete a list of {@link OperationReduction}s
+	 * @param operationReductionList the list of {@link OperationReduction}s to delete
+	 * @throws OHServiceException if the error happen during the delete process
+	 */
+	public void deleteBulk(List<OperationReduction> operationReductionList) throws OHServiceException {
+		for (OperationReduction operationReduction : operationReductionList) {
+			delete(operationReduction);
+		}
 	}
 }

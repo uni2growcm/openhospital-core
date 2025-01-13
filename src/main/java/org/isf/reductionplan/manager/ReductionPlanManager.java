@@ -62,20 +62,11 @@ public class ReductionPlanManager {
 	}
 
 	/**
-	 * Get not deleted reduction plans
-	 * @return The list of {@link ReductionPlan}s not deleted
-	 * @throws OHServiceException When failed to get not deleted {@link ReductionPlan}s
-	 */
-	public List<ReductionPlan> getNotDeleted() throws OHServiceException {
-		return reductionPlanIoOperations.getNotDeleted();
-	}
-
-	/**
 	 * Get  reduction plans by description
-	 * @return The list of {@link ReductionPlan}s
+	 * @return a {@link ReductionPlan}
 	 * @throws OHServiceException When failed to get  reduction plans by description
 	 */
-	public List<ReductionPlan> getByDescription(String description, boolean deleted) throws OHServiceException {
+	public ReductionPlan getByDescription(String description, boolean deleted) throws OHServiceException {
 		return reductionPlanIoOperations.getByDescription(description, deleted);
 	}
 
@@ -112,24 +103,16 @@ public class ReductionPlanManager {
 		List<PriceOtherReduction> priceOtherReductionList = priceOtherReductionManager.getByReductionPlanId(reductionPlan.getId(), false);
 
 		if (!examReductionList.isEmpty()) {
-			for (ExamReduction examReduction : examReductionList) {
-				examReductionManager.delete(examReduction);
-			}
+			examReductionManager.deleteBulk(examReductionList);
 		}
 		if (!medicalReductionList.isEmpty()) {
-			for (MedicalReduction medicalReduction : medicalReductionList) {
-				medicalReductionManager.delete(medicalReduction);
-			}
+			medicalReductionManager.deleteBulk(medicalReductionList);
 		}
 		if (!operationReductionList.isEmpty()) {
-			for (OperationReduction operationReduction : operationReductionList) {
-				operationReductionManager.delete(operationReduction);
-			}
+			operationReductionManager.deleteBulk(operationReductionList);
 		}
 		if (!priceOtherReductionList.isEmpty()) {
-			for (PriceOtherReduction priceOtherReduction : priceOtherReductionList) {
-				priceOtherReductionManager.delete(priceOtherReduction);
-			}
+			priceOtherReductionManager.deleteBulk(priceOtherReductionList);
 		}
 
 		return reductionPlan;

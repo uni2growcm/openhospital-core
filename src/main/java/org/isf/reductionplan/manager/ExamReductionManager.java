@@ -60,9 +60,20 @@ public class ExamReductionManager {
 	/**
 	 * delete an {@link ExamReduction}
 	 * @param examReduction the {@link ExamReduction} you want to delete
-	 * @throws OHServiceException if the error happened during the delete process
+	 * @throws OHServiceException if the error happen during the delete process
 	 */
 	public ExamReduction delete(ExamReduction examReduction) throws OHServiceException {
 		return examReductionIoOperations.delete(examReduction);
+	}
+
+	/**
+	 * Delete a list of {@link ExamReduction}s
+	 * @param examReductionList the list of {@link ExamReduction}s to delete
+	 * @throws OHServiceException if the error happen during the delete process
+	 */
+	public void deleteBulk(List<ExamReduction> examReductionList) throws OHServiceException {
+		for (ExamReduction examReduction : examReductionList) {
+			delete(examReduction);
+		}
 	}
 }

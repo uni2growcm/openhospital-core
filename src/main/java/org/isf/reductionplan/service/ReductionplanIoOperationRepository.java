@@ -30,7 +30,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ReductionplanIoOperationRepository extends JpaRepository<ReductionPlan, Integer> {
-	List<ReductionPlan> findByDescriptionAndDeleted(String description, boolean deleted);
+	ReductionPlan findByDescriptionAndDeleted(String description, boolean deleted);
 	List<ReductionPlan> findByDeleted(boolean deleted);
 	ReductionPlan findByIdAndDeleted(int id, boolean deleted);
 }

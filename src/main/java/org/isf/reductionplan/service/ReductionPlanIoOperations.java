@@ -61,10 +61,10 @@ public class ReductionPlanIoOperations {
 
 	/**
 	 * Get reduction plans by description
-	 * @return The list of {@link ReductionPlan}s
+	 * @return a {@link ReductionPlan}
 	 * @throws OHServiceException When failed to get  reduction plans by description
 	 */
-	public List<ReductionPlan> getByDescription(String description, boolean deleted) throws OHServiceException {
+	public ReductionPlan getByDescription(String description, boolean deleted) throws OHServiceException {
 		return reductionplanIoOperationRepository.findByDescriptionAndDeleted(description, deleted);
 	}
 

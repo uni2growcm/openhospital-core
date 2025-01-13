@@ -28,18 +28,17 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 import org.isf.OHCoreTestCase;
+import org.isf.reductionplan.data.ReductionPlanDataGenerate;
 import org.isf.reductionplan.model.ReductionPlan;
 import org.isf.reductionplan.service.ReductionPlanIoOperations;
 import org.isf.reductionplan.service.ReductionplanIoOperationRepository;
+import org.isf.utils.exception.OHServiceException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 class ReductionPlanManagerTest extends OHCoreTestCase {
-
-	@Autowired
-	ReductionPlanIoOperations ioOperations;
 
 	@Autowired
 	ReductionplanIoOperationRepository repository;
@@ -52,21 +51,10 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 		cleanH2InMemoryDb();
 	}
 
-	private List<ReductionPlan> generateFixtures(int number, String fixedDescription) {
-		return IntStream.range(0, number).mapToObj(i -> new ReductionPlan(
-						fixedDescription != null ? fixedDescription : "Description " + i,
-						1.0 + i,
-						2.0 + i,
-						3.0 + i,
-						3.0 + i
-
-		)).toList();
-	}
-
 	@Test
 	@DisplayName("Should get all reduction plans")
 	void testGetAll() throws Exception {
-		List<ReductionPlan> reductionPlans = generateFixtures(2, null);
+		List<ReductionPlan> reductionPlans = ReductionPlanDataGenerate.generateReductionPlanFixtures(2, null);
 		repository.saveAllAndFlush(reductionPlans);
 
 		List<ReductionPlan> existingReductionPlan = manager.getAll(false);
@@ -78,15 +66,63 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 	@DisplayName("Should get all reduction plans by description")
 	void testGetByDescription() throws Exception {
 		String description = "Fixed Description";
-		List<ReductionPlan> reductionPlans = generateFixtures(2, description);
+		ReductionPlan reductionPlan = new ReductionPlan(description, 10, 10, 10, 10);
 
-		repository.saveAllAndFlush(reductionPlans);
+		repository.saveAndFlush(reductionPlan);
 
-		List<ReductionPlan> existingReductionPlans = manager.getByDescription(description, false);
+		ReductionPlan existingReductionPlans = manager.getByDescription(description, false);
 
 		assertThat(existingReductionPlans).isNotNull();
-		assertThat(existingReductionPlans.size()).isEqualTo(2);
-		existingReductionPlans.forEach(plan ->
-						assertThat(plan.getDescription()).isEqualTo(description));
+		assertThat(existingReductionPlans.getDescription()).isEqualTo(description);
+	}
+
+	@Test
+	@DisplayName("Should save reduction plan")
+	void testSave() throws Exception {
+		String description = "Test description";
+		ReductionPlan reductionPlan = new ReductionPlan(description, 10, 10, 10, 10);
+		ReductionPlan saveReductionPlan = manager.save(reductionPlan);
+
+		assertThat(saveReductionPlan).isNotNull();
+		assertThat(saveReductionPlan.getId()).isGreaterThan(0);
+		assertThat(saveReductionPlan.getDescription()).isEqualTo(description);
+		assertThat(saveReductionPlan.getExamRate()).isEqualTo(10);
+		assertThat(saveReductionPlan.getOperationRate()).isEqualTo(10);
+		assertThat(saveReductionPlan.getMedicalRate()).isEqualTo(10);
+		assertThat(saveReductionPlan.getOtherRate()).isEqualTo(10);
+	}
+
+	@Test
+	@DisplayName("Should update reduction plan")
+	void testUpdate() throws Exception {
+		String description = "Test description";
+		ReductionPlan reductionPlan = new ReductionPlan(description, 10, 10, 10, 10);
+		repository.saveAndFlush(reductionPlan);
+
+		ReductionPlan existingReductionPlan = manager.getByDescription(description, false);
+		existingReductionPlan.setDescription("update");
+		existingReductionPlan.setOperationRate(0.0);
+		existingReductionPlan.setMedicalRate(0.0);
+		existingReductionPlan.setExamRate(0.0);
+		existingReductionPlan.setOtherRate(0.0);
+
+		ReductionPlan updateReductionPlan = manager.update(existingReductionPlan);
+		assertThat(updateReductionPlan).isNotNull();
+		assertThat(updateReductionPlan.getId()).isEqualTo(existingReductionPlan.getId());
+		assertThat(updateReductionPlan.getDescription()).isEqualTo("update");
+		assertThat(updateReductionPlan.getOperationRate()).isEqualTo(0.0);
+		assertThat(updateReductionPlan.getMedicalRate()).isEqualTo(0.0);
+		assertThat(updateReductionPlan.getExamRate()).isEqualTo(0.0);
+		assertThat(updateReductionPlan.getOtherRate()).isEqualTo(0.0);
+	}
+
+	@Test
+	@DisplayName("Should delete reduction plan")
+	void testDelete() throws Exception {
+		String description = "Test Description";
+		ReductionPlan reductionPlan = new ReductionPlan(description, 10, 10, 10, 10);
+		repository.saveAndFlush(reductionPlan);
+
+		ReductionPlan existingReductionPlan = manager.getByDescription(description, false);
 	}
 }

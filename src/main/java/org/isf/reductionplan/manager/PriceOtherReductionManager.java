@@ -23,6 +23,7 @@ package org.isf.reductionplan.manager;
 
 import java.util.List;
 
+import org.isf.reductionplan.model.OperationReduction;
 import org.isf.reductionplan.model.PriceOtherReduction;
 import org.isf.reductionplan.model.ReductionPlan;
 import org.isf.reductionplan.service.PriceOtherReductionIoOperation;
@@ -65,5 +66,16 @@ public class PriceOtherReductionManager {
 	 */
 	public PriceOtherReduction delete(PriceOtherReduction priceOtherReduction) throws OHServiceException {
 		return priceOtherReductionIoOperation.delete(priceOtherReduction);
+	}
+
+	/**
+	 * Delete a list of {@link PriceOtherReduction}s
+	 * @param priceOtherReductionList the list of {@link PriceOtherReduction}s to delete
+	 * @throws OHServiceException if the error happen during the delete process
+	 */
+	public void deleteBulk(List<PriceOtherReduction> priceOtherReductionList) throws OHServiceException {
+		for (PriceOtherReduction priceOtherReduction : priceOtherReductionList) {
+			delete(priceOtherReduction);
+		}
 	}
 }
