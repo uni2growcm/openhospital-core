@@ -66,7 +66,7 @@ public class ReductionPlanDataGenerate {
 		, medical, 1.0);
 	}
 
-	public static PriceOtherReduction generateOperationReductionFixture(PricesOthers pricesOthers, ReductionPlan reductionPlan) throws OHException {
+	public static PriceOtherReduction generatePriceOtherReductionFixture(PricesOthers pricesOthers, ReductionPlan reductionPlan) throws OHException {
 		if (pricesOthers == null) {
 			TestPricesOthers testPricesOthers = new TestPricesOthers();
 			pricesOthers = testPricesOthers.setup(false);
