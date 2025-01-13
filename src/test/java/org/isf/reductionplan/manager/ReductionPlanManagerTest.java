@@ -25,14 +25,11 @@ package org.isf.reductionplan.manager;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
-import java.util.stream.IntStream;
 
 import org.isf.OHCoreTestCase;
 import org.isf.reductionplan.data.ReductionPlanDataGenerate;
 import org.isf.reductionplan.model.ReductionPlan;
-import org.isf.reductionplan.service.ReductionPlanIoOperations;
 import org.isf.reductionplan.service.ReductionplanIoOperationRepository;
-import org.isf.utils.exception.OHServiceException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -124,5 +121,9 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 		repository.saveAndFlush(reductionPlan);
 
 		ReductionPlan existingReductionPlan = manager.getByDescription(description, false);
+
+		ReductionPlan deletedReductionPlan = manager.delete(existingReductionPlan);
+		assertThat(deletedReductionPlan.isDeleted()).isTrue();
+		assertThat(manager.getAll(false)).hasSize(0);
 	}
 }
