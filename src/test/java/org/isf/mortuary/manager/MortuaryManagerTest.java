@@ -98,7 +98,7 @@ public class MortuaryManagerTest extends OHCoreTestCase {
 		int id = setupTestMortuary(patient, deathReason, ward,false);
 		Death foundMortuary = mortuaryIoOperations.findById(id);
 		assertThat(foundMortuary).isNotNull();
-		List<Death> mortuaries = mortuaryBrowserManager.getMortuariesWhereData(null, null, fromDate, toDate, null, "I");
+		List<Death> mortuaries = mortuaryBrowserManager.getMortuariesWhereData("", "", fromDate, toDate, "");
 		assertThat(mortuaries).isNotNull();
 		assertThat(mortuaries.size()).isEqualTo(1);
 	}
@@ -134,36 +134,14 @@ public class MortuaryManagerTest extends OHCoreTestCase {
 
 		LocalDateTime fromDate = LocalDateTime.of(2023, 1, 1, 0, 0, 0);
 		LocalDateTime toDate = LocalDateTime.of(2025, 3, 3, 0, 0, 0);
-		Page<Death> mortuariesPages1 = mortuaryBrowserManager.getMortuariesWhereDataPageable("Arrêt cardiaque", "", fromDate, toDate, 1, 0, 1);
+		Page<Death> mortuariesPages1 = mortuaryBrowserManager.getMortuariesWhereDataPageable("", "", fromDate, toDate, "Arrêt cardiaque", 0, 1);
 		assertThat(mortuariesPages1).isNotNull();
 		assertThat(mortuariesPages1.getSize()).isEqualTo(1);
-		Page<Death> mortuariesPages2 = mortuaryBrowserManager.getMortuariesWhereDataPageable("", "", fromDate, toDate, 1, 1, 1);
+		Page<Death> mortuariesPages2 = mortuaryBrowserManager.getMortuariesWhereDataPageable("", "", fromDate, toDate, "Arrêt cardiaque", 1, 1);
 		assertThat(mortuariesPages2).isNotNull();
 		assertThat(mortuariesPages2.getSize()).isEqualTo(1);
-
+		System.out.println(mortuariesPages2.getContent());
 		assertThat(mortuariesPages1.getContent().get(0).getPatient().getName()).isNotEqualTo(mortuariesPages2.getContent().get(0).getPatient().getName());
-	}
-
-	@Test
-	void testMgrCountTotalMortuaries() throws OHServiceException, OHException {
-		DeathReason deathReason = testDeathReason.setup(true);
-		deathReasonIoOperations.add(deathReason);
-
-		Ward ward = testWard.setup(true);
-		wardIoOperations.newWard(ward);
-
-		Patient patient = new Patient("TestFirstName", "TestSecondName", LocalDate.of(1984, 8, 14), 31,
-			"d1", 'F', "TestAddress", "TestCity", "testNextKin", "testTelephone", "TestMotherName",
-			'A', "TestFatherName", 'A', "0-/+", 'Y', 'Y', "TestTaxCode",
-			"divorced", "business"
-		);
-		patientIoOperations.updatePatient(patient);
-
-		LocalDateTime fromDate = LocalDateTime.of(2023, 1, 1, 0, 0, 0);
-		LocalDateTime toDate = LocalDateTime.of(2025, 3, 3, 0, 0, 0);
-		int id = setupTestMortuary(patient, deathReason, ward,false);
-		long count = mortuaryBrowserManager.countTotalMortuaries(null, null, fromDate, toDate, null, "I");
-		assertThat(count).isEqualTo(1);
 	}
 
 	private int setupTestMortuary(Patient patient, DeathReason deathReason, Ward ward, boolean usingSet) throws OHException, OHServiceException {

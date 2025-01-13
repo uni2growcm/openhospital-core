@@ -47,71 +47,82 @@ public class MortuaryBrowserManager {
 		return mortuaryIoOperations.add(Mortuary);
 	}
 
-	public List<Death> getAll() throws OHException {
+	/**
+	 * Get all the {@link Death}s.
+	 * @return all the {@link Death}s.
+	 * @throws OHServiceException
+	 */
+	public List<Death> getAll() throws OHServiceException {
 		return mortuaryIoOperations.getAll();
 	}
 
-	public Death update(Death mortuary) throws OHException {
+	/**
+	 * Updates an existing {@link Death}.
+	 * @return {@link Death}.
+	 * @throws OHServiceException
+	 */
+	public Death update(Death mortuary) throws OHServiceException {
 		return mortuaryIoOperations.update(mortuary);
 	}
 
-	public void delete(Death mortuary) throws OHException {
+	/**
+	 * Delete the specified {@link Death}.
+	 * @throws OHServiceException
+	 */
+	public void delete(Death mortuary) throws OHServiceException {
 		mortuaryIoOperations.delete(mortuary);
 	}
 
 	/**
-	 * Retrieves all the {@link Death}s with the specified criteria.<br>
+	 * Retrieves all the {@link Death}s.<br>
 	 * <br>
 	 * @param patientName the patient name.
-	 * @param provenance the provenance.
+	 * @param wardDescription the provenance ward.
 	 * @param dateFrom the lower bound for the mortuary date range.
 	 * @param dateTo the upper bound for the mortuary date range.
-	 * @param deathReason the reason of death.
-	 * @param inputOrOutput the value that determines the date to be set in the interval.
+	 * @param deathReasonDescription the reason of death.
 	 * @return the retrieved mortuaries.
+	 * @throws OHServiceException
 	 */
 	public List<Death> getMortuariesWhereData(
 		String patientName,
-		String provenance,
+		String wardDescription,
 		LocalDateTime dateFrom,
 		LocalDateTime dateTo,
-		String deathReason,
-		String inputOrOutput
-	) {
+		String deathReasonDescription
+	) throws OHServiceException {
 		return mortuaryIoOperations.getMortuariesWhereData(
 			patientName,
-			provenance,
+			wardDescription,
 			TimeTools.truncateToSeconds(dateFrom),
 			TimeTools.truncateToSeconds(dateTo),
-			deathReason,
-			inputOrOutput
+			deathReasonDescription
 		);
 	}
 
 	/**
-	 * Retrieves a page of {@link Death}s with the specified criteria.<br>
+	 * Retrieves a page of {@link Death}s.<br>
 	 * <br>
 	 * @param patientName the patient name.
 	 * @param provenance the provenance.
 	 * @param dateFrom the lower bound for the mortuary date range.
 	 * @param dateTo the upper bound for the mortuary date range.
 	 * @param deathReason the reason of death.
-	 * @param inputOrOutput the value that determines the date to be set in the interval.
 	 * @param page current page.
 	 * @param size the size of the page.
 	 * @return the retrieved a mortuaries page.
+	 * @throws OHServiceException
 	 */
 	public Page<Death> getMortuariesWhereDataPageable(
 		String patientName,
 		String provenance,
 		LocalDateTime dateFrom,
 		LocalDateTime dateTo,
-		int deathReason,
+		String deathReason,
 		int page,
 		int size
-	) {
+	) throws OHServiceException {
 		Pageable pageable = PageRequest.of(page, size);
-		System.out.println(mortuaryIoOperations.findByPatientName(patientName).get(0).getPatient().getName());
 		return mortuaryIoOperations.getMortuariesWhereDataPageable(
 			patientName,
 			provenance,
@@ -123,31 +134,29 @@ public class MortuaryBrowserManager {
 	}
 
 	/**
-	 * Count all the {@link Death}s with the specified criteria.<br>
+	 * Retrieves a page of {@link Death}s.<br>
 	 * <br>
 	 * @param patientName the patient name.
-	 * @param provenance the provenance.
 	 * @param dateFrom the lower bound for the mortuary date range.
 	 * @param dateTo the upper bound for the mortuary date range.
-	 * @param deathReason the reason of death.
-	 * @param inputOrOutput the value that determines the date to be set in the interval.
-	 * @return the number of mortuary.
+	 * @param page current page.
+	 * @param size the size of the page.
+	 * @return the retrieved a mortuaries page.
+	 * @throws OHServiceException
 	 */
-	public long countTotalMortuaries(
+	public Page<Death> searchPatientByName(
 		String patientName,
-		String provenance,
 		LocalDateTime dateFrom,
 		LocalDateTime dateTo,
-		String deathReason,
-		String inputOrOutput
+		int page,
+		int size
 	) throws OHServiceException {
-		return mortuaryIoOperations.countTotalMortuaries(
+		Pageable pageable = PageRequest.of(page, size);
+		return mortuaryIoOperations.findAllByPatientNameAndDateToDateFromPageable(
 			patientName,
-			provenance,
-			TimeTools.truncateToSeconds(dateFrom),
-			TimeTools.truncateToSeconds(dateTo),
-			deathReason,
-			inputOrOutput
+			dateFrom,
+			dateTo,
+			pageable
 		);
 	}
 }

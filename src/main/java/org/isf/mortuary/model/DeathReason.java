@@ -41,6 +41,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @AttributeOverride(name = "lastModifiedBy", column = @Column(name = "DTHR_LAST_MODIFIED_BY"))
 @AttributeOverride(name = "lastModifiedDate", column = @Column(name = "DTHR_LAST_MODIFIED_DATE"))
 @AttributeOverride(name = "active", column = @Column(name = "DTHR_ACTIVE"))
+
 public class DeathReason {
 
 	@Id

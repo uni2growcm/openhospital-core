@@ -25,6 +25,7 @@ package org.isf.mortuary.manager;
 import java.util.List;
 import java.util.Optional;
 
+import org.isf.mortuary.model.Death;
 import org.isf.mortuary.model.DeathReason;
 import org.isf.mortuary.service.DeathReasonIoOperations;
 import org.isf.utils.exception.OHServiceException;
@@ -39,10 +40,21 @@ public class DeathReasonManager {
 		this.deathReasonIoOperations = deathReasonIoOperations;
 	}
 
+	/**
+	 * Get all the {@link DeathReason}s.
+	 * @return all the {@link DeathReason}s.
+	 * @throws OHServiceException
+	 */
 	public List<DeathReason> getAll() throws OHServiceException {
 		return deathReasonIoOperations.getAll();
 	}
 
+	/**
+	 * Get a specific {@link DeathReason} by id.
+	 * @param id DeathReason specific id.
+	 * @return {@link DeathReason}.
+	 * @throws OHServiceException
+	 */
 	public DeathReason getById(int id) throws OHServiceException {
 		return deathReasonIoOperations.getById(id);
 	}

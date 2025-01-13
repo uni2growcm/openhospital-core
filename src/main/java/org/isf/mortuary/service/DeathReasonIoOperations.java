@@ -24,7 +24,9 @@ package org.isf.mortuary.service;
 
 import java.util.List;
 
+import org.isf.mortuary.model.Death;
 import org.isf.mortuary.model.DeathReason;
+import org.isf.utils.exception.OHException;
 import org.isf.utils.exception.OHServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -42,15 +44,32 @@ public class DeathReasonIoOperations {
 		DeathReasonIoOperations.deathReasonRepository = deathReasonRepository;
 	}
 
+	/**
+	 * Get all the {@link DeathReason}s.
+	 * @return all the {@link DeathReason}s.
+	 * @throws OHServiceException
+	 */
 	public List<DeathReason> getAll() throws OHServiceException {
 		return deathReasonRepository.findAll();
 	}
 
+	/**
+	 * Get a specific {@link DeathReason} by id.
+	 * @param id DeathReason specific id.
+	 * @return {@link DeathReason}.
+	 * @throws OHServiceException
+	 */
 	public DeathReason getById(int id) throws OHServiceException {
 		return deathReasonRepository.findDeathReasonById(id);
 	}
 
-	public DeathReason add(DeathReason deathReason) {
+	/**
+	 * Store the specified {@link DeathReason}.
+	 * @param deathReason specific DeathReason to store.
+	 * @return {@link DeathReason}.
+	 * @throws OHServiceException
+	 */
+	public DeathReason add(DeathReason deathReason) throws OHServiceException {
 		return deathReasonRepository.save(deathReason);
 	}
 }

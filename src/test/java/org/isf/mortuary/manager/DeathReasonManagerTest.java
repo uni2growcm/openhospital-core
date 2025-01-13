@@ -28,6 +28,7 @@ import org.isf.OHCoreTestCase;
 import org.isf.mortuary.model.DeathReason;
 import org.isf.mortuary.service.DeathReasonIoOperations;
 import org.isf.utils.exception.OHException;
+import org.isf.utils.exception.OHServiceException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -61,7 +62,7 @@ public class DeathReasonManagerTest extends OHCoreTestCase {
 		assertThat(foundDeathReason.getId()).isEqualTo(id);
 	}
 
-	private int setupTestDeathReason(boolean usingSet) throws OHException {
+	private int setupTestDeathReason(boolean usingSet) throws OHException, OHServiceException {
 		DeathReason deathReason = testDeathReason.setup(usingSet);
 		deathReasonIoOperations.add(deathReason);
 		return deathReason.getId();

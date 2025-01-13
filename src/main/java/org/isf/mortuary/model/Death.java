@@ -49,6 +49,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @AttributeOverride(name = "lastModifiedBy", column = @Column(name = "DTH_LAST_MODIFIED_BY"))
 @AttributeOverride(name = "lastModifiedDate", column = @Column(name = "DTH_LAST_MODIFIED_DATE"))
 @AttributeOverride(name = "active", column = @Column(name = "DTH_ACTIVE"))
+
 public class Death {
 
 	@Id
@@ -60,12 +61,16 @@ public class Death {
 	private String place;
 
 	@OneToOne
-	@JoinColumn(name = "DTH_PAT_ID", insertable = false, updatable = false)
+	@JoinColumn(name = "DTH_PAT_ID")
 	private Patient patient;
 
 	@ManyToOne
-	@JoinColumn(name = "DTH_WRD_ID_A", insertable = false, updatable = false)
+	@JoinColumn(name = "DTH_WRD_ID_A")
 	private Ward ward;
+
+	@ManyToOne
+	@JoinColumn(name = "DTH_DTHR_ID")
+	private DeathReason deathReason;
 
 	@Column(name = "DTH_DATE")
 	private LocalDate date;
@@ -78,10 +83,6 @@ public class Death {
 
 	@Column(name = "DTH_ESTIMATED_DISCHARGE_DATE")
 	private LocalDate estimatedDischargeDate;
-
-	@ManyToOne
-	@JoinColumn(name = "DTH_DTHR_ID", insertable = false, updatable = false)
-	private DeathReason deathReason;
 
 	@Column(name = "DTH_DECLARING_NAME")
 	private String declaringName;

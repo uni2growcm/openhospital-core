@@ -29,7 +29,6 @@ import org.isf.mortuary.model.Death;
 import org.isf.utils.db.TranslateOHServiceException;
 import org.isf.utils.exception.OHException;
 import org.isf.utils.exception.OHServiceException;
-import org.isf.utils.time.TimeTools;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -59,124 +58,117 @@ public class MortuaryIoOperations {
 	/**
 	 * Get all the {@link Death}s.
 	 * @return a list of deaths.
-	 * @throws OHException if an error occurs retrieving the deaths.
+	 * @throws OHServiceException if an error occurs retrieving the deaths.
 	 */
-	public List<Death> getAll() throws OHException {
+	public List<Death> getAll() throws OHServiceException {
 		return mortuaryRepository.findAll();
 	}
 
 	/**
-	 * method that update an existing {@link Death} in the db
+	 * Updates an existing {@link Death}
 	 * @param mortuary - the {@link Death} to update
 	 * @return {@link Death} has been updated
-	 * @throws OHException
+	 * @throws OHServiceException
 	 */
-	public Death update(Death mortuary) throws OHException {
+	public Death update(Death mortuary) throws OHServiceException {
 		return mortuaryRepository.save(mortuary);
 	}
 
 	/**
-	 * method that delete a death
+	 * Delete {@link Death}
 	 * @param mortuary
-	 * @throws OHException
+	 * @throws OHServiceException
 	 */
-	public void delete(Death mortuary) throws OHException {
+	public void delete(Death mortuary) throws OHServiceException {
 		mortuaryRepository.delete(mortuary);
 	}
 
 	/**
-	 * Retrieves all the {@link Death}s with the specified criteria.<br>
+	 * Retrieves all the {@link Death}s.<br>
 	 * <br>
 	 * @param patientName the patient name.
-	 * @param provenance the provenance.
+	 * @param wardDescription the ward provenance.
 	 * @param dateFrom the lower bound for the mortuary date range.
 	 * @param dateTo the upper bound for the mortuary date range.
-	 * @param deathReason the reason of death.
-	 * @param inputOrOutput the value that determines the date to be set in the interval.
+	 * @param deathReasonDescription the reason of death.
 	 * @return the retrieved mortuaries.
+	 * @throws OHServiceException
 	 */
-	public List<Death> getMortuariesWhereData(
+	public List<Death> getMortuariesWhereData (
 		String patientName,
-		String provenance,
+		String wardDescription,
 		LocalDateTime dateFrom,
 		LocalDateTime dateTo,
-		String deathReason,
-		String inputOrOutput
-	) {
-		return mortuaryRepository.findAllWhereData(patientName, provenance, dateFrom, dateTo, deathReason, inputOrOutput);
+		String deathReasonDescription
+	) throws OHServiceException {
+		return mortuaryRepository.findAllByPatientNameAndWardDescriptionAndDateFromAndDateToAndDeathReasonDescription(
+			patientName,
+			wardDescription,
+			dateFrom,
+			dateTo,
+			deathReasonDescription
+		);
 	}
 
 	/**
-	 * Retrieves a page of {@link Death}s with the specified criteria.<br>
+	 * Retrieves a page of {@link Death}s.<br>
 	 * <br>
 	 * @param patientName the patient name.
-	 * @param provenance the provenance.
+	 * @param wardDescription the ward provenance.
 	 * @param dateFrom the lower bound for the mortuary date range.
 	 * @param dateTo the upper bound for the mortuary date range.
-	 * @param deathReason the reason of death.
-	 * @param inputOrOutput the value that determines the date to be set in the interval.
-	 * @param pageable for pagination/.
+	 * @param deathReasonDescription the reason of death.
+	 * @param pageable for pagination.
 	 * @return the retrieved a mortuaries page.
+	 * @throws OHServiceException
 	 */
 	public Page<Death> getMortuariesWhereDataPageable(
 		String patientName,
-		String provenance,
+		String wardDescription,
 		LocalDateTime dateFrom,
 		LocalDateTime dateTo,
-		int deathReason,
+		String deathReasonDescription,
 		Pageable pageable
-	) {
-		return mortuaryRepository.findAllWhereDatad(
+	) throws OHServiceException {
+		return mortuaryRepository.findAllByPatientNameAndWardDescriptionAndDateFromAndDateToAndDeathReasonDescriptionPageable(
 			patientName,
-			provenance,
+			wardDescription,
 			dateFrom,
 			dateTo,
-			deathReason,
+			deathReasonDescription,
 			pageable
 		);
 	}
 
 	/**
-	 * Count all the {@link Death}s with the specified criteria.<br>
+	 * Retrieves a page of {@link Death}s.<br>
 	 * <br>
 	 * @param patientName the patient name.
-	 * @param provenance the provenance.
 	 * @param dateFrom the lower bound for the mortuary date range.
 	 * @param dateTo the upper bound for the mortuary date range.
-	 * @param deathReason the reason of death.
-	 * @param inputOrOutput the value that determines the date to be set in the interval.
-	 * @return the number of mortuary.
+	 * @param pageable for pagination.
+	 * @return the retrieved a mortuaries page.
+	 * @throws OHServiceException
 	 */
-	public long countTotalMortuaries(
-		String patientName,
-		String provenance,
-		LocalDateTime dateFrom,
-		LocalDateTime dateTo,
-		String deathReason,
-		String inputOrOutput
-	) {
-		if ((dateFrom != null) && (dateTo != null)) {
-			dateFrom = dateFrom.withHour(0).withMinute(0);
-			dateTo = dateTo.withHour(23).withMinute(59);
-		}
-
-		return mortuaryRepository.getCountTotalMortuaries(
-			patientName,
-			provenance,
-			TimeTools.truncateToSeconds(dateFrom),
-			TimeTools.truncateToSeconds(dateTo),
-			deathReason,
-			inputOrOutput
-		);
+	public Page<Death> findAllByPatientNameAndDateToDateFromPageable(String patientName, LocalDateTime dateFrom, LocalDateTime dateTo, Pageable pageable) {
+		return mortuaryRepository.findAllByPatientNameAndDateToDateFromPageable(patientName, dateFrom, dateTo, pageable);
 	}
 
-	public List<Death> findByPatientName(String name) {
-		return mortuaryRepository.findByPatientName(name);
-	}
+	/**
+	 * Store {@link Death}.
+	 * @return {@link Death}.
+	 * @throws OHServiceException
+	 */
 	public Death save(Death mortuary) {
 		return mortuaryRepository.save(mortuary);
 	}
+
+	/**
+	 * Find {@link Death} by the specific id.
+	 * @return {@link Death}.
+	 * @throws OHServiceException
+	 */
 	public Death findById(int id) {
-		return mortuaryRepository.findMortuaryById(id);
+		return mortuaryRepository.findById(id).orElse(null);
 	}
 }
