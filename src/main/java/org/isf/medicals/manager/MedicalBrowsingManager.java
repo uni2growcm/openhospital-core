@@ -292,7 +292,7 @@ public class MedicalBrowsingManager {
 	 * @return A {@link Page} containing the filtered and sorted medical records.
 	 * @throws OHServiceException If an error occurs while fetching medical records from the database.
 	 */
-	public Page<Medical> getMedicalsByTypeAndDescription(String type, String description, boolean nameSorted, int page, int size) throws OHServiceException {
+	public Page<Medical> getMedicalsByTypeAndDescription(String type, String description, Character deleted, boolean nameSorted, int page, int size) throws OHServiceException {
 		Pageable pageable;
 
 		if (nameSorted) {
@@ -301,6 +301,6 @@ public class MedicalBrowsingManager {
 			pageable = PageRequest.of(page, size, Sort.by("prod_code").ascending());
 		}
 
-		return ioOperations.getMedicals(type, description, pageable);
+		return ioOperations.getMedicalsByTypeDescriptionAndDeleted(type, description, deleted, pageable);
 	}
 }

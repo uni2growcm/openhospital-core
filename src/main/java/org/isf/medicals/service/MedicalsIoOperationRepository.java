@@ -98,4 +98,9 @@ public interface MedicalsIoOperationRepository extends JpaRepository<Medical, In
 	Page<Medical> findAllByTypeDescriptionContainsAndDescriptionContains(
 		@Param("type") String type, @Param("description") String description, Pageable pageable
 	);
+	
+	@Query(value = "SELECT m FROM Medical m WHERE m.type.description LIKE %:type% AND m.description LIKE %:description% AND m.deleted = :deleted")
+	Page<Medical> findAllByTypeDescriptionContainsAndDescriptionContainsAndDeleted(
+		@Param("type") String type, @Param("description") String description, @Param("deleted") char deleted, Pageable pageable
+	);
 }

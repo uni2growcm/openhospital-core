@@ -108,7 +108,7 @@ public class MedicalsIoOperations {
 		}
 		return getMedicals(nameSorted);
 	}
-	
+
 	/**
 	 * Retrieves all stored medicals by a given type, sorted by description or smart code.
 	 * @param type the type the found medicals should have.
@@ -277,24 +277,32 @@ public class MedicalsIoOperations {
 		}
 		return repository.findAllOrderBySmartCodeAndDescription();
 	}
-	
+
 	/**
-	 * Retrieves all stored medicals by a given type description and medical description, sorted by description or medical code.
-	 * @param type Keywords to match medical type.
-	 * @param description Keywords to match medical description.
-	 * <p>
-	 * If <code>true</code>, medicals are sorted by description, otherwise, they are sorted by prod_code
-	 * </p>
-	 * @return The sorted List of medicals or empty list if none found.
-	 * @throws OHServiceException When failed to get medicals
+	 * Retrieves a paginated list of medical records filtered by type, description, and deletion status.
+	 *
+	 * @param type The keyword to match medical type. If {@code null}, an empty string is used to include all types.
+	 * @param description The keyword to match medical description. If {@code null}, an empty string is used to include all descriptions.
+	 * @param deleted The deletion status to filter records by:
+	 * - If {@code 'Y'}, only deleted records are retrieved.
+	 * - If {@code 'N'}, only non-deleted records are retrieved.
+	 * - If {@code null}, records are retrieved regardless of deletion status.
+	 * @param pageable The pagination and sorting information, such as page number, page size, and sort order.
+	 * Must not be {@code null}.
+	 * @return A {@link Page} containing the filtered medical records. Returns an empty page if no records match the filters.
+	 * @throws OHServiceException If an error occurs while fetching the records from the database.
 	 */
-	public Page<Medical> getMedicals(String type, String description, Pageable pageable) throws OHServiceException {
+	public Page<Medical> getMedicalsByTypeDescriptionAndDeleted(String type, String description, Character deleted, Pageable pageable) throws OHServiceException {
 		if (type == null) {
 			type = "";
 		}
 
 		if (description == null) {
 			description = "";
+		}
+
+		if (deleted != null) {
+			return repository.findAllByTypeDescriptionContainsAndDescriptionContainsAndDeleted(type, description, deleted, pageable);
 		}
 
 		return repository.findAllByTypeDescriptionContainsAndDescriptionContains(type, description, pageable);

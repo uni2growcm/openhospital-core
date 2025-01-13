@@ -676,14 +676,14 @@ class Tests extends OHCoreTestCase {
 		movementIoOperationRepository.saveAndFlush(movement);
 		return movement.getCode();
 	}
-	
+
 	@Test
-	@DisplayName("Should return requested page of medical filtered by type and sorted by prod_code")
+	@DisplayName("Should return requested page of medical filtered by type, deleted status, and sorted by prod_code")
 	void testMgrGetMedicalsByTypeSortedByProdCodePageable() throws Exception {
-		List<Medical> savedMedicals = generateMedicals(10, true);
+		List<Medical> savedMedicals = generateMedicals(10, true, 'N'); // Génère avec le paramètre deleted
 
 		Page<Medical> medicals = medicalBrowsingManager.getMedicalsByTypeAndDescription(
-			savedMedicals.get(0).getType().getDescription(), null, false, 0, 3
+			savedMedicals.get(0).getType().getDescription(), null, 'N', false, 0, 3
 		);
 
 		assertThat(medicals.getTotalPages()).isEqualTo(4);
@@ -692,7 +692,7 @@ class Tests extends OHCoreTestCase {
 		assertThat(medicals.getContent().get(0).getProdCode()).isEqualTo(savedMedicals.get(0).getProdCode());
 
 		medicals = medicalBrowsingManager.getMedicalsByTypeAndDescription(
-			savedMedicals.get(0).getType().getDescription(), null, false, 3, 3
+			savedMedicals.get(0).getType().getDescription(), null, 'N', false, 3, 3
 		);
 
 		assertThat(medicals.getTotalPages()).isEqualTo(4);
@@ -702,10 +702,10 @@ class Tests extends OHCoreTestCase {
 
 		medicalsIoOperationRepository.deleteAll();
 
-		savedMedicals = generateMedicals(5, false);
+		savedMedicals = generateMedicals(5, false, 'Y'); // Génère avec un autre statut deleted
 
 		medicals = medicalBrowsingManager.getMedicalsByTypeAndDescription(
-			savedMedicals.get(0).getType().getDescription(), null, false, 0, 2
+			savedMedicals.get(0).getType().getDescription(), null, 'Y', false, 0, 2
 		);
 
 		assertThat(medicals.getTotalPages()).isEqualTo(3);
@@ -716,7 +716,7 @@ class Tests extends OHCoreTestCase {
 		String typeCode = savedMedicals.get(0).getType().getDescription();
 		String keyword = typeCode.substring(0, typeCode.length() - 2);
 
-		medicals = medicalBrowsingManager.getMedicalsByTypeAndDescription(keyword, null, false, 2, 2);
+		medicals = medicalBrowsingManager.getMedicalsByTypeAndDescription(keyword, null, 'Y', false, 2, 2);
 
 		assertThat(medicals.getTotalPages()).isEqualTo(3);
 		assertThat(medicals.getTotalElements()).isEqualTo(5);
@@ -725,12 +725,13 @@ class Tests extends OHCoreTestCase {
 	}
 
 	@Test
-	@DisplayName("Should return requested page of medical filtered by description")
+	@DisplayName("Should return requested page of medical filtered by description and deleted status")
 	void testMgrGetMedicalsByDescriptionPageable() throws Exception {
-		List<Medical> savedMedicals = generateMedicals(10, true);
+		List<Medical> savedMedicals = generateMedicals(10, true, 'N'); // Génère avec le paramètre deleted
 
+		// Cas 1 : Recherche par description avec deleted = 'N'
 		Page<Medical> medicals = medicalBrowsingManager.getMedicalsByTypeAndDescription(
-			null, savedMedicals.get(0).getDescription(), false, 0, 3
+			null, savedMedicals.get(0).getDescription(), 'N', false, 0, 3
 		);
 
 		assertThat(medicals.getTotalPages()).isEqualTo(1);
@@ -741,28 +742,43 @@ class Tests extends OHCoreTestCase {
 		String description = savedMedicals.get(0).getDescription();
 		String keyword = description.substring(2, 10);
 
-		medicals = medicalBrowsingManager.getMedicalsByTypeAndDescription(null, keyword, false, 0, 3);
+		// Cas 2 : Recherche avec un mot-clé dans la description, deleted = 'N'
+		medicals = medicalBrowsingManager.getMedicalsByTypeAndDescription(null, keyword, 'N', false, 0, 3);
 
 		assertThat(medicals.getTotalPages()).isEqualTo(4);
 		assertThat(medicals.getTotalElements()).isEqualTo(10);
 		assertThat(medicals.getContent().size()).isEqualTo(3);
 		assertThat(medicals.getContent().get(0).getDescription()).isEqualTo(savedMedicals.get(0).getDescription());
 
-		medicals = medicalBrowsingManager.getMedicalsByTypeAndDescription(null, keyword, true, 1, 3);
+		// Cas 3 : Recherche avec tri descendant, deleted = 'N'
+		medicals = medicalBrowsingManager.getMedicalsByTypeAndDescription(null, keyword, 'N', true, 1, 3);
 
 		assertThat(medicals.getTotalPages()).isEqualTo(4);
 		assertThat(medicals.getTotalElements()).isEqualTo(10);
 		assertThat(medicals.getContent().size()).isEqualTo(3);
 		assertThat(medicals.getContent().get(0).getDescription()).isEqualTo(savedMedicals.get(7).getDescription());
+
+		// Cas 4 : Vérification avec deleted = 'Y'
+		medicalsIoOperationRepository.deleteAll();
+		savedMedicals = generateMedicals(5, false, 'Y'); // Génère avec deleted = 'Y'
+
+		medicals = medicalBrowsingManager.getMedicalsByTypeAndDescription(null, keyword, 'Y', false, 0, 2);
+
+		assertThat(medicals.getTotalPages()).isEqualTo(3);
+		assertThat(medicals.getTotalElements()).isEqualTo(5);
+		assertThat(medicals.getContent().size()).isEqualTo(2);
+		assertThat(medicals.getContent().get(0).getDescription()).isEqualTo(savedMedicals.get(0).getDescription());
 	}
 
 	@Test
-	@DisplayName("Should return requested page of medical filtered by type and sorted by description")
+	@DisplayName("Should return requested page of medical filtered by type, sorted by description, and respecting deleted status")
 	void testMgrGetMedicalsByTypeSortedByDescriptionPageable() throws Exception {
-		List<Medical> savedMedicals = generateMedicals(7, true);
+		// Générer des Medical avec deleted = 'N'
+		List<Medical> savedMedicals = generateMedicals(7, true, 'N');
 
+		// Cas 1 : Recherche par type avec deleted = 'N', tri ascendant
 		Page<Medical> medicals = medicalBrowsingManager.getMedicalsByTypeAndDescription(
-			savedMedicals.get(0).getType().getDescription(), null, true, 0, 2
+			savedMedicals.get(0).getType().getDescription(), null, 'N', true, 0, 2
 		);
 
 		assertThat(medicals.getTotalPages()).isEqualTo(4);
@@ -770,23 +786,38 @@ class Tests extends OHCoreTestCase {
 		assertThat(medicals.getContent().size()).isEqualTo(2);
 		assertThat(medicals.getContent().get(0).getDescription()).isEqualTo(savedMedicals.get(6).getDescription());
 
+		// Cas 2 : Recherche par type avec deleted = 'N', tri ascendant, page 3
 		medicals = medicalBrowsingManager.getMedicalsByTypeAndDescription(
-			savedMedicals.get(0).getType().getDescription(), null, true, 3, 2
+			savedMedicals.get(0).getType().getDescription(), null, 'N', true, 3, 2
 		);
 
 		assertThat(medicals.getTotalPages()).isEqualTo(4);
 		assertThat(medicals.getTotalElements()).isEqualTo(7);
 		assertThat(medicals.getContent().size()).isEqualTo(1);
 		assertThat(medicals.getContent().get(0).getDescription()).isEqualTo(savedMedicals.get(0).getDescription());
+
+		// Cas 3 : Recherche par type avec deleted = 'Y'
+		medicalsIoOperationRepository.deleteAll();
+		savedMedicals = generateMedicals(5, false, 'Y');
+
+		medicals = medicalBrowsingManager.getMedicalsByTypeAndDescription(
+			savedMedicals.get(0).getType().getDescription(), null, 'Y', true, 0, 3
+		);
+
+		assertThat(medicals.getTotalPages()).isEqualTo(2);
+		assertThat(medicals.getTotalElements()).isEqualTo(5);
+		assertThat(medicals.getContent().size()).isEqualTo(3);
+		assertThat(medicals.getContent().get(0).getDescription()).isEqualTo(savedMedicals.get(4).getDescription());
 	}
 
 	/**
 	 * Generate a list of medical
-	 * @param size The number if medical to generate
+	 * @param size The number of medical to generate
 	 * @param sameType Whether to use the same medical type for all the generated medicals or not
+	 * @param deleted The deletion status of the generated medicals ('Y' or 'N')
 	 * @return The list of generated {@link Medical}s
 	 */
-	private List<Medical> generateMedicals(int size, boolean sameType) {
+	private List<Medical> generateMedicals(int size, boolean sameType, char deleted) {
 		String medicalTypeCode = "MT";
 
 		List<Medical> medicals = IntStream.range(0, size).mapToObj(i -> {
@@ -816,6 +847,7 @@ class Tests extends OHCoreTestCase {
 			);
 
 			medical.setCode(null);
+			medical.setDeleted(deleted);
 
 			return medical;
 		}).toList();
