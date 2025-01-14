@@ -280,12 +280,14 @@ public class MedicalBrowsingManager {
 	}
 
 	/**
-	 * Retrieves a paginated list of medical records filtered by type and description,
+	 * Retrieves a paginated list of medical records filtered by type, description, and deleted status,
 	 * with an option to sort the results either alphabetically by description or by production code.
 	 *
 	 * @param type The type of medical items to filter by. Can be {@code null} to ignore this filter.
 	 * @param description The description of medical items to filter by. Can be {@code null} to ignore this filter.
-	 * @param nameSorted  If {@code true}, sorts the results alphabetically by the description field.
+	 * @param deleted The deletion status of medical items to filter by. If {@code null}, this filter is ignored.
+	 *  Use {@code 'Y'} for deleted records and {@code 'N'} for active records.
+	 * @param nameSorted If {@code true}, sorts the results alphabetically by the description field.
 	 * If {@code false}, sorts the results by the production code field (ascending order).
 	 * @param page The page number (0-based index) to retrieve. Must be non-negative.
 	 * @param size The number of items per page. Must be greater than 0.
