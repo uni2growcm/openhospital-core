@@ -132,10 +132,10 @@ class Tests extends OHCoreTestCase {
 
 	@Autowired
 	SupplierIoOperationRepository supplierIoOperationRepository;
-	
+
 	@Autowired
 	MedicalStockIoOperationRepository medicalStockIoOperationRepository;
-	
+
 	@Autowired
 	MedicalStockIoOperations medicalStockIoOperation;
 
@@ -147,9 +147,9 @@ class Tests extends OHCoreTestCase {
 
 	static Stream<Arguments> automaticlot() {
 		return Stream.of(Arguments.of(true, true, false),
-						 Arguments.of(true, true, true),
-						 Arguments.of(false, true, false),
-						 Arguments.of(false, true, true));
+			Arguments.of(true, true, true),
+			Arguments.of(false, true, false),
+			Arguments.of(false, true, true));
 	}
 
 	private static void setGeneralData(boolean in, boolean out, boolean toward) {
@@ -157,7 +157,7 @@ class Tests extends OHCoreTestCase {
 		GeneralData.AUTOMATICLOT_OUT = out;
 		GeneralData.AUTOMATICLOTWARD_TOWARD = toward;
 	}
-	
+
 	@BeforeAll
 	static void setUpClass() {
 		testMedicalInventory = new TestMedicalInventory();
@@ -313,7 +313,7 @@ class Tests extends OHCoreTestCase {
 		assertThat(foundMedicalInventory).isNotNull();
 		assertThat(foundMedicalInventory.getStatus()).isEqualTo(InventoryStatus.canceled.toString());
 	}
-	
+
 	@Test
 	void testDeleteMedicalInventoryWithInventoryRowsWithNewLot() throws Exception {
 		Integer id = setupTestMedicalInventory();
@@ -348,7 +348,7 @@ class Tests extends OHCoreTestCase {
 		MedicalInventory secondMedicalInventory = medIvnIoOperationRepository.saveAndFlush(inventory);
 		assertThat(secondMedicalInventory).isNotNull();
 		List<MedicalInventory> medicalInventories = medicalInventoryManager.getMedicalInventoryByStatusAndInventoryType(firstMedicalInventory.getStatus(),
-						firstMedicalInventory.getInventoryType());
+			firstMedicalInventory.getInventoryType());
 		assertThat(medicalInventories).hasSize(1);
 		assertThat(medicalInventories.get(0).getStatus()).isEqualTo(firstMedicalInventory.getStatus());
 	}
@@ -367,7 +367,7 @@ class Tests extends OHCoreTestCase {
 		MedicalInventory secondMedicalInventory = medIvnIoOperationRepository.saveAndFlush(inventory);
 		assertThat(secondMedicalInventory).isNotNull();
 		List<MedicalInventory> medicalInventories = medicalInventoryIoOperation.getMedicalInventoryByStatusAndInventoryType(firstMedicalInventory.getStatus(),
-						firstMedicalInventory.getInventoryType());
+			firstMedicalInventory.getInventoryType());
 		assertThat(medicalInventories).hasSize(1);
 		assertThat(medicalInventories.get(0).getStatus()).isEqualTo(firstMedicalInventory.getStatus());
 	}
@@ -388,7 +388,7 @@ class Tests extends OHCoreTestCase {
 		MedicalInventory secondMedicalInventory = medIvnIoOperationRepository.saveAndFlush(inventory);
 		assertThat(secondMedicalInventory).isNotNull();
 		List<MedicalInventory> medicalinventories = medicalInventoryManager.getMedicalInventoryByStatusAndWard(firstMedicalInventory.getStatus(),
-						firstMedicalInventory.getWard());
+			firstMedicalInventory.getWard());
 		assertThat(medicalinventories).hasSize(1);
 		assertThat(medicalinventories.get(0).getStatus()).isEqualTo(firstMedicalInventory.getStatus());
 		assertThat(medicalinventories.get(0).getWard()).isEqualTo(firstMedicalInventory.getWard());
@@ -410,7 +410,7 @@ class Tests extends OHCoreTestCase {
 		MedicalInventory secondMedicalInventory = medIvnIoOperationRepository.saveAndFlush(inventory);
 		assertThat(secondMedicalInventory).isNotNull();
 		List<MedicalInventory> medicalinventories = medicalInventoryIoOperation
-						.getMedicalInventoryByStatusAndWard(firstMedicalInventory.getStatus(), firstMedicalInventory.getWard());
+			.getMedicalInventoryByStatusAndWard(firstMedicalInventory.getStatus(), firstMedicalInventory.getWard());
 		assertThat(medicalinventories).hasSize(1);
 		assertThat(medicalinventories.get(0).getStatus()).isEqualTo(firstMedicalInventory.getStatus());
 		assertThat(medicalinventories.get(0).getWard()).isEqualTo(firstMedicalInventory.getWard());
@@ -432,10 +432,10 @@ class Tests extends OHCoreTestCase {
 		MedicalInventory secondMedicalInventory = medIvnIoOperationRepository.saveAndFlush(inventory);
 		assertThat(secondMedicalInventory).isNotNull();
 		List<MedicalInventory> medicalinventories = medicalInventoryManager.getMedicalInventoryByParams(secondMedicalInventory.getInventoryDate().minusDays(2),
-						secondMedicalInventory.getInventoryDate().plusDays(2), status, secondMedicalInventory.getInventoryType());
-		assertThat(medicalinventories).hasSize(1);
-		assertThat(medicalinventories.get(0).getStatus()).isEqualTo(secondMedicalInventory.getStatus());
-		assertThat(medicalinventories.get(0).getWard()).isEqualTo(secondMedicalInventory.getWard());
+			secondMedicalInventory.getInventoryDate().plusDays(2), status, secondMedicalInventory.getInventoryType());
+		assertThat(medicalinventories).hasSize(2); // including draft inventory (id=1)
+		assertThat(medicalinventories.get(1).getStatus()).isEqualTo(secondMedicalInventory.getStatus());
+		assertThat(medicalinventories.get(1).getWard()).isEqualTo(secondMedicalInventory.getWard());
 	}
 
 	@Test
@@ -454,7 +454,7 @@ class Tests extends OHCoreTestCase {
 		MedicalInventory secondMedicalInventory = medIvnIoOperationRepository.saveAndFlush(inventory);
 		assertThat(secondMedicalInventory).isNotNull();
 		List<MedicalInventory> medicalinventories = medicalInventoryManager.getMedicalInventoryByParams(secondMedicalInventory.getInventoryDate().minusDays(2),
-						secondMedicalInventory.getInventoryDate().plusDays(2), null, secondMedicalInventory.getInventoryType());
+			secondMedicalInventory.getInventoryDate().plusDays(2), null, secondMedicalInventory.getInventoryType());
 		assertThat(medicalinventories).hasSize(2);
 		assertThat(medicalinventories.get(0).getStatus()).containsAnyOf(firstMedicalInventory.getStatus(), status);
 		assertThat(medicalinventories.get(0).getWard()).containsAnyOf(firstMedicalInventory.getWard(), wardCode);
@@ -478,11 +478,11 @@ class Tests extends OHCoreTestCase {
 		MedicalInventory secondMedicalInventory = medIvnIoOperationRepository.saveAndFlush(inventory);
 		assertThat(secondMedicalInventory).isNotNull();
 		Page<MedicalInventory> medicalinventories = medicalInventoryManager.getMedicalInventoryByParamsPageable(
-						secondMedicalInventory.getInventoryDate().minusDays(2), secondMedicalInventory.getInventoryDate().plusDays(2), status,
-						secondMedicalInventory.getInventoryType(), 0, 10);
-		assertThat(medicalinventories).hasSize(1);
-		assertThat(medicalinventories.getContent().get(0).getStatus()).isEqualTo(secondMedicalInventory.getStatus());
-		assertThat(medicalinventories.getContent().get(0).getWard()).isEqualTo(secondMedicalInventory.getWard());
+			secondMedicalInventory.getInventoryDate().minusDays(2), secondMedicalInventory.getInventoryDate().plusDays(2), status,
+			secondMedicalInventory.getInventoryType(), 0, 10);
+		assertThat(medicalinventories).hasSize(2); // including draft inventory (id=1)
+		assertThat(medicalinventories.getContent().get(1).getStatus()).isEqualTo(secondMedicalInventory.getStatus());
+		assertThat(medicalinventories.getContent().get(1).getWard()).isEqualTo(secondMedicalInventory.getWard());
 	}
 
 	@Test
@@ -501,8 +501,8 @@ class Tests extends OHCoreTestCase {
 		MedicalInventory secondMedicalInventory = medIvnIoOperationRepository.saveAndFlush(inventory);
 		assertThat(secondMedicalInventory).isNotNull();
 		Page<MedicalInventory> medicalinventories = medicalInventoryManager.getMedicalInventoryByParamsPageable(
-						secondMedicalInventory.getInventoryDate().minusDays(2), secondMedicalInventory.getInventoryDate().plusDays(2), null,
-						secondMedicalInventory.getInventoryType(), 0, 10);
+			secondMedicalInventory.getInventoryDate().minusDays(2), secondMedicalInventory.getInventoryDate().plusDays(2), null,
+			secondMedicalInventory.getInventoryType(), 0, 10);
 		assertThat(medicalinventories).hasSize(2);
 		assertThat(medicalinventories.getContent().get(0).getStatus()).containsAnyOf(firstMedicalInventory.getStatus(), status);
 		assertThat(medicalinventories.getContent().get(0).getWard()).containsAnyOf(firstMedicalInventory.getWard(), wardCode);
@@ -726,7 +726,7 @@ class Tests extends OHCoreTestCase {
 		medicalStockIoOperationRepository.saveAndFlush(secondmedicalStock);
 		MedicalInventoryRow medicalInventoryRowOne = testMedicalInventoryRow.setup(inventory, medical, lotOne, false);
 		medicalInventoryRowOne.setRealqty(60);
-		MedicalInventoryRow medicalInventoryRowTwo = testMedicalInventoryRow.setup(inventory, medical, lotTwo, false); 
+		MedicalInventoryRow medicalInventoryRowTwo = testMedicalInventoryRow.setup(inventory, medical, lotTwo, false);
 		medicalInventoryRowTwo.setId(2);
 		medicalInventoryRowTwo.setRealqty(30);
 		MedicalInventoryRow medicalInventoryRowThree = testMedicalInventoryRow.setup(inventory, medical, lotThree, false);
@@ -745,7 +745,7 @@ class Tests extends OHCoreTestCase {
 		assertThat(inventory).isNotNull();
 		assertThat(inventory.getStatus()).isEqualTo(status);
 	}
-	
+
 	@Test
 	void testReferenceOfInventoryExist() throws Exception {
 		int id = setupTestMedicalInventory();
@@ -755,14 +755,14 @@ class Tests extends OHCoreTestCase {
 		boolean exist = medicalInventoryManager.referenceExists(reference);
 		assertThat(exist).isTrue();
 	}
-	
+
 	@Test
 	void testGetInventoryByID() throws Exception {
 		int id = setupTestMedicalInventory();
 		MedicalInventory inventory = medicalInventoryManager.getInventoryById(id);
 		assertThat(inventory).isNotNull();
 	}
-	
+
 	@Test
 	void testGetInventoryByReference() throws Exception {
 		int id = setupTestMedicalInventory();
@@ -773,7 +773,7 @@ class Tests extends OHCoreTestCase {
 		assertThat(found).isNotNull();
 		assertThat(found.getInventoryReference()).isEqualTo(inventory.getInventoryReference());
 	}
-	
+
 	@Test
 	void testValidateMedicalInventory() throws Exception {
 		Ward ward = testWard.setup(false);
@@ -812,7 +812,7 @@ class Tests extends OHCoreTestCase {
 		lotThree = lotIoOperationRepository.save(lotThree);
 		MedicalInventoryRow medicalInventoryRowOne = testMedicalInventoryRow.setup(inventory, medical, lotOne, false);
 		medicalInventoryRowOne.setRealqty(60);
-		MedicalInventoryRow medicalInventoryRowTwo = testMedicalInventoryRow.setup(inventory, medical, lotTwo, false); 
+		MedicalInventoryRow medicalInventoryRowTwo = testMedicalInventoryRow.setup(inventory, medical, lotTwo, false);
 		medicalInventoryRowTwo.setId(2);
 		medicalInventoryRowTwo.setRealqty(30);
 		MedicalInventoryRow medicalInventoryRowThree = testMedicalInventoryRow.setup(inventory, medical, lotThree, false);

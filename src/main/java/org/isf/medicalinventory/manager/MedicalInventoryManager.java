@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 import org.isf.generaldata.GeneralData;
 import org.isf.generaldata.MessageBundle;
 import org.isf.medicalinventory.model.InventoryStatus;
+import org.isf.medicalinventory.model.InventoryType;
 import org.isf.medicalinventory.model.MedicalInventory;
 import org.isf.medicalinventory.model.MedicalInventoryRow;
 import org.isf.medicalinventory.service.MedicalInventoryIoOperation;
@@ -621,6 +622,16 @@ public class MedicalInventoryManager {
 		return this.updateMedicalInventory(inventory, true);
 	}
 
+	/**
+	 * Return the number of inventories by {@link InventoryType}.
+	 * 
+	 * @param type {@link InventoryType}
+	 * @return the number of records or zero.
+	 */
+	public int getInventoryCount(String type) {
+		return ioOperations.getInventoryCount(type);
+	}
+
 	private void buildStatusHashMap() {
 		statusHashMap = new HashMap<>(4);
 		statusHashMap.put("canceled", MessageBundle.getMessage("angal.inventory.status.canceled.txt"));
@@ -630,11 +641,7 @@ public class MedicalInventoryManager {
 	}
 
 	/**
-	 * Return a list of status:
-	 * draft,
-	 * done,
-	 * canceled,
-	 * validated
+	 * Return a list of status: draft, done, canceled, validated
 	 *
 	 * @return
 	 */
@@ -649,6 +656,7 @@ public class MedicalInventoryManager {
 
 	/**
 	 * Return a value of the key on statusHashMap.
+	 * 
 	 * @param key - the key of status
 	 * @return the value of the key or empty string if key is not on statusHashMap.
 	 */
