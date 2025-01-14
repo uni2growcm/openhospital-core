@@ -25,6 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.lang.reflect.Method;
+import java.util.Comparator;
 import java.util.List;
 
 import org.assertj.core.api.Condition;
@@ -32,6 +33,7 @@ import org.isf.OHCoreTestCase;
 import org.isf.exa.manager.ExamBrowsingManager;
 import org.isf.exa.manager.ExamRowBrowsingManager;
 import org.isf.exa.model.Exam;
+import org.isf.exa.model.ExamTarget;
 import org.isf.exa.model.ExamRow;
 import org.isf.exa.service.ExamIoOperationRepository;
 import org.isf.exa.service.ExamIoOperations;
@@ -46,6 +48,7 @@ import org.isf.utils.exception.OHException;
 import org.isf.utils.exception.OHServiceException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -170,6 +173,37 @@ class Tests extends OHCoreTestCase {
 		assertThat(foundExamType).isNotNull();
 		List<ExamType> examTypes = examIoOperation.getExamType();
 		assertThat(examTypes).contains(foundExamType);
+	}
+
+	@Test
+	@DisplayName("Should return exam list matching the given target")
+	void testIoGetExamTargetExam() throws Exception {
+		ExamTarget target = setupTestExamTarget(false);
+		Exam examWithTarget = new Exam();
+		examWithTarget.setTarget(target);
+		List<Exam> examTargetList = examBrowsingManager.getByTarget(target);
+		assertThat(examTargetList).allMatch(exam -> exam.getTarget().equals(target));
+	}
+
+	@Test
+	@DisplayName("Should return exam list matching the give type and target sorted by description")
+	void testGetByTargetAndType() throws OHServiceException, OHException {
+		ExamTarget target = setupTestExamTarget(false);
+		ExamType examType = new ExamType("ZZ", "TestDescription");
+		List<Exam> exams = examBrowsingManager.getByTargetAndType(target, examType.getDescription());
+
+		assertThat(exams).isSortedAccordingTo(Comparator.comparing(Exam::getDescription));
+	}
+
+	@Test
+	@DisplayName(" Should return empty list when getting exam with non-existing exam type")
+	void testGetByTargetAndTypeNoMatchingExams() throws OHServiceException {
+		ExamTarget target = setupTestExamTarget(false);
+		String examType = "NonExistentType";
+
+		List<Exam> exams = examBrowsingManager.getByTargetAndType(target, examType);
+
+		assertThat(exams).isEmpty();
 	}
 
 	@Test
@@ -502,7 +536,7 @@ class Tests extends OHCoreTestCase {
 		Exam exam = examIoOperationRepository.findById(code).orElse(null);
 		assertThat(exam).isNotNull();
 		ExamType examType = testExamType.setup(false);
-		Exam exam2 = new Exam("XXX", "TestDescription", examType, 1, "TestDefaultResult");
+		Exam exam2 = new Exam("XXX", "TestDescription", examType, 1, "TestDefaultResult", ExamTarget.both);
 		assertThat(exam)
 				.isEqualTo(exam)
 				.isNotEqualTo(exam2)
@@ -523,7 +557,7 @@ class Tests extends OHCoreTestCase {
 		ExamRow examRow = examRowIoOperationRepository.findById(code).orElse(null);
 		assertThat(examRow).isNotNull();
 		ExamType examType = testExamType.setup(false);
-		Exam exam2 = new Exam("XXX", "TestDescription", examType, 1, "TestDefaultResult");
+		Exam exam2 = new Exam("XXX", "TestDescription", examType, 1, "TestDefaultResult", ExamTarget.both);
 		ExamRow examRow2 = new ExamRow(exam2, "NewDescription");
 		assertThat(examRow)
 				.isEqualTo(examRow)
@@ -603,4 +637,15 @@ class Tests extends OHCoreTestCase {
 		examTypeIoOperationRepository.saveAndFlush(examType);
 		return examType.getCode();
 	}
+
+	private ExamTarget setupTestExamTarget(boolean saveToDb) throws OHServiceException {
+		ExamTarget target = ExamTarget.prenatal;
+		if (saveToDb) {
+			Exam exam = new Exam();
+			exam.setTarget(target);
+			examIoOperation.newExam(exam);
+		}
+		return target;
+	}
+
 }
