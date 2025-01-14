@@ -234,9 +234,9 @@ public class PatientHistory extends Auditable<String> implements Comparable<Pati
 	@Column(name = "PAH_PHY_DIURE_ABN")
 	private String phyDiuresisAbnormal;
 
-	@Column(name = "PAH_PHY_ALCOOL")
+	@Column(name = "PAH_PHY_ALCOHOL")
 	@ColumnDefault("false")
-	private boolean phyAlcool;
+	private boolean phyAlcohol;
 
 	@Column(name = "PAH_PHY_SMOKE")
 	@ColumnDefault("false")
@@ -585,12 +585,12 @@ public class PatientHistory extends Auditable<String> implements Comparable<Pati
 		this.phyDiuresisAbnormal = phyDiuresisAbnormal;
 	}
 
-	public boolean isPhyAlcool() {
-		return phyAlcool;
+	public boolean isPhyAlcohol() {
+		return phyAlcohol;
 	}
 
-	public void setPhyAlcool(boolean phyAlcool) {
-		this.phyAlcool = phyAlcool;
+	public void setPhyAlcohol(boolean phyAlcohol) {
+		this.phyAlcohol = phyAlcohol;
 	}
 
 	public boolean isPhySmoke() {
@@ -785,7 +785,11 @@ public class PatientHistory extends Auditable<String> implements Comparable<Pati
 		this.patOpenNote = patOpenNote;
 	}
 
-	public int getLock() { return lock; }
+	public int getLock() {
+		return lock;
+	}
 
-	public void setLock(int lock) { this.lock = lock; }
+	public void setLock(int lock) {
+		this.lock = lock;
+	}
 }

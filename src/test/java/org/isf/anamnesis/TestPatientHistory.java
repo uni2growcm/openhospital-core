@@ -78,7 +78,7 @@ public class TestPatientHistory {
 		patientHistory.setPhyAlvoAbnormal("Alvo Abnormal");
 		patientHistory.setPhyDiuresisNormal(true);
 		patientHistory.setPhyDiuresisAbnormal("Diuresis Abnormal");
-		patientHistory.setPhyAlcool(false);
+		patientHistory.setPhyAlcohol(false);
 		patientHistory.setPhySmoke(true);
 		patientHistory.setPhyDrug(false);
 		patientHistory.setPhyPeriodNormal(true);
