@@ -24,6 +24,8 @@ package org.isf.mortuary.manager;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
+
 import org.isf.OHCoreTestCase;
 import org.isf.mortuary.model.DeathReason;
 import org.isf.mortuary.service.DeathReasonIoOperations;
@@ -60,6 +62,14 @@ public class DeathReasonManagerTest extends OHCoreTestCase {
 		DeathReason foundDeathReason = deathReasonManager.getById(id);
 		assertThat(foundDeathReason).isNotNull();
 		assertThat(foundDeathReason.getId()).isEqualTo(id);
+	}
+
+	@Test
+	void testGetAll() throws Exception {
+		int id = setupTestDeathReason(false);
+		List<DeathReason> deathReasons = deathReasonManager.getAll();
+		assertThat(deathReasons).isNotNull();
+		assertThat(deathReasons.size()).isEqualTo(1);
 	}
 
 	private int setupTestDeathReason(boolean usingSet) throws OHException, OHServiceException {

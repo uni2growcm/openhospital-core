@@ -43,6 +43,7 @@ public class MortuaryBrowserManager {
 	public MortuaryBrowserManager(MortuaryIoOperations mortuaryIoOperations) {
 		this.mortuaryIoOperations = mortuaryIoOperations;
 	}
+
 	public Death add(Death Mortuary) throws OHException {
 		return mortuaryIoOperations.add(Mortuary);
 	}
@@ -77,26 +78,29 @@ public class MortuaryBrowserManager {
 	 * Retrieves all the {@link Death}s.<br>
 	 * <br>
 	 * @param patientName the patient name.
-	 * @param wardDescription the provenance ward.
+	 * @param wardCode the code of provenance ward.
 	 * @param dateFrom the lower bound for the mortuary date range.
 	 * @param dateTo the upper bound for the mortuary date range.
-	 * @param deathReasonDescription the reason of death.
+	 * @param deathReasonCode the reason of death.
+	 * @param isEnter to specify if it's admission date or discharge date
 	 * @return the retrieved mortuaries.
 	 * @throws OHServiceException
 	 */
 	public List<Death> getMortuariesWhereData(
 		String patientName,
-		String wardDescription,
+		String wardCode,
 		LocalDateTime dateFrom,
 		LocalDateTime dateTo,
-		String deathReasonDescription
+		boolean isEnter,
+		String deathReasonCode
 	) throws OHServiceException {
 		return mortuaryIoOperations.getMortuariesWhereData(
 			patientName,
-			wardDescription,
+			wardCode,
 			TimeTools.truncateToSeconds(dateFrom),
 			TimeTools.truncateToSeconds(dateTo),
-			deathReasonDescription
+			isEnter,
+			deathReasonCode
 		);
 	}
 
@@ -104,10 +108,11 @@ public class MortuaryBrowserManager {
 	 * Retrieves a page of {@link Death}s.<br>
 	 * <br>
 	 * @param patientName the patient name.
-	 * @param provenance the provenance.
+	 * @param wardCode the code of provenance ward.
 	 * @param dateFrom the lower bound for the mortuary date range.
 	 * @param dateTo the upper bound for the mortuary date range.
-	 * @param deathReason the reason of death.
+	 * @param deathReasonCode the reason of death.
+	 * @param isEnter to specify if it's admission date or discharge date
 	 * @param page current page.
 	 * @param size the size of the page.
 	 * @return the retrieved a mortuaries page.
@@ -115,20 +120,22 @@ public class MortuaryBrowserManager {
 	 */
 	public Page<Death> getMortuariesWhereDataPageable(
 		String patientName,
-		String provenance,
+		String wardCode,
 		LocalDateTime dateFrom,
 		LocalDateTime dateTo,
-		String deathReason,
+		String deathReasonCode,
+		boolean isEnter,
 		int page,
 		int size
 	) throws OHServiceException {
 		Pageable pageable = PageRequest.of(page, size);
 		return mortuaryIoOperations.getMortuariesWhereDataPageable(
 			patientName,
-			provenance,
+			wardCode,
 			dateFrom,
 			dateTo,
-			deathReason,
+			deathReasonCode,
+			isEnter,
 			pageable
 		);
 	}
@@ -139,6 +146,7 @@ public class MortuaryBrowserManager {
 	 * @param patientName the patient name.
 	 * @param dateFrom the lower bound for the mortuary date range.
 	 * @param dateTo the upper bound for the mortuary date range.
+	 * @param isEnter to specify if it's admission date or discharge date
 	 * @param page current page.
 	 * @param size the size of the page.
 	 * @return the retrieved a mortuaries page.
@@ -148,6 +156,7 @@ public class MortuaryBrowserManager {
 		String patientName,
 		LocalDateTime dateFrom,
 		LocalDateTime dateTo,
+		boolean isEnter,
 		int page,
 		int size
 	) throws OHServiceException {
@@ -156,6 +165,7 @@ public class MortuaryBrowserManager {
 			patientName,
 			dateFrom,
 			dateTo,
+			isEnter,
 			pageable
 		);
 	}

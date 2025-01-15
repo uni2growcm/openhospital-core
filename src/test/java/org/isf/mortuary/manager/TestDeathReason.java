@@ -41,7 +41,7 @@ public class TestDeathReason {
 			deathReason = new DeathReason();
 			setParameters(deathReason);
 		} else {
-			deathReason = new DeathReason(id, code, description,false);
+			deathReason = new DeathReason(id, code, description, deleted);
 		}
 		return deathReason;
 	}

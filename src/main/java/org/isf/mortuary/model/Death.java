@@ -73,7 +73,7 @@ public class Death {
 	private DeathReason deathReason;
 
 	@Column(name = "DTH_DATE")
-	private LocalDate date;
+	private LocalDateTime date;
 
 	@Column(name = "DTH_ADMISSION_DATE")
 	private LocalDateTime admissionDate;
@@ -82,7 +82,7 @@ public class Death {
 	private LocalDateTime dischargeDate;
 
 	@Column(name = "DTH_ESTIMATED_DISCHARGE_DATE")
-	private LocalDate estimatedDischargeDate;
+	private LocalDateTime estimatedDischargeDate;
 
 	@Column(name = "DTH_DECLARING_NAME")
 	private String declaringName;
@@ -109,10 +109,10 @@ public class Death {
 		super();
 	}
 
-	public Death(int id, String place, Patient patient, Ward ward, LocalDate date, LocalDateTime admissionDate,
-		LocalDateTime dischargeDate, LocalDate estimatedDischargeDate, DeathReason deathReason, String declaringName, String declaringPhone, String declaringNid,
-		String familyName, String familyPhone, String familyNid, String lockerNumber) {
-		this.id = id;
+	public Death(String place, Patient patient, Ward ward, LocalDateTime date, LocalDateTime admissionDate,
+		LocalDateTime dischargeDate, LocalDateTime estimatedDischargeDate, DeathReason deathReason, String declaringName, String declaringPhone, String declaringNid,
+		String familyName, String familyPhone, String familyNid, String lockerNumber
+	) {
 		this.place = place;
 		this.patient = patient;
 		this.ward = ward;
@@ -128,6 +128,18 @@ public class Death {
 		this.familyPhone = familyPhone;
 		this.familyNid = familyNid;
 		this.lockerNumber = lockerNumber;
+	}
+
+	public Death(int id, String place, Patient patient, Ward ward, LocalDateTime date, LocalDateTime admissionDate,
+		LocalDateTime dischargeDate, LocalDateTime estimatedDischargeDate, DeathReason deathReason, String declaringName, String declaringPhone, String declaringNid,
+		String familyName, String familyPhone, String familyNid, String lockerNumber
+	) {
+		this(place, patient, ward, date, admissionDate,
+			dischargeDate, estimatedDischargeDate, deathReason, declaringName, declaringPhone, declaringNid,
+			familyName, familyPhone, familyNid, lockerNumber
+		);
+
+		this.setId(id);
 	}
 
 	public String getLockerNumber() {
@@ -184,10 +196,10 @@ public class Death {
 	public void setDeclaringNid(String declaringNid) {
 		this.declaringNid = declaringNid;
 	}
-	public LocalDate getDate() {
+	public LocalDateTime getDate() {
 		return date;
 	}
-	public void setDate(LocalDate date) {
+	public void setDate(LocalDateTime date) {
 		this.date = date;
 	}
 	public LocalDateTime getAdmissionDate() {
@@ -202,10 +214,10 @@ public class Death {
 	public void setDischargeDate(LocalDateTime dischargeDate) {
 		this.dischargeDate = dischargeDate;
 	}
-	public LocalDate getEstimatedDischargeDate() {
+	public LocalDateTime getEstimatedDischargeDate() {
 		return estimatedDischargeDate;
 	}
-	public void setEstimatedDischargeDate(LocalDate dateSortieProvisoire) {
+	public void setEstimatedDischargeDate(LocalDateTime dateSortieProvisoire) {
 		this.estimatedDischargeDate = dateSortieProvisoire;
 	}
 	public String getFamilyName() {

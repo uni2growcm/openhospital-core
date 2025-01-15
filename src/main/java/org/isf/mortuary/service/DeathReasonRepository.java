@@ -33,9 +33,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface DeathReasonRepository extends JpaRepository<DeathReason, Integer> {
 
-	@Query("select d from DeathReason d where d.id = :id")
-	DeathReason findDeathReasonById(@Param("id") int id);
+	@Query("select d from DeathReason d where d.id = :id and d.deleted = :deleted")
+	DeathReason findDeathReasonById(@Param("id") int id, @Param("deleted") boolean deleted);
 
-	@Query("select d from DeathReason d where d.deleted = :deleted ")
-	List<DeathReason> findByDeleted(boolean deleted);
+	@Query("select d from DeathReason d where d.deleted = :deleted")
+	List<DeathReason> findAllWhereNotDeleted(@Param("deleted") boolean deleted);
 }

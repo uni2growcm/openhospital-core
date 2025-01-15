@@ -23,11 +23,10 @@ package org.isf.mortuary.manager;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import org.isf.mortuary.model.DeathReason;
 import org.isf.mortuary.model.Death;
+import org.isf.mortuary.model.DeathReason;
 import org.isf.patient.model.Patient;
 import org.isf.utils.exception.OHException;
 import org.isf.ward.model.Ward;
@@ -36,10 +35,10 @@ public class TestMortuary {
 
 	private final int id = 1;
 	private final String place = "Salle A1";
-	private final LocalDate deathDate = LocalDate.of(2024, 12, 1);
+	private final LocalDateTime deathDate = LocalDateTime.of(2024, 12, 1, 0, 0, 0);
 	private final LocalDateTime enteredDate = LocalDateTime.of(2024, 12, 1, 0, 0, 0);
-	private final LocalDateTime releaseDate = LocalDateTime.of(2024, 12, 5, 0,0,0);
-	private final LocalDate provisionalReleaseDate = LocalDate.of(2024, 12, 4);
+	private final LocalDateTime releaseDate = LocalDateTime.of(2024, 12, 5, 0, 0, 0);
+	private final LocalDateTime provisionalReleaseDate = LocalDateTime.of(2024, 12, 4, 0, 0, 0);
 	private final String declaringName = "John Doe";
 	private final String declaringPhone = "6543210001";
 	private final String declaringNest = "12345";
@@ -66,7 +65,7 @@ public class TestMortuary {
 		Death mortuary;
 		if (usingSet) {
 			mortuary = new Death();
-			setParameters(patient, deathReason, ward,mortuary);
+			setParameters(patient, deathReason, ward, mortuary);
 		} else {
 			mortuary = new Death(id, place, patient, ward, deathDate, enteredDate,
 				releaseDate, provisionalReleaseDate, deathReason, declaringName, declaringPhone, declaringNest,

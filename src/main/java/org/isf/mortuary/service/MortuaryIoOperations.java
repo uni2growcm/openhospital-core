@@ -87,26 +87,37 @@ public class MortuaryIoOperations {
 	 * Retrieves all the {@link Death}s.<br>
 	 * <br>
 	 * @param patientName the patient name.
-	 * @param wardDescription the ward provenance.
+	 * @param wardCode the code of provenance ward.
 	 * @param dateFrom the lower bound for the mortuary date range.
 	 * @param dateTo the upper bound for the mortuary date range.
-	 * @param deathReasonDescription the reason of death.
+	 * @param deathReasonCode the reason of death.
+	 * @param isEnter to specify if it's admission date or discharge date
 	 * @return the retrieved mortuaries.
 	 * @throws OHServiceException
 	 */
-	public List<Death> getMortuariesWhereData (
+	public List<Death> getMortuariesWhereData(
 		String patientName,
-		String wardDescription,
+		String wardCode,
 		LocalDateTime dateFrom,
 		LocalDateTime dateTo,
-		String deathReasonDescription
+		boolean isEnter,
+		String deathReasonCode
 	) throws OHServiceException {
-		return mortuaryRepository.findAllByPatientNameAndWardDescriptionAndDateFromAndDateToAndDeathReasonDescription(
+		if (isEnter) {
+			return mortuaryRepository.findAllByPatientNameAndWardCodeAndAdmissionDateBetweenAndDeathReasonCode(
+				patientName,
+				wardCode,
+				dateFrom,
+				dateTo,
+				deathReasonCode
+			);
+		}
+		return mortuaryRepository.findAllByPatientNameAndWardCodeAndDischargeDateBetweenAndDeathReasonCode(
 			patientName,
-			wardDescription,
+			wardCode,
 			dateFrom,
 			dateTo,
-			deathReasonDescription
+			deathReasonCode
 		);
 	}
 
@@ -114,28 +125,40 @@ public class MortuaryIoOperations {
 	 * Retrieves a page of {@link Death}s.<br>
 	 * <br>
 	 * @param patientName the patient name.
-	 * @param wardDescription the ward provenance.
+	 * @param wardCode the code of provenance ward.
 	 * @param dateFrom the lower bound for the mortuary date range.
 	 * @param dateTo the upper bound for the mortuary date range.
-	 * @param deathReasonDescription the reason of death.
+	 * @param deathReasonCode the reason of death.
+	 * @param isEnter to specify if it's admission date or discharge date
 	 * @param pageable for pagination.
 	 * @return the retrieved a mortuaries page.
 	 * @throws OHServiceException
 	 */
 	public Page<Death> getMortuariesWhereDataPageable(
 		String patientName,
-		String wardDescription,
+		String wardCode,
 		LocalDateTime dateFrom,
 		LocalDateTime dateTo,
-		String deathReasonDescription,
+		String deathReasonCode,
+		boolean isEnter,
 		Pageable pageable
 	) throws OHServiceException {
-		return mortuaryRepository.findAllByPatientNameAndWardDescriptionAndDateFromAndDateToAndDeathReasonDescriptionPageable(
+		if (isEnter) {
+			return mortuaryRepository.findAllByPatientNameContainsAndWardCodeContainsAndAdmissionDateBetweenAndDeathReasonCodeContains(
+				patientName,
+				wardCode,
+				dateFrom,
+				dateTo,
+				deathReasonCode,
+				pageable
+			);
+		}
+		return mortuaryRepository.findAllByPatientNameContainsAndWardCodeContainsAndDischargeDateBetweenAndDeathReasonCodeContains(
 			patientName,
-			wardDescription,
+			wardCode,
 			dateFrom,
 			dateTo,
-			deathReasonDescription,
+			deathReasonCode,
 			pageable
 		);
 	}
@@ -146,12 +169,22 @@ public class MortuaryIoOperations {
 	 * @param patientName the patient name.
 	 * @param dateFrom the lower bound for the mortuary date range.
 	 * @param dateTo the upper bound for the mortuary date range.
+	 * @param isEnter to specify if it's admission date or discharge date
 	 * @param pageable for pagination.
 	 * @return the retrieved a mortuaries page.
 	 * @throws OHServiceException
 	 */
-	public Page<Death> findAllByPatientNameAndDateToDateFromPageable(String patientName, LocalDateTime dateFrom, LocalDateTime dateTo, Pageable pageable) {
-		return mortuaryRepository.findAllByPatientNameAndDateToDateFromPageable(patientName, dateFrom, dateTo, pageable);
+	public Page<Death> findAllByPatientNameAndDateToDateFromPageable(
+		String patientName,
+		LocalDateTime dateFrom,
+		LocalDateTime dateTo,
+		boolean isEnter,
+		Pageable pageable
+	) throws OHServiceException {
+		if (isEnter) {
+			return mortuaryRepository.findAllByPatientNameContainsAndAdmissionDateBetween(patientName, dateFrom, dateTo, pageable);
+		}
+		return mortuaryRepository.findAllByPatientNameContainsAndDischargeDateBetween(patientName, dateFrom, dateTo, pageable);
 	}
 
 	/**
@@ -159,7 +192,7 @@ public class MortuaryIoOperations {
 	 * @return {@link Death}.
 	 * @throws OHServiceException
 	 */
-	public Death save(Death mortuary) {
+	public Death save(Death mortuary) throws OHServiceException {
 		return mortuaryRepository.save(mortuary);
 	}
 
@@ -168,7 +201,7 @@ public class MortuaryIoOperations {
 	 * @return {@link Death}.
 	 * @throws OHServiceException
 	 */
-	public Death findById(int id) {
+	public Death findById(int id) throws OHServiceException {
 		return mortuaryRepository.findById(id).orElse(null);
 	}
 }

@@ -36,30 +36,47 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface MortuaryRepository extends JpaRepository<Death, Integer> {
 
-	@Query("SELECT d FROM Death d WHERE d.patient.name LIKE %:patientName% AND d.admissionDate >= :dateFrom AND d.dischargeDate <= :dateTo order by d.admissionDate asc")
-	Page<Death> findAllByPatientNameAndDateToDateFromPageable(
-		@Param("patientName")String patientName,
-		@Param("dateFrom")LocalDateTime dateFrom,
-		@Param("dateTo")LocalDateTime dateTo,
+	Page<Death> findAllByPatientNameContainsAndAdmissionDateBetween(
+		String patientName,
+		LocalDateTime admissionDateFrom,
+		LocalDateTime admissionDateTo,
 		Pageable pageable
 	);
 
-	@Query("SELECT d FROM Death d WHERE d.patient.name LIKE %:patientName% AND d.ward.description LIKE %:wardDescription% AND d.admissionDate >= :dateFrom AND d.dischargeDate <= :dateTo AND d.deathReason.description LIKE %:deathReasonDescription% ")
-	List<Death> findAllByPatientNameAndWardDescriptionAndDateFromAndDateToAndDeathReasonDescription(
-		@Param("patientName") String patientName,
-		@Param("wardDescription") String wardDescription,
-		@Param("dateFrom") LocalDateTime dateFrom,
-		@Param("dateTo") LocalDateTime dateTo,
-		@Param("deathReasonDescription") String deathReasonDescription
+	Page<Death> findAllByPatientNameContainsAndDischargeDateBetween(
+		String patientName,
+		LocalDateTime admissionDateFrom,
+		LocalDateTime admissionDateTo,
+		Pageable pageable
 	);
 
-	@Query("SELECT d FROM Death d WHERE d.patient.name LIKE %:patientName% AND d.ward.description LIKE %:wardDescription% AND d.admissionDate >= :dateFrom AND d.dischargeDate <= :dateTo AND d.deathReason.description LIKE %:deathReasonDescription% order by d.admissionDate asc")
-	Page<Death> findAllByPatientNameAndWardDescriptionAndDateFromAndDateToAndDeathReasonDescriptionPageable(
+	@Query("SELECT d FROM Death d WHERE d.patient.name LIKE %:patientName% AND d.ward.code LIKE %:wardCode% AND (d.admissionDate BETWEEN :dateFrom AND :dateTo) AND d.deathReason.code LIKE %:deathReasonCode% ")
+	List<Death> findAllByPatientNameAndWardCodeAndAdmissionDateBetweenAndDeathReasonCode(
 		@Param("patientName") String patientName,
-		@Param("wardDescription") String wardDescription,
+		@Param("wardCode") String wardCode,
 		@Param("dateFrom") LocalDateTime dateFrom,
 		@Param("dateTo") LocalDateTime dateTo,
-		@Param("deathReasonDescription") String deathReasonDescription,
-		Pageable pageable
+		@Param("deathReasonCode") String deathReasonCode
+	);
+
+	@Query("SELECT d FROM Death d WHERE d.patient.name LIKE %:patientName% AND d.ward.code LIKE %:wardCode% AND (d.dischargeDate BETWEEN :dateFrom AND :dateTo) AND d.deathReason.code LIKE %:deathReasonCode% ")
+	List<Death> findAllByPatientNameAndWardCodeAndDischargeDateBetweenAndDeathReasonCode(
+		@Param("patientName") String patientName,
+		@Param("wardCode") String wardCode,
+		@Param("dateFrom") LocalDateTime dateFrom,
+		@Param("dateTo") LocalDateTime dateTo,
+		@Param("deathReasonCode") String deathReasonCode
+	);
+
+	Page<Death> findAllByAdmissionDateBetweenOrDischargeDateBetween(
+		LocalDateTime admissionDateFrom, LocalDateTime admissionDateTo, LocalDateTime dischargeDateFrom, LocalDateTime dischargeDateTo, Pageable pageable
+	);
+
+	Page<Death> findAllByPatientNameContainsAndWardCodeContainsAndAdmissionDateBetweenAndDeathReasonCodeContains(
+		String patientName, String wardCode, LocalDateTime admissionDateFrom, LocalDateTime admissionDateTo, String deathReasonCode, Pageable pageable
+	);
+
+	Page<Death> findAllByPatientNameContainsAndWardCodeContainsAndDischargeDateBetweenAndDeathReasonCodeContains(
+		String patientName, String wardCode, LocalDateTime dischargeDateFrom, LocalDateTime dischargeDateTo, String deathReasonCode, Pageable pageable
 	);
 }

@@ -61,6 +61,13 @@ public class DeathReason {
 	public DeathReason() {
 	}
 
+	public DeathReason(String code, String description, boolean deleted) {
+		super();
+		this.code = code;
+		this.description = description;
+		this.deleted = deleted;
+	}
+
 	public DeathReason(int id, String code, String description, boolean deleted) {
 		super();
 		this.id = id;

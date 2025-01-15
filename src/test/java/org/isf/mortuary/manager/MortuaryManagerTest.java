@@ -27,45 +27,45 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import org.isf.OHCoreTestCase;
 import org.isf.mortuary.model.Death;
 import org.isf.mortuary.model.DeathReason;
-import org.isf.mortuary.service.DeathReasonIoOperations;
-import org.isf.mortuary.service.MortuaryIoOperations;
+import org.isf.mortuary.service.DeathReasonRepository;
+import org.isf.mortuary.service.MortuaryRepository;
 import org.isf.patient.model.Patient;
-import org.isf.patient.service.PatientIoOperations;
+import org.isf.patient.service.PatientIoOperationRepository;
 import org.isf.utils.exception.OHException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.ward.TestWard;
 import org.isf.ward.model.Ward;
-import org.isf.ward.service.WardIoOperations;
+import org.isf.ward.service.WardIoOperationRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 public class MortuaryManagerTest extends OHCoreTestCase {
 
 	private static TestMortuary testMortuary;
 	private static TestDeathReason testDeathReason;
 	private static TestWard testWard;
-
 	@Autowired
-	PatientIoOperations patientIoOperations;
-
-	@Autowired
-	WardIoOperations wardIoOperations;
-
+	PatientIoOperationRepository patientIoOperationsRepository;
 	@Autowired
 	MortuaryBrowserManager mortuaryBrowserManager;
+	private final LocalDateTime date = LocalDateTime.of(2024, 1, 10, 0, 0, 0);
+	@Autowired
+	private MortuaryRepository repository;
 
 	@Autowired
-	MortuaryIoOperations mortuaryIoOperations;
+	private DeathReasonRepository deathReasonRepository;
 
 	@Autowired
-	DeathReasonIoOperations deathReasonIoOperations;
+	private WardIoOperationRepository wardIoOperationRepository;
 
 	@BeforeAll
 	static void setUpClass() {
@@ -80,73 +80,119 @@ public class MortuaryManagerTest extends OHCoreTestCase {
 	}
 
 	@Test
-	void testMgrGetMortuariesWhereData() throws OHException, OHServiceException {
-		DeathReason deathReason = testDeathReason.setup(true);
-		deathReasonIoOperations.add(deathReason);
+	void testGetDeathByAdmissionOrDischargeDate() throws OHException {
+		List<Death> savedDeaths = generateDeaths(10, true, true);
 
-		Ward ward = testWard.setup(true);
-		wardIoOperations.newWard(ward);
-
-		Patient patient = new Patient("TestFirstName", "TestSecondName", LocalDate.of(1984, 8, 14), 31,
-			"d1", 'F', "TestAddress", "TestCity", "testNextKin", "testTelephone", "TestMotherName",
-			'A', "TestFatherName", 'A', "0-/+", 'Y', 'Y', "TestTaxCode",
-			"divorced", "business"
-		);
-		patientIoOperations.updatePatient(patient);
 		LocalDateTime fromDate = LocalDateTime.of(2023, 1, 1, 0, 0, 0);
 		LocalDateTime toDate = LocalDateTime.of(2025, 3, 3, 0, 0, 0);
-		int id = setupTestMortuary(patient, deathReason, ward,false);
-		Death foundMortuary = mortuaryIoOperations.findById(id);
-		assertThat(foundMortuary).isNotNull();
-		List<Death> mortuaries = mortuaryBrowserManager.getMortuariesWhereData("", "", fromDate, toDate, "");
+
+		Page<Death> deaths = repository.findAllByAdmissionDateBetweenOrDischargeDateBetween(fromDate, toDate, fromDate, toDate, PageRequest.of(0, 3));
+
+		assertThat(deaths.getContent().size()).isEqualTo(3);
+	}
+
+	@Test
+	void testGetPatientNameContainsAndWardCodeContainsAndAdmissionDateBetweenAndDeathReasonCodeContains() throws OHException {
+		List<Death> savedDeaths = generateDeaths(10, true, true);
+
+		LocalDateTime fromDate = LocalDateTime.of(2023, 1, 1, 0, 0, 0);
+		LocalDateTime toDate = LocalDateTime.of(2025, 3, 3, 0, 0, 0);
+
+		Page<Death> deaths = repository.findAllByPatientNameContainsAndWardCodeContainsAndDischargeDateBetweenAndDeathReasonCodeContains("FirstName 0", "w",
+			fromDate, toDate, "CARD001", PageRequest.of(0, 3));
+
+		assertThat(deaths.getContent().size()).isEqualTo(1);
+		assertThat(deaths.getTotalPages()).isEqualTo(1);
+		assertThat(deaths.getTotalElements()).isEqualTo(1);
+		assertThat(deaths.getSize()).isEqualTo(3);
+	}
+
+	@Test
+	void testMgrGetMortuariesWhereData() throws OHException, OHServiceException {
+		int totalElements = 10;
+		List<Death> savedDeaths = generateDeaths(totalElements, true, true);
+
+		LocalDateTime fromDate = LocalDateTime.of(2023, 1, 1, 0, 0, 0);
+		LocalDateTime toDate = LocalDateTime.of(2025, 3, 3, 0, 0, 0);
+
+		List<Death> mortuaries = mortuaryBrowserManager.getMortuariesWhereData("", "", fromDate, toDate, true, "");
 		assertThat(mortuaries).isNotNull();
-		assertThat(mortuaries.size()).isEqualTo(1);
+		assertThat(mortuaries.size()).isEqualTo(totalElements);
 	}
 
 	@Test
 	void testMgrGetMortuariesWhereDataPageable() throws OHException, OHServiceException {
-
-		DeathReason deathReason = testDeathReason.setup(true);
-		deathReasonIoOperations.add(deathReason);
-
-		Ward ward = testWard.setup(true);
-		wardIoOperations.newWard(ward);
-
-		Patient patient1 = new Patient("TestFirstName", "TestSecondName", LocalDate.of(1984, 8, 14), 31,
-			"d1", 'F', "TestAddress", "TestCity", "testNextKin", "testTelephone", "TestMotherName",
-			'A', "TestFatherName", 'A', "0-/+", 'Y', 'Y', "TestTaxCode",
-			"divorced", "business"
-		);
-		Patient patient2 = new Patient("FirstName", "SecondName", LocalDate.of(2000, 8, 14), 25,
-			"d1", 'M', "Address", "City", "NextKin", "Telephone", "MotherName",
-			'A', "FatherName", 'A', "0-/+", 'N', 'N', "TaxCode",
-			"divorced", "business"
-		);
-		patientIoOperations.updatePatient(patient1);
-		patientIoOperations.updatePatient(patient2);
-
-		Death mortuary1 = testMortuary.setup(patient1, deathReason, ward, false, 1);
-		assertThat(mortuary1).isNotNull();
-		mortuaryIoOperations.save(mortuary1);
-		Death mortuary2 = testMortuary.setup(patient2, deathReason, ward,false, 2);
-		assertThat(mortuary2).isNotNull();
-		mortuaryIoOperations.save(mortuary2);
+		int totalElements = 12;
+		List<Death> savedDeaths = generateDeaths(totalElements, true, true);
 
 		LocalDateTime fromDate = LocalDateTime.of(2023, 1, 1, 0, 0, 0);
 		LocalDateTime toDate = LocalDateTime.of(2025, 3, 3, 0, 0, 0);
-		Page<Death> mortuariesPages1 = mortuaryBrowserManager.getMortuariesWhereDataPageable("", "", fromDate, toDate, "Arrêt cardiaque", 0, 1);
-		assertThat(mortuariesPages1).isNotNull();
-		assertThat(mortuariesPages1.getSize()).isEqualTo(1);
-		Page<Death> mortuariesPages2 = mortuaryBrowserManager.getMortuariesWhereDataPageable("", "", fromDate, toDate, "Arrêt cardiaque", 1, 1);
-		assertThat(mortuariesPages2).isNotNull();
-		assertThat(mortuariesPages2.getSize()).isEqualTo(1);
-		System.out.println(mortuariesPages2.getContent());
-		assertThat(mortuariesPages1.getContent().get(0).getPatient().getName()).isNotEqualTo(mortuariesPages2.getContent().get(0).getPatient().getName());
+
+		Page<Death> mortuariesPages = mortuaryBrowserManager.getMortuariesWhereDataPageable("", "", fromDate, toDate, "", true, 0, 3);
+
+		assertThat(mortuariesPages).isNotNull();
+		assertThat(mortuariesPages.getTotalElements()).isEqualTo(totalElements);
+		assertThat(mortuariesPages.getTotalPages()).isEqualTo(4);
+		assertThat(mortuariesPages.getSize()).isEqualTo(3);
 	}
 
-	private int setupTestMortuary(Patient patient, DeathReason deathReason, Ward ward, boolean usingSet) throws OHException, OHServiceException {
-		Death mortuary = testMortuary.setup(patient, deathReason, ward, usingSet);
-		mortuaryIoOperations.save(mortuary);
-		return mortuary.getId();
+	private List<Death> generateDeaths(int size, boolean sameWard, boolean sameDeathReason) throws OHException {
+		Ward ward = testWard.setup(true);
+		DeathReason deathReason = testDeathReason.setup(true);
+		deathReason = deathReasonRepository.save(deathReason);
+
+		String wardCode = "W";
+		DeathReason finalDeathReason = deathReason;
+		List<Death> deaths = IntStream.range(0, size).mapToObj(i -> {
+			Ward deathWard;
+			DeathReason deathReason1;
+
+			Patient patient = new Patient("FirstName " + i, "SecondName " + i, LocalDate.of(1984, 8, 14), 20 + i,
+				"d" + i, 'M', "Address " + 1, "City " + i, "NextKin " + 1, "Telephone " + i, "MotherName " + i,
+				'A', "FatherName " + i, 'A', "0-/+", 'Y', 'Y', "TaxCode " + i,
+				"divorced", "business"
+			);
+			Patient savePatient = patientIoOperationsRepository.saveAndFlush(patient);
+
+			if (!sameWard) {
+				Ward saveWard;
+				if (i < 100) {
+					saveWard = new Ward(wardCode + i, "Description " + i, "Telephone " + i, "Fax " + i, "Email " + i, i, i, i, true, false);
+				} else {
+					saveWard = new Ward("" + (i - 100), "Description " + i, "Telephone " + i, "Fax " + i, "Email " + i, i, i, i, true, false);
+				}
+				deathWard = wardIoOperationRepository.saveAndFlush(saveWard);
+			} else {
+				ward.setCode(wardCode);
+				deathWard = wardIoOperationRepository.saveAndFlush(ward);
+			}
+
+			if (!sameDeathReason) {
+				DeathReason deathReasonTest = new DeathReason("Code " + i, "Description" + i, false);
+				deathReason1 = deathReasonRepository.saveAndFlush(deathReasonTest);
+			} else {
+				deathReason1 = finalDeathReason;
+			}
+
+			return new Death(
+				"Test place" + i,
+				savePatient,
+				deathWard,
+				date.plusDays(date.getDayOfMonth() + 2),
+				date.plusDays(date.getDayOfMonth() + 2),
+				date.plusDays(date.getDayOfMonth() + 2),
+				date.plusDays(date.getDayOfMonth() + 2),
+				deathReason1,
+				"Declaring " + i,
+				"Declaring phone number " + 1,
+				"Declaring Nid " + i,
+				"Family name " + i,
+				"Family phone number" + i,
+				"Family phone number" + i,
+				"Locker number" + i
+			);
+		}).toList();
+
+		return repository.saveAllAndFlush(deaths);
 	}
 }
