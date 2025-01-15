@@ -34,9 +34,6 @@ public class DeathReasonIoOperations {
 
 	private static DeathReasonRepository deathReasonRepository;
 
-	public DeathReasonIoOperations() {
-	}
-
 	@Autowired
 	public DeathReasonIoOperations(DeathReasonRepository deathReasonRepository) {
 		DeathReasonIoOperations.deathReasonRepository = deathReasonRepository;
