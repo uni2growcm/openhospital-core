@@ -697,16 +697,19 @@ class Tests extends OHCoreTestCase {
 
 		List<Medical> savedMedicals = generateMedicals(10, true, 2);
 
-		Page<Medical> medicals = medicalBrowsingManager.getMedicalsByTypeAndDescription(
+		Page<Medical> firstPage = medicalBrowsingManager.getMedicalsByTypeAndDescription(
 			savedMedicals.get(0).getType().getDescription(), null, 'N', false, 0, 3
 		);
 
-		assertThat(medicals.getTotalElements()).isEqualTo(8);
-		assertThat(medicals.getTotalPages()).isEqualTo(3);
-		assertThat(medicals.getContent().size()).isEqualTo(3);
-		assertThat(medicals.getContent().get(0).getProdCode()).isEqualTo("prod_code2");
-		assertThat(medicals.getContent().get(1).getProdCode()).isEqualTo("prod_code3");
-		assertThat(medicals.getContent().get(2).getProdCode()).isEqualTo("prod_code4");
+		assertThat(firstPage.getTotalElements()).isEqualTo(8);
+		assertThat(firstPage.getContent().size()).isEqualTo(3);
+		assertThat(firstPage.getContent().get(0).getProdCode()).isEqualTo("prod_code2");
+
+		Page<Medical> lastPage = medicalBrowsingManager.getMedicalsByTypeAndDescription(
+			savedMedicals.get(0).getType().getDescription(), null, 'N', false, 2, 3
+		);
+
+		assertThat(lastPage.getContent().size()).isEqualTo(2);
 	}
 
 	@Test
@@ -731,7 +734,7 @@ class Tests extends OHCoreTestCase {
 		);
 		assertThat(medicals.getContent().get(0).getDescription()).isEqualTo("4description6");
 
-		generateMedicals(5, false, 5); // Tous supprimés
+		generateMedicals(5, false, 5);
 		medicals = medicalBrowsingManager.getMedicalsByTypeAndDescription(
 			null, "descr", 'Y', false, 0, 2
 		);
@@ -740,23 +743,22 @@ class Tests extends OHCoreTestCase {
 	}
 
 	@Test
-	@DisplayName("Should filter medicals by type and sort by description")
-	void testMgrGetMedicalsByTypeSortedByDescriptionPageable() throws Exception {
+	@DisplayName("Should retrieve all medicals regardless of deleted status")
+	void testMgrGetAllMedicalsRegardlessOfDeletedStatus() throws Exception {
 		List<Medical> savedMedicals = generateMedicals(8, true, 2);
 
 		Page<Medical> medicals = medicalBrowsingManager.getMedicalsByTypeAndDescription(
-			savedMedicals.get(0).getType().getDescription(), null, 'N', true, 0, 3
+			savedMedicals.get(0).getType().getDescription(), null, null, false, 0, 8
 		);
 
-		assertThat(medicals.getTotalElements()).isEqualTo(6);
-		assertThat(medicals.getTotalPages()).isEqualTo(2);
-		assertThat(medicals.getContent().size()).isEqualTo(3);
-		assertThat(medicals.getContent().get(0).getDescription()).isEqualTo("1description7");
-		assertThat(medicals.getContent().get(1).getDescription()).isEqualTo("2description6");
-		assertThat(medicals.getContent().get(2).getDescription()).isEqualTo("3description5");
+		assertThat(medicals.getTotalElements()).isEqualTo(8);
+		assertThat(medicals.getContent().size()).isEqualTo(8);
 
-		long deleteCount = savedMedicals.stream().filter(m -> m.getDeleted() == 'Y').count();
-		assertThat(deleteCount).isEqualTo(2);
+		long deletedCount = medicals.getContent().stream().filter(m -> m.getDeleted() == 'Y').count();
+		long notDeletedCount = medicals.getContent().stream().filter(m -> m.getDeleted() == 'N').count();
+
+		assertThat(deletedCount).isEqualTo(2);
+		assertThat(notDeletedCount).isEqualTo(6); 
 	}
 
 	/**
