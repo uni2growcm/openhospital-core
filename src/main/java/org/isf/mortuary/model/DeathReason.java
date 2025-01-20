@@ -31,6 +31,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+import org.isf.utils.db.Auditable;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
@@ -41,8 +42,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @AttributeOverride(name = "lastModifiedBy", column = @Column(name = "DTHR_LAST_MODIFIED_BY"))
 @AttributeOverride(name = "lastModifiedDate", column = @Column(name = "DTHR_LAST_MODIFIED_DATE"))
 @AttributeOverride(name = "active", column = @Column(name = "DTHR_ACTIVE"))
-
-public class DeathReason {
+public class DeathReason extends Auditable<String> {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

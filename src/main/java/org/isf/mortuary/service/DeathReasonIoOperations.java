@@ -45,7 +45,7 @@ public class DeathReasonIoOperations {
 	 * @throws OHServiceException
 	 */
 	public List<DeathReason> getAll() throws OHServiceException {
-		return deathReasonRepository.findAllWhereNotDeleted(false);
+		return deathReasonRepository.findByDeleted(false);
 	}
 
 	/**
@@ -55,7 +55,7 @@ public class DeathReasonIoOperations {
 	 * @throws OHServiceException
 	 */
 	public DeathReason getById(int id) throws OHServiceException {
-		return deathReasonRepository.findDeathReasonById(id, false);
+		return deathReasonRepository.findByIdAndDeleted(id, false);
 	}
 
 	/**

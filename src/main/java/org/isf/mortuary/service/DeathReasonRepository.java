@@ -26,16 +26,12 @@ import java.util.List;
 
 import org.isf.mortuary.model.DeathReason;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface DeathReasonRepository extends JpaRepository<DeathReason, Integer> {
 
-	@Query("select d from DeathReason d where d.id = :id and d.deleted = :deleted")
-	DeathReason findDeathReasonById(@Param("id") int id, @Param("deleted") boolean deleted);
+	List<DeathReason> findByDeleted(boolean deleted);
 
-	@Query("select d from DeathReason d where d.deleted = :deleted")
-	List<DeathReason> findAllWhereNotDeleted(@Param("deleted") boolean deleted);
+	DeathReason findByIdAndDeleted(int id, boolean deleted);
 }

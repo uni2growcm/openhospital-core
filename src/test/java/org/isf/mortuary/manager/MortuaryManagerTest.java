@@ -108,19 +108,6 @@ public class MortuaryManagerTest extends OHCoreTestCase {
 	}
 
 	@Test
-	void testMgrGetMortuariesWhereData() throws OHException, OHServiceException {
-		int totalElements = 10;
-		List<Death> savedDeaths = generateDeaths(totalElements, true, true);
-
-		LocalDateTime fromDate = LocalDateTime.of(2023, 1, 1, 0, 0, 0);
-		LocalDateTime toDate = LocalDateTime.of(2025, 3, 3, 0, 0, 0);
-
-		List<Death> mortuaries = mortuaryBrowserManager.getMortuariesWhereData("", "", fromDate, toDate, true, "");
-		assertThat(mortuaries).isNotNull();
-		assertThat(mortuaries.size()).isEqualTo(totalElements);
-	}
-
-	@Test
 	void testMgrGetMortuariesWhereDataPageable() throws OHException, OHServiceException {
 		int totalElements = 12;
 		List<Death> savedDeaths = generateDeaths(totalElements, true, true);
@@ -128,7 +115,7 @@ public class MortuaryManagerTest extends OHCoreTestCase {
 		LocalDateTime fromDate = LocalDateTime.of(2023, 1, 1, 0, 0, 0);
 		LocalDateTime toDate = LocalDateTime.of(2025, 3, 3, 0, 0, 0);
 
-		Page<Death> mortuariesPages = mortuaryBrowserManager.getMortuariesWhereDataPageable("", "", fromDate, toDate, "", true, 0, 3);
+		Page<Death> mortuariesPages = mortuaryBrowserManager.getMortuariesPages("", "", fromDate, toDate, "", true, 0, 3);
 
 		assertThat(mortuariesPages).isNotNull();
 		assertThat(mortuariesPages.getTotalElements()).isEqualTo(totalElements);

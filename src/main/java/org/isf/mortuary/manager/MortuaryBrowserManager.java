@@ -27,9 +27,7 @@ import java.util.List;
 
 import org.isf.mortuary.model.Death;
 import org.isf.mortuary.service.MortuaryIoOperations;
-import org.isf.utils.exception.OHException;
 import org.isf.utils.exception.OHServiceException;
-import org.isf.utils.time.TimeTools;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -44,10 +42,6 @@ public class MortuaryBrowserManager {
 		this.mortuaryIoOperations = mortuaryIoOperations;
 	}
 
-	public Death add(Death Mortuary) throws OHException {
-		return mortuaryIoOperations.add(Mortuary);
-	}
-
 	/**
 	 * Get all the {@link Death}s.
 	 * @return all the {@link Death}s.
@@ -58,50 +52,32 @@ public class MortuaryBrowserManager {
 	}
 
 	/**
-	 * Updates an existing {@link Death}.
-	 * @return {@link Death}.
-	 * @throws OHServiceException
+	 * Store the specified {@link Death}.
+	 * @param death the death  to store.
+	 * @return {@link Death} if the {@link Death} has been stored, null otherwise.
+	 * @throws OHServiceException if an error occurs during the store operation.
 	 */
-	public Death update(Death mortuary) throws OHServiceException {
-		return mortuaryIoOperations.update(mortuary);
+	public Death add(Death death) throws OHServiceException {
+		return mortuaryIoOperations.save(death);
 	}
 
 	/**
-	 * Delete the specified {@link Death}.
+	 * Updates an existing {@link Death}
+	 * @param death - the {@link Death} to update
+	 * @return {@link Death} has been updated
 	 * @throws OHServiceException
 	 */
-	public void delete(Death mortuary) throws OHServiceException {
-		mortuaryIoOperations.delete(mortuary);
+	public Death update(Death death) throws OHServiceException {
+		return mortuaryIoOperations.update(death);
 	}
 
 	/**
-	 * Retrieves all the {@link Death}s.<br>
-	 * <br>
-	 * @param patientName the patient name.
-	 * @param wardCode the code of provenance ward.
-	 * @param dateFrom the lower bound for the mortuary date range.
-	 * @param dateTo the upper bound for the mortuary date range.
-	 * @param deathReasonCode the reason of death.
-	 * @param isEnter to specify if it's admission date or discharge date
-	 * @return the retrieved mortuaries.
+	 * Delete {@link Death}
+	 * @param death
 	 * @throws OHServiceException
 	 */
-	public List<Death> getMortuariesWhereData(
-		String patientName,
-		String wardCode,
-		LocalDateTime dateFrom,
-		LocalDateTime dateTo,
-		boolean isEnter,
-		String deathReasonCode
-	) throws OHServiceException {
-		return mortuaryIoOperations.getMortuariesWhereData(
-			patientName,
-			wardCode,
-			TimeTools.truncateToSeconds(dateFrom),
-			TimeTools.truncateToSeconds(dateTo),
-			isEnter,
-			deathReasonCode
-		);
+	public void delete(Death death) throws OHServiceException {
+		mortuaryIoOperations.delete(death);
 	}
 
 	/**
@@ -118,7 +94,7 @@ public class MortuaryBrowserManager {
 	 * @return the retrieved a mortuaries page.
 	 * @throws OHServiceException
 	 */
-	public Page<Death> getMortuariesWhereDataPageable(
+	public Page<Death> getMortuariesPages(
 		String patientName,
 		String wardCode,
 		LocalDateTime dateFrom,
@@ -129,7 +105,7 @@ public class MortuaryBrowserManager {
 		int size
 	) throws OHServiceException {
 		Pageable pageable = PageRequest.of(page, size);
-		return mortuaryIoOperations.getMortuariesWhereDataPageable(
+		return mortuaryIoOperations.getMortuariesPages(
 			patientName,
 			wardCode,
 			dateFrom,
@@ -152,7 +128,7 @@ public class MortuaryBrowserManager {
 	 * @return the retrieved a mortuaries page.
 	 * @throws OHServiceException
 	 */
-	public Page<Death> searchPatientByName(
+	public Page<Death> getByPatientNameAndDates(
 		String patientName,
 		LocalDateTime dateFrom,
 		LocalDateTime dateTo,

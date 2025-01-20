@@ -46,16 +46,6 @@ public class MortuaryIoOperations {
 	}
 
 	/**
-	 * Store the specified {@link Death}.
-	 * @param mortuary the death  to store.
-	 * @return {@link Death} if the {@link Death} has been stored, null otherwise.
-	 * @throws OHException if an error occurs during the store operation.
-	 */
-	public Death add(Death mortuary) throws OHException {
-		return mortuaryRepository.save(mortuary);
-	}
-
-	/**
 	 * Get all the {@link Death}s.
 	 * @return a list of deaths.
 	 * @throws OHServiceException if an error occurs retrieving the deaths.
@@ -65,60 +55,41 @@ public class MortuaryIoOperations {
 	}
 
 	/**
+	 * Store the specified {@link Death}.
+	 * @param death the death  to store.
+	 * @return {@link Death} if the {@link Death} has been stored, null otherwise.
+	 * @throws OHException if an error occurs during the store operation.
+	 */
+	public Death save(Death death) throws OHServiceException {
+		return mortuaryRepository.save(death);
+	}
+
+	/**
 	 * Updates an existing {@link Death}
-	 * @param mortuary - the {@link Death} to update
+	 * @param death - the {@link Death} to update
 	 * @return {@link Death} has been updated
 	 * @throws OHServiceException
 	 */
-	public Death update(Death mortuary) throws OHServiceException {
-		return mortuaryRepository.save(mortuary);
+	public Death update(Death death) throws OHServiceException {
+		return mortuaryRepository.save(death);
 	}
 
 	/**
 	 * Delete {@link Death}
-	 * @param mortuary
+	 * @param death
 	 * @throws OHServiceException
 	 */
-	public void delete(Death mortuary) throws OHServiceException {
-		mortuaryRepository.delete(mortuary);
+	public void delete(Death death) throws OHServiceException {
+		mortuaryRepository.delete(death);
 	}
 
 	/**
-	 * Retrieves all the {@link Death}s.<br>
-	 * <br>
-	 * @param patientName the patient name.
-	 * @param wardCode the code of provenance ward.
-	 * @param dateFrom the lower bound for the mortuary date range.
-	 * @param dateTo the upper bound for the mortuary date range.
-	 * @param deathReasonCode the reason of death.
-	 * @param isEnter to specify if it's admission date or discharge date
-	 * @return the retrieved mortuaries.
+	 * Find {@link Death} by the specific id.
+	 * @return {@link Death}.
 	 * @throws OHServiceException
 	 */
-	public List<Death> getMortuariesWhereData(
-		String patientName,
-		String wardCode,
-		LocalDateTime dateFrom,
-		LocalDateTime dateTo,
-		boolean isEnter,
-		String deathReasonCode
-	) throws OHServiceException {
-		if (isEnter) {
-			return mortuaryRepository.findAllByPatientNameAndWardCodeAndAdmissionDateBetweenAndDeathReasonCode(
-				patientName,
-				wardCode,
-				dateFrom,
-				dateTo,
-				deathReasonCode
-			);
-		}
-		return mortuaryRepository.findAllByPatientNameAndWardCodeAndDischargeDateBetweenAndDeathReasonCode(
-			patientName,
-			wardCode,
-			dateFrom,
-			dateTo,
-			deathReasonCode
-		);
+	public Death findById(int id) throws OHServiceException {
+		return mortuaryRepository.findById(id).orElse(null);
 	}
 
 	/**
@@ -134,7 +105,7 @@ public class MortuaryIoOperations {
 	 * @return the retrieved a mortuaries page.
 	 * @throws OHServiceException
 	 */
-	public Page<Death> getMortuariesWhereDataPageable(
+	public Page<Death> getMortuariesPages(
 		String patientName,
 		String wardCode,
 		LocalDateTime dateFrom,
@@ -185,23 +156,5 @@ public class MortuaryIoOperations {
 			return mortuaryRepository.findAllByPatientNameContainsAndAdmissionDateBetween(patientName, dateFrom, dateTo, pageable);
 		}
 		return mortuaryRepository.findAllByPatientNameContainsAndDischargeDateBetween(patientName, dateFrom, dateTo, pageable);
-	}
-
-	/**
-	 * Store {@link Death}.
-	 * @return {@link Death}.
-	 * @throws OHServiceException
-	 */
-	public Death save(Death mortuary) throws OHServiceException {
-		return mortuaryRepository.save(mortuary);
-	}
-
-	/**
-	 * Find {@link Death} by the specific id.
-	 * @return {@link Death}.
-	 * @throws OHServiceException
-	 */
-	public Death findById(int id) throws OHServiceException {
-		return mortuaryRepository.findById(id).orElse(null);
 	}
 }
