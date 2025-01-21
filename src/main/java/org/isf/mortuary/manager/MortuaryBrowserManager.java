@@ -73,7 +73,7 @@ public class MortuaryBrowserManager {
 
 	/**
 	 * Delete {@link Death}
-	 * @param death
+	 * @param death - the {@link Death} to delete
 	 * @throws OHServiceException
 	 */
 	public void delete(Death death) throws OHServiceException {

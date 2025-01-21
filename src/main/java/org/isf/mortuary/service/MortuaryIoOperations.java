@@ -27,7 +27,6 @@ import java.util.List;
 
 import org.isf.mortuary.model.Death;
 import org.isf.utils.db.TranslateOHServiceException;
-import org.isf.utils.exception.OHException;
 import org.isf.utils.exception.OHServiceException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -58,7 +57,7 @@ public class MortuaryIoOperations {
 	 * Store the specified {@link Death}.
 	 * @param death the death  to store.
 	 * @return {@link Death} if the {@link Death} has been stored, null otherwise.
-	 * @throws OHException if an error occurs during the store operation.
+	 * @throws OHServiceException if an error occurs during the store operation.
 	 */
 	public Death save(Death death) throws OHServiceException {
 		return mortuaryRepository.save(death);
@@ -76,7 +75,7 @@ public class MortuaryIoOperations {
 
 	/**
 	 * Delete {@link Death}
-	 * @param death
+	 * @param death - the {@link Death} to delete
 	 * @throws OHServiceException
 	 */
 	public void delete(Death death) throws OHServiceException {

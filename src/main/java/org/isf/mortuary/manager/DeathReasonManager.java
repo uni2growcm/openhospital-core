@@ -23,9 +23,7 @@
 package org.isf.mortuary.manager;
 
 import java.util.List;
-import java.util.Optional;
 
-import org.isf.mortuary.model.Death;
 import org.isf.mortuary.model.DeathReason;
 import org.isf.mortuary.service.DeathReasonIoOperations;
 import org.isf.utils.exception.OHServiceException;
