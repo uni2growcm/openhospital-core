@@ -58,7 +58,7 @@ public class MortuaryBrowserManager {
 	 * @throws OHServiceException if an error occurs during the store operation.
 	 */
 	public Death add(Death death) throws OHServiceException {
-		return mortuaryIoOperations.save(death);
+		return mortuaryIoOperations.add(death);
 	}
 
 	/**
@@ -94,7 +94,7 @@ public class MortuaryBrowserManager {
 	 * @return the retrieved a mortuaries page.
 	 * @throws OHServiceException
 	 */
-	public Page<Death> getMortuariesPages(
+	public Page<Death> getMortuariesPageable(
 		String patientName,
 		String wardCode,
 		LocalDateTime dateFrom,
@@ -105,7 +105,7 @@ public class MortuaryBrowserManager {
 		int size
 	) throws OHServiceException {
 		Pageable pageable = PageRequest.of(page, size);
-		return mortuaryIoOperations.getMortuariesPages(
+		return mortuaryIoOperations.getMortuariesPageable(
 			patientName,
 			wardCode,
 			dateFrom,

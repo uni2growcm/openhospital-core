@@ -115,7 +115,7 @@ public class MortuaryManagerTest extends OHCoreTestCase {
 		LocalDateTime fromDate = LocalDateTime.of(2023, 1, 1, 0, 0, 0);
 		LocalDateTime toDate = LocalDateTime.of(2025, 3, 3, 0, 0, 0);
 
-		Page<Death> mortuariesPages = mortuaryBrowserManager.getMortuariesPages("", "", fromDate, toDate, "", true, 0, 3);
+		Page<Death> mortuariesPages = mortuaryBrowserManager.getMortuariesPageable("", "", fromDate, toDate, "", true, 0, 3);
 
 		assertThat(mortuariesPages).isNotNull();
 		assertThat(mortuariesPages.getTotalElements()).isEqualTo(totalElements);

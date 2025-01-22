@@ -59,7 +59,7 @@ public class MortuaryIoOperations {
 	 * @return {@link Death} if the {@link Death} has been stored, null otherwise.
 	 * @throws OHServiceException if an error occurs during the store operation.
 	 */
-	public Death save(Death death) throws OHServiceException {
+	public Death add(Death death) throws OHServiceException {
 		return mortuaryRepository.save(death);
 	}
 
@@ -104,7 +104,7 @@ public class MortuaryIoOperations {
 	 * @return the retrieved a mortuaries page.
 	 * @throws OHServiceException
 	 */
-	public Page<Death> getMortuariesPages(
+	public Page<Death> getMortuariesPageable(
 		String patientName,
 		String wardCode,
 		LocalDateTime dateFrom,
