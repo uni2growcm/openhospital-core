@@ -86,7 +86,7 @@ public class MortuaryManagerTest extends OHCoreTestCase {
 		LocalDateTime fromDate = LocalDateTime.of(2023, 1, 1, 0, 0, 0);
 		LocalDateTime toDate = LocalDateTime.of(2025, 3, 3, 0, 0, 0);
 
-		Page<Death> deaths = repository.findAllByAdmissionDateBetweenOrDischargeDateBetween(fromDate, toDate, fromDate, toDate, PageRequest.of(0, 3));
+		Page<Death> deaths = repository.findAllByAdmissionDateBetweenOrEstimatedDischargeDateBetween(fromDate, toDate, fromDate, toDate, PageRequest.of(0, 3));
 
 		assertThat(deaths.getContent().size()).isEqualTo(3);
 	}
@@ -98,7 +98,7 @@ public class MortuaryManagerTest extends OHCoreTestCase {
 		LocalDateTime fromDate = LocalDateTime.of(2023, 1, 1, 0, 0, 0);
 		LocalDateTime toDate = LocalDateTime.of(2025, 3, 3, 0, 0, 0);
 
-		Page<Death> deaths = repository.findAllByPatientNameContainsAndWardCodeContainsAndDischargeDateBetweenAndDeathReasonCodeContains("FirstName 0", "w",
+		Page<Death> deaths = repository.findAllByPatientNameContainsAndWardCodeContainsAndEstimatedDischargeDateBetweenAndDeathReasonCodeContains("FirstName 0", "w",
 			fromDate, toDate, "CARD001", PageRequest.of(0, 3));
 
 		assertThat(deaths.getContent().size()).isEqualTo(1);

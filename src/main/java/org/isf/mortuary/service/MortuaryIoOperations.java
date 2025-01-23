@@ -123,7 +123,7 @@ public class MortuaryIoOperations {
 				pageable
 			);
 		}
-		return mortuaryRepository.findAllByPatientNameContainsAndWardCodeContainsAndDischargeDateBetweenAndDeathReasonCodeContains(
+		return mortuaryRepository.findAllByPatientNameContainsAndWardCodeContainsAndEstimatedDischargeDateBetweenAndDeathReasonCodeContains(
 			patientName,
 			wardCode,
 			dateFrom,
@@ -154,6 +154,6 @@ public class MortuaryIoOperations {
 		if (isEnter) {
 			return mortuaryRepository.findAllByPatientNameContainsAndAdmissionDateBetween(patientName, dateFrom, dateTo, pageable);
 		}
-		return mortuaryRepository.findAllByPatientNameContainsAndDischargeDateBetween(patientName, dateFrom, dateTo, pageable);
+		return mortuaryRepository.findAllByPatientNameContainsAndEstimatedDischargeDateBetween(patientName, dateFrom, dateTo, pageable);
 	}
 }
