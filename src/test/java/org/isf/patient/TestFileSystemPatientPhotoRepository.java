@@ -23,11 +23,11 @@ package org.isf.patient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.io.File;
 import java.lang.reflect.Method;
 import java.sql.Blob;
 
 import org.isf.OHCoreTestCase;
+import org.isf.generaldata.GeneralData;
 import org.isf.patient.model.Patient;
 import org.isf.patient.service.FileSystemPatientPhotoRepository;
 import org.isf.patient.service.PatientIoOperationRepository;
@@ -36,15 +36,9 @@ import org.isf.utils.exception.OHException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
 class TestFileSystemPatientPhotoRepository extends OHCoreTestCase {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(TestFileSystemPatientPhotoRepository.class);
 
 	private static TestPatient testPatient;
 
@@ -62,6 +56,7 @@ class TestFileSystemPatientPhotoRepository extends OHCoreTestCase {
 
 	@BeforeEach
 	void setUp() {
+		GeneralData.initialize(); // needed for GeneralData.PATIENTPHOTSTORAGE
 		cleanH2InMemoryDb();
 	}
 
@@ -74,9 +69,6 @@ class TestFileSystemPatientPhotoRepository extends OHCoreTestCase {
 	@Test
 	void testLoadInPatient() throws Exception {
 		Integer code = setupTestPatient(false);
-		LOGGER.info("Working Directory: {}", System.getProperty("user.dir"));
-		LOGGER.info("File Path: {}", new File("rsc-test/patient").getAbsolutePath());
-		LOGGER.info("patientIoOperation: {}", patientIoOperation);
 		Patient patient = patientIoOperation.getPatient(code);
 		fileSystemPatientPhotoRepository.loadInPatient(patient, "rsc-test/patient");
 	}
