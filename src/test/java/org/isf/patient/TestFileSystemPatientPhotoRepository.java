@@ -67,27 +67,29 @@ class TestFileSystemPatientPhotoRepository extends OHCoreTestCase {
 	@Test
 	void testLoadInPatient() throws Exception {
 		Integer code = setupTestPatient(false);
+		assertThat(code).isNotNull();
 		Patient patient = patientIoOperation.getPatient(code);
+		assertThat(patient).isNotNull();
 		fileSystemPatientPhotoRepository.loadInPatient(patient, "rsc-test/patient");
 	}
 
 	@Test
 	void testSaveAndDelete() throws Exception {
 		Blob blob = getBlob();
-		fileSystemPatientPhotoRepository.save("rsc-test/patient", 2, blob.getBytes(1, (int)blob.length()));
+		fileSystemPatientPhotoRepository.save("rsc-test/patient", 2, blob.getBytes(1, (int) blob.length()));
 		fileSystemPatientPhotoRepository.delete("rsc-test/patient", 2);
 	}
 
 	private Blob getBlob() throws Exception {
 		Method method = fileSystemPatientPhotoRepository.getClass().getDeclaredMethod("load", Integer.class, String.class);
 		method.setAccessible(true);
-		Blob blob = (Blob)method.invoke(fileSystemPatientPhotoRepository, 1, "rsc-test/patient");
+		Blob blob = (Blob) method.invoke(fileSystemPatientPhotoRepository, 1, "rsc-test/patient");
 		return blob;
 	}
 
-
 	private Integer setupTestPatient(boolean usingSet) throws OHException {
 		Patient patient = testPatient.setup(usingSet);
+		assertThat(patient).isNotNull();
 		patientIoOperationRepository.saveAndFlush(patient);
 		return patient.getCode();
 	}
