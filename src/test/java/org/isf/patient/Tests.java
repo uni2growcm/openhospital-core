@@ -44,6 +44,8 @@ import org.isf.patient.model.Patient;
 import org.isf.patient.model.PatientProfilePhoto;
 import org.isf.patient.service.PatientIoOperationRepository;
 import org.isf.patient.service.PatientIoOperations;
+import org.isf.reductionplan.model.ReductionPlan;
+import org.isf.reductionplan.service.ReductionplanIoOperationRepository;
 import org.isf.utils.exception.OHException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.pagination.PagedResponse;
@@ -66,6 +68,8 @@ class Tests extends OHCoreTestCase {
 	PatientIoOperationRepository patientIoOperationRepository;
 	@Autowired
 	PatientBrowserManager patientBrowserManager;
+	@Autowired
+	ReductionplanIoOperationRepository reductionplanIoOperationRepository;
 
 	@BeforeAll
 	static void setUpClass() {
@@ -242,12 +246,39 @@ class Tests extends OHCoreTestCase {
 	}
 
 	@Test
+	void testIoNewPatientWithReductionPlan() throws Exception {
+		Patient patient = testPatient.setup(true);
+		ReductionPlan reductionPlan = new ReductionPlan("Reduction plan", 2,2,2,2);
+		reductionPlan = reductionplanIoOperationRepository.save(reductionPlan);
+		patient.setReductionPlan(reductionPlan);
+		patient = patientIoOperationRepository.save(patient);
+		Patient savedPatient = patientIoOperationRepository.getReferenceById(patient.getCode());
+		assertThat(savedPatient.getReductionPlan()).isEqualTo(reductionPlan);
+	}
+
+	@Test
 	void testIoUpdatePatient() throws Exception {
 		Integer code = setupTestPatient(false);
 		Patient patient = patientIoOperation.getPatient(code);
 		patient.setFirstName("someNewFirstName");
 		Patient updatedPatient = patientIoOperation.updatePatient(patient);
 		assertThat(updatedPatient.getFirstName()).isEqualTo(patient.getFirstName());
+	}
+
+	@Test
+	void testIoUpdatePatientWithReductionPlan() throws Exception {
+		Patient patient = testPatient.setup(true);
+		ReductionPlan reductionPlan = new ReductionPlan("Initial Plan", 2, 3, 4, 5);
+		reductionPlan = reductionplanIoOperationRepository.save(reductionPlan);
+		patient.setReductionPlan(reductionPlan);
+		ReductionPlan reductionPlanNew = new ReductionPlan("Updated Plan", 2, 3, 4, 5);
+		reductionPlanNew = reductionplanIoOperationRepository.save(reductionPlanNew);
+		patient.setReductionPlan(reductionPlanNew);
+		patient = patientIoOperationRepository.save(patient);
+		Patient updatedPatient = patientIoOperationRepository.getReferenceById(patient.getCode());
+		assertThat(updatedPatient.getReductionPlan()).isNotNull();
+		assertThat(updatedPatient.getReductionPlan()).isEqualTo(reductionPlanNew);
+		assertThat(updatedPatient.getReductionPlan().getId()).isEqualTo(reductionPlanNew.getId());
 	}
 
 	@Test
