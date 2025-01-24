@@ -36,11 +36,15 @@ import org.isf.utils.exception.OHException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 class TestFileSystemPatientPhotoRepository extends OHCoreTestCase {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(TestFileSystemPatientPhotoRepository.class);
 
 	private static TestPatient testPatient;
 
@@ -70,9 +74,9 @@ class TestFileSystemPatientPhotoRepository extends OHCoreTestCase {
 	@Test
 	void testLoadInPatient() throws Exception {
 		Integer code = setupTestPatient(false);
-		System.out.println("Working Directory: " + System.getProperty("user.dir"));
-		System.out.println("File Path: " + new File("rsc-test/patient").getAbsolutePath());
-		System.out.println("patientIoOperation: " + patientIoOperation);
+		LOGGER.info("Working Directory: {}", System.getProperty("user.dir"));
+		LOGGER.info("File Path: {}", new File("rsc-test/patient").getAbsolutePath());
+		LOGGER.info("patientIoOperation: {}", patientIoOperation);
 		Patient patient = patientIoOperation.getPatient(code);
 		fileSystemPatientPhotoRepository.loadInPatient(patient, "rsc-test/patient");
 	}
