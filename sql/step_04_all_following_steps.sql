@@ -109,4 +109,4 @@ source step_a112_users_and_groups_soft_deletion.sql;
 source step_a113_alter_table_medicalinventory.sql;
 source step_a114_medical_type_soft_deletion.sql;
 source u2g_update/step_x_create_table_for_reductionplan.sql;
-source u2g_update/step_x1_alter_table_patient_foreign_key.sql;
+source u2g_update/step_x_add_reduction_plan_in_table_patient.sql;
