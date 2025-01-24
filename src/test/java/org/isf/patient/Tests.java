@@ -252,7 +252,7 @@ class Tests extends OHCoreTestCase {
 		reductionPlan = reductionplanIoOperationRepository.save(reductionPlan);
 		patient.setReductionPlan(reductionPlan);
 		patient = patientBrowserManager.savePatient(patient);
-		Patient savedPatient = patientIoOperationRepository.getReferenceById(patient.getCode());
+		Patient savedPatient = patientBrowserManager.getPatientById(patient.getCode());
 		assertThat(savedPatient.getReductionPlan()).isEqualTo(reductionPlan);
 	}
 
