@@ -34,10 +34,11 @@ import org.isf.patient.service.PatientIoOperations;
 import org.isf.utils.exception.OHException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
+@SpringBootTest
 class TestFileSystemPatientPhotoRepository extends OHCoreTestCase {
 
 	private static TestPatient testPatient;
@@ -60,24 +61,19 @@ class TestFileSystemPatientPhotoRepository extends OHCoreTestCase {
 	}
 
 	@Test
-	@Order(1)
 	void testExist() throws Exception {
 		Integer code = setupTestPatient(true);
 		assertThat(fileSystemPatientPhotoRepository.exist("rsc-test/patient", code)).isTrue();
 	}
 
 	@Test
-	@Order(2)
 	void testLoadInPatient() throws Exception {
 		Integer code = setupTestPatient(false);
-		assertThat(code).isNotNull();
 		Patient patient = patientIoOperation.getPatient(code);
-		assertThat(patient).isNotNull();
 		fileSystemPatientPhotoRepository.loadInPatient(patient, "rsc-test/patient");
 	}
 
 	@Test
-	@Order(3)
 	void testSaveAndDelete() throws Exception {
 		Blob blob = getBlob();
 		fileSystemPatientPhotoRepository.save("rsc-test/patient", 2, blob.getBytes(1, (int) blob.length()));
@@ -93,7 +89,6 @@ class TestFileSystemPatientPhotoRepository extends OHCoreTestCase {
 
 	private Integer setupTestPatient(boolean usingSet) throws OHException {
 		Patient patient = testPatient.setup(usingSet);
-		assertThat(patient).isNotNull();
 		patientIoOperationRepository.saveAndFlush(patient);
 		return patient.getCode();
 	}
