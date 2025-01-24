@@ -23,6 +23,7 @@ package org.isf.patient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.io.File;
 import java.lang.reflect.Method;
 import java.sql.Blob;
 
@@ -69,6 +70,9 @@ class TestFileSystemPatientPhotoRepository extends OHCoreTestCase {
 	@Test
 	void testLoadInPatient() throws Exception {
 		Integer code = setupTestPatient(false);
+		System.out.println("Working Directory: " + System.getProperty("user.dir"));
+		System.out.println("File Path: " + new File("rsc-test/patient").getAbsolutePath());
+		System.out.println("patientIoOperation: " + patientIoOperation);
 		Patient patient = patientIoOperation.getPatient(code);
 		fileSystemPatientPhotoRepository.loadInPatient(patient, "rsc-test/patient");
 	}
