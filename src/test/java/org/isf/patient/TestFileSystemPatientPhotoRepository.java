@@ -34,6 +34,7 @@ import org.isf.patient.service.PatientIoOperations;
 import org.isf.utils.exception.OHException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -59,12 +60,14 @@ class TestFileSystemPatientPhotoRepository extends OHCoreTestCase {
 	}
 
 	@Test
+	@Order(1)
 	void testExist() throws Exception {
 		Integer code = setupTestPatient(true);
 		assertThat(fileSystemPatientPhotoRepository.exist("rsc-test/patient", code)).isTrue();
 	}
 
 	@Test
+	@Order(2)
 	void testLoadInPatient() throws Exception {
 		Integer code = setupTestPatient(false);
 		assertThat(code).isNotNull();
@@ -74,6 +77,7 @@ class TestFileSystemPatientPhotoRepository extends OHCoreTestCase {
 	}
 
 	@Test
+	@Order(3)
 	void testSaveAndDelete() throws Exception {
 		Blob blob = getBlob();
 		fileSystemPatientPhotoRepository.save("rsc-test/patient", 2, blob.getBytes(1, (int) blob.length()));
