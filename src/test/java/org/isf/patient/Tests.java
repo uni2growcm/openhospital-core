@@ -271,7 +271,7 @@ class Tests extends OHCoreTestCase {
 		ReductionPlan reductionPlan = new ReductionPlan("Initial Plan", 2, 3, 4, 5);
 		reductionPlan = reductionplanIoOperationRepository.save(reductionPlan);
 		patient.setReductionPlan(reductionPlan);
-		ReductionPlan reductionPlanNew = new ReductionPlan("Updated Plan", 2, 3, 4, 5);
+		ReductionPlan reductionPlanNew = new ReductionPlan("Updated Plan", 20, 0, 0, 50);
 		reductionPlanNew = reductionplanIoOperationRepository.save(reductionPlanNew);
 		patient.setReductionPlan(reductionPlanNew);
 		patient = patientIoOperationRepository.save(patient);
