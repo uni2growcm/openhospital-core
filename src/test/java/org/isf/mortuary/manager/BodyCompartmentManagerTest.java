@@ -41,7 +41,7 @@ public class BodyCompartmentManagerTest  extends OHCoreTestCase {
 	private static TestBodyCompartment testBodyCompartment;
 
 	@Autowired
-	BodyComportmentManager bodyComportmentManager;
+	BodyCompartmentManager bodyComportmentManager;
 
 	@Autowired
 	BodyCompartmentIoOperations bodyCompartmentIoOperations;

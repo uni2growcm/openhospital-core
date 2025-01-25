@@ -26,15 +26,16 @@ import java.util.List;
 
 import org.isf.mortuary.model.BodyCompartment;
 import org.isf.mortuary.service.BodyCompartmentIoOperations;
+import org.isf.mortuarystays.model.MortuaryStay;
 import org.isf.utils.exception.OHServiceException;
 import org.springframework.stereotype.Component;
 
 @Component
-public class BodyComportmentManager {
+public class BodyCompartmentManager {
 
 	private final BodyCompartmentIoOperations bodyCompartmentIoOperations;
 
-	public BodyComportmentManager(BodyCompartmentIoOperations deathReasonIoOperations) {
+	public BodyCompartmentManager(BodyCompartmentIoOperations deathReasonIoOperations) {
 		this.bodyCompartmentIoOperations = deathReasonIoOperations;
 	}
 
@@ -87,4 +88,15 @@ public class BodyComportmentManager {
 		bodyCompartmentFound.setDescription(bodyCompartment.getDescription());
 		return bodyCompartmentIoOperations.update(bodyCompartmentFound);
 	}
+
+	/**
+	 * Checks if the code is already in use.
+	 * @param code - the {@link BodyCompartment} code
+	 * @return {@code true} if the code is already in use, {@code false} otherwise
+	 * @throws OHServiceException
+	 */
+	public boolean isCodePresent(String code) throws OHServiceException {
+		return bodyCompartmentIoOperations.isCodePresent(code);
+	}
+
 }

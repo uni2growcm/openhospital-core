@@ -15,25 +15,25 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Entity
 @Table(name = "OH_BODY_COMPARTMENT")
 @EntityListeners(AuditingEntityListener.class)
-@AttributeOverride(name = "createdBy", column = @Column(name = "DTHR_CREATED_BY", updatable = false))
-@AttributeOverride(name = "createdDate", column = @Column(name = "DTHR_CREATED_DATE", updatable = false))
-@AttributeOverride(name = "lastModifiedBy", column = @Column(name = "DTHR_LAST_MODIFIED_BY"))
-@AttributeOverride(name = "lastModifiedDate", column = @Column(name = "DTHR_LAST_MODIFIED_DATE"))
-@AttributeOverride(name = "active", column = @Column(name = "DTHR_ACTIVE"))
+@AttributeOverride(name = "createdBy", column = @Column(name = "BC_CREATED_BY", updatable = false))
+@AttributeOverride(name = "createdDate", column = @Column(name = "BC_CREATED_DATE", updatable = false))
+@AttributeOverride(name = "lastModifiedBy", column = @Column(name = "BC_LAST_MODIFIED_BY"))
+@AttributeOverride(name = "lastModifiedDate", column = @Column(name = "BC_LAST_MODIFIED_DATE"))
+@AttributeOverride(name = "active", column = @Column(name = "BC_ACTIVE"))
 public class BodyCompartment extends Auditable<String> {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "DTHR_ID")
+	@Column(name = "BC_ID")
 	private int id;
 
-	@Column(name = "DTHR_CODE")
+	@Column(name = "BC_CODE")
 	private String code;
 
-	@Column(name = "DTHR_DESC")
+	@Column(name = "BC_DESC")
 	private String description;
 
-	@Column(name = "DTHR_DELETED")
+	@Column(name = "BC_DELETED")
 	private boolean deleted;
 
 	public BodyCompartment() {

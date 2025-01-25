@@ -33,7 +33,7 @@ public interface BodyCompartmentRepository extends JpaRepository<BodyCompartment
 
 	List<BodyCompartment> findByDeleted(boolean deleted);
 
-	BodyCompartment findByIDAndDeleted(int id, boolean deleted);
+	BodyCompartment findByIdAndDeleted(int id, boolean deleted);
 
 	BodyCompartment findByCodeAndDeleted(String code, boolean deleted);
 }

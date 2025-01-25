@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.isf.generaldata.MessageBundle;
 import org.isf.mortuary.model.BodyCompartment;
+import org.isf.mortuarystays.model.MortuaryStay;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.model.OHExceptionMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,7 +58,7 @@ public class BodyCompartmentIoOperations {
 	 * @throws OHServiceException
 	 */
 	public BodyCompartment getById(int id) throws OHServiceException {
-		return bodyCompartmentRepository.findByIDAndDeleted(id, false);
+		return bodyCompartmentRepository.findByIdAndDeleted(id, false);
 	}
 
 	/**
@@ -105,5 +106,21 @@ public class BodyCompartmentIoOperations {
 			return bodyCompartmentRepository.findByCodeAndDeleted(code, false);
 		}
 		throw new OHServiceException(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuarystays.codemostnotbenull.msg")));
+	}
+
+	/**
+	 * Checks if the code is already in use.
+	 *
+	 * @param code - the {@link BodyCompartment} code
+	 * @return {@code true} if the code is already in use and deleted is false, {@code false} otherwise
+	 * @throws OHServiceException
+	 */
+	public boolean isCodePresent(String code) throws OHServiceException {
+		boolean existed = false;
+		BodyCompartment bodyCompartment = getByCode(code);
+		if (bodyCompartment != null) {
+			existed = true;
+		}
+		return existed;
 	}
 }
