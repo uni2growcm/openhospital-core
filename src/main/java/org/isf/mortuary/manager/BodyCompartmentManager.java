@@ -28,6 +28,7 @@ import org.isf.utils.exception.OHServiceException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -90,7 +91,7 @@ public class BodyCompartmentManager {
 	 * @throws OHServiceException if {@label label} is {@literal null}
 	 */
 	public Page<BodyCompartment> getByLabelPageable(String label, int page, int size) throws OHServiceException {
-		Pageable pageable = PageRequest.of(page, size);
+		Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdDate"));
 		return bodyCompartmentIoOperations.getByCodePageable(label, pageable);
 	}
 }
