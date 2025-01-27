@@ -29,7 +29,7 @@ import org.isf.utils.exception.OHException;
 
 public class TestBodyCompartment {
 	private final int id = 1;
-	private final String code = "BC001";
+	private final String label = "BC001";
 	private final String description = "Casier de la salle A";
 	private final boolean deleted = false;
 
@@ -40,21 +40,21 @@ public class TestBodyCompartment {
 			bodyCompartment = new BodyCompartment();
 			setParameters(bodyCompartment);
 		} else {
-			bodyCompartment = new BodyCompartment(id, code, description, deleted);
+			bodyCompartment = new BodyCompartment(id, label, description, deleted);
 		}
 		return bodyCompartment;
 	}
 
 	public void setParameters(BodyCompartment bodyCompartment) {
 		bodyCompartment.setId(id);
-		bodyCompartment.setCode(code);
+		bodyCompartment.setLabel(label);
 		bodyCompartment.setDescription(description);
 		bodyCompartment.setDeleted(deleted);
 	}
 
 	public void check(BodyCompartment bodyCompartment) {
 		assertThat(bodyCompartment.getId()).isEqualTo(id);
-		assertThat(bodyCompartment.getCode()).isEqualTo(code);
+		assertThat(bodyCompartment.getLabel()).isEqualTo(label);
 		assertThat(bodyCompartment.getDescription()).isEqualTo(description);
 	}
 }

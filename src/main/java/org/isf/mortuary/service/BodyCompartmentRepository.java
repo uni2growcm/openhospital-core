@@ -25,15 +25,15 @@ package org.isf.mortuary.service;
 import java.util.List;
 
 import org.isf.mortuary.model.BodyCompartment;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface BodyCompartmentRepository extends JpaRepository<BodyCompartment, Integer> {
 
-	List<BodyCompartment> findByDeleted(boolean deleted);
+	BodyCompartment findByLabelAndDeleted(String label, boolean deleted);
 
-	BodyCompartment findByIdAndDeleted(int id, boolean deleted);
-
-	BodyCompartment findByCodeAndDeleted(String code, boolean deleted);
+	Page<BodyCompartment> findByLabelContainsAndDeleted(String label, boolean deleted, Pageable pageable);
 }

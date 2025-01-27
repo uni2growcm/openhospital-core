@@ -13,7 +13,7 @@ import org.isf.utils.db.Auditable;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
-@Table(name = "OH_BODY_COMPARTMENT")
+@Table(name = "OH_BODYCOMPARTMENT")
 @EntityListeners(AuditingEntityListener.class)
 @AttributeOverride(name = "createdBy", column = @Column(name = "BC_CREATED_BY", updatable = false))
 @AttributeOverride(name = "createdDate", column = @Column(name = "BC_CREATED_DATE", updatable = false))
@@ -27,8 +27,8 @@ public class BodyCompartment extends Auditable<String> {
 	@Column(name = "BC_ID")
 	private int id;
 
-	@Column(name = "BC_CODE")
-	private String code;
+	@Column(name = "BC_LABEL")
+	private String label;
 
 	@Column(name = "BC_DESC")
 	private String description;
@@ -41,7 +41,7 @@ public class BodyCompartment extends Auditable<String> {
 	}
 
 	public BodyCompartment(String code, String description, boolean deleted) {
-		this.code = code;
+		this.label = code;
 		this.description = description;
 		this.deleted = deleted;
 	}
@@ -57,11 +57,11 @@ public class BodyCompartment extends Auditable<String> {
 	public void setId(int id) {
 		this.id = id;
 	}
-	public String getCode() {
-		return code;
+	public String getLabel() {
+		return label;
 	}
-	public void setCode(String code) {
-		this.code = code;
+	public void setLabel(String label) {
+		this.label = label;
 	}
 	public String getDescription() {
 		return description;
@@ -79,7 +79,7 @@ public class BodyCompartment extends Auditable<String> {
 	@Override
 	public String toString() {
 		return "BodyCompartment{" +
-			"code='" + code + '\'' +
+			"code='" + label + '\'' +
 			", description='" + description + '\'' +
 			'}';
 	}

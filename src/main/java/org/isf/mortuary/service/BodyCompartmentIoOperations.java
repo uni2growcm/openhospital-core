@@ -22,14 +22,13 @@
 
 package org.isf.mortuary.service;
 
-import java.util.List;
-
 import org.isf.generaldata.MessageBundle;
 import org.isf.mortuary.model.BodyCompartment;
-import org.isf.mortuarystays.model.MortuaryStay;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.model.OHExceptionMessage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -40,25 +39,6 @@ public class BodyCompartmentIoOperations {
 	@Autowired
 	public BodyCompartmentIoOperations(BodyCompartmentRepository bodyCompartmentRepository) {
 		BodyCompartmentIoOperations.bodyCompartmentRepository = bodyCompartmentRepository;
-	}
-
-	/**
-	 * Get all the {@link BodyCompartment}s.
-	 * @return all the {@link BodyCompartment}s.
-	 * @throws OHServiceException
-	 */
-	public List<BodyCompartment> getAll() throws OHServiceException {
-		return bodyCompartmentRepository.findByDeleted(false);
-	}
-
-	/**
-	 * Get a specific {@link BodyCompartment} by id.
-	 * @param id BodyCompartment specific id.
-	 * @return {@link BodyCompartment}.
-	 * @throws OHServiceException
-	 */
-	public BodyCompartment getById(int id) throws OHServiceException {
-		return bodyCompartmentRepository.findByIdAndDeleted(id, false);
 	}
 
 	/**
@@ -78,7 +58,7 @@ public class BodyCompartmentIoOperations {
 	 * @throws OHServiceException
 	 */
 	public BodyCompartment delete(BodyCompartment bodyCompartment) throws OHServiceException {
-		BodyCompartment bodyCompartmentFound = bodyCompartmentRepository.findByCodeAndDeleted(bodyCompartment.getCode(), false);
+		BodyCompartment bodyCompartmentFound = bodyCompartmentRepository.findByLabelAndDeleted(bodyCompartment.getLabel(), false);
 		bodyCompartmentFound.setDeleted(true);
 		return bodyCompartmentRepository.save(bodyCompartmentFound);
 	}
@@ -95,29 +75,43 @@ public class BodyCompartmentIoOperations {
 	}
 
 	/**
-	 * Returns the {@link BodyCompartment} based on code
+	 * Returns the {@link BodyCompartment} based on label
 	 *
-	 * @param code - the code, must not be {@literal null}
+	 * @param label - the label, must not be {@literal null}
 	 * @return the {@link BodyCompartment} or {@literal null} if none found
-	 * @throws OHServiceException if {@code code} is {@literal null}
+	 * @throws OHServiceException if {@label label} is {@literal null}
 	 */
-	public BodyCompartment getByCode(String code) throws OHServiceException {
-		if (code != null) {
-			return bodyCompartmentRepository.findByCodeAndDeleted(code, false);
+	public BodyCompartment getByCode(String label) throws OHServiceException {
+		if (label != null) {
+			return bodyCompartmentRepository.findByLabelAndDeleted(label, false);
 		}
-		throw new OHServiceException(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuarystays.codemostnotbenull.msg")));
+		throw new OHServiceException(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuarystays.labelmostnotbenull.msg")));
 	}
 
 	/**
-	 * Checks if the code is already in use.
+	 * Returns the page of {@link BodyCompartment} based on label
 	 *
-	 * @param code - the {@link BodyCompartment} code
-	 * @return {@code true} if the code is already in use and deleted is false, {@code false} otherwise
+	 * @param label - the label, must not be {@literal null}
+	 * @return the page of {@link BodyCompartment}
+	 * @throws OHServiceException if {@label label} is {@literal null}
+	 */
+	public Page<BodyCompartment> getByCodePageable(String label, Pageable pageable) throws OHServiceException {
+		if (label != null) {
+			return bodyCompartmentRepository.findByLabelContainsAndDeleted(label, false, pageable);
+		}
+		throw new OHServiceException(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuarystays.labelmostnotbenull.msg")));
+	}
+
+	/**
+	 * Checks if the label is already in use.
+	 *
+	 * @param label - the {@link BodyCompartment} label
+	 * @return {@label true} if the label is already in use and deleted is false, {@label false} otherwise
 	 * @throws OHServiceException
 	 */
-	public boolean isCodePresent(String code) throws OHServiceException {
+	public boolean isCodePresent(String label) throws OHServiceException {
 		boolean existed = false;
-		BodyCompartment bodyCompartment = getByCode(code);
+		BodyCompartment bodyCompartment = getByCode(label);
 		if (bodyCompartment != null) {
 			existed = true;
 		}

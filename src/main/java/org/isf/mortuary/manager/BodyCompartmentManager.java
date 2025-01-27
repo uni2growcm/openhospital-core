@@ -22,12 +22,12 @@
 
 package org.isf.mortuary.manager;
 
-import java.util.List;
-
 import org.isf.mortuary.model.BodyCompartment;
 import org.isf.mortuary.service.BodyCompartmentIoOperations;
-import org.isf.mortuarystays.model.MortuaryStay;
 import org.isf.utils.exception.OHServiceException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -37,25 +37,6 @@ public class BodyCompartmentManager {
 
 	public BodyCompartmentManager(BodyCompartmentIoOperations deathReasonIoOperations) {
 		this.bodyCompartmentIoOperations = deathReasonIoOperations;
-	}
-
-	/**
-	 * Get all the {@link BodyCompartment}s.
-	 * @return all the {@link BodyCompartment}s.
-	 * @throws OHServiceException
-	 */
-	public List<BodyCompartment> getAll() throws OHServiceException {
-		return bodyCompartmentIoOperations.getAll();
-	}
-
-	/**
-	 * Get a specific {@link BodyCompartment} by id.
-	 * @param id BodyCompartment specific id.
-	 * @return {@link BodyCompartment}.
-	 * @throws OHServiceException
-	 */
-	public BodyCompartment getById(int id) throws OHServiceException {
-		return bodyCompartmentIoOperations.getById(id);
 	}
 
 	/**
@@ -84,7 +65,7 @@ public class BodyCompartmentManager {
 	 * @throws OHServiceException if an error occurs during the update.
 	 */
 	public BodyCompartment update(BodyCompartment bodyCompartment) throws OHServiceException {
-		BodyCompartment bodyCompartmentFound = bodyCompartmentIoOperations.getByCode(bodyCompartment.getCode());
+		BodyCompartment bodyCompartmentFound = bodyCompartmentIoOperations.getByCode(bodyCompartment.getLabel());
 		bodyCompartmentFound.setDescription(bodyCompartment.getDescription());
 		return bodyCompartmentIoOperations.update(bodyCompartmentFound);
 	}
@@ -99,4 +80,17 @@ public class BodyCompartmentManager {
 		return bodyCompartmentIoOperations.isCodePresent(code);
 	}
 
+	/**
+	 * Returns the page of {@link BodyCompartment} based on label
+	 *
+	 * @param label - the label, must not be {@literal null}
+	 * @param page current page.
+	 * @param size the size of the page.
+	 * @return the page of {@link BodyCompartment}
+	 * @throws OHServiceException if {@label label} is {@literal null}
+	 */
+	public Page<BodyCompartment> getByLabelPageable(String label, int page, int size) throws OHServiceException {
+		Pageable pageable = PageRequest.of(page, size);
+		return bodyCompartmentIoOperations.getByCodePageable(label, pageable);
+	}
 }

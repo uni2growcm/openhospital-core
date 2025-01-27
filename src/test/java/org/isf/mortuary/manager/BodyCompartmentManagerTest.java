@@ -35,6 +35,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 
 public class BodyCompartmentManagerTest  extends OHCoreTestCase {
 
@@ -57,25 +58,19 @@ public class BodyCompartmentManagerTest  extends OHCoreTestCase {
 	}
 
 	@Test
-	void testGetById() throws Exception {
+	void testGetByLabelPageable() throws Exception {
 		int id = setupTestBodyCompartment(false);
-		BodyCompartment foundBodyCompartment = bodyComportmentManager.getById(id);
-		assertThat(foundBodyCompartment).isNotNull();
-		assertThat(foundBodyCompartment.getId()).isEqualTo(id);
-	}
-
-	@Test
-	void testGetAll() throws Exception {
-		int id = setupTestBodyCompartment(false);
-		List<BodyCompartment> deathReasons = bodyComportmentManager.getAll();
-		assertThat(deathReasons).isNotNull();
-		assertThat(deathReasons.size()).isEqualTo(1);
+		Page<BodyCompartment> bodyCompartment = bodyComportmentManager.getByLabelPageable("", 0,1);
+		assertThat(bodyCompartment).isNotNull();
+		assertThat(bodyCompartment.getTotalElements()).isEqualTo(1);
+		assertThat(bodyCompartment.getTotalPages()).isEqualTo(1);
+		assertThat(bodyCompartment.getContent().get(0).getId()).isEqualTo(id);
 	}
 
 	private int setupTestBodyCompartment(boolean usingSet) throws OHException, OHServiceException {
-		BodyCompartment deathReason = testBodyCompartment.setup(usingSet);
-		bodyCompartmentIoOperations.add(deathReason);
-		return deathReason.getId();
+		BodyCompartment bodyCompartment = testBodyCompartment.setup(usingSet);
+		bodyCompartmentIoOperations.add(bodyCompartment);
+		return bodyCompartment.getId();
 	}
 
 }
