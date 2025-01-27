@@ -33,6 +33,7 @@ import org.isf.generaldata.GeneralData;
 import org.isf.patient.model.Patient;
 import org.isf.patient.model.PatientMergedEvent;
 import org.isf.patient.model.PatientProfilePhoto;
+import org.isf.reductionplan.model.ReductionPlan;
 import org.isf.utils.db.TranslateOHServiceException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.model.OHExceptionMessage;
@@ -182,6 +183,8 @@ public class PatientIoOperations {
 	public Patient savePatient(Patient patient) {
 		boolean isLoadProfilePhotoFromDB = LOAD_FROM_DB.equals(GeneralData.PATIENTPHOTOSTORAGE);
 		if (isLoadProfilePhotoFromDB) {
+			ReductionPlan reductionPlan = patient.getReductionPlan();
+			patient.setReductionPlan(reductionPlan);
 			return repository.save(patient);
 		}
 		try {
