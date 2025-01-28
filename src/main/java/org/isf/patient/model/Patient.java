@@ -510,7 +510,9 @@ public class Patient extends Auditable<String> {
 	    return reductionPlan;
 	}
 
-	public void setReductionPlan(ReductionPlan reductionPlan){ this.reductionPlan = reductionPlan; }
+	public void setReductionPlan(ReductionPlan reductionPlan){
+	    this.reductionPlan = reductionPlan;
+	}
 
 	/**
 	 * field for "ui"
