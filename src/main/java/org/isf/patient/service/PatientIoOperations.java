@@ -183,8 +183,6 @@ public class PatientIoOperations {
 	public Patient savePatient(Patient patient) {
 		boolean isLoadProfilePhotoFromDB = LOAD_FROM_DB.equals(GeneralData.PATIENTPHOTOSTORAGE);
 		if (isLoadProfilePhotoFromDB) {
-			ReductionPlan reductionPlan = patient.getReductionPlan();
-			patient.setReductionPlan(reductionPlan);
 			return repository.save(patient);
 		}
 		try {
