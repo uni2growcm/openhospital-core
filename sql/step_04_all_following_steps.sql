@@ -111,5 +111,3 @@ source step_a114_medical_type_soft_deletion.sql;
 source u2g_update/step_01_add_column_medicaldsr.sql;
 source u2g_update/step_02_add_collumn_exa_target_to_table_oh_exam.sql;
 source u2g_update/step_03_mortuarystays_table.sql;
-source u2g_update/step_x_add_mortuary_tables_and_menu.sql;
-source u2g_update/step_x_add_bodycompartment_table.sql;
