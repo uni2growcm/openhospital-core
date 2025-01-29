@@ -1,0 +1,101 @@
+/*
+ * Open Hospital (www.open-hospital.org)
+ * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ *
+ * Open Hospital is a free and open source software for healthcare data management.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * https://www.gnu.org/licenses/gpl-3.0-standalone.html
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+package org.isf.mortuary.manager;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.time.LocalDateTime;
+
+import org.isf.mortuary.model.Death;
+import org.isf.mortuary.model.DeathReason;
+import org.isf.patient.model.Patient;
+import org.isf.utils.exception.OHException;
+import org.isf.ward.model.Ward;
+
+public class TestMortuary {
+
+	private final int id = 1;
+	private final String place = "Salle A1";
+	private final LocalDateTime deathDate = LocalDateTime.of(2024, 12, 1, 0, 0, 0);
+	private final LocalDateTime enteredDate = LocalDateTime.of(2024, 12, 1, 0, 0, 0);
+	private final LocalDateTime releaseDate = LocalDateTime.of(2024, 12, 5, 0, 0, 0);
+	private final LocalDateTime provisionalReleaseDate = LocalDateTime.of(2024, 12, 4, 0, 0, 0);
+	private final String declaringName = "John Doe";
+	private final String declaringPhone = "6543210001";
+	private final String declaringNest = "12345";
+	private final String familyName = null;
+	private final String familyPhone = null;
+	private final String familyNest = null;
+	private final String locker = "L-001";
+
+	public Death setup(Patient patient, DeathReason deathReason, Ward ward, boolean usingSet) throws OHException {
+		Death mortuary;
+
+		if (usingSet) {
+			mortuary = new Death();
+			setParameters(patient, deathReason, ward, mortuary);
+		} else {
+			mortuary = new Death(id, place, patient, ward, deathDate, enteredDate,
+				releaseDate, provisionalReleaseDate, deathReason, declaringName, declaringPhone, declaringNest,
+				familyName, familyPhone, familyNest, locker);
+		}
+		return mortuary;
+	}
+
+	public Death setup(Patient patient, DeathReason deathReason, Ward ward, boolean usingSet, int id) throws OHException {
+		Death mortuary;
+		if (usingSet) {
+			mortuary = new Death();
+			setParameters(patient, deathReason, ward, mortuary);
+		} else {
+			mortuary = new Death(id, place, patient, ward, deathDate, enteredDate,
+				releaseDate, provisionalReleaseDate, deathReason, declaringName, declaringPhone, declaringNest,
+				familyName, familyPhone, familyNest, locker);
+		}
+		return mortuary;
+	}
+
+	public void setParameters(Patient patient, DeathReason deathReason, Ward ward, Death mortuary) {
+		mortuary.setId(id);
+		mortuary.setWard(ward);
+		mortuary.setPlace(place);
+		mortuary.setPatient(patient);
+		mortuary.setDeathReason(deathReason);
+		mortuary.setDate(deathDate);
+		mortuary.setAdmissionDate(enteredDate);
+		mortuary.setDischargeDate(releaseDate);
+		mortuary.setEstimatedDischargeDate(provisionalReleaseDate);
+		mortuary.setDeclaringName(declaringName);
+		mortuary.setDeclaringPhone(declaringPhone);
+		mortuary.setDeclaringNid(declaringNest);
+		mortuary.setFamilyName(familyName);
+		mortuary.setFamilyPhone(familyPhone);
+		mortuary.setFamilyNid(familyNest);
+		mortuary.setLockerNumber(locker);
+	}
+
+	public void check(Death mortuary) {
+		assertThat(mortuary.getId()).isEqualTo(id);
+		assertThat(mortuary.getDate()).isEqualTo(deathDate);
+		assertThat(mortuary.getDeclaringName()).isEqualTo(declaringName);
+	}
+}
