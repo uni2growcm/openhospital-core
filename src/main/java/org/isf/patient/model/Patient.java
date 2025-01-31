@@ -506,7 +506,7 @@ public class Patient extends Auditable<String> {
 		return patientProfilePhoto;
 	}
 
-	public ReductionPlan getReductionPlan(){
+	public ReductionPlan getReductionPlan() {
 	    return reductionPlan;
 	}
 
