@@ -19,26 +19,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.isf.exa.service;
+package org.isf.mortuarystays.service;
 
 import java.util.List;
 
-import org.isf.exa.model.Exam;
-import org.isf.exa.model.ExamTarget;
+import org.isf.mortuarystays.model.MortuaryStay;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ExamIoOperationRepository extends JpaRepository<Exam, String> {
+public interface MortuaryStayIoOperationRepository extends JpaRepository<MortuaryStay, Integer> {
 
-	List<Exam> findByOrderByDescriptionAscDescriptionAsc();
+	@Query("select m from MortuaryStay m where m.deleted = :deleted ")
+	List<MortuaryStay> findByDeletedOrderByNameAsc(boolean deleted);
 
-	List<Exam> findByDescriptionContainingOrderByExamtypeDescriptionAscDescriptionAsc(String description);
+	@Query("select m from MortuaryStay m where m.deleted = false and m.code = :code")
+	MortuaryStay findByIdWhereNotDeleted(@Param("code") String code);
 
-	List<Exam> findByExamtype_DescriptionContainingOrderByExamtypeDescriptionAscDescriptionAsc(String description);
-
-	List<Exam> findByTargetOrderByDescriptionAsc(ExamTarget target);
-
-	List<Exam> findByTargetAndExamtypeDescriptionOrderByDescriptionAsc(ExamTarget target, String examType);
+	@Query("select m from MortuaryStay m where m.code = :code")
+	MortuaryStay findByCode(@Param("code") String code);
 }

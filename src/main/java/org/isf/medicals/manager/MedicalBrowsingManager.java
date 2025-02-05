@@ -121,7 +121,6 @@ public class MedicalBrowsingManager {
 
 	/**
 	 * Returns all the medicals with the specified description.
-	 *
 	 * @param type the medical type description.
 	 * @param nameSorted if {@code true}, returns the list in alphabetical order; otherwise, by code.
 	 * @return all the medicals with the specified description.

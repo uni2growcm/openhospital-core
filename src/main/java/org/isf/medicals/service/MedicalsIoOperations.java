@@ -304,7 +304,6 @@ public class MedicalsIoOperations {
 		if (deleted != null) {
 			return repository.findAllByTypeDescriptionContainsAndDescriptionContainsAndDeleted(type, description, deleted, pageable);
 		}
-
 		return repository.findAllByTypeDescriptionContainsAndDescriptionContains(type, description, pageable);
 	}
 }
