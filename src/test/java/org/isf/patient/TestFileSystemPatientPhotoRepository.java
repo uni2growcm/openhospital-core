@@ -27,6 +27,7 @@ import java.lang.reflect.Method;
 import java.sql.Blob;
 
 import org.isf.OHCoreTestCase;
+import org.isf.generaldata.GeneralData;
 import org.isf.patient.model.Patient;
 import org.isf.patient.service.FileSystemPatientPhotoRepository;
 import org.isf.patient.service.PatientIoOperationRepository;
@@ -55,6 +56,7 @@ class TestFileSystemPatientPhotoRepository extends OHCoreTestCase {
 
 	@BeforeEach
 	void setUp() {
+		GeneralData.initialize(); // needed for GeneralData.PATIENTPHOTSTORAGE
 		cleanH2InMemoryDb();
 	}
 

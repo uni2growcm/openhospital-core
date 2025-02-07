@@ -73,6 +73,7 @@ public final class GeneralData extends ConfigurationProperties {
 	public static boolean VIDEOMODULEENABLED;
 	public static boolean PATIENTVACCINEEXTENDED;
 	public static boolean ENHANCEDSEARCH;
+	public static boolean ENABLEMORTUARYMODULE;
 	public static boolean XMPPMODULEENABLED;
 	public static boolean DICOMMODULEENABLED;
 	public static boolean DICOMTHUMBNAILS;
@@ -132,6 +133,7 @@ public final class GeneralData extends ConfigurationProperties {
 	private static final boolean DEFAULT_VIDEOMODULEENABLED = false;
 	private static final boolean DEFAULT_PATIENTVACCINEEXTENDED = false;
 	private static final boolean DEFAULT_ENHANCEDSEARCH = false;
+	private static final boolean DEFAULT_ENABLEMORTUARYMODULE = false;
 	private static final boolean DEFAULT_XMPPMODULEENABLED = false;
 	private static final boolean DEFAULT_DICOMMODULEENABLED = false;
 	private static final boolean DEFAULT_DICOMTHUMBNAILS = true;
@@ -203,6 +205,7 @@ public final class GeneralData extends ConfigurationProperties {
 		VIDEOMODULEENABLED = myGetProperty("VIDEOMODULEENABLED", DEFAULT_VIDEOMODULEENABLED);
 		PATIENTVACCINEEXTENDED = myGetProperty("PATIENTVACCINEEXTENDED", DEFAULT_PATIENTVACCINEEXTENDED);
 		ENHANCEDSEARCH = myGetProperty("ENHANCEDSEARCH", DEFAULT_ENHANCEDSEARCH);
+		ENABLEMORTUARYMODULE = myGetProperty("ENABLEMORTUARYMODULE", DEFAULT_ENABLEMORTUARYMODULE);
 		XMPPMODULEENABLED = myGetProperty("XMPPMODULEENABLED", DEFAULT_XMPPMODULEENABLED);
 		DICOMMODULEENABLED = myGetProperty("DICOMMODULEENABLED", DEFAULT_DICOMMODULEENABLED);
 		DICOMTHUMBNAILS = myGetProperty("DICOMTHUMBNAILS", DEFAULT_DICOMTHUMBNAILS);

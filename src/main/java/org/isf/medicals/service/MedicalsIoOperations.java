@@ -21,18 +21,12 @@
  */
 package org.isf.medicals.service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.isf.medicals.model.Medical;
-import org.isf.medicalstock.model.Movement;
 import org.isf.medicalstock.service.MovementIoOperationRepository;
-import org.isf.medstockmovtype.model.MovementType;
-import org.isf.medtype.model.MedicalType;
 import org.isf.utils.db.TranslateOHServiceException;
 import org.isf.utils.exception.OHServiceException;
-import org.isf.utils.time.TimeTools;
-import org.isf.ward.model.Ward;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -49,9 +43,9 @@ import org.springframework.transaction.annotation.Transactional;
 @TranslateOHServiceException
 public class MedicalsIoOperations {
 
-	private MedicalsIoOperationRepository repository;
+	private final MedicalsIoOperationRepository repository;
 
-	private MovementIoOperationRepository moveRepository;
+	private final MovementIoOperationRepository moveRepository;
 
 	public MedicalsIoOperations(MedicalsIoOperationRepository medicalsIoOperationRepository, MovementIoOperationRepository movementIoOperationRepository) {
 		this.repository = medicalsIoOperationRepository;
@@ -120,12 +114,27 @@ public class MedicalsIoOperations {
 	}
 
 	/**
+	 * Retrieves all stored medicals by a given type, sorted by description or smart code.
+	 * 
+	 * @param type the type the found medicals should have.
+	 * @param nameSorted if true the found medicals are sorted by description, otherwise sorted by prod_code and description.
+	 * @return sorted List of medicals or empty list if none found.
+	 * @throws OHServiceException When failed to get medicals
+	 */
+	private List<Medical> getMedicalsByType(String type, boolean nameSorted) throws OHServiceException {
+		if (nameSorted) {
+			return repository.findAllWhereTypeOrderByDescription(type);
+		}
+		return repository.findAllWhereTypeOrderBySmartCodeAndDescription(type);
+	}
+
+	/**
 	 * Returns the medicals pageable.
-	 *
+	 * 
 	 * @param page - the page number.
 	 * @param size - the page size.
 	 * @return the list of {@link Medical}s pageable. It could be {@code empty}.
-	 * @throws OHServiceException
+	 * @throws OHServiceException When failed to get medicals
 	 */
 	public Page<Medical> getMedicalsPageable(int page, int size) throws OHServiceException {
 		Pageable pageable = PageRequest.of(page, size);
@@ -257,7 +266,7 @@ public class MedicalsIoOperations {
 	 * @throws OHServiceException if an error occurs during the check.
 	 */
 	public boolean isMedicalReferencedInStockMovement(int code) throws OHServiceException {
-		return moveRepository.findAllByMedicalCode(code).size() > 0;
+		return !moveRepository.findAllByMedicalCode(code).isEmpty();
 	}
 
 	/**
@@ -275,7 +284,7 @@ public class MedicalsIoOperations {
 	 * 
 	 * @param nameSorted if true the found medicals are sorted by description, otherwise sorted by prod_code and description.
 	 * @return sorted List of medicals or empty list if none found.
-	 * @throws OHServiceException
+	 * @throws OHServiceException When failed to get medicals
 	 */
 	private List<Medical> getMedicals(boolean nameSorted) throws OHServiceException {
 		if (nameSorted) {
@@ -285,17 +294,31 @@ public class MedicalsIoOperations {
 	}
 
 	/**
-	 * Retrieves all stored medicals by a given type, sorted by description or smart code.
-	 * 
-	 * @param type the type the found medicals should have.
-	 * @param nameSorted if true the found medicals are sorted by description, otherwise sorted by prod_code and description.
-	 * @return sorted List of medicals or empty list if none found.
-	 * @throws OHServiceException
+	 * Retrieves a paginated list of medical records filtered by type, description, and deletion status.
+	 *
+	 * @param type The keyword to match medical type. If {@code null}, an empty string is used to include all types.
+	 * @param description The keyword to match medical description. If {@code null}, an empty string is used to include all descriptions.
+	 * @param deleted The deletion status to filter records by:
+	 * - If {@code 'Y'}, only deleted records are retrieved.
+	 * - If {@code 'N'}, only non-deleted records are retrieved.
+	 * - If {@code null}, records are retrieved regardless of deletion status.
+	 * @param pageable The pagination and sorting information, such as page number, page size, and sort order.
+	 * Must not be {@code null}.
+	 * @return A {@link Page} containing the filtered medical records. Returns an empty page if no records match the filters.
+	 * @throws OHServiceException If an error occurs while fetching the records from the database.
 	 */
-	private List<Medical> getMedicalsByType(String type, boolean nameSorted) throws OHServiceException {
-		if (nameSorted) {
-			return repository.findAllWhereTypeOrderByDescription(type);
+	public Page<Medical> getMedicalsByTypeDescriptionAndDeleted(String type, String description, Character deleted, Pageable pageable) throws OHServiceException {
+		if (type == null) {
+			type = "";
 		}
-		return repository.findAllWhereTypeOrderBySmartCodeAndDescription(type);
+
+		if (description == null) {
+			description = "";
+		}
+
+		if (deleted != null) {
+			return repository.findAllByTypeDescriptionContainsAndDescriptionContainsAndDeleted(type, description, deleted, pageable);
+		}
+		return repository.findAllByTypeDescriptionContainsAndDescriptionContains(type, description, pageable);
 	}
 }
