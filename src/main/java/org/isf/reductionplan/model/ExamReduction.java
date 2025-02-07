@@ -41,37 +41,37 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Entity
 @Table(name = "OH_EXAMSREDUCTION")
 @EntityListeners(AuditingEntityListener.class)
-@AttributeOverride(name = "createdBy", column = @Column(name = "ER_CREATED_BY", updatable = false))
-@AttributeOverride(name = "createdDate", column = @Column(name = "ER_CREATED_DATE", updatable = false))
-@AttributeOverride(name = "lastModifiedBy", column = @Column(name = "ER_LAST_MODIFIED_BY"))
-@AttributeOverride(name = "active", column = @Column(name = "ER_ACTIVE"))
-@AttributeOverride(name = "lastModifiedDate", column = @Column(name = "ER_LAST_MODIFIED_DATE"))
+@AttributeOverride(name = "createdBy", column = @Column(name = "EXAR_CREATED_BY", updatable = false))
+@AttributeOverride(name = "createdDate", column = @Column(name = "EXAR_CREATED_DATE", updatable = false))
+@AttributeOverride(name = "lastModifiedBy", column = @Column(name = "EXAR_LAST_MODIFIED_BY"))
+@AttributeOverride(name = "active", column = @Column(name = "EXAR_ACTIVE"))
+@AttributeOverride(name = "lastModifiedDate", column = @Column(name = "EXAR_LAST_MODIFIED_DATE"))
 public class ExamReduction extends Auditable<String> {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "ER_ID")
+	@Column(name = "EXAR_ID")
 	private int id;
 
 	@NotNull
 	@ManyToOne
-	@JoinColumn(name = "ER_RP_ID")
+	@JoinColumn(name = "EXAR_RP_ID")
 	private ReductionPlan reductionPlan;
 
 	@NotNull
 	@ManyToOne
-	@JoinColumn(name = "ER_EXA_ID_A")
+	@JoinColumn(name = "EXAR_EXA_ID_A")
 	private Exam exam;
 
 	@NotNull
-	@Column(name = "ER_REDUCTIONRATE")
+	@Column(name = "EXAR_REDUCTIONRATE")
 	private double reductionRate;
 
 	@NotNull
-	@Column(name = "ER_DELETED")
+	@Column(name = "EXAR_DELETED")
 	private boolean deleted = false;
 
 	@Version
-	@Column(name="ER_LOCK")
+	@Column(name="EXAR_LOCK")
 	private int lock;
 
 	public ExamReduction() {

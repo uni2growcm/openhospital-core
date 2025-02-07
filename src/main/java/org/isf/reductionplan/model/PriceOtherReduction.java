@@ -41,38 +41,38 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Entity
 @Table(name = "OH_PRICESOTHERSREDUCTION")
 @EntityListeners(AuditingEntityListener.class)
-@AttributeOverride(name = "createdBy", column = @Column(name = "OTR_CREATED_BY", updatable = false))
-@AttributeOverride(name = "createdDate", column = @Column(name = "OTR_CREATED_DATE", updatable = false))
-@AttributeOverride(name = "lastModifiedBy", column = @Column(name = "OTR_LAST_MODIFIED_BY"))
-@AttributeOverride(name = "active", column = @Column(name = "OTR_ACTIVE"))
-@AttributeOverride(name = "lastModifiedDate", column = @Column(name = "OTR_LAST_MODIFIED_DATE"))
+@AttributeOverride(name = "createdBy", column = @Column(name = "OTHR_CREATED_BY", updatable = false))
+@AttributeOverride(name = "createdDate", column = @Column(name = "OTHR_CREATED_DATE", updatable = false))
+@AttributeOverride(name = "lastModifiedBy", column = @Column(name = "OTHR_LAST_MODIFIED_BY"))
+@AttributeOverride(name = "active", column = @Column(name = "OTHR_ACTIVE"))
+@AttributeOverride(name = "lastModifiedDate", column = @Column(name = "OTHR_LAST_MODIFIED_DATE"))
 public class PriceOtherReduction extends Auditable<String> {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "OTR_ID")
+	@Column(name = "OTHR_ID")
 	private int id;
 
 	@NotNull
 	@ManyToOne
-	@JoinColumn(name = "OTR_RP_ID")
+	@JoinColumn(name = "OTHR_RP_ID")
 	private ReductionPlan reductionPlan;
 
 	@NotNull
 	@ManyToOne
-	@JoinColumn(name = "OTR_OTH_ID")
+	@JoinColumn(name = "OTHR_OTH_ID")
 	private PricesOthers pricesOthers;
 
 	@NotNull
-	@Column(name = "OTR_REDUCTIONRATE")
+	@Column(name = "OTHR_REDUCTIONRATE")
 	private double reductionRate;
 
 	@NotNull
-	@Column(name = "OTR_DELETED")
+	@Column(name = "OTHR_DELETED")
 	private boolean deleted = false;
 
 	@Version
-	@Column(name = "OTR_LOCK")
+	@Column(name = "OTHR_LOCK")
 	private int lock;
 
 	public PriceOtherReduction() {
