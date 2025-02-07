@@ -33,10 +33,14 @@ import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.model.OHExceptionMessage;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 /**
  * Class that provides gui separation from database operations and gives some useful logic manipulations of the dynamic data (memory)
+ *
  * @author bob 19-dec-2005 14-jan-2006
  */
 @Component
@@ -118,8 +122,9 @@ public class MedicalBrowsingManager {
 	/**
 	 * Returns all the medicals with the specified description.
 	 * @param type the medical type description.
-	 * @param nameSorted if {@code true} return the list in alphabetical order, by code otherwise
+	 * @param nameSorted if {@code true}, returns the list in alphabetical order; otherwise, by code.
 	 * @return all the medicals with the specified description.
+	 * @throws OHServiceException if an error occurs during the retrieval of medicals from the database.
 	 */
 	public List<Medical> getMedicals(String type, boolean nameSorted) throws OHServiceException {
 		return ioOperations.getMedicals(type, nameSorted);
@@ -283,5 +288,32 @@ public class MedicalBrowsingManager {
 		if (!errors.isEmpty()) {
 			throw new OHDataValidationException(errors);
 		}
+	}
+
+	/**
+	 * Retrieves a paginated list of medical records filtered by type, description, and deleted status,
+	 * with an option to sort the results either alphabetically by description or by production code.
+	 *
+	 * @param type The type of medical items to filter by. Can be {@code null} to ignore this filter.
+	 * @param description The description of medical items to filter by. Can be {@code null} to ignore this filter.
+	 * @param deleted The deletion status of medical items to filter by. If {@code null}, this filter is ignored.
+	 *  Use {@code 'Y'} for deleted records and {@code 'N'} for active records.
+	 * @param nameSorted If {@code true}, sorts the results alphabetically by the description field.
+	 * If {@code false}, sorts the results by the production code field (ascending order).
+	 * @param page The page number (0-based index) to retrieve. Must be non-negative.
+	 * @param size The number of items per page. Must be greater than 0.
+	 * @return A {@link Page} containing the filtered and sorted medical records.
+	 * @throws OHServiceException If an error occurs while fetching medical records from the database.
+	 */
+	public Page<Medical> getMedicalsByTypeAndDescription(String type, String description, Character deleted, boolean nameSorted, int page, int size) throws OHServiceException {
+		Pageable pageable;
+
+		if (nameSorted) {
+			pageable = PageRequest.of(page, size, Sort.by("description").ascending());
+		} else {
+			pageable = PageRequest.of(page, size, Sort.by("prod_code").ascending());
+		}
+
+		return ioOperations.getMedicalsByTypeDescriptionAndDeleted(type, description, deleted, pageable);
 	}
 }

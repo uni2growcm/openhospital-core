@@ -129,6 +129,7 @@ public class ExamBrowsingManager {
 
 	/**
 	 * Returns the list of {@link ExamType}s
+	 * 
 	 * @return the list of {@link ExamType}s. It could be {@code null}
 	 * @throws OHServiceException
 	 */
