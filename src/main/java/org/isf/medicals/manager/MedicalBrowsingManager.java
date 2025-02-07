@@ -122,20 +122,9 @@ public class MedicalBrowsingManager {
 	/**
 	 * Returns all the medicals with the specified description.
 	 * @param type the medical type description.
-<<<<<<< HEAD
-<<<<<<< HEAD
 	 * @param nameSorted if {@code true}, returns the list in alphabetical order; otherwise, by code.
 	 * @return all the medicals with the specified description.
 	 * @throws OHServiceException if an error occurs during the retrieval of medicals from the database.
-=======
-	 * @param nameSorted if {@code true} return the list in alphabetical order, by code otherwise
-	 * @return all the medicals with the specified description.
->>>>>>> main
-=======
-	 * @param nameSorted if {@code true}, returns the list in alphabetical order; otherwise, by code.
-	 * @return all the medicals with the specified description.
-	 * @throws OHServiceException if an error occurs during the retrieval of medicals from the database.
->>>>>>> fd797a84da9e77796906fb72271832720d9ac4aa
 	 */
 	public List<Medical> getMedicals(String type, boolean nameSorted) throws OHServiceException {
 		return ioOperations.getMedicals(type, nameSorted);
