@@ -75,6 +75,7 @@ import org.isf.ward.service.WardIoOperationRepository;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -153,7 +154,6 @@ class Tests extends OHCoreTestCase {
 		testSupplier = new TestSupplier();
 		testMedicalStock = new TestMedicalStock();
 	}
-
 	@AfterAll
 	static void tearDownClass() {
 		testLot = null;
@@ -165,12 +165,10 @@ class Tests extends OHCoreTestCase {
 		testSupplier = null;
 		testMedicalStock = null;
 	}
-
 	@BeforeEach
 	void setUp() throws OHException {
 		cleanH2InMemoryDb();
 	}
-
 	@ParameterizedTest(name = "Test with AUTOMATICLOT_IN={0}, AUTOMATICLOT_OUT={1}, AUTOMATICLOTWARD_TOWARD={2}")
 	@MethodSource("automaticlot")
 	void testLotGets(boolean in, boolean out, boolean toward) throws Exception {
@@ -752,6 +750,22 @@ class Tests extends OHCoreTestCase {
 		assertThat(foundMovement).isNotNull();
 		List<Movement> movements = movBrowserManager.getMovements(null, null, foundMovement.getWard().getCode(), null,
 			null, null, null, null, null, null);
+		assertThat(movements.get(0).getCode()).isEqualTo(foundMovement.getCode());
+	}
+
+	@ParameterizedTest(name = "Test with AUTOMATICLOT_IN={0}, AUTOMATICLOT_OUT={1}, AUTOMATICLOTWARD_TOWARD={2}")
+	@MethodSource("automaticlot")
+	@DisplayName("Should return the first page of movements matching the given filters")
+	void testGetMovements(boolean in, boolean out, boolean toward) throws Exception {
+		setGeneralData(in, out, toward);
+		LocalDateTime fromDate = LocalDateTime.of(2000, 1, 1, 0, 0, 0);
+		LocalDateTime toDate = LocalDateTime.of(2001, 3, 3, 0, 0, 0);
+		int code = setupTestMovement(false);
+		Movement foundMovement = movementIoOperationRepository.findById(code).orElse(null);
+		assertThat(foundMovement).isNotNull();
+		List<Movement> movements = movBrowserManager.getMovements(foundMovement.getMedical().getCode(), foundMovement.getMedical().getType().getCode(),
+			foundMovement.getWard().getCode(), foundMovement.getType().getCode(), fromDate, toDate, fromDate, toDate, fromDate, toDate,0,10);
+		assertThat(movements.size()).isGreaterThan(0);
 		assertThat(movements.get(0).getCode()).isEqualTo(foundMovement.getCode());
 	}
 
