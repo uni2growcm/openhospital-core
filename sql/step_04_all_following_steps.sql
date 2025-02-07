@@ -112,3 +112,4 @@ source step_a115_add_missing_foreign_key_for_auditable_entities.sql
 source u2g_update/step_01_add_column_medicaldsr.sql;
 source u2g_update/step_02_add_collumn_exa_target_to_table_oh_exam.sql;
 source u2g_update/step_03_mortuarystays_table.sql;
+source u2g_update/step_04_add_mortuary_table_and_menu.sql;
