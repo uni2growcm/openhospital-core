@@ -108,11 +108,7 @@ public class MedicalsIoOperations {
 		}
 		return getMedicals(nameSorted);
 	}
-
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> fd797a84da9e77796906fb72271832720d9ac4aa
+	
 	/**
 	 * Retrieves all stored medicals by a given type, sorted by description or smart code.
 	 * @param type the type the found medicals should have.
@@ -127,11 +123,6 @@ public class MedicalsIoOperations {
 		return repository.findAllWhereTypeOrderBySmartCodeAndDescription(type);
 	}
 
-<<<<<<< HEAD
-=======
->>>>>>> main
-=======
->>>>>>> fd797a84da9e77796906fb72271832720d9ac4aa
 	/**
 	 * Returns the medicals pageable.
 	 * @param page - the page number.
@@ -288,10 +279,6 @@ public class MedicalsIoOperations {
 	}
 
 	/**
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> fd797a84da9e77796906fb72271832720d9ac4aa
 	 * Retrieves a paginated list of medical records filtered by type, description, and deletion status.
 	 *
 	 * @param type The keyword to match medical type. If {@code null}, an empty string is used to include all types.
@@ -304,25 +291,11 @@ public class MedicalsIoOperations {
 	 * Must not be {@code null}.
 	 * @return A {@link Page} containing the filtered medical records. Returns an empty page if no records match the filters.
 	 * @throws OHServiceException If an error occurs while fetching the records from the database.
-<<<<<<< HEAD
-=======
-	 * Retrieves all stored medicals by a given type, sorted by description or smart code.
-	 * @param type the type the found medicals should have.
-	 * @param nameSorted if true the found medicals are sorted by description, otherwise sorted by prod_code and description.
-	 * @return sorted List of medicals or empty list if none found.
-	 * @throws OHServiceException
->>>>>>> main
-=======
->>>>>>> fd797a84da9e77796906fb72271832720d9ac4aa
 	 */
 	public Page<Medical> getMedicalsByTypeDescriptionAndDeleted(String type, String description, Character deleted, Pageable pageable) throws OHServiceException {
 		if (type == null) {
 			type = "";
 		}
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> fd797a84da9e77796906fb72271832720d9ac4aa
 
 		if (description == null) {
 			description = "";
@@ -332,11 +305,5 @@ public class MedicalsIoOperations {
 			return repository.findAllByTypeDescriptionContainsAndDescriptionContainsAndDeleted(type, description, deleted, pageable);
 		}
 		return repository.findAllByTypeDescriptionContainsAndDescriptionContains(type, description, pageable);
-<<<<<<< HEAD
-=======
-		return repository.findAllWhereTypeOrderBySmartCodeAndDescription(type);
->>>>>>> main
-=======
->>>>>>> fd797a84da9e77796906fb72271832720d9ac4aa
 	}
 }
