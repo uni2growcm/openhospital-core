@@ -40,7 +40,6 @@ import org.springframework.stereotype.Component;
 
 /**
  * Class that provides gui separation from database operations and gives some useful logic manipulations of the dynamic data (memory)
- *
  * @author bob 19-dec-2005 14-jan-2006
  */
 @Component
@@ -121,11 +120,15 @@ public class MedicalBrowsingManager {
 
 	/**
 	 * Returns all the medicals with the specified description.
-	 *
 	 * @param type the medical type description.
+<<<<<<< HEAD
 	 * @param nameSorted if {@code true}, returns the list in alphabetical order; otherwise, by code.
 	 * @return all the medicals with the specified description.
 	 * @throws OHServiceException if an error occurs during the retrieval of medicals from the database.
+=======
+	 * @param nameSorted if {@code true} return the list in alphabetical order, by code otherwise
+	 * @return all the medicals with the specified description.
+>>>>>>> main
 	 */
 	public List<Medical> getMedicals(String type, boolean nameSorted) throws OHServiceException {
 		return ioOperations.getMedicals(type, nameSorted);
