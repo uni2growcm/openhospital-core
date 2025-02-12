@@ -58,7 +58,7 @@ public class BodyCompartmentManagerTest  extends OHCoreTestCase {
 	@Test
 	void testGetByLabelPageable() throws Exception {
 		int id = setupTestBodyCompartment(false);
-		Page<BodyCompartment> bodyCompartment = bodyComportmentManager.getByLabelPageable("", 0,1);
+		Page<BodyCompartment> bodyCompartment = bodyComportmentManager.getByLabelPageable("", 0, 1);
 		assertThat(bodyCompartment).isNotNull();
 		assertThat(bodyCompartment.getTotalElements()).isEqualTo(1);
 		assertThat(bodyCompartment.getTotalPages()).isEqualTo(1);
