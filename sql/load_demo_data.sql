@@ -1088,11 +1088,11 @@ UNLOCK TABLES;
 LOCK TABLES `oh_examsreduction` WRITE;
 /*!40000 ALTER TABLE `oh_examsreduction` DISABLE KEYS */;
 
-INSERT INTO `oh_examsreduction`(`ER_RP_ID`, `ER_EXA_ID_A`, `ER_REDUCTIONRATE`) VALUES (1, 'EXA001', 15.00);
-INSERT INTO `oh_examsreduction`(`ER_RP_ID`, `ER_EXA_ID_A`, `ER_REDUCTIONRATE`) VALUES (2, 'EXA002', 20.00);
-INSERT INTO `oh_examsreduction`(`ER_RP_ID`, `ER_EXA_ID_A`, `ER_REDUCTIONRATE`) VALUES (3, 'EXA003', 10.00);
-INSERT INTO `oh_examsreduction`(`ER_RP_ID`, `ER_EXA_ID_A`, `ER_REDUCTIONRATE`) VALUES (4, 'EXA004', 25.00);
-INSERT INTO `oh_examsreduction`(`ER_RP_ID`, `ER_EXA_ID_A`, `ER_REDUCTIONRATE`) VALUES (5, 'EXA005', 12.50);
+INSERT INTO `oh_examsreduction`(`ER_RP_ID`, `ER_EXA_ID_A`, `ER_REDUCTIONRATE`) VALUES (1, 'HB', 15.00);
+INSERT INTO `oh_examsreduction`(`ER_RP_ID`, `ER_EXA_ID_A`, `ER_REDUCTIONRATE`) VALUES (2, 'BT', 20.00);
+INSERT INTO `oh_examsreduction`(`ER_RP_ID`, `ER_EXA_ID_A`, `ER_REDUCTIONRATE`) VALUES (3, 'PA', 10.00);
+INSERT INTO `oh_examsreduction`(`ER_RP_ID`, `ER_EXA_ID_A`, `ER_REDUCTIONRATE`) VALUES (4, 'BA', 25.00);
+INSERT INTO `oh_examsreduction`(`ER_RP_ID`, `ER_EXA_ID_A`, `ER_REDUCTIONRATE`) VALUES (5, 'MC', 12.50);
 
 /*!40000 ALTER TABLE `oh_examsreduction` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -3037,11 +3037,11 @@ UNLOCK TABLES;
 LOCK TABLES `oh_medicalsreduction` WRITE;
 /*!40000 ALTER TABLE `oh_medicalsreduction` DISABLE KEYS */;
 
-INSERT INTO `oh_medicalsreduction`(`MR_RP_ID`, `MR_MED_ID`, `MR_REDUCTIONRATE`) VALUES (1, 201, 5.50);
-INSERT INTO `oh_medicalsreduction`(`MR_RP_ID`, `MR_MED_ID`, `MR_REDUCTIONRATE`) VALUES (2, 202, 7.00);
-INSERT INTO `oh_medicalsreduction`(`MR_RP_ID`, `MR_MED_ID`, `MR_REDUCTIONRATE`) VALUES (3, 203, 6.25);
-INSERT INTO `oh_medicalsreduction`(`MR_RP_ID`, `MR_MED_ID`, `MR_REDUCTIONRATE`) VALUES (4, 204, 8.00);
-INSERT INTO `oh_medicalsreduction`(`MR_RP_ID`, `MR_MED_ID`, `MR_REDUCTIONRATE`) VALUES (5, 205, 9.00);
+INSERT INTO `oh_medicalsreduction`(`MR_RP_ID`, `MR_MED_ID`, `MR_REDUCTIONRATE`) VALUES (1, 1, 5.50);
+INSERT INTO `oh_medicalsreduction`(`MR_RP_ID`, `MR_MED_ID`, `MR_REDUCTIONRATE`) VALUES (2, 2, 7.00);
+INSERT INTO `oh_medicalsreduction`(`MR_RP_ID`, `MR_MED_ID`, `MR_REDUCTIONRATE`) VALUES (3, 3, 6.25);
+INSERT INTO `oh_medicalsreduction`(`MR_RP_ID`, `MR_MED_ID`, `MR_REDUCTIONRATE`) VALUES (4, 4, 8.00);
+INSERT INTO `oh_medicalsreduction`(`MR_RP_ID`, `MR_MED_ID`, `MR_REDUCTIONRATE`) VALUES (5, 5, 9.00);
 
 /*!40000 ALTER TABLE `oh_medicalsreduction` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -3175,11 +3175,11 @@ UNLOCK TABLES;
 LOCK TABLES `oh_operationsreduction` WRITE;
 /*!40000 ALTER TABLE `oh_operationsreduction` DISABLE KEYS */;
 
-INSERT INTO `oh_operationsreduction`(`OPR_RP_ID`, `OPR_OPE_ID_A`, `OPR_REDUCTIONRATE`) VALUES (1, 'OPE001', 10.00);
-INSERT INTO `oh_operationsreduction`(`OPR_RP_ID`, `OPR_OPE_ID_A`, `OPR_REDUCTIONRATE`) VALUES (2, 'OPE002', 12.50);
-INSERT INTO `oh_operationsreduction`(`OPR_RP_ID`, `OPR_OPE_ID_A`, `OPR_REDUCTIONRATE`) VALUES (3, 'OPE003', 7.00);
-INSERT INTO `oh_operationsreduction`(`OPR_RP_ID`, `OPR_OPE_ID_A`, `OPR_REDUCTIONRATE`) VALUES (4, 'OPE004', 15.00);
-INSERT INTO `oh_operationsreduction`(`OPR_RP_ID`, `OPR_OPE_ID_A`, `OPR_REDUCTIONRATE`) VALUES (5, 'OPE005', 20.00);
+INSERT INTO `oh_operationsreduction`(`OPR_RP_ID`, `OPR_OPE_ID_A`, `OPR_REDUCTIONRATE`) VALUES (1, '11', 10.00);
+INSERT INTO `oh_operationsreduction`(`OPR_RP_ID`, `OPR_OPE_ID_A`, `OPR_REDUCTIONRATE`) VALUES (2, '12', 12.50);
+INSERT INTO `oh_operationsreduction`(`OPR_RP_ID`, `OPR_OPE_ID_A`, `OPR_REDUCTIONRATE`) VALUES (3, '13', 7.00);
+INSERT INTO `oh_operationsreduction`(`OPR_RP_ID`, `OPR_OPE_ID_A`, `OPR_REDUCTIONRATE`) VALUES (4, '14', 15.00);
+INSERT INTO `oh_operationsreduction`(`OPR_RP_ID`, `OPR_OPE_ID_A`, `OPR_REDUCTIONRATE`) VALUES (5, '15', 20.00);
 
 /*!40000 ALTER TABLE `oh_operationsreduction` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -3693,11 +3693,7 @@ UNLOCK TABLES;
 LOCK TABLES `oh_otherreduction` WRITE;
 /*!40000 ALTER TABLE `oh_otherreduction` DISABLE KEYS */;
 
-INSERT INTO `oh_otherreduction`(`OTR_RP_ID`, `OTR_OTH_ID`, `OTR_REDUCTIONRATE`) VALUES (1, 101, 5.00);
-INSERT INTO `oh_otherreduction`(`OTR_RP_ID`, `OTR_OTH_ID`, `OTR_REDUCTIONRATE`) VALUES (2, 102, 10.00);
-INSERT INTO `oh_otherreduction`(`OTR_RP_ID`, `OTR_OTH_ID`, `OTR_REDUCTIONRATE`) VALUES (3, 103, 7.50);
-INSERT INTO `oh_otherreduction`(`OTR_RP_ID`, `OTR_OTH_ID`, `OTR_REDUCTIONRATE`) VALUES (4, 104, 12.00);
-INSERT INTO `oh_otherreduction`(`OTR_RP_ID`, `OTR_OTH_ID`, `OTR_REDUCTIONRATE`) VALUES (5, 105, 8.00);
+INSERT INTO `oh_otherreduction`(`OTR_RP_ID`, `OTR_OTH_ID`, `OTR_REDUCTIONRATE`) VALUES (1, 1, 5.00);
 
 /*!40000 ALTER TABLE `oh_otherreduction` ENABLE KEYS */;
 UNLOCK TABLES;
