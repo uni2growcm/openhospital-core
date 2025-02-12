@@ -48,7 +48,6 @@ public class TestMedical {
 			// Create Medical with all parameters
 			medical = new Medical(code, medicalType, prod_code, description, pcsperpck, minqty, inqty, outqty);
 		}
-
 		return medical;
 	}
 

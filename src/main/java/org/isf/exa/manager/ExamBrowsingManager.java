@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2023 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2024 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.isf.exa.model.Exam;
+import org.isf.exa.model.ExamTarget;
 import org.isf.exa.service.ExamIoOperations;
 import org.isf.exatype.model.ExamType;
 import org.isf.generaldata.MessageBundle;
@@ -101,6 +102,29 @@ public class ExamBrowsingManager {
 	 */
 	public List<Exam> getExamsByTypeDescription(String description) throws OHServiceException {
 		return ioOperations.getExamsByExamTypeDesc(description);
+	}
+
+	/**
+	 * Returns the list of {@link Exam}s
+	 *
+	 * @param target - the exam target
+	 * @return the list of {@link Exam}s. It could be an empty list
+	 * @throws OHServiceException when fail to fetch by target
+	 */
+	public List<Exam> getByTarget(ExamTarget target) throws OHServiceException {
+		return ioOperations.getByTarget(target);
+	}
+
+	/**
+	 * Returns the list of {@link Exam}s
+	 * 
+	 * @param target - the exam target
+	 * @param examType - the exam type
+	 * @return the list of {@link Exam}s. It could be an empty list
+	 * @throws OHServiceException when fail to fetch by target and type
+	 */
+	public List<Exam> getByTargetAndType(ExamTarget target, String examType) throws OHServiceException {
+		return ioOperations.getByTargetAndType(target, examType);
 	}
 
 	/**

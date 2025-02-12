@@ -40,6 +40,8 @@ import org.isf.utils.pagination.PagedResponse;
 import org.isf.ward.model.Ward;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 /**
@@ -185,6 +187,29 @@ public class OpdBrowserManager {
 	}
 
 	/**
+	 * Return all Opds within specified dates and parameters
+	 *
+	 * @param ward the ward to consider
+	 * @param diseaseTypeCode the code of the disease type
+	 * @param diseaseCode the code of the disease
+	 * @param dateFrom the starting date
+	 * @param dateTo the ending date
+	 * @param ageFrom the starting age
+	 * @param ageTo the ending age
+	 * @param sex the sex to consider
+	 * @param newPatient if patient is new
+	 * @param user the user to consider
+	 * @param page the page to be fetched
+	 * @param size the number of OPD to be fetched per page
+	 * @return the list of Opds. It could be {@code null}.
+	 * @throws OHServiceException when fails to fetch paginated OPDs
+	 */
+	public List<Opd> getOpd(Ward ward, String diseaseTypeCode, String diseaseCode, LocalDate dateFrom, LocalDate dateTo, int ageFrom, int ageTo, char sex, char newPatient, String user, int page, int size) throws OHServiceException {
+		Pageable pageable = PageRequest.of(page, size);
+		return ioOperations.getOpdList(ward, diseaseTypeCode, diseaseCode, dateFrom, dateTo, ageFrom, ageTo, sex,newPatient, user, pageable);
+	}
+
+	/**
 	 * Returns all {@link Opd}s associated to specified patient ID
 	 *
 	 * @param patientcode the patient ID
@@ -193,6 +218,21 @@ public class OpdBrowserManager {
 	 */
 	public List<Opd> getOpdList(int patientcode) throws OHServiceException {
 		return ioOperations.getOpdList(patientcode);
+	}
+
+	/**
+	 * Returns all {@link Opd}s associated to specified patient ID
+	 *
+	 * @param patientcode - the patient ID
+	 * @param page the page to be fetched
+	 * @param size the number of OPDs to be fetched per page
+	 * @return the list of {@link Opd}s associated to specified patient ID.
+	 * the whole list of {@link Opd}s if {@code 0} is passed.
+	 * @throws OHServiceException when fails to fetched paginated OPDs
+	 */
+	public List<Opd> getOpdList(int patientcode, int page, int size) throws OHServiceException {
+		Pageable pageable = PageRequest.of(page, size);
+		return ioOperations.getOpdList(patientcode, pageable);
 	}
 
 	/**
@@ -284,6 +324,19 @@ public class OpdBrowserManager {
 	}
 
 	/**
+	 * Get a list of OPD with specified Progressive in Year number
+	 *
+	 * @param code - the OPD code
+	 * @param page the page to be fetched
+	 * @param size the number of OPDs per page
+	 * @return a list of OPD or an empty list
+	 */
+	public List<Opd> getOpdByProgYear(int code, int page, int size) {
+		Pageable pageable = PageRequest.of(page, size);
+		return ioOperations.getOpdByProgYear(code, pageable);
+	}
+
+	/**
 	 * Returns {@link List} of {@link Opd}s associated to specified patient ID with page info.
 	 *
 	 * @param ward the ward of opd
@@ -303,5 +356,52 @@ public class OpdBrowserManager {
 	public PagedResponse<Opd> getOpdPageable(Ward ward, String diseaseTypeCode, String diseaseCode, LocalDate dateFrom, LocalDate dateTo, int ageFrom,
 		int ageTo, char sex, char newPatient, int page, int size) throws OHServiceException {
 		return ioOperations.getOpdListPageable(ward, diseaseTypeCode, diseaseCode, dateFrom, dateTo, ageFrom, ageTo, sex, newPatient, null, page, size);
+	}
+
+	/**
+	 * Returns the total number of {@link Opd}s within specified dates and parameters
+	 *
+	 * @param ward - the ward of opd
+	 * @param diseaseTypeCode - the disease type
+	 * @param diseaseCode - the Code of disease
+	 * @param dateFrom the stating date
+	 * @param dateTo the ending date
+	 * @param ageFrom the starting age
+	 * @param ageTo the ending age
+	 * @param sex the sex to consider
+	 * @param newPatient if patient is new
+	 * @param user the user to consider
+	 * @return the total number of {@link Opd}s
+	 * @throws OHServiceException when fails to count fetched OPDs
+	 */
+	public long countTotalOpds(Ward ward, String diseaseTypeCode, String diseaseCode, LocalDate dateFrom, LocalDate dateTo, int ageFrom, int ageTo, char sex, char newPatient, String user) throws OHServiceException {
+		if (ward == null && diseaseTypeCode == null && diseaseCode == null && dateFrom == null && dateTo == null &&
+			ageFrom == 0 && ageTo == 0 && sex == '\0' && newPatient == '\0' && user == null) {
+				return ioOperations.getOpdList(false).size();
+		}
+
+		return ioOperations.countTotalOpds(ward, diseaseTypeCode, diseaseCode, dateFrom, dateTo, ageFrom, ageTo, sex, newPatient, user);
+	}
+
+	/**
+	 * Returns the total number of {@link Opd}s with specified Progressive in Year number
+	 *
+	 * @param code - the OPD code
+	 * @return the total number of {@link Opd}s
+	 * @throws OHServiceException when fails to count fetched OPDs
+	 */
+	public long countByProgYear(int code) {
+		return ioOperations.countByProgYear(code);
+	}
+
+	/**
+	 * Returns the total number of {@link Opd}s associated to specified patient ID
+	 *
+	 * @param patientcode the patient ID
+	 * @return the total number of {@link Opd}s
+	 * @throws OHServiceException when fails to count fetched OPDs
+	 */
+	public long countByPatientId(int patientcode) throws OHServiceException {
+		return ioOperations.countByPatientId(patientcode);
 	}
 }
