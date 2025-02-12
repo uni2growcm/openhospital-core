@@ -35,9 +35,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * This class offers the io operations for recovering and managing medical records from the database
- * @author bob modified by alex:
- * - column product code
- * - column pieces per packet 11-dec-2005 14-jan-2006
+ * 
+ * @author bob modified by alex: - column product code - column pieces per packet 11-dec-2005 14-jan-2006
  */
 @Service
 @Transactional(rollbackFor = OHServiceException.class)
@@ -55,6 +54,7 @@ public class MedicalsIoOperations {
 
 	/**
 	 * Retrieves the specified {@link Medical}.
+	 * 
 	 * @param code the medical code.
 	 * @return the stored medical.
 	 * @throws OHServiceException if an error occurs retrieving the stored medical.
@@ -65,6 +65,7 @@ public class MedicalsIoOperations {
 
 	/**
 	 * Retrieves the specified {@link Medical}.
+	 * 
 	 * @param prod_code the medical prod_code.
 	 * @return the stored medical.
 	 * @throws OHServiceException if an error occurs retrieving the stored medical.
@@ -75,6 +76,7 @@ public class MedicalsIoOperations {
 
 	/**
 	 * Gets all stored {@link Medical}s.
+	 * 
 	 * @return all the stored medicals.
 	 * @throws OHServiceException if an error occurs retrieving the stored medicals.
 	 */
@@ -84,6 +86,7 @@ public class MedicalsIoOperations {
 
 	/**
 	 * Retrieves all stored {@link Medical}s. If a description value is provided, the medicals are filtered by the description.
+	 * 
 	 * @param description the medical description.
 	 * @return the stored medicals.
 	 * @throws OHServiceException if an error occurs retrieving the stored medicals.
@@ -97,6 +100,7 @@ public class MedicalsIoOperations {
 
 	/**
 	 * Retrieves all stored {@link Medical}s. If a description value is provided the medicals are filtered.
+	 * 
 	 * @param type the medical type description.
 	 * @param nameSorted if {@code true} return the list in alphabetical order, by code otherwise
 	 * @return the stored medicals.
@@ -108,9 +112,10 @@ public class MedicalsIoOperations {
 		}
 		return getMedicals(nameSorted);
 	}
-	
+
 	/**
 	 * Retrieves all stored medicals by a given type, sorted by description or smart code.
+	 * 
 	 * @param type the type the found medicals should have.
 	 * @param nameSorted if true the found medicals are sorted by description, otherwise sorted by prod_code and description.
 	 * @return sorted List of medicals or empty list if none found.
@@ -125,6 +130,7 @@ public class MedicalsIoOperations {
 
 	/**
 	 * Returns the medicals pageable.
+	 * 
 	 * @param page - the page number.
 	 * @param size - the page size.
 	 * @return the list of {@link Medical}s pageable. It could be {@code empty}.
@@ -137,6 +143,7 @@ public class MedicalsIoOperations {
 
 	/**
 	 * Retrieves the stored {@link Medical}s based on the specified filter criteria.
+	 * 
 	 * @param description the medical description or {@code null}
 	 * @param type the medical type or {@code null}
 	 * @param critical {@code true} if include only medicals under critical level.
@@ -180,6 +187,7 @@ public class MedicalsIoOperations {
 
 	/**
 	 * Checks if the specified {@link Medical} exists or not.
+	 * 
 	 * @param medical - the medical to check.
 	 * @param update - if {@code true} excludes the actual {@link Medical}
 	 * @return all {@link Medical} with similar description
@@ -194,6 +202,7 @@ public class MedicalsIoOperations {
 
 	/**
 	 * Checks if the specified {@link Medical} ProductCode exists or not.
+	 * 
 	 * @param medical - the medical to check.
 	 * @param update - if {@code true} excludes the actual {@link Medical}
 	 * @return {@code true} if exists, {@code false} otherwise.
@@ -211,6 +220,7 @@ public class MedicalsIoOperations {
 
 	/**
 	 * Checks if the specified {@link Medical} exists or not.
+	 * 
 	 * @param medical the medical to check.
 	 * @param update - if {@code true} exclude the current medical itself from search
 	 * @return {@code true} if exists {@code false} otherwise.
@@ -228,6 +238,7 @@ public class MedicalsIoOperations {
 
 	/**
 	 * Stores the specified {@link Medical}.
+	 * 
 	 * @param medical the medical to store.
 	 * @return the newly stored {@link Medical} object.
 	 * @throws OHServiceException if an error occurs storing the medical.
@@ -238,6 +249,7 @@ public class MedicalsIoOperations {
 
 	/**
 	 * Updates the specified {@link Medical}.
+	 * 
 	 * @param medical the medical to update.
 	 * @return the persisted {@link Medical} object.
 	 * @throws OHServiceException if an error occurs during the update.
@@ -248,6 +260,7 @@ public class MedicalsIoOperations {
 
 	/**
 	 * Checks if the specified {@link Medical} is referenced in stock movement.
+	 * 
 	 * @param code the medical code.
 	 * @return {@code true} if the medical is referenced, {@code false} otherwise.
 	 * @throws OHServiceException if an error occurs during the check.
@@ -258,6 +271,7 @@ public class MedicalsIoOperations {
 
 	/**
 	 * Deletes the specified {@link Medical}.
+	 * 
 	 * @param medical the medical to delete.
 	 * @throws OHServiceException if an error occurs during the medical deletion.
 	 */
@@ -267,6 +281,7 @@ public class MedicalsIoOperations {
 
 	/**
 	 * Retrieves all stored medicals, sorted by description or smart code.
+	 * 
 	 * @param nameSorted if true the found medicals are sorted by description, otherwise sorted by prod_code and description.
 	 * @return sorted List of medicals or empty list if none found.
 	 * @throws OHServiceException When failed to get medicals
