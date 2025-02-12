@@ -36,6 +36,7 @@ public final class GeneralData extends ConfigurationProperties {
 	public static boolean DEMODATA;
 	public static boolean APISERVER;
 
+	public static boolean ALLOWBILLGUARANTOR;
 	public static String LANGUAGE;
 	public static boolean AUTOMATICLOT_IN;
 	public static boolean AUTOMATICLOT_OUT;
@@ -91,6 +92,7 @@ public final class GeneralData extends ConfigurationProperties {
 	public static int PASSWORDLOCKTIME;
 	public static int PASSWORDIDLE;
 
+	private static final boolean DEFAULT_ALLOWBILLGUARANTOR  = false;
 	private static final String DEFAULT_LANGUAGE = "en";
 	private static final boolean DEFAULT_SINGLEUSER = false;
 	private static final boolean DEFAULT_USERSLISTLOGIN = false;
@@ -159,6 +161,7 @@ public final class GeneralData extends ConfigurationProperties {
 
 	private GeneralData(String fileProperties) {
 		super(fileProperties, EXIT_ON_FAIL);
+		ALLOWBILLGUARANTOR = myGetProperty("ALLOWBILLGUARANTOR", DEFAULT_ALLOWBILLGUARANTOR);
 		SINGLEUSER = myGetProperty("SINGLEUSER", DEFAULT_SINGLEUSER);
 		USERSLISTLOGIN = myGetProperty("USERSLISTLOGIN", DEFAULT_USERSLISTLOGIN);
 		MODE = myGetProperty("MODE", DEFAULT_MODE);
