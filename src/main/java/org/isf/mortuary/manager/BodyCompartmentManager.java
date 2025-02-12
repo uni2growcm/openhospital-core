@@ -66,19 +66,17 @@ public class BodyCompartmentManager {
 	 * @throws OHServiceException if an error occurs during the update.
 	 */
 	public BodyCompartment update(BodyCompartment bodyCompartment) throws OHServiceException {
-		BodyCompartment bodyCompartmentFound = bodyCompartmentIoOperations.getByCode(bodyCompartment.getLabel());
-		bodyCompartmentFound.setDescription(bodyCompartment.getDescription());
-		return bodyCompartmentIoOperations.update(bodyCompartmentFound);
+		return bodyCompartmentIoOperations.update(bodyCompartment);
 	}
 
 	/**
-	 * Checks if the code is already in use.
+	 * Checks if the code is already in git.
 	 * @param code - the {@link BodyCompartment} code
 	 * @return {@code true} if the code is already in use, {@code false} otherwise
 	 * @throws OHServiceException
 	 */
 	public boolean isCodePresent(String code) throws OHServiceException {
-		return bodyCompartmentIoOperations.isCodePresent(code);
+		return bodyCompartmentIoOperations.isLabelPresent(code);
 	}
 
 	/**

@@ -59,6 +59,9 @@ public class BodyCompartmentIoOperations {
 	 */
 	public BodyCompartment delete(BodyCompartment bodyCompartment) throws OHServiceException {
 		BodyCompartment bodyCompartmentFound = bodyCompartmentRepository.findByLabelAndDeleted(bodyCompartment.getLabel(), false);
+		if (bodyCompartmentFound == null) {
+			throw new OHServiceException(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuary.bodycompartment.thisbodycompartmentdontexist.msg")));
+		}
 		bodyCompartmentFound.setDeleted(true);
 		return bodyCompartmentRepository.save(bodyCompartmentFound);
 	}
@@ -71,6 +74,11 @@ public class BodyCompartmentIoOperations {
 	 * @throws OHServiceException if an error occurs during the update.
 	 */
 	public BodyCompartment update(BodyCompartment bodyCompartment) throws OHServiceException {
+		BodyCompartment bodyCompartmentFound = getByCode(bodyCompartment.getLabel());
+		if (bodyCompartmentFound == null) {
+			throw new OHServiceException(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuary.bodycompartment.thisbodycompartmentdontexist.msg")));
+		}
+		bodyCompartmentFound.setDescription(bodyCompartment.getDescription());
 		return bodyCompartmentRepository.save(bodyCompartment);
 	}
 
@@ -109,9 +117,9 @@ public class BodyCompartmentIoOperations {
 	 * @return {@label true} if the label is already in use and deleted is false, {@label false} otherwise
 	 * @throws OHServiceException
 	 */
-	public boolean isCodePresent(String label) throws OHServiceException {
+	public boolean isLabelPresent(String label) throws OHServiceException {
 		boolean existed = false;
-		BodyCompartment bodyCompartment = getByCode(label);
+		BodyCompartment bodyCompartment = bodyCompartmentRepository.findByLabelAndDeleted(label, false);
 		if (bodyCompartment != null) {
 			existed = true;
 		}

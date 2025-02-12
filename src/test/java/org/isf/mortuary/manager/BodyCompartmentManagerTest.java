@@ -23,6 +23,7 @@
 package org.isf.mortuary.manager;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.isf.OHCoreTestCase;
 import org.isf.mortuary.model.BodyCompartment;
@@ -63,6 +64,17 @@ public class BodyCompartmentManagerTest  extends OHCoreTestCase {
 		assertThat(bodyCompartment.getTotalElements()).isEqualTo(1);
 		assertThat(bodyCompartment.getTotalPages()).isEqualTo(1);
 		assertThat(bodyCompartment.getContent().get(0).getId()).isEqualTo(id);
+	}
+
+	@Test
+	void testMgrUpdate() throws OHException, OHServiceException {
+		BodyCompartment bodyCompartment = testBodyCompartment.setup(false);
+		assertThatThrownBy(() -> bodyComportmentManager.update(bodyCompartment))
+			.isInstanceOf(OHServiceException.class);
+		BodyCompartment bodyCompartmentSaved = bodyCompartmentIoOperations.add(bodyCompartment);
+		bodyCompartmentSaved.setDescription("Updated");
+		BodyCompartment bodyCompartmentUpdated = bodyComportmentManager.update(bodyCompartmentSaved);
+		assertThat(bodyCompartmentUpdated.getDescription()).isEqualTo("Updated");
 	}
 
 	private int setupTestBodyCompartment(boolean usingSet) throws OHException, OHServiceException {
