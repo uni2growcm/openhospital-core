@@ -45,10 +45,10 @@ public interface AdmissionIoOperationRepository extends JpaRepository<Admission,
 	List<Admission> findAllWherePatientByOrderByDate(@Param("patient") int patient);
 
 	@Query(value = "select a FROM Admission a " +
-					"WHERE a.ward.code =:ward AND a.admDate >= :dateFrom AND a.admDate <= :dateTo AND a.deleted ='N' " +
-					"ORDER BY a.yProg desc ")
+		"WHERE a.ward.code =:ward AND a.admDate >= :dateFrom AND a.admDate <= :dateTo AND a.deleted ='N' " +
+		"ORDER BY a.yProg desc ")
 	List<Admission> findAllWhereWardAndDates(
-					@Param("ward") String ward, @Param("dateFrom") LocalDateTime dateFrom, @Param("dateTo") LocalDateTime dateTo);
+		@Param("ward") String ward, @Param("dateFrom") LocalDateTime dateFrom, @Param("dateTo") LocalDateTime dateTo);
 
 	@Query(value = "select a FROM Admission a WHERE a.admitted =1 and a.ward.code = :ward and a.deleted = 'N'")
 	List<Admission> findAllWhereWardIn(@Param("ward") String ward);
@@ -67,4 +67,8 @@ public interface AdmissionIoOperationRepository extends JpaRepository<Admission,
 
 	@Query("select count(a) from Admission a where active=1 and deleted not like 'Y'")
 	long countAllActiveNotDeletedAdmissions();
+
+	Page<Admission> findAllByPatientSexAndPatientNameContainsAndDeleted(
+		char sex, String patientName, char deleted, Pageable pageable
+	);
 }
