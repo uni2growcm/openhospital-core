@@ -114,3 +114,4 @@ source u2g_update/step_02_add_collumn_exa_target_to_table_oh_exam.sql;
 source u2g_update/step_03_mortuarystays_table.sql;
 source u2g_update/step_04_add_mortuary_table_and_menu.sql;
 source u2g_update/step_05_add_column_bll_guarantor_to_table_oh_bills.sql;
+source u2g_update/step_06_add_pregnancycare_menuitem_and_privilege_for_groupmenu.sql;
