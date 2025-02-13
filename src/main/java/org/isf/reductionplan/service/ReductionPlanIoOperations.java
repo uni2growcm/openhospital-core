@@ -107,15 +107,15 @@ public class ReductionPlanIoOperations {
 		return reductionplanIoOperationRepository.save(reductionPlan);
 	}
 
-//	/**
-//	 * save a {@link ExamReduction}
-//	 * @param examReduction the {@link ExamReduction} to insert
-//	 * @return the newly persisted {@link ExamReduction} object
-//	 * @throws OHServiceException if the error happened during the save process
-//	 */
-//	public ExamReduction save(ExamReduction examReduction) throws OHServiceException {
-//		return examReductionIoOperationsRepository.save(examReduction);
-//	}
+	/**
+	 * save a {@link ExamReduction}
+	 * @param examReduction the {@link ExamReduction} to insert
+	 * @return the newly persisted {@link ExamReduction} object
+	 * @throws OHServiceException if the error happened during the save process
+	 */
+	public ExamReduction save(ExamReduction examReduction) throws OHServiceException {
+		return examReductionIoOperationsRepository.save(examReduction);
+	}
 
 	/**
 	 * fetch a list of {@link ExamReduction}s by {@link ReductionPlan} id
@@ -138,15 +138,15 @@ public class ReductionPlanIoOperations {
 		return examReductionIoOperationsRepository.save(examReduction);
 	}
 
-//	/**
-//	 * Save a {@link MedicalReduction}
-//	 * @param medicalReduction the {@link MedicalReduction} to insert
-//	 * @return the newly persisted {@link MedicalReduction} object
-//	 * @throws OHServiceException if an error happened during the save process
-//	 */
-//	public MedicalReduction save(MedicalReduction medicalReduction) throws OHServiceException {
-//		return medicalReductionIoOperationRepository.save(medicalReduction);
-//	}
+	/**
+	 * Save a {@link MedicalReduction}
+	 * @param medicalReduction the {@link MedicalReduction} to insert
+	 * @return the newly persisted {@link MedicalReduction} object
+	 * @throws OHServiceException if an error happened during the save process
+	 */
+	public MedicalReduction save(MedicalReduction medicalReduction) throws OHServiceException {
+		return medicalReductionIoOperationRepository.save(medicalReduction);
+	}
 
 	/**
 	 * fetch a list of {@link MedicalReduction}s by {@link ReductionPlan} id.
@@ -158,16 +158,16 @@ public class ReductionPlanIoOperations {
 		return medicalReductionIoOperationRepository.findByReductionPlanIdAndDeleted(reductionPlanId, deleted);
 	}
 
-//	/**
-//	 * delete a {@link MedicalReduction}
-//	 * @param medicalReduction the {@link MedicalReduction} want to delete
-//	 * @throws OHServiceException if an error happened during the delete process
-//	 */
-//	public MedicalReduction delete(MedicalReduction medicalReduction) throws OHServiceException {
-//		medicalReduction = medicalReductionIoOperationRepository.findByIdAndDeleted(medicalReduction.getId(), false);
-//		medicalReduction.setDeleted(true);
-//		return medicalReductionIoOperationRepository.save(medicalReduction);
-//	}
+	/**
+	 * delete a {@link MedicalReduction}
+	 * @param medicalReduction the {@link MedicalReduction} want to delete
+	 * @throws OHServiceException if an error happened during the delete process
+	 */
+	public MedicalReduction delete(MedicalReduction medicalReduction) throws OHServiceException {
+		medicalReduction = medicalReductionIoOperationRepository.findByIdAndDeleted(medicalReduction.getId(), false);
+		medicalReduction.setDeleted(true);
+		return medicalReductionIoOperationRepository.save(medicalReduction);
+	}
 
 	/**
 	 * Save an {@link OperationReduction}
@@ -201,15 +201,15 @@ public class ReductionPlanIoOperations {
 		return operationReductionIoOperationRepository.save(operationReduction);
 	}
 
-//	/**
-//	 * Save a {@link PriceOtherReduction}
-//	 * @param priceOtherReduction the {@link PriceOtherReduction} to insert
-//	 * @return the newly persisted {@link PriceOtherReduction} object
-//	 * @throws OHServiceException if an error happened during the save process
-//	 */
-//	public PriceOtherReduction save(PriceOtherReduction priceOtherReduction) throws OHServiceException {
-//		return PriceOtherReductionIoOperationRepository.save(priceOtherReduction);
-//	}
+	/**
+	 * Save a {@link PriceOtherReduction}
+	 * @param priceOtherReduction the {@link PriceOtherReduction} to insert
+	 * @return the newly persisted {@link PriceOtherReduction} object
+	 * @throws OHServiceException if an error happened during the save process
+	 */
+	public PriceOtherReduction save(PriceOtherReduction priceOtherReduction) throws OHServiceException {
+		return PriceOtherReductionIoOperationRepository.save(priceOtherReduction);
+	}
 
 	/**
 	 * Fetch a list of {@link PriceOtherReduction}s by {@link ReductionPlan}

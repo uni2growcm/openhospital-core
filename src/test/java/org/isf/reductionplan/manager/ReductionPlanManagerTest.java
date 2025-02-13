@@ -58,6 +58,7 @@ import org.isf.reductionplan.service.ExamReductionIoOperationsRepository;
 import org.isf.reductionplan.service.MedicalReductionIoOperationRepository;
 import org.isf.reductionplan.service.OperationReductionIoOperationRepository;
 import org.isf.reductionplan.service.PriceOtherReductionIoOperationRepository;
+import org.isf.reductionplan.service.ReductionPlanIoOperations;
 import org.isf.reductionplan.service.ReductionplanIoOperationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -103,6 +104,9 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 
 	@Autowired
 	PricesOthersManager pricesOthersManager;
+
+	@Autowired
+	ReductionPlanIoOperations reductionPlanIoOperations;
 
 	@BeforeEach
 	void setUp() {
@@ -237,7 +241,7 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 		Exam exam = examBrowsingManager.newExam(examReduction.getExam());
 		examReduction.setExam(exam);
 
-		ExamReduction saveExamReduction = manager.save(examReduction);
+		ExamReduction saveExamReduction = reductionPlanIoOperations.save(examReduction);
 		assertThat(saveExamReduction).isNotNull();
 		assertThat(saveExamReduction.getReductionPlan()).isEqualTo(reductionPlan);
 		assertThat(saveExamReduction.getExam()).isEqualTo(exam);
@@ -256,7 +260,7 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 		examReduction.getExam().setExamtype(examType);
 		Exam exam = examBrowsingManager.newExam(examReduction.getExam());
 		examReduction.setExam(exam);
-		examReduction = manager.save(examReduction);
+		examReduction = reductionPlanIoOperations.save(examReduction);
 
 		ExamReduction deletedExamReduction = manager.delete(examReduction);
 
@@ -350,7 +354,7 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 		Medical medical = medicalBrowsingManager.newMedical(medicalReduction.getMedical());
 		medicalReduction.setMedical(medical);
 
-		MedicalReduction saveMedicalReduction = manager.save(medicalReduction);
+		MedicalReduction saveMedicalReduction = reductionPlanIoOperations.save(medicalReduction);
 		assertThat(saveMedicalReduction).isNotNull();
 		assertThat(saveMedicalReduction.getReductionPlan()).isEqualTo(reductionPlan);
 		assertThat(saveMedicalReduction.getMedical()).isEqualTo(medical);
@@ -369,7 +373,7 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 		medicalReduction.getMedical().setType(medicalType);
 		Medical medical = medicalBrowsingManager.newMedical(medicalReduction.getMedical());
 		medicalReduction.setMedical(medical);
-		medicalReduction = manager.save(medicalReduction);
+		medicalReduction = reductionPlanIoOperations.save(medicalReduction);
 
 		MedicalReduction deletedMedicalReduction = manager.delete(medicalReduction);
 
@@ -463,7 +467,7 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 		Operation operation = operationBrowserManager.newOperation(operationReduction.getOperation());
 		operationReduction.setOperation(operation);
 
-		OperationReduction saveOperationReduction = manager.save(operationReduction);
+		OperationReduction saveOperationReduction = reductionPlanIoOperations.save(operationReduction);
 		assertThat(saveOperationReduction).isNotNull();
 		assertThat(saveOperationReduction.getReductionPlan()).isEqualTo(reductionPlan);
 		assertThat(saveOperationReduction.getOperation()).isEqualTo(operation);
@@ -482,7 +486,7 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 		operationReduction.getOperation().setType(operationType);
 		Operation operation = operationBrowserManager.newOperation(operationReduction.getOperation());
 		operationReduction.setOperation(operation);
-		operationReduction = manager.save(operationReduction);
+		operationReduction = reductionPlanIoOperations.save(operationReduction);
 
 		OperationReduction deletedOperationReduction = manager.delete(operationReduction);
 
@@ -566,7 +570,7 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 		PricesOthers pricesOthers = pricesOthersManager.newOther(priceOtherReduction.getPricesOthers());
 		priceOtherReduction.setPricesOthers(pricesOthers);
 
-		PriceOtherReduction savePriceOtherReduction = manager.save(priceOtherReduction);
+		PriceOtherReduction savePriceOtherReduction = reductionPlanIoOperations.save(priceOtherReduction);
 		assertThat(savePriceOtherReduction).isNotNull();
 		assertThat(savePriceOtherReduction.getReductionPlan()).isEqualTo(reductionPlan);
 		assertThat(savePriceOtherReduction.getPricesOthers()).isEqualTo(pricesOthers);
@@ -583,7 +587,7 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 		PriceOtherReduction priceOtherReduction = ReductionPlanDataGenerate.generatePriceOtherReductionFixture(null, reductionPlan);
 		PricesOthers pricesOthers = pricesOthersManager.newOther(priceOtherReduction.getPricesOthers());
 		priceOtherReduction.setPricesOthers(pricesOthers);
-		priceOtherReduction = manager.save(priceOtherReduction);
+		priceOtherReduction = reductionPlanIoOperations.save(priceOtherReduction);
 
 		PriceOtherReduction deletedPriceOtherReduction = manager.delete(priceOtherReduction);
 

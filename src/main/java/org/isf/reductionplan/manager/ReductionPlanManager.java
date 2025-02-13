@@ -67,6 +67,37 @@ public class ReductionPlanManager {
 	 * @throws OHServiceException when failed to save {@link ReductionPlan}
 	 */
 	public ReductionPlan save(ReductionPlan reductionPlan) throws OHServiceException {
+
+		List<ExamReduction> examReductionList = reductionPlanIoOperations.getExamReductionByReductionPlanId(reductionPlan.getId(), false);
+		List<MedicalReduction> medicalReductionList = reductionPlanIoOperations.getMedicalReductionByReductionPlanId(reductionPlan.getId(), false);
+		List<OperationReduction> operationReductionList = reductionPlanIoOperations.getOperationReductionByReductionPlanId(reductionPlan.getId(), false);
+		List<PriceOtherReduction> priceOtherReductionList = reductionPlanIoOperations.getPriceOtherReductionByReductionPlanId(reductionPlan.getId(), false);
+
+		if (!examReductionList.isEmpty()) {
+			for (ExamReduction examReduction : examReductionList) {
+				examReduction.setReductionPlan(reductionPlan);
+				reductionPlanIoOperations.save(examReduction);
+			}
+		}
+		if (!medicalReductionList.isEmpty()) {
+			for (MedicalReduction medicalReduction : medicalReductionList) {
+				medicalReduction.setReductionPlan(reductionPlan);
+				reductionPlanIoOperations.save(medicalReduction);
+			}
+		}
+		if (!operationReductionList.isEmpty()) {
+			for (OperationReduction operationReduction : operationReductionList) {
+				operationReduction.setReductionPlan(reductionPlan);
+				reductionPlanIoOperations.save(operationReduction);
+			}
+		}
+		if (!priceOtherReductionList.isEmpty()) {
+			for (PriceOtherReduction priceOtherReduction : priceOtherReductionList) {
+				priceOtherReduction.setReductionPlan(reductionPlan);
+				reductionPlanIoOperations.save(priceOtherReduction);
+			}
+		}
+
 		return reductionPlanIoOperations.save(reductionPlan);
 	}
 
@@ -77,6 +108,36 @@ public class ReductionPlanManager {
 	 * @throws OHServiceException when failed to update {@link ReductionPlan}
 	 */
 	public ReductionPlan update(ReductionPlan reductionPlan) throws OHServiceException {
+		List<ExamReduction> examReductionList = reductionPlanIoOperations.getExamReductionByReductionPlanId(reductionPlan.getId(), false);
+		List<MedicalReduction> medicalReductionList = reductionPlanIoOperations.getMedicalReductionByReductionPlanId(reductionPlan.getId(), false);
+		List<OperationReduction> operationReductionList = reductionPlanIoOperations.getOperationReductionByReductionPlanId(reductionPlan.getId(), false);
+		List<PriceOtherReduction> priceOtherReductionList = reductionPlanIoOperations.getPriceOtherReductionByReductionPlanId(reductionPlan.getId(), false);
+
+		if (!examReductionList.isEmpty()) {
+			for (ExamReduction examReduction : examReductionList) {
+				examReduction.setReductionPlan(reductionPlan);
+				reductionPlanIoOperations.save(examReduction);
+			}
+		}
+		if (!medicalReductionList.isEmpty()) {
+			for (MedicalReduction medicalReduction : medicalReductionList) {
+				medicalReduction.setReductionPlan(reductionPlan);
+				reductionPlanIoOperations.save(medicalReduction);
+			}
+		}
+		if (!operationReductionList.isEmpty()) {
+			for (OperationReduction operationReduction : operationReductionList) {
+				operationReduction.setReductionPlan(reductionPlan);
+				reductionPlanIoOperations.save(operationReduction);
+			}
+		}
+		if (!priceOtherReductionList.isEmpty()) {
+			for (PriceOtherReduction priceOtherReduction : priceOtherReductionList) {
+				priceOtherReduction.setReductionPlan(reductionPlan);
+				reductionPlanIoOperations.save(priceOtherReduction);
+			}
+		}
+
 		return reductionPlanIoOperations.save(reductionPlan);
 	}
 
