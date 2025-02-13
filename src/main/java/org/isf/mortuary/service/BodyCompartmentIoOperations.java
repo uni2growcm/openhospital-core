@@ -103,7 +103,7 @@ public class BodyCompartmentIoOperations {
 	 * @return the page of {@link BodyCompartment}
 	 * @throws OHServiceException if {@label label} is {@literal null}
 	 */
-	public Page<BodyCompartment> getByCodePageable(String label, Pageable pageable) throws OHServiceException {
+	public Page<BodyCompartment> getByLabelPageable(String label, Pageable pageable) throws OHServiceException {
 		if (label != null) {
 			return bodyCompartmentRepository.findByLabelContainsAndDeleted(label, false, pageable);
 		}

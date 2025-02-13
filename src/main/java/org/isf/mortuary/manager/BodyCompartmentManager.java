@@ -90,6 +90,6 @@ public class BodyCompartmentManager {
 	 */
 	public Page<BodyCompartment> getByLabelPageable(String label, int page, int size) throws OHServiceException {
 		Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdDate"));
-		return bodyCompartmentIoOperations.getByCodePageable(label, pageable);
+		return bodyCompartmentIoOperations.getByLabelPageable(label, pageable);
 	}
 }
