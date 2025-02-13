@@ -1,6 +1,6 @@
 -- Add pregnancycare menuitem and privilege
 INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('pregnancycare','angal.menu.btn.pregnancycare','angal.menu.pregnancycare','x','E','main','org.isf.pregnancycare.gui.PregnancyCareBrowser','N',5);
-INSERT INTO `oh_groupmenu` (`GM_ID`, `GM_UG_ID_A`, `GM_MNI_ID_A`, `GM_ACTIVE`, `GM_CREATED_BY`, `GM_CREATED_DATE`, `GM_LAST_MODIFIED_BY`, `GM_LAST_MODIFIED_DATE`) VALUES (349,'admin','pregnancycare',1,NULL,NULL,NULL,NULL);
+INSERT INTO `oh_groupmenu` (`GM_ID`, `GM_UG_ID_A`, `GM_MNI_ID_A`, `GM_ACTIVE`, `GM_CREATED_BY`, `GM_CREATED_DATE`, `GM_LAST_MODIFIED_BY`, `GM_LAST_MODIFIED_DATE`) VALUES (351,'admin','pregnancycare',1,NULL,NULL,NULL,NULL);
 -- Update the order of positioning of menu items
 UPDATE oh_menuitem SET MNI_POSITION=7 WHERE MNI_ID_A="accounting";
 UPDATE oh_menuitem SET MNI_POSITION=12 WHERE MNI_ID_A="agetype";
