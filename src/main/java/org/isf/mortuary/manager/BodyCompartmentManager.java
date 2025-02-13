@@ -70,13 +70,13 @@ public class BodyCompartmentManager {
 	}
 
 	/**
-	 * Checks if the code is already in git.
-	 * @param code - the {@link BodyCompartment} code
-	 * @return {@code true} if the code is already in use, {@code false} otherwise
+	 * Checks if the label exist.
+	 * @param label - the {@link BodyCompartment} label
+	 * @return {@label true} if the label is already in use, {@label false} otherwise
 	 * @throws OHServiceException
 	 */
-	public boolean isCodePresent(String code) throws OHServiceException {
-		return bodyCompartmentIoOperations.isLabelPresent(code);
+	public boolean isLabelPresent(String label) throws OHServiceException {
+		return bodyCompartmentIoOperations.isLabelPresent(label);
 	}
 
 	/**

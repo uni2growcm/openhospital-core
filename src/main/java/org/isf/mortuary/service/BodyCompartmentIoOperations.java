@@ -74,7 +74,7 @@ public class BodyCompartmentIoOperations {
 	 * @throws OHServiceException if an error occurs during the update.
 	 */
 	public BodyCompartment update(BodyCompartment bodyCompartment) throws OHServiceException {
-		BodyCompartment bodyCompartmentFound = getByCode(bodyCompartment.getLabel());
+		BodyCompartment bodyCompartmentFound = getByLabel(bodyCompartment.getLabel());
 		if (bodyCompartmentFound == null) {
 			throw new OHServiceException(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuary.bodycompartment.thisbodycompartmentdontexist.msg")));
 		}
@@ -89,7 +89,7 @@ public class BodyCompartmentIoOperations {
 	 * @return the {@link BodyCompartment} or {@literal null} if none found
 	 * @throws OHServiceException if {@label label} is {@literal null}
 	 */
-	public BodyCompartment getByCode(String label) throws OHServiceException {
+	public BodyCompartment getByLabel(String label) throws OHServiceException {
 		if (label != null) {
 			return bodyCompartmentRepository.findByLabelAndDeleted(label, false);
 		}
@@ -111,7 +111,7 @@ public class BodyCompartmentIoOperations {
 	}
 
 	/**
-	 * Checks if the label is already in use.
+	 * Checks if the label exist.
 	 *
 	 * @param label - the {@link BodyCompartment} label
 	 * @return {@label true} if the label is already in use and deleted is false, {@label false} otherwise
