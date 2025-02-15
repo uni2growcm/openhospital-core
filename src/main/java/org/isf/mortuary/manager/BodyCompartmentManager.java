@@ -72,7 +72,7 @@ public class BodyCompartmentManager {
 	/**
 	 * Checks if the label exist.
 	 * @param label - the {@link BodyCompartment} label
-	 * @return {@label true} if the label is already in use, {@label false} otherwise
+	 * @return {@label true} if the label is present in the database, {@label false} otherwise
 	 * @throws OHServiceException
 	 */
 	public boolean isLabelPresent(String label) throws OHServiceException {
