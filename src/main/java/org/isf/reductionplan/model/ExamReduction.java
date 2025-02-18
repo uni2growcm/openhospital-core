@@ -30,11 +30,13 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 import jakarta.validation.constraints.NotNull;
 
 import org.isf.exa.model.Exam;
+import org.isf.exatype.model.ExamType;
 import org.isf.utils.db.Auditable;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -58,8 +60,8 @@ public class ExamReduction extends Auditable<String> {
 	private ReductionPlan reductionPlan;
 
 	@NotNull
-	@ManyToOne
-	@JoinColumn(name = "EXAR_EXA_ID_A")
+	@ManyToOne(optional = false, cascade = CascadeType.PERSIST)
+	@JoinColumn(name = "EXAR_EXA_ID_A", nullable = false)
 	private Exam exam;
 
 	@NotNull

@@ -22,6 +22,7 @@
 package org.isf.reductionplan.model;
 
 import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -35,6 +36,7 @@ import jakarta.persistence.Version;
 import jakarta.validation.constraints.NotNull;
 
 import org.isf.medicals.model.Medical;
+import org.isf.medtype.model.MedicalType;
 import org.isf.utils.db.Auditable;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -58,7 +60,7 @@ public class MedicalReduction extends Auditable<String> {
 	private ReductionPlan reductionPlan;
 
 	@NotNull
-	@ManyToOne
+	@ManyToOne(optional = false, cascade = CascadeType.PERSIST)
 	@JoinColumn(name = "MR_MDSR_ID")
 	private Medical medical;
 

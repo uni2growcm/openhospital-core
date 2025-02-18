@@ -22,6 +22,7 @@
 package org.isf.reductionplan.model;
 
 import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -35,6 +36,7 @@ import jakarta.persistence.Version;
 import jakarta.validation.constraints.NotNull;
 
 import org.isf.operation.model.Operation;
+import org.isf.opetype.model.OperationType;
 import org.isf.utils.db.Auditable;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -59,7 +61,7 @@ public class OperationReduction extends Auditable<String> {
 	private ReductionPlan reductionPlan;
 
 	@NotNull
-	@ManyToOne
+	@ManyToOne(optional = false, cascade = CascadeType.PERSIST)
 	@JoinColumn(name = "OPR_OPE_ID_A")
 	private Operation operation;
 
@@ -96,36 +98,47 @@ public class OperationReduction extends Auditable<String> {
 	public int getId() {
 		return id;
 	}
+
 	public void setId(int id) {
 		this.id = id;
 	}
+
 	public ReductionPlan getReductionPlan() {
 		return reductionPlan;
 	}
+
 	public void setReductionPlan(ReductionPlan reductionPlan) {
 		this.reductionPlan = reductionPlan;
 	}
+
 	public Operation getOperation() {
 		return operation;
 	}
+
 	public void setOperation(Operation operation) {
 		this.operation = operation;
 	}
+
 	public double getReductionRate() {
 		return reductionRate;
 	}
+
 	public void setReductionRate(double reductionRate) {
 		this.reductionRate = reductionRate;
 	}
+
 	public boolean isDeleted() {
 		return  deleted;
 	}
+
 	public void setDeleted(boolean deleted) {
 		this.deleted = deleted;
 	}
+
 	public int getLock() {
 		return lock;
 	}
+
 	public void setLock(int lock) {
 		this.lock = lock;
 	}

@@ -22,6 +22,7 @@
 package org.isf.reductionplan.model;
 
 import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -59,7 +60,7 @@ public class PriceOtherReduction extends Auditable<String> {
 	private ReductionPlan reductionPlan;
 
 	@NotNull
-	@ManyToOne
+	@ManyToOne(optional = false, cascade = CascadeType.PERSIST)
 	@JoinColumn(name = "OTHR_OTH_ID")
 	private PricesOthers pricesOthers;
 

@@ -33,6 +33,7 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
@@ -83,6 +84,18 @@ public class ReductionPlan extends Auditable<String> implements Serializable {
 	@Column(name = "RP_LOCK")
 	private int lock;
 
+	@OneToMany(mappedBy = "reductionPlan", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<ExamReduction> examReductionList;
+
+	@OneToMany(mappedBy = "reductionPlan", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<MedicalReduction> medicalReductionList;
+
+	@OneToMany(mappedBy = "reductionPlan", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<OperationReduction> operationReductionList;
+
+	@OneToMany(mappedBy = "reductionPlan", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<PriceOtherReduction> priceOtherReductionList;
+
 	@Transient
 	private volatile int hashcode;
 
@@ -90,8 +103,13 @@ public class ReductionPlan extends Auditable<String> implements Serializable {
 		super();
 	}
 
-	public ReductionPlan(int id, String description, double operationRate, double medicalRate,
-					double examRate, double otherRate
+	public ReductionPlan(
+		int id,
+		String description,
+		double operationRate,
+		double medicalRate,
+		double examRate,
+		double otherRate
 	) {
 		super();
 		this.id = id;
@@ -108,6 +126,31 @@ public class ReductionPlan extends Auditable<String> implements Serializable {
 		this.medicalRate = medicalRate;
 		this.examRate = examRate;
 		this.otherRate = otherRate;
+	}
+
+	public ReductionPlan(
+		int id,
+		String description,
+		double operationRate,
+		double medicalRate,
+		double examRate,
+		double otherRate,
+		List<ExamReduction> examReductionList,
+		List<MedicalReduction> medicalReductionList,
+		List<OperationReduction> operationReductionList,
+		List<PriceOtherReduction> priceOtherReductionList
+	) {
+		super();
+		this.id = id;
+		this.description = description;
+		this.operationRate = operationRate;
+		this.medicalRate = medicalRate;
+		this.examRate = examRate;
+		this.otherRate = otherRate;
+		this.examReductionList = examReductionList;
+		this.medicalReductionList = medicalReductionList;
+		this.operationReductionList = operationReductionList;
+		this.priceOtherReductionList = priceOtherReductionList;
 	}
 
 	public int getId() {
@@ -169,6 +212,38 @@ public class ReductionPlan extends Auditable<String> implements Serializable {
 
 	public void setLock(int lock) {
 		this.lock = lock;
+	}
+
+	public List<ExamReduction> getExamReductionList() {
+		return examReductionList;
+	}
+
+	public void setExamReductionList(List<ExamReduction> examReductionList) {
+		this.examReductionList = examReductionList;
+	}
+
+	public List<MedicalReduction> getMedicalReductionList() {
+		return medicalReductionList;
+	}
+
+	public void setMedicalReductionList(List<MedicalReduction> medicalReductionList) {
+		this.medicalReductionList = medicalReductionList;
+	}
+
+	public List<OperationReduction> getOperationReductionList() {
+		return operationReductionList;
+	}
+
+	public void setOperationReductionList(List<OperationReduction> operationReductionList) {
+		this.operationReductionList = operationReductionList;
+	}
+
+	public List<PriceOtherReduction> getPriceOtherReductionList() {
+		return priceOtherReductionList;
+	}
+
+	public void setPriceOtherReductionList(List<PriceOtherReduction> priceOtherReductionList) {
+		this.priceOtherReductionList = priceOtherReductionList;
 	}
 
 	@Override

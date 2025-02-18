@@ -110,11 +110,10 @@ public class ReductionPlanIoOperations {
 	/**
 	 * save a {@link ExamReduction}
 	 * @param examReduction the {@link ExamReduction} to insert
-	 * @return the newly persisted {@link ExamReduction} object
 	 * @throws OHServiceException if the error happened during the save process
 	 */
-	public ExamReduction save(ExamReduction examReduction) throws OHServiceException {
-		return examReductionIoOperationsRepository.save(examReduction);
+	public void saveExamReduction(ExamReduction examReduction) throws OHServiceException {
+		examReductionIoOperationsRepository.save(examReduction);
 	}
 
 	/**
@@ -123,8 +122,8 @@ public class ReductionPlanIoOperations {
 	 * @return the list of {@link ExamReduction}s
 	 * @throws OHServiceException if the error happened during the get process
 	 */
-	public List<ExamReduction> getExamReductionByReductionPlanId(int reductionPlanId, boolean deleted) throws OHServiceException {
-		return examReductionIoOperationsRepository.findByReductionPlanIdAndDeleted(reductionPlanId, deleted);
+	public List<ExamReduction> getExamReductionByReductionPlanId(int reductionPlanId) throws OHServiceException {
+		return examReductionIoOperationsRepository.findByReductionPlanId(reductionPlanId);
 	}
 
 	/**
@@ -132,20 +131,17 @@ public class ReductionPlanIoOperations {
 	 * @param examReduction the {@link ExamReduction} you want to delete
 	 * @throws OHServiceException if the error happened during the delete process
 	 */
-	public ExamReduction delete(ExamReduction examReduction) throws OHServiceException {
-		examReduction = examReductionIoOperationsRepository.findByIdAndDeleted(examReduction.getId(), false);
-		examReduction.setDeleted(true);
-		return examReductionIoOperationsRepository.save(examReduction);
+	public void deleteExamReduction(ExamReduction examReduction) throws OHServiceException {
+		examReductionIoOperationsRepository.deleteById(examReduction.getId());
 	}
 
 	/**
 	 * Save a {@link MedicalReduction}
 	 * @param medicalReduction the {@link MedicalReduction} to insert
-	 * @return the newly persisted {@link MedicalReduction} object
 	 * @throws OHServiceException if an error happened during the save process
 	 */
-	public MedicalReduction save(MedicalReduction medicalReduction) throws OHServiceException {
-		return medicalReductionIoOperationRepository.save(medicalReduction);
+	public void saveMedicalReduction(MedicalReduction medicalReduction) throws OHServiceException {
+		medicalReductionIoOperationRepository.save(medicalReduction);
 	}
 
 	/**
@@ -154,8 +150,8 @@ public class ReductionPlanIoOperations {
 	 * @return the list of {@link MedicalReduction}s
 	 * @throws OHServiceException if an error happened during the get process
 	 */
-	public List<MedicalReduction> getMedicalReductionByReductionPlanId(int reductionPlanId, boolean deleted) throws OHServiceException {
-		return medicalReductionIoOperationRepository.findByReductionPlanIdAndDeleted(reductionPlanId, deleted);
+	public List<MedicalReduction> getMedicalReductionByReductionPlanId(int reductionPlanId) throws OHServiceException {
+		return medicalReductionIoOperationRepository.findByReductionPlanId(reductionPlanId);
 	}
 
 	/**
@@ -163,31 +159,27 @@ public class ReductionPlanIoOperations {
 	 * @param medicalReduction the {@link MedicalReduction} want to delete
 	 * @throws OHServiceException if an error happened during the delete process
 	 */
-	public MedicalReduction delete(MedicalReduction medicalReduction) throws OHServiceException {
-		medicalReduction = medicalReductionIoOperationRepository.findByIdAndDeleted(medicalReduction.getId(), false);
-		medicalReduction.setDeleted(true);
-		return medicalReductionIoOperationRepository.save(medicalReduction);
+	public void deleteMedicalReduction(MedicalReduction medicalReduction) throws OHServiceException {
+		medicalReductionIoOperationRepository.deleteById(medicalReduction.getId());
 	}
 
 	/**
 	 * Save an {@link OperationReduction}
 	 * @param operationReduction the {@link OperationReduction} to insert
-	 * @return the newly persisted {@link OperationReduction} object
 	 * @throws OHServiceException if an error happened during the save process
 	 */
-	public OperationReduction save(OperationReduction operationReduction) throws OHServiceException {
-		return operationReductionIoOperationRepository.save(operationReduction);
+	public void saveOperationReduction(OperationReduction operationReduction) throws OHServiceException {
+		operationReductionIoOperationRepository.save(operationReduction);
 	}
 
 	/**
 	 * fetch a list of {@link OperationReduction}s by {@link ReductionPlan}
 	 * @param reductionPlanId the {@link ReductionPlan} id
-	 * @param deleted if get deleted data or not
 	 * @return the list of {@link OperationReduction}s
 	 * @throws OHServiceException if an error happened during the get process
 	 */
-	public List<OperationReduction> getOperationReductionByReductionPlanId(int reductionPlanId, boolean deleted) throws OHServiceException {
-		return operationReductionIoOperationRepository.findByReductionPlanIdAndDeleted(reductionPlanId, deleted);
+	public List<OperationReduction> getOperationReductionByReductionPlanId(int reductionPlanId) throws OHServiceException {
+		return operationReductionIoOperationRepository.findByReductionPlanId(reductionPlanId);
 	}
 
 	/**
@@ -195,31 +187,27 @@ public class ReductionPlanIoOperations {
 	 * @param operationReduction the {@link OperationReduction} want to delete
 	 * @throws OHServiceException if an error happened during the delete process
 	 */
-	public OperationReduction delete(OperationReduction operationReduction) throws OHServiceException {
-		operationReduction = operationReductionIoOperationRepository.findByIdAndDeleted(operationReduction.getId(), false);
-		operationReduction.setDeleted(true);
-		return operationReductionIoOperationRepository.save(operationReduction);
+	public void deleteOperationReduction(OperationReduction operationReduction) throws OHServiceException {
+		operationReductionIoOperationRepository.deleteById(operationReduction.getId());
 	}
 
 	/**
 	 * Save a {@link PriceOtherReduction}
 	 * @param priceOtherReduction the {@link PriceOtherReduction} to insert
-	 * @return the newly persisted {@link PriceOtherReduction} object
 	 * @throws OHServiceException if an error happened during the save process
 	 */
-	public PriceOtherReduction save(PriceOtherReduction priceOtherReduction) throws OHServiceException {
-		return PriceOtherReductionIoOperationRepository.save(priceOtherReduction);
+	public void savePriceOtherReduction(PriceOtherReduction priceOtherReduction) throws OHServiceException {
+		PriceOtherReductionIoOperationRepository.save(priceOtherReduction);
 	}
 
 	/**
 	 * Fetch a list of {@link PriceOtherReduction}s by {@link ReductionPlan}
 	 * @param reductionPlanId the {@link ReductionPlan} id
-	 * @param deleted if get deleted data or not
 	 * @return the list of {@link PriceOtherReduction}s
 	 * @throws OHServiceException if an error happened during the get process
 	 */
-	public List<PriceOtherReduction> getPriceOtherReductionByReductionPlanId(int reductionPlanId, boolean deleted) throws OHServiceException {
-		return PriceOtherReductionIoOperationRepository.findByReductionPlanIdAndDeleted(reductionPlanId, deleted);
+	public List<PriceOtherReduction> getPriceOtherReductionByReductionPlanId(int reductionPlanId) throws OHServiceException {
+		return PriceOtherReductionIoOperationRepository.findByReductionPlanId(reductionPlanId);
 	}
 
 	/**
@@ -227,9 +215,7 @@ public class ReductionPlanIoOperations {
 	 * @param priceOtherReduction the {@link PriceOtherReduction} want to delete
 	 * @throws OHServiceException if an error happened during the delete process
 	 */
-	public PriceOtherReduction delete(PriceOtherReduction priceOtherReduction) throws OHServiceException {
-		priceOtherReduction = PriceOtherReductionIoOperationRepository.findByIdAndDeleted(priceOtherReduction.getId(), false);
-		priceOtherReduction.setDeleted(true);
-		return PriceOtherReductionIoOperationRepository.save(priceOtherReduction);
+	public void deleteOtherReduction(PriceOtherReduction priceOtherReduction) throws OHServiceException {
+		 PriceOtherReductionIoOperationRepository.deleteById(priceOtherReduction.getId());
 	}
 }

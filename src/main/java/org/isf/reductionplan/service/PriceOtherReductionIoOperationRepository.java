@@ -29,6 +29,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PriceOtherReductionIoOperationRepository extends JpaRepository<PriceOtherReduction, Integer> {
-	List<PriceOtherReduction> findByReductionPlanIdAndDeleted(int reductionPlanId, boolean deleted);
-	PriceOtherReduction findByIdAndDeleted(int id, boolean deleted);
+	List<PriceOtherReduction> findByReductionPlanId(int reductionPlanId);
 }

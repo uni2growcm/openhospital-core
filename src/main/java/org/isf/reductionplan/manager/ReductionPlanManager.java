@@ -68,37 +68,39 @@ public class ReductionPlanManager {
 	 */
 	public ReductionPlan save(ReductionPlan reductionPlan) throws OHServiceException {
 
-		List<ExamReduction> examReductionList = reductionPlanIoOperations.getExamReductionByReductionPlanId(reductionPlan.getId(), false);
-		List<MedicalReduction> medicalReductionList = reductionPlanIoOperations.getMedicalReductionByReductionPlanId(reductionPlan.getId(), false);
-		List<OperationReduction> operationReductionList = reductionPlanIoOperations.getOperationReductionByReductionPlanId(reductionPlan.getId(), false);
-		List<PriceOtherReduction> priceOtherReductionList = reductionPlanIoOperations.getPriceOtherReductionByReductionPlanId(reductionPlan.getId(), false);
+		List<ExamReduction> examReductionList = reductionPlan.getExamReductionList();
+		List<MedicalReduction> medicalReductionList = reductionPlan.getMedicalReductionList();
+		List<OperationReduction> operationReductionList = reductionPlan.getOperationReductionList();
+		List<PriceOtherReduction> priceOtherReductionList = reductionPlan.getPriceOtherReductionList();
 
 		if (!examReductionList.isEmpty()) {
 			for (ExamReduction examReduction : examReductionList) {
 				examReduction.setReductionPlan(reductionPlan);
-				reductionPlanIoOperations.save(examReduction);
+				reductionPlanIoOperations.saveExamReduction(examReduction);
 			}
 		}
 		if (!medicalReductionList.isEmpty()) {
 			for (MedicalReduction medicalReduction : medicalReductionList) {
 				medicalReduction.setReductionPlan(reductionPlan);
-				reductionPlanIoOperations.save(medicalReduction);
+				reductionPlanIoOperations.saveMedicalReduction(medicalReduction);
 			}
 		}
 		if (!operationReductionList.isEmpty()) {
 			for (OperationReduction operationReduction : operationReductionList) {
 				operationReduction.setReductionPlan(reductionPlan);
-				reductionPlanIoOperations.save(operationReduction);
+				reductionPlanIoOperations.saveOperationReduction(operationReduction);
 			}
 		}
 		if (!priceOtherReductionList.isEmpty()) {
 			for (PriceOtherReduction priceOtherReduction : priceOtherReductionList) {
 				priceOtherReduction.setReductionPlan(reductionPlan);
-				reductionPlanIoOperations.save(priceOtherReduction);
+				reductionPlanIoOperations.savePriceOtherReduction(priceOtherReduction);
 			}
 		}
 
-		return reductionPlanIoOperations.save(reductionPlan);
+		ReductionPlan savedPlan;
+		savedPlan = reductionPlanIoOperations.save(reductionPlan);
+		return savedPlan;
 	}
 
 	/**
@@ -108,33 +110,33 @@ public class ReductionPlanManager {
 	 * @throws OHServiceException when failed to update {@link ReductionPlan}
 	 */
 	public ReductionPlan update(ReductionPlan reductionPlan) throws OHServiceException {
-		List<ExamReduction> examReductionList = reductionPlanIoOperations.getExamReductionByReductionPlanId(reductionPlan.getId(), false);
-		List<MedicalReduction> medicalReductionList = reductionPlanIoOperations.getMedicalReductionByReductionPlanId(reductionPlan.getId(), false);
-		List<OperationReduction> operationReductionList = reductionPlanIoOperations.getOperationReductionByReductionPlanId(reductionPlan.getId(), false);
-		List<PriceOtherReduction> priceOtherReductionList = reductionPlanIoOperations.getPriceOtherReductionByReductionPlanId(reductionPlan.getId(), false);
+		List<ExamReduction> examReductionList = reductionPlan.getExamReductionList();
+		List<MedicalReduction> medicalReductionList = reductionPlan.getMedicalReductionList();
+		List<OperationReduction> operationReductionList = reductionPlan.getOperationReductionList();
+		List<PriceOtherReduction> priceOtherReductionList = reductionPlan.getPriceOtherReductionList();
 
 		if (!examReductionList.isEmpty()) {
 			for (ExamReduction examReduction : examReductionList) {
 				examReduction.setReductionPlan(reductionPlan);
-				reductionPlanIoOperations.save(examReduction);
+				reductionPlanIoOperations.saveExamReduction(examReduction);
 			}
 		}
 		if (!medicalReductionList.isEmpty()) {
 			for (MedicalReduction medicalReduction : medicalReductionList) {
 				medicalReduction.setReductionPlan(reductionPlan);
-				reductionPlanIoOperations.save(medicalReduction);
+				reductionPlanIoOperations.saveMedicalReduction(medicalReduction);
 			}
 		}
 		if (!operationReductionList.isEmpty()) {
 			for (OperationReduction operationReduction : operationReductionList) {
 				operationReduction.setReductionPlan(reductionPlan);
-				reductionPlanIoOperations.save(operationReduction);
+				reductionPlanIoOperations.saveOperationReduction(operationReduction);
 			}
 		}
 		if (!priceOtherReductionList.isEmpty()) {
 			for (PriceOtherReduction priceOtherReduction : priceOtherReductionList) {
 				priceOtherReduction.setReductionPlan(reductionPlan);
-				reductionPlanIoOperations.save(priceOtherReduction);
+				reductionPlanIoOperations.savePriceOtherReduction(priceOtherReduction);
 			}
 		}
 
@@ -147,37 +149,26 @@ public class ReductionPlanManager {
 	 * @throws OHServiceException when failed to delete {@link ReductionPlan}
 	 */
 	public ReductionPlan delete(ReductionPlan reductionPlan) throws OHServiceException {
-		reductionPlan = reductionPlanIoOperations.delete(reductionPlan);
-		List<ExamReduction> examReductionList = reductionPlanIoOperations.getExamReductionByReductionPlanId(reductionPlan.getId(), false);
-		List<MedicalReduction> medicalReductionList = reductionPlanIoOperations.getMedicalReductionByReductionPlanId(reductionPlan.getId(), false);
-		List<OperationReduction> operationReductionList = reductionPlanIoOperations.getOperationReductionByReductionPlanId(reductionPlan.getId(), false);
-		List<PriceOtherReduction> priceOtherReductionList = reductionPlanIoOperations.getPriceOtherReductionByReductionPlanId(reductionPlan.getId(), false);
+		List<ExamReduction> examReductionList = reductionPlan.getExamReductionList();
+		List<MedicalReduction> medicalReductionList = reductionPlan.getMedicalReductionList();
+		List<OperationReduction> operationReductionList = reductionPlan.getOperationReductionList();
+		List<PriceOtherReduction> priceOtherReductionList = reductionPlan.getPriceOtherReductionList();
 
 		if (!examReductionList.isEmpty()) {
-			this.deleteBulkExamReduction(examReductionList);
+			examReductionList.clear();
 		}
 		if (!medicalReductionList.isEmpty()) {
-			this.deleteBulkMedicalReduction(medicalReductionList);
+			medicalReductionList.clear();
 		}
 		if (!operationReductionList.isEmpty()) {
-			this.deleteBulkOperationReduction(operationReductionList);
+			operationReductionList.clear();
 		}
 		if (!priceOtherReductionList.isEmpty()) {
-			this.deleteBulkPriceOtherReduction(priceOtherReductionList);
+			priceOtherReductionList.clear();
 		}
 
-		return reductionPlan;
+		return reductionPlanIoOperations.delete(reductionPlan);
 	}
-
-//	/**
-//	 * save a {@link ExamReduction}
-//	 * @param examReduction the {@link ExamReduction} to insert
-//	 * @return the newly persisted {@link ExamReduction} object
-//	 * @throws OHServiceException if the error happened during the save process
-//	 */
-//	public ExamReduction save(ExamReduction examReduction) throws OHServiceException {
-//		return reductionPlanIoOperations.save(examReduction);
-//	}
 
 	/**
 	 * fetch a list of {@link ExamReduction}s by {@link ReductionPlan} id
@@ -185,8 +176,8 @@ public class ReductionPlanManager {
 	 * @return the list of {@link ExamReduction}s
 	 * @throws OHServiceException if the error happened during the get process
 	 */
-	public List<ExamReduction> getExamReductionByReductionPlanId(int reductionPlanId, boolean deleted) throws OHServiceException {
-		return reductionPlanIoOperations.getExamReductionByReductionPlanId(reductionPlanId, deleted);
+	public List<ExamReduction> getExamReductionByReductionPlanId(int reductionPlanId) throws OHServiceException {
+		return reductionPlanIoOperations.getExamReductionByReductionPlanId(reductionPlanId);
 	}
 
 	/**
@@ -194,8 +185,8 @@ public class ReductionPlanManager {
 	 * @param examReduction the {@link ExamReduction} you want to delete
 	 * @throws OHServiceException if the error happen during the delete process
 	 */
-	public ExamReduction delete(ExamReduction examReduction) throws OHServiceException {
-		return reductionPlanIoOperations.delete(examReduction);
+	public void deleteExamReduction(ExamReduction examReduction) throws OHServiceException {
+		reductionPlanIoOperations.deleteExamReduction(examReduction);
 	}
 
 	/**
@@ -205,29 +196,18 @@ public class ReductionPlanManager {
 	 */
 	public void deleteBulkExamReduction(List<ExamReduction> examReductionList) throws OHServiceException {
 		for (ExamReduction examReduction : examReductionList) {
-			delete(examReduction);
+			deleteExamReduction(examReduction);
 		}
 	}
-
-//	/**
-//	 * Save a {@link MedicalReduction}
-//	 * @param medicalReduction the {@link MedicalReduction} to insert
-//	 * @return the newly persisted {@link MedicalReduction} object
-//	 * @throws OHServiceException if an error happened during the save process
-//	 */
-//	public MedicalReduction save(MedicalReduction medicalReduction) throws OHServiceException {
-//		return reductionPlanIoOperations.save(medicalReduction);
-//	}
 
 	/**
 	 * fetch a list of {@link MedicalReduction}s by {@link ReductionPlan} id.
 	 * @param reductionPlanId the {@link ReductionPlan} id
-	 * @param deleted if get deleted data or not
 	 * @return the list of {@link MedicalReduction}s
 	 * @throws OHServiceException if an error happened during the get process
 	 */
-	public List<MedicalReduction> getMedicalReductionByReductionPlanId(int reductionPlanId, boolean deleted) throws OHServiceException {
-		return reductionPlanIoOperations.getMedicalReductionByReductionPlanId(reductionPlanId, deleted);
+	public List<MedicalReduction> getMedicalReductionByReductionPlanId(int reductionPlanId) throws OHServiceException {
+		return reductionPlanIoOperations.getMedicalReductionByReductionPlanId(reductionPlanId);
 	}
 
 	/**
@@ -235,8 +215,8 @@ public class ReductionPlanManager {
 	 * @param medicalReduction the {@link MedicalReduction} want to delete
 	 * @throws OHServiceException if an error happened during the delete process
 	 */
-	public MedicalReduction delete(MedicalReduction medicalReduction) throws OHServiceException {
-		return reductionPlanIoOperations.delete(medicalReduction);
+	public void deleteMedicalReduction(MedicalReduction medicalReduction) throws OHServiceException {
+		reductionPlanIoOperations.deleteMedicalReduction(medicalReduction);
 	}
 
 	/**
@@ -246,29 +226,18 @@ public class ReductionPlanManager {
 	 */
 	public void deleteBulkMedicalReduction(List<MedicalReduction> medicalReductionList) throws OHServiceException {
 		for (MedicalReduction medicalReduction : medicalReductionList) {
-			delete(medicalReduction);
+			deleteMedicalReduction(medicalReduction);
 		}
 	}
-
-//	/**
-//	 * Save an {@link OperationReduction}
-//	 * @param operationReduction the {@link OperationReduction} to insert
-//	 * @return the newly persisted {@link OperationReduction} object
-//	 * @throws OHServiceException if an error happened during the save process
-//	 */
-//	public OperationReduction save(OperationReduction operationReduction) throws OHServiceException {
-//		return reductionPlanIoOperations.save(operationReduction);
-//	}
 
 	/**
 	 * fetch a list of {@link OperationReduction}s by {@link ReductionPlan}
 	 * @param reductionPlanId the {@link ReductionPlan} id
-	 * @param deleted if get deleted data or not
 	 * @return the list of {@link OperationReduction}s
 	 * @throws OHServiceException if an error happened during the get process
 	 */
-	public List<OperationReduction> getOperationReductionByReductionPlanId(int reductionPlanId, boolean deleted) throws OHServiceException {
-		return reductionPlanIoOperations.getOperationReductionByReductionPlanId(reductionPlanId, deleted);
+	public List<OperationReduction> getOperationReductionByReductionPlanId(int reductionPlanId) throws OHServiceException {
+		return reductionPlanIoOperations.getOperationReductionByReductionPlanId(reductionPlanId);
 	}
 
 	/**
@@ -276,8 +245,8 @@ public class ReductionPlanManager {
 	 * @param operationReduction the {@link OperationReduction} want to delete
 	 * @throws OHServiceException if an error happened during the delete process
 	 */
-	public OperationReduction delete(OperationReduction operationReduction) throws OHServiceException {
-		return reductionPlanIoOperations.delete(operationReduction);
+	public void deleteOperationReduction(OperationReduction operationReduction) throws OHServiceException {
+		reductionPlanIoOperations.deleteOperationReduction(operationReduction);
 	}
 
 	/**
@@ -287,29 +256,18 @@ public class ReductionPlanManager {
 	 */
 	public void deleteBulkOperationReduction(List<OperationReduction> operationReductionList) throws OHServiceException {
 		for (OperationReduction operationReduction : operationReductionList) {
-			delete(operationReduction);
+			deleteOperationReduction(operationReduction);
 		}
 	}
-
-//	/**
-//	 * Save a {@link PriceOtherReduction}
-//	 * @param priceOtherReduction the {@link PriceOtherReduction} to insert
-//	 * @return the newly persisted {@link PriceOtherReduction} object
-//	 * @throws OHServiceException if an error happened during the save process
-//	 */
-//	public PriceOtherReduction save(PriceOtherReduction priceOtherReduction) throws OHServiceException {
-//		return reductionPlanIoOperations.save(priceOtherReduction);
-//	}
 
 	/**
 	 * Fetch a list of {@link PriceOtherReduction}s by {@link ReductionPlan}
 	 * @param reductionPlanId the {@link ReductionPlan} id
-	 * @param deleted if get deleted data or not
 	 * @return the list of {@link PriceOtherReduction}s
 	 * @throws OHServiceException if an error happened during the get process
 	 */
-	public List<PriceOtherReduction> getPriceOtherReductionByReductionPlanId(int reductionPlanId, boolean deleted) throws OHServiceException {
-		return reductionPlanIoOperations.getPriceOtherReductionByReductionPlanId(reductionPlanId, deleted);
+	public List<PriceOtherReduction> getPriceOtherReductionByReductionPlanId(int reductionPlanId) throws OHServiceException {
+		return reductionPlanIoOperations.getPriceOtherReductionByReductionPlanId(reductionPlanId);
 	}
 
 	/**
@@ -317,8 +275,8 @@ public class ReductionPlanManager {
 	 * @param priceOtherReduction the {@link PriceOtherReduction} want to delete
 	 * @throws OHServiceException if an error happened during the delete process
 	 */
-	public PriceOtherReduction delete(PriceOtherReduction priceOtherReduction) throws OHServiceException {
-		return reductionPlanIoOperations.delete(priceOtherReduction);
+	public void deleteOtherReduction(PriceOtherReduction priceOtherReduction) throws OHServiceException {
+		reductionPlanIoOperations.deleteOtherReduction(priceOtherReduction);
 	}
 
 	/**
@@ -328,7 +286,7 @@ public class ReductionPlanManager {
 	 */
 	public void deleteBulkPriceOtherReduction(List<PriceOtherReduction> priceOtherReductionList) throws OHServiceException {
 		for (PriceOtherReduction priceOtherReduction : priceOtherReductionList) {
-			delete(priceOtherReduction);
+			deleteOtherReduction(priceOtherReduction);
 		}
 	}
 }

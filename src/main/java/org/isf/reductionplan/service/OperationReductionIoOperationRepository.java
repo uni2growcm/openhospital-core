@@ -29,6 +29,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface OperationReductionIoOperationRepository extends JpaRepository<OperationReduction, Integer> {
-	List<OperationReduction> findByReductionPlanIdAndDeleted(int reductionPlanId, boolean deleted);
-	OperationReduction findByIdAndDeleted(int id, boolean deleted);
+	List<OperationReduction> findByReductionPlanId(int reductionPlanId);
 }
