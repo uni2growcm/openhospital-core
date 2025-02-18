@@ -23,6 +23,7 @@ package org.isf.opd.service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -117,6 +118,41 @@ public class OpdIoOperations {
 	}
 
 	/**
+	 * Return all {@link Opd}s within specified dates and parameters.
+	 *
+	 * @param ward the ward to consider
+	 * @param diseaseTypeCode the code of the disease type
+	 * @param diseaseCode the code of the disease
+	 * @param dateFrom the starting date
+	 * @param dateTo the ending date
+	 * @param ageFrom the starting age
+	 * @param ageTo the ending age
+	 * @param sex the sex to condider
+	 * @param newPatient if patient is new
+	 * @param user the user to consider
+	 * @param pageable to fetch paginated OPD list
+	 * @return the list of Opds. It could be {@code empty}.
+	 * @throws OHServiceException when fails to fetch paginated OPDs
+	 */
+	public List<Opd> getOpdList(
+		Ward ward,
+		String diseaseTypeCode,
+		String diseaseCode,
+		LocalDate dateFrom,
+		LocalDate dateTo,
+		int ageFrom,
+		int ageTo,
+		char sex,
+		char newPatient,
+		String user,
+		Pageable pageable
+	) throws OHServiceException {
+		LocalDateTime startOfDay = dateFrom.atStartOfDay(); // 00:00:00
+		LocalDateTime endOfDay = dateTo.atTime(LocalTime.MAX); // 23:59:59
+		return repository.findAllOpdWhereParams(ward, diseaseTypeCode, diseaseCode, startOfDay, endOfDay, ageFrom, ageTo, sex, newPatient, user, pageable);
+	}
+
+	/**
 	 * Return all {@link Opd}s associated to specified patient ID.
 	 * 
 	 * @param patID - the patient ID
@@ -126,6 +162,25 @@ public class OpdIoOperations {
 	 */
 	public List<Opd> getOpdList(int patID) throws OHServiceException {
 		return patID == 0 ? repository.findAllOrderByProgYearDesc() : repository.findAllByPatient_CodeOrderByProgYearDesc(patID);
+	}
+
+	/**
+	 * Return all {@link Opd}s associated to specified patient ID.
+	 *
+	 * @param patID - the patient ID
+	 * @param pageable to fetch paginated OPD list
+	 * @return the list of {@link Opd}s associated to specified patient ID.
+	 * the whole list of {@link Opd}s if {@code 0} is passed.
+	 * @throws OHServiceException when fails to Fetch OPDs with pagination
+	 */
+	public List<Opd> getOpdList(int patID, Pageable pageable) throws OHServiceException {
+		Page<Opd> page;
+		if(patID == 0) {
+			page = repository.findAllByOrderByDateDesc(pageable);}
+		else{
+			page = repository.findAllByPatient_CodeOrderByDateDesc(patID, pageable);
+		}
+		return page.getContent();
 	}
 
 	/**
@@ -229,6 +284,16 @@ public class OpdIoOperations {
 	}
 
 	/**
+	 * Get a list of {@link Opd}s with the specified Progressive in Year number.
+	 * @param code - the OPD code
+	 * @param pageable to fetch paginated OPD list
+	 * @return a list of OPD or an empty list
+	 */
+	public List<Opd> getOpdByProgYear(Integer code, Pageable pageable) {
+		return repository.findByProgYear(code, pageable).getContent();
+	}
+
+	/**
 	 * Retrieves a page of {@link Opd}s within specified dates and parameters.
 	 * 
 	 * @param ward
@@ -272,5 +337,49 @@ public class OpdIoOperations {
 		data.setData(pages.getContent());
 		data.setPageInfo(PageInfo.from(pages));
 		return data;
+	}
+
+	/**
+	 * Returns the total number of {@link Opd}s within specified dates and parameters
+	 *
+	 * @param ward the ward to consider
+	 * @param diseaseTypeCode the code of the disease type
+	 * @param diseaseCode the code of the disease
+	 * @param dateFrom the starting date
+	 * @param dateTo the ending date
+	 * @param ageFrom the starting age
+	 * @param ageTo the ending age
+	 * @param sex the sex to consider
+	 * @param newPatient if patient is new
+	 * @param user the user to consider
+	 * @return the total number of {@link Opd}s.
+	 * @throws OHServiceException when fails to count fetched OPDs
+	 */
+	public long countTotalOpds(Ward ward, String diseaseTypeCode, String diseaseCode, LocalDate dateFrom, LocalDate dateTo, int ageFrom, int ageTo, char sex, char newPatient, String user)throws OHServiceException {
+		LocalDateTime startOfDay = dateFrom.atStartOfDay(); // 00:00:00
+		LocalDateTime endOfDay = dateTo.atTime(LocalTime.MAX); // 23:59:59
+		return repository.getCountTotalOpds(ward, diseaseTypeCode, diseaseCode, startOfDay, endOfDay, ageFrom, ageTo, sex, newPatient, user);
+	}
+
+	/**
+	 * Returns the total number of {@link Opd}s with specified Progressive in Year number
+	 *
+	 * @param code - the OPD code
+	 * @return the total number of {@link Opd}s
+	 * @throws OHServiceException when fails to count fetched OPDs
+	 */
+	public long countByProgYear(int code) {
+		return repository.countByProgYear(code);
+	}
+
+	/**
+	 * Returns the total number of {@link Opd}s associated to specified patient ID
+	 *
+	 * @param patientcode the patient ID
+	 * @return the total number of {@link Opd}s
+	 * @throws OHServiceException when fails to count fetched OPDs
+	 */
+	public long countByPatientId(int patientcode) throws OHServiceException {
+		return repository.countByPatient_CodeOrderByDateDesc(patientcode);
 	}
 }
