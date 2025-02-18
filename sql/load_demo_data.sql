@@ -1130,6 +1130,22 @@ INSERT INTO `oh_exam` (`EXA_ID_A`, `EXA_DESC`, `EXA_EXC_ID_A`, `EXA_PROC`, `EXA_
 UNLOCK TABLES;
 
 --
+-- Dumping data for table `oh_examsreduction`
+--
+
+LOCK TABLES `oh_examsreduction` WRITE;
+/*!40000 ALTER TABLE `oh_examsreduction` DISABLE KEYS */;
+
+INSERT INTO `oh_examsreduction`(`ER_RP_ID`, `ER_EXA_ID_A`, `ER_REDUCTIONRATE`) VALUES (1, 'HB', 15.00);
+INSERT INTO `oh_examsreduction`(`ER_RP_ID`, `ER_EXA_ID_A`, `ER_REDUCTIONRATE`) VALUES (2, 'BT', 20.00);
+INSERT INTO `oh_examsreduction`(`ER_RP_ID`, `ER_EXA_ID_A`, `ER_REDUCTIONRATE`) VALUES (3, 'PA', 10.00);
+INSERT INTO `oh_examsreduction`(`ER_RP_ID`, `ER_EXA_ID_A`, `ER_REDUCTIONRATE`) VALUES (4, 'BA', 25.00);
+INSERT INTO `oh_examsreduction`(`ER_RP_ID`, `ER_EXA_ID_A`, `ER_REDUCTIONRATE`) VALUES (5, 'MC', 12.50);
+
+/*!40000 ALTER TABLE `oh_examsreduction` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Dumping data for table `oh_examrow`
 --
 
@@ -1641,6 +1657,8 @@ INSERT INTO `oh_groupmenu` (`GM_ID`, `GM_UG_ID_A`, `GM_MNI_ID_A`, `GM_ACTIVE`, `
 INSERT INTO `oh_groupmenu` (`GM_ID`, `GM_UG_ID_A`, `GM_MNI_ID_A`, `GM_ACTIVE`, `GM_CREATED_BY`, `GM_CREATED_DATE`, `GM_LAST_MODIFIED_BY`, `GM_LAST_MODIFIED_DATE`) VALUES (348,'laboratorist','btnlaboratoryedit',1,NULL,NULL,NULL,NULL);
 INSERT INTO `oh_groupmenu` (`GM_ID`, `GM_UG_ID_A`, `GM_MNI_ID_A`, `GM_ACTIVE`, `GM_CREATED_BY`, `GM_CREATED_DATE`, `GM_LAST_MODIFIED_BY`, `GM_LAST_MODIFIED_DATE`) VALUES (349,'admin','mortuarystays',1,NULL,NULL,NULL,NULL);
 INSERT INTO `oh_groupmenu` (`GM_ID`, `GM_UG_ID_A`, `GM_MNI_ID_A`, `GM_ACTIVE`, `GM_CREATED_BY`, `GM_CREATED_DATE`, `GM_LAST_MODIFIED_BY`, `GM_LAST_MODIFIED_DATE`) VALUES (350,'admin','mortuary',1,NULL,NULL,NULL,NULL);
+INSERT INTO `oh_groupmenu` (`GM_ID`, `GM_UG_ID_A`, `GM_MNI_ID_A`, `GM_ACTIVE`, `GM_CREATED_BY`, `GM_CREATED_DATE`, `GM_LAST_MODIFIED_BY`, `GM_LAST_MODIFIED_DATE`) VALUES (351,'admin','pregnancycare',1,NULL,NULL,NULL,NULL);
+INSERT INTO `oh_groupmenu` (`GM_ID`, `GM_UG_ID_A`, `GM_MNI_ID_A`, `GM_ACTIVE`, `GM_CREATED_BY`, `GM_CREATED_DATE`, `GM_LAST_MODIFIED_BY`, `GM_LAST_MODIFIED_DATE`) VALUES (352,'admin','reductionplan',1,NULL,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `oh_groupmenu` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -3062,16 +3080,35 @@ INSERT INTO `oh_medicaldsrward` (`MDSRWRD_WRD_ID_A`, `MDSRWRD_MDSR_ID`, `MDSRWRD
 /*!40000 ALTER TABLE `oh_medicaldsrward` ENABLE KEYS */;
 UNLOCK TABLES;
 
+
+--
+-- Dumping data for table `oh_medicalsreduction`
+--
+
+LOCK TABLES `oh_medicalsreduction` WRITE;
+/*!40000 ALTER TABLE `oh_medicalsreduction` DISABLE KEYS */;
+
+INSERT INTO `oh_medicalsreduction`(`MR_RP_ID`, `MR_MED_ID`, `MR_REDUCTIONRATE`) VALUES (1, 1, 5.50);
+INSERT INTO `oh_medicalsreduction`(`MR_RP_ID`, `MR_MED_ID`, `MR_REDUCTIONRATE`) VALUES (2, 2, 7.00);
+INSERT INTO `oh_medicalsreduction`(`MR_RP_ID`, `MR_MED_ID`, `MR_REDUCTIONRATE`) VALUES (3, 3, 6.25);
+INSERT INTO `oh_medicalsreduction`(`MR_RP_ID`, `MR_MED_ID`, `MR_REDUCTIONRATE`) VALUES (4, 4, 8.00);
+INSERT INTO `oh_medicalsreduction`(`MR_RP_ID`, `MR_MED_ID`, `MR_REDUCTIONRATE`) VALUES (5, 5, 9.00);
+
+/*!40000 ALTER TABLE `oh_medicalsreduction` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+
 --
 -- Dumping data for table `oh_menuitem`
 --
 
 LOCK TABLES `oh_menuitem` WRITE;
 /*!40000 ALTER TABLE `oh_menuitem` DISABLE KEYS */;
-INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('accounting','angal.menu.btn.accounting','angal.menu.accounting','x','C','main','none','Y',6);
+INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('accounting','angal.menu.btn.accounting','angal.menu.accounting','x','C','main','none','Y',7);
 INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('admission','angal.menu.btn.admission','angal.menu.admission','x','A','main','org.isf.admission.gui.AdmittedPatientBrowser','N',2);
 INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('admtype','angal.menu.btn.admtype','angal.menu.admtype','x','A','types','org.isf.admtype.gui.AdmissionTypeBrowser','N',0);
-INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('agetype','angal.menu.btn.agetype','angal.menu.agetype','x','G','types','org.isf.agetype.gui.AgeTypeBrowser','N',11);
+INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('agetype','angal.menu.btn.agetype','angal.menu.agetype','x','G','types','org.isf.agetype.gui.AgeTypeBrowser','N',12);
 INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('billsmanager','angal.menu.btn.billsmanager','angal.menu.billsmanager','x','M','accounting','org.isf.accounting.gui.BillBrowser','N',1);
 INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('btnadmadm','angal.admission.admission','angal.admission.admission','x','A','admission','none','N',4);
 INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('btnadmadmexamination','angal.admission.examination','angal.admission.examination','x','A','btnadmadm','none','N',1);
@@ -3084,16 +3121,16 @@ INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTI
 INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('btnadmlab','angal.menu.btn.laboratory','angal.menu.laboratory','x','L','admission','none','N',3);
 INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('btnadmmer','angal.admission.merge','angal.admission.merge','x','L','admission','none','N',2);
 INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('btnadmnew','angal.admission.newpatient','angal.admission.newpatient','x','N','admission','none','N',0);
-INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('btnadmopd','angal.admission.opd','angal.admission.admission','x','O','admission','none','N',5);
+INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('btnadmopd','angal.admission.opd','angal.admission.admission','x','O','admission','none','N',6);
 INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('btnadmpateditanamnesis','angal.patient.anamnesis','angal.patient.anamnesis','x','A','btnadmedit','none','N',1);
-INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('btnadmpatientfolder','angal.admission.patientfolder','angal.admission.patientfolder','x','P','admission','none','Y',6);
+INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('btnadmpatientfolder','angal.admission.patientfolder','angal.admission.patientfolder','x','P','admission','none','Y',7);
 INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('btnadmpatnewanamnesis','angal.patient.anamnesis','angal.patient.anamnesis','x','A','btnadmnew','none','N',1);
-INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('btnadmtherapy','angal.admission.therapy','angal.admission.therapy','x','T','admission','none','N',6);
+INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('btnadmtherapy','angal.admission.therapy','angal.admission.therapy','x','T','admission','none','N',7);
 INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('btnbilldelete','angal.billbrowser.deletebill.btn','angal.billbrowser.deletebill.btn','x','N','billsmanager','none','N',4);
 INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('btnbilledit','angal.billbrowser.editbill','angal.billbrowser.editbill','x','N','billsmanager','none','N',2);
 INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('btnbillnew','angal.billbrowser.newbill.btn','angal.billbrowser.newbill.btn','x','N','billsmanager','none','N',1);
-INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('btnbillreceipt','angal.menu.btn.btnbillreceipt','angal.menu.btnbillreceipt','x','R','billsmanager','none','N',6);
-INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('btnbillreport','angal.billbrowser.report','angal.billbrowser.report','x','N','billsmanager','none','N',5);
+INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('btnbillreceipt','angal.menu.btn.btnbillreceipt','angal.menu.btnbillreceipt','x','R','billsmanager','none','N',7);
+INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('btnbillreport','angal.billbrowser.report','angal.billbrowser.report','x','N','billsmanager','none','N',6);
 INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('btndatadel','angal.common.delete','angal.common.delete','x','D','data','none','N',2);
 INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('btndataedit','angal.common.edit','angal.common.edit','x','E','data','none','N',1);
 INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('btndataeditpat','angal.admission.editpatient','angal.admission.editpatient','x','P','data','none','N',0);
@@ -3128,11 +3165,11 @@ INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTI
 INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('btnpharmstockcmovdelete','angal.common.delete.btn','angal.common.delete.btn','x','X','medicalstock','none','N',3);
 INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('btnpharmstockdischarge','angal.menu.btn.btnpharmstockdischarge','angal.menu.btnpharmstockdischarge','x','D','medicalstock','none','N',2);
 INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('cashiersfilter','angal.menu.accounting.cashiersfilter','angal.menu.accounting.cashiersfilter','x','X','billsmanager','none','N',0);
-INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('communication','angal.menu.btn.chat','angal.menu.chat','x','M','main','org.isf.xmpp.gui.CommunicationFrame','N',10);
+INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('communication','angal.menu.btn.chat','angal.menu.chat','x','M','main','org.isf.xmpp.gui.CommunicationFrame','N',11);
 INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('data','angal.admission.data','angal.admission.data','x','D','admission','none','N',3);
 INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('deliverytype','angal.menu.btn.deliverytype','angal.menu.deliverytype','x','L','types','org.isf.dlvrtype.gui.DeliveryTypeBrowser','N',2);
 INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('delresulttype','angal.menu.btn.delresulttype','angal.menu.delresulttype','x','R','types','org.isf.dlvrrestype.gui.DeliveryResultTypeBrowser','N',3);
-INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('dicomtype','angal.menu.btn.dicomtype','angal.menu.dicomtype','x','X','types','org.isf.dicomtype.gui.DicomTypeBrowser','N',13);
+INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('dicomtype','angal.menu.btn.dicomtype','angal.menu.dicomtype','x','X','types','org.isf.dicomtype.gui.DicomTypeBrowser','N',14);
 INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('disctype','angal.menu.btn.disctype','angal.menu.disctype','x','H','types','org.isf.disctype.gui.DischargeTypeBrowser','N',1);
 INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('disease','angal.menu.btn.disease','angal.menu.disease','x','D','generaldata','org.isf.disease.gui.DiseaseBrowser','N',3);
 INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('diseaselist','angal.menu.btn.diseaselist','angal.menu.diseaselist','x','D','printing','org.isf.stat.gui.DiseasesListLauncher','N',2);
@@ -3141,46 +3178,68 @@ INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTI
 INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('editclosedbills','angal.menu.accounting.editclosedbills','angal.menu.accounting.editclosedbills','x','E','billsmanager','none','N',3);
 INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('examlist1','angal.menu.btn.examlist1','angal.menu.examlist1','x','E','printing','org.isf.stat.gui.ExamsList1Launcher','N',1);
 INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('exams','angal.menu.btn.exams','angal.menu.exams','x','E','generaldata','org.isf.exa.gui.ExamBrowser','N',4);
-INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('examtype','angal.menu.btn.examtype','angal.menu.examtype','x','E','types','org.isf.exatype.gui.ExamTypeBrowser','N',5);
+INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('examtype','angal.menu.btn.examtype','angal.menu.examtype','x','E','types','org.isf.exatype.gui.ExamTypeBrowser','N',6);
 INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('generaldata','angal.menu.btn.generaldata','angal.menu.generaldata','x','S','main','none','Y',12);
 INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('groups','angal.menu.btn.groups','angal.menu.groups','x','G','users','org.isf.menu.gui.UserGroupBrowsing','N',1);
 INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('help','angal.menu.btn.help','angal.menu.help','x','H','main','none','Y',13);
 INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('hospital','angal.menu.btn.hospital','angal.menu.hospital','x','H','generaldata','org.isf.hospital.gui.HospitalBrowser','N',1);
-INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('inventoryward','angal.menu.btn.inventoryward','angal.menu.inventoryward','x','P','pharmacy','org.isf.medicalinventory.gui.InventoryWardBrowser','N',5);
+INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('inventoryward','angal.menu.btn.inventoryward','angal.menu.inventoryward','x','P','pharmacy','org.isf.medicalinventory.gui.InventoryWardBrowser','N',6);
 INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('laboratory','angal.menu.btn.laboratory','angal.menu.laboratory','x','L','main','org.isf.lab.gui.LabBrowser','N',3);
 INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('logfile','angal.menu.btn.logfile','angal.menu.logfile','x','L','help','org.isf.help.LogViewer','N',2);
 INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('medicals','angal.menu.btn.medicals','angal.menu.medicals','x','P','pharmacy','org.isf.medicals.gui.MedicalBrowser','N',0);
 INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('medicalstock','angal.menu.btn.medicalstock','angal.menu.medicalstock','x','S','pharmacy','org.isf.medicalstock.gui.MovStockBrowser','N',1);
-INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('medicalstype','angal.menu.btn.medicalstype','angal.menu.medicalstype','x','M','types','org.isf.medtype.gui.MedicalTypeBrowser','N',7);
+INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('medicalstype','angal.menu.btn.medicalstype','angal.menu.medicalstype','x','M','types','org.isf.medtype.gui.MedicalTypeBrowser','N',8);
 INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('medicalsward','angal.menu.btn.medicalsward','angal.menu.medicalsward','x','W','pharmacy','org.isf.medicalstockward.gui.WardPharmacy','N',2);
-INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('medstockmovtype','angal.menu.btn.medstockmovtype','angal.menu.medstockmovtype','x','S','types','org.isf.medstockmovtype.gui.MedicalDsrStockMovementTypeBrowser','N',6);
+INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('medstockmovtype','angal.menu.btn.medstockmovtype','angal.menu.medstockmovtype','x','S','types','org.isf.medstockmovtype.gui.MedicalDsrStockMovementTypeBrowser','N',7);
 INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('newbill','angal.menu.btn.newbill','angal.menu.newbill','x','N','accounting','org.isf.accounting.gui.PatientBillEdit','N',0);
 INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('opd','angal.menu.btn.opd','angal.menu.opd','x','O','main','org.isf.opd.gui.OpdBrowser','N',1);
-INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('operation','angal.menu.btn.operation','angal.menu.operation','x','O','generaldata','org.isf.operation.gui.OperationBrowser','N',5);
+INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('operation','angal.menu.btn.operation','angal.menu.operation','x','O','generaldata','org.isf.operation.gui.OperationBrowser','N',6);
 INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('operationlist','angal.menu.btn.operationlist','angal.menu.operationlist','x','O','printing','org.isf.stat.gui.OperationsListLauncher','N',3);
-INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('operationtype','angal.menu.btn.operationtype','angal.menu.operationtype','x','O','types','org.isf.opetype.gui.OperationTypeBrowser','N',8);
-INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('otherprices','angal.menu.btn.otherprices','angal.menu.otherprices','x','H','types','org.isf.pricesothers.gui.PricesOthersBrowser','N',10);
-INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('patientvaccine','angal.menu.btn.patientvaccine','angal.menu.patientvaccine','x','V','main','org.isf.patvac.gui.PatVacBrowser','N',5);
+INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('operationtype','angal.menu.btn.operationtype','angal.menu.operationtype','x','O','types','org.isf.opetype.gui.OperationTypeBrowser','N',9);
+INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('otherprices','angal.menu.btn.otherprices','angal.menu.otherprices','x','H','types','org.isf.pricesothers.gui.PricesOthersBrowser','N',11);
+INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('patientvaccine','angal.menu.btn.patientvaccine','angal.menu.patientvaccine','x','V','main','org.isf.patvac.gui.PatVacBrowser','N',6);
 INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('pharmacy','angal.menu.btn.pharmacy','angal.menu.pharmacy','x','P','main','none','Y',4);
-INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('pretreatmenttype','angal.menu.btn.pretreatmenttype','angal.menu.pretreatmenttype','x','P','types','org.isf.pregtreattype.gui.PregnantTreatmentTypeBrowser','N',9);
-INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('priceslists','angal.menu.btn.priceslists','angal.menu.priceslists','x','P','generaldata','org.isf.priceslist.gui.PricesBrowser','N',7);
-INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('printing','angal.menu.btn.printing','angal.menu.printing','x','R','main','none','Y',9);
-INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('smsmanager','angal.menu.btn.smsmanager','angal.menu.smsmanager','x','M','generaldata','org.isf.sms.gui.SmsBrowser','N',9);
-INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('statistics','angal.menu.btn.statistics','angal.menu.statistics','x','T','main','org.isf.stat.reportlauncher.gui.ReportLauncher','N',8);
-INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('supplier','angal.menu.btn.supplier','angal.menu.supplier','x','S','generaldata','org.isf.supplier.gui.SupplierBrowser','N',8);
-INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('telemetry','angal.menu.btn.telemetry','angal.menu.telemetry','x','M','generaldata','org.isf.telemetry.gui.TelemetryEdit','N',9);
+INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('pregnancycare','angal.menu.btn.pregnancycare','angal.menu.pregnancycare','x','E','main','org.isf.pregnancycare.gui.PregnancyCareBrowser','N',5);
+INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('pretreatmenttype','angal.menu.btn.pretreatmenttype','angal.menu.pretreatmenttype','x','P','types','org.isf.pregtreattype.gui.PregnantTreatmentTypeBrowser','N',10);
+INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('priceslists','angal.menu.btn.priceslists','angal.menu.priceslists','x','P','generaldata','org.isf.priceslist.gui.PricesBrowser','N',8);
+INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('printing','angal.menu.btn.printing','angal.menu.printing','x','R','main','none','Y',10);
+INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('smsmanager','angal.menu.btn.smsmanager','angal.menu.smsmanager','x','M','generaldata','org.isf.sms.gui.SmsBrowser','N',10);
+INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('statistics','angal.menu.btn.statistics','angal.menu.statistics','x','T','main','org.isf.stat.reportlauncher.gui.ReportLauncher','N',9);
+INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('supplier','angal.menu.btn.supplier','angal.menu.supplier','x','S','generaldata','org.isf.supplier.gui.SupplierBrowser','N',9);
+INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('telemetry','angal.menu.btn.telemetry','angal.menu.telemetry','x','M','generaldata','org.isf.telemetry.gui.TelemetryEdit','N',10);
 INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('types','angal.menu.btn.types','angal.menu.types','x','T','generaldata','none','Y',0);
-INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('users','angal.menu.btn.users','angal.menu.users','x','U','generaldata','none','Y',10);
+INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('users','angal.menu.btn.users','angal.menu.users','x','U','generaldata','none','Y',11);
 INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('usersusers','angal.menu.btn.usersusers','angal.menu.usersusers','x','U','users','org.isf.menu.gui.UserBrowsing','N',0);
-INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('vaccine','angal.menu.btn.vaccine','angal.menu.vaccine','x','V','generaldata','org.isf.vaccine.gui.VaccineBrowser','N',6);
-INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('vaccinetype','angal.menu.btn.vaccinetype','angal.menu.vaccinetype','x','V','types','org.isf.vactype.gui.VaccineTypeBrowser','N',12);
+INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('vaccine','angal.menu.btn.vaccine','angal.menu.vaccine','x','V','generaldata','org.isf.vaccine.gui.VaccineBrowser','N',7);
+INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('vaccinetype','angal.menu.btn.vaccinetype','angal.menu.vaccinetype','x','V','types','org.isf.vactype.gui.VaccineTypeBrowser','N',13);
 INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('ward','angal.menu.btn.ward','angal.menu.ward','x','W','generaldata','org.isf.ward.gui.WardBrowser','N',2);
-INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('worksheet','angal.menu.btn.worksheet','angal.menu.worksheet','x','W','main','org.isf.visits.gui.VisitView','N',7);
-INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('inventory','angal.menu.btn.inventory','angal.menu.inventory','x','I','pharmacy','org.isf.medicalinventory.gui.InventoryBrowser','N',6);
-INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('mortuarystays', 'angal.menu.btn.mortuarystays', 'angal.menu.mortuarystays', 'x', 'U', 'generaldata', 'org.isf.mortuarystays.gui.MortuaryStaysBrowser','N', 11);
+INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('worksheet','angal.menu.btn.worksheet','angal.menu.worksheet','x','W','main','org.isf.visits.gui.VisitView','N',8);
+INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('inventory','angal.menu.btn.inventory','angal.menu.inventory','x','I','pharmacy','org.isf.medicalinventory.gui.InventoryBrowser','N',7);
+INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('mortuarystays', 'angal.menu.btn.mortuarystays', 'angal.menu.mortuarystays', 'x', 'U', 'generaldata', 'org.isf.mortuarystays.gui.MortuaryStaysBrowser','N', 12);
 INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('mortuary', 'angal.menu.btn.mortuary', 'angal.menu.mortuary', 'x', 'U', 'main', 'org.isf.mortuary.gui.MortuaryBrowser','N', 11);
+INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('reductionplan','angal.menu.btn.reductionplans','angal.menu.reductionplans','x','R','generaldata','org.isf.reductionplan.gui.ReductionPlanBrowser','N',13);
 /*!40000 ALTER TABLE `oh_menuitem` ENABLE KEYS */;
 UNLOCK TABLES;
+
+
+--
+-- Dumping data for table `oh_operationsreduction`
+--
+
+LOCK TABLES `oh_operationsreduction` WRITE;
+/*!40000 ALTER TABLE `oh_operationsreduction` DISABLE KEYS */;
+
+INSERT INTO `oh_operationsreduction`(`OPR_RP_ID`, `OPR_OPE_ID_A`, `OPR_REDUCTIONRATE`) VALUES (1, '11', 10.00);
+INSERT INTO `oh_operationsreduction`(`OPR_RP_ID`, `OPR_OPE_ID_A`, `OPR_REDUCTIONRATE`) VALUES (2, '12', 12.50);
+INSERT INTO `oh_operationsreduction`(`OPR_RP_ID`, `OPR_OPE_ID_A`, `OPR_REDUCTIONRATE`) VALUES (3, '13', 7.00);
+INSERT INTO `oh_operationsreduction`(`OPR_RP_ID`, `OPR_OPE_ID_A`, `OPR_REDUCTIONRATE`) VALUES (4, '14', 15.00);
+INSERT INTO `oh_operationsreduction`(`OPR_RP_ID`, `OPR_OPE_ID_A`, `OPR_REDUCTIONRATE`) VALUES (5, '15', 20.00);
+
+/*!40000 ALTER TABLE `oh_operationsreduction` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+
 
 --
 -- Dumping data for table `oh_mortuarystays`
@@ -3691,6 +3750,19 @@ INSERT INTO `oh_operationtype` (`OCL_ID_A`, `OCL_DESC`, `OCL_TYPE`, `OCL_CREATED
 INSERT INTO `oh_operationtype` (`OCL_ID_A`, `OCL_DESC`, `OCL_TYPE`, `OCL_CREATED_BY`, `OCL_CREATED_DATE`, `OCL_LAST_MODIFIED_BY`, `OCL_LAST_MODIFIED_DATE`, `OCL_ACTIVE`) VALUES ('OS','OTHERS: SKIN AND SUBCUTANEOUS','MAJOR',NULL,NULL,NULL,NULL,1);
 /*!40000 ALTER TABLE `oh_operationtype` ENABLE KEYS */;
 UNLOCK TABLES;
+
+
+--
+-- Dumping data for table `oh_otherreduction`
+--
+LOCK TABLES `oh_otherreduction` WRITE;
+/*!40000 ALTER TABLE `oh_otherreduction` DISABLE KEYS */;
+
+INSERT INTO `oh_otherreduction`(`OTR_RP_ID`, `OTR_OTH_ID`, `OTR_REDUCTIONRATE`) VALUES (1, 1, 5.00);
+
+/*!40000 ALTER TABLE `oh_otherreduction` ENABLE KEYS */;
+UNLOCK TABLES;
+
 
 --
 -- Dumping data for table `oh_patient`
@@ -6651,6 +6723,20 @@ LOCK TABLES `oh_pricesothers` WRITE;
 /*!40000 ALTER TABLE `oh_pricesothers` DISABLE KEYS */;
 INSERT INTO `oh_pricesothers` (`OTH_ID`, `OTH_CODE`, `OTH_DESC`, `OTH_OPD_INCLUDE`, `OTH_IPD_INCLUDE`, `OTH_DAILY`, `OTH_DISCHARGE`, `OTH_UNDEFINED`, `OTH_CREATED_BY`, `OTH_CREATED_DATE`, `OTH_LAST_MODIFIED_BY`, `OTH_LAST_MODIFIED_DATE`, `OTH_ACTIVE`, `OTH_LOCK`) VALUES (1,'OTH001','Amount per day',0,1,1,0,0,NULL,NULL,NULL,NULL,1,0);
 /*!40000 ALTER TABLE `oh_pricesothers` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Dumping data for table `oh_supplier`
+--
+
+LOCK TABLES `oh_reductionplan` WRITE;
+/*!40000 ALTER TABLE `oh_reductionplan` DISABLE KEYS */;
+INSERT INTO `oh_reductionplan`(`RP_ID`, `RP_DESCRIPTION`, `RP_OPERATIONRATE`, `RP_MEDICALRATE`, `RP_EXAMRATE`, `RP_OTHERRATE`, `RP_CREATED_BY`, `RP_CREATED_DATE`, `RP_LAST_MODIFIED_BY`, `RP_LAST_MODIFIED_DATE`, `RP_ACTIVE`, `RP_LOCK`) VALUES (1,'DRIVERS','1.00','3.00','1.00','2.00',"admin",NOW(),"admin",NOW(),1,0);
+INSERT INTO `oh_reductionplan`(`RP_ID`, `RP_DESCRIPTION`, `RP_OPERATIONRATE`, `RP_MEDICALRATE`, `RP_EXAMRATE`, `RP_OTHERRATE`, `RP_CREATED_BY`, `RP_CREATED_DATE`, `RP_LAST_MODIFIED_BY`, `RP_LAST_MODIFIED_DATE`, `RP_ACTIVE`, `RP_LOCK`) VALUES (2,'DREAM IN CHARGE','3.00','0.00','8.00','3.00',"admin",NOW(),"admin",NOW(),1,0);
+INSERT INTO `oh_reductionplan`(`RP_ID`, `RP_DESCRIPTION`, `RP_OPERATIONRATE`, `RP_MEDICALRATE`, `RP_EXAMRATE`, `RP_OTHERRATE`, `RP_CREATED_BY`, `RP_CREATED_DATE`, `RP_LAST_MODIFIED_BY`, `RP_LAST_MODIFIED_DATE`, `RP_ACTIVE`, `RP_LOCK`) VALUES (3,'ESPERANT IN CHARGE','0.00','4.00','2.00','6.00',"admin",NOW(),"admin",NOW(),1,0);
+INSERT INTO `oh_reductionplan`(`RP_ID`, `RP_DESCRIPTION`, `RP_OPERATIONRATE`, `RP_MEDICALRATE`, `RP_EXAMRATE`, `RP_OTHERRATE`, `RP_CREATED_BY`, `RP_CREATED_DATE`, `RP_LAST_MODIFIED_BY`, `RP_LAST_MODIFIED_DATE`, `RP_ACTIVE`, `RP_LOCK`) VALUES (4,'FREE IN CHARGE','9.00','4.00','2.00','1.00',"admin",NOW(),"admin",NOW(),1,0);
+INSERT INTO `oh_reductionplan`(`RP_ID`, `RP_DESCRIPTION`, `RP_OPERATIONRATE`, `RP_MEDICALRATE`, `RP_EXAMRATE`, `RP_OTHERRATE`, `RP_CREATED_BY`, `RP_CREATED_DATE`, `RP_LAST_MODIFIED_BY`, `RP_LAST_MODIFIED_DATE`, `RP_ACTIVE`, `RP_LOCK`) VALUES (5,'COMMUNITY FDLC','8.00','6.00','7.00','6.00',"admin",NOW(),"admin",NOW(),1,0);
+/*!40000 ALTER TABLE `oh_reductionplan` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --

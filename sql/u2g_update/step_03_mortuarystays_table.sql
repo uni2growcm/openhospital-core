@@ -17,6 +17,6 @@ CREATE TABLE OH_MORTUARYSTAYS (
    INDEX FK_MORTUARYSTAYS_CREATED_BY_IDX (MRTST_CREATED_BY ASC)
 ) ENGINE = INNODB DEFAULT CHARACTER SET utf8;
 
-INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('mortuarystays', 'angal.menu.btn.mortuarystays', 'angal.menu.mortuarystays', 'x', 'U', 'generaldata', 'org.isf.mortuarystays.gui.MortuaryStaysBrowser','N', 11);
+INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('mortuarystays', 'angal.menu.btn.mortuarystays', 'angal.menu.mortuarystays', 'x', 'U', 'generaldata', 'org.isf.mortuarystays.gui.MortuaryStaysBrowser','N', 12);
 
 INSERT INTO `oh_groupmenu` (`GM_ID`, `GM_UG_ID_A`, `GM_MNI_ID_A`, `GM_ACTIVE`, `GM_CREATED_BY`, `GM_CREATED_DATE`, `GM_LAST_MODIFIED_BY`, `GM_LAST_MODIFIED_DATE`) VALUES (349,'admin','mortuarystays',1,NULL,NULL,NULL,NULL);

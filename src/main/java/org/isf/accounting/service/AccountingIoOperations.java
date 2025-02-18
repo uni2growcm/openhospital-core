@@ -30,6 +30,7 @@ import java.util.TreeSet;
 import org.isf.accounting.model.Bill;
 import org.isf.accounting.model.BillItems;
 import org.isf.accounting.model.BillPayments;
+import org.isf.menu.model.User;
 import org.isf.patient.model.Patient;
 import org.isf.utils.db.TranslateOHServiceException;
 import org.isf.utils.exception.OHServiceException;
@@ -50,8 +51,8 @@ public class AccountingIoOperations {
 	private AccountingBillItemsIoOperationRepository billItemsRepository;
 
 	public AccountingIoOperations(AccountingBillIoOperationRepository accountingBillIoOperationRepository,
-	                              AccountingBillPaymentIoOperationRepository accountingBillPaymentIoOperationRepository,
-	                              AccountingBillItemsIoOperationRepository accountingBillItemsIoOperationRepository) {
+					AccountingBillPaymentIoOperationRepository accountingBillPaymentIoOperationRepository,
+					AccountingBillItemsIoOperationRepository accountingBillItemsIoOperationRepository) {
 		this.billRepository = accountingBillIoOperationRepository;
 		this.billPaymentRepository = accountingBillPaymentIoOperationRepository;
 		this.billItemsRepository = accountingBillItemsIoOperationRepository;
@@ -59,6 +60,7 @@ public class AccountingIoOperations {
 
 	/**
 	 * Returns all the pending {@link Bill}s for the specified patient.
+	 * 
 	 * @param patID the patient id.
 	 * @return the list of pending bills.
 	 * @throws OHServiceException if an error occurs retrieving the pending bills.
@@ -72,6 +74,7 @@ public class AccountingIoOperations {
 
 	/**
 	 * Get all the {@link Bill}s.
+	 * 
 	 * @return a list of bills.
 	 * @throws OHServiceException if an error occurs retrieving the bills.
 	 */
@@ -81,6 +84,7 @@ public class AccountingIoOperations {
 
 	/**
 	 * Get the {@link Bill} with specified billID.
+	 * 
 	 * @param billID
 	 * @return the {@link Bill}.
 	 * @throws OHServiceException if an error occurs retrieving the bill.
@@ -91,6 +95,7 @@ public class AccountingIoOperations {
 
 	/**
 	 * Returns all user ids from {@link BillPayments}.
+	 * 
 	 * @return a list of user id.
 	 * @throws OHServiceException if an error occurs retrieving the users list.
 	 */
@@ -102,8 +107,8 @@ public class AccountingIoOperations {
 	}
 
 	/**
-	 * Returns the {@link BillItems} associated to the specified {@link Bill} id or all 
-	 * the stored {@link BillItems} if no id is provided. 
+	 * Returns the {@link BillItems} associated to the specified {@link Bill} id or all the stored {@link BillItems} if no id is provided.
+	 * 
 	 * @param billID the bill id or {@code 0}.
 	 * @return a list of {@link BillItems} associated to the bill id or all the stored bill items.
 	 * @throws OHServiceException if an error occurs retrieving the bill items.
@@ -117,7 +122,8 @@ public class AccountingIoOperations {
 
 	/**
 	 * Retrieves all the {@link BillPayments} for the specified date range.
-	 * @param dateFrom low endpoint, inclusive, for the date range. 
+	 * 
+	 * @param dateFrom low endpoint, inclusive, for the date range.
 	 * @param dateTo high endpoint, inclusive, for the date range.
 	 * @return a list of {@link BillPayments} for the specified date range.
 	 * @throws OHServiceException if an error occurs retrieving the bill payments.
@@ -127,8 +133,8 @@ public class AccountingIoOperations {
 	}
 
 	/**
-	 * Retrieves all the {@link BillPayments} for the specified {@link Bill} id, or all 
-	 * the stored {@link BillPayments} if no id is indicated.
+	 * Retrieves all the {@link BillPayments} for the specified {@link Bill} id, or all the stored {@link BillPayments} if no id is indicated.
+	 * 
 	 * @param billID the bill id or {@code 0}.
 	 * @return the list of bill payments.
 	 * @throws OHServiceException if an error occurs retrieving the bill payments.
@@ -142,6 +148,7 @@ public class AccountingIoOperations {
 
 	/**
 	 * Stores a new {@link Bill}.
+	 * 
 	 * @param newBill the bill to store.
 	 * @return the persisted Bill object
 	 * @throws OHServiceException if an error occurs storing the bill.
@@ -152,6 +159,7 @@ public class AccountingIoOperations {
 
 	/**
 	 * Stores a list of {@link BillItems} associated to a {@link Bill}.
+	 * 
 	 * @param bill the bill.
 	 * @param billItems the bill items to store.
 	 * @throws OHServiceException if an error occurs during the store operation.
@@ -166,6 +174,7 @@ public class AccountingIoOperations {
 
 	/**
 	 * Stores a list of {@link BillPayments} associated to a {@link Bill}.
+	 * 
 	 * @param bill the bill.
 	 * @param payItems the bill payments.
 	 * @throws OHServiceException if an error occurs during the store procedure.
@@ -180,6 +189,7 @@ public class AccountingIoOperations {
 
 	/**
 	 * Updates the specified {@link Bill}.
+	 * 
 	 * @param updateBill the bill to update.
 	 * @return the updated Bill object
 	 * @throws OHServiceException if an error occurs during the update.
@@ -189,8 +199,8 @@ public class AccountingIoOperations {
 	}
 
 	/**
-	 * Deletes the specified {@link Bill}.   If the argument is NULL then an error is thrown.
-	 * If the Bill is not found it is silently ignored.
+	 * Deletes the specified {@link Bill}. If the argument is NULL then an error is thrown. If the Bill is not found it is silently ignored.
+	 * 
 	 * @param deleteBill the bill to delete.
 	 * @throws OHServiceException if an error occurs deleting the bill.
 	 */
@@ -200,6 +210,7 @@ public class AccountingIoOperations {
 
 	/**
 	 * Retrieves all the {@link Bill}s for the specified date range.
+	 * 
 	 * @param dateFrom the low date range endpoint, inclusive.
 	 * @param dateTo the high date range endpoint, inclusive.
 	 * @return a list of retrieved {@link Bill}s.
@@ -211,6 +222,7 @@ public class AccountingIoOperations {
 
 	/**
 	 * Gets all the {@link Bill}s associated to the passed {@link BillPayments}.
+	 * 
 	 * @param payments the {@link BillPayments} associated to the bill to retrieve.
 	 * @return a list of {@link Bill} associated to the passed {@link BillPayments}.
 	 * @throws OHServiceException if an error occurs retrieving the bill list.
@@ -225,6 +237,7 @@ public class AccountingIoOperations {
 
 	/**
 	 * Retrieves all the {@link BillPayments} associated to the passed {@link Bill} list.
+	 * 
 	 * @param bills the bill list.
 	 * @return a list of {@link BillPayments} associated to the passed bill list.
 	 * @throws OHServiceException if an error occurs retrieving the payments.
@@ -235,6 +248,7 @@ public class AccountingIoOperations {
 
 	/**
 	 * Retrieves all billPayments for a given patient in the period dateFrom -> dateTo
+	 * 
 	 * @param dateFrom
 	 * @param dateTo
 	 * @param patient
@@ -248,6 +262,7 @@ public class AccountingIoOperations {
 
 	/**
 	 * Retrieves all the bills for a given patient in the period dateFrom -> dateTo
+	 * 
 	 * @param dateFrom
 	 * @param dateTo
 	 * @param patient
@@ -269,7 +284,7 @@ public class AccountingIoOperations {
 	}
 
 	/**
-	 *
+	 * 
 	 * @param patID
 	 * @return
 	 * @throws OHServiceException
@@ -279,9 +294,9 @@ public class AccountingIoOperations {
 	}
 
 	/**
-	 * Return distinct BillItems
-	 * added by u2g
-	 * @return BillItems list 
+	 * Return distinct BillItems added by u2g
+	 * 
+	 * @return BillItems list
 	 * @throws OHServiceException
 	 */
 	public List<BillItems> getDistictsBillItems() throws OHServiceException {
@@ -315,4 +330,83 @@ public class AccountingIoOperations {
 		return this.billRepository.countAllActiveBills();
 	}
 
+	/**
+	    * Get the bills list of invoices filtered by date, patient and guarantor
+	    * 
+		* @param dateFrom start date
+		* @param dateTo end date
+		* @param guarantor the user acting as the guarantor for the bills.
+		* @return The {@link List} of invoices
+		* @throws OHServiceException when failed to execute the query.
+		*/
+	public List<Bill> getBillsByDatesPatientAndGuarantor(LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient, User guarantor)
+					throws OHServiceException {
+		if (patient == null) {
+			throw new IllegalArgumentException("Patient cannot be null");
+		}
+
+		return billRepository.findByDateBetweenAndBillPatientCodeAndGuarantorUserName(
+						TimeTools.getBeginningOfDay(dateFrom), TimeTools.getBeginningOfNextDay(dateTo),
+						patient.getCode(), guarantor.getUserName());
+	}
+
+	/**
+	    * Get the bills list filter by date and guarantor
+	    * 
+		* @param dateFrom start date
+		* @param dateTo end date
+		* @param guarantor the user acting as the guarantor for the bills.
+		* @return The {@link List} of invoices
+		* @throws OHServiceException when failed to execute the query.
+		*/
+	public List<Bill> getBillsByDatesAndGuarantor(LocalDateTime dateFrom, LocalDateTime dateTo, User guarantor) throws OHServiceException {
+		return billRepository.findByDateBetweenAndGuarantorUserName(
+						TimeTools.getBeginningOfDay(dateFrom), TimeTools.getBeginningOfNextDay(dateTo),
+						guarantor.getUserName());
+	}
+
+	/**
+	    * Get the bills payments filtered by date, patient and guarantor
+	    * 
+		* @param dateFrom start date
+		* @param dateTo end date
+		* @param guarantor the user acting as the guarantor for the bills.
+		* @return The {@link List} of{@link BillPayments} matching the filters, or an empty list if no match
+		* @throws OHServiceException when failed to execute the query.
+		*/
+	public List<BillPayments> getPaymentsByDatesPatientAndGuarantor(LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient, User guarantor) throws OHServiceException {
+	    return billPaymentRepository.findByDateBetweenAndBillBillPatientCodeAndBillGuarantorUserNameOrderByBillAscDateAsc(TimeTools.getBeginningOfDay(dateFrom), TimeTools.getBeginningOfNextDay(dateTo), patient.getCode(), guarantor.getUserName());
+	}
+
+	/**
+	    * Get the bills payments filtered by date and guarantor
+	    * 
+		* @param dateFrom start date
+		* @param dateTo end date
+		* @param guarantor the user acting as the guarantor for the bills.
+		* @return The {@link List} of{@link BillPayments} matching the filters, or an empty list if no match
+		* @throws OHServiceException when failed to execute the query.
+		*/
+	public List<BillPayments> getPaymentsByDatesAndGuarantor(LocalDateTime dateFrom, LocalDateTime dateTo, User guarantor) throws OHServiceException {
+	    return billPaymentRepository.findByDateBetweenAndBillGuarantorUserNameOrderByBillAscDateAsc(TimeTools.getBeginningOfDay(dateFrom), TimeTools.getBeginningOfNextDay(dateTo), guarantor.getUserName());
+	}
+
+	/**
+	    * Get the bills payments filtered by guarantor
+	    *
+		* @param guarantor the user acting as the guarantor for the bills.
+		* @return The {@link List} of{@link BillPayments} matching the filters, or an empty list if no match
+		* @throws OHServiceException when failed to execute the query.
+		*/
+	public List<Bill> getBillsByGuarantor(List<BillPayments> payments, User guarantor) throws OHServiceException {
+		Set<Bill> bills = new TreeSet<>((o1, o2) -> o1.getId() == o2.getId() ? 0 : -1);
+		for (BillPayments bp : payments) {
+			Bill bill = bp.getBill();
+
+			if (bill.getGuarantor().equals(guarantor)) {
+				bills.add(bill);
+			}
+		}
+		return new ArrayList<>(bills);
+	}
 }

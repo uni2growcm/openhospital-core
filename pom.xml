@@ -82,7 +82,7 @@
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-openfeign</artifactId>
-			<version>4.0.6</version>
+			<version>4.2.0</version>
 		</dependency>
 		<dependency>
 		    <groupId>net.java.dev.jna</groupId>
@@ -177,7 +177,7 @@
 		<dependency>
 			<groupId>com.github.oshi</groupId>
 			<artifactId>oshi-core</artifactId>
-			<version>6.6.5</version>
+			<version>6.6.6</version>
 		</dependency>
 		<dependency>
 			<groupId>org.dcm4che</groupId>

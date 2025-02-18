@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2023 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2024 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -19,23 +19,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.isf.admission.service;
 
-import java.time.LocalDateTime;
+package org.isf.reductionplan.service;
+
 import java.util.List;
 
-import org.isf.admission.model.AdmittedPatient;
-import org.isf.utils.exception.OHServiceException;
+import org.isf.reductionplan.model.ReductionPlan;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface AdmissionIoOperationRepositoryCustom {
-
-	List<AdmittedPatient> findPatientAdmissionsBySearchAndDateRanges(String searchTerms, LocalDateTime[] admissionRange, LocalDateTime[] dischargeRange)
-			throws OHServiceException;
-
-	/**
-	 * @param patientId
-	 * @param admissionId
-	 */
-	record PatientAdmission(Integer patientId, Integer admissionId) {
-	}
+@Repository
+public interface ReductionplanIoOperationRepository extends JpaRepository<ReductionPlan, Integer> {
+	List<ReductionPlan> findByDescription(String description);
 }
