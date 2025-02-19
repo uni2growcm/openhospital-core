@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2024 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -72,34 +72,34 @@ public class ReductionPlanManager {
 		List<MedicalReduction> medicalReductionList = reductionPlan.getMedicalReductionList();
 		List<OperationReduction> operationReductionList = reductionPlan.getOperationReductionList();
 		List<PriceOtherReduction> priceOtherReductionList = reductionPlan.getPriceOtherReductionList();
+		ReductionPlan savedPlan;
+		savedPlan = reductionPlanIoOperations.save(reductionPlan);
 
 		if (!examReductionList.isEmpty()) {
 			for (ExamReduction examReduction : examReductionList) {
-				examReduction.setReductionPlan(reductionPlan);
+				examReduction.setReductionPlan(savedPlan);
 				reductionPlanIoOperations.saveExamReduction(examReduction);
 			}
 		}
 		if (!medicalReductionList.isEmpty()) {
 			for (MedicalReduction medicalReduction : medicalReductionList) {
-				medicalReduction.setReductionPlan(reductionPlan);
+				medicalReduction.setReductionPlan(savedPlan);
 				reductionPlanIoOperations.saveMedicalReduction(medicalReduction);
 			}
 		}
 		if (!operationReductionList.isEmpty()) {
 			for (OperationReduction operationReduction : operationReductionList) {
-				operationReduction.setReductionPlan(reductionPlan);
+				operationReduction.setReductionPlan(savedPlan);
 				reductionPlanIoOperations.saveOperationReduction(operationReduction);
 			}
 		}
 		if (!priceOtherReductionList.isEmpty()) {
 			for (PriceOtherReduction priceOtherReduction : priceOtherReductionList) {
-				priceOtherReduction.setReductionPlan(reductionPlan);
+				priceOtherReduction.setReductionPlan(savedPlan);
 				reductionPlanIoOperations.savePriceOtherReduction(priceOtherReduction);
 			}
 		}
 
-		ReductionPlan savedPlan;
-		savedPlan = reductionPlanIoOperations.save(reductionPlan);
 		return savedPlan;
 	}
 
