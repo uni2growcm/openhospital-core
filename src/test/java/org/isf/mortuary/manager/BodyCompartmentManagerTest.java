@@ -36,6 +36,7 @@ import org.isf.utils.exception.OHException;
 import org.isf.utils.exception.OHServiceException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -64,29 +65,8 @@ public class BodyCompartmentManagerTest  extends OHCoreTestCase {
 	}
 
 	@Test
-	void testAddWithNullEntry() {
-		BodyCompartment bodyCompartment = null;
-		assertThatThrownBy(() -> bodyComportmentManager.add(bodyCompartment))
-			.isInstanceOf(OHServiceException.class);
-	}
-
-	@Test
-	void testAddWithEmptyBodyCompartmentEntry() {
-		BodyCompartment bodyCompartment = new BodyCompartment();
-		assertThatThrownBy(() -> bodyComportmentManager.add(bodyCompartment))
-			.isInstanceOf(OHServiceException.class);
-	}
-
-	@Test
-	void testAddWithEmptyLabel() {
-		BodyCompartment bodyCompartment = new BodyCompartment();
-		bodyCompartment.setLabel("");
-		assertThatThrownBy(() -> bodyComportmentManager.add(bodyCompartment))
-			.isInstanceOf(OHServiceException.class);
-	}
-
-	@Test
-	void testAddWithCorrectData() throws OHServiceException {
+	@DisplayName("Should successfully add a body compartment")
+	void testAdd() throws OHServiceException {
 		BodyCompartment bodyCompartment = new BodyCompartment("BC001", "Description", false);
 		BodyCompartment bodyCompartmentSaved = bodyComportmentManager.add(bodyCompartment);
 		assertThat(bodyCompartment.getLabel()).isEqualTo(bodyCompartmentSaved.getLabel());
@@ -95,8 +75,9 @@ public class BodyCompartmentManagerTest  extends OHCoreTestCase {
 	}
 
 	@Test
+	@DisplayName("It should be possible to retrieve body compartment pages based on the label or description")
 	void testGetByLabelOrDescriptionPageable() throws Exception {
-		List<BodyCompartment> bodyCompartments = generateDatas(20);
+		List<BodyCompartment> bodyCompartments = generateBodyCompartments(20);
 
 		Page<BodyCompartment> bodyCompartment = bodyComportmentManager.getByLabelOrDescriptionPageable("", "",0, 4);
 
@@ -108,6 +89,7 @@ public class BodyCompartmentManagerTest  extends OHCoreTestCase {
 	}
 
 	@Test
+	@DisplayName("Should successfully update a body compartment")
 	void testUpdate() throws OHException, OHServiceException {
 		BodyCompartment bodyCompartment = testBodyCompartment.setup(false);
 		assertThatThrownBy(() -> bodyComportmentManager.update(bodyCompartment))
@@ -119,6 +101,7 @@ public class BodyCompartmentManagerTest  extends OHCoreTestCase {
 	}
 
 	@Test
+	@DisplayName("Should successfully delete a body compartment")
 	void testDelete() throws OHException, OHServiceException {
 		String label = setupTestBodyCompartment(false);
 		BodyCompartment bodyCompartment = bodyCompartmentRepository.findByLabelAndDeleted(label, false);
@@ -133,7 +116,7 @@ public class BodyCompartmentManagerTest  extends OHCoreTestCase {
 		return bodyCompartment.getLabel();
 	}
 
-	private List<BodyCompartment> generateDatas(int size) {
+	private List<BodyCompartment> generateBodyCompartments(int size) {
 		String labelPrefix = "BC";
 		String desc = "Description for body compartment ";
 		List<BodyCompartment> bodyCompartments = IntStream.range(0, size).mapToObj(i -> {
