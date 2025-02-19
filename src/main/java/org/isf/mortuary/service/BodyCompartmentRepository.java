@@ -33,5 +33,5 @@ public interface BodyCompartmentRepository extends JpaRepository<BodyCompartment
 
 	BodyCompartment findByLabelAndDeleted(String label, boolean deleted);
 
-	Page<BodyCompartment> findByLabelContainsAndDeleted(String label, boolean deleted, Pageable pageable);
+	Page<BodyCompartment> findByLabelContainsAndDeletedOrDescriptionContainsAndDeleted( String label, boolean deleted, String description, boolean deleted2, Pageable pageable);
 }

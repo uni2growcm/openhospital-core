@@ -25,9 +25,13 @@ package org.isf.mortuary.manager;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.util.List;
+import java.util.stream.IntStream;
+
 import org.isf.OHCoreTestCase;
 import org.isf.mortuary.model.BodyCompartment;
 import org.isf.mortuary.service.BodyCompartmentIoOperations;
+import org.isf.mortuary.service.BodyCompartmentRepository;
 import org.isf.utils.exception.OHException;
 import org.isf.utils.exception.OHServiceException;
 import org.junit.jupiter.api.BeforeAll;
@@ -46,6 +50,9 @@ public class BodyCompartmentManagerTest  extends OHCoreTestCase {
 	@Autowired
 	BodyCompartmentIoOperations bodyCompartmentIoOperations;
 
+	@Autowired
+	BodyCompartmentRepository bodyCompartmentRepository;
+
 	@BeforeAll
 	static void setUpClass() {
 		testBodyCompartment = new TestBodyCompartment();
@@ -57,17 +64,51 @@ public class BodyCompartmentManagerTest  extends OHCoreTestCase {
 	}
 
 	@Test
-	void testGetByLabelPageable() throws Exception {
-		int id = setupTestBodyCompartment(false);
-		Page<BodyCompartment> bodyCompartment = bodyComportmentManager.getByLabelPageable("", 0, 1);
-		assertThat(bodyCompartment).isNotNull();
-		assertThat(bodyCompartment.getTotalElements()).isEqualTo(1);
-		assertThat(bodyCompartment.getTotalPages()).isEqualTo(1);
-		assertThat(bodyCompartment.getContent().get(0).getId()).isEqualTo(id);
+	void testAddWithNullEntry() {
+		BodyCompartment bodyCompartment = null;
+		assertThatThrownBy(() -> bodyComportmentManager.add(bodyCompartment))
+			.isInstanceOf(OHServiceException.class);
 	}
 
 	@Test
-	void testMgrUpdate() throws OHException, OHServiceException {
+	void testAddWithEmptyBodyCompartmentEntry() {
+		BodyCompartment bodyCompartment = new BodyCompartment();
+		assertThatThrownBy(() -> bodyComportmentManager.add(bodyCompartment))
+			.isInstanceOf(OHServiceException.class);
+	}
+
+	@Test
+	void testAddWithEmptyLabel() {
+		BodyCompartment bodyCompartment = new BodyCompartment();
+		bodyCompartment.setLabel("");
+		assertThatThrownBy(() -> bodyComportmentManager.add(bodyCompartment))
+			.isInstanceOf(OHServiceException.class);
+	}
+
+	@Test
+	void testAddWithCorrectData() throws OHServiceException {
+		BodyCompartment bodyCompartment = new BodyCompartment("BC001", "Description", false);
+		BodyCompartment bodyCompartmentSaved = bodyComportmentManager.add(bodyCompartment);
+		assertThat(bodyCompartment.getLabel()).isEqualTo(bodyCompartmentSaved.getLabel());
+		assertThat(bodyCompartment.getDescription()).isEqualTo(bodyCompartmentSaved.getDescription());
+		assertThat(bodyCompartment.isDeleted()).isEqualTo(bodyCompartmentSaved.isDeleted());
+	}
+
+	@Test
+	void testGetByLabelOrDescriptionPageable() throws Exception {
+		List<BodyCompartment> bodyCompartments = generateDatas(20);
+
+		Page<BodyCompartment> bodyCompartment = bodyComportmentManager.getByLabelOrDescriptionPageable("", "",0, 4);
+
+		assertThat(bodyCompartment).isNotNull();
+		assertThat(bodyCompartment.getContent().size()).isEqualTo(4);
+		assertThat(bodyCompartment.getTotalElements()).isEqualTo(20);
+		assertThat(bodyCompartment.getTotalPages()).isEqualTo(5);
+		assertThat(bodyCompartment.getSize()).isEqualTo(4);
+	}
+
+	@Test
+	void testUpdate() throws OHException, OHServiceException {
 		BodyCompartment bodyCompartment = testBodyCompartment.setup(false);
 		assertThatThrownBy(() -> bodyComportmentManager.update(bodyCompartment))
 			.isInstanceOf(OHServiceException.class);
@@ -77,9 +118,64 @@ public class BodyCompartmentManagerTest  extends OHCoreTestCase {
 		assertThat(bodyCompartmentUpdated.getDescription()).isEqualTo("Updated");
 	}
 
-	private int setupTestBodyCompartment(boolean usingSet) throws OHException, OHServiceException {
+	@Test
+	void testDelete() throws OHException, OHServiceException {
+		String label = setupTestBodyCompartment(false);
+		BodyCompartment bodyCompartment = bodyCompartmentRepository.findByLabelAndDeleted(label, false);
+		assertThat(bodyCompartment).isNotNull();
+		boolean isDeleted = bodyComportmentManager.delete(bodyCompartment);
+		assertThat(isDeleted).isEqualTo(true);
+	}
+
+	private String setupTestBodyCompartment(boolean usingSet) throws OHException, OHServiceException {
 		BodyCompartment bodyCompartment = testBodyCompartment.setup(usingSet);
 		bodyCompartmentIoOperations.add(bodyCompartment);
-		return bodyCompartment.getId();
+		return bodyCompartment.getLabel();
+	}
+
+	private List<BodyCompartment> generateDatas(int size) {
+		String labelPrefix = "BC";
+		String desc = "Description for body compartment ";
+		List<BodyCompartment> bodyCompartments = IntStream.range(0, size).mapToObj(i -> {
+			return new BodyCompartment(
+				labelPrefix + i,
+				desc + i,
+				false
+			);
+		}).toList();
+
+		return bodyCompartmentRepository.saveAllAndFlush(bodyCompartments);
+	}
+
+	private static class TestBodyCompartment {
+		private final int id = 1;
+		private final String label = "BC001";
+		private final String description = "Casier de la salle A";
+		private final boolean deleted = false;
+
+		public BodyCompartment setup(boolean usingSet) throws OHException {
+			BodyCompartment bodyCompartment;
+
+			if (usingSet) {
+				bodyCompartment = new BodyCompartment();
+				setParameters(bodyCompartment);
+			} else {
+				bodyCompartment = new BodyCompartment(id, label, description, deleted);
+			}
+			return bodyCompartment;
+		}
+
+		public void setParameters(BodyCompartment bodyCompartment) {
+			bodyCompartment.setId(id);
+			bodyCompartment.setLabel(label);
+			bodyCompartment.setDescription(description);
+			bodyCompartment.setDeleted(deleted);
+		}
+
+		public void check(BodyCompartment bodyCompartment) {
+			assertThat(bodyCompartment.getId()).isEqualTo(id);
+			assertThat(bodyCompartment.getLabel()).isEqualTo(label);
+			assertThat(bodyCompartment.getDescription()).isEqualTo(description);
+		}
 	}
 }

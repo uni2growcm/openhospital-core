@@ -101,7 +101,8 @@ public class BodyCompartment extends Auditable<String> {
 	@Override
 	public String toString() {
 		return "BodyCompartment{" +
-			"code='" + label + '\'' +
+			"id=" + id +
+			", label='" + label + '\'' +
 			", description='" + description + '\'' +
 			'}';
 	}

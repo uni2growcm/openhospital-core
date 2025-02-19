@@ -22,8 +22,13 @@
 
 package org.isf.mortuary.service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.isf.generaldata.MessageBundle;
 import org.isf.mortuary.model.BodyCompartment;
+import org.isf.utils.exception.OHDataIntegrityViolationException;
+import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.model.OHExceptionMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +53,7 @@ public class BodyCompartmentIoOperations {
 	 * @throws OHServiceException
 	 */
 	public BodyCompartment add(BodyCompartment bodyCompartment) throws OHServiceException {
+		validate(bodyCompartment);
 		return bodyCompartmentRepository.save(bodyCompartment);
 	}
 
@@ -55,15 +61,17 @@ public class BodyCompartmentIoOperations {
 	 * Deletes a {@link BodyCompartment} in the DB.
 	 *
 	 * @param bodyCompartment - the item to delete
+	 * return true if deletion works and false otherwise
 	 * @throws OHServiceException
 	 */
-	public BodyCompartment delete(BodyCompartment bodyCompartment) throws OHServiceException {
+	public boolean delete(BodyCompartment bodyCompartment) throws OHServiceException {
 		BodyCompartment bodyCompartmentFound = bodyCompartmentRepository.findByLabelAndDeleted(bodyCompartment.getLabel(), false);
 		if (bodyCompartmentFound == null) {
 			throw new OHServiceException(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuary.bodycompartment.thisbodycompartmentdontexist.msg")));
 		}
 		bodyCompartmentFound.setDeleted(true);
-		return bodyCompartmentRepository.save(bodyCompartmentFound);
+		BodyCompartment deleted = bodyCompartmentRepository.save(bodyCompartmentFound);
+		return deleted.isDeleted();
 	}
 
 	/**
@@ -100,12 +108,13 @@ public class BodyCompartmentIoOperations {
 	 * Returns the page of {@link BodyCompartment} based on label
 	 *
 	 * @param label - the label, must not be {@literal null}
+	 * @param description - the description, must not be {@literal null}
 	 * @return the page of {@link BodyCompartment}
 	 * @throws OHServiceException if {@label label} is {@literal null}
 	 */
-	public Page<BodyCompartment> getByLabelPageable(String label, Pageable pageable) throws OHServiceException {
-		if (label != null) {
-			return bodyCompartmentRepository.findByLabelContainsAndDeleted(label, false, pageable);
+	public Page<BodyCompartment> getByLabelOrDescriptionPageable(String label, String description,Pageable pageable) throws OHServiceException {
+		if (label != null && description != null) {
+			return bodyCompartmentRepository.findByLabelContainsAndDeletedOrDescriptionContainsAndDeleted(label, false,description,false, pageable);
 		}
 		throw new OHServiceException(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuarystays.labelmostnotbenull.msg")));
 	}
@@ -115,14 +124,39 @@ public class BodyCompartmentIoOperations {
 	 *
 	 * @param label - the {@link BodyCompartment} label
 	 * @return {@label true} if the label is already in use and deleted is false, {@label false} otherwise
-	 * @throws OHServiceException
 	 */
-	public boolean isLabelPresent(String label) throws OHServiceException {
+	public boolean isLabelPresent(String label) {
 		boolean existed = false;
 		BodyCompartment bodyCompartment = bodyCompartmentRepository.findByLabelAndDeleted(label, false);
 		if (bodyCompartment != null) {
 			existed = true;
 		}
 		return existed;
+	}
+
+	/**
+	 * Verify if the object is valid for CRUD and return a list of errors, if any.
+	 * @param bodyCompartment the {@link BodyCompartment} object to validate.
+	 * @throws OHServiceException
+	 */
+	protected void validate(BodyCompartment bodyCompartment) throws OHServiceException {
+		List<OHExceptionMessage> errors = new ArrayList<>();
+		if (bodyCompartment == null) {
+			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.commom.anullentrycannotberegistered.msg")));
+		} else {
+			if (bodyCompartment.getLabel() == null) {
+				errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.common.pleaseinsertacode.msg")));
+			} else {
+				if (bodyCompartment.getLabel().trim().isEmpty()) {
+					errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.common.pleaseinsertacode.msg")));
+				}
+				if (isLabelPresent(bodyCompartment.getLabel())) {
+					throw new OHDataIntegrityViolationException(new OHExceptionMessage(MessageBundle.getMessage("angal.common.thecodeisalreadyinuse.msg")));
+				}
+			}
+		}
+		if (!errors.isEmpty()) {
+			throw new OHDataValidationException(errors);
+		}
 	}
 }

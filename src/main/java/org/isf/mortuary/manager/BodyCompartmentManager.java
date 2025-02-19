@@ -53,9 +53,10 @@ public class BodyCompartmentManager {
 	/**
 	 * Deletes a {@link BodyCompartment} in the DB.
 	 * @param bodyCompartment - the item to delete
+	 * return true if deletion works and false otherwise
 	 * @throws OHServiceException
 	 */
-	public BodyCompartment delete(BodyCompartment bodyCompartment) throws OHServiceException {
+	public boolean delete(BodyCompartment bodyCompartment) throws OHServiceException {
 		return bodyCompartmentIoOperations.delete(bodyCompartment);
 	}
 
@@ -83,13 +84,14 @@ public class BodyCompartmentManager {
 	 * Returns the page of {@link BodyCompartment} based on label
 	 *
 	 * @param label - the label, must not be {@literal null}
+	 * @param description - the description, must not be {@literal null}
 	 * @param page current page.
 	 * @param size the size of the page.
 	 * @return the page of {@link BodyCompartment}
 	 * @throws OHServiceException if {@label label} is {@literal null}
 	 */
-	public Page<BodyCompartment> getByLabelPageable(String label, int page, int size) throws OHServiceException {
+	public Page<BodyCompartment> getByLabelOrDescriptionPageable(String label, String description ,int page, int size) throws OHServiceException {
 		Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdDate"));
-		return bodyCompartmentIoOperations.getByLabelPageable(label, pageable);
+		return bodyCompartmentIoOperations.getByLabelOrDescriptionPageable(label, description,pageable);
 	}
 }
