@@ -82,26 +82,12 @@ public class BodyCompartmentIoOperations {
 	 * @throws OHServiceException if an error occurs during the update.
 	 */
 	public BodyCompartment update(BodyCompartment bodyCompartment) throws OHServiceException {
-		BodyCompartment bodyCompartmentFound = getByLabel(bodyCompartment.getLabel());
+		BodyCompartment bodyCompartmentFound = bodyCompartmentRepository.findById(bodyCompartment.getId()).orElse(null);
 		if (bodyCompartmentFound == null) {
 			throw new OHServiceException(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuary.bodycompartment.thisbodycompartmentdontexist.msg")));
 		}
 		bodyCompartmentFound.setDescription(bodyCompartment.getDescription());
 		return bodyCompartmentRepository.save(bodyCompartment);
-	}
-
-	/**
-	 * Returns the {@link BodyCompartment} based on label
-	 *
-	 * @param label - the label, must not be {@literal null}
-	 * @return the {@link BodyCompartment} or {@literal null} if none found
-	 * @throws OHServiceException if {@label label} is {@literal null}
-	 */
-	public BodyCompartment getByLabel(String label) throws OHServiceException {
-		if (label != null) {
-			return bodyCompartmentRepository.findByLabelAndDeleted(label, false);
-		}
-		throw new OHServiceException(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuarystays.labelmostnotbenull.msg")));
 	}
 
 	/**
