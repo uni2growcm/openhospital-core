@@ -86,16 +86,16 @@ public class ReductionPlan extends Auditable<String> implements Serializable {
 	private int lock;
 
 	@OneToMany(mappedBy = "reductionPlan", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-	private List<ExamReduction> examReductionList;
+	private List<ExamReduction> examReductions;
 
 	@OneToMany(mappedBy = "reductionPlan", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-	private List<MedicalReduction> medicalReductionList;
+	private List<MedicalReduction> medicalReductions;
 
 	@OneToMany(mappedBy = "reductionPlan", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-	private List<OperationReduction> operationReductionList;
+	private List<OperationReduction> operationReductions;
 
 	@OneToMany(mappedBy = "reductionPlan", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-	private List<PriceOtherReduction> priceOtherReductionList;
+	private List<PriceOtherReduction> priceOtherReductions;
 
 	@Transient
 	private volatile int hashcode;
@@ -148,10 +148,10 @@ public class ReductionPlan extends Auditable<String> implements Serializable {
 		this.medicalRate = medicalRate;
 		this.examRate = examRate;
 		this.otherRate = otherRate;
-		this.examReductionList = examReductionList;
-		this.medicalReductionList = medicalReductionList;
-		this.operationReductionList = operationReductionList;
-		this.priceOtherReductionList = priceOtherReductionList;
+		this.examReductions = examReductionList;
+		this.medicalReductions = medicalReductionList;
+		this.operationReductions = operationReductionList;
+		this.priceOtherReductions = priceOtherReductionList;
 	}
 
 	public int getId() {
@@ -215,36 +215,36 @@ public class ReductionPlan extends Auditable<String> implements Serializable {
 		this.lock = lock;
 	}
 
-	public List<ExamReduction> getExamReductionList() {
-		return examReductionList;
+	public List<ExamReduction> getExamReductions() {
+		return examReductions;
 	}
 
-	public void setExamReductionList(List<ExamReduction> examReductionList) {
-		this.examReductionList = examReductionList;
+	public void setExamReductions(List<ExamReduction> examReductions) {
+		this.examReductions = examReductions;
 	}
 
-	public List<MedicalReduction> getMedicalReductionList() {
-		return medicalReductionList;
+	public List<MedicalReduction> getMedicalReductions() {
+		return medicalReductions;
 	}
 
-	public void setMedicalReductionList(List<MedicalReduction> medicalReductionList) {
-		this.medicalReductionList = medicalReductionList;
+	public void setMedicalReductions(List<MedicalReduction> medicalReductions) {
+		this.medicalReductions = medicalReductions;
 	}
 
-	public List<OperationReduction> getOperationReductionList() {
-		return operationReductionList;
+	public List<OperationReduction> getOperationReductions() {
+		return operationReductions;
 	}
 
-	public void setOperationReductionList(List<OperationReduction> operationReductionList) {
-		this.operationReductionList = operationReductionList;
+	public void setOperationReductions(List<OperationReduction> operationReductionList) {
+		this.operationReductions = operationReductionList;
 	}
 
-	public List<PriceOtherReduction> getPriceOtherReductionList() {
-		return priceOtherReductionList;
+	public List<PriceOtherReduction> getPriceOtherReductions() {
+		return priceOtherReductions;
 	}
 
-	public void setPriceOtherReductionList(List<PriceOtherReduction> priceOtherReductionList) {
-		this.priceOtherReductionList = priceOtherReductionList;
+	public void setPriceOtherReductions(List<PriceOtherReduction> priceOtherReductions) {
+		this.priceOtherReductions = priceOtherReductions;
 	}
 
 	@Override

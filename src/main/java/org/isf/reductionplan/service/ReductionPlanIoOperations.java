@@ -64,8 +64,8 @@ public class ReductionPlanIoOperations {
 	 * @return The list of {@link ReductionPlan}s
 	 * @throws OHServiceException When failed to get all reduction plans
 	 */
-	public List<ReductionPlan> getAll(boolean deleted) throws OHServiceException {
-		return reductionplanIoOperationRepository.findByDeleted(deleted);
+	public List<ReductionPlan> getAll() throws OHServiceException {
+		return reductionplanIoOperationRepository.findByDeleted(false);
 	}
 
 	/**
@@ -89,11 +89,10 @@ public class ReductionPlanIoOperations {
 	/**
 	 * Save a {@link ReductionPlan}
 	 * @param reductionPlan the {@link ReductionPlan} to insert
-	 * @return the newly persisted {@link ReductionPlan} object
 	 * @throws OHServiceException when failed to save {@link ReductionPlan}
 	 */
-	public ReductionPlan save(ReductionPlan reductionPlan) throws OHServiceException {
-		return reductionplanIoOperationRepository.save(reductionPlan);
+	public void add(ReductionPlan reductionPlan) throws OHServiceException {
+		reductionplanIoOperationRepository.save(reductionPlan);
 	}
 
 	/**
@@ -105,15 +104,6 @@ public class ReductionPlanIoOperations {
 		reductionPlan = reductionplanIoOperationRepository.findByIdAndDeleted(reductionPlan.getId(), false);
 		reductionPlan.setDeleted(true);
 		return reductionplanIoOperationRepository.save(reductionPlan);
-	}
-
-	/**
-	 * save a {@link ExamReduction}
-	 * @param examReduction the {@link ExamReduction} to insert
-	 * @throws OHServiceException if the error happened during the save process
-	 */
-	public void saveExamReduction(ExamReduction examReduction) throws OHServiceException {
-		examReductionIoOperationsRepository.save(examReduction);
 	}
 
 	/**
@@ -136,15 +126,6 @@ public class ReductionPlanIoOperations {
 	}
 
 	/**
-	 * Save a {@link MedicalReduction}
-	 * @param medicalReduction the {@link MedicalReduction} to insert
-	 * @throws OHServiceException if an error happened during the save process
-	 */
-	public void saveMedicalReduction(MedicalReduction medicalReduction) throws OHServiceException {
-		medicalReductionIoOperationRepository.save(medicalReduction);
-	}
-
-	/**
 	 * fetch a list of {@link MedicalReduction}s by {@link ReductionPlan} id.
 	 * @param reductionPlanId the {@link ReductionPlan} id
 	 * @return the list of {@link MedicalReduction}s
@@ -164,15 +145,6 @@ public class ReductionPlanIoOperations {
 	}
 
 	/**
-	 * Save an {@link OperationReduction}
-	 * @param operationReduction the {@link OperationReduction} to insert
-	 * @throws OHServiceException if an error happened during the save process
-	 */
-	public void saveOperationReduction(OperationReduction operationReduction) throws OHServiceException {
-		operationReductionIoOperationRepository.save(operationReduction);
-	}
-
-	/**
 	 * fetch a list of {@link OperationReduction}s by {@link ReductionPlan}
 	 * @param reductionPlanId the {@link ReductionPlan} id
 	 * @return the list of {@link OperationReduction}s
@@ -189,15 +161,6 @@ public class ReductionPlanIoOperations {
 	 */
 	public void deleteOperationReduction(OperationReduction operationReduction) throws OHServiceException {
 		operationReductionIoOperationRepository.deleteById(operationReduction.getId());
-	}
-
-	/**
-	 * Save a {@link PriceOtherReduction}
-	 * @param priceOtherReduction the {@link PriceOtherReduction} to insert
-	 * @throws OHServiceException if an error happened during the save process
-	 */
-	public void savePriceOtherReduction(PriceOtherReduction priceOtherReduction) throws OHServiceException {
-		PriceOtherReductionIoOperationRepository.save(priceOtherReduction);
 	}
 
 	/**
