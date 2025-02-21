@@ -269,10 +269,10 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 		ReductionPlan deletedReductionPlan = manager.getByDescription(reductionPlan.getDescription(), true).get(0);
 		assertThat(deletedReductionPlan.isDeleted()).isTrue();
 		assertThat(manager.getAll()).hasSize(1);
-		assertThat(manager.getExamReductionsByReductionPlanId(id).size()).isEqualTo(0);
-		assertThat(manager.getOperationReductionsByReductionPlanId(id).size()).isEqualTo(0);
-		assertThat(manager.getMedicalReductionsByReductionPlanId(id).size()).isEqualTo(0);
-		assertThat(manager.getPriceOtherReductionsByReductionPlanId(id).size()).isEqualTo(0);
+		assertThat(manager.getExamReductionsByReductionPlanId(id).size()).isEqualTo(1);
+		assertThat(manager.getOperationReductionsByReductionPlanId(id).size()).isEqualTo(1);
+		assertThat(manager.getMedicalReductionsByReductionPlanId(id).size()).isEqualTo(1);
+		assertThat(manager.getPriceOtherReductionsByReductionPlanId(id).size()).isEqualTo(1);
 	}
 
 	@Test
