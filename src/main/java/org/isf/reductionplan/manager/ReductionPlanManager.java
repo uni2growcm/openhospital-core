@@ -58,6 +58,7 @@ public class ReductionPlanManager {
 
 	/**
 	 * Get  reduction plans by description
+	 * @param description {@link ReductionPlan}'s description
 	 * @return The list of {@link ReductionPlan}s
 	 * @throws OHServiceException When failed to get  reduction plans by description
 	 */
@@ -193,7 +194,7 @@ public class ReductionPlanManager {
 	 * @param reductionPlan the {@link ReductionPlan} to delete
 	 * @throws OHServiceException when failed to delete {@link ReductionPlan}
 	 */
-	public ReductionPlan delete(ReductionPlan reductionPlan) throws OHServiceException {
+	public void delete(ReductionPlan reductionPlan) throws OHServiceException {
 		List<ExamReduction> examReductionList = reductionPlan.getExamReductions();
 		List<MedicalReduction> medicalReductionList = reductionPlan.getMedicalReductions();
 		List<OperationReduction> operationReductionList = reductionPlan.getOperationReductions();
@@ -212,7 +213,7 @@ public class ReductionPlanManager {
 			priceOtherReductionList.clear();
 		}
 
-		return reductionPlanIoOperations.delete(reductionPlan);
+		reductionPlanIoOperations.delete(reductionPlan);
 	}
 
 	/**
@@ -221,8 +222,8 @@ public class ReductionPlanManager {
 	 * @return the list of {@link ExamReduction}s
 	 * @throws OHServiceException if the error happened during the get process
 	 */
-	public List<ExamReduction> getExamReductionByReductionPlanId(int reductionPlanId) throws OHServiceException {
-		return reductionPlanIoOperations.getExamReductionByReductionPlanId(reductionPlanId);
+	public List<ExamReduction> getExamReductionsByReductionPlanId(int reductionPlanId) throws OHServiceException {
+		return reductionPlanIoOperations.getExamReductionsByReductionPlanId(reductionPlanId);
 	}
 
 	/**
@@ -240,8 +241,8 @@ public class ReductionPlanManager {
 	 * @return the list of {@link MedicalReduction}s
 	 * @throws OHServiceException if an error happened during the get process
 	 */
-	public List<MedicalReduction> getMedicalReductionByReductionPlanId(int reductionPlanId) throws OHServiceException {
-		return reductionPlanIoOperations.getMedicalReductionByReductionPlanId(reductionPlanId);
+	public List<MedicalReduction> getMedicalReductionsByReductionPlanId(int reductionPlanId) throws OHServiceException {
+		return reductionPlanIoOperations.getMedicalReductionsByReductionPlanId(reductionPlanId);
 	}
 
 	/**
@@ -259,8 +260,8 @@ public class ReductionPlanManager {
 	 * @return the list of {@link OperationReduction}s
 	 * @throws OHServiceException if an error happened during the get process
 	 */
-	public List<OperationReduction> getOperationReductionByReductionPlanId(int reductionPlanId) throws OHServiceException {
-		return reductionPlanIoOperations.getOperationReductionByReductionPlanId(reductionPlanId);
+	public List<OperationReduction> getOperationReductionsByReductionPlanId(int reductionPlanId) throws OHServiceException {
+		return reductionPlanIoOperations.getOperationReductionsByReductionPlanId(reductionPlanId);
 	}
 
 	/**
@@ -278,8 +279,8 @@ public class ReductionPlanManager {
 	 * @return the list of {@link PriceOtherReduction}s
 	 * @throws OHServiceException if an error happened during the get process
 	 */
-	public List<PriceOtherReduction> getPriceOtherReductionByReductionPlanId(int reductionPlanId) throws OHServiceException {
-		return reductionPlanIoOperations.getPriceOtherReductionByReductionPlanId(reductionPlanId);
+	public List<PriceOtherReduction> getPriceOtherReductionsByReductionPlanId(int reductionPlanId) throws OHServiceException {
+		return reductionPlanIoOperations.getPriceOtherReductionsByReductionPlanId(reductionPlanId);
 	}
 
 	/**
@@ -287,7 +288,7 @@ public class ReductionPlanManager {
 	 * @param priceOtherReduction the {@link PriceOtherReduction} want to delete
 	 * @throws OHServiceException if an error happened during the delete process
 	 */
-	public void deleteOtherReduction(PriceOtherReduction priceOtherReduction) throws OHServiceException {
-		reductionPlanIoOperations.deleteOtherReduction(priceOtherReduction);
+	public void deletePriceOtherReduction(PriceOtherReduction priceOtherReduction) throws OHServiceException {
+		reductionPlanIoOperations.deletePriceOtherReduction(priceOtherReduction);
 	}
 }

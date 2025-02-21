@@ -60,13 +60,9 @@ import org.isf.reductionplan.model.MedicalReduction;
 import org.isf.reductionplan.model.OperationReduction;
 import org.isf.reductionplan.model.PriceOtherReduction;
 import org.isf.reductionplan.model.ReductionPlan;
-import org.isf.reductionplan.service.ExamReductionIoOperationsRepository;
-import org.isf.reductionplan.service.MedicalReductionIoOperationRepository;
-import org.isf.reductionplan.service.OperationReductionIoOperationRepository;
-import org.isf.reductionplan.service.PriceOtherReductionIoOperationRepository;
+import org.isf.reductionplan.service.PriceOtherReductionRepository;
 import org.isf.reductionplan.service.ReductionPlanIoOperations;
 import org.isf.reductionplan.service.ReductionplanRepository;
-import org.isf.utils.exception.OHDataIntegrityViolationException;
 import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHException;
 import org.isf.utils.exception.OHServiceException;
@@ -85,7 +81,7 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 	ReductionPlanManager manager;
 
 	@Autowired
-	ExamReductionIoOperationsRepository ExamReductionRepository;
+	org.isf.reductionplan.service.ExamReductionRepository ExamReductionRepository;
 
 	@Autowired
 	ExamIoOperationRepository ExamRepository;
@@ -109,13 +105,13 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 	PriceOthersIoOperationRepository PriceOthersRepository;
 
 	@Autowired
-	MedicalReductionIoOperationRepository MedicalReductionRepository;
+	org.isf.reductionplan.service.MedicalReductionRepository MedicalReductionRepository;
 
 	@Autowired
-	OperationReductionIoOperationRepository OperationReductionRepository;
+	org.isf.reductionplan.service.OperationReductionRepository OperationReductionRepository;
 
 	@Autowired
-	PriceOtherReductionIoOperationRepository PricesOtherReductionRepository;
+	PriceOtherReductionRepository PricesOtherReductionRepository;
 
 	@Autowired
 	ReductionPlanIoOperations reductionPlanIoOperations;
@@ -269,13 +265,14 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 		assertThat(manager.getAll()).hasSize(2);
 		ReductionPlan existingReductionPlan = manager.getByDescription(reductionPlan.getDescription(), false).get(0);
 
-		ReductionPlan deletedReductionPlan = manager.delete(existingReductionPlan);
+		manager.delete(existingReductionPlan);
+		ReductionPlan deletedReductionPlan = manager.getByDescription(reductionPlan.getDescription(), true).get(0);
 		assertThat(deletedReductionPlan.isDeleted()).isTrue();
 		assertThat(manager.getAll()).hasSize(1);
-		assertThat(manager.getExamReductionByReductionPlanId(id).size()).isEqualTo(0);
-		assertThat(manager.getOperationReductionByReductionPlanId(id).size()).isEqualTo(0);
-		assertThat(manager.getMedicalReductionByReductionPlanId(id).size()).isEqualTo(0);
-		assertThat(manager.getPriceOtherReductionByReductionPlanId(id).size()).isEqualTo(0);
+		assertThat(manager.getExamReductionsByReductionPlanId(id).size()).isEqualTo(0);
+		assertThat(manager.getOperationReductionsByReductionPlanId(id).size()).isEqualTo(0);
+		assertThat(manager.getMedicalReductionsByReductionPlanId(id).size()).isEqualTo(0);
+		assertThat(manager.getPriceOtherReductionsByReductionPlanId(id).size()).isEqualTo(0);
 	}
 
 	@Test
@@ -298,7 +295,7 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 		ExamReductionRepository.saveAndFlush(examReduction);
 		reductionPlan.getExamReductions().add(examReduction);
 
-		List<ExamReduction> existingExamReductionList = manager.getExamReductionByReductionPlanId(reductionPlan.getId());
+		List<ExamReduction> existingExamReductionList = manager.getExamReductionsByReductionPlanId(reductionPlan.getId());
 
 		assertThat(existingExamReductionList.size()).isEqualTo(2);
 		assertThat(existingExamReductionList.get(1).getExam().getCode()).isEqualTo("EXA");
@@ -323,9 +320,9 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 		ExamReduction examReduction = generate.generateExamReductionFixture(testExam, reductionPlan);
 		ExamReductionRepository.saveAndFlush(examReduction);
 
-		assertThat(manager.getExamReductionByReductionPlanId(reductionPlan.getId()).size()).isEqualTo(2);
+		assertThat(manager.getExamReductionsByReductionPlanId(reductionPlan.getId()).size()).isEqualTo(2);
 		manager.deleteExamReduction(examReduction);
-		assertThat(manager.getExamReductionByReductionPlanId(reductionPlan.getId()).size()).isEqualTo(1);
+		assertThat(manager.getExamReductionsByReductionPlanId(reductionPlan.getId()).size()).isEqualTo(1);
 	}
 
 	@Test
@@ -348,12 +345,12 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 		ExamReductionRepository.saveAndFlush(examReduction);
 		reductionPlan.getExamReductions().add(examReduction);
 
-		assertThat(manager.getExamReductionByReductionPlanId(reductionPlan.getId()).size()).isEqualTo(2);
+		assertThat(manager.getExamReductionsByReductionPlanId(reductionPlan.getId()).size()).isEqualTo(2);
 		reductionPlan.getExamReductions().clear();
 		repository.saveAndFlush(reductionPlan);
 
 		assertThat(reductionPlan.getExamReductions().size()).isEqualTo(0);
-		assertThat(manager.getExamReductionByReductionPlanId(reductionPlan.getId()).size()).isEqualTo(0);
+		assertThat(manager.getExamReductionsByReductionPlanId(reductionPlan.getId()).size()).isEqualTo(0);
 	}
 
 	@Test
@@ -377,7 +374,7 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 		MedicalReductionRepository.saveAndFlush(medicalReduction);
 		reductionPlan.getMedicalReductions().add(medicalReduction);
 
-		List<MedicalReduction> existingMedicalReductionList = manager.getMedicalReductionByReductionPlanId(reductionPlan.getId());
+		List<MedicalReduction> existingMedicalReductionList = manager.getMedicalReductionsByReductionPlanId(reductionPlan.getId());
 		assertThat(existingMedicalReductionList.size()).isEqualTo(2);
 	}
 
@@ -399,9 +396,9 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 		MedicalReduction medicalReduction = generate.generateMedicalReductionFixture(testMedical, reductionPlan);
 		MedicalReductionRepository.saveAndFlush(medicalReduction);
 
-		assertThat(manager.getMedicalReductionByReductionPlanId(reductionPlan.getId()).size()).isEqualTo(2);
+		assertThat(manager.getMedicalReductionsByReductionPlanId(reductionPlan.getId()).size()).isEqualTo(2);
 		manager.deleteMedicalReduction(medicalReduction);
-		assertThat(manager.getMedicalReductionByReductionPlanId(reductionPlan.getId()).size()).isEqualTo(1);
+		assertThat(manager.getMedicalReductionsByReductionPlanId(reductionPlan.getId()).size()).isEqualTo(1);
 	}
 
 	@Test
@@ -423,12 +420,12 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 		MedicalReductionRepository.saveAndFlush(medicalReduction);
 		reductionPlan.getMedicalReductions().add(medicalReduction);
 
-		assertThat(manager.getMedicalReductionByReductionPlanId(reductionPlan.getId()).size()).isEqualTo(2);
+		assertThat(manager.getMedicalReductionsByReductionPlanId(reductionPlan.getId()).size()).isEqualTo(2);
 		reductionPlan.getMedicalReductions().clear();
 		repository.saveAndFlush(reductionPlan);
 
 		assertThat(reductionPlan.getMedicalReductions().size()).isEqualTo(0);
-		assertThat(manager.getMedicalReductionByReductionPlanId(reductionPlan.getId()).size()).isEqualTo(0);
+		assertThat(manager.getMedicalReductionsByReductionPlanId(reductionPlan.getId()).size()).isEqualTo(0);
 	}
 
 	@Test
@@ -450,7 +447,7 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 		OperationReductionRepository.saveAndFlush(operationReduction);
 		reductionPlan.getOperationReductions().add(operationReduction);
 
-		List<OperationReduction> existingOperationReductionList = manager.getOperationReductionByReductionPlanId(reductionPlan.getId());
+		List<OperationReduction> existingOperationReductionList = manager.getOperationReductionsByReductionPlanId(reductionPlan.getId());
 		assertThat(existingOperationReductionList.size()).isEqualTo(2);
 	}
 
@@ -472,9 +469,9 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 		OperationReduction operationReduction = generate.generateOperationReductionFixture(testOperation, reductionPlan);
 		OperationReductionRepository.saveAndFlush(operationReduction);
 
-		assertThat(manager.getOperationReductionByReductionPlanId(reductionPlan.getId()).size()).isEqualTo(2);
+		assertThat(manager.getOperationReductionsByReductionPlanId(reductionPlan.getId()).size()).isEqualTo(2);
 		manager.deleteOperationReduction(operationReduction);
-		assertThat(manager.getOperationReductionByReductionPlanId(reductionPlan.getId()).size()).isEqualTo(1);
+		assertThat(manager.getOperationReductionsByReductionPlanId(reductionPlan.getId()).size()).isEqualTo(1);
 	}
 
 	@Test
@@ -497,12 +494,12 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 
 		reductionPlan.getOperationReductions().add(operationReduction);
 
-		assertThat(manager.getOperationReductionByReductionPlanId(reductionPlan.getId()).size()).isEqualTo(2);
+		assertThat(manager.getOperationReductionsByReductionPlanId(reductionPlan.getId()).size()).isEqualTo(2);
 		assertThat(reductionPlan.getOperationReductions().size()).isEqualTo(2);
 		reductionPlan.getOperationReductions().clear();
 		manager.add(reductionPlan);
 		assertThat(reductionPlan.getOperationReductions().size()).isEqualTo(0);
-		assertThat(manager.getOperationReductionByReductionPlanId(reductionPlan.getId()).size()).isEqualTo(0);
+		assertThat(manager.getOperationReductionsByReductionPlanId(reductionPlan.getId()).size()).isEqualTo(0);
 	}
 
 	@Test
@@ -520,7 +517,7 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 		PricesOtherReductionRepository.saveAndFlush(priceOtherReduction);
 		reductionPlan.getPriceOtherReductions().add(priceOtherReduction);
 
-		List<PriceOtherReduction> existingPriceOtherReductionList = manager.getPriceOtherReductionByReductionPlanId(reductionPlan.getId());
+		List<PriceOtherReduction> existingPriceOtherReductionList = manager.getPriceOtherReductionsByReductionPlanId(reductionPlan.getId());
 		assertThat(existingPriceOtherReductionList.size()).isEqualTo(2);
 	}
 
@@ -538,9 +535,9 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 		PriceOtherReduction priceOtherReduction = generate.generatePriceOtherReductionFixture(testPriceOthers, reductionPlan);
 		PricesOtherReductionRepository.saveAndFlush(priceOtherReduction);
 
-		assertThat(manager.getPriceOtherReductionByReductionPlanId(reductionPlan.getId()).size()).isEqualTo(2);
-		manager.deleteOtherReduction(priceOtherReduction);
-		assertThat(manager.getPriceOtherReductionByReductionPlanId(reductionPlan.getId()).size()).isEqualTo(1);
+		assertThat(manager.getPriceOtherReductionsByReductionPlanId(reductionPlan.getId()).size()).isEqualTo(2);
+		manager.deletePriceOtherReduction(priceOtherReduction);
+		assertThat(manager.getPriceOtherReductionsByReductionPlanId(reductionPlan.getId()).size()).isEqualTo(1);
 	}
 
 	@Test
@@ -559,10 +556,10 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 		reductionPlan.getPriceOtherReductions().add(priceOtherReduction);
 
 		assertThat(reductionPlan.getPriceOtherReductions().size()).isEqualTo(2);
-		assertThat(manager.getPriceOtherReductionByReductionPlanId(reductionPlan.getId()).size()).isEqualTo(2);
+		assertThat(manager.getPriceOtherReductionsByReductionPlanId(reductionPlan.getId()).size()).isEqualTo(2);
 		reductionPlan.getPriceOtherReductions().clear();
 		assertThat(reductionPlan.getPriceOtherReductions().size()).isEqualTo(0);
-		assertThat(manager.getPriceOtherReductionByReductionPlanId(reductionPlan.getId()).size()).isEqualTo(0);
+		assertThat(manager.getPriceOtherReductionsByReductionPlanId(reductionPlan.getId()).size()).isEqualTo(0);
 	}
 
 	public class ReductionPlanDataGenerate {

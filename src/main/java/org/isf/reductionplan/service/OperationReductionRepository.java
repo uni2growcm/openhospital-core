@@ -28,6 +28,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface OperationReductionIoOperationRepository extends JpaRepository<OperationReduction, Integer> {
+public interface OperationReductionRepository extends JpaRepository<OperationReduction, Integer> {
 	List<OperationReduction> findByReductionPlanId(int reductionPlanId);
 }
