@@ -327,7 +327,7 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 
 	@Test
 	@DisplayName("Should delete a list of exam reduction")
-	void testDeleteBulkExamReduction() throws Exception {
+	void testDeleteExamReductions() throws Exception {
 		ReductionPlanDataGenerate generate = new ReductionPlanDataGenerate();
 		List<ReductionPlan> reductionPlans = generate.generateReductionPlanFixtures(1, null);
 		reductionPlans = repository.saveAllAndFlush(reductionPlans);
@@ -403,7 +403,7 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 
 	@Test
 	@DisplayName("Should delete a list of medical reduction")
-	void testDeleteBulkMedicalReduction() throws Exception {
+	void testDeleteMedicalReductions() throws Exception {
 		ReductionPlanDataGenerate generate = new ReductionPlanDataGenerate();
 		List<ReductionPlan> reductionPlans = generate.generateReductionPlanFixtures(1, null);
 		reductionPlans = repository.saveAllAndFlush(reductionPlans);
@@ -476,7 +476,7 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 
 	@Test
 	@DisplayName("Should delete a list of operation reduction")
-	void testDeleteBulkOperationReduction() throws Exception {
+	void testDeleteOperationReductions() throws Exception {
 		ReductionPlanDataGenerate generate = new ReductionPlanDataGenerate();
 		List<ReductionPlan> reductionPlans = generate.generateReductionPlanFixtures(1, null);
 		reductionPlans = repository.saveAllAndFlush(reductionPlans);
@@ -542,7 +542,7 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 
 	@Test
 	@DisplayName("Should delete a list of price other reduction")
-	void testDeleteBulkPricesOtherReduction() throws Exception {
+	void testDeletePriceOtherReductions() throws Exception {
 		ReductionPlanDataGenerate generate = new ReductionPlanDataGenerate();
 		List<ReductionPlan> reductionPlans = generate.generateReductionPlanFixtures(1, null);
 		reductionPlans = repository.saveAllAndFlush(reductionPlans);
