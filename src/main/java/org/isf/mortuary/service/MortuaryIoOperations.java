@@ -23,11 +23,15 @@
 package org.isf.mortuary.service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
+import org.isf.generaldata.MessageBundle;
 import org.isf.mortuary.model.Death;
 import org.isf.utils.db.TranslateOHServiceException;
+import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHServiceException;
+import org.isf.utils.exception.model.OHExceptionMessage;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -60,6 +64,7 @@ public class MortuaryIoOperations {
 	 * @throws OHServiceException if an error occurs during the store operation.
 	 */
 	public Death add(Death death) throws OHServiceException {
+		validatedDeath(death);
 		return mortuaryRepository.save(death);
 	}
 
@@ -70,6 +75,7 @@ public class MortuaryIoOperations {
 	 * @throws OHServiceException
 	 */
 	public Death update(Death death) throws OHServiceException {
+		validatedDeath(death);
 		return mortuaryRepository.save(death);
 	}
 
@@ -79,7 +85,9 @@ public class MortuaryIoOperations {
 	 * @throws OHServiceException
 	 */
 	public void delete(Death death) throws OHServiceException {
-		mortuaryRepository.delete(death);
+		Death bodyCompartmentDeleted = findById(death.getId());
+		bodyCompartmentDeleted.setDeleted(true);
+		mortuaryRepository.save(bodyCompartmentDeleted);
 	}
 
 	/**
@@ -114,21 +122,23 @@ public class MortuaryIoOperations {
 		Pageable pageable
 	) throws OHServiceException {
 		if (isEnter) {
-			return mortuaryRepository.findAllByPatientNameContainsAndWardCodeContainsAndAdmissionDateBetweenAndDeathReasonCodeContains(
+			return mortuaryRepository.findAllByPatientNameContainsAndWardCodeContainsAndAdmissionDateBetweenAndDeathReasonCodeContainsAndDeleted(
 				patientName,
 				wardCode,
 				dateFrom,
 				dateTo,
 				deathReasonCode,
+				false,
 				pageable
 			);
 		}
-		return mortuaryRepository.findAllByPatientNameContainsAndWardCodeContainsAndEstimatedDischargeDateBetweenAndDeathReasonCodeContains(
+		return mortuaryRepository.findAllByPatientNameContainsAndWardCodeContainsAndEstimatedDischargeDateBetweenAndDeathReasonCodeContainsAndDeleted(
 			patientName,
 			wardCode,
 			dateFrom,
 			dateTo,
 			deathReasonCode,
+			false,
 			pageable
 		);
 	}
@@ -152,8 +162,36 @@ public class MortuaryIoOperations {
 		Pageable pageable
 	) throws OHServiceException {
 		if (isEnter) {
-			return mortuaryRepository.findAllByPatientNameContainsAndAdmissionDateBetween(patientName, dateFrom, dateTo, pageable);
+			return mortuaryRepository.findAllByPatientNameContainsAndAdmissionDateBetweenAndDeleted(patientName, dateFrom, dateTo, false,pageable);
 		}
-		return mortuaryRepository.findAllByPatientNameContainsAndEstimatedDischargeDateBetween(patientName, dateFrom, dateTo, pageable);
+		return mortuaryRepository.findAllByPatientNameContainsAndEstimatedDischargeDateBetweenAndDeleted(patientName, dateFrom, dateTo, false,pageable);
+	}
+
+	public Death getMortuaryWithPatientCode(int patientCode) {
+		return mortuaryRepository.findByPatientCode(patientCode);
+	}
+
+	private void validatedDeath(Death death) throws OHDataValidationException {
+		List<OHExceptionMessage> errors = new ArrayList<>();
+		Death deathValidated = getMortuaryWithPatientCode(death.getPatient().getCode());
+
+		if (deathValidated != null && death.getId() == 0) {
+			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuary.thispatientisalreadydeadpleaseselectanotherpatient.msg")));
+		}
+		if (death.getAdmissionDate().isAfter(death.getEstimatedDischargeDate())) {
+			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuary.admissiondatemustbenotlaterthandischargedate.msg")));
+		}
+		if (death.getDate().isAfter(LocalDateTime.now())) {
+			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuary.deathdatemustnotbelaterthantodaydate.msg")));
+		}
+		if (death.getAdmissionDate().isBefore(death.getDate())) {
+			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuary.deathdatemustnotbelaterthanadmissiondate.msg")));
+		}
+		if (death.getAdmissionDate().isAfter(LocalDateTime.now())) {
+			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuary.admissiondatemustbenotlaterthantodaydate.msg")));
+		}
+		if (!errors.isEmpty()) {
+			throw new OHDataValidationException(errors);
+		}
 	}
 }

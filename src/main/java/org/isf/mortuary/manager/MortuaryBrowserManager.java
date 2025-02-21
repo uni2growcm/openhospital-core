@@ -31,6 +31,7 @@ import org.isf.utils.exception.OHServiceException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -104,7 +105,7 @@ public class MortuaryBrowserManager {
 		int page,
 		int size
 	) throws OHServiceException {
-		Pageable pageable = PageRequest.of(page, size);
+		Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdDate"));
 		return mortuaryIoOperations.getMortuariesPageable(
 			patientName,
 			wardCode,
@@ -136,7 +137,7 @@ public class MortuaryBrowserManager {
 		int page,
 		int size
 	) throws OHServiceException {
-		Pageable pageable = PageRequest.of(page, size);
+		Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdDate"));
 		return mortuaryIoOperations.findAllByPatientNameAndDateToDateFromPageable(
 			patientName,
 			dateFrom,

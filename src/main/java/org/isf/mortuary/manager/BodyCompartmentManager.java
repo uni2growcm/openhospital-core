@@ -22,6 +22,8 @@
 
 package org.isf.mortuary.manager;
 
+import java.util.List;
+
 import org.isf.mortuary.model.BodyCompartment;
 import org.isf.mortuary.service.BodyCompartmentIoOperations;
 import org.isf.utils.exception.OHServiceException;
@@ -93,5 +95,9 @@ public class BodyCompartmentManager {
 	public Page<BodyCompartment> getByLabelOrDescriptionPageable(String label, String description ,int page, int size) throws OHServiceException {
 		Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdDate"));
 		return bodyCompartmentIoOperations.getByLabelOrDescriptionPageable(label, description,pageable);
+	}
+
+	public List<BodyCompartment> getBodyCompartments() {
+		return bodyCompartmentIoOperations.getBodyCompartments();
 	}
 }

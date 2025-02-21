@@ -120,6 +120,10 @@ public class BodyCompartmentIoOperations {
 		return existed;
 	}
 
+	public List<BodyCompartment> getBodyCompartments() {
+		return bodyCompartmentRepository.findByDeleted(false);
+	}
+
 	/**
 	 * Verify if the object is valid for CRUD and return a list of errors, if any.
 	 * @param bodyCompartment the {@link BodyCompartment} object to validate.

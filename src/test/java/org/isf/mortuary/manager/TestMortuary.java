@@ -25,6 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDateTime;
 
+import org.isf.mortuary.model.BodyCompartment;
 import org.isf.mortuary.model.Death;
 import org.isf.mortuary.model.DeathReason;
 import org.isf.patient.model.Patient;
@@ -45,36 +46,36 @@ public class TestMortuary {
 	private final String familyName = null;
 	private final String familyPhone = null;
 	private final String familyNest = null;
-	private final String locker = "L-001";
+	private final boolean deleted = false;
 
-	public Death setup(Patient patient, DeathReason deathReason, Ward ward, boolean usingSet) throws OHException {
+	public Death setup(Patient patient, DeathReason deathReason, Ward ward, BodyCompartment locker,boolean usingSet) throws OHException {
 		Death mortuary;
 
 		if (usingSet) {
 			mortuary = new Death();
-			setParameters(patient, deathReason, ward, mortuary);
+			setParameters(patient, deathReason, ward, mortuary, locker);
 		} else {
 			mortuary = new Death(id, place, patient, ward, deathDate, enteredDate,
 				releaseDate, provisionalReleaseDate, deathReason, declaringName, declaringPhone, declaringNest,
-				familyName, familyPhone, familyNest, locker);
+				familyName, familyPhone, familyNest, locker, deleted);
 		}
 		return mortuary;
 	}
 
-	public Death setup(Patient patient, DeathReason deathReason, Ward ward, boolean usingSet, int id) throws OHException {
+	public Death setup(Patient patient, DeathReason deathReason, Ward ward, BodyCompartment locker,boolean usingSet, int id) throws OHException {
 		Death mortuary;
 		if (usingSet) {
 			mortuary = new Death();
-			setParameters(patient, deathReason, ward, mortuary);
+			setParameters(patient, deathReason, ward, mortuary, locker);
 		} else {
 			mortuary = new Death(id, place, patient, ward, deathDate, enteredDate,
 				releaseDate, provisionalReleaseDate, deathReason, declaringName, declaringPhone, declaringNest,
-				familyName, familyPhone, familyNest, locker);
+				familyName, familyPhone, familyNest, locker,deleted);
 		}
 		return mortuary;
 	}
 
-	public void setParameters(Patient patient, DeathReason deathReason, Ward ward, Death mortuary) {
+	public void setParameters(Patient patient, DeathReason deathReason, Ward ward, Death mortuary, BodyCompartment locker) {
 		mortuary.setId(id);
 		mortuary.setWard(ward);
 		mortuary.setPlace(place);

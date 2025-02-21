@@ -30,8 +30,10 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 import org.isf.OHCoreTestCase;
+import org.isf.mortuary.model.BodyCompartment;
 import org.isf.mortuary.model.Death;
 import org.isf.mortuary.model.DeathReason;
+import org.isf.mortuary.service.BodyCompartmentRepository;
 import org.isf.mortuary.service.DeathReasonRepository;
 import org.isf.mortuary.service.MortuaryRepository;
 import org.isf.patient.model.Patient;
@@ -67,6 +69,9 @@ public class MortuaryManagerTest extends OHCoreTestCase {
 	@Autowired
 	private WardIoOperationRepository wardIoOperationRepository;
 
+	@Autowired
+	private BodyCompartmentRepository bodyCompartmentRepository;
+
 	@BeforeAll
 	static void setUpClass() {
 		testMortuary = new TestMortuary();
@@ -86,7 +91,7 @@ public class MortuaryManagerTest extends OHCoreTestCase {
 		LocalDateTime fromDate = LocalDateTime.of(2023, 1, 1, 0, 0, 0);
 		LocalDateTime toDate = LocalDateTime.of(2025, 3, 3, 0, 0, 0);
 
-		Page<Death> deaths = repository.findAllByAdmissionDateBetweenOrEstimatedDischargeDateBetween(fromDate, toDate, fromDate, toDate, PageRequest.of(0, 3));
+		Page<Death> deaths = repository.findAllByAdmissionDateBetweenOrEstimatedDischargeDateBetweenAndDeleted(fromDate, toDate, fromDate, toDate, false,PageRequest.of(0, 3));
 
 		assertThat(deaths.getContent().size()).isEqualTo(3);
 	}
@@ -98,8 +103,8 @@ public class MortuaryManagerTest extends OHCoreTestCase {
 		LocalDateTime fromDate = LocalDateTime.of(2023, 1, 1, 0, 0, 0);
 		LocalDateTime toDate = LocalDateTime.of(2025, 3, 3, 0, 0, 0);
 
-		Page<Death> deaths = repository.findAllByPatientNameContainsAndWardCodeContainsAndEstimatedDischargeDateBetweenAndDeathReasonCodeContains("FirstName 0", "w",
-			fromDate, toDate, "CARD001", PageRequest.of(0, 3));
+		Page<Death> deaths = repository.findAllByPatientNameContainsAndWardCodeContainsAndEstimatedDischargeDateBetweenAndDeathReasonCodeContainsAndDeleted("FirstName 0", "w",
+			fromDate, toDate, "CARD001", false,PageRequest.of(0, 3));
 
 		assertThat(deaths.getContent().size()).isEqualTo(1);
 		assertThat(deaths.getTotalPages()).isEqualTo(1);
@@ -126,10 +131,13 @@ public class MortuaryManagerTest extends OHCoreTestCase {
 	private List<Death> generateDeaths(int size, boolean sameWard, boolean sameDeathReason) throws OHException {
 		Ward ward = testWard.setup(true);
 		DeathReason deathReason = testDeathReason.setup(true);
+		BodyCompartment bodyCompartment = new BodyCompartment("BC001","Body Compartment 1",false);
 		deathReason = deathReasonRepository.save(deathReason);
+		bodyCompartment = bodyCompartmentRepository.save(bodyCompartment);
 
 		String wardCode = "W";
 		DeathReason finalDeathReason = deathReason;
+		BodyCompartment finalBodyCompartment = bodyCompartment;
 		List<Death> deaths = IntStream.range(0, size).mapToObj(i -> {
 			Ward deathWard;
 			DeathReason deathReason1;
@@ -176,7 +184,8 @@ public class MortuaryManagerTest extends OHCoreTestCase {
 				"Family name " + i,
 				"Family phone number" + i,
 				"Family phone number" + i,
-				"Locker number" + i
+				finalBodyCompartment,
+				false
 			);
 		}).toList();
 

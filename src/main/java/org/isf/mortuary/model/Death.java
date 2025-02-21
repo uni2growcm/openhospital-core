@@ -101,8 +101,12 @@ public class Death extends Auditable<String> {
 	@Column(name = "DTH_FAMILY_NID")
 	private String familyNid;
 
-	@Column(name = "DTH_LOCKER_NUMBER")
-	private String lockerNumber;
+	@ManyToOne
+	@JoinColumn(name = "DTH_LOCKER_NUMBER")
+	private BodyCompartment lockerNumber;
+
+	@Column(name = "DTH_DELETED")
+	private boolean deleted;
 
 	public Death() {
 		super();
@@ -110,7 +114,7 @@ public class Death extends Auditable<String> {
 
 	public Death(String place, Patient patient, Ward ward, LocalDateTime date, LocalDateTime admissionDate,
 		LocalDateTime dischargeDate, LocalDateTime estimatedDischargeDate, DeathReason deathReason, String declaringName, String declaringPhone, String declaringNid,
-		String familyName, String familyPhone, String familyNid, String lockerNumber
+		String familyName, String familyPhone, String familyNid, BodyCompartment lockerNumber, boolean deleted
 	) {
 		this.place = place;
 		this.patient = patient;
@@ -127,24 +131,25 @@ public class Death extends Auditable<String> {
 		this.familyPhone = familyPhone;
 		this.familyNid = familyNid;
 		this.lockerNumber = lockerNumber;
+		this.deleted = deleted;
 	}
 
 	public Death(int id, String place, Patient patient, Ward ward, LocalDateTime date, LocalDateTime admissionDate,
 		LocalDateTime dischargeDate, LocalDateTime estimatedDischargeDate, DeathReason deathReason, String declaringName, String declaringPhone, String declaringNid,
-		String familyName, String familyPhone, String familyNid, String lockerNumber
+		String familyName, String familyPhone, String familyNid, BodyCompartment lockerNumber, boolean deleted
 	) {
 		this(place, patient, ward, date, admissionDate,
 			dischargeDate, estimatedDischargeDate, deathReason, declaringName, declaringPhone, declaringNid,
-			familyName, familyPhone, familyNid, lockerNumber
+			familyName, familyPhone, familyNid, lockerNumber, deleted
 		);
 
 		this.setId(id);
 	}
 
-	public String getLockerNumber() {
+	public BodyCompartment getLockerNumber() {
 		return lockerNumber;
 	}
-	public void setLockerNumber(String lockerNumber) {
+	public void setLockerNumber(BodyCompartment lockerNumber) {
 		this.lockerNumber = lockerNumber;
 	}
 	public int getId() {
@@ -237,7 +242,12 @@ public class Death extends Auditable<String> {
 	public void setFamilyNid(String familyNid) {
 		this.familyNid = familyNid;
 	}
-
+	public boolean isDeleted() {
+		return deleted;
+	}
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
+	}
 	@Override
 	public String toString() {
 		return "Mortuary{" +
