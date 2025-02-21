@@ -68,10 +68,6 @@ public class PriceOtherReduction extends Auditable<String> {
 	@Column(name = "OTHR_REDUCTIONRATE")
 	private double reductionRate;
 
-	@NotNull
-	@Column(name = "OTHR_DELETED")
-	private boolean deleted = false;
-
 	@Version
 	@Column(name = "OTHR_LOCK")
 	private int lock;
@@ -124,14 +120,6 @@ public class PriceOtherReduction extends Auditable<String> {
 
 	public void setReductionRate(double reductionRate) {
 		this.reductionRate = reductionRate;
-	}
-
-	public boolean isDeleted() {
-		return deleted;
-	}
-
-	public void setDeleted (boolean deleted) {
-		this.deleted = deleted;
 	}
 
 	public int getLock() {
