@@ -45,7 +45,7 @@ import org.isf.patient.model.PatientProfilePhoto;
 import org.isf.patient.service.PatientIoOperationRepository;
 import org.isf.patient.service.PatientIoOperations;
 import org.isf.reductionplan.model.ReductionPlan;
-import org.isf.reductionplan.service.ReductionplanIoOperationRepository;
+import org.isf.reductionplan.service.ReductionplanRepository;
 import org.isf.utils.exception.OHException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.pagination.PagedResponse;
@@ -69,7 +69,7 @@ class Tests extends OHCoreTestCase {
 	@Autowired
 	PatientBrowserManager patientBrowserManager;
 	@Autowired
-	ReductionplanIoOperationRepository reductionplanIoOperationRepository;
+	ReductionplanRepository reductionplanIoOperationRepository;
 
 	@BeforeAll
 	static void setUpClass() {

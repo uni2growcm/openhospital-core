@@ -22,10 +22,10 @@
 
 package org.isf.reductionplan.manager;
 
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
-import org.isf.generaldata.MessageBundle;
 import org.isf.reductionplan.model.ExamReduction;
 import org.isf.reductionplan.model.MedicalReduction;
 import org.isf.reductionplan.model.OperationReduction;
@@ -36,7 +36,6 @@ import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.model.OHExceptionMessage;
 import org.springframework.stereotype.Component;
-import java.util.ArrayList;
 
 @Component
 public class ReductionPlanManager {
@@ -67,107 +66,108 @@ public class ReductionPlanManager {
 
 	/**
 	 * Validates an ExamReduction to ensure that it's exam is not associated with the exam of a saved ExamReduction.
-	 *
 	 * @param examReduction the ExamReduction to validate
+	 * @param reductionPlan ReductionPlan whose examReductions will be used to check validation
 	 * @param errorMessage the error message to include in the exception if validation fails
 	 * @throws OHServiceException if a duplicate Exam is found in the ReductionPlan
 	 */
-	public void validateExamReduction(ExamReduction examReduction, String errorMessage) throws OHServiceException {
-		boolean valid = getExamReductionByReductionPlanId(examReduction.getReductionPlan().getId())
+	public void validateExamReduction(ExamReduction examReduction, ReductionPlan reductionPlan, String errorMessage) throws OHServiceException {
+		int duplicateCount = (int) Optional.ofNullable(reductionPlan.getExamReductions())
+			.orElse(Collections.emptyList())
 			.stream()
-			.noneMatch(er -> er.getExam().equals(examReduction.getExam())
-				&& !er.equals(examReduction));
-		if (!valid) {
-			throw new OHServiceException(
-				new OHExceptionMessage(MessageBundle.getMessage(errorMessage))
-			);
+			.filter(existing -> existing.getExam().equals(examReduction.getExam()))
+			.count();
+
+		if (duplicateCount >= 2) {
+			throw new OHDataValidationException(new OHExceptionMessage(errorMessage));
 		}
 	}
 
 	/**
 	 * Validates an MedicalReduction to ensure that it's exam is not associated with the exam of a saved MedicalReduction.
-	 *
 	 * @param medicalReduction the MedicalReduction to validate
+	 * @param reductionPlan ReductionPlan whose medicalReductions will be used to check validation
 	 * @param errorMessage the error message to include in the exception if validation fails
 	 * @throws OHServiceException if a duplicate Medical is found in the ReductionPlan
 	 */
-	public void validateMedicalReduction(MedicalReduction medicalReduction, String errorMessage) throws OHServiceException {
-		boolean valid = getMedicalReductionByReductionPlanId(medicalReduction.getReductionPlan().getId())
+	public void validateMedicalReduction(MedicalReduction medicalReduction, ReductionPlan reductionPlan, String errorMessage) throws OHServiceException {
+		int duplicateCount = (int) Optional.ofNullable(reductionPlan.getMedicalReductions())
+			.orElse(Collections.emptyList())
 			.stream()
-			.noneMatch(mr -> mr.getMedical().equals(medicalReduction.getMedical())
-				&& !mr.equals(medicalReduction));
-		if (!valid) {
-			throw new OHServiceException(
-				new OHExceptionMessage(MessageBundle.getMessage(errorMessage))
-			);
+			.filter(existing -> existing.getMedical().equals(medicalReduction.getMedical()))
+			.count();
+
+		if (duplicateCount >= 2) {
+			throw new OHDataValidationException(new OHExceptionMessage(errorMessage));
 		}
 	}
 
 	/**
 	 * Validates an OperationReduction to ensure that it's exam is not associated with the exam of a saved OperationReduction.
 	 * @param operationReduction the OperationReduction to validate
+	 * @param reductionPlan ReductionPlan whose operationReductions will be used to check validation
 	 * @param errorMessage the error message to include in the exception if validation fails
 	 * @throws OHServiceException if a duplicate Operation is found in the ReductionPlan
 	 */
-	public void validateOperationReduction(OperationReduction operationReduction, String errorMessage) throws OHServiceException {
-		boolean valid = getOperationReductionByReductionPlanId(operationReduction.getReductionPlan().getId())
+	public void validateOperationReduction(OperationReduction operationReduction, ReductionPlan reductionPlan, String errorMessage) throws OHServiceException {
+		int duplicateCount = (int) Optional.ofNullable(reductionPlan.getOperationReductions())
+			.orElse(Collections.emptyList())
 			.stream()
-			.noneMatch(or -> or.getOperation().equals(operationReduction.getOperation())
-				&& !or.equals(operationReduction));
-		if (!valid) {
-			throw new OHServiceException(
-				new OHExceptionMessage(MessageBundle.getMessage(errorMessage))
-			);
+			.filter(existing -> existing.getOperation().equals(operationReduction.getOperation()))
+			.count();
+
+		if (duplicateCount >= 2) {
+			throw new OHDataValidationException(new OHExceptionMessage(errorMessage));
 		}
 	}
 
 	/**
 	 * Validates an PriceOtherReduction to ensure that it's exam is not associated with the exam of a saved PriceOtherReduction.
-	 *
 	 * @param priceOtherReduction the PriceOtherReduction to validate
+	 * @param reductionPlan ReductionPlan whose priceOtherReductions will be used to check validation
 	 * @param errorMessage the error message to include in the exception if validation fails
 	 * @throws OHServiceException if a duplicate Operation is found in the ReductionPlan
 	 */
-	public void validatePriceOtherReduction(PriceOtherReduction priceOtherReduction, String errorMessage) throws OHServiceException {
-		boolean valid = getPriceOtherReductionByReductionPlanId(priceOtherReduction.getReductionPlan().getId())
+	public void validatePriceOtherReduction(PriceOtherReduction priceOtherReduction, ReductionPlan reductionPlan, String errorMessage) throws OHServiceException {
+		int duplicateCount = (int) Optional.ofNullable(reductionPlan.getPriceOtherReductions())
+			.orElse(Collections.emptyList())
 			.stream()
-			.noneMatch(pr -> pr.getPricesOthers().equals(priceOtherReduction.getPricesOthers())
-				&& !pr.equals(priceOtherReduction));
-		if (!valid) {
-			throw new OHServiceException(
-				new OHExceptionMessage(MessageBundle.getMessage(errorMessage))
-			);
+			.filter(existing -> existing.getPricesOthers().equals(priceOtherReduction.getPricesOthers()))
+			.count();
+
+		if (duplicateCount >= 2) {
+			throw new OHDataValidationException(new OHExceptionMessage(errorMessage));
 		}
 	}
 
 	/**
-	 * validates reduction Items
+	 * Validates reduction items
 	 * @param reductionPlan the {@link ReductionPlan} to insert
-	 * @throws OHServiceException when failed to save {@link ReductionPlan}
+	 * @throws OHServiceException when validation fails due to a duplicate item
 	 */
-	public void validateItems(ReductionPlan reductionPlan) throws OHServiceException{
+	public void validateItems(ReductionPlan reductionPlan) throws OHServiceException {
 		for (ExamReduction r : reductionPlan.getExamReductions()) {
-			validateExamReduction(r, "Duplicate Exam found for this ReductionPlan");
+			validateExamReduction(r, reductionPlan, "angal.reductionplan.duplicateexamfound.msg");
 			r.setReductionPlan(reductionPlan);
 		}
 
 		for (OperationReduction r : reductionPlan.getOperationReductions()) {
-			validateOperationReduction(r, "Duplicate Operation found for this ReductionPlan");
+			validateOperationReduction(r, reductionPlan, "angal.reductionplan.duplicatemedicalfound.msg");
 			r.setReductionPlan(reductionPlan);
 		}
 
 		for (MedicalReduction r : reductionPlan.getMedicalReductions()) {
-			validateMedicalReduction(r, "Duplicate Medical found for this ReductionPlan");
+			validateMedicalReduction(r, reductionPlan, "angal.reductionplan.duplicateoperationfound.msg ");
 			r.setReductionPlan(reductionPlan);
 		}
 
 		for (PriceOtherReduction r : reductionPlan.getPriceOtherReductions()) {
-			validatePriceOtherReduction(r, "Duplicate PriceOther found for this ReductionPlan");
+			validatePriceOtherReduction(r, reductionPlan, "angal.reductionplan.duplicatepriceotherfound.msg ");
 			r.setReductionPlan(reductionPlan);
 		}
 	}
 
-	 /**
+	/**
 	 * Save a {@link ReductionPlan}
 	 * @param reductionPlan the {@link ReductionPlan} to insert
 	 * @throws OHServiceException when failed to save {@link ReductionPlan}
