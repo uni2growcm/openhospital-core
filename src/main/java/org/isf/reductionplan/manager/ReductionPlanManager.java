@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import org.isf.generaldata.MessageBundle;
 import org.isf.reductionplan.model.ExamReduction;
 import org.isf.reductionplan.model.MedicalReduction;
 import org.isf.reductionplan.model.OperationReduction;
@@ -147,22 +148,22 @@ public class ReductionPlanManager {
 	 */
 	public void validateItems(ReductionPlan reductionPlan) throws OHServiceException {
 		for (ExamReduction r : reductionPlan.getExamReductions()) {
-			validateExamReduction(r, reductionPlan, "angal.reductionplan.duplicateexamfound.msg");
+			validateExamReduction(r, reductionPlan, MessageBundle.getMessage("angal.reductionplan.duplicateexamfound.msg"));
 			r.setReductionPlan(reductionPlan);
 		}
 
 		for (OperationReduction r : reductionPlan.getOperationReductions()) {
-			validateOperationReduction(r, reductionPlan, "angal.reductionplan.duplicatemedicalfound.msg");
+			validateOperationReduction(r, reductionPlan, MessageBundle.getMessage("angal.reductionplan.duplicateoperationfound.msg"));
 			r.setReductionPlan(reductionPlan);
 		}
 
 		for (MedicalReduction r : reductionPlan.getMedicalReductions()) {
-			validateMedicalReduction(r, reductionPlan, "angal.reductionplan.duplicateoperationfound.msg ");
+			validateMedicalReduction(r, reductionPlan, MessageBundle.getMessage("angal.reductionplan.duplicatemedicalfound.msg"));
 			r.setReductionPlan(reductionPlan);
 		}
 
 		for (PriceOtherReduction r : reductionPlan.getPriceOtherReductions()) {
-			validatePriceOtherReduction(r, reductionPlan, "angal.reductionplan.duplicatepriceotherfound.msg ");
+			validatePriceOtherReduction(r, reductionPlan, MessageBundle.getMessage("angal.reductionplan.duplicatepriceotherfound.msg"));
 			r.setReductionPlan(reductionPlan);
 		}
 	}
