@@ -118,4 +118,4 @@ source u2g_update/step_06_add_pregnancycare_menuitem_and_privilege_for_groupmenu
 source u2g_update/step_07_add_reduction_plan_in_table_patient.sql;
 source u2g_update/step_08_create_table_for_reductionplan.sql;
 source u2g_update/step_09_add_bodycompartment_table.sql;
-u2g_update/step_10_reorganize_mortuary_menu.sql
+source u2g_update/step_10_reorganize_mortuary_menu.sql
