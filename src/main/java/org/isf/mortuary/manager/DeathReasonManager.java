@@ -27,6 +27,10 @@ import java.util.List;
 import org.isf.mortuary.model.DeathReason;
 import org.isf.mortuary.service.DeathReasonIoOperations;
 import org.isf.utils.exception.OHServiceException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -51,9 +55,63 @@ public class DeathReasonManager {
 	 * Get a specific {@link DeathReason} by id.
 	 * @param id DeathReason specific id.
 	 * @return {@link DeathReason}.
+	 */
+	public DeathReason getById(int id)  {
+		return deathReasonIoOperations.getById(id);
+	}
+
+	/**
+	 * Store the specified {@link DeathReason}.
+	 * @param deathReason specific DeathReason to store.
+	 * @return {@link DeathReason}.
 	 * @throws OHServiceException
 	 */
-	public DeathReason getById(int id) throws OHServiceException {
-		return deathReasonIoOperations.getById(id);
+	public DeathReason add(DeathReason deathReason) throws OHServiceException {
+		return deathReasonIoOperations.add(deathReason);
+	}
+
+	/**
+	 * Deletes a {@link DeathReason} in the DB.
+	 * @param deathReason - the item to delete
+	 * return true if deletion works and false otherwise
+	 * @throws OHServiceException
+	 */
+	public boolean delete(DeathReason deathReason) throws OHServiceException {
+		return deathReasonIoOperations.delete(deathReason);
+	}
+
+	/**
+	 * Updates the specified {@link DeathReason}.
+	 * @param deathReason - the {@link DeathReason} to update.
+	 * @return deathReason that has been updated.
+	 * @throws OHServiceException if an error occurs during the update.
+	 */
+	public DeathReason update(DeathReason deathReason) throws OHServiceException {
+		return deathReasonIoOperations.update(deathReason);
+	}
+
+	/**
+	 * Checks if the code exist.
+	 * @param code - the {@link DeathReason} code
+	 * @return {@code true} if the code is present in the database, {@code false} otherwise
+	 * @throws OHServiceException
+	 */
+	public boolean isCodePresent(String code) throws OHServiceException {
+		return deathReasonIoOperations.isCodePresent(code);
+	}
+
+	/**
+	 * Returns the page of {@link DeathReason} based on code
+	 *
+	 * @param code - the code, must not be {@literal null}
+	 * @param description - the description, must not be {@literal null}
+	 * @param page current page.
+	 * @param size the size of the page.
+	 * @return the page of {@link DeathReason}
+	 * @throws OHServiceException if {@code code} is {@literal null}
+	 */
+	public Page<DeathReason> getByCodeOrDescriptionPageable(String code, String description ,int page, int size) throws OHServiceException {
+		Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdDate"));
+		return deathReasonIoOperations.getByCodeOrDescriptionPageable(code, description,pageable);
 	}
 }
