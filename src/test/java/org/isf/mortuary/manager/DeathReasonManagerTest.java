@@ -73,21 +73,21 @@ public class DeathReasonManagerTest extends OHCoreTestCase {
 	}
 
 	@Test
-	@DisplayName("Should successfully add a body compartment")
+	@DisplayName("Should successfully add a death reason")
 	void testAdd() throws OHServiceException {
 		DeathReason deathReason = new DeathReason("BC001", "Description", false);
 		DeathReason deathReasonSaved = deathReasonManager.add(deathReason);
-		assertThat(deathReason.getCode()).isEqualTo(deathReasonSaved.getCode());
+		assertThat(deathReason.getTitle()).isEqualTo(deathReasonSaved.getTitle());
 		assertThat(deathReason.getDescription()).isEqualTo(deathReasonSaved.getDescription());
 		assertThat(deathReason.getDeleted()).isEqualTo(deathReasonSaved.getDeleted());
 	}
 
 	@Test
-	@DisplayName("It should be possible to retrieve body compartment pages based on the code or description")
+	@DisplayName("It should be possible to retrieve death reason pages based on the title or description")
 	void testGetByCodeOrDescriptionPageable() throws Exception {
 		List<DeathReason> deathReasons = generateDeathReasons(20);
 
-		Page<DeathReason> deathReason = deathReasonManager.getByCodeOrDescriptionPageable("", "",0, 4);
+		Page<DeathReason> deathReason = deathReasonManager.getByTitleOrDescriptionPageable("",0, 4);
 
 		assertThat(deathReason).isNotNull();
 		assertThat(deathReason.getContent().size()).isEqualTo(4);
@@ -97,7 +97,7 @@ public class DeathReasonManagerTest extends OHCoreTestCase {
 	}
 
 	@Test
-	@DisplayName("Should successfully update a body compartment")
+	@DisplayName("Should successfully update a death reason")
 	void testUpdate() throws OHException, OHServiceException {
 		DeathReason deathReason = testDeathReason.setup(false);
 		assertThatThrownBy(() -> deathReasonManager.update(deathReason))
@@ -109,19 +109,13 @@ public class DeathReasonManagerTest extends OHCoreTestCase {
 	}
 
 	@Test
-	@DisplayName("Should successfully delete a body compartment")
+	@DisplayName("Should successfully delete a death reason")
 	void testDelete() throws OHException, OHServiceException {
-		String code = setupTestDeathReason(false);
-		DeathReason deathReason = deathReasonRepository.findByCodeAndDeleted(code, false);
+		List<DeathReason> deathReasonSaved = generateDeathReasons(1);
+		DeathReason deathReason = deathReasonRepository.findByTitleAndDeleted(deathReasonSaved.get(0).getTitle(), false);
 		assertThat(deathReason).isNotNull();
 		boolean isDeleted = deathReasonManager.delete(deathReason);
 		assertThat(isDeleted).isEqualTo(true);
-	}
-
-	private String setupTestDeathReason(boolean usingSet) throws OHException, OHServiceException {
-		DeathReason deathReason = testDeathReason.setup(usingSet);
-		deathReasonIoOperations.add(deathReason);
-		return deathReason.getCode();
 	}
 
 	private List<DeathReason> generateDeathReasons(int size) {

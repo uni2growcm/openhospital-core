@@ -24,6 +24,7 @@ package org.isf.mortuary.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.isf.generaldata.MessageBundle;
 import org.isf.mortuary.model.DeathReason;
@@ -71,7 +72,10 @@ public class DeathReasonIoOperations {
 	 * @throws OHServiceException
 	 */
 	public DeathReason add(DeathReason deathReason) throws OHServiceException {
-		validate(deathReason);
+		List<OHExceptionMessage> errors = validate(deathReason);
+		if (!errors.isEmpty()) {
+			throw new OHDataValidationException(errors);
+		}
 		return deathReasonRepository.save(deathReason);
 	}
 
@@ -83,9 +87,9 @@ public class DeathReasonIoOperations {
 	 * @throws OHServiceException
 	 */
 	public boolean delete(DeathReason deathReason) throws OHServiceException {
-		DeathReason deathReasonFound = deathReasonRepository.findByCodeAndDeleted(deathReason.getCode(), false);
+		DeathReason deathReasonFound = deathReasonRepository.findByTitleAndDeleted(deathReason.getTitle(), false);
 		if (deathReasonFound == null) {
-			throw new OHServiceException(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuary.deathreason.thisdeathreasondontexist.msg")));
+			throw new OHServiceException(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuary.deathreason.notfound.msg")));
 		}
 		deathReasonFound.setDeleted(true);
 		DeathReason deleted = deathReasonRepository.save(deathReasonFound);
@@ -111,31 +115,26 @@ public class DeathReasonIoOperations {
 	/**
 	 * Returns the page of {@link DeathReason} based on code
 	 *
-	 * @param code - the code, must not be {@literal null}
-	 * @param description - the description, must not be {@literal null}
+	 * @param key - the code, must not be {@literal null}
 	 * @return the page of {@link DeathReason}
 	 * @throws OHServiceException if {@code code} is {@literal null}
 	 */
-	public Page<DeathReason> getByCodeOrDescriptionPageable(String code, String description, Pageable pageable) throws OHServiceException {
-		if (code != null && description != null) {
-			return deathReasonRepository.findByCodeContainsAndDeletedOrDescriptionContainsAndDeleted(code, false,description,false, pageable);
+	public Page<DeathReason> getByTitleOrDescriptionPageable(String key, Pageable pageable) throws OHServiceException {
+		if (key != null) {
+			return deathReasonRepository.findByTitleContainsAndDeletedOrDescriptionContainsAndDeleted(key, false, key,false, pageable);
 		}
-		throw new OHServiceException(new OHExceptionMessage(MessageBundle.getMessage("angal.deathreason.codemostnotbenull.msg")));
+		return deathReasonRepository.findByTitleContainsAndDeletedOrDescriptionContainsAndDeleted("", false,"",false, pageable);
 	}
 
 	/**
-	 * Checks if the code exist.
+	 * Checks if the death reason exist.
 	 *
-	 * @param code - the {@link DeathReason} code
-	 * @return {@code true} if the code is already in use and deleted is false, {@code false} otherwise
+	 * @param deathReason - the {@link DeathReason} code
+	 * @return {@code true} if the death reason is already in exist where deleted is false, {@code false} otherwise
 	 */
-	public boolean isCodePresent(String code) {
-		boolean existed = false;
-		DeathReason deathReason = deathReasonRepository.findByCodeAndDeleted(code, false);
-		if (deathReason != null) {
-			existed = true;
-		}
-		return existed;
+	public boolean exists(DeathReason deathReason) {
+		DeathReason deathReasonFound = deathReasonRepository.findByTitleAndDeleted(deathReason.getTitle(), false);
+		return Objects.equals(deathReasonFound, deathReason);
 	}
 
 	/**
@@ -143,24 +142,22 @@ public class DeathReasonIoOperations {
 	 * @param deathReason the {@link DeathReason} object to validate.
 	 * @throws OHServiceException
 	 */
-	protected void validate(DeathReason deathReason) throws OHServiceException {
+	private List<OHExceptionMessage> validate(DeathReason deathReason) throws OHServiceException {
 		List<OHExceptionMessage> errors = new ArrayList<>();
 		if (deathReason == null) {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.commom.anullentrycannotberegistered.msg")));
-		} else {
-			if (deathReason.getCode() == null) {
-				errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.common.pleaseinsertacode.msg")));
-			} else {
-				if (deathReason.getCode().trim().isEmpty()) {
-					errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.common.pleaseinsertacode.msg")));
-				}
-				if (isCodePresent(deathReason.getCode())) {
-					throw new OHDataIntegrityViolationException(new OHExceptionMessage(MessageBundle.getMessage("angal.common.thecodeisalreadyinuse.msg")));
-				}
-			}
+			return errors;
 		}
-		if (!errors.isEmpty()) {
-			throw new OHDataValidationException(errors);
+		if (deathReason.getTitle() == null) {
+			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.common.pleaseinsertacode.msg")));
+			return errors;
 		}
+		if (deathReason.getTitle().trim().isEmpty()) {
+			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.common.pleaseinsertacode.msg")));
+		}
+		if (exists(deathReason)) {
+			throw new OHDataIntegrityViolationException(new OHExceptionMessage(MessageBundle.getMessage("angal.common.thecodeisalreadyinuse.msg")));
+		}
+		return errors;
 	}
 }

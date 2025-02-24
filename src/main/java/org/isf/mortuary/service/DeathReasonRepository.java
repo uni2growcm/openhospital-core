@@ -37,7 +37,7 @@ public interface DeathReasonRepository extends JpaRepository<DeathReason, Intege
 
 	DeathReason findByIdAndDeleted(int id, boolean deleted);
 
-	Page<DeathReason> findByCodeContainsAndDeletedOrDescriptionContainsAndDeleted(String code, boolean b, String description, boolean b1, Pageable pageable);
+	Page<DeathReason> findByTitleContainsAndDeletedOrDescriptionContainsAndDeleted(String code, boolean b, String description, boolean b1, Pageable pageable);
 
-	DeathReason findByCodeAndDeleted(String code, boolean b);
+	DeathReason findByTitleAndDeleted(String code, boolean b);
 }

@@ -55,8 +55,9 @@ public class DeathReasonManager {
 	 * Get a specific {@link DeathReason} by id.
 	 * @param id DeathReason specific id.
 	 * @return {@link DeathReason}.
+	 * @throws OHServiceException
 	 */
-	public DeathReason getById(int id)  {
+	public DeathReason getById(int id) throws OHServiceException {
 		return deathReasonIoOperations.getById(id);
 	}
 
@@ -91,27 +92,26 @@ public class DeathReasonManager {
 	}
 
 	/**
-	 * Checks if the code exist.
-	 * @param code - the {@link DeathReason} code
-	 * @return {@code true} if the code is present in the database, {@code false} otherwise
+	 * Checks if the death reason exist.
+	 * @param deathReason - the {@link DeathReason} code
+	 * @return {@code true} if the death reason is present in the database, {@code false} otherwise
 	 * @throws OHServiceException
 	 */
-	public boolean isCodePresent(String code) throws OHServiceException {
-		return deathReasonIoOperations.isCodePresent(code);
+	public boolean exists(DeathReason deathReason) {
+		return deathReasonIoOperations.exists(deathReason);
 	}
 
 	/**
 	 * Returns the page of {@link DeathReason} based on code
 	 *
-	 * @param code - the code, must not be {@literal null}
-	 * @param description - the description, must not be {@literal null}
+	 * @param key - the code, must not be {@literal null}
 	 * @param page current page.
 	 * @param size the size of the page.
 	 * @return the page of {@link DeathReason}
 	 * @throws OHServiceException if {@code code} is {@literal null}
 	 */
-	public Page<DeathReason> getByCodeOrDescriptionPageable(String code, String description ,int page, int size) throws OHServiceException {
+	public Page<DeathReason> getByTitleOrDescriptionPageable(String key,int page, int size) throws OHServiceException {
 		Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdDate"));
-		return deathReasonIoOperations.getByCodeOrDescriptionPageable(code, description,pageable);
+		return deathReasonIoOperations.getByTitleOrDescriptionPageable(key,pageable);
 	}
 }

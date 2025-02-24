@@ -49,8 +49,8 @@ public class DeathReason extends Auditable<String> {
 	@Column(name = "DTHR_ID")
 	private int id;
 
-	@Column(name = "DTHR_CODE")
-	private String code;
+	@Column(name = "DTHR_TITLE")
+	private String title;
 
 	@Column(name = "DTHR_DESC")
 	private String description;
@@ -61,17 +61,17 @@ public class DeathReason extends Auditable<String> {
 	public DeathReason() {
 	}
 
-	public DeathReason(String code, String description, boolean deleted) {
+	public DeathReason(String title, String description, boolean deleted) {
 		super();
-		this.code = code;
+		this.title = title;
 		this.description = description;
 		this.deleted = deleted;
 	}
 
-	public DeathReason(int id, String code, String description, boolean deleted) {
+	public DeathReason(int id, String title, String description, boolean deleted) {
 		super();
 		this.id = id;
-		this.code = code;
+		this.title = title;
 		this.description = description;
 		this.deleted = deleted;
 	}
@@ -82,11 +82,11 @@ public class DeathReason extends Auditable<String> {
 	public void setId(int id) {
 		this.id = id;
 	}
-	public String getCode() {
-		return code;
+	public String getTitle() {
+		return title;
 	}
-	public void setCode(String code) {
-		this.code = code;
+	public void setTitle(String title) {
+		this.title = title;
 	}
 	public String getDescription() {
 		return description;
@@ -103,6 +103,6 @@ public class DeathReason extends Auditable<String> {
 
 	@Override
 	public String toString() {
-		return description;
+		return title;
 	}
 }
