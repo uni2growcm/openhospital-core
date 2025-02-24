@@ -28,7 +28,6 @@ import java.util.Objects;
 
 import org.isf.generaldata.MessageBundle;
 import org.isf.mortuary.model.DeathReason;
-import org.isf.utils.exception.OHDataIntegrityViolationException;
 import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.model.OHExceptionMessage;
@@ -50,7 +49,7 @@ public class DeathReasonIoOperations {
 	/**
 	 * Get all the {@link DeathReason}s.
 	 * @return all the {@link DeathReason}s.
-	 * @throws OHServiceException
+	 * @throws OHServiceException If an error occurs during recovery
 	 */
 	public List<DeathReason> getAll() throws OHServiceException {
 		return deathReasonRepository.findByDeleted(false);
@@ -60,8 +59,9 @@ public class DeathReasonIoOperations {
 	 * Get a specific {@link DeathReason} by id.
 	 * @param id DeathReason specific id.
 	 * @return {@link DeathReason}.
+	 * @throws OHServiceException if the search element does not exist in the DB
 	 */
-	public DeathReason getById(int id) {
+	public DeathReason getById(int id) throws OHServiceException {
 		return deathReasonRepository.findByIdAndDeleted(id, false);
 	}
 
@@ -69,7 +69,7 @@ public class DeathReasonIoOperations {
 	 * Store the specified {@link DeathReason}.
 	 * @param deathReason specific DeathReason to store.
 	 * @return {@link DeathReason}.
-	 * @throws OHServiceException
+	 * @throws OHServiceException If a validation error is detected
 	 */
 	public DeathReason add(DeathReason deathReason) throws OHServiceException {
 		List<OHExceptionMessage> errors = validate(deathReason);
@@ -84,7 +84,7 @@ public class DeathReasonIoOperations {
 	 *
 	 * @param deathReason - the item to delete
 	 * return true if deletion works and false otherwise
-	 * @throws OHServiceException
+	 * @throws OHServiceException When data could not be deleted
 	 */
 	public boolean delete(DeathReason deathReason) throws OHServiceException {
 		DeathReason deathReasonFound = deathReasonRepository.findByTitleAndDeleted(deathReason.getTitle(), false);
@@ -140,9 +140,8 @@ public class DeathReasonIoOperations {
 	/**
 	 * Verify if the object is valid for CRUD and return a list of errors, if any.
 	 * @param deathReason the {@link DeathReason} object to validate.
-	 * @throws OHServiceException
 	 */
-	private List<OHExceptionMessage> validate(DeathReason deathReason) throws OHServiceException {
+	private List<OHExceptionMessage> validate(DeathReason deathReason) {
 		List<OHExceptionMessage> errors = new ArrayList<>();
 		if (deathReason == null) {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.commom.anullentrycannotberegistered.msg")));
@@ -155,9 +154,7 @@ public class DeathReasonIoOperations {
 		if (deathReason.getTitle().trim().isEmpty()) {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.common.pleaseinsertacode.msg")));
 		}
-		if (exists(deathReason)) {
-			throw new OHDataIntegrityViolationException(new OHExceptionMessage(MessageBundle.getMessage("angal.common.thecodeisalreadyinuse.msg")));
-		}
+
 		return errors;
 	}
 }

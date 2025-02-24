@@ -55,7 +55,7 @@ public class DeathReasonManager {
 	 * Get a specific {@link DeathReason} by id.
 	 * @param id DeathReason specific id.
 	 * @return {@link DeathReason}.
-	 * @throws OHServiceException
+	 * @throws OHServiceException if the search element does not exist in the DB
 	 */
 	public DeathReason getById(int id) throws OHServiceException {
 		return deathReasonIoOperations.getById(id);
@@ -65,7 +65,7 @@ public class DeathReasonManager {
 	 * Store the specified {@link DeathReason}.
 	 * @param deathReason specific DeathReason to store.
 	 * @return {@link DeathReason}.
-	 * @throws OHServiceException
+	 * @throws OHServiceException If a validation error is detected
 	 */
 	public DeathReason add(DeathReason deathReason) throws OHServiceException {
 		return deathReasonIoOperations.add(deathReason);
@@ -75,7 +75,7 @@ public class DeathReasonManager {
 	 * Deletes a {@link DeathReason} in the DB.
 	 * @param deathReason - the item to delete
 	 * return true if deletion works and false otherwise
-	 * @throws OHServiceException
+	 * @throws OHServiceException When data could not be deleted
 	 */
 	public boolean delete(DeathReason deathReason) throws OHServiceException {
 		return deathReasonIoOperations.delete(deathReason);
@@ -95,7 +95,6 @@ public class DeathReasonManager {
 	 * Checks if the death reason exist.
 	 * @param deathReason - the {@link DeathReason} code
 	 * @return {@code true} if the death reason is present in the database, {@code false} otherwise
-	 * @throws OHServiceException
 	 */
 	public boolean exists(DeathReason deathReason) {
 		return deathReasonIoOperations.exists(deathReason);
