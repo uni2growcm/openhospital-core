@@ -22,15 +22,25 @@
 
 package org.isf.reductionplan.service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.isf.exa.model.Exam;
+import org.isf.medicals.model.Medical;
+import org.isf.operation.model.Operation;
+import org.isf.pricesothers.model.PricesOthers;
 import org.isf.reductionplan.model.ExamReduction;
 import org.isf.reductionplan.model.MedicalReduction;
 import org.isf.reductionplan.model.OperationReduction;
 import org.isf.reductionplan.model.PriceOtherReduction;
 import org.isf.reductionplan.model.ReductionPlan;
 import org.isf.utils.db.TranslateOHServiceException;
+import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHServiceException;
+import org.isf.utils.exception.model.OHExceptionMessage;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,24 +49,24 @@ import org.springframework.transaction.annotation.Transactional;
 @TranslateOHServiceException
 public class ReductionPlanIoOperations {
 
-	private final ReductionplanRepository ReductionplanRepository;
-	private final ExamReductionRepository ExamReductionRepository;
-	private final MedicalReductionRepository MedicalReductionRepository;
-	private final OperationReductionRepository OperationReductionRepository;
-	private final PriceOtherReductionRepository PriceOtherReductionRepository;
+	private final ReductionPlanRepository reductionPlanRepository;
+	private final ExamReductionRepository examReductionRepository;
+	private final MedicalReductionRepository medicalReductionRepository;
+	private final OperationReductionRepository operationReductionRepository;
+	private final PriceOtherReductionRepository priceOtherReductionRepository;
 
 	public ReductionPlanIoOperations(
-		ReductionplanRepository reductionplanIoOperationRepository,
+		ReductionPlanRepository reductionPlanIoOperationRepository,
 		ExamReductionRepository examReductionIoOperationsRepository,
 		MedicalReductionRepository medicalReductionIoOperationRepository,
 		OperationReductionRepository operationReductionIoOperationRepository,
 		PriceOtherReductionRepository priceOtherReductionIoOperationRepository
 	) {
-		this.ReductionplanRepository = reductionplanIoOperationRepository;
-		this.ExamReductionRepository = examReductionIoOperationsRepository;
-		this.MedicalReductionRepository = medicalReductionIoOperationRepository;
-		this.OperationReductionRepository = operationReductionIoOperationRepository;
-		this.PriceOtherReductionRepository = priceOtherReductionIoOperationRepository;
+		this.reductionPlanRepository = reductionPlanIoOperationRepository;
+		this.examReductionRepository = examReductionIoOperationsRepository;
+		this.medicalReductionRepository = medicalReductionIoOperationRepository;
+		this.operationReductionRepository = operationReductionIoOperationRepository;
+		this.priceOtherReductionRepository = priceOtherReductionIoOperationRepository;
 	}
 
 	/**
@@ -65,25 +75,97 @@ public class ReductionPlanIoOperations {
 	 * @throws OHServiceException When failed to get all reduction plans
 	 */
 	public List<ReductionPlan> getAll() throws OHServiceException {
-		return ReductionplanRepository.findByDeleted(false);
+		return reductionPlanRepository.findByDeleted(false);
 	}
 
 	/**
-	 * Get not deleted reduction plans
-	 * @return The list of {@link ReductionPlan}s not deleted
-	 * @throws OHServiceException when failed to get not deleted {@link ReductionPlan}s
+	 * Get a {@link ReductionPlan} by ID
+	 * @param id {@link ReductionPlan}'s ID
+	 * @return a {@link ReductionPlan}
+	 * @throws OHServiceException When failed to get  reduction plans by description
 	 */
-	public List<ReductionPlan> getNotDeleted() throws OHServiceException {
-		return ReductionplanRepository.findByDeleted(false);
+	public ReductionPlan getById(int id) throws OHServiceException {
+		return reductionPlanRepository.findByIdAndDeleted(id, false);
 	}
 
 	/**
 	 * Get reduction plans by description
+	 * @param description {@link ReductionPlan}'s description to be used
 	 * @return The list of {@link ReductionPlan}s
 	 * @throws OHServiceException When failed to get  reduction plans by description
 	 */
-	public List<ReductionPlan> getByDescription(String description, boolean deleted) throws OHServiceException {
-		return ReductionplanRepository.findByDescriptionAndDeleted(description, deleted);
+	public List<ReductionPlan> getByDescription(String description) throws OHServiceException {
+		return reductionPlanRepository.findByDescriptionAndDeleted(description, false);
+	}
+
+	/**
+	 * Validates a {@link ReductionPlan} making sure no items properties are duplicated
+	 * @param reductionPlan the {@link ReductionPlan} to add
+	 */
+	public List<OHDataValidationException> validateReductionPlan(ReductionPlan reductionPlan) {
+		List<OHDataValidationException> errors = new ArrayList<>();
+
+		if (reductionPlan.getExamReductions() != null && !reductionPlan.getExamReductions().isEmpty()) {
+			Set<Exam> duplicates = reductionPlan.getExamReductions().stream()
+				.collect(Collectors.groupingBy(ExamReduction::getExam, Collectors.counting()))
+				.entrySet().stream()
+				.filter(entry -> entry.getValue() > 1)
+				.map(Map.Entry::getKey)
+				.collect(Collectors.toSet());
+
+			if (!duplicates.isEmpty()) {
+				errors.add(
+					new OHDataValidationException(new OHExceptionMessage("angal.reductionplan.duplicateexamfound.msg")
+				));
+			}
+		}
+
+		if (reductionPlan.getOperationReductions() != null && !reductionPlan.getOperationReductions().isEmpty()) {
+			Set<Medical> duplicates = reductionPlan.getMedicalReductions().stream()
+				.collect(Collectors.groupingBy(MedicalReduction::getMedical, Collectors.counting()))
+				.entrySet().stream()
+				.filter(entry -> entry.getValue() > 1)
+				.map(Map.Entry::getKey)
+				.collect(Collectors.toSet());
+
+			if (!duplicates.isEmpty()) {
+				errors.add(
+					new OHDataValidationException(new OHExceptionMessage("angal.reductionplan.duplicatemedicalfound.msg"))
+				);
+			}
+		}
+
+		if (reductionPlan.getMedicalReductions() != null && !reductionPlan.getMedicalReductions().isEmpty()) {
+			Set<Operation> duplicates = reductionPlan.getOperationReductions().stream()
+				.collect(Collectors.groupingBy(OperationReduction::getOperation, Collectors.counting()))
+				.entrySet().stream()
+				.filter(entry -> entry.getValue() > 1)
+				.map(Map.Entry::getKey)
+				.collect(Collectors.toSet());
+
+			if (!duplicates.isEmpty()) {
+				errors.add(
+					new OHDataValidationException(new OHExceptionMessage("angal.reductionplan.duplicateoperationfound.msg"))
+				);
+			}
+		}
+
+		if (reductionPlan.getExamReductions() != null && !reductionPlan.getExamReductions().isEmpty()) {
+			Set<PricesOthers> duplicates = reductionPlan.getPriceOtherReductions().stream()
+				.collect(Collectors.groupingBy(PriceOtherReduction::getPricesOthers, Collectors.counting()))
+				.entrySet().stream()
+				.filter(entry -> entry.getValue() > 1)
+				.map(Map.Entry::getKey)
+				.collect(Collectors.toSet());
+
+			if (!duplicates.isEmpty()) {
+				errors.add(
+					new OHDataValidationException(new OHExceptionMessage("angal.reductionplan.duplicatepriceotherfound.msg"))
+				);
+			}
+		}
+
+		return errors;
 	}
 
 	/**
@@ -91,8 +173,17 @@ public class ReductionPlanIoOperations {
 	 * @param reductionPlan the {@link ReductionPlan} to insert
 	 * @throws OHServiceException when failed to save {@link ReductionPlan}
 	 */
-	public void add(ReductionPlan reductionPlan) throws OHServiceException {
-		ReductionplanRepository.save(reductionPlan);
+	public void add(ReductionPlan reductionPlan) throws OHServiceException{
+		List<OHDataValidationException> errors = validateReductionPlan(reductionPlan);
+
+		if (!errors.isEmpty()) {
+			String combinedMessage = errors.stream()
+				.flatMap(e -> e.getMessages().stream().map(OHExceptionMessage::getMessage))
+				.collect(Collectors.joining("; "));
+			throw new OHDataValidationException(new OHExceptionMessage(combinedMessage));
+		}
+
+		reductionPlanRepository.save(reductionPlan);
 	}
 
 	/**
@@ -101,9 +192,9 @@ public class ReductionPlanIoOperations {
 	 * @throws OHServiceException when failed to delete {@link ReductionPlan}
 	 */
 	public void delete(ReductionPlan reductionPlan) throws OHServiceException {
-		reductionPlan = ReductionplanRepository.findByIdAndDeleted(reductionPlan.getId(), false);
+		reductionPlan = reductionPlanRepository.findByIdAndDeleted(reductionPlan.getId(), false);
 		reductionPlan.setDeleted(true);
-		ReductionplanRepository.save(reductionPlan);
+		reductionPlanRepository.save(reductionPlan);
 	}
 
 	/**
@@ -113,25 +204,7 @@ public class ReductionPlanIoOperations {
 	 * @throws OHServiceException if the error happened during the get process
 	 */
 	public List<ExamReduction> getExamReductionsByReductionPlanId(int reductionPlanId) throws OHServiceException {
-		return ExamReductionRepository.findByReductionPlanId(reductionPlanId);
-	}
-
-	/**
-	 * delete an {@link ExamReduction}
-	 * @param examReduction the {@link ExamReduction} to delete
-	 * @throws OHServiceException if the error happened during the delete process
-	 */
-	public void deleteExamReduction(ExamReduction examReduction) throws OHServiceException {
-		ExamReductionRepository.deleteById(examReduction.getId());
-	}
-
-	/**
-	 * delete list of {@link ExamReduction}
-	 * @param examReductionList the list of {@link ExamReduction} to delete
-	 * @throws OHServiceException if the error happen during the delete process
-	 */
-	public void deleteExamReductions(List<ExamReduction> examReductionList) throws OHServiceException {
-		ExamReductionRepository.deleteAll(examReductionList);
+		return examReductionRepository.findByReductionPlanId(reductionPlanId);
 	}
 
 	/**
@@ -141,25 +214,7 @@ public class ReductionPlanIoOperations {
 	 * @throws OHServiceException if an error happened during the get process
 	 */
 	public List<MedicalReduction> getMedicalReductionsByReductionPlanId(int reductionPlanId) throws OHServiceException {
-		return MedicalReductionRepository.findByReductionPlanId(reductionPlanId);
-	}
-
-	/**
-	 * delete a {@link MedicalReduction}
-	 * @param medicalReduction the {@link MedicalReduction} to delete
-	 * @throws OHServiceException if an error happened during the delete process
-	 */
-	public void deleteMedicalReduction(MedicalReduction medicalReduction) throws OHServiceException {
-		MedicalReductionRepository.deleteById(medicalReduction.getId());
-	}
-
-	/**
-	 * delete a list of {@link MedicalReduction}
-	 * @param medicalReductionList the list of {@link MedicalReduction} to delete
-	 * @throws OHServiceException if an error happened during the delete process
-	 */
-	public void deleteMedicalReductions(List<MedicalReduction> medicalReductionList) throws OHServiceException {
-		MedicalReductionRepository.deleteAll(medicalReductionList);
+		return medicalReductionRepository.findByReductionPlanId(reductionPlanId);
 	}
 
 	/**
@@ -169,25 +224,7 @@ public class ReductionPlanIoOperations {
 	 * @throws OHServiceException if an error happened during the get process
 	 */
 	public List<OperationReduction> getOperationReductionsByReductionPlanId(int reductionPlanId) throws OHServiceException {
-		return OperationReductionRepository.findByReductionPlanId(reductionPlanId);
-	}
-
-	/**
-	 * Delete an {@link OperationReduction}
-	 * @param operationReduction the {@link OperationReduction} to delete
-	 * @throws OHServiceException if an error happened during the delete process
-	 */
-	public void deleteOperationReduction(OperationReduction operationReduction) throws OHServiceException {
-		OperationReductionRepository.deleteById(operationReduction.getId());
-	}
-
-	/**
-	 * Delete a list of {@link OperationReduction}
-	 * @param operationReductionList the list of {@link OperationReduction} to delete
-	 * @throws OHServiceException if an error happened during the delete process
-	 */
-	public void deleteOperationReductions(List<OperationReduction> operationReductionList) throws OHServiceException {
-		OperationReductionRepository.deleteAll(operationReductionList);
+		return operationReductionRepository.findByReductionPlanId(reductionPlanId);
 	}
 
 	/**
@@ -197,24 +234,6 @@ public class ReductionPlanIoOperations {
 	 * @throws OHServiceException if an error happened during the get process
 	 */
 	public List<PriceOtherReduction> getPriceOtherReductionsByReductionPlanId(int reductionPlanId) throws OHServiceException {
-		return PriceOtherReductionRepository.findByReductionPlanId(reductionPlanId);
-	}
-
-	/**
-	 * Delete a {@link PriceOtherReduction}
-	 * @param priceOtherReduction the {@link PriceOtherReduction} to delete
-	 * @throws OHServiceException if an error happened during the delete process
-	 */
-	public void deletePriceOtherReduction(PriceOtherReduction priceOtherReduction) throws OHServiceException {
-		 PriceOtherReductionRepository.deleteById(priceOtherReduction.getId());
-	}
-
-	/**
-	 * Delete a list {@link PriceOtherReduction}
-	 * @param priceOtherReductionList the list of {@link PriceOtherReduction} to delete
-	 * @throws OHServiceException if an error happened during the delete process
-	 */
-	public void deletePriceOtherReductions(List<PriceOtherReduction> priceOtherReductionList) throws OHServiceException{
-		PriceOtherReductionRepository.deleteAll(priceOtherReductionList);
+		return priceOtherReductionRepository.findByReductionPlanId(reductionPlanId);
 	}
 }

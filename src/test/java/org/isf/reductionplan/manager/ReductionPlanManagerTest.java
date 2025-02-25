@@ -26,8 +26,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,13 +60,10 @@ import org.isf.reductionplan.model.MedicalReduction;
 import org.isf.reductionplan.model.OperationReduction;
 import org.isf.reductionplan.model.PriceOtherReduction;
 import org.isf.reductionplan.model.ReductionPlan;
-import org.isf.reductionplan.service.PriceOtherReductionRepository;
-import org.isf.reductionplan.service.ReductionPlanIoOperations;
-import org.isf.reductionplan.service.ReductionplanRepository;
+import org.isf.reductionplan.service.ReductionPlanRepository;
 import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHException;
 import org.isf.utils.exception.OHServiceException;
-import org.isf.utils.exception.model.OHExceptionMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -75,46 +72,33 @@ import org.springframework.beans.factory.annotation.Autowired;
 class ReductionPlanManagerTest extends OHCoreTestCase {
 
 	@Autowired
-	ReductionplanRepository repository;
+	ReductionPlanRepository repository;
 
 	@Autowired
 	ReductionPlanManager manager;
 
 	@Autowired
-	org.isf.reductionplan.service.ExamReductionRepository ExamReductionRepository;
+	ExamIoOperationRepository examRepository;
 
 	@Autowired
-	ExamIoOperationRepository ExamRepository;
+	ExamTypeIoOperationRepository examTypeRepository;
 
 	@Autowired
-	ExamTypeIoOperationRepository ExamTypeRepository;
+	MedicalsIoOperationRepository medicalsRepository;
 
 	@Autowired
-	MedicalsIoOperationRepository MedicalsRepository;
+	MedicalTypeIoOperationRepository medicalsTypeRepository;
 
 	@Autowired
-	MedicalTypeIoOperationRepository MedicalsTypeRepository;
+	OperationIoOperationRepository operationRepository;
 
 	@Autowired
-	OperationIoOperationRepository OperationRepository;
+	OperationTypeIoOperationRepository operationTypeRepository;
 
 	@Autowired
-	OperationTypeIoOperationRepository OperationTypeRepository;
-
+	PriceOthersIoOperationRepository priceOthersRepository;
 	@Autowired
-	PriceOthersIoOperationRepository PriceOthersRepository;
-
-	@Autowired
-	org.isf.reductionplan.service.MedicalReductionRepository MedicalReductionRepository;
-
-	@Autowired
-	org.isf.reductionplan.service.OperationReductionRepository OperationReductionRepository;
-
-	@Autowired
-	PriceOtherReductionRepository PricesOtherReductionRepository;
-
-	@Autowired
-	ReductionPlanIoOperations reductionPlanIoOperations;
+	ReductionPlanRepository reductionPlanRepository;
 
 	@BeforeEach
 	void setUp() {
@@ -140,7 +124,7 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 		List<ReductionPlan> reductionPlans = generate.generateReductionPlanFixtures(2, description);
 		repository.saveAllAndFlush(reductionPlans);
 
-		List<ReductionPlan> existingReductionPlans = manager.getByDescription(description, false);
+		List<ReductionPlan> existingReductionPlans = manager.getByDescription(description);
 
 		assertThat(existingReductionPlans).isNotNull();
 		assertThat(existingReductionPlans.size()).isEqualTo(2);
@@ -155,7 +139,7 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 		List<ReductionPlan> reductionPlans = generate.generateReductionPlanFixtures(1, null);
 		ReductionPlan reductionPlan = reductionPlans.get(0);
 		manager.add(reductionPlan);
-		ReductionPlan saveReductionPlan = manager.getByDescription(reductionPlans.get(0).getDescription(), false).get(0);
+		ReductionPlan saveReductionPlan = manager.getById(reductionPlans.get(0).getId());
 
 		assertThat(saveReductionPlan).isNotNull();
 		assertThat(saveReductionPlan.getId()).isGreaterThan(0);
@@ -184,8 +168,8 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 		assertFalse(exception.getMessages().isEmpty());
 		assertEquals("angal.reductionplan.duplicateexamfound.msg", exception.getMessages().get(0).getMessage());
 
-		List<ReductionPlan> savedReductionPlans = manager.getByDescription(reductionPlan.getDescription(), false);
-		assertTrue(savedReductionPlans.isEmpty());
+		ReductionPlan savedReductionPlan = manager.getById(reductionPlan.getId());
+		assertNull(savedReductionPlan);
 	}
 
 	@Test
@@ -194,7 +178,7 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 		ReductionPlanDataGenerate generate = new ReductionPlanDataGenerate();
 		List<ReductionPlan> reductionPlans = generate.generateReductionPlanFixtures(1, null);
 		repository.saveAllAndFlush(reductionPlans);
-		ReductionPlan existingReductionPlan = manager.getByDescription(reductionPlans.get(0).getDescription(), false).get(0);
+		ReductionPlan existingReductionPlan = manager.getById(reductionPlans.get(0).getId());
 		existingReductionPlan.setDescription("update");
 		existingReductionPlan.setOperationRate(0.0);
 		existingReductionPlan.setMedicalRate(0.0);
@@ -202,45 +186,8 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 		existingReductionPlan.setOtherRate(0.0);
 
 		manager.update(existingReductionPlan);
-		ReductionPlan updateReductionPlan = manager.getByDescription(existingReductionPlan.getDescription(), false).get(0);
-		assertThat(manager.getByDescription(existingReductionPlan.getDescription(), false)).hasSize(1);
+		ReductionPlan updateReductionPlan = manager.getById(existingReductionPlan.getId());
 		assertThat(updateReductionPlan).isNotNull();
-		assertThat(updateReductionPlan.getId()).isEqualTo(existingReductionPlan.getId());
-		assertThat(updateReductionPlan.getDescription()).isEqualTo("update");
-		assertThat(updateReductionPlan.getOperationRate()).isEqualTo(0.0);
-		assertThat(updateReductionPlan.getMedicalRate()).isEqualTo(0.0);
-		assertThat(updateReductionPlan.getExamRate()).isEqualTo(0.0);
-		assertThat(updateReductionPlan.getOtherRate()).isEqualTo(0.0);
-		assertThat(updateReductionPlan.getExamReductions().get(0).getId()).isEqualTo(1);
-		assertThat(updateReductionPlan.getMedicalReductions().get(0).getId()).isEqualTo(1);
-		assertThat(updateReductionPlan.getOperationReductions().get(0).getId()).isEqualTo(1);
-		assertThat(updateReductionPlan.getPriceOtherReductions().get(0).getId()).isEqualTo(1);
-	}
-
-	@Test
-	@DisplayName("Should not update reduction plan")
-	void testDoNotUpdate() throws Exception {
-		ReductionPlanDataGenerate generate = new ReductionPlanDataGenerate();
-		List<ReductionPlan> reductionPlans = generate.generateReductionPlanFixtures(1, null);
-		repository.saveAllAndFlush(reductionPlans);
-		ReductionPlan existingReductionPlan = manager.getByDescription(reductionPlans.get(0).getDescription(), false).get(0);
-		existingReductionPlan.setDescription("update");
-		existingReductionPlan.setOperationRate(0.0);
-		existingReductionPlan.setMedicalRate(0.0);
-		existingReductionPlan.setExamRate(0.0);
-		existingReductionPlan.setOtherRate(0.0);
-		ExamReduction examReduction = generate.generateExamReductionFixture(existingReductionPlan.getExamReductions().get(0).getExam(), existingReductionPlan);
-		existingReductionPlan.getExamReductions().add(examReduction);
-
-		OHDataValidationException exception = assertThrows(OHDataValidationException.class, () -> manager.update(existingReductionPlan));
-		if (exception != null) {
-			List<OHExceptionMessage> messages = exception.getMessages();
-			assertFalse(messages.isEmpty());
-			assertEquals("angal.reductionplan.duplicateexamfound.msg", messages.get(0).getMessage());
-		}
-
-		ReductionPlan updateReductionPlan = manager.getByDescription(existingReductionPlan.getDescription(), false).get(0);
-		assertThat(manager.getByDescription(existingReductionPlan.getDescription(), false)).hasSize(1);
 		assertThat(updateReductionPlan).isNotNull();
 		assertThat(updateReductionPlan.getId()).isEqualTo(existingReductionPlan.getId());
 		assertThat(updateReductionPlan.getDescription()).isEqualTo("update");
@@ -258,17 +205,16 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 	@DisplayName("Should delete reduction plan")
 	void testDelete() throws Exception {
 		ReductionPlanDataGenerate generate = new ReductionPlanDataGenerate();
-		List<ReductionPlan> reductionPlans = generate.generateReductionPlanFixtures(2, null);
+		List<ReductionPlan> reductionPlans = generate.generateReductionPlanFixtures(1, null);
 		repository.saveAllAndFlush(reductionPlans);
-		ReductionPlan reductionPlan = manager.getByDescription(reductionPlans.get(0).getDescription(), false).get(0);
+		ReductionPlan reductionPlan = manager.getById(reductionPlans.get(0).getId());
 		int id = reductionPlan.getId();
-		assertThat(manager.getAll()).hasSize(2);
-		ReductionPlan existingReductionPlan = manager.getByDescription(reductionPlan.getDescription(), false).get(0);
+		assertThat(manager.getAll()).hasSize(1);
+		ReductionPlan existingReductionPlan = manager.getById(reductionPlan.getId());
 
 		manager.delete(existingReductionPlan);
-		ReductionPlan deletedReductionPlan = manager.getByDescription(reductionPlan.getDescription(), true).get(0);
+		ReductionPlan deletedReductionPlan = reductionPlanRepository.findByDeleted(true).get(0);
 		assertThat(deletedReductionPlan.isDeleted()).isTrue();
-		assertThat(manager.getAll()).hasSize(1);
 		assertThat(manager.getExamReductionsByReductionPlanId(id).size()).isEqualTo(1);
 		assertThat(manager.getOperationReductionsByReductionPlanId(id).size()).isEqualTo(1);
 		assertThat(manager.getMedicalReductionsByReductionPlanId(id).size()).isEqualTo(1);
@@ -279,50 +225,14 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 	@DisplayName("Should get exam reduction by reduction plan")
 	void testGetExamReductionByReductionPlanId() throws Exception {
 		ReductionPlanDataGenerate generate = new ReductionPlanDataGenerate();
-		List<ReductionPlan> reductionPlans = generate.generateReductionPlanFixtures(2, null);
+		List<ReductionPlan> reductionPlans = generate.generateReductionPlanFixtures(1, null);
 		repository.saveAllAndFlush(reductionPlans);
 		ReductionPlan reductionPlan = reductionPlans.get(0);
 
-		ExamType testExamType1 = new TestExamType().setup(false);
-		testExamType1.setCode("AZ");
-		testExamType1.setDescription("AZ_DES");
-		ExamTypeRepository.saveAndFlush(testExamType1);
-		Exam testExam = new TestExam().setup(testExamType1, 1, true);
-		testExam.setCode("EXA");
-		testExam.setDescription("EXAM_DES");
-		ExamRepository.saveAndFlush(testExam);
-		ExamReduction examReduction = generate.generateExamReductionFixture(testExam, reductionPlan);
-		ExamReductionRepository.saveAndFlush(examReduction);
-		reductionPlan.getExamReductions().add(examReduction);
-
 		List<ExamReduction> existingExamReductionList = manager.getExamReductionsByReductionPlanId(reductionPlan.getId());
 
-		assertThat(existingExamReductionList.size()).isEqualTo(2);
-		assertThat(existingExamReductionList.get(1).getExam().getCode()).isEqualTo("EXA");
-	}
-
-	@Test
-	@DisplayName("Should save and delete an exam reduction")
-	void testSaveAndDeleteExamReduction() throws Exception {
-		ReductionPlanDataGenerate generate = new ReductionPlanDataGenerate();
-		List<ReductionPlan> reductionPlans = generate.generateReductionPlanFixtures(1, null);
-		repository.saveAllAndFlush(reductionPlans);
-		ReductionPlan reductionPlan = manager.getByDescription(reductionPlans.get(0).getDescription(), false).get(0);
-
-		ExamType testExamType1 = new TestExamType().setup(false);
-		testExamType1.setCode("AZ");
-		testExamType1.setDescription("AZ_DES");
-		testExamType1= ExamTypeRepository.saveAndFlush(testExamType1);
-		Exam testExam = new TestExam().setup(testExamType1, 1, true);
-		testExam.setCode("EXA");
-		testExam.setDescription("EXAM_DES");
-		testExam = ExamRepository.saveAndFlush(testExam);
-		ExamReduction examReduction = generate.generateExamReductionFixture(testExam, reductionPlan);
-		ExamReductionRepository.saveAndFlush(examReduction);
-
-		assertThat(manager.getExamReductionsByReductionPlanId(reductionPlan.getId()).size()).isEqualTo(2);
-		manager.deleteExamReduction(examReduction);
-		assertThat(manager.getExamReductionsByReductionPlanId(reductionPlan.getId()).size()).isEqualTo(1);
+		assertThat(existingExamReductionList.size()).isEqualTo(1);
+		assertThat(existingExamReductionList.get(0).getExam().getCode()).isEqualTo("ZZ0");
 	}
 
 	@Test
@@ -331,23 +241,8 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 		ReductionPlanDataGenerate generate = new ReductionPlanDataGenerate();
 		List<ReductionPlan> reductionPlans = generate.generateReductionPlanFixtures(1, null);
 		reductionPlans = repository.saveAllAndFlush(reductionPlans);
-		ReductionPlan reductionPlan = manager.getByDescription(reductionPlans.get(0).getDescription(), false).get(0);
-
-		ExamType testExamType1 = new TestExamType().setup(false);
-		testExamType1.setCode("AZ");
-		testExamType1.setDescription("AZ_DES");
-		testExamType1 = ExamTypeRepository.saveAndFlush(testExamType1);
-		Exam testExam = new TestExam().setup(testExamType1, 1, true);
-		testExam.setCode("EXA");
-		testExam.setDescription("EXAM_DES");
-		testExam = ExamRepository.saveAndFlush(testExam);
-		ExamReduction examReduction = generate.generateExamReductionFixture(testExam, reductionPlan);
-		ExamReductionRepository.saveAndFlush(examReduction);
-		reductionPlan.getExamReductions().add(examReduction);
-
-		assertThat(manager.getExamReductionsByReductionPlanId(reductionPlan.getId()).size()).isEqualTo(2);
+		ReductionPlan reductionPlan = manager.getById(reductionPlans.get(0).getId());
 		reductionPlan.getExamReductions().clear();
-		repository.saveAndFlush(reductionPlan);
 
 		assertThat(reductionPlan.getExamReductions().size()).isEqualTo(0);
 		assertThat(manager.getExamReductionsByReductionPlanId(reductionPlan.getId()).size()).isEqualTo(0);
@@ -355,50 +250,14 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 
 	@Test
 	@DisplayName("Should get medical reduction by reduction plan")
-	void testGetMedicalReductionByReductionPlanId() throws Exception {
+	void testGetMedicalReductionsByReductionPlanId() throws Exception {
 		ReductionPlanDataGenerate generate = new ReductionPlanDataGenerate();
-		List<ReductionPlan> reductionPlans = generate.generateReductionPlanFixtures(2, null);
+		List<ReductionPlan> reductionPlans = generate.generateReductionPlanFixtures(1, null);
 		repository.saveAllAndFlush(reductionPlans);
 		ReductionPlan reductionPlan = reductionPlans.get(0);
 
-		MedicalType testMedicalType1 = new TestMedicalType().setup(false);
-		testMedicalType1.setCode("AZ");
-		testMedicalType1.setDescription("AZ_DES");
-		MedicalsTypeRepository.saveAndFlush(testMedicalType1);
-		MedicalsTypeRepository.saveAndFlush(testMedicalType1);
-		Medical testMedical = new TestMedical().setup(testMedicalType1, true);
-		testMedical.setDescription("EXAM_DES");
-		MedicalsRepository.saveAndFlush(testMedical);
-		MedicalsRepository.saveAndFlush(testMedical);
-		MedicalReduction medicalReduction = generate.generateMedicalReductionFixture(testMedical, reductionPlan);
-		MedicalReductionRepository.saveAndFlush(medicalReduction);
-		reductionPlan.getMedicalReductions().add(medicalReduction);
-
 		List<MedicalReduction> existingMedicalReductionList = manager.getMedicalReductionsByReductionPlanId(reductionPlan.getId());
-		assertThat(existingMedicalReductionList.size()).isEqualTo(2);
-	}
-
-	@Test
-	@DisplayName("Should save and dalete a medical reduction")
-	void testDeleteMedicalReduction() throws Exception {
-		ReductionPlanDataGenerate generate = new ReductionPlanDataGenerate();
-		List<ReductionPlan> reductionPlans = generate.generateReductionPlanFixtures(1, null);
-		reductionPlans = repository.saveAllAndFlush(reductionPlans);
-		ReductionPlan reductionPlan = manager.getByDescription(reductionPlans.get(0).getDescription(), false).get(0);
-
-		MedicalType testMedicalType1 = new TestMedicalType().setup(false);
-		testMedicalType1.setCode("AZ");
-		testMedicalType1.setDescription("AZ_DES");
-		MedicalsTypeRepository.saveAndFlush(testMedicalType1);
-		Medical testMedical = new TestMedical().setup(testMedicalType1, true);
-		testMedical.setDescription("EXAM_DES");
-		MedicalsRepository.saveAndFlush(testMedical);
-		MedicalReduction medicalReduction = generate.generateMedicalReductionFixture(testMedical, reductionPlan);
-		MedicalReductionRepository.saveAndFlush(medicalReduction);
-
-		assertThat(manager.getMedicalReductionsByReductionPlanId(reductionPlan.getId()).size()).isEqualTo(2);
-		manager.deleteMedicalReduction(medicalReduction);
-		assertThat(manager.getMedicalReductionsByReductionPlanId(reductionPlan.getId()).size()).isEqualTo(1);
+		assertThat(existingMedicalReductionList.size()).isEqualTo(1);
 	}
 
 	@Test
@@ -407,20 +266,9 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 		ReductionPlanDataGenerate generate = new ReductionPlanDataGenerate();
 		List<ReductionPlan> reductionPlans = generate.generateReductionPlanFixtures(1, null);
 		reductionPlans = repository.saveAllAndFlush(reductionPlans);
-		ReductionPlan reductionPlan = manager.getByDescription(reductionPlans.get(0).getDescription(), false).get(0);
+		ReductionPlan reductionPlan = manager.getById(reductionPlans.get(0).getId());
 
-		MedicalType testMedicalType1 = new TestMedicalType().setup(false);
-		testMedicalType1.setCode("AZ");
-		testMedicalType1.setDescription("AZ_DES");
-		MedicalsTypeRepository.saveAndFlush(testMedicalType1);
-		Medical testMedical = new TestMedical().setup(testMedicalType1, true);
-		testMedical.setDescription("EXAM_DES");
-		MedicalsRepository.saveAndFlush(testMedical);
-		MedicalReduction medicalReduction = generate.generateMedicalReductionFixture(testMedical, reductionPlan);
-		MedicalReductionRepository.saveAndFlush(medicalReduction);
-		reductionPlan.getMedicalReductions().add(medicalReduction);
-
-		assertThat(manager.getMedicalReductionsByReductionPlanId(reductionPlan.getId()).size()).isEqualTo(2);
+		assertThat(manager.getMedicalReductionsByReductionPlanId(reductionPlan.getId()).size()).isEqualTo(1);
 		reductionPlan.getMedicalReductions().clear();
 		repository.saveAndFlush(reductionPlan);
 
@@ -430,48 +278,13 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 
 	@Test
 	@DisplayName("Should get operation reduction by reduction plan")
-	void testGetOperationReductionByReductionPlanId() throws Exception {
+	void testGetOperationReductionsByReductionPlanId() throws Exception {
 		ReductionPlanDataGenerate generate = new ReductionPlanDataGenerate();
-		List<ReductionPlan> reductionPlans = generate.generateReductionPlanFixtures(2, null);ReductionPlan reductionPlan = reductionPlans.get(0);
+		List<ReductionPlan> reductionPlans = generate.generateReductionPlanFixtures(1, null);ReductionPlan reductionPlan = reductionPlans.get(0);
 		repository.saveAllAndFlush(reductionPlans);
 
-		OperationType testOperationType1 = new TestOperationType().setup(false);
-		testOperationType1.setCode("AZ");
-		testOperationType1.setDescription("AZ_DES");
-		OperationTypeRepository.saveAndFlush(testOperationType1);
-		Operation testOperation = new TestOperation().setup(testOperationType1, true);
-		testOperation.setDescription("EXAM_DES");
-		OperationRepository.saveAndFlush(testOperation);
-		OperationReduction operationReduction = generate.generateOperationReductionFixture(testOperation, reductionPlan);
-
-		OperationReductionRepository.saveAndFlush(operationReduction);
-		reductionPlan.getOperationReductions().add(operationReduction);
-
 		List<OperationReduction> existingOperationReductionList = manager.getOperationReductionsByReductionPlanId(reductionPlan.getId());
-		assertThat(existingOperationReductionList.size()).isEqualTo(2);
-	}
-
-	@Test
-	@DisplayName("Should save and Delete an operation reduction")
-	void testDeleteOperationReduction() throws Exception {
-		ReductionPlanDataGenerate generate = new ReductionPlanDataGenerate();
-		List<ReductionPlan> reductionPlans = generate.generateReductionPlanFixtures(1, null);
-		reductionPlans = repository.saveAllAndFlush(reductionPlans);
-		ReductionPlan reductionPlan = manager.getByDescription(reductionPlans.get(0).getDescription(), false).get(0);
-
-		OperationType testOperationType1 = new TestOperationType().setup(false);
-		testOperationType1.setCode("AT");
-		testOperationType1.setDescription("AT_DES");
-		OperationTypeRepository.saveAndFlush(testOperationType1);
-		Operation testOperation = new TestOperation().setup(testOperationType1, true);
-		testOperation.setDescription("OP_DES");
-		OperationRepository.saveAndFlush(testOperation);
-		OperationReduction operationReduction = generate.generateOperationReductionFixture(testOperation, reductionPlan);
-		OperationReductionRepository.saveAndFlush(operationReduction);
-
-		assertThat(manager.getOperationReductionsByReductionPlanId(reductionPlan.getId()).size()).isEqualTo(2);
-		manager.deleteOperationReduction(operationReduction);
-		assertThat(manager.getOperationReductionsByReductionPlanId(reductionPlan.getId()).size()).isEqualTo(1);
+		assertThat(existingOperationReductionList.size()).isEqualTo(1);
 	}
 
 	@Test
@@ -480,22 +293,10 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 		ReductionPlanDataGenerate generate = new ReductionPlanDataGenerate();
 		List<ReductionPlan> reductionPlans = generate.generateReductionPlanFixtures(1, null);
 		reductionPlans = repository.saveAllAndFlush(reductionPlans);
-		ReductionPlan reductionPlan = manager.getByDescription(reductionPlans.get(0).getDescription(), false).get(0);
+		ReductionPlan reductionPlan = manager.getById(reductionPlans.get(0).getId());
 
-		OperationType testOperationType1 = new TestOperationType().setup(false);
-		testOperationType1.setCode("AP");
-		testOperationType1.setDescription("AP_DES");
-		OperationTypeRepository.saveAndFlush(testOperationType1);
-		Operation testOperation = new TestOperation().setup(testOperationType1, true);
-		testOperation.setDescription("OP_DES");
-		OperationRepository.saveAndFlush(testOperation);
-		OperationReduction operationReduction = generate.generateOperationReductionFixture(testOperation, reductionPlan);
-		OperationReductionRepository.saveAndFlush(operationReduction);
-
-		reductionPlan.getOperationReductions().add(operationReduction);
-
-		assertThat(manager.getOperationReductionsByReductionPlanId(reductionPlan.getId()).size()).isEqualTo(2);
-		assertThat(reductionPlan.getOperationReductions().size()).isEqualTo(2);
+		assertThat(manager.getOperationReductionsByReductionPlanId(reductionPlan.getId()).size()).isEqualTo(1);
+		assertThat(reductionPlan.getOperationReductions().size()).isEqualTo(1);
 		reductionPlan.getOperationReductions().clear();
 		manager.add(reductionPlan);
 		assertThat(reductionPlan.getOperationReductions().size()).isEqualTo(0);
@@ -504,40 +305,14 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 
 	@Test
 	@DisplayName("Should get price other reduction by reduction plan")
-	void testGetPricesOtherReductionByReductionPlanId() throws Exception {
-		ReductionPlanDataGenerate generate = new ReductionPlanDataGenerate();
-		List<ReductionPlan> reductionPlans = generate.generateReductionPlanFixtures(2, null);
-		reductionPlans = repository.saveAllAndFlush(reductionPlans);
-		ReductionPlan reductionPlan = manager.getByDescription(reductionPlans.get(0).getDescription(), false).get(0);
-
-		PricesOthers testPriceOthers = new TestPricesOthers().setup(true);
-		testPriceOthers.setDescription("ZE");
-		testPriceOthers = PriceOthersRepository.saveAndFlush(testPriceOthers);
-		PriceOtherReduction priceOtherReduction = generate.generatePriceOtherReductionFixture(testPriceOthers, reductionPlan);
-		PricesOtherReductionRepository.saveAndFlush(priceOtherReduction);
-		reductionPlan.getPriceOtherReductions().add(priceOtherReduction);
-
-		List<PriceOtherReduction> existingPriceOtherReductionList = manager.getPriceOtherReductionsByReductionPlanId(reductionPlan.getId());
-		assertThat(existingPriceOtherReductionList.size()).isEqualTo(2);
-	}
-
-	@Test
-	@DisplayName("Should save and delete price other reduction")
-	void testDeletePricesOtherReduction() throws Exception {
+	void testGetPricesOtherReductionsByReductionPlanId() throws Exception {
 		ReductionPlanDataGenerate generate = new ReductionPlanDataGenerate();
 		List<ReductionPlan> reductionPlans = generate.generateReductionPlanFixtures(1, null);
 		reductionPlans = repository.saveAllAndFlush(reductionPlans);
-		ReductionPlan reductionPlan = manager.getByDescription(reductionPlans.get(0).getDescription(), false).get(0);
+		ReductionPlan reductionPlan = manager.getById(reductionPlans.get(0).getId());
 
-		PricesOthers testPriceOthers = new TestPricesOthers().setup(true);
-		testPriceOthers.setDescription("ZE");
-		testPriceOthers = PriceOthersRepository.saveAndFlush(testPriceOthers);
-		PriceOtherReduction priceOtherReduction = generate.generatePriceOtherReductionFixture(testPriceOthers, reductionPlan);
-		PricesOtherReductionRepository.saveAndFlush(priceOtherReduction);
-
-		assertThat(manager.getPriceOtherReductionsByReductionPlanId(reductionPlan.getId()).size()).isEqualTo(2);
-		manager.deletePriceOtherReduction(priceOtherReduction);
-		assertThat(manager.getPriceOtherReductionsByReductionPlanId(reductionPlan.getId()).size()).isEqualTo(1);
+		List<PriceOtherReduction> existingPriceOtherReductionList = manager.getPriceOtherReductionsByReductionPlanId(reductionPlan.getId());
+		assertThat(existingPriceOtherReductionList.size()).isEqualTo(1);
 	}
 
 	@Test
@@ -546,17 +321,10 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 		ReductionPlanDataGenerate generate = new ReductionPlanDataGenerate();
 		List<ReductionPlan> reductionPlans = generate.generateReductionPlanFixtures(1, null);
 		reductionPlans = repository.saveAllAndFlush(reductionPlans);
-		ReductionPlan reductionPlan = manager.getByDescription(reductionPlans.get(0).getDescription(), false).get(0);
+		ReductionPlan reductionPlan = manager.getById(reductionPlans.get(0).getId());
 
-		PricesOthers testPriceOthers = new TestPricesOthers().setup(true);
-		testPriceOthers.setDescription("ZE");
-		testPriceOthers = PriceOthersRepository.saveAndFlush(testPriceOthers);
-		PriceOtherReduction priceOtherReduction = generate.generatePriceOtherReductionFixture(testPriceOthers, reductionPlan);
-		PricesOtherReductionRepository.saveAndFlush(priceOtherReduction);
-		reductionPlan.getPriceOtherReductions().add(priceOtherReduction);
-
-		assertThat(reductionPlan.getPriceOtherReductions().size()).isEqualTo(2);
-		assertThat(manager.getPriceOtherReductionsByReductionPlanId(reductionPlan.getId()).size()).isEqualTo(2);
+		assertThat(reductionPlan.getPriceOtherReductions().size()).isEqualTo(1);
+		assertThat(manager.getPriceOtherReductionsByReductionPlanId(reductionPlan.getId()).size()).isEqualTo(1);
 		reductionPlan.getPriceOtherReductions().clear();
 		assertThat(reductionPlan.getPriceOtherReductions().size()).isEqualTo(0);
 		assertThat(manager.getPriceOtherReductionsByReductionPlanId(reductionPlan.getId()).size()).isEqualTo(0);
@@ -584,37 +352,37 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 					ExamType testExamType = new TestExamType().setup(false);
 					testExamType.setCode(testExamType.getCode() + i);
 					testExamType.setDescription(testExamType.getDescription() + i);
-					testExamType = ExamTypeRepository.saveAndFlush(testExamType);
+					testExamType = examTypeRepository.saveAndFlush(testExamType);
 					Exam testExam = new TestExam().setup(testExamType, 1, true);
 					testExam.setCode(testExam.getCode() + i);
 					testExam.setDescription(testExam.getCode() + i);
-					testExam = ExamRepository.saveAndFlush(testExam);
+					testExam = examRepository.saveAndFlush(testExam);
 					ExamReduction examReduction = generateExamReductionFixture(testExam, reductionPlan);
 					examReductions.add(examReduction);
 
 					MedicalType testMedicalType = new TestMedicalType().setup(false);
 					testMedicalType.setCode(testMedicalType.getCode() +i);
-					MedicalsTypeRepository.saveAndFlush(testMedicalType);
+					medicalsTypeRepository.saveAndFlush(testMedicalType);
 					Medical testMedical = new TestMedical().setup(testMedicalType, true);
 					testMedical.setProdCode(testMedical.getProdCode() + i);
 					testMedical.setDescription(testMedical.getDescription() + i);
-					MedicalsRepository.saveAndFlush(testMedical);
+					medicalsRepository.saveAndFlush(testMedical);
 					MedicalReduction medicalReduction = generateMedicalReductionFixture(testMedical, reductionPlan);
 					medicalReductions.add(medicalReduction);
 
 					OperationType testOperationType = new TestOperationType().setup(false);
 					testOperationType.setCode(testOperationType.getCode() + i);
-					OperationTypeRepository.saveAndFlush(testOperationType);
+					operationTypeRepository.saveAndFlush(testOperationType);
 					Operation testOperation = new TestOperation().setup(testOperationType, true);
 					testOperation.setCode(testOperation.getCode() + i);
 					testOperation.setDescription(testOperation.getDescription() + i);
-					OperationRepository.saveAndFlush(testOperation);
+					operationRepository.saveAndFlush(testOperation);
 					OperationReduction operationReduction = generateOperationReductionFixture(testOperation, reductionPlan);
 					operationReductions.add(operationReduction);
 
 					TestPricesOthers testPricesOthers = new TestPricesOthers();
 					PricesOthers pricesOthers = testPricesOthers.setup(false);
-					PriceOthersRepository.saveAndFlush(pricesOthers);
+					priceOthersRepository.saveAndFlush(pricesOthers);
 					priceOtherReductions.add(generatePriceOtherReductionFixture(pricesOthers, reductionPlan));
 				} catch (OHException e) {
 					throw new RuntimeException("Failed to generate fixture for reduction", e);

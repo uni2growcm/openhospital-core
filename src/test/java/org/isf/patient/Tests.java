@@ -45,7 +45,7 @@ import org.isf.patient.model.PatientProfilePhoto;
 import org.isf.patient.service.PatientIoOperationRepository;
 import org.isf.patient.service.PatientIoOperations;
 import org.isf.reductionplan.model.ReductionPlan;
-import org.isf.reductionplan.service.ReductionplanRepository;
+import org.isf.reductionplan.service.ReductionPlanRepository;
 import org.isf.utils.exception.OHException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.pagination.PagedResponse;
@@ -69,7 +69,7 @@ class Tests extends OHCoreTestCase {
 	@Autowired
 	PatientBrowserManager patientBrowserManager;
 	@Autowired
-	ReductionplanRepository reductionplanIoOperationRepository;
+	ReductionPlanRepository reductionPlanRepository;
 
 	@BeforeAll
 	static void setUpClass() {
@@ -249,7 +249,7 @@ class Tests extends OHCoreTestCase {
 	void testIoNewPatientWithReductionPlan() throws Exception {
 		Patient patient = testPatient.setup(true);
 		ReductionPlan reductionPlan = new ReductionPlan("Reduction plan", 2,2,2,2);
-		reductionPlan = reductionplanIoOperationRepository.save(reductionPlan);
+		reductionPlan = reductionPlanRepository.save(reductionPlan);
 		patient.setReductionPlan(reductionPlan);
 		patient = patientBrowserManager.savePatient(patient);
 		Patient savedPatient = patientBrowserManager.getPatientById(patient.getCode());
@@ -269,10 +269,10 @@ class Tests extends OHCoreTestCase {
 	void testIoUpdatePatientWithReductionPlan() throws Exception {
 		Patient patient = testPatient.setup(true);
 		ReductionPlan reductionPlan = new ReductionPlan("Initial Plan", 2, 3, 4, 5);
-		reductionPlan = reductionplanIoOperationRepository.save(reductionPlan);
+		reductionPlan = reductionPlanRepository.save(reductionPlan);
 		patient.setReductionPlan(reductionPlan);
 		ReductionPlan reductionPlanNew = new ReductionPlan("Updated Plan", 20, 0, 0, 50);
-		reductionPlanNew = reductionplanIoOperationRepository.save(reductionPlanNew);
+		reductionPlanNew = reductionPlanRepository.save(reductionPlanNew);
 		patient.setReductionPlan(reductionPlanNew);
 		patient = patientBrowserManager.savePatient(patient);
 		Patient updatedPatient = patientBrowserManager.getPatientById(patient.getCode());

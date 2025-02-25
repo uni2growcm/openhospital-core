@@ -29,7 +29,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ReductionplanRepository extends JpaRepository<ReductionPlan, Integer> {
+public interface ReductionPlanRepository extends JpaRepository<ReductionPlan, Integer> {
 	List<ReductionPlan> findByDescriptionAndDeleted(String description, boolean deleted);
 	List<ReductionPlan> findByDeleted(boolean deleted);
 	ReductionPlan findByIdAndDeleted(int id, boolean deleted);
