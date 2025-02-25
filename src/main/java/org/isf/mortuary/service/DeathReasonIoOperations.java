@@ -133,8 +133,11 @@ public class DeathReasonIoOperations {
 	 * @return {@code true} if the death reason is already in exist where deleted is false, {@code false} otherwise
 	 */
 	public boolean exists(DeathReason deathReason) {
-		DeathReason deathReasonFound = deathReasonRepository.findByTitleAndDeleted(deathReason.getTitle(), false);
-		return Objects.equals(deathReasonFound, deathReason);
+		if(deathReason.getId() > 0) {
+			return deathReasonRepository.existsByTitleAndDeletedAndIdNot(deathReason.getTitle(), false, deathReason.getId());
+		} else {
+			return deathReasonRepository.existsByTitleAndDeleted(deathReason.getTitle(), false);
+		}
 	}
 
 	/**
@@ -154,7 +157,9 @@ public class DeathReasonIoOperations {
 		if (deathReason.getTitle().trim().isEmpty()) {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.common.pleaseinsertacode.msg")));
 		}
-
+		if (exists(deathReason)) {
+			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuary.deathreason.deathreasonalreadyexist.msg")));
+		}
 		return errors;
 	}
 }
