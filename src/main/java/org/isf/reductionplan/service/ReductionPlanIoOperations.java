@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.isf.generaldata.MessageBundle;
 
 import org.isf.exa.model.Exam;
 import org.isf.medicals.model.Medical;
@@ -150,7 +151,7 @@ public class ReductionPlanIoOperations {
 			}
 		}
 
-		if (reductionPlan.getExamReductions() != null && !reductionPlan.getExamReductions().isEmpty()) {
+		if (reductionPlan.getPriceOtherReductions() != null && !reductionPlan.getPriceOtherReductions().isEmpty()) {
 			Set<PricesOthers> duplicates = reductionPlan.getPriceOtherReductions().stream()
 				.collect(Collectors.groupingBy(PriceOtherReduction::getPricesOthers, Collectors.counting()))
 				.entrySet().stream()
