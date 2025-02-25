@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import org.isf.generaldata.MessageBundle;
 
 import org.isf.exa.model.Exam;
@@ -116,12 +117,14 @@ public class ReductionPlanIoOperations {
 
 			if (!duplicates.isEmpty()) {
 				errors.add(
-					new OHDataValidationException(new OHExceptionMessage("angal.reductionplan.duplicateexamfound.msg")
-				));
+					new OHDataValidationException(
+						new OHExceptionMessage(MessageBundle.getMessage("angal.reductionplan.duplicateexamfound.msg"))
+					)
+				);
 			}
 		}
 
-		if (reductionPlan.getOperationReductions() != null && !reductionPlan.getOperationReductions().isEmpty()) {
+		if (reductionPlan.getMedicalReductions() != null && !reductionPlan.getDescription().isEmpty()) {
 			Set<Medical> duplicates = reductionPlan.getMedicalReductions().stream()
 				.collect(Collectors.groupingBy(MedicalReduction::getMedical, Collectors.counting()))
 				.entrySet().stream()
@@ -131,7 +134,9 @@ public class ReductionPlanIoOperations {
 
 			if (!duplicates.isEmpty()) {
 				errors.add(
-					new OHDataValidationException(new OHExceptionMessage("angal.reductionplan.duplicatemedicalfound.msg"))
+					new OHDataValidationException(
+						new OHExceptionMessage(MessageBundle.getMessage("angal.reductionplan.duplicatemedicalfound.msg"))
+					)
 				);
 			}
 		}
@@ -146,7 +151,9 @@ public class ReductionPlanIoOperations {
 
 			if (!duplicates.isEmpty()) {
 				errors.add(
-					new OHDataValidationException(new OHExceptionMessage("angal.reductionplan.duplicateoperationfound.msg"))
+					new OHDataValidationException(new OHExceptionMessage(MessageBundle.getMessage(
+						"angal.reductionplan.duplicateoperationfound.msg"))
+					)
 				);
 			}
 		}
@@ -161,7 +168,9 @@ public class ReductionPlanIoOperations {
 
 			if (!duplicates.isEmpty()) {
 				errors.add(
-					new OHDataValidationException(new OHExceptionMessage("angal.reductionplan.duplicatepriceotherfound.msg"))
+					new OHDataValidationException(new OHExceptionMessage(MessageBundle.getMessage(
+						"angal.reductionplan.duplicatepriceotherfound.msg"))
+					)
 				);
 			}
 		}
