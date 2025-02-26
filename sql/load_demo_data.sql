@@ -3223,7 +3223,7 @@ INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTI
 INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('reductionplan','angal.menu.btn.reductionplans','angal.menu.reductionplans','x','R','generaldata','org.isf.reductionplan.gui.ReductionPlanBrowser','N',13);
 INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('bodycompartments', 'angal.menu.btn.bodycompartments', 'angal.menu.bodycompartments', 'x', 'B', 'mortuary', 'org.isf.mortuary.gui.BodyCompartmentBrowser','N', 1);
 INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('deaths', 'angal.menu.btn.deaths', 'angal.menu.deaths', 'x', 'D', 'mortuary', 'org.isf.mortuary.gui.MortuaryBrowser','N', 3);
-INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('deathreasons', 'angal.menu.btn.deathreasons', 'angal.menu.deathreasons', 'x', 'A', 'mortuary', 'org.isf.mortuary.gui.DeathReasonBrowser','N', 4);
+INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('deathreasons', 'angal.menu.btn.causeofdeaths', 'angal.menu.causeofdeaths', 'x', 'A', 'mortuary', 'org.isf.mortuary.gui.DeathReasonBrowser','N', 4);
 /*!40000 ALTER TABLE `oh_menuitem` ENABLE KEYS */;
 UNLOCK TABLES;
 

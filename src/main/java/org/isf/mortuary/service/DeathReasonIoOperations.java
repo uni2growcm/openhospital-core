@@ -88,7 +88,7 @@ public class DeathReasonIoOperations {
 	public boolean delete(DeathReason deathReason) throws OHServiceException {
 		DeathReason deathReasonFound = deathReasonRepository.findByTitleAndDeleted(deathReason.getTitle(), false);
 		if (deathReasonFound == null) {
-			throw new OHServiceException(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuary.deathreason.notfound.msg")));
+			throw new OHServiceException(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuary.causeofdeath.notfound.msg")));
 		}
 		deathReasonFound.setDeleted(true);
 		DeathReason deleted = deathReasonRepository.save(deathReasonFound);
@@ -109,7 +109,7 @@ public class DeathReasonIoOperations {
 		}
 		DeathReason deathReasonFound = deathReasonRepository.findByIdAndDeleted(deathReason.getId(), false);
 		if (deathReasonFound == null) {
-			throw new OHServiceException(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuary.deathReason.thisdeathreasondontexist.msg")));
+			throw new OHServiceException(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuary.causeofdeath.thiscauseofdeathdontexist.msg")));
 		}
 		deathReasonFound.setDescription(deathReason.getDescription());
 		return deathReasonRepository.save(deathReason);
@@ -154,14 +154,14 @@ public class DeathReasonIoOperations {
 			return errors;
 		}
 		if (deathReason.getTitle() == null) {
-			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuary.deathreason.pleaseinsertatitle.msg")));
+			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuary.causeofdeath.pleaseinsertatitle.msg")));
 			return errors;
 		}
 		if (deathReason.getTitle().trim().isEmpty()) {
-			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuary.deathreason.pleaseinsertatitle.msg")));
+			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuary.causeofdeath.pleaseinsertatitle.msg")));
 		}
 		if (exists(deathReason)) {
-			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuary.deathreason.deathreasonalreadyexist.msg")));
+			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuary.causeofdeath.causeofdeathalreadyexist.msg")));
 		}
 		return errors;
 	}
