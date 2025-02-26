@@ -24,7 +24,6 @@ package org.isf.mortuary.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import org.isf.generaldata.MessageBundle;
 import org.isf.mortuary.model.DeathReason;
@@ -104,7 +103,11 @@ public class DeathReasonIoOperations {
 	 * @throws OHServiceException if an error occurs during the update.
 	 */
 	public DeathReason update(DeathReason deathReason) throws OHServiceException {
-		DeathReason deathReasonFound = deathReasonRepository.findById(deathReason.getId()).orElse(null);
+		List<OHExceptionMessage> errors = validate(deathReason);
+		if (!errors.isEmpty()) {
+			throw new OHDataValidationException(errors);
+		}
+		DeathReason deathReasonFound = deathReasonRepository.findByIdAndDeleted(deathReason.getId(), false);
 		if (deathReasonFound == null) {
 			throw new OHServiceException(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuary.deathReason.thisdeathreasondontexist.msg")));
 		}
