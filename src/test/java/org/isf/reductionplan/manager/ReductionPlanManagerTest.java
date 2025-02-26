@@ -145,10 +145,10 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 		assertThat(saveReductionPlan).isNotNull();
 		assertThat(saveReductionPlan.getId()).isGreaterThan(0);
 		assertThat(saveReductionPlan.getDescription()).isEqualTo("Description 0");
-		assertThat(saveReductionPlan.getExamRate()).isEqualTo(3.0);
-		assertThat(saveReductionPlan.getOperationRate()).isEqualTo(1.0);
-		assertThat(saveReductionPlan.getMedicalRate()).isEqualTo(2.0);
-		assertThat(saveReductionPlan.getOtherRate()).isEqualTo(3.0);
+		assertThat(saveReductionPlan.getExamRate()).isEqualTo(BigDecimal.valueOf(3.0));
+		assertThat(saveReductionPlan.getOperationRate()).isEqualTo(BigDecimal.valueOf(1.0));
+		assertThat(saveReductionPlan.getMedicalRate()).isEqualTo(BigDecimal.valueOf(2.0));
+		assertThat(saveReductionPlan.getOtherRate()).isEqualTo(BigDecimal.valueOf(3.0));
 		assertThat(saveReductionPlan.getExamReductions().get(0).getId()).isEqualTo(1);
 		assertThat(saveReductionPlan.getMedicalReductions().get(0).getId()).isEqualTo(1);
 		assertThat(saveReductionPlan.getOperationReductions().get(0).getId()).isEqualTo(1);
@@ -200,10 +200,10 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 		repository.saveAllAndFlush(reductionPlans);
 		ReductionPlan existingReductionPlan = manager.getById(reductionPlans.get(0).getId());
 		existingReductionPlan.setDescription("update");
-		existingReductionPlan.setOperationRate(BigDecimal.valueOf(0.0));
-		existingReductionPlan.setMedicalRate(BigDecimal.valueOf(0.0));
-		existingReductionPlan.setExamRate(BigDecimal.valueOf(0.0));
-		existingReductionPlan.setOtherRate(BigDecimal.valueOf(0.0));
+		existingReductionPlan.setOperationRate(BigDecimal.valueOf(0.1));
+		existingReductionPlan.setMedicalRate(BigDecimal.valueOf(0.1));
+		existingReductionPlan.setExamRate(BigDecimal.valueOf(0.1));
+		existingReductionPlan.setOtherRate(BigDecimal.valueOf(0.1));
 
 		manager.update(existingReductionPlan);
 		ReductionPlan updateReductionPlan = manager.getById(existingReductionPlan.getId());
@@ -211,10 +211,10 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 		assertThat(updateReductionPlan).isNotNull();
 		assertThat(updateReductionPlan.getId()).isEqualTo(existingReductionPlan.getId());
 		assertThat(updateReductionPlan.getDescription()).isEqualTo("update");
-		assertThat(updateReductionPlan.getOperationRate()).isEqualTo(0.0);
-		assertThat(updateReductionPlan.getMedicalRate()).isEqualTo(0.0);
-		assertThat(updateReductionPlan.getExamRate()).isEqualTo(0.0);
-		assertThat(updateReductionPlan.getOtherRate()).isEqualTo(0.0);
+		assertThat(updateReductionPlan.getOperationRate()).isEqualTo(BigDecimal.valueOf(0.1));
+		assertThat(updateReductionPlan.getMedicalRate()).isEqualTo(BigDecimal.valueOf(0.1));
+		assertThat(updateReductionPlan.getExamRate()).isEqualTo(BigDecimal.valueOf(0.1));
+		assertThat(updateReductionPlan.getOtherRate()).isEqualTo(BigDecimal.valueOf(0.1));
 		assertThat(updateReductionPlan.getExamReductions().get(0).getId()).isEqualTo(1);
 		assertThat(updateReductionPlan.getMedicalReductions().get(0).getId()).isEqualTo(1);
 		assertThat(updateReductionPlan.getOperationReductions().get(0).getId()).isEqualTo(1);
