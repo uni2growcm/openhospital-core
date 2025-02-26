@@ -154,11 +154,11 @@ public class DeathReasonIoOperations {
 			return errors;
 		}
 		if (deathReason.getTitle() == null) {
-			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.common.pleaseinsertacode.msg")));
+			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuary.deathreason.pleaseinsertatitle.msg")));
 			return errors;
 		}
 		if (deathReason.getTitle().trim().isEmpty()) {
-			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.common.pleaseinsertacode.msg")));
+			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuary.deathreason.pleaseinsertatitle.msg")));
 		}
 		if (exists(deathReason)) {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuary.deathreason.deathreasonalreadyexist.msg")));
