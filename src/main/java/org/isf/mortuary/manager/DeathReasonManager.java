@@ -110,7 +110,7 @@ public class DeathReasonManager {
 	 * @throws OHServiceException if {@code code} is {@literal null}
 	 */
 	public Page<DeathReason> getByTitleOrDescriptionPageable(String key,int page, int size) throws OHServiceException {
-		Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "title"));
+		Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "title"));
 		return deathReasonIoOperations.getByTitleOrDescriptionPageable(key,pageable);
 	}
 }
