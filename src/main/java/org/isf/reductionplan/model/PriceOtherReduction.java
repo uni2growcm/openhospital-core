@@ -21,6 +21,8 @@
  */
 package org.isf.reductionplan.model;
 
+import java.math.BigDecimal;
+
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -65,8 +67,8 @@ public class PriceOtherReduction extends Auditable<String> {
 	private PricesOthers pricesOthers;
 
 	@NotNull
-	@Column(name = "OTHR_REDUCTIONRATE")
-	private double reductionRate;
+	@Column(name = "OTHR_REDUCTIONRATE",  precision = 5, scale = 2)
+	private BigDecimal reductionRate;
 
 	@Version
 	@Column(name = "OTHR_LOCK")
@@ -76,7 +78,7 @@ public class PriceOtherReduction extends Auditable<String> {
 		super();
 	}
 
-	public PriceOtherReduction(int id, ReductionPlan reductionPlan, PricesOthers pricesOthers, double reductionRate) {
+	public PriceOtherReduction(int id, ReductionPlan reductionPlan, PricesOthers pricesOthers, BigDecimal reductionRate) {
 		super();
 		this.id = id;
 		this.reductionPlan = reductionPlan;
@@ -84,7 +86,7 @@ public class PriceOtherReduction extends Auditable<String> {
 		this.reductionRate = reductionRate;
 	}
 
-	public PriceOtherReduction(ReductionPlan reductionPlan, PricesOthers pricesOthers, double reductionRate) {
+	public PriceOtherReduction(ReductionPlan reductionPlan, PricesOthers pricesOthers, BigDecimal reductionRate) {
 		this.reductionPlan = reductionPlan;
 		this.pricesOthers = pricesOthers;
 		this.reductionRate = reductionRate;
@@ -114,11 +116,11 @@ public class PriceOtherReduction extends Auditable<String> {
 		this.pricesOthers = pricesOthers;
 	}
 
-	public double getReductionRate() {
+	public BigDecimal getReductionRate() {
 		return reductionRate;
 	}
 
-	public void setReductionRate(double reductionRate) {
+	public void setReductionRate(BigDecimal reductionRate) {
 		this.reductionRate = reductionRate;
 	}
 

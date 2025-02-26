@@ -29,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -156,7 +157,7 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 
 	@Test
 	@DisplayName("Should not add reduction plan")
-	void shouldThrowExceptionWhenConditionIsMet() throws OHException, OHServiceException {
+	void shouldThrowExceptionWhenDuplicateItemFound() throws OHException, OHServiceException {
 		ReductionPlanDataGenerate generate = new ReductionPlanDataGenerate();
 		List<ReductionPlan> reductionPlans = generate.generateReductionPlanFixtures(1, null);
 		ReductionPlan reductionPlan = reductionPlans.get(0);
@@ -173,6 +174,25 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 	}
 
 	@Test
+	@DisplayName("Should not add reduction plan if invalid reduction rate")
+	void shouldThrowExceptionWhenInvalidRatesAreUsed() throws OHException, OHServiceException {
+		ReductionPlanDataGenerate generate = new ReductionPlanDataGenerate();
+		List<ReductionPlan> reductionPlans = generate.generateReductionPlanFixtures(1, null);
+		ReductionPlan reductionPlan = reductionPlans.get(0);
+
+		reductionPlan.setExamRate(BigDecimal.valueOf(1001));
+		reductionPlan.getPriceOtherReductions().get(0).setReductionRate(BigDecimal.valueOf(0));
+		reductionPlan.setOperationRate(BigDecimal.valueOf(-2));
+		OHDataValidationException exception = assertThrows(OHDataValidationException.class, () -> manager.add(reductionPlan));
+		assertNotNull(exception);
+		assertFalse(exception.getMessages().isEmpty());
+		assertEquals("angal.reductionplan.invalidrate.msg", exception.getMessages().get(0).getMessage());
+
+		ReductionPlan savedReductionPlan = manager.getById(reductionPlan.getId());
+		assertNull(savedReductionPlan);
+	}
+
+	@Test
 	@DisplayName("Should update reduction plan")
 	void testUpdate() throws Exception {
 		ReductionPlanDataGenerate generate = new ReductionPlanDataGenerate();
@@ -180,10 +200,10 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 		repository.saveAllAndFlush(reductionPlans);
 		ReductionPlan existingReductionPlan = manager.getById(reductionPlans.get(0).getId());
 		existingReductionPlan.setDescription("update");
-		existingReductionPlan.setOperationRate(0.0);
-		existingReductionPlan.setMedicalRate(0.0);
-		existingReductionPlan.setExamRate(0.0);
-		existingReductionPlan.setOtherRate(0.0);
+		existingReductionPlan.setOperationRate(BigDecimal.valueOf(0.0));
+		existingReductionPlan.setMedicalRate(BigDecimal.valueOf(0.0));
+		existingReductionPlan.setExamRate(BigDecimal.valueOf(0.0));
+		existingReductionPlan.setOtherRate(BigDecimal.valueOf(0.0));
 
 		manager.update(existingReductionPlan);
 		ReductionPlan updateReductionPlan = manager.getById(existingReductionPlan.getId());
@@ -342,7 +362,7 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 				double examRate = 3.0 + i;
 				double otherRate = 3.0 + i;
 
-				ReductionPlan reductionPlan = new ReductionPlan(description, opRate, medRate, examRate, otherRate);
+				ReductionPlan reductionPlan = new ReductionPlan(description, BigDecimal.valueOf(opRate), BigDecimal.valueOf(medRate), BigDecimal.valueOf(examRate), BigDecimal.valueOf(otherRate));
 				List<ExamReduction> examReductions = new ArrayList<>();
 				List<MedicalReduction> medicalReductions = new ArrayList<>();
 				List<OperationReduction> operationReductions = new ArrayList<>();
@@ -404,7 +424,7 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 				exam = testExam.setup(testExamType.setup(false), 1, false);
 			}
 			return new ExamReduction(reductionPlan != null ? reductionPlan : generateReductionPlanFixtures(1, null).get(0)
-				, exam, 1.0);
+				, exam, BigDecimal.valueOf(1.0));
 		}
 
 		public OperationReduction generateOperationReductionFixture(Operation operation, ReductionPlan reductionPlan) throws OHException {
@@ -414,7 +434,7 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 				operation = testOperation.setup(testOperationType.setup(false), false);
 			}
 			return new OperationReduction(reductionPlan != null ? reductionPlan : generateReductionPlanFixtures(1, null).get(0)
-				, operation, 1.0);
+				, operation, BigDecimal.valueOf(1.0));
 		}
 
 		public MedicalReduction generateMedicalReductionFixture(Medical medical, ReductionPlan reductionPlan) throws OHException {
@@ -424,7 +444,7 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 				medical = testMedical.setup(testMedicalType.setup(false), false);
 			}
 			return new MedicalReduction(reductionPlan != null ? reductionPlan : generateReductionPlanFixtures(1, null).get(0)
-				, medical, 1.0);
+				, medical, BigDecimal.valueOf(1.0));
 		}
 
 		public PriceOtherReduction generatePriceOtherReductionFixture(PricesOthers pricesOthers, ReductionPlan reductionPlan) throws OHException {
@@ -433,7 +453,7 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 				pricesOthers = testPricesOthers.setup(false);
 			}
 			return new PriceOtherReduction(reductionPlan != null ? reductionPlan : generateReductionPlanFixtures(1, null).get(0)
-				, pricesOthers, 1.0);
+				, pricesOthers, BigDecimal.valueOf(1.0));
 		}
 	}
 }

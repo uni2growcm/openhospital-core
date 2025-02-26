@@ -26,6 +26,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.io.File;
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -248,7 +249,7 @@ class Tests extends OHCoreTestCase {
 	@Test
 	void testIoNewPatientWithReductionPlan() throws Exception {
 		Patient patient = testPatient.setup(true);
-		ReductionPlan reductionPlan = new ReductionPlan("Reduction plan", 2,2,2,2);
+		ReductionPlan reductionPlan = new ReductionPlan("Reduction plan", BigDecimal.valueOf(2),BigDecimal.valueOf(2),BigDecimal.valueOf(2),BigDecimal.valueOf(2));
 		reductionPlan = reductionPlanRepository.save(reductionPlan);
 		patient.setReductionPlan(reductionPlan);
 		patient = patientBrowserManager.savePatient(patient);
@@ -268,10 +269,10 @@ class Tests extends OHCoreTestCase {
 	@Test
 	void testIoUpdatePatientWithReductionPlan() throws Exception {
 		Patient patient = testPatient.setup(true);
-		ReductionPlan reductionPlan = new ReductionPlan("Initial Plan", 2, 3, 4, 5);
+		ReductionPlan reductionPlan = new ReductionPlan("Initial Plan", BigDecimal.valueOf(2), BigDecimal.valueOf(3), BigDecimal.valueOf(4), BigDecimal.valueOf(5));
 		reductionPlan = reductionPlanRepository.save(reductionPlan);
 		patient.setReductionPlan(reductionPlan);
-		ReductionPlan reductionPlanNew = new ReductionPlan("Updated Plan", 20, 0, 0, 50);
+		ReductionPlan reductionPlanNew = new ReductionPlan("Updated Plan", BigDecimal.valueOf(20), BigDecimal.valueOf(0), BigDecimal.valueOf(0), BigDecimal.valueOf(50));
 		reductionPlanNew = reductionPlanRepository.save(reductionPlanNew);
 		patient.setReductionPlan(reductionPlanNew);
 		patient = patientBrowserManager.savePatient(patient);

@@ -24,6 +24,7 @@ package org.isf.reductionplan.model;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 import jakarta.persistence.AttributeOverride;
@@ -66,17 +67,17 @@ public class ReductionPlan extends Auditable<String> implements Serializable {
 	@Column(name = "RP_DESCRIPTION")
 	private String description;
 
-	@Column(name = "RP_OPERATIONRATE")
-	private double operationRate;
+	@Column(name = "RP_OPERATIONRATE",  precision = 5, scale = 2)
+	private BigDecimal operationRate;
 
-	@Column(name = "RP_MEDICALRATE")
-	private double medicalRate;
+	@Column(name = "RP_MEDICALRATE",  precision = 5, scale = 2)
+	private BigDecimal medicalRate;
 
-	@Column(name = "RP_EXAMRATE")
-	private double examRate;
+	@Column(name = "RP_EXAMRATE",  precision = 5, scale = 2)
+	private BigDecimal examRate;
 
-	@Column(name = "RP_OTHERRATE")
-	private double otherRate;
+	@Column(name = "RP_OTHERRATE",  precision = 5, scale = 2)
+	private BigDecimal otherRate;
 
 	@Column(name = "RP_DELETED")
 	private boolean deleted = false;
@@ -107,10 +108,10 @@ public class ReductionPlan extends Auditable<String> implements Serializable {
 	public ReductionPlan(
 		int id,
 		String description,
-		double operationRate,
-		double medicalRate,
-		double examRate,
-		double otherRate
+		BigDecimal operationRate,
+		BigDecimal medicalRate,
+		BigDecimal examRate,
+		BigDecimal otherRate
 	) {
 		super();
 		this.id = id;
@@ -121,7 +122,13 @@ public class ReductionPlan extends Auditable<String> implements Serializable {
 		this.otherRate = otherRate;
 	}
 
-	public ReductionPlan(String description, double operationRate, double medicalRate, double examRate, double otherRate) {
+	public ReductionPlan(
+		String description,
+		BigDecimal operationRate,
+		BigDecimal medicalRate,
+		BigDecimal examRate,
+		BigDecimal otherRate
+	) {
 		this.description = description;
 		this.operationRate = operationRate;
 		this.medicalRate = medicalRate;
@@ -132,10 +139,10 @@ public class ReductionPlan extends Auditable<String> implements Serializable {
 	public ReductionPlan(
 		int id,
 		String description,
-		double operationRate,
-		double medicalRate,
-		double examRate,
-		double otherRate,
+		BigDecimal operationRate,
+		BigDecimal medicalRate,
+		BigDecimal examRate,
+		BigDecimal otherRate,
 		List<ExamReduction> examReductionList,
 		List<MedicalReduction> medicalReductionList,
 		List<OperationReduction> operationReductionList,
@@ -169,35 +176,35 @@ public class ReductionPlan extends Auditable<String> implements Serializable {
 		this.description = description;
 	}
 
-	public double getOperationRate() {
+	public BigDecimal getOperationRate() {
 		return operationRate;
 	}
 
-	public void setOperationRate(double operationRate) {
+	public void setOperationRate(BigDecimal operationRate) {
 		this.operationRate = operationRate;
 	}
 
-	public double getMedicalRate() {
+	public BigDecimal getMedicalRate() {
 		return medicalRate;
 	}
 
-	public void setMedicalRate(double medicalRate) {
+	public void setMedicalRate(BigDecimal medicalRate) {
 		this.medicalRate = medicalRate;
 	}
 
-	public double getExamRate() {
+	public BigDecimal getExamRate() {
 		return examRate;
 	}
 
-	public void setExamRate(double examRate) {
+	public void setExamRate(BigDecimal examRate) {
 		this.examRate = examRate;
 	}
 
-	public double getOtherRate() {
+	public BigDecimal getOtherRate() {
 		return otherRate;
 	}
 
-	public void setOtherRate(double otherRate) {
+	public void setOtherRate(BigDecimal otherRate) {
 		this.otherRate = otherRate;
 	}
 

@@ -22,10 +22,14 @@
 
 package org.isf.reductionplan.service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.isf.generaldata.MessageBundle;
@@ -178,6 +182,151 @@ public class ReductionPlanIoOperations {
 		return errors;
 	}
 
+//	/**
+//	 * Validates the {@link ReductionPlan} rates making sure that they are greater than 0.00 and less  than or equal to 100.00
+//	 * @param reductionPlan the {@link ReductionPlan} to add
+//	 */
+//	public List<OHDataValidationException> validateRates(ReductionPlan reductionPlan) {
+//		List<OHDataValidationException> errors = new ArrayList<>();
+//
+//		if (reductionPlan.getExamRate().compareTo(BigDecimal.ZERO) <= 0 ||
+//			reductionPlan.getExamRate().compareTo(BigDecimal.valueOf(100)) > 0) {
+//			errors.add(
+//				new OHDataValidationException(
+//					new OHExceptionMessage(MessageBundle.getMessage("angal.reductionplan.invalidrate.msg"))
+//				)
+//			);
+//		}
+//
+//		if (reductionPlan.getMedicalRate().compareTo(BigDecimal.ZERO) <= 0 ||
+//			reductionPlan.getMedicalRate().compareTo(BigDecimal.valueOf(100)) > 0) {
+//			errors.add(
+//				new OHDataValidationException(
+//					new OHExceptionMessage(MessageBundle.getMessage("angal.reductionplan.invalidrate.msg"))
+//				)
+//			);
+//		}
+//
+//		if (reductionPlan.getOperationRate().compareTo(BigDecimal.ZERO) <= 0 ||
+//			reductionPlan.getOperationRate().compareTo(BigDecimal.valueOf(100)) > 0) {
+//			errors.add(
+//				new OHDataValidationException(
+//					new OHExceptionMessage(MessageBundle.getMessage("angal.reductionplan.invalidrate.msg"))
+//				)
+//			);
+//		}
+//
+//		if (reductionPlan.getOtherRate().compareTo(BigDecimal.ZERO) <= 0 ||
+//			reductionPlan.getOtherRate().compareTo(BigDecimal.valueOf(100)) > 0) {
+//			errors.add(
+//				new OHDataValidationException(
+//					new OHExceptionMessage(MessageBundle.getMessage("angal.reductionplan.invalidrate.msg"))
+//				)
+//			);
+//		}
+//
+//		for (ExamReduction examReduction : reductionPlan.getExamReductions()){
+//			if (examReduction.getReductionRate().compareTo(BigDecimal.ZERO) <= 0 ||
+//				examReduction.getReductionRate().compareTo(BigDecimal.valueOf(100)) > 0) {
+//				errors.add(
+//					new OHDataValidationException(
+//						new OHExceptionMessage(MessageBundle.getMessage("angal.reductionplan.invalidrate.msg"))
+//					)
+//				);
+//			}
+//		}
+//
+//		for (MedicalReduction medicalReduction : reductionPlan.getMedicalReductions()){
+//			if (medicalReduction.getReductionRate().compareTo(BigDecimal.ZERO) <= 0 ||
+//				medicalReduction.getReductionRate().compareTo(BigDecimal.valueOf(100)) > 0) {
+//				errors.add(
+//					new OHDataValidationException(
+//						new OHExceptionMessage(MessageBundle.getMessage("angal.reductionplan.invalidrate.msg"))
+//					)
+//				);
+//			}
+//		}
+//
+//		for (OperationReduction operationReduction : reductionPlan.getOperationReductions()){
+//			if (operationReduction.getReductionRate().compareTo(BigDecimal.ZERO) <= 0 ||
+//				operationReduction.getReductionRate().compareTo(BigDecimal.valueOf(100)) > 0) {
+//				errors.add(
+//					new OHDataValidationException(
+//						new OHExceptionMessage(MessageBundle.getMessage("angal.reductionplan.invalidrate.msg"))
+//					)
+//				);
+//			}
+//		}
+//
+//		for (PriceOtherReduction priceOtherReduction : reductionPlan.getPriceOtherReductions()){
+//			if (priceOtherReduction.getReductionRate().compareTo(BigDecimal.ZERO) <= 0 ||
+//				priceOtherReduction.getReductionRate().compareTo(BigDecimal.valueOf(100)) > 0) {
+//				errors.add(
+//					new OHDataValidationException(
+//						new OHExceptionMessage(MessageBundle.getMessage("angal.reductionplan.invalidrate.msg"))
+//					)
+//				);
+//			}
+//		}
+//
+//		return errors;
+//	}
+
+	/**
+	 * Validates the rate of {@link ReductionPlan} item rates making sure that they are greater than 0.00
+	 * and less than or equal to 100.00.
+	 * @param rate the {@link ReductionPlan} to add
+	 * @return a true if valid and false if not
+	 */
+	private boolean isInvalidRate(BigDecimal rate) {
+		return rate.compareTo(BigDecimal.ZERO) <= 0 || rate.compareTo(BigDecimal.valueOf(100)) > 0;
+	}
+
+	/**
+	 * Validates the {@link ReductionPlan} rates making sure that they are greater than 0.00
+	 * and less than or equal to 100.00.
+	 * @param reductions list of {@link ReductionPlan} items whose rate are to be validated
+	 * @return a list of OHDataValidationException containing any validation errors
+	 */
+	private <T> List<OHDataValidationException> validateReductionRates(Collection<T> reductions,
+		Function<T, BigDecimal> rateExtractor, String errorMsg) {
+		if (reductions == null) return Collections.emptyList();
+		return reductions.stream()
+			.filter(r -> isInvalidRate(rateExtractor.apply(r)))
+			.map(r -> new OHDataValidationException(new OHExceptionMessage(errorMsg)))
+			.collect(Collectors.toList());
+	}
+
+	/**
+	 * Validates the {@link ReductionPlan} rates making sure that they are greater than 0.00
+	 * and less than or equal to 100.00.
+	 * @param reductionPlan the {@link ReductionPlan} to add
+	 * @return a list of OHDataValidationException containing any validation errors
+	 */
+	public List<OHDataValidationException> validateRates(ReductionPlan reductionPlan) {
+		List<OHDataValidationException> errors = new ArrayList<>();
+		String errorMsg = MessageBundle.getMessage("angal.reductionplan.invalidrate.msg");
+
+		if (isInvalidRate(reductionPlan.getExamRate())) {
+			errors.add(new OHDataValidationException(new OHExceptionMessage(errorMsg)));
+		}
+		if (isInvalidRate(reductionPlan.getMedicalRate())) {
+			errors.add(new OHDataValidationException(new OHExceptionMessage(errorMsg)));
+		}
+		if (isInvalidRate(reductionPlan.getOperationRate())) {
+			errors.add(new OHDataValidationException(new OHExceptionMessage(errorMsg)));
+		}
+		if (isInvalidRate(reductionPlan.getOtherRate())) {
+			errors.add(new OHDataValidationException(new OHExceptionMessage(errorMsg)));
+		}
+		errors.addAll(validateReductionRates(reductionPlan.getExamReductions(), ExamReduction::getReductionRate, errorMsg));
+		errors.addAll(validateReductionRates(reductionPlan.getMedicalReductions(), MedicalReduction::getReductionRate, errorMsg));
+		errors.addAll(validateReductionRates(reductionPlan.getOperationReductions(), OperationReduction::getReductionRate, errorMsg));
+		errors.addAll(validateReductionRates(reductionPlan.getPriceOtherReductions(), PriceOtherReduction::getReductionRate, errorMsg));
+
+		return errors;
+	}
+
 	/**
 	 * Save a {@link ReductionPlan}
 	 * @param reductionPlan the {@link ReductionPlan} to insert
@@ -185,12 +334,17 @@ public class ReductionPlanIoOperations {
 	 */
 	public void add(ReductionPlan reductionPlan) throws OHServiceException{
 		List<OHDataValidationException> errors = validateReductionPlan(reductionPlan);
+		List<OHDataValidationException> ratesErrors = validateRates(reductionPlan);
 
 		if (!errors.isEmpty()) {
 			String combinedMessage = errors.stream()
 				.flatMap(e -> e.getMessages().stream().map(OHExceptionMessage::getMessage))
 				.collect(Collectors.joining("; "));
 			throw new OHDataValidationException(new OHExceptionMessage(combinedMessage));
+		}
+
+		if (!ratesErrors.isEmpty()){
+			throw ratesErrors.get(0);
 		}
 
 		reductionPlanRepository.save(reductionPlan);

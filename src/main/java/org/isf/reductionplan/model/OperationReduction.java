@@ -21,6 +21,8 @@
  */
 package org.isf.reductionplan.model;
 
+import java.math.BigDecimal;
+
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -66,8 +68,8 @@ public class OperationReduction extends Auditable<String> {
 	private Operation operation;
 
 	@NotNull
-	@Column(name = "OPR_REDUCTIONRATE")
-	private double reductionRate;
+	@Column(name = "OPR_REDUCTIONRATE",  precision = 5, scale = 2)
+	private BigDecimal reductionRate;
 
 	@Version
 	@Column(name = "OPR_LOCK")
@@ -77,7 +79,7 @@ public class OperationReduction extends Auditable<String> {
 		super();
 	}
 
-	public OperationReduction(int id, ReductionPlan reductionPlan, Operation operation, double reductionRate) {
+	public OperationReduction(int id, ReductionPlan reductionPlan, Operation operation, BigDecimal reductionRate) {
 		super();
 		this.id = id;
 		this.reductionPlan = reductionPlan;
@@ -85,7 +87,7 @@ public class OperationReduction extends Auditable<String> {
 		this.reductionRate = reductionRate;
 	}
 
-	public OperationReduction(ReductionPlan reductionPlan, Operation operation, double reductionRate) {
+	public OperationReduction(ReductionPlan reductionPlan, Operation operation, BigDecimal reductionRate) {
 		this.reductionPlan = reductionPlan;
 		this.operation = operation;
 		this.reductionRate = reductionRate;
@@ -115,11 +117,11 @@ public class OperationReduction extends Auditable<String> {
 		this.operation = operation;
 	}
 
-	public double getReductionRate() {
+	public BigDecimal getReductionRate() {
 		return reductionRate;
 	}
 
-	public void setReductionRate(double reductionRate) {
+	public void setReductionRate(BigDecimal reductionRate) {
 		this.reductionRate = reductionRate;
 	}
 
