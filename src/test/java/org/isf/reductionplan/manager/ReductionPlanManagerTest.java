@@ -186,7 +186,7 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 		OHDataValidationException exception = assertThrows(OHDataValidationException.class, () -> manager.add(reductionPlan));
 		assertNotNull(exception);
 		assertFalse(exception.getMessages().isEmpty());
-		assertEquals("angal.reductionplan.invalidrate.msg", exception.getMessages().get(0).getMessage());
+		assertEquals("angal.reductionplan.invalidglobalreductionrate.msg", exception.getMessages().get(0).getMessage());
 
 		ReductionPlan savedReductionPlan = manager.getById(reductionPlan.getId());
 		assertNull(savedReductionPlan);
@@ -318,7 +318,7 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 		assertThat(manager.getOperationReductionsByReductionPlanId(reductionPlan.getId()).size()).isEqualTo(1);
 		assertThat(reductionPlan.getOperationReductions().size()).isEqualTo(1);
 		reductionPlan.getOperationReductions().clear();
-		manager.add(reductionPlan);
+		repository.saveAndFlush(reductionPlan);
 		assertThat(reductionPlan.getOperationReductions().size()).isEqualTo(0);
 		assertThat(manager.getOperationReductionsByReductionPlanId(reductionPlan.getId()).size()).isEqualTo(0);
 	}
