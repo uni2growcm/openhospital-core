@@ -48,7 +48,7 @@ public class DeathReasonIoOperations {
 	/**
 	 * Get all the {@link DeathReason}s.
 	 * @return all the {@link DeathReason}s.
-	 * @throws OHServiceException If an error occurs during recovery
+	 * @throws OHServiceException if an error occurs during recovery
 	 */
 	public List<DeathReason> getAll() throws OHServiceException {
 		return deathReasonRepository.findByDeleted(false);
@@ -68,7 +68,7 @@ public class DeathReasonIoOperations {
 	 * Store the specified {@link DeathReason}.
 	 * @param deathReason specific DeathReason to store.
 	 * @return {@link DeathReason}.
-	 * @throws OHServiceException If a validation error is detected
+	 * @throws OHServiceException if a validation error is detected
 	 */
 	public DeathReason add(DeathReason deathReason) throws OHServiceException {
 		List<OHExceptionMessage> errors = validate(deathReason);
@@ -135,7 +135,7 @@ public class DeathReasonIoOperations {
 	 * @param deathReason - the {@link DeathReason} code
 	 * @return {@code true} if the death reason is already in exist where deleted is false, {@code false} otherwise
 	 */
-	public boolean exists(DeathReason deathReason) {
+	public boolean exists(DeathReason deathReason) throws OHServiceException {
 		if(deathReason.getId() > 0) {
 			return deathReasonRepository.existsByTitleAndDeletedAndIdNot(deathReason.getTitle(), false, deathReason.getId());
 		} else {
@@ -147,7 +147,7 @@ public class DeathReasonIoOperations {
 	 * Verify if the object is valid for CRUD and return a list of errors, if any.
 	 * @param deathReason the {@link DeathReason} object to validate.
 	 */
-	private List<OHExceptionMessage> validate(DeathReason deathReason) {
+	private List<OHExceptionMessage> validate(DeathReason deathReason) throws OHServiceException {
 		List<OHExceptionMessage> errors = new ArrayList<>();
 		if (deathReason == null) {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.commom.anullentrycannotberegistered.msg")));

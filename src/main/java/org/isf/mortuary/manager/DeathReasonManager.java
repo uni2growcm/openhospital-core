@@ -65,7 +65,7 @@ public class DeathReasonManager {
 	 * Store the specified {@link DeathReason}.
 	 * @param deathReason specific DeathReason to store.
 	 * @return {@link DeathReason}.
-	 * @throws OHServiceException If a validation error is detected
+	 * @throws OHServiceException if a validation error is detected
 	 */
 	public DeathReason add(DeathReason deathReason) throws OHServiceException {
 		return deathReasonIoOperations.add(deathReason);
@@ -96,7 +96,7 @@ public class DeathReasonManager {
 	 * @param deathReason - the {@link DeathReason} code
 	 * @return {@code true} if the death reason is present in the database, {@code false} otherwise
 	 */
-	public boolean exists(DeathReason deathReason) {
+	public boolean exists(DeathReason deathReason) throws OHServiceException {
 		return deathReasonIoOperations.exists(deathReason);
 	}
 
