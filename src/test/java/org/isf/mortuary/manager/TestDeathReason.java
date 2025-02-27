@@ -30,7 +30,7 @@ import org.isf.utils.exception.OHException;
 public class TestDeathReason {
 
 	private final int id = 1;
-	private final String code = "CARD001";
+	private final String title = "CARD001";
 	private final String description = "Arrêt cardiaque";
 	private final boolean deleted = false;
 
@@ -41,21 +41,21 @@ public class TestDeathReason {
 			deathReason = new DeathReason();
 			setParameters(deathReason);
 		} else {
-			deathReason = new DeathReason(id, code, description, deleted);
+			deathReason = new DeathReason(id, title, description, deleted);
 		}
 		return deathReason;
 	}
 
 	public void setParameters(DeathReason deathReason) {
 		deathReason.setId(id);
-		deathReason.setCode(code);
+		deathReason.setTitle(title);
 		deathReason.setDescription(description);
 		deathReason.setDeleted(deleted);
 	}
 
 	public void check(DeathReason deathReason) {
 		assertThat(deathReason.getId()).isEqualTo(id);
-		assertThat(deathReason.getCode()).isEqualTo(code);
+		assertThat(deathReason.getTitle()).isEqualTo(title);
 		assertThat(deathReason.getDescription()).isEqualTo(description);
 	}
 }
