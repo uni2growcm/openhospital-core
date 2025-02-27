@@ -820,6 +820,20 @@ INSERT INTO `oh_bills` (`BLL_ID`, `BLL_DATE`, `BLL_UPDATE`, `BLL_IS_LST`, `BLL_I
 UNLOCK TABLES;
 
 --
+-- Dumping data for table `oh_bodycompartment`
+--
+
+LOCK TABLES `oh_bodycompartment` WRITE;
+/*!40000 ALTER TABLE `oh_bodycompartment` DISABLE KEYS */;
+INSERT INTO `OH_BODYCOMPARTMENT` (`BC_ID`,`BC_LABEL`,`BC_DESC`,`BC_CREATED_BY`,`BC_CREATED_DATE`,`BC_LAST_MODIFIED_BY`,`BC_LAST_MODIFIED_DATE`,`BC_ACTIVE`,`BC_DELETED`) VALUES (1,'BC001', 'Section A lockers, level 1', 'admin', '2025-01-01 08:30:00', 'admin', '2025-01-01 08:30:00', 1, 0);
+INSERT INTO `OH_BODYCOMPARTMENT` (`BC_ID`,`BC_LABEL`,`BC_DESC`,`BC_CREATED_BY`,`BC_CREATED_DATE`,`BC_LAST_MODIFIED_BY`,`BC_LAST_MODIFIED_DATE`,`BC_ACTIVE`,`BC_DELETED`) VALUES (2, 'BC002', 'Section A lockers, level 2', 'admin', '2025-01-01 08:35:00', 'admin', '2025-01-01 08:35:00', 1, 0);
+INSERT INTO `OH_BODYCOMPARTMENT` (`BC_ID`,`BC_LABEL`,`BC_DESC`,`BC_CREATED_BY`,`BC_CREATED_DATE`,`BC_LAST_MODIFIED_BY`,`BC_LAST_MODIFIED_DATE`,`BC_ACTIVE`,`BC_DELETED`) VALUES (3, 'BC003', 'Section B lockers, level 1', 'admin', '2025-01-02 09:00:00', 'admin', '2025-01-02 09:15:00', 1, 0);
+INSERT INTO `OH_BODYCOMPARTMENT` (`BC_ID`,`BC_LABEL`,`BC_DESC`,`BC_CREATED_BY`,`BC_CREATED_DATE`,`BC_LAST_MODIFIED_BY`,`BC_LAST_MODIFIED_DATE`,`BC_ACTIVE`,`BC_DELETED`) VALUES (4, 'BC004', 'Section B lockers, level 2', 'admin', '2025-01-02 09:05:00', 'admin', '2025-01-02 09:05:00', 1, 0);
+INSERT INTO `OH_BODYCOMPARTMENT` (`BC_ID`,`BC_LABEL`,`BC_DESC`,`BC_CREATED_BY`,`BC_CREATED_DATE`,`BC_LAST_MODIFIED_BY`,`BC_LAST_MODIFIED_DATE`,`BC_ACTIVE`,`BC_DELETED`) VALUES (5, 'BC005', 'Insulated lockers for high security', 'admin', '2025-01-03 10:00:00', 'admin', '2025-01-03 10:00:00', 1, 0);
+/*!40000 ALTER TABLE `oh_bodycompartment` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Dumping data for table `oh_death`
 --
 
@@ -844,12 +858,12 @@ UNLOCK TABLES;
 
 LOCK TABLES `oh_deathreason` WRITE;
 /*!40000 ALTER TABLE `oh_deathreason` DISABLE KEYS */;
-INSERT INTO `oh_deathreason` (`DTHR_ID`,`DTHR_CODE`,`DTHR_DESC`,`DTHR_CREATED_BY`,`DTHR_CREATED_DATE`,`DTHR_LAST_MODIFIED_BY`,`DTHR_LAST_MODIFIED_DATE`,`DTHR_ACTIVE`) VALUES (1, 'CARD001', 'Cardiac arrest', 'admin', '2024-12-01 09:00:00', 'admin', '2024-12-01 09:15:00', 1);
-INSERT INTO `oh_deathreason` (`DTHR_ID`,`DTHR_CODE`,`DTHR_DESC`,`DTHR_CREATED_BY`,`DTHR_CREATED_DATE`,`DTHR_LAST_MODIFIED_BY`,`DTHR_LAST_MODIFIED_DATE`,`DTHR_ACTIVE`) VALUES (2, 'RESP002', 'Acute respiratory insufficiency', 'admin', '2024-11-20 14:30:00', 'admin', '2024-11-20 15:00:00', 1);
-INSERT INTO `oh_deathreason` (`DTHR_ID`,`DTHR_CODE`,`DTHR_DESC`,`DTHR_CREATED_BY`,`DTHR_CREATED_DATE`,`DTHR_LAST_MODIFIED_BY`,`DTHR_LAST_MODIFIED_DATE`,`DTHR_ACTIVE`) VALUES (3, 'CANC003', 'End-stage cancer', 'admin', '2024-11-18 11:45:00', 'admin', '2024-11-18 12:15:00', 1);
-INSERT INTO `oh_deathreason` (`DTHR_ID`,`DTHR_CODE`,`DTHR_DESC`,`DTHR_CREATED_BY`,`DTHR_CREATED_DATE`,`DTHR_LAST_MODIFIED_BY`,`DTHR_LAST_MODIFIED_DATE`,`DTHR_ACTIVE`) VALUES (4, 'TRAU004', 'Severe head trauma', 'admin', '2024-11-22 08:20:00', 'dr_lee', '2024-11-22 09:00:00', 1);
-INSERT INTO `oh_deathreason` (`DTHR_ID`,`DTHR_CODE`,`DTHR_DESC`,`DTHR_CREATED_BY`,`DTHR_CREATED_DATE`,`DTHR_LAST_MODIFIED_BY`,`DTHR_LAST_MODIFIED_DATE`,`DTHR_ACTIVE`) VALUES (5, 'INF005', 'Generalized infection (septicemia)', 'admin', '2024-12-05 16:10:00', 'admin', '2024-12-05 16:45:00', 1);
-INSERT INTO `oh_deathreason` (`DTHR_ID`,`DTHR_CODE`,`DTHR_DESC`,`DTHR_CREATED_BY`,`DTHR_CREATED_DATE`,`DTHR_LAST_MODIFIED_BY`,`DTHR_LAST_MODIFIED_DATE`,`DTHR_ACTIVE`) VALUES (6, 'NEUR006', 'Massive ischemic stroke', 'admin', '2024-11-30 10:00:00', 'admin', '2024-11-30 10:30:00', 1);
+INSERT INTO `oh_deathreason` (`DTHR_ID`,`DTHR_TITLE`,`DTHR_DESC`,`DTHR_CREATED_BY`,`DTHR_CREATED_DATE`,`DTHR_LAST_MODIFIED_BY`,`DTHR_LAST_MODIFIED_DATE`,`DTHR_ACTIVE`) VALUES (1, 'CARD001', 'Cardiac arrest', 'admin', '2024-12-01 09:00:00', 'admin', '2024-12-01 09:15:00', 1);
+INSERT INTO `oh_deathreason` (`DTHR_ID`,`DTHR_TITLE`,`DTHR_DESC`,`DTHR_CREATED_BY`,`DTHR_CREATED_DATE`,`DTHR_LAST_MODIFIED_BY`,`DTHR_LAST_MODIFIED_DATE`,`DTHR_ACTIVE`) VALUES (2, 'RESP002', 'Acute respiratory insufficiency', 'admin', '2024-11-20 14:30:00', 'admin', '2024-11-20 15:00:00', 1);
+INSERT INTO `oh_deathreason` (`DTHR_ID`,`DTHR_TITLE`,`DTHR_DESC`,`DTHR_CREATED_BY`,`DTHR_CREATED_DATE`,`DTHR_LAST_MODIFIED_BY`,`DTHR_LAST_MODIFIED_DATE`,`DTHR_ACTIVE`) VALUES (3, 'CANC003', 'End-stage cancer', 'admin', '2024-11-18 11:45:00', 'admin', '2024-11-18 12:15:00', 1);
+INSERT INTO `oh_deathreason` (`DTHR_ID`,`DTHR_TITLE`,`DTHR_DESC`,`DTHR_CREATED_BY`,`DTHR_CREATED_DATE`,`DTHR_LAST_MODIFIED_BY`,`DTHR_LAST_MODIFIED_DATE`,`DTHR_ACTIVE`) VALUES (4, 'TRAU004', 'Severe head trauma', 'admin', '2024-11-22 08:20:00', 'dr_lee', '2024-11-22 09:00:00', 1);
+INSERT INTO `oh_deathreason` (`DTHR_ID`,`DTHR_TITLE`,`DTHR_DESC`,`DTHR_CREATED_BY`,`DTHR_CREATED_DATE`,`DTHR_LAST_MODIFIED_BY`,`DTHR_LAST_MODIFIED_DATE`,`DTHR_ACTIVE`) VALUES (5, 'INF005', 'Generalized infection (septicemia)', 'admin', '2024-12-05 16:10:00', 'admin', '2024-12-05 16:45:00', 1);
+INSERT INTO `oh_deathreason` (`DTHR_ID`,`DTHR_TITLE`,`DTHR_DESC`,`DTHR_CREATED_BY`,`DTHR_CREATED_DATE`,`DTHR_LAST_MODIFIED_BY`,`DTHR_LAST_MODIFIED_DATE`,`DTHR_ACTIVE`) VALUES (6, 'NEUR006', 'Massive ischemic stroke', 'admin', '2024-11-30 10:00:00', 'admin', '2024-11-30 10:30:00', 1);
 /*!40000 ALTER TABLE `oh_deathreason` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1645,6 +1659,9 @@ INSERT INTO `oh_groupmenu` (`GM_ID`, `GM_UG_ID_A`, `GM_MNI_ID_A`, `GM_ACTIVE`, `
 INSERT INTO `oh_groupmenu` (`GM_ID`, `GM_UG_ID_A`, `GM_MNI_ID_A`, `GM_ACTIVE`, `GM_CREATED_BY`, `GM_CREATED_DATE`, `GM_LAST_MODIFIED_BY`, `GM_LAST_MODIFIED_DATE`) VALUES (350,'admin','mortuary',1,NULL,NULL,NULL,NULL);
 INSERT INTO `oh_groupmenu` (`GM_ID`, `GM_UG_ID_A`, `GM_MNI_ID_A`, `GM_ACTIVE`, `GM_CREATED_BY`, `GM_CREATED_DATE`, `GM_LAST_MODIFIED_BY`, `GM_LAST_MODIFIED_DATE`) VALUES (351,'admin','pregnancycare',1,NULL,NULL,NULL,NULL);
 INSERT INTO `oh_groupmenu` (`GM_ID`, `GM_UG_ID_A`, `GM_MNI_ID_A`, `GM_ACTIVE`, `GM_CREATED_BY`, `GM_CREATED_DATE`, `GM_LAST_MODIFIED_BY`, `GM_LAST_MODIFIED_DATE`) VALUES (352,'admin','reductionplan',1,NULL,NULL,NULL,NULL);
+INSERT INTO `oh_groupmenu` (`GM_ID`, `GM_UG_ID_A`, `GM_MNI_ID_A`, `GM_ACTIVE`, `GM_CREATED_BY`, `GM_CREATED_DATE`, `GM_LAST_MODIFIED_BY`, `GM_LAST_MODIFIED_DATE`) VALUES (353,'admin','bodycompartments',1,NULL,NULL,NULL,NULL);
+INSERT INTO `oh_groupmenu` (`GM_ID`, `GM_UG_ID_A`, `GM_MNI_ID_A`, `GM_ACTIVE`, `GM_CREATED_BY`, `GM_CREATED_DATE`, `GM_LAST_MODIFIED_BY`, `GM_LAST_MODIFIED_DATE`) VALUES (354,'admin','deaths',1,NULL,NULL,NULL,NULL);
+INSERT INTO `oh_groupmenu` (`GM_ID`, `GM_UG_ID_A`, `GM_MNI_ID_A`, `GM_ACTIVE`, `GM_CREATED_BY`, `GM_CREATED_DATE`, `GM_LAST_MODIFIED_BY`, `GM_LAST_MODIFIED_DATE`) VALUES (355,'admin','deathreasons',1,NULL,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `oh_groupmenu` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -3201,9 +3218,12 @@ INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTI
 INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('ward','angal.menu.btn.ward','angal.menu.ward','x','W','generaldata','org.isf.ward.gui.WardBrowser','N',2);
 INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('worksheet','angal.menu.btn.worksheet','angal.menu.worksheet','x','W','main','org.isf.visits.gui.VisitView','N',8);
 INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('inventory','angal.menu.btn.inventory','angal.menu.inventory','x','I','pharmacy','org.isf.medicalinventory.gui.InventoryBrowser','N',7);
-INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('mortuarystays', 'angal.menu.btn.mortuarystays', 'angal.menu.mortuarystays', 'x', 'U', 'generaldata', 'org.isf.mortuarystays.gui.MortuaryStaysBrowser','N', 12);
-INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('mortuary', 'angal.menu.btn.mortuary', 'angal.menu.mortuary', 'x', 'U', 'main', 'org.isf.mortuary.gui.MortuaryBrowser','N', 11);
+INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('mortuarystays', 'angal.menu.btn.mortuarystays', 'angal.menu.mortuarystays', 'x', 'U', 'mortuary', 'org.isf.mortuarystays.gui.MortuaryStaysBrowser','N', 2);
+INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('mortuary', 'angal.menu.btn.mortuary', 'angal.menu.mortuary', 'x', 'U', 'main', 'none','Y', 11);
 INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('reductionplan','angal.menu.btn.reductionplans','angal.menu.reductionplans','x','R','generaldata','org.isf.reductionplan.gui.ReductionPlanBrowser','N',13);
+INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('bodycompartments', 'angal.menu.btn.bodycompartments', 'angal.menu.bodycompartments', 'x', 'B', 'mortuary', 'org.isf.mortuary.gui.BodyCompartmentBrowser','N', 1);
+INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('deaths', 'angal.menu.btn.deaths', 'angal.menu.deaths', 'x', 'D', 'mortuary', 'org.isf.mortuary.gui.MortuaryBrowser','N', 3);
+INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('deathreasons', 'angal.menu.btn.causeofdeaths', 'angal.menu.causeofdeaths', 'x', 'A', 'mortuary', 'org.isf.mortuary.gui.DeathReasonBrowser','N', 4);
 /*!40000 ALTER TABLE `oh_menuitem` ENABLE KEYS */;
 UNLOCK TABLES;
 

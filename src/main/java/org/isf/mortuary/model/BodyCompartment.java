@@ -35,45 +35,42 @@ import org.isf.utils.db.Auditable;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
-@Table(name = "OH_DEATHREASON")
+@Table(name = "OH_BODYCOMPARTMENT")
 @EntityListeners(AuditingEntityListener.class)
-@AttributeOverride(name = "createdBy", column = @Column(name = "DTHR_CREATED_BY", updatable = false))
-@AttributeOverride(name = "createdDate", column = @Column(name = "DTHR_CREATED_DATE", updatable = false))
-@AttributeOverride(name = "lastModifiedBy", column = @Column(name = "DTHR_LAST_MODIFIED_BY"))
-@AttributeOverride(name = "lastModifiedDate", column = @Column(name = "DTHR_LAST_MODIFIED_DATE"))
-@AttributeOverride(name = "active", column = @Column(name = "DTHR_ACTIVE"))
-public class DeathReason extends Auditable<String> {
+@AttributeOverride(name = "createdBy", column = @Column(name = "BC_CREATED_BY", updatable = false))
+@AttributeOverride(name = "createdDate", column = @Column(name = "BC_CREATED_DATE", updatable = false))
+@AttributeOverride(name = "lastModifiedBy", column = @Column(name = "BC_LAST_MODIFIED_BY"))
+@AttributeOverride(name = "lastModifiedDate", column = @Column(name = "BC_LAST_MODIFIED_DATE"))
+@AttributeOverride(name = "active", column = @Column(name = "BC_ACTIVE"))
+public class BodyCompartment extends Auditable<String> {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "DTHR_ID")
+	@Column(name = "BC_ID")
 	private int id;
 
-	@Column(name = "DTHR_TITLE")
-	private String title;
+	@Column(name = "BC_LABEL")
+	private String label;
 
-	@Column(name = "DTHR_DESC")
+	@Column(name = "BC_DESC")
 	private String description;
 
-	@Column(name = "DTHR_DELETED")
+	@Column(name = "BC_DELETED")
 	private boolean deleted;
 
-	public DeathReason() {
+	public BodyCompartment() {
+
 	}
 
-	public DeathReason(String title, String description, boolean deleted) {
-		super();
-		this.title = title;
+	public BodyCompartment(String code, String description, boolean deleted) {
+		this.label = code;
 		this.description = description;
 		this.deleted = deleted;
 	}
 
-	public DeathReason(int id, String title, String description, boolean deleted) {
-		super();
+	public BodyCompartment(int id, String code, String description, boolean deleted) {
+		this(code, description, deleted);
 		this.id = id;
-		this.title = title;
-		this.description = description;
-		this.deleted = deleted;
 	}
 
 	public int getId() {
@@ -82,11 +79,11 @@ public class DeathReason extends Auditable<String> {
 	public void setId(int id) {
 		this.id = id;
 	}
-	public String getTitle() {
-		return title;
+	public String getLabel() {
+		return label;
 	}
-	public void setTitle(String title) {
-		this.title = title;
+	public void setLabel(String label) {
+		this.label = label;
 	}
 	public String getDescription() {
 		return description;
@@ -94,8 +91,8 @@ public class DeathReason extends Auditable<String> {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	public boolean getDeleted() {
-		return this.deleted;
+	public boolean isDeleted() {
+		return deleted;
 	}
 	public void setDeleted(boolean deleted) {
 		this.deleted = deleted;
@@ -103,6 +100,10 @@ public class DeathReason extends Auditable<String> {
 
 	@Override
 	public String toString() {
-		return title;
+		return "BodyCompartment{" +
+			"id=" + id +
+			", label='" + label + '\'' +
+			", description='" + description + '\'' +
+			'}';
 	}
 }

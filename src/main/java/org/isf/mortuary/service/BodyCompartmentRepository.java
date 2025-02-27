@@ -22,26 +22,16 @@
 
 package org.isf.mortuary.service;
 
-import java.util.List;
-
-import org.isf.mortuary.model.DeathReason;
+import org.isf.mortuary.model.BodyCompartment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface DeathReasonRepository extends JpaRepository<DeathReason, Integer> {
+public interface BodyCompartmentRepository extends JpaRepository<BodyCompartment, Integer> {
 
-	List<DeathReason> findByDeleted(boolean deleted);
+	BodyCompartment findByLabelAndDeleted(String label, boolean deleted);
 
-	DeathReason findByIdAndDeleted(int id, boolean deleted);
-
-	Page<DeathReason> findByTitleContainsAndDeletedOrDescriptionContainsAndDeleted(String code, boolean b, String description, boolean b1, Pageable pageable);
-
-	DeathReason findByTitleAndDeleted(String code, boolean b);
-
-	boolean existsByTitleAndDeletedAndIdNot(String title, boolean b, int id);
-
-	boolean existsByTitleAndDeleted(String title, boolean b);
+	Page<BodyCompartment> findByLabelContainsAndDeletedOrDescriptionContainsAndDeleted( String label, boolean deleted, String description, boolean deleted2, Pageable pageable);
 }
