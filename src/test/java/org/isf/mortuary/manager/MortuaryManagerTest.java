@@ -35,6 +35,7 @@ import org.isf.mortuary.model.Death;
 import org.isf.mortuary.model.DeathReason;
 import org.isf.mortuary.service.BodyCompartmentRepository;
 import org.isf.mortuary.service.DeathReasonRepository;
+import org.isf.mortuary.service.MortuaryIoOperations;
 import org.isf.mortuary.service.MortuaryRepository;
 import org.isf.patient.model.Patient;
 import org.isf.patient.service.PatientIoOperationRepository;
@@ -45,6 +46,7 @@ import org.isf.ward.model.Ward;
 import org.isf.ward.service.WardIoOperationRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -55,11 +57,17 @@ public class MortuaryManagerTest extends OHCoreTestCase {
 	private static TestMortuary testMortuary;
 	private static TestDeathReason testDeathReason;
 	private static TestWard testWard;
+	private final LocalDateTime date = LocalDateTime.of(2024, 1, 10, 0, 0, 0);
+
 	@Autowired
 	PatientIoOperationRepository patientIoOperationsRepository;
+
 	@Autowired
 	MortuaryBrowserManager mortuaryBrowserManager;
-	private final LocalDateTime date = LocalDateTime.of(2024, 1, 10, 0, 0, 0);
+
+	@Autowired
+	MortuaryIoOperations mortuaryIoOperations;
+
 	@Autowired
 	private MortuaryRepository repository;
 
@@ -85,8 +93,42 @@ public class MortuaryManagerTest extends OHCoreTestCase {
 	}
 
 	@Test
+	@DisplayName("Should successfully add a death")
+	void testAdd() throws OHException, OHServiceException {
+		Death death = generateDeaths(1, true, true).get(0);
+		Death deathSaved = mortuaryBrowserManager.add(death);
+		assertThat(death.getPatient().getName()).isEqualTo(deathSaved.getPatient().getName());
+		assertThat(death.getDeclaringName()).isEqualTo(deathSaved.getDeclaringName());
+		assertThat(death.getDeathReason().getTitle()).isEqualTo(deathSaved.getDeathReason().getTitle());
+	}
+
+	@Test
+	@DisplayName("Should successfully update a death")
+	void testUpdate() throws OHException, OHServiceException {
+		Death death = generateDeaths(1, true, true).get(0);
+		Death deathSaved = repository.saveAndFlush(death);
+		deathSaved.setDeclaringName("John Doe");
+		Death deathUpdated = mortuaryBrowserManager.update(deathSaved);
+		assertThat(deathSaved.getPatient().getName()).isEqualTo(deathUpdated.getPatient().getName());
+		assertThat(deathSaved.getDeathReason().getTitle()).isEqualTo(deathUpdated.getDeathReason().getTitle());
+		assertThat(deathUpdated.getDeclaringName()).isEqualTo("John Doe");
+	}
+
+	@Test
+	@DisplayName("Should successfully delete a death")
+	void testDelete() throws OHException, OHServiceException {
+		List<Death> deathsSaved = repository.saveAllAndFlush(generateDeaths(1, true, true));
+		Death death = mortuaryIoOperations.findByIdAndDeleted(deathsSaved.get(0).getId());
+		assertThat(death).isNotNull();
+		mortuaryBrowserManager.delete(death);
+		Death deathDeleted = mortuaryIoOperations.findByIdAndDeleted(death.getId());
+		assertThat(deathDeleted).isNull();
+	}
+
+	@Test
+	@DisplayName("It should be possible to retrieve death pages based on admission or discharge date")
 	void testGetDeathByAdmissionOrDischargeDate() throws OHException {
-		List<Death> savedDeaths = generateDeaths(10, true, true);
+		List<Death> savedDeaths = repository.saveAllAndFlush(generateDeaths(10, true, true));
 
 		LocalDateTime fromDate = LocalDateTime.of(2023, 1, 1, 0, 0, 0);
 		LocalDateTime toDate = LocalDateTime.of(2025, 3, 3, 0, 0, 0);
@@ -97,8 +139,9 @@ public class MortuaryManagerTest extends OHCoreTestCase {
 	}
 
 	@Test
-	void testGetPatientNameContainsAndWardCodeContainsAndAdmissionDateBetweenAndDeathReasonCodeContains() throws OHException {
-		List<Death> savedDeaths = generateDeaths(10, true, true);
+	@DisplayName("It should be possible to retrieve death pages based on the patient name, ward code, admission date and death reason title")
+	void testGetPatientNameContainsAndWardCodeContainsAndAdmissionDateBetweenAndDeathReasonTitleContains() throws OHException {
+		List<Death> savedDeaths = repository.saveAllAndFlush(generateDeaths(10, true, true));
 
 		LocalDateTime fromDate = LocalDateTime.of(2023, 1, 1, 0, 0, 0);
 		LocalDateTime toDate = LocalDateTime.of(2025, 3, 3, 0, 0, 0);
@@ -113,9 +156,10 @@ public class MortuaryManagerTest extends OHCoreTestCase {
 	}
 
 	@Test
+	@DisplayName("It should be possible to retrieve death pages based on the patient name, ward code, admission date and death reason title")
 	void testMgrGetMortuariesWhereDataPageable() throws OHException, OHServiceException {
 		int totalElements = 12;
-		List<Death> savedDeaths = generateDeaths(totalElements, true, true);
+		List<Death> savedDeaths = repository.saveAllAndFlush(generateDeaths(totalElements, true, true));
 
 		LocalDateTime fromDate = LocalDateTime.of(2023, 1, 1, 0, 0, 0);
 		LocalDateTime toDate = LocalDateTime.of(2025, 3, 3, 0, 0, 0);
@@ -138,7 +182,8 @@ public class MortuaryManagerTest extends OHCoreTestCase {
 		String wardCode = "W";
 		DeathReason finalDeathReason = deathReason;
 		BodyCompartment finalBodyCompartment = bodyCompartment;
-		List<Death> deaths = IntStream.range(0, size).mapToObj(i -> {
+
+		return IntStream.range(0, size).mapToObj(i -> {
 			Ward deathWard;
 			DeathReason deathReason1;
 
@@ -188,7 +233,5 @@ public class MortuaryManagerTest extends OHCoreTestCase {
 				false
 			);
 		}).toList();
-
-		return repository.saveAllAndFlush(deaths);
 	}
 }

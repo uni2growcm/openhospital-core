@@ -66,7 +66,7 @@ public class MortuaryBrowserManager {
 	 * Updates an existing {@link Death}
 	 * @param death - the {@link Death} to update
 	 * @return {@link Death} has been updated
-	 * @throws OHServiceException
+	 * @throws OHServiceException if an error occurs during the update operation
 	 */
 	public Death update(Death death) throws OHServiceException {
 		return mortuaryIoOperations.update(death);
@@ -88,7 +88,7 @@ public class MortuaryBrowserManager {
 	 * @param wardCode the code of provenance ward.
 	 * @param dateFrom the lower bound for the mortuary date range.
 	 * @param dateTo the upper bound for the mortuary date range.
-	 * @param deathReasonCode the reason of death.
+	 * @param deathReasonTitle the title of death reason.
 	 * @param isEnter to specify if it's admission date or discharge date
 	 * @param page current page.
 	 * @param size the size of the page.
@@ -100,7 +100,7 @@ public class MortuaryBrowserManager {
 		String wardCode,
 		LocalDateTime dateFrom,
 		LocalDateTime dateTo,
-		String deathReasonCode,
+		String deathReasonTitle,
 		boolean isEnter,
 		int page,
 		int size
@@ -111,7 +111,7 @@ public class MortuaryBrowserManager {
 			wardCode,
 			dateFrom,
 			dateTo,
-			deathReasonCode,
+			deathReasonTitle,
 			isEnter,
 			pageable
 		);

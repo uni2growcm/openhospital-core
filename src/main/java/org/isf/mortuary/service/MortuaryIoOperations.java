@@ -64,7 +64,10 @@ public class MortuaryIoOperations {
 	 * @throws OHServiceException if an error occurs during the store operation.
 	 */
 	public Death add(Death death) throws OHServiceException {
-		validatedDeath(death);
+		List<OHExceptionMessage> errors = validate(death);
+		if (!errors.isEmpty()) {
+			throw new OHDataValidationException(errors);
+		}
 		return mortuaryRepository.save(death);
 	}
 
@@ -75,7 +78,13 @@ public class MortuaryIoOperations {
 	 * @throws OHServiceException
 	 */
 	public Death update(Death death) throws OHServiceException {
-		validatedDeath(death);
+		if (death == null) {
+			throw new OHServiceException(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuary.deathnotfound.msg")));
+		}
+		List<OHExceptionMessage> errors = validate(death);
+		if (!errors.isEmpty()) {
+			throw new OHDataValidationException(errors);
+		}
 		return mortuaryRepository.save(death);
 	}
 
@@ -85,9 +94,12 @@ public class MortuaryIoOperations {
 	 * @throws OHServiceException
 	 */
 	public void delete(Death death) throws OHServiceException {
-		Death bodyCompartmentDeleted = findById(death.getId());
-		bodyCompartmentDeleted.setDeleted(true);
-		mortuaryRepository.save(bodyCompartmentDeleted);
+		Death deathDeleted = findByIdAndDeleted(death.getId());
+		if (deathDeleted == null) {
+			throw new OHServiceException(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuary.deathnotfound.msg")));
+		}
+		deathDeleted.setDeleted(true);
+		mortuaryRepository.save(deathDeleted);
 	}
 
 	/**
@@ -95,8 +107,8 @@ public class MortuaryIoOperations {
 	 * @return {@link Death}.
 	 * @throws OHServiceException
 	 */
-	public Death findById(int id) throws OHServiceException {
-		return mortuaryRepository.findById(id).orElse(null);
+	public Death findByIdAndDeleted(int id) throws OHServiceException {
+		return mortuaryRepository.findByIdAndDeleted(id, false);
 	}
 
 	/**
@@ -106,7 +118,7 @@ public class MortuaryIoOperations {
 	 * @param wardCode the code of provenance ward.
 	 * @param dateFrom the lower bound for the mortuary date range.
 	 * @param dateTo the upper bound for the mortuary date range.
-	 * @param deathReasonCode the reason of death.
+	 * @param deathReasonTitle the title of death reason.
 	 * @param isEnter to specify if it's admission date or discharge date
 	 * @param pageable for pagination.
 	 * @return the retrieved a mortuaries page.
@@ -117,7 +129,7 @@ public class MortuaryIoOperations {
 		String wardCode,
 		LocalDateTime dateFrom,
 		LocalDateTime dateTo,
-		String deathReasonCode,
+		String deathReasonTitle,
 		boolean isEnter,
 		Pageable pageable
 	) throws OHServiceException {
@@ -127,7 +139,7 @@ public class MortuaryIoOperations {
 				wardCode,
 				dateFrom,
 				dateTo,
-				deathReasonCode,
+				deathReasonTitle,
 				false,
 				pageable
 			);
@@ -137,7 +149,7 @@ public class MortuaryIoOperations {
 			wardCode,
 			dateFrom,
 			dateTo,
-			deathReasonCode,
+			deathReasonTitle,
 			false,
 			pageable
 		);
@@ -167,11 +179,16 @@ public class MortuaryIoOperations {
 		return mortuaryRepository.findAllByPatientNameContainsAndEstimatedDischargeDateBetweenAndDeleted(patientName, dateFrom, dateTo, false,pageable);
 	}
 
-	public Death getMortuaryWithPatientCode(int patientCode) {
+	/**
+	 * Find {@link Death} by patient code.
+	 * @return {@link Death}.
+	 * @throws OHServiceException
+	 */
+	public Death getMortuaryWithPatientCode(int patientCode) throws OHServiceException{
 		return mortuaryRepository.findByPatientCode(patientCode);
 	}
 
-	private void validatedDeath(Death death) throws OHDataValidationException {
+	private List<OHExceptionMessage> validate(Death death) throws OHServiceException {
 		List<OHExceptionMessage> errors = new ArrayList<>();
 		Death deathValidated = getMortuaryWithPatientCode(death.getPatient().getCode());
 
@@ -190,8 +207,7 @@ public class MortuaryIoOperations {
 		if (death.getAdmissionDate().isAfter(LocalDateTime.now())) {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuary.admissiondatemustbenotlaterthantodaydate.msg")));
 		}
-		if (!errors.isEmpty()) {
-			throw new OHDataValidationException(errors);
-		}
+
+		return errors;
 	}
 }

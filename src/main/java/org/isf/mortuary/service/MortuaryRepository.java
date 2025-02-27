@@ -79,4 +79,6 @@ public interface MortuaryRepository extends JpaRepository<Death, Integer> {
 	);
 
 	Death findByPatientCode(int patientCode);
+
+	Death findByIdAndDeleted(int id, boolean b);
 }
