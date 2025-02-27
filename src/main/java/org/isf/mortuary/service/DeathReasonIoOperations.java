@@ -136,7 +136,7 @@ public class DeathReasonIoOperations {
 	 * @return {@code true} if the death reason is already in exist where deleted is false, {@code false} otherwise
 	 */
 	public boolean exists(DeathReason deathReason) throws OHServiceException {
-		if(deathReason.getId() > 0) {
+		if (deathReason.getId() > 0) {
 			return deathReasonRepository.existsByTitleAndDeletedAndIdNot(deathReason.getTitle(), false, deathReason.getId());
 		} else {
 			return deathReasonRepository.existsByTitleAndDeleted(deathReason.getTitle(), false);
