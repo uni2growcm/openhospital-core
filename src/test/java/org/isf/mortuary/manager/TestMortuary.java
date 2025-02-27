@@ -42,13 +42,10 @@ public class TestMortuary {
 	private final LocalDateTime provisionalReleaseDate = LocalDateTime.of(2024, 12, 4, 0, 0, 0);
 	private final String declaringName = "John Doe";
 	private final String declaringPhone = "6543210001";
-	private final String declaringNest = "12345";
-	private final String familyName = null;
-	private final String familyPhone = null;
-	private final String familyNest = null;
+	private final String declaringNid = "12345";
 	private final boolean deleted = false;
 
-	public Death setup(Patient patient, DeathReason deathReason, Ward ward, BodyCompartment locker,boolean usingSet) throws OHException {
+	public Death setup(Patient patient, DeathReason deathReason, Ward ward, BodyCompartment locker, boolean usingSet) throws OHException {
 		Death mortuary;
 
 		if (usingSet) {
@@ -56,21 +53,21 @@ public class TestMortuary {
 			setParameters(patient, deathReason, ward, mortuary, locker);
 		} else {
 			mortuary = new Death(id, place, patient, ward, deathDate, enteredDate,
-				releaseDate, provisionalReleaseDate, deathReason, declaringName, declaringPhone, declaringNest,
-				familyName, familyPhone, familyNest, locker, deleted);
+				releaseDate, provisionalReleaseDate, deathReason, declaringName, declaringPhone, declaringNid,
+				null, null, null, locker, deleted);
 		}
 		return mortuary;
 	}
 
-	public Death setup(Patient patient, DeathReason deathReason, Ward ward, BodyCompartment locker,boolean usingSet, int id) throws OHException {
+	public Death setup(Patient patient, DeathReason deathReason, Ward ward, BodyCompartment locker, boolean usingSet, int id) throws OHException {
 		Death mortuary;
 		if (usingSet) {
 			mortuary = new Death();
 			setParameters(patient, deathReason, ward, mortuary, locker);
 		} else {
 			mortuary = new Death(id, place, patient, ward, deathDate, enteredDate,
-				releaseDate, provisionalReleaseDate, deathReason, declaringName, declaringPhone, declaringNest,
-				familyName, familyPhone, familyNest, locker,deleted);
+				releaseDate, provisionalReleaseDate, deathReason, declaringName, declaringPhone, declaringNid,
+				null, null, null, locker, deleted);
 		}
 		return mortuary;
 	}
@@ -87,10 +84,10 @@ public class TestMortuary {
 		mortuary.setEstimatedDischargeDate(provisionalReleaseDate);
 		mortuary.setDeclaringName(declaringName);
 		mortuary.setDeclaringPhone(declaringPhone);
-		mortuary.setDeclaringNid(declaringNest);
-		mortuary.setFamilyName(familyName);
-		mortuary.setFamilyPhone(familyPhone);
-		mortuary.setFamilyNid(familyNest);
+		mortuary.setDeclaringNid(declaringNid);
+		mortuary.setFamilyName(null);
+		mortuary.setFamilyPhone(null);
+		mortuary.setFamilyNid(null);
 		mortuary.setLockerNumber(locker);
 	}
 

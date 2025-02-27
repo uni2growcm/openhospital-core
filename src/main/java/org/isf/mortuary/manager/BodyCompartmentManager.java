@@ -97,7 +97,7 @@ public class BodyCompartmentManager {
 		return bodyCompartmentIoOperations.getByLabelOrDescriptionPageable(label, description,pageable);
 	}
 
-	public List<BodyCompartment> getBodyCompartments() {
+	public List<BodyCompartment> getBodyCompartments() throws OHServiceException {
 		return bodyCompartmentIoOperations.getBodyCompartments();
 	}
 }

@@ -120,7 +120,7 @@ public class BodyCompartmentIoOperations {
 		return existed;
 	}
 
-	public List<BodyCompartment> getBodyCompartments() {
+	public List<BodyCompartment> getBodyCompartments() throws OHServiceException {
 		return bodyCompartmentRepository.findByDeleted(false);
 	}
 

@@ -133,7 +133,7 @@ public class MortuaryManagerTest extends OHCoreTestCase {
 		LocalDateTime fromDate = LocalDateTime.of(2023, 1, 1, 0, 0, 0);
 		LocalDateTime toDate = LocalDateTime.of(2025, 3, 3, 0, 0, 0);
 
-		Page<Death> deaths = repository.findAllByAdmissionDateBetweenOrEstimatedDischargeDateBetweenAndDeleted(fromDate, toDate, fromDate, toDate, false,PageRequest.of(0, 3));
+		Page<Death> deaths = repository.findAllByAdmissionDateBetweenOrEstimatedDischargeDateBetweenAndDeleted(fromDate, toDate, fromDate, toDate, false, PageRequest.of(0, 3));
 
 		assertThat(deaths.getContent().size()).isEqualTo(3);
 	}
@@ -147,7 +147,7 @@ public class MortuaryManagerTest extends OHCoreTestCase {
 		LocalDateTime toDate = LocalDateTime.of(2025, 3, 3, 0, 0, 0);
 
 		Page<Death> deaths = repository.findAllByPatientNameContainsAndWardCodeContainsAndEstimatedDischargeDateBetweenAndDeathReasonTitleContainsAndDeleted("FirstName 0", "w",
-			fromDate, toDate, "CARD001", false,PageRequest.of(0, 3));
+			fromDate, toDate, "CARD001", false, PageRequest.of(0, 3));
 
 		assertThat(deaths.getContent().size()).isEqualTo(1);
 		assertThat(deaths.getTotalPages()).isEqualTo(1);
@@ -175,7 +175,7 @@ public class MortuaryManagerTest extends OHCoreTestCase {
 	private List<Death> generateDeaths(int size, boolean sameWard, boolean sameDeathReason) throws OHException {
 		Ward ward = testWard.setup(true);
 		DeathReason deathReason = testDeathReason.setup(true);
-		BodyCompartment bodyCompartment = new BodyCompartment("BC001","Body Compartment 1",false);
+		BodyCompartment bodyCompartment = new BodyCompartment("BC001","Body Compartment 1", false);
 		deathReason = deathReasonRepository.save(deathReason);
 		bodyCompartment = bodyCompartmentRepository.save(bodyCompartment);
 

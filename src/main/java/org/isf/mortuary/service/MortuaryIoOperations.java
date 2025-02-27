@@ -174,9 +174,9 @@ public class MortuaryIoOperations {
 		Pageable pageable
 	) throws OHServiceException {
 		if (isEnter) {
-			return mortuaryRepository.findAllByPatientNameContainsAndAdmissionDateBetweenAndDeleted(patientName, dateFrom, dateTo, false,pageable);
+			return mortuaryRepository.findAllByPatientNameContainsAndAdmissionDateBetweenAndDeleted(patientName, dateFrom, dateTo, false, pageable);
 		}
-		return mortuaryRepository.findAllByPatientNameContainsAndEstimatedDischargeDateBetweenAndDeleted(patientName, dateFrom, dateTo, false,pageable);
+		return mortuaryRepository.findAllByPatientNameContainsAndEstimatedDischargeDateBetweenAndDeleted(patientName, dateFrom, dateTo, false, pageable);
 	}
 
 	/**
