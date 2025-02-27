@@ -25,6 +25,8 @@ package org.isf.mortuary.service;
 import java.util.List;
 
 import org.isf.mortuary.model.DeathReason;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -34,4 +36,12 @@ public interface DeathReasonRepository extends JpaRepository<DeathReason, Intege
 	List<DeathReason> findByDeleted(boolean deleted);
 
 	DeathReason findByIdAndDeleted(int id, boolean deleted);
+
+	Page<DeathReason> findByTitleContainsAndDeletedOrDescriptionContainsAndDeleted(String code, boolean b, String description, boolean b1, Pageable pageable);
+
+	DeathReason findByTitleAndDeleted(String code, boolean b);
+
+	boolean existsByTitleAndDeletedAndIdNot(String title, boolean b, int id);
+
+	boolean existsByTitleAndDeleted(String title, boolean b);
 }

@@ -119,4 +119,5 @@ source u2g_update/step_07_add_reduction_plan_in_table_patient.sql;
 source u2g_update/step_08_create_table_for_reductionplan.sql;
 source u2g_update/step_09_add_bodycompartment_table.sql;
 source u2g_update/step_10_reorganize_mortuary_menu.sql;
+source u2g_update/step_11_add_deathreanson_on_mortuary_menu.sql;
 source u2g_update/step_12_add_foreign_key_on_death_table.sql;

@@ -58,7 +58,7 @@ public interface MortuaryRepository extends JpaRepository<Death, Integer> {
 		Pageable pageable
 	);
 
-	Page<Death> findAllByPatientNameContainsAndWardCodeContainsAndAdmissionDateBetweenAndDeathReasonCodeContainsAndDeleted(
+	Page<Death> findAllByPatientNameContainsAndWardCodeContainsAndAdmissionDateBetweenAndDeathReasonTitleContainsAndDeleted(
 		String patientName,
 		String wardCode,
 		LocalDateTime admissionDateFrom,
@@ -68,7 +68,7 @@ public interface MortuaryRepository extends JpaRepository<Death, Integer> {
 		Pageable pageable
 	);
 
-	Page<Death> findAllByPatientNameContainsAndWardCodeContainsAndEstimatedDischargeDateBetweenAndDeathReasonCodeContainsAndDeleted(
+	Page<Death> findAllByPatientNameContainsAndWardCodeContainsAndEstimatedDischargeDateBetweenAndDeathReasonTitleContainsAndDeleted(
 		String patientName,
 		String wardCode,
 		LocalDateTime dischargeDateFrom,

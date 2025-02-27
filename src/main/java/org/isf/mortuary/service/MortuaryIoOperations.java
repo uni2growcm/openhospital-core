@@ -122,7 +122,7 @@ public class MortuaryIoOperations {
 		Pageable pageable
 	) throws OHServiceException {
 		if (isEnter) {
-			return mortuaryRepository.findAllByPatientNameContainsAndWardCodeContainsAndAdmissionDateBetweenAndDeathReasonCodeContainsAndDeleted(
+			return mortuaryRepository.findAllByPatientNameContainsAndWardCodeContainsAndAdmissionDateBetweenAndDeathReasonTitleContainsAndDeleted(
 				patientName,
 				wardCode,
 				dateFrom,
@@ -132,7 +132,7 @@ public class MortuaryIoOperations {
 				pageable
 			);
 		}
-		return mortuaryRepository.findAllByPatientNameContainsAndWardCodeContainsAndEstimatedDischargeDateBetweenAndDeathReasonCodeContainsAndDeleted(
+		return mortuaryRepository.findAllByPatientNameContainsAndWardCodeContainsAndEstimatedDischargeDateBetweenAndDeathReasonTitleContainsAndDeleted(
 			patientName,
 			wardCode,
 			dateFrom,
