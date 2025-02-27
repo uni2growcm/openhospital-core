@@ -120,7 +120,7 @@ public class DeathReasonManagerTest extends OHCoreTestCase {
 
 	private List<DeathReason> generateDeathReasons(int size) {
 		String codePrefix = "DTHR";
-		String desc = "Description for death reason ";
+		String desc = "Description for death reason";
 		List<DeathReason> deathReasons = IntStream.range(0, size).mapToObj(i -> {
 			return new DeathReason(
 				codePrefix + i,
