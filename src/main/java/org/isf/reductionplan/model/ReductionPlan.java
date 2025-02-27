@@ -86,16 +86,16 @@ public class ReductionPlan extends Auditable<String> implements Serializable {
 	@Column(name = "RP_LOCK")
 	private int lock;
 
-	@OneToMany(mappedBy = "reductionPlan", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "reductionPlan", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
 	private List<ExamReduction> examReductions;
 
-	@OneToMany(mappedBy = "reductionPlan", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "reductionPlan", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
 	private List<MedicalReduction> medicalReductions;
 
-	@OneToMany(mappedBy = "reductionPlan", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "reductionPlan", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
 	private List<OperationReduction> operationReductions;
 
-	@OneToMany(mappedBy = "reductionPlan", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "reductionPlan", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
 	private List<PriceOtherReduction> priceOtherReductions;
 
 	@Transient
@@ -103,6 +103,10 @@ public class ReductionPlan extends Auditable<String> implements Serializable {
 
 	public ReductionPlan() {
 		super();
+		this.operationRate = BigDecimal.valueOf(0.00);
+		this.examRate = BigDecimal.valueOf(0.00);
+		this.medicalRate = BigDecimal.valueOf(0.00);
+		this.otherRate = BigDecimal.valueOf(0.00);
 	}
 
 	public ReductionPlan(

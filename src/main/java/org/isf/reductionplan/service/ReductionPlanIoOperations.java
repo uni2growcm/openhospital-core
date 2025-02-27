@@ -188,6 +188,10 @@ public class ReductionPlanIoOperations {
 		return rate.compareTo(BigDecimal.ZERO) > 0 && rate.compareTo(BigDecimal.valueOf(100)) <= 0;
 	}
 
+	private boolean isValidGlobalRate(BigDecimal rate) {
+		return rate.compareTo(BigDecimal.ZERO) >= 0 && rate.compareTo(BigDecimal.valueOf(100)) <= 0;
+	}
+
 	/**
 	 * Validates a list of {@link ReductionPlan}'s item rates making sure that they are greater than 0.00
 	 * and less than or equal to 100.00.
@@ -219,22 +223,46 @@ public class ReductionPlanIoOperations {
 		List<OHExceptionMessage> errors = new ArrayList<>();
 		String errorMsg = MessageBundle.getMessage("angal.reductionplan.invalidglobalreductionrate.msg");
 
-		if (!isValidRate(reductionPlan.getExamRate())) {
+		if (!isValidGlobalRate(reductionPlan.getExamRate())) {
 			errors.add(new OHExceptionMessage(errorMsg));
 		}
-		if (!isValidRate(reductionPlan.getMedicalRate())) {
+
+		if (!isValidGlobalRate(reductionPlan.getMedicalRate())) {
 			errors.add(new OHExceptionMessage(errorMsg));
 		}
-		if (!isValidRate(reductionPlan.getOperationRate())) {
+
+		if (!isValidGlobalRate(reductionPlan.getOperationRate())) {
 			errors.add(new OHExceptionMessage(errorMsg));
 		}
-		if (!isValidRate(reductionPlan.getOtherRate())) {
+
+		if (!isValidGlobalRate(reductionPlan.getOtherRate())) {
 			errors.add(new OHExceptionMessage(errorMsg));
 		}
-		errors.addAll(validateRates(reductionPlan.getExamReductions(), ExamReduction::getReductionRate, "angal.reductionplan.oneormoreinvalidexamreductionrate.msg"));
-		errors.addAll(validateRates(reductionPlan.getMedicalReductions(), MedicalReduction::getReductionRate, "angal.reductionplan.oneormoreinvalidmedicalreductionrate.msg"));
-		errors.addAll(validateRates(reductionPlan.getOperationReductions(), OperationReduction::getReductionRate, "angal.reductionplan.oneormoreinvalidoperationreductionrate.msg"));
-		errors.addAll(validateRates(reductionPlan.getPriceOtherReductions(), PriceOtherReduction::getReductionRate, "angal.reductionplan.oneormoreinvalidotherreductionrate.msg"));
+
+		errors.addAll(validateRates(
+			reductionPlan.getExamReductions(),
+			ExamReduction::getReductionRate,
+			MessageBundle.getMessage("angal.reductionplan.oneormoreinvalidexamreductionrate.msg"))
+		);
+
+		errors.addAll(
+			validateRates(
+				reductionPlan.getMedicalReductions(),
+				MedicalReduction::getReductionRate,
+				MessageBundle.getMessage("angal.reductionplan.oneormoreinvalidmedicalreductionrate.msg"))
+		);
+
+		errors.addAll(validateRates(
+			reductionPlan.getOperationReductions(),
+			OperationReduction::getReductionRate,
+			MessageBundle.getMessage("angal.reductionplan.oneormoreinvalidoperationreductionrate.msg"))
+		);
+
+		errors.addAll(validateRates(
+			reductionPlan.getPriceOtherReductions(),
+			PriceOtherReduction::getReductionRate,
+			MessageBundle.getMessage("angal.reductionplan.oneormoreinvalidotherreductionrate.msg"))
+		);
 
 		return errors;
 	}
