@@ -40,12 +40,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(rollbackFor = OHServiceException.class)
 @TranslateOHServiceException
-public class MortuaryIoOperations {
+public class DeathIoOperations {
 
-	private final MortuaryRepository mortuaryRepository;
+	private final DeathRepository deathRepository;
 
-	public MortuaryIoOperations(MortuaryRepository mortuaryRepository) {
-		this.mortuaryRepository = mortuaryRepository;
+	public DeathIoOperations(DeathRepository mortuaryRepository) {
+		this.deathRepository = mortuaryRepository;
 	}
 
 	/**
@@ -54,7 +54,7 @@ public class MortuaryIoOperations {
 	 * @throws OHServiceException if an error occurs retrieving the deaths.
 	 */
 	public List<Death> getAll() throws OHServiceException {
-		return mortuaryRepository.findAll();
+		return deathRepository.findAll();
 	}
 
 	/**
@@ -68,7 +68,7 @@ public class MortuaryIoOperations {
 		if (!errors.isEmpty()) {
 			throw new OHDataValidationException(errors);
 		}
-		return mortuaryRepository.save(death);
+		return deathRepository.save(death);
 	}
 
 	/**
@@ -85,7 +85,7 @@ public class MortuaryIoOperations {
 		if (!errors.isEmpty()) {
 			throw new OHDataValidationException(errors);
 		}
-		return mortuaryRepository.save(death);
+		return deathRepository.save(death);
 	}
 
 	/**
@@ -94,12 +94,12 @@ public class MortuaryIoOperations {
 	 * @throws OHServiceException
 	 */
 	public void delete(Death death) throws OHServiceException {
-		Death deathDeleted = findByIdAndDeleted(death.getId());
+		Death deathDeleted = findById(death.getId());
 		if (deathDeleted == null) {
 			throw new OHServiceException(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuary.deathnotfound.msg")));
 		}
 		deathDeleted.setDeleted(true);
-		mortuaryRepository.save(deathDeleted);
+		deathRepository.save(deathDeleted);
 	}
 
 	/**
@@ -107,8 +107,8 @@ public class MortuaryIoOperations {
 	 * @return {@link Death}.
 	 * @throws OHServiceException
 	 */
-	public Death findByIdAndDeleted(int id) throws OHServiceException {
-		return mortuaryRepository.findByIdAndDeleted(id, false);
+	public Death findById(int id) throws OHServiceException {
+		return deathRepository.findByIdAndDeleted(id, false);
 	}
 
 	/**
@@ -134,7 +134,7 @@ public class MortuaryIoOperations {
 		Pageable pageable
 	) throws OHServiceException {
 		if (isEnter) {
-			return mortuaryRepository.findAllByPatientNameContainsAndWardCodeContainsAndAdmissionDateBetweenAndDeathReasonTitleContainsAndDeleted(
+			return deathRepository.findAllByPatientNameContainsAndWardCodeContainsAndAdmissionDateBetweenAndDeathReasonTitleContainsAndDeleted(
 				patientName,
 				wardCode,
 				dateFrom,
@@ -144,7 +144,7 @@ public class MortuaryIoOperations {
 				pageable
 			);
 		}
-		return mortuaryRepository.findAllByPatientNameContainsAndWardCodeContainsAndEstimatedDischargeDateBetweenAndDeathReasonTitleContainsAndDeleted(
+		return deathRepository.findAllByPatientNameContainsAndWardCodeContainsAndEstimatedDischargeDateBetweenAndDeathReasonTitleContainsAndDeleted(
 			patientName,
 			wardCode,
 			dateFrom,
@@ -174,9 +174,9 @@ public class MortuaryIoOperations {
 		Pageable pageable
 	) throws OHServiceException {
 		if (isEnter) {
-			return mortuaryRepository.findAllByPatientNameContainsAndAdmissionDateBetweenAndDeleted(patientName, dateFrom, dateTo, false, pageable);
+			return deathRepository.findAllByPatientNameContainsAndAdmissionDateBetweenAndDeleted(patientName, dateFrom, dateTo, false, pageable);
 		}
-		return mortuaryRepository.findAllByPatientNameContainsAndEstimatedDischargeDateBetweenAndDeleted(patientName, dateFrom, dateTo, false, pageable);
+		return deathRepository.findAllByPatientNameContainsAndEstimatedDischargeDateBetweenAndDeleted(patientName, dateFrom, dateTo, false, pageable);
 	}
 
 	/**
@@ -184,16 +184,19 @@ public class MortuaryIoOperations {
 	 * @return {@link Death}.
 	 * @throws OHServiceException
 	 */
-	public Death getMortuaryWithPatientCode(int patientCode) throws OHServiceException{
-		return mortuaryRepository.findByPatientCode(patientCode);
+	public boolean exists(Death death) throws OHServiceException{
+		if (death.getId() > 0){
+			return deathRepository.existsByPatientCodeAndDeletedAndIdNot(death.getPatient().getCode(), false, death.getId());
+		}
+		return deathRepository.existsByPatientCodeAndDeleted(death.getPatient().getCode(), false);
 	}
 
 	private List<OHExceptionMessage> validate(Death death) throws OHServiceException {
 		List<OHExceptionMessage> errors = new ArrayList<>();
-		Death deathValidated = getMortuaryWithPatientCode(death.getPatient().getCode());
 
-		if (deathValidated != null && death.getId() == 0) {
+		if (exists(death)) {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuary.thispatientisalreadydeadpleaseselectanotherpatient.msg")));
+			return errors;
 		}
 		if (death.getAdmissionDate().isAfter(death.getEstimatedDischargeDate())) {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuary.admissiondatemustbenotlaterthandischargedate.msg")));

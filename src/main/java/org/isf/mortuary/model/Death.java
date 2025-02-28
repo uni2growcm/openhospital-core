@@ -102,8 +102,8 @@ public class Death extends Auditable<String> {
 	private String familyNid;
 
 	@ManyToOne
-	@JoinColumn(name = "DTH_LOCKER_NUMBER")
-	private BodyCompartment lockerNumber;
+	@JoinColumn(name = "DTH_BC_ID", nullable = false)
+	private BodyCompartment bodyCompartment;
 
 	@Column(name = "DTH_DELETED")
 	private boolean deleted;
@@ -130,7 +130,7 @@ public class Death extends Auditable<String> {
 		this.familyName = familyName;
 		this.familyPhone = familyPhone;
 		this.familyNid = familyNid;
-		this.lockerNumber = lockerNumber;
+		this.bodyCompartment = lockerNumber;
 		this.deleted = deleted;
 	}
 
@@ -146,11 +146,11 @@ public class Death extends Auditable<String> {
 		this.setId(id);
 	}
 
-	public BodyCompartment getLockerNumber() {
-		return lockerNumber;
+	public BodyCompartment getBodyCompartment() {
+		return bodyCompartment;
 	}
-	public void setLockerNumber(BodyCompartment lockerNumber) {
-		this.lockerNumber = lockerNumber;
+	public void setBodyCompartment(BodyCompartment bodyCompartment) {
+		this.bodyCompartment = bodyCompartment;
 	}
 	public int getId() {
 		return id;
@@ -266,7 +266,7 @@ public class Death extends Auditable<String> {
 			", familyName='" + familyName + '\'' +
 			", familyPhone='" + familyPhone + '\'' +
 			", familyNest='" + familyNid + '\'' +
-			", locker='" + lockerNumber + '\'' +
+			", locker='" + bodyCompartment + '\'' +
 			'}';
 	}
 }

@@ -19,6 +19,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+
 package org.isf.mortuary.manager;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,7 +33,7 @@ import org.isf.patient.model.Patient;
 import org.isf.utils.exception.OHException;
 import org.isf.ward.model.Ward;
 
-public class TestMortuary {
+public class TestDeath {
 
 	private final int id = 1;
 	private final String place = "Salle A1";
@@ -46,30 +47,30 @@ public class TestMortuary {
 	private final boolean deleted = false;
 
 	public Death setup(Patient patient, DeathReason deathReason, Ward ward, BodyCompartment locker, boolean usingSet) throws OHException {
-		Death mortuary;
+		Death death;
 
 		if (usingSet) {
-			mortuary = new Death();
-			setParameters(patient, deathReason, ward, mortuary, locker);
+			death = new Death();
+			setParameters(patient, deathReason, ward, death, locker);
 		} else {
-			mortuary = new Death(id, place, patient, ward, deathDate, enteredDate,
+			death = new Death(id, place, patient, ward, deathDate, enteredDate,
 				releaseDate, provisionalReleaseDate, deathReason, declaringName, declaringPhone, declaringNid,
 				null, null, null, locker, deleted);
 		}
-		return mortuary;
+		return death;
 	}
 
 	public Death setup(Patient patient, DeathReason deathReason, Ward ward, BodyCompartment locker, boolean usingSet, int id) throws OHException {
-		Death mortuary;
+		Death death;
 		if (usingSet) {
-			mortuary = new Death();
-			setParameters(patient, deathReason, ward, mortuary, locker);
+			death = new Death();
+			setParameters(patient, deathReason, ward, death, locker);
 		} else {
-			mortuary = new Death(id, place, patient, ward, deathDate, enteredDate,
+			death = new Death(id, place, patient, ward, deathDate, enteredDate,
 				releaseDate, provisionalReleaseDate, deathReason, declaringName, declaringPhone, declaringNid,
 				null, null, null, locker, deleted);
 		}
-		return mortuary;
+		return death;
 	}
 
 	public void setParameters(Patient patient, DeathReason deathReason, Ward ward, Death mortuary, BodyCompartment locker) {
@@ -88,12 +89,12 @@ public class TestMortuary {
 		mortuary.setFamilyName(null);
 		mortuary.setFamilyPhone(null);
 		mortuary.setFamilyNid(null);
-		mortuary.setLockerNumber(locker);
+		mortuary.setBodyCompartment(locker);
 	}
 
-	public void check(Death mortuary) {
-		assertThat(mortuary.getId()).isEqualTo(id);
-		assertThat(mortuary.getDate()).isEqualTo(deathDate);
-		assertThat(mortuary.getDeclaringName()).isEqualTo(declaringName);
+	public void check(Death death) {
+		assertThat(death.getId()).isEqualTo(id);
+		assertThat(death.getDate()).isEqualTo(deathDate);
+		assertThat(death.getDeclaringName()).isEqualTo(declaringName);
 	}
 }

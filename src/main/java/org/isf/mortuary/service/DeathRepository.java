@@ -31,7 +31,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface MortuaryRepository extends JpaRepository<Death, Integer> {
+public interface DeathRepository extends JpaRepository<Death, Integer> {
 
 	Page<Death> findAllByPatientNameContainsAndAdmissionDateBetweenAndDeleted(
 		String patientName,
@@ -78,7 +78,11 @@ public interface MortuaryRepository extends JpaRepository<Death, Integer> {
 		Pageable pageable
 	);
 
-	Death findByPatientCode(int patientCode);
+	Death findByPatientCodeAndDeleted(int patientCode, boolean deleted);
 
 	Death findByIdAndDeleted(int id, boolean b);
+
+	boolean existsByPatientCodeAndDeletedAndIdNot(Integer code, boolean b, int id);
+
+	boolean existsByPatientCodeAndDeleted(Integer code, boolean b);
 }
