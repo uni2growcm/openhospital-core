@@ -277,13 +277,13 @@ public class ReductionPlanIoOperations {
 	 * @param reductionPlan the {@link ReductionPlan} to insert
 	 * @throws OHServiceException when failed to save {@link ReductionPlan}
 	 */
-	public void add(ReductionPlan reductionPlan) throws OHServiceException{
+	public ReductionPlan add(ReductionPlan reductionPlan) throws OHServiceException{
 		List<OHExceptionMessage> errors = validateReductionPlan(reductionPlan);
 
 		if (!errors.isEmpty()) {
 			throw new OHDataValidationException(errors);
 		}
-		reductionPlanRepository.save(reductionPlan);
+		return reductionPlanRepository.save(reductionPlan);
 	}
 
 	/**

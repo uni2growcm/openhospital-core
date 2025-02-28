@@ -75,8 +75,8 @@ public class ReductionPlanManager {
 	 * @param reductionPlan the {@link ReductionPlan} to add
 	 * @throws OHServiceException when failed to save {@link ReductionPlan}
 	 */
-	public void add(ReductionPlan reductionPlan) throws OHServiceException {
-		reductionPlanIoOperations.add(reductionPlan);
+	public ReductionPlan add(ReductionPlan reductionPlan) throws OHServiceException {
+		return reductionPlanIoOperations.add(reductionPlan);
 	}
 
 	/**
@@ -84,8 +84,8 @@ public class ReductionPlanManager {
 	 * @param reductionPlan the {@link ReductionPlan} to update
 	 * @throws OHServiceException when failed to update {@link ReductionPlan}
 	 */
-	public void update(ReductionPlan reductionPlan) throws OHServiceException {
-		reductionPlanIoOperations.add(reductionPlan);
+	public ReductionPlan update(ReductionPlan reductionPlan) throws OHServiceException {
+		return reductionPlanIoOperations.add(reductionPlan);
 	}
 
 	/**
