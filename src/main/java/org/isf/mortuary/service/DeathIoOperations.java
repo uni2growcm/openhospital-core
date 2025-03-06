@@ -94,15 +94,16 @@ public class DeathIoOperations {
 	 * @throws OHServiceException
 	 */
 	public void delete(Death death) throws OHServiceException {
-		if (death.getId() == 0) {
-			throw new OHServiceException(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuary.insertadeathwhoexistindb.msg")));
+		if ( death != null && death.getId() != 0) {
+			Death deathDeleted = findById(death.getId());
+			if (deathDeleted == null) {
+				throw new OHServiceException(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuary.deathnotfound.msg")));
+			}
+			deathDeleted.setDeleted(true);
+			deathRepository.save(deathDeleted);
+			return;
 		}
-		Death deathDeleted = findById(death.getId());
-		if (deathDeleted == null) {
-			throw new OHServiceException(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuary.deathnotfound.msg")));
-		}
-		deathDeleted.setDeleted(true);
-		deathRepository.save(deathDeleted);
+		throw new OHServiceException(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuary.insertadeathwhoexistindb.msg")));
 	}
 
 	/**

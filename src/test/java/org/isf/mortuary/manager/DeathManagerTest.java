@@ -176,6 +176,7 @@ public class DeathManagerTest extends OHCoreTestCase {
 		List<Death> deathsSaved = deathRepository.saveAllAndFlush(generateDeaths(1, true, true));
 		Death death = deathIoOperations.findById(deathsSaved.get(0).getId());
 		assertThat(death).isNotNull();
+		System.out.println(death.getId());
 		deathManager.delete(death);
 		Death deathDeleted = deathIoOperations.findById(death.getId());
 		assertThat(deathDeleted).isNull();
