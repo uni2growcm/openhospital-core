@@ -79,7 +79,7 @@ public class DeathIoOperations {
 	 */
 	public Death update(Death death) throws OHServiceException {
 		if (death == null) {
-			throw new OHServiceException(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuary.deathnotfound.msg")));
+			throw new OHServiceException(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuary.deathmostnotbenull.msg")));
 		}
 		List<OHExceptionMessage> errors = validate(death);
 		if (!errors.isEmpty()) {
@@ -94,6 +94,9 @@ public class DeathIoOperations {
 	 * @throws OHServiceException
 	 */
 	public void delete(Death death) throws OHServiceException {
+		if (death.getId() == 0) {
+			throw new OHServiceException(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuary.insertadeathwhoexistindb.msg")));
+		}
 		Death deathDeleted = findById(death.getId());
 		if (deathDeleted == null) {
 			throw new OHServiceException(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuary.deathnotfound.msg")));
