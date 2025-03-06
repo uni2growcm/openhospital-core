@@ -25,6 +25,7 @@ package org.isf.reductionplan.model;
 import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.AttributeOverride;
@@ -87,16 +88,16 @@ public class ReductionPlan extends Auditable<String> implements Serializable {
 	private int lock;
 
 	@OneToMany(mappedBy = "reductionPlan", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-	private List<ExamReduction> examReductions;
+	private List<ExamReduction> examReductions = new ArrayList<>();
 
 	@OneToMany(mappedBy = "reductionPlan", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-	private List<MedicalReduction> medicalReductions;
+	private List<MedicalReduction> medicalReductions = new ArrayList<>();
 
 	@OneToMany(mappedBy = "reductionPlan", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-	private List<OperationReduction> operationReductions;
+	private List<OperationReduction> operationReductions = new ArrayList<>();
 
 	@OneToMany(mappedBy = "reductionPlan", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-	private List<PriceOtherReduction> priceOtherReductions;
+	private List<PriceOtherReduction> priceOtherReductions = new ArrayList<>();
 
 	@Transient
 	private volatile int hashcode;
