@@ -223,26 +223,21 @@ public class ReductionPlanIoOperations {
 		List<OHExceptionMessage> errors = new ArrayList<>();
 		int countError = 0;
 
-		if (!isValidGlobalRate(reductionPlan.getExamRate())) {
+		if (
+			!isValidGlobalRate(reductionPlan.getExamRate()) ||
+		    !isValidGlobalRate(reductionPlan.getMedicalRate()) ||
+			!isValidGlobalRate(reductionPlan.getOperationRate()) ||
+			!isValidGlobalRate(reductionPlan.getOtherRate())
+		) {
 			countError ++;
 		}
 
-		if (!isValidGlobalRate(reductionPlan.getMedicalRate())) {
-			countError ++;
-		}
-
-		if (!isValidGlobalRate(reductionPlan.getOperationRate())) {
-			countError ++;
-		}
-
-		if (!isValidGlobalRate(reductionPlan.getOtherRate())) {
-			countError ++;
-		}
-
-		if (countError > 0) errors.add(
-			new OHExceptionMessage(
-				MessageBundle.getMessage("angal.reductionplan.invalidglobalreductionrate.msg"))
+		if (countError > 0) {
+			errors.add(
+				new OHExceptionMessage(
+					MessageBundle.getMessage("angal.reductionplan.invalidglobalreductionrate.msg"))
 			);
+		}
 
 		errors.addAll(validateRates(
 			reductionPlan.getExamReductions(),
