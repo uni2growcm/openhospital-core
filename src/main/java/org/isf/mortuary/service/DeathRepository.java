@@ -31,31 +31,58 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface MortuaryRepository extends JpaRepository<Death, Integer> {
+public interface DeathRepository extends JpaRepository<Death, Integer> {
 
-	Page<Death> findAllByPatientNameContainsAndAdmissionDateBetween(
+	Page<Death> findAllByPatientNameContainsAndAdmissionDateBetweenAndDeleted(
 		String patientName,
 		LocalDateTime admissionDateFrom,
 		LocalDateTime admissionDateTo,
+		boolean deleted,
 		Pageable pageable
 	);
 
-	Page<Death> findAllByPatientNameContainsAndEstimatedDischargeDateBetween(
+	Page<Death> findAllByPatientNameContainsAndEstimatedDischargeDateBetweenAndDeleted(
 		String patientName,
 		LocalDateTime admissionDateFrom,
 		LocalDateTime admissionDateTo,
+		boolean deleted,
 		Pageable pageable
 	);
 
-	Page<Death> findAllByAdmissionDateBetweenOrEstimatedDischargeDateBetween(
-		LocalDateTime admissionDateFrom, LocalDateTime admissionDateTo, LocalDateTime dischargeDateFrom, LocalDateTime dischargeDateTo, Pageable pageable
+	Page<Death> findAllByAdmissionDateBetweenOrEstimatedDischargeDateBetweenAndDeleted(
+		LocalDateTime admissionDateFrom,
+		LocalDateTime admissionDateTo,
+		LocalDateTime dischargeDateFrom,
+		LocalDateTime dischargeDateTo,
+		boolean deleted,
+		Pageable pageable
 	);
 
-	Page<Death> findAllByPatientNameContainsAndWardCodeContainsAndAdmissionDateBetweenAndDeathReasonTitleContains(
-		String patientName, String wardCode, LocalDateTime admissionDateFrom, LocalDateTime admissionDateTo, String deathReasonTitle, Pageable pageable
+	Page<Death> findAllByPatientNameContainsAndWardCodeContainsAndAdmissionDateBetweenAndDeathReasonTitleContainsAndDeleted(
+		String patientName,
+		String wardCode,
+		LocalDateTime admissionDateFrom,
+		LocalDateTime admissionDateTo,
+		String deathReasonCode,
+		boolean deleted,
+		Pageable pageable
 	);
 
-	Page<Death> findAllByPatientNameContainsAndWardCodeContainsAndEstimatedDischargeDateBetweenAndDeathReasonTitleContains(
-		String patientName, String wardCode, LocalDateTime dischargeDateFrom, LocalDateTime dischargeDateTo, String deathReasonTitle, Pageable pageable
+	Page<Death> findAllByPatientNameContainsAndWardCodeContainsAndEstimatedDischargeDateBetweenAndDeathReasonTitleContainsAndDeleted(
+		String patientName,
+		String wardCode,
+		LocalDateTime dischargeDateFrom,
+		LocalDateTime dischargeDateTo,
+		String deathReasonCode,
+		boolean deleted,
+		Pageable pageable
 	);
+
+	Death findByPatientCodeAndDeleted(int patientCode, boolean deleted);
+
+	Death findByIdAndDeleted(int id, boolean b);
+
+	boolean existsByPatientCodeAndDeletedAndIdNot(Integer code, boolean b, int id);
+
+	boolean existsByPatientCodeAndDeleted(Integer code, boolean b);
 }

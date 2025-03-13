@@ -26,20 +26,21 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.isf.mortuary.model.Death;
-import org.isf.mortuary.service.MortuaryIoOperations;
+import org.isf.mortuary.service.DeathIoOperations;
 import org.isf.utils.exception.OHServiceException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 @Component
-public class MortuaryBrowserManager {
+public class DeathManager {
 
-	private final MortuaryIoOperations mortuaryIoOperations;
+	private final DeathIoOperations deathIoOperations;
 
-	public MortuaryBrowserManager(MortuaryIoOperations mortuaryIoOperations) {
-		this.mortuaryIoOperations = mortuaryIoOperations;
+	public DeathManager(DeathIoOperations deathIoOperations) {
+		this.deathIoOperations = deathIoOperations;
 	}
 
 	/**
@@ -48,7 +49,7 @@ public class MortuaryBrowserManager {
 	 * @throws OHServiceException
 	 */
 	public List<Death> getAll() throws OHServiceException {
-		return mortuaryIoOperations.getAll();
+		return deathIoOperations.getAll();
 	}
 
 	/**
@@ -58,17 +59,17 @@ public class MortuaryBrowserManager {
 	 * @throws OHServiceException if an error occurs during the store operation.
 	 */
 	public Death add(Death death) throws OHServiceException {
-		return mortuaryIoOperations.add(death);
+		return deathIoOperations.add(death);
 	}
 
 	/**
 	 * Updates an existing {@link Death}
 	 * @param death - the {@link Death} to update
 	 * @return {@link Death} has been updated
-	 * @throws OHServiceException
+	 * @throws OHServiceException if an error occurs during the update operation
 	 */
 	public Death update(Death death) throws OHServiceException {
-		return mortuaryIoOperations.update(death);
+		return deathIoOperations.update(death);
 	}
 
 	/**
@@ -77,7 +78,7 @@ public class MortuaryBrowserManager {
 	 * @throws OHServiceException
 	 */
 	public void delete(Death death) throws OHServiceException {
-		mortuaryIoOperations.delete(death);
+		deathIoOperations.delete(death);
 	}
 
 	/**
@@ -87,7 +88,7 @@ public class MortuaryBrowserManager {
 	 * @param wardCode the code of provenance ward.
 	 * @param dateFrom the lower bound for the mortuary date range.
 	 * @param dateTo the upper bound for the mortuary date range.
-	 * @param deathReasonCode the reason of death.
+	 * @param deathReasonTitle the title of death reason.
 	 * @param isEnter to specify if it's admission date or discharge date
 	 * @param page current page.
 	 * @param size the size of the page.
@@ -99,18 +100,18 @@ public class MortuaryBrowserManager {
 		String wardCode,
 		LocalDateTime dateFrom,
 		LocalDateTime dateTo,
-		String deathReasonCode,
+		String deathReasonTitle,
 		boolean isEnter,
 		int page,
 		int size
 	) throws OHServiceException {
-		Pageable pageable = PageRequest.of(page, size);
-		return mortuaryIoOperations.getMortuariesPageable(
+		Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdDate"));
+		return deathIoOperations.getMortuariesPageable(
 			patientName,
 			wardCode,
 			dateFrom,
 			dateTo,
-			deathReasonCode,
+			deathReasonTitle,
 			isEnter,
 			pageable
 		);
@@ -136,8 +137,8 @@ public class MortuaryBrowserManager {
 		int page,
 		int size
 	) throws OHServiceException {
-		Pageable pageable = PageRequest.of(page, size);
-		return mortuaryIoOperations.findAllByPatientNameAndDateToDateFromPageable(
+		Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdDate"));
+		return deathIoOperations.findAllByPatientNameAndDateToDateFromPageable(
 			patientName,
 			dateFrom,
 			dateTo,

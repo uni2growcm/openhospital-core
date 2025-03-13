@@ -19,19 +19,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+
 package org.isf.mortuary.manager;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDateTime;
 
+import org.isf.mortuary.model.BodyCompartment;
 import org.isf.mortuary.model.Death;
 import org.isf.mortuary.model.DeathReason;
 import org.isf.patient.model.Patient;
 import org.isf.utils.exception.OHException;
 import org.isf.ward.model.Ward;
 
-public class TestMortuary {
+public class TestDeath {
 
 	private final int id = 1;
 	private final String place = "Salle A1";
@@ -41,40 +43,37 @@ public class TestMortuary {
 	private final LocalDateTime provisionalReleaseDate = LocalDateTime.of(2024, 12, 4, 0, 0, 0);
 	private final String declaringName = "John Doe";
 	private final String declaringPhone = "6543210001";
-	private final String declaringNest = "12345";
-	private final String familyName = null;
-	private final String familyPhone = null;
-	private final String familyNest = null;
-	private final String locker = "L-001";
+	private final String declaringNid = "12345";
+	private final boolean deleted = false;
 
-	public Death setup(Patient patient, DeathReason deathReason, Ward ward, boolean usingSet) throws OHException {
-		Death mortuary;
+	public Death setup(Patient patient, DeathReason deathReason, Ward ward, BodyCompartment locker, boolean usingSet) throws OHException {
+		Death death;
 
 		if (usingSet) {
-			mortuary = new Death();
-			setParameters(patient, deathReason, ward, mortuary);
+			death = new Death();
+			setParameters(patient, deathReason, ward, death, locker);
 		} else {
-			mortuary = new Death(id, place, patient, ward, deathDate, enteredDate,
-				releaseDate, provisionalReleaseDate, deathReason, declaringName, declaringPhone, declaringNest,
-				familyName, familyPhone, familyNest, locker);
+			death = new Death(id, place, patient, ward, deathDate, enteredDate,
+				releaseDate, provisionalReleaseDate, deathReason, declaringName, declaringPhone, declaringNid,
+				null, null, null, locker, deleted);
 		}
-		return mortuary;
+		return death;
 	}
 
-	public Death setup(Patient patient, DeathReason deathReason, Ward ward, boolean usingSet, int id) throws OHException {
-		Death mortuary;
+	public Death setup(Patient patient, DeathReason deathReason, Ward ward, BodyCompartment locker, boolean usingSet, int id) throws OHException {
+		Death death;
 		if (usingSet) {
-			mortuary = new Death();
-			setParameters(patient, deathReason, ward, mortuary);
+			death = new Death();
+			setParameters(patient, deathReason, ward, death, locker);
 		} else {
-			mortuary = new Death(id, place, patient, ward, deathDate, enteredDate,
-				releaseDate, provisionalReleaseDate, deathReason, declaringName, declaringPhone, declaringNest,
-				familyName, familyPhone, familyNest, locker);
+			death = new Death(id, place, patient, ward, deathDate, enteredDate,
+				releaseDate, provisionalReleaseDate, deathReason, declaringName, declaringPhone, declaringNid,
+				null, null, null, locker, deleted);
 		}
-		return mortuary;
+		return death;
 	}
 
-	public void setParameters(Patient patient, DeathReason deathReason, Ward ward, Death mortuary) {
+	public void setParameters(Patient patient, DeathReason deathReason, Ward ward, Death mortuary, BodyCompartment locker) {
 		mortuary.setId(id);
 		mortuary.setWard(ward);
 		mortuary.setPlace(place);
@@ -86,16 +85,16 @@ public class TestMortuary {
 		mortuary.setEstimatedDischargeDate(provisionalReleaseDate);
 		mortuary.setDeclaringName(declaringName);
 		mortuary.setDeclaringPhone(declaringPhone);
-		mortuary.setDeclaringNid(declaringNest);
-		mortuary.setFamilyName(familyName);
-		mortuary.setFamilyPhone(familyPhone);
-		mortuary.setFamilyNid(familyNest);
-		mortuary.setLockerNumber(locker);
+		mortuary.setDeclaringNid(declaringNid);
+		mortuary.setFamilyName(null);
+		mortuary.setFamilyPhone(null);
+		mortuary.setFamilyNid(null);
+		mortuary.setBodyCompartment(locker);
 	}
 
-	public void check(Death mortuary) {
-		assertThat(mortuary.getId()).isEqualTo(id);
-		assertThat(mortuary.getDate()).isEqualTo(deathDate);
-		assertThat(mortuary.getDeclaringName()).isEqualTo(declaringName);
+	public void check(Death death) {
+		assertThat(death.getId()).isEqualTo(id);
+		assertThat(death.getDate()).isEqualTo(deathDate);
+		assertThat(death.getDeclaringName()).isEqualTo(declaringName);
 	}
 }
