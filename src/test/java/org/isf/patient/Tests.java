@@ -26,6 +26,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.io.File;
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -45,7 +46,7 @@ import org.isf.patient.model.PatientProfilePhoto;
 import org.isf.patient.service.PatientIoOperationRepository;
 import org.isf.patient.service.PatientIoOperations;
 import org.isf.reductionplan.model.ReductionPlan;
-import org.isf.reductionplan.service.ReductionplanIoOperationRepository;
+import org.isf.reductionplan.service.ReductionPlanRepository;
 import org.isf.utils.exception.OHException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.pagination.PagedResponse;
@@ -69,7 +70,7 @@ class Tests extends OHCoreTestCase {
 	@Autowired
 	PatientBrowserManager patientBrowserManager;
 	@Autowired
-	ReductionplanIoOperationRepository reductionplanIoOperationRepository;
+	ReductionPlanRepository reductionPlanRepository;
 
 	@BeforeAll
 	static void setUpClass() {
@@ -248,8 +249,8 @@ class Tests extends OHCoreTestCase {
 	@Test
 	void testIoNewPatientWithReductionPlan() throws Exception {
 		Patient patient = testPatient.setup(true);
-		ReductionPlan reductionPlan = new ReductionPlan("Reduction plan", 2,2,2,2);
-		reductionPlan = reductionplanIoOperationRepository.save(reductionPlan);
+		ReductionPlan reductionPlan = new ReductionPlan("Reduction plan", BigDecimal.valueOf(2),BigDecimal.valueOf(2),BigDecimal.valueOf(2),BigDecimal.valueOf(2));
+		reductionPlan = reductionPlanRepository.save(reductionPlan);
 		patient.setReductionPlan(reductionPlan);
 		patient = patientBrowserManager.savePatient(patient);
 		Patient savedPatient = patientBrowserManager.getPatientById(patient.getCode());
@@ -268,11 +269,11 @@ class Tests extends OHCoreTestCase {
 	@Test
 	void testIoUpdatePatientWithReductionPlan() throws Exception {
 		Patient patient = testPatient.setup(true);
-		ReductionPlan reductionPlan = new ReductionPlan("Initial Plan", 2, 3, 4, 5);
-		reductionPlan = reductionplanIoOperationRepository.save(reductionPlan);
+		ReductionPlan reductionPlan = new ReductionPlan("Initial Plan", BigDecimal.valueOf(2), BigDecimal.valueOf(3), BigDecimal.valueOf(4), BigDecimal.valueOf(5));
+		reductionPlan = reductionPlanRepository.save(reductionPlan);
 		patient.setReductionPlan(reductionPlan);
-		ReductionPlan reductionPlanNew = new ReductionPlan("Updated Plan", 20, 0, 0, 50);
-		reductionPlanNew = reductionplanIoOperationRepository.save(reductionPlanNew);
+		ReductionPlan reductionPlanNew = new ReductionPlan("Updated Plan", BigDecimal.valueOf(20), BigDecimal.valueOf(0), BigDecimal.valueOf(0), BigDecimal.valueOf(50));
+		reductionPlanNew = reductionPlanRepository.save(reductionPlanNew);
 		patient.setReductionPlan(reductionPlanNew);
 		patient = patientBrowserManager.savePatient(patient);
 		Patient updatedPatient = patientBrowserManager.getPatientById(patient.getCode());

@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2024 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -24,14 +24,20 @@ package org.isf.reductionplan.model;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import jakarta.persistence.Version;
@@ -62,31 +68,55 @@ public class ReductionPlan extends Auditable<String> implements Serializable {
 	@Column(name = "RP_DESCRIPTION")
 	private String description;
 
-	@Column(name = "RP_OPERATIONRATE")
-	private double operationRate;
+	@Column(name = "RP_OPERATIONRATE",  precision = 5, scale = 2)
+	private BigDecimal operationRate;
 
-	@Column(name = "RP_MEDICALRATE")
-	private double medicalRate;
+	@Column(name = "RP_MEDICALRATE",  precision = 5, scale = 2)
+	private BigDecimal medicalRate;
 
-	@Column(name = "RP_EXAMRATE")
-	private double examRate;
+	@Column(name = "RP_EXAMRATE",  precision = 5, scale = 2)
+	private BigDecimal examRate;
 
-	@Column(name = "RP_OTHERRATE")
-	private double otherRate;
+	@Column(name = "RP_OTHERRATE",  precision = 5, scale = 2)
+	private BigDecimal otherRate;
+
+	@Column(name = "RP_DELETED")
+	private boolean deleted = false;
 
 	@Version
 	@Column(name = "RP_LOCK")
 	private int lock;
+
+	@OneToMany(mappedBy = "reductionPlan", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+	private List<ExamReduction> examReductions = new ArrayList<>();
+
+	@OneToMany(mappedBy = "reductionPlan", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+	private List<MedicalReduction> medicalReductions = new ArrayList<>();
+
+	@OneToMany(mappedBy = "reductionPlan", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+	private List<OperationReduction> operationReductions = new ArrayList<>();
+
+	@OneToMany(mappedBy = "reductionPlan", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+	private List<PriceOtherReduction> priceOtherReductions = new ArrayList<>();
 
 	@Transient
 	private volatile int hashcode;
 
 	public ReductionPlan() {
 		super();
+		this.operationRate = BigDecimal.valueOf(0.00);
+		this.examRate = BigDecimal.valueOf(0.00);
+		this.medicalRate = BigDecimal.valueOf(0.00);
+		this.otherRate = BigDecimal.valueOf(0.00);
 	}
 
-	public ReductionPlan(int id, String description, double operationRate, double medicalRate,
-					double examRate, double otherRate
+	public ReductionPlan(
+		int id,
+		String description,
+		BigDecimal operationRate,
+		BigDecimal medicalRate,
+		BigDecimal examRate,
+		BigDecimal otherRate
 	) {
 		super();
 		this.id = id;
@@ -97,12 +127,43 @@ public class ReductionPlan extends Auditable<String> implements Serializable {
 		this.otherRate = otherRate;
 	}
 
-	public ReductionPlan(String description, double operationRate, double medicalRate, double examRate, double otherRate) {
+	public ReductionPlan(
+		String description,
+		BigDecimal operationRate,
+		BigDecimal medicalRate,
+		BigDecimal examRate,
+		BigDecimal otherRate
+	) {
 		this.description = description;
 		this.operationRate = operationRate;
 		this.medicalRate = medicalRate;
 		this.examRate = examRate;
 		this.otherRate = otherRate;
+	}
+
+	public ReductionPlan(
+		int id,
+		String description,
+		BigDecimal operationRate,
+		BigDecimal medicalRate,
+		BigDecimal examRate,
+		BigDecimal otherRate,
+		List<ExamReduction> examReductionList,
+		List<MedicalReduction> medicalReductionList,
+		List<OperationReduction> operationReductionList,
+		List<PriceOtherReduction> priceOtherReductionList
+	) {
+		super();
+		this.id = id;
+		this.description = description;
+		this.operationRate = operationRate;
+		this.medicalRate = medicalRate;
+		this.examRate = examRate;
+		this.otherRate = otherRate;
+		this.examReductions = examReductionList;
+		this.medicalReductions = medicalReductionList;
+		this.operationReductions = operationReductionList;
+		this.priceOtherReductions = priceOtherReductionList;
 	}
 
 	public int getId() {
@@ -120,44 +181,82 @@ public class ReductionPlan extends Auditable<String> implements Serializable {
 		this.description = description;
 	}
 
-	public double getOperationRate() {
+	public BigDecimal getOperationRate() {
 		return operationRate;
 	}
 
-	public void setOperationRate(double operationRate) {
+	public void setOperationRate(BigDecimal operationRate) {
 		this.operationRate = operationRate;
 	}
 
-	public double getMedicalRate() {
+	public BigDecimal getMedicalRate() {
 		return medicalRate;
 	}
 
-	public void setMedicalRate(double medicalRate) {
+	public void setMedicalRate(BigDecimal medicalRate) {
 		this.medicalRate = medicalRate;
 	}
 
-	public double getExamRate() {
+	public BigDecimal getExamRate() {
 		return examRate;
 	}
 
-	public void setExamRate(double examRate) {
+	public void setExamRate(BigDecimal examRate) {
 		this.examRate = examRate;
 	}
 
-	public double getOtherRate() {
+	public BigDecimal getOtherRate() {
 		return otherRate;
 	}
 
-	public void setOtherRate(double otherRate) {
+	public void setOtherRate(BigDecimal otherRate) {
 		this.otherRate = otherRate;
 	}
 
+	public boolean isDeleted() {
+		return deleted;
+	}
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
+	}
 	public int getLock() {
 		return lock;
 	}
 
 	public void setLock(int lock) {
 		this.lock = lock;
+	}
+
+	public List<ExamReduction> getExamReductions() {
+		return examReductions;
+	}
+
+	public void setExamReductions(List<ExamReduction> examReductions) {
+		this.examReductions = examReductions;
+	}
+
+	public List<MedicalReduction> getMedicalReductions() {
+		return medicalReductions;
+	}
+
+	public void setMedicalReductions(List<MedicalReduction> medicalReductions) {
+		this.medicalReductions = medicalReductions;
+	}
+
+	public List<OperationReduction> getOperationReductions() {
+		return operationReductions;
+	}
+
+	public void setOperationReductions(List<OperationReduction> operationReductionList) {
+		this.operationReductions = operationReductionList;
+	}
+
+	public List<PriceOtherReduction> getPriceOtherReductions() {
+		return priceOtherReductions;
+	}
+
+	public void setPriceOtherReductions(List<PriceOtherReduction> priceOtherReductions) {
+		this.priceOtherReductions = priceOtherReductions;
 	}
 
 	@Override

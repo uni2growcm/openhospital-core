@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2024 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -23,7 +23,10 @@
 package org.isf.reductionplan.manager;
 
 import java.util.List;
-
+import org.isf.reductionplan.model.ExamReduction;
+import org.isf.reductionplan.model.MedicalReduction;
+import org.isf.reductionplan.model.OperationReduction;
+import org.isf.reductionplan.model.PriceOtherReduction;
 import org.isf.reductionplan.model.ReductionPlan;
 import org.isf.reductionplan.service.ReductionPlanIoOperations;
 import org.isf.utils.exception.OHServiceException;
@@ -48,11 +51,89 @@ public class ReductionPlanManager {
 	}
 
 	/**
+	 * Get a {@link ReductionPlan} by ID
+	 * @param id {@link ReductionPlan}'s ID
+	 * @return a {@link ReductionPlan}
+	 * @throws OHServiceException When failed to get  reduction plans by description
+	 */
+	public ReductionPlan getById(int id) throws OHServiceException {
+		return reductionPlanIoOperations.getById(id);
+	}
+
+	/**
 	 * Get  reduction plans by description
+	 * @param description {@link ReductionPlan}'s description
 	 * @return The list of {@link ReductionPlan}s
 	 * @throws OHServiceException When failed to get  reduction plans by description
 	 */
 	public List<ReductionPlan> getByDescription(String description) throws OHServiceException {
 		return reductionPlanIoOperations.getByDescription(description);
+	}
+
+	/**
+	 * Save a {@link ReductionPlan}
+	 * @param reductionPlan the {@link ReductionPlan} to add
+	 * @throws OHServiceException when failed to save {@link ReductionPlan}
+	 */
+	public ReductionPlan add(ReductionPlan reductionPlan) throws OHServiceException {
+		return reductionPlanIoOperations.add(reductionPlan);
+	}
+
+	/**
+	 * Update a {@link ReductionPlan}
+	 * @param reductionPlan the {@link ReductionPlan} to update
+	 * @throws OHServiceException when failed to update {@link ReductionPlan}
+	 */
+	public ReductionPlan update(ReductionPlan reductionPlan) throws OHServiceException {
+		return reductionPlanIoOperations.add(reductionPlan);
+	}
+
+	/**
+	 * Delete a {@link ReductionPlan}
+	 * @param reductionPlan the {@link ReductionPlan} to delete
+	 * @throws OHServiceException when failed to delete {@link ReductionPlan}
+	 */
+	public void delete(ReductionPlan reductionPlan) throws OHServiceException {
+		reductionPlanIoOperations.delete(reductionPlan);
+	}
+
+	/**
+	 * fetch a list of {@link ExamReduction}s by {@link ReductionPlan} id
+	 * @param reductionPlanId the {@link ExamReduction} id
+	 * @return the list of {@link ExamReduction}s
+	 * @throws OHServiceException if the error happened during the get process
+	 */
+	public List<ExamReduction> getExamReductionsByReductionPlanId(int reductionPlanId) throws OHServiceException {
+		return reductionPlanIoOperations.getExamReductionsByReductionPlanId(reductionPlanId);
+	}
+
+	/**
+	 * fetch a list of {@link MedicalReduction}s by {@link ReductionPlan} id.
+	 * @param reductionPlanId the {@link ReductionPlan} id
+	 * @return the list of {@link MedicalReduction}s
+	 * @throws OHServiceException if an error happened during the get process
+	 */
+	public List<MedicalReduction> getMedicalReductionsByReductionPlanId(int reductionPlanId) throws OHServiceException {
+		return reductionPlanIoOperations.getMedicalReductionsByReductionPlanId(reductionPlanId);
+	}
+
+	/**
+	 * fetch a list of {@link OperationReduction}s by {@link ReductionPlan}
+	 * @param reductionPlanId the {@link ReductionPlan} id
+	 * @return the list of {@link OperationReduction}s
+	 * @throws OHServiceException if an error happened during the get process
+	 */
+	public List<OperationReduction> getOperationReductionsByReductionPlanId(int reductionPlanId) throws OHServiceException {
+		return reductionPlanIoOperations.getOperationReductionsByReductionPlanId(reductionPlanId);
+	}
+
+	/**
+	 * Fetch a list of {@link PriceOtherReduction}s by {@link ReductionPlan}
+	 * @param reductionPlanId the {@link ReductionPlan} id
+	 * @return the list of {@link PriceOtherReduction}s
+	 * @throws OHServiceException if an error happened during the get process
+	 */
+	public List<PriceOtherReduction> getPriceOtherReductionsByReductionPlanId(int reductionPlanId) throws OHServiceException {
+		return reductionPlanIoOperations.getPriceOtherReductionsByReductionPlanId(reductionPlanId);
 	}
 }
