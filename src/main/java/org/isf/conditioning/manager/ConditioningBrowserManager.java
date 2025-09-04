@@ -84,6 +84,7 @@ public class ConditioningBrowserManager {
 	 */
 	public Conditioning updateConditioning(Conditioning conditioning) throws OHServiceException {
 		validateConditioning(conditioning);
+		System.out.println("test 3");
 		return conditioningIoOperations.updateConditioning(conditioning);
 	}
 
