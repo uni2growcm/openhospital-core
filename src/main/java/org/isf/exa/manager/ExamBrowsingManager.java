@@ -82,7 +82,7 @@ public class ExamBrowsingManager {
 	protected void validateLock(Exam current, Exam payload) throws OHDataValidationException {
 		if (!Objects.equals(current.getLock(), payload.getLock())) {
 			List<OHExceptionMessage> errors = new ArrayList<>();
-			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.common.lockingfailure.msg")));
+			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.sql.thedatahasbeenupdatedbysomeoneelse.msg")));
 			throw new OHDataValidationException(errors);
 		}
 	}
