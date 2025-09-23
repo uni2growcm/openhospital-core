@@ -30,7 +30,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
-import jakarta.persistence.Version;
 import jakarta.validation.constraints.NotNull;
 
 import org.isf.exatype.model.ExamType;
@@ -67,7 +66,6 @@ public class Exam extends Auditable<String> {
 	@JoinColumn(name="EXA_EXC_ID_A")
 	private ExamType examtype;
 
-//	@Version
 	@Column(name="EXA_LOCK")
 	private Integer lock;
 
