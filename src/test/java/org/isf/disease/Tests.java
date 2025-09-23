@@ -265,11 +265,6 @@ class Tests extends OHCoreTestCase {
 	void testMgrUpdateDisease() throws Exception {
 		String code = setupTestDisease(false);
 		Disease foundDisease = diseaseBrowserManager.getDiseaseByCode(code);
-
-		if (foundDisease.getLock() == null) {
-			foundDisease.setLock(0);
-		}
-
 		foundDisease.setDescription("Update");
 		Disease result = diseaseBrowserManager.updateDisease(foundDisease);
 		assertThat(result.getDescription()).isEqualTo("Update");
