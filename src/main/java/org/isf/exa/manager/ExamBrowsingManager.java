@@ -23,6 +23,7 @@ package org.isf.exa.manager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.isf.exa.model.Exam;
 import org.isf.exa.service.ExamIoOperations;
@@ -70,6 +71,22 @@ public class ExamBrowsingManager {
 			throw new OHDataValidationException(errors);
 		}
 	}
+
+	/**
+	 * Validates the optimistic locking of an {@link Exam} entity.
+	 *
+	 * @param current the {@link Exam} currently stored in the database
+	 * @param payload the {@link Exam} instance provided for update
+	 * @throws OHDataValidationException if the lock values do not match (concurrent modification detected)
+	 */
+	protected void validateLock(Exam current, Exam payload) throws OHDataValidationException {
+		if (!Objects.equals(current.getLock(), payload.getLock())) {
+			List<OHExceptionMessage> errors = new ArrayList<>();
+			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.common.lockingfailure.msg")));
+			throw new OHDataValidationException(errors);
+		}
+	}
+
 
 	/**
 	 * Returns the list of {@link Exam}s
@@ -145,6 +162,9 @@ public class ExamBrowsingManager {
 	 * @throws OHServiceException
 	 */
 	public Exam update(Exam payload, List<String> rows) throws OHServiceException {
+		Exam exam = findByCode(payload.getCode());
+		validateLock(exam, payload);
+		payload.setLock(exam.getLock() + 1);
 		return ioOperations.update(payload, rows);
 	}
 
