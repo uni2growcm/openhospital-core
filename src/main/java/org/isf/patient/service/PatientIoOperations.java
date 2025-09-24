@@ -331,4 +331,16 @@ public class PatientIoOperations {
 		}
 		return patients;
 	}
+
+	/**
+	 * Method that returns the full list of {@link Patient}s with specified parameters.
+	 *
+	 * @param parameters
+	 * @return the list of {@link Patient}s.
+	 * @throws OHServiceException
+	 */
+	public PagedResponse<Patient> getPatients(Map<String, Object> parameters, Pageable pageable) throws OHServiceException {
+		Page<Patient> patientPageResult = repository.getPatientsByParams(parameters, pageable);
+		return setPaginationData(patientPageResult);
+	}
 }
