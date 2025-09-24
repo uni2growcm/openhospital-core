@@ -30,7 +30,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
@@ -119,16 +118,46 @@ public class PatientIoOperationRepositoryImpl implements PatientIoOperationRepos
 
 		List<Predicate> predicates = new ArrayList<>();
 		predicates.add(notDeleted);
-		for (Map.Entry<String, Object> entry : params.entrySet()) {
-			Path<String> keyPath = patient.get(entry.getKey());
 
-			if (entry.getKey().equals("birthDate")) {
-				LocalDateTime birthDateFrom = (LocalDateTime) entry.getValue();
+		for (Map.Entry<String, Object> entry : params.entrySet()) {
+			String key = entry.getKey();
+			Object value = entry.getValue();
+
+			if (key.equals("birthDate")) {
+				LocalDateTime birthDateFrom = (LocalDateTime) value;
 				LocalDateTime birthDateTo = birthDateFrom.plusDays(1);
-				predicates.add(cb.between(keyPath.as(LocalDateTime.class), birthDateFrom, birthDateTo));
+				predicates.add(cb.between(patient.get(key).as(LocalDateTime.class), birthDateFrom, birthDateTo));
+			} else if (key.equals("age")) {
+				if (value instanceof String) {
+					try {
+						Integer ageValue = Integer.parseInt((String) value);
+						predicates.add(cb.equal(patient.get("age"), ageValue));
+					} catch (NumberFormatException e) {
+						predicates.add(cb.disjunction());
+					}
+				} else if (value instanceof Integer) {
+					predicates.add(cb.equal(patient.get("age"), value));
+				}
 			} else {
-				if (entry.getValue() instanceof String) {
-					predicates.add(cb.like(cb.lower(keyPath), like(((String) entry.getValue()).toLowerCase())));
+				if (value instanceof String) {
+					String stringValue = ((String) value).toLowerCase();
+
+					if ("code".equals(key) || "age".equals(key)) {
+						try {
+							if ("code".equals(key)) {
+								Integer intValue = Integer.parseInt((String) value);
+								predicates.add(cb.equal(patient.get(key), intValue));
+							} else {
+								predicates.add(cb.like(patient.get(key).as(String.class), like(stringValue)));
+							}
+						} catch (NumberFormatException e) {
+							predicates.add(cb.disjunction());
+						}
+					} else {
+						predicates.add(cb.like(cb.lower(patient.get(key)), like(stringValue)));
+					}
+				} else {
+					predicates.add(cb.equal(patient.get(key), value));
 				}
 			}
 		}

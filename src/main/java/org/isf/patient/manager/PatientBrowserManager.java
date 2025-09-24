@@ -110,6 +110,14 @@ public class PatientBrowserManager {
 	}
 
 	/**
+	 * Updates the age of all patients based on their date of birth
+	 * @return Number of patients updated
+	 */
+	public int updateAllPatientsAge() {
+		return ioOperations.updateAllPatientsAge();
+	}
+
+	/**
 	 * Method that gets a {@link Patient} by his/her ID.
 	 *
 	 * @param code

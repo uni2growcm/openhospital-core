@@ -677,7 +677,7 @@ class Tests extends OHCoreTestCase {
 		assertThat(patient.getSex()).isEqualTo('F');
 		assertThat(patient.getBirthDate()).isNull();
 
-		assertThat(patient.getLock()).isZero();
+		assertThat(patient.getLock()).isNull();
 		patient.setLock(99);
 		assertThat(patient.getLock()).isEqualTo(99);
 	}
