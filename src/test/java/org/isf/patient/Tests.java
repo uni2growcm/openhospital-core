@@ -45,6 +45,7 @@ import org.isf.patient.model.Patient;
 import org.isf.patient.model.PatientProfilePhoto;
 import org.isf.patient.service.PatientIoOperationRepository;
 import org.isf.patient.service.PatientIoOperations;
+import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.pagination.PagedResponse;
@@ -608,7 +609,7 @@ class Tests extends OHCoreTestCase {
 		assertThatThrownBy(() -> {
 			Patient patient = testPatient.setup(true);
 
-			patient.setBirthDate(LocalDate.of(999, 1, 1));
+			patient.setBirthDate(LocalDate.now().plusYears(1));
 
 			patientBrowserManager.savePatient(patient);
 		}).isInstanceOf(OHServiceException.class).has(new Condition<Throwable>(

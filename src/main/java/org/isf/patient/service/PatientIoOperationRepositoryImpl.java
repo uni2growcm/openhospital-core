@@ -21,6 +21,7 @@
  */
 package org.isf.patient.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -124,9 +125,9 @@ public class PatientIoOperationRepositoryImpl implements PatientIoOperationRepos
 			Object value = entry.getValue();
 
 			if (key.equals("birthDate")) {
-				LocalDateTime birthDateFrom = (LocalDateTime) value;
-				LocalDateTime birthDateTo = birthDateFrom.plusDays(1);
-				predicates.add(cb.between(patient.get(key).as(LocalDateTime.class), birthDateFrom, birthDateTo));
+				LocalDate birthDateFrom = (LocalDate) value;
+				LocalDate birthDateTo = birthDateFrom.plusDays(1);
+				predicates.add(cb.between(patient.get(key).as(LocalDate.class), birthDateFrom, birthDateTo));
 			} else if (key.equals("age")) {
 				if (value instanceof String) {
 					try {

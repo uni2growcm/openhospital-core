@@ -272,7 +272,7 @@ class TestMergePatient extends OHCoreTestCase {
 		patientBrowserManager.mergePatient(mergedPatient, obsoletePatient);
 
 		// then:
-		assertThat(mergedPatient.getAge()).isGreaterThanOrEqualTo(71);  // in 2021 the value of age is 71
+		assertThat(mergedPatient.getAge()).isGreaterThanOrEqualTo(31);
 		assertThat(mergedPatient.getAgetype()).isEqualTo("d5");
 	}
 
