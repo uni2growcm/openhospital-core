@@ -29,7 +29,6 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -229,8 +228,6 @@ class Tests extends OHCoreTestCase {
 		setupTestPatient(false);
 		Map<String, Object> params = new HashMap<>();
 		params.put("firstName", "TestFirstName");
-		LocalDateTime birthDate = (LocalDateTime) params.get("birthDate");
-		params.put("birthDate", LocalDate.of(1984, 8, 14));
 		params.put("address", "TestAddress");
 		List<Patient> patients = patientIoOperation.getPatients(params);
 		assertThat(patients).isNotEmpty();
