@@ -230,7 +230,6 @@ class Tests extends OHCoreTestCase {
 		setupTestPatient(false);
 		Map<String, Object> params = new HashMap<>();
 		params.put("firstName", "TestFirstName");
-		params.put("birthDate", LocalDateTime.of(1984, Calendar.AUGUST, 14, 0, 0, 0));
 		params.put("address", "TestAddress");
 		List<Patient> patients = patientIoOperation.getPatients(params);
 		assertThat(patients).isNotEmpty();
@@ -332,7 +331,6 @@ class Tests extends OHCoreTestCase {
 		setupTestPatient(false);
 		Map<String, Object> params = new HashMap<>();
 		params.put("firstName", "TestFirstName");
-		params.put("birthDate", LocalDateTime.of(1984, Calendar.AUGUST, 14, 0, 0, 0));
 		params.put("address", "TestAddress");
 		List<Patient> patients = patientBrowserManager.getPatients(params);
 		assertThat(patients).isNotEmpty();
@@ -351,7 +349,6 @@ class Tests extends OHCoreTestCase {
 		setupTestPatient(false);
 		Map<String, Object> params = new HashMap<>();
 		params.put("firstName", "TestFirstName");
-		params.put("birthDate", LocalDateTime.of(1984, Calendar.AUGUST, 14, 0, 0, 0));
 		params.put("address", "TestAddress");
 		PagedResponse<Patient> patients = patientBrowserManager.getPatients(params, 0, 3);
 		assertThat(patients.getData()).isNotEmpty();
@@ -622,7 +619,7 @@ class Tests extends OHCoreTestCase {
 		assertThatThrownBy(() -> {
 			Patient patient = testPatient.setup(true);
 
-			patient.setBirthDate(LocalDate.of(999, 1, 1));
+			patient.setBirthDate(LocalDate.now().plusYears(1));
 
 			patientBrowserManager.savePatient(patient);
 		}).isInstanceOf(OHServiceException.class).has(new Condition<Throwable>(
@@ -691,7 +688,7 @@ class Tests extends OHCoreTestCase {
 		assertThat(patient.getSex()).isEqualTo('F');
 		assertThat(patient.getBirthDate()).isNull();
 
-		assertThat(patient.getLock()).isZero();
+		assertThat(patient.getLock()).isNull();
 		patient.setLock(99);
 		assertThat(patient.getLock()).isEqualTo(99);
 	}

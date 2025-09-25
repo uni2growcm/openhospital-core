@@ -81,7 +81,7 @@ public class Patient extends Auditable<String> {
 
 	@NotNull
 	@Column(name="PAT_AGE")
-	private int age;
+	private Integer age;
 
 	@Column(name="PAT_AGETYPE")
 	private String agetype;
@@ -159,7 +159,7 @@ public class Patient extends Auditable<String> {
 
 	@Version
 	@Column(name="PAT_LOCK")
-	private int lock;
+	private Integer lock;
 
 	@OneToOne(
 			fetch = FetchType.LAZY,
@@ -222,7 +222,7 @@ public class Patient extends Auditable<String> {
 		this.profession = "";
 	}
 
-	public Patient(String firstName, String secondName, LocalDate birthDate, int age, String agetype, char sex,
+	public Patient(String firstName, String secondName, LocalDate birthDate, Integer age, String agetype, char sex,
 			String address, String city, String nextKin, String telephone,
 			String motherName, char mother, String fatherName, char father,
 			String bloodType, char economicStatus, char parentTogether, String personalCode,
@@ -250,7 +250,7 @@ public class Patient extends Auditable<String> {
 		this.profession = profession;
 	}
 
-	public Patient(int code, String firstName, String secondName, String name, LocalDate birthDate, int age, String agetype, char sex,
+	public Patient(int code, String firstName, String secondName, String name, LocalDate birthDate, Integer age, String agetype, char sex,
 			String address, String city, String nextKin, String telephone, String note,
 			String motherName, char mother, String fatherName, char father,
 			String bloodType, char economicStatus, char parentTogether, String taxCode,
@@ -305,15 +305,32 @@ public class Patient extends Auditable<String> {
 		this.birthDate = birthDate;
 	}
 
-	public int getAge() {
-		if (this.birthDate != null) {
-			Period periodAge = Period.between(birthDate, LocalDate.now());
-			age = periodAge.getYears();
-		}
-		return age;
+//	public Integer getAge() {
+//		if (this.birthDate != null) {
+//			Period periodAge = Period.between(birthDate, LocalDate.now());
+//			age = periodAge.getYears();
+//		}
+//		return age;
+//	}
+
+	public Integer getAge() {
+		return this.age;
 	}
 
-	public void setAge(int age) {
+	public void updateAge() {
+		if (this.birthDate != null) {
+			this.age = Period.between(birthDate, LocalDate.now()).getYears();
+		}
+	}
+
+	public Integer getCurrentAge() {
+		if (this.birthDate != null) {
+			return Period.between(birthDate, LocalDate.now()).getYears();
+		}
+		return this.age;
+	}
+
+	public void setAge(Integer age) {
 		this.age = age;
 	}
 
@@ -350,11 +367,11 @@ public class Patient extends Auditable<String> {
 		this.name = this.firstName + ' ' + this.secondName;
 	}
 
-	public int getLock() {
+	public Integer getLock() {
 		return lock;
 	}
 
-	public void setLock(int lock) {
+	public void setLock(Integer lock) {
 		this.lock = lock;
 	}
 

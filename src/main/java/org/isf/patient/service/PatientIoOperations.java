@@ -21,6 +21,8 @@
  */
 package org.isf.patient.service;
 
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -105,6 +107,60 @@ public class PatientIoOperations {
 	 */
 	public List<Patient> getPatients(Map<String, Object> parameters) throws OHServiceException {
 		return repository.getPatientsByParams(parameters);
+	}
+
+	/**
+	 * Updates the age of all patients based on their date of birth
+	 * @return Number of patients updated
+	 */
+	public int updateAllPatientsAge() {
+		List<Patient> allPatients = repository.findAll();
+		int updatedCount = 0;
+
+		for (Patient patient : allPatients) {
+			if (patient.getBirthDate() != null) {
+				int currentAge = calculateAgeFromBirthDate(patient.getBirthDate());
+
+				if (patient.getAge() == null || !patient.getAge().equals(currentAge)) {
+					patient.setAge(currentAge);
+					updatedCount++;
+				}
+			}
+		}
+
+		if (updatedCount > 0) {
+			repository.saveAll(allPatients);
+		}
+
+		return updatedCount;
+	}
+
+	/**
+	 * Updates the age of a specific patient
+	 * @param patientCode Patient code
+	 * @return true if updated, false otherwise
+	 */
+	public boolean updatePatientAge(Integer patientCode) {
+		Patient patient = repository.findById(patientCode).orElse(null);
+		if (patient == null || patient.getBirthDate() == null) {
+			return false;
+		}
+
+		int currentAge = calculateAgeFromBirthDate(patient.getBirthDate());
+		if (patient.getAge() == null || !patient.getAge().equals(currentAge)) {
+			patient.setAge(currentAge);
+			repository.save(patient);
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Calculates age from date of birth
+	 */
+	private int calculateAgeFromBirthDate(LocalDate birthDate) {
+		return Period.between(birthDate, LocalDate.now()).getYears();
 	}
 
 	/**
