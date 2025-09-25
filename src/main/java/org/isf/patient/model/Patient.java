@@ -305,14 +305,6 @@ public class Patient extends Auditable<String> {
 		this.birthDate = birthDate;
 	}
 
-//	public Integer getAge() {
-//		if (this.birthDate != null) {
-//			Period periodAge = Period.between(birthDate, LocalDate.now());
-//			age = periodAge.getYears();
-//		}
-//		return age;
-//	}
-
 	public Integer getAge() {
 		return this.age;
 	}
