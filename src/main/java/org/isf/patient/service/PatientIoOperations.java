@@ -23,6 +23,7 @@ package org.isf.patient.service;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -110,30 +111,40 @@ public class PatientIoOperations {
 	}
 
 	/**
-	 * Updates the age of all patients based on their date of birth
-	 * @return Number of patients updated
+	 * Get the age of all patients based on the age
+	 * @return list of patients
 	 */
-	public int updateAllPatientsAge() {
+	public PagedResponse<Patient> AgeFromBirthDate(int age, int page, int size) {
 		List<Patient> allPatients = repository.findAll();
-		int updatedCount = 0;
+		List<Patient> filtered = new ArrayList<>();
 
 		for (Patient patient : allPatients) {
 			if (patient.getBirthDate() != null) {
 				int currentAge = calculateAgeFromBirthDate(patient.getBirthDate());
-
-				if (patient.getAge() == null || !patient.getAge().equals(currentAge)) {
-					patient.setAge(currentAge);
-					updatedCount++;
+				if (currentAge == age) {
+					filtered.add(patient);
 				}
 			}
 		}
 
-		if (updatedCount > 0) {
-			repository.saveAll(allPatients);
-		}
+		int start = page * size;
+		int end = Math.min(start + size, filtered.size());
+		List<Patient> content = start >= filtered.size() ? new ArrayList<>() : filtered.subList(start, end);
 
-		return updatedCount;
+		PageInfo pageInfo = new PageInfo();
+		pageInfo.setPage(page);
+		pageInfo.setSize(size);
+		pageInfo.setTotalNbOfElements(filtered.size());
+		pageInfo.setTotalPages((int) Math.ceil((double) filtered.size() / size));
+
+		PagedResponse<Patient> response = new PagedResponse<>();
+		response.setData(content);
+		response.setPageInfo(pageInfo);
+
+		return response;
 	}
+
+
 
 	/**
 	 * Updates the age of a specific patient

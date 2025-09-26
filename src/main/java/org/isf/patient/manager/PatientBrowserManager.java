@@ -113,8 +113,8 @@ public class PatientBrowserManager {
 	 * Updates the age of all patients based on their date of birth
 	 * @return Number of patients updated
 	 */
-	public int updateAllPatientsAge() {
-		return ioOperations.updateAllPatientsAge();
+	public PagedResponse<Patient> AgeFromBirthDate(int age, int page, int size) {
+		return ioOperations.AgeFromBirthDate(age, page, size);
 	}
 
 	/**
