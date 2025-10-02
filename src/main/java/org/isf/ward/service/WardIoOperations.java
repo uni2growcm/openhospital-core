@@ -195,4 +195,13 @@ public class WardIoOperations {
 		return repository.findAll();
 	}
 
+	/**
+	 * Retrieves all stored {@link Ward}s flagged as pharmacy wards.
+	 *
+	 * @return list of wards where isPharmacy = true
+	 * @throws OHServiceException if an error occurs retrieving the wards.
+	 */
+	public List<Ward> getPharmacyWards() throws OHServiceException {
+		return new ArrayList<>(repository.findPharmacyWards());
+	}
 }
