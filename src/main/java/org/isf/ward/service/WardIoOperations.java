@@ -202,6 +202,6 @@ public class WardIoOperations {
 	 * @throws OHServiceException if an error occurs retrieving the wards.
 	 */
 	public List<Ward> getPharmacyWards() throws OHServiceException {
-		return new ArrayList<>(repository.findPharmacyWards());
+		return repository.findPharmacyWards();
 	}
 }
