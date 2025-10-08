@@ -638,8 +638,6 @@ public class JasperReportsManager {
 			}
 
 			HashMap<String, Object> parameters = getHospitalParameters();
-			addBundleParameter(RPT_BASE, jasperFileName, parameters);
-
 			parameters.put("fromdate", toDate(dateFrom));
 			parameters.put("todate", toDate(dateTo));
 			parameters.put(JRParameter.REPORT_LOCALE, locale);
@@ -650,7 +648,6 @@ public class JasperReportsManager {
 				parameters.put("WardCode", String.valueOf(ward.getCode()));
 				parameters.put("WardName", String.valueOf(ward.getDescription()));
 			}
-
 			String pdfFilename = compilePDFFilename(RPT_BASE, jasperFileName, null, "pdf");
 
 			JasperReportResultDto result = generateJasperReport(compileJasperFilename(RPT_BASE, jasperFileName), pdfFilename, parameters);
