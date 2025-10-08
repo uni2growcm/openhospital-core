@@ -626,6 +626,42 @@ public class JasperReportsManager {
 		}
 	}
 
+	public JasperReportResultDto getGenericReportPharmaceuticalStockCardPdf(String jasperFileName, String exportFileName, LocalDateTime dateFrom,
+																			LocalDateTime dateTo, Medical medical, Ward ward, Locale locale) throws OHServiceException {
+
+		try {
+			if (dateFrom == null) {
+				dateFrom = TimeTools.getNow();
+			}
+			if (dateTo == null) {
+				dateTo = TimeTools.getNow();
+			}
+
+			HashMap<String, Object> parameters = getHospitalParameters();
+			addBundleParameter(RPT_BASE, jasperFileName, parameters);
+
+			parameters.put("fromdate", toDate(dateFrom));
+			parameters.put("todate", toDate(dateTo));
+			parameters.put(JRParameter.REPORT_LOCALE, locale);
+			if (medical != null) {
+				parameters.put("productID", String.valueOf(medical.getCode()));
+			}
+			if (ward != null) {
+				parameters.put("WardCode", String.valueOf(ward.getCode()));
+				parameters.put("WardName", String.valueOf(ward.getDescription()));
+			}
+
+			String pdfFilename = compilePDFFilename(RPT_BASE, jasperFileName, null, "pdf");
+
+			JasperReportResultDto result = generateJasperReport(compileJasperFilename(RPT_BASE, jasperFileName), pdfFilename, parameters);
+			JasperExportManager.exportReportToPdfFile(result.getJasperPrint(), pdfFilename);
+			return result;
+		} catch (Exception e) {
+			LOGGER.error("", e);
+			throw new OHReportException(e, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
+		}
+	}
+
 	public void getGenericReportPharmaceuticalStockCardExcel(String jasperFileName, String exportFileName, LocalDateTime dateFrom, LocalDateTime dateTo,
 					Medical medical, Ward ward) throws OHServiceException {
 
