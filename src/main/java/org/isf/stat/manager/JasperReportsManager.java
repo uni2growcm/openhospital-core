@@ -441,6 +441,30 @@ public class JasperReportsManager {
 		}
 	}
 
+	public JasperReportResultDto getGenericReportPharmaceuticalOrder2Pdf(String jasperFileName, Locale locale) throws OHServiceException {
+
+		try {
+			HashMap<String, Object> parameters = getHospitalParameters();
+
+			LocalDateTime date = TimeTools.getNow();
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern(E_D_MMMM_YYYY);
+			String todayReport = formatter.format(date);
+			formatter = DateTimeFormatter.ofPattern(YYYY_M_MDD);
+			String todayFile = formatter.format(date);
+			parameters.put("Date", todayReport);
+			parameters.put(JRParameter.REPORT_LOCALE, locale);
+
+			String pdfFilename = compilePDFFilename(RPT_BASE, jasperFileName, Arrays.asList(todayFile), "pdf");
+
+			JasperReportResultDto result = generateJasperReport(compileJasperFilename(RPT_BASE, jasperFileName), pdfFilename, parameters);
+			JasperExportManager.exportReportToPdfFile(result.getJasperPrint(), pdfFilename);
+			return result;
+		} catch (Exception e) {
+			LOGGER.error("", e);
+			throw new OHReportException(e, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
+		}
+	}
+
 	public JasperReportResultDto GenericReportPharmaceuticalAMCPdf(LocalDateTime date, String jasperFileName) throws OHServiceException {
 		try {
 			if (date == null) {
