@@ -1100,6 +1100,10 @@ public class JasperReportsManager {
 		sbFilename.append(File.separator);
 		sbFilename.append("PDF");
 		sbFilename.append(File.separator);
+		File pdfFolder = new File(folderName + File.separator + "PDF");
+		if (!pdfFolder.exists()) {
+			pdfFolder.mkdirs();
+		}
 		sbFilename.append(jasperFileName);
 		if (params != null) {
 			params.forEach(p -> {
