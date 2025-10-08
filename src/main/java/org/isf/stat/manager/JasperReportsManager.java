@@ -524,52 +524,6 @@ public class JasperReportsManager {
 		}
 	}
 
-	public void getGenericReportPharmaceuticalAMCExcel(LocalDateTime date, String jasperFileName, String exportFilename, Locale locale)
-		throws OHServiceException {
-		try {
-			if (date == null) {
-				date = TimeTools.getNow();
-			}
-
-			HashMap<String, Object> parameters = compileGenericReportPharmaceuticalAMCparameters(date);
-
-			if (locale != null) {
-				parameters.put(JRParameter.REPORT_LOCALE, locale);
-			}
-
-			String dateTodayQuery = TimeTools.formatDateTime((LocalDateTime) parameters.get("TODAY_DATE"), YYYY_MM_DD);
-			String dateStartQuery = TimeTools.formatDateTime((LocalDateTime) parameters.get("START_DATE"), YYYY_MM_DD);
-			String dateEndQuery = TimeTools.formatDateTime((LocalDateTime) parameters.get("END_DATE"), YYYY_MM_DD);
-
-			File jasperFile = new File(compileJasperFilename(RPT_BASE, jasperFileName));
-			JasperReport jasperReport = (JasperReport) JRLoader.loadObject(jasperFile);
-
-			JRQuery query = jasperReport.getMainDataset().getQuery();
-			String queryString = query.getText()
-				.replace("$P{TODAY_DATE}", "'" + dateTodayQuery + "'")
-				.replace("$P{START_DATE}", "'" + dateStartQuery + "'")
-				.replace("$P{END_DATE}", "'" + dateEndQuery + "'");
-
-			DbQueryLogger dbQuery = new DbQueryLogger();
-			ResultSet resultSet = dbQuery.getData(queryString, true);
-
-			File exportFile = new File(exportFilename);
-			ExcelExporter xlsExport = new ExcelExporter();
-
-			if (exportFile.getName().endsWith(".xls")) {
-				xlsExport.exportResultsetToExcelOLD(resultSet, exportFile);
-			} else {
-				xlsExport.exportResultsetToExcel(resultSet, exportFile);
-			}
-
-			LOGGER.info("Generated Pharmaceutical AMC Excel report: {}", exportFile.getAbsolutePath());
-
-		} catch (Exception e) {
-			LOGGER.error("Error generating Pharmaceutical AMC Excel report", e);
-			throw new OHReportException(e, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
-		}
-	}
-
 	private HashMap<String, Object> compileGenericReportPharmaceuticalAMCparameters(LocalDateTime date) throws OHServiceException {
 		HashMap<String, Object> parameters = getHospitalParameters();
 
