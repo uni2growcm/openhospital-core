@@ -733,6 +733,35 @@ public class JasperReportsManager {
 		}
 	}
 
+	public JasperReportResultDto getGenericReportPharmaceuticalStockWardPdf(LocalDateTime date, String jasperFileName, Ward ward, Locale locale) throws OHServiceException {
+
+		try {
+			HashMap<String, Object> parameters = getHospitalParameters();
+
+			if (date == null) {
+				date = TimeTools.getNow();
+			}
+			String dateReport = date.format(DateTimeFormatter.ofPattern(E_D_MMMM_YYYY));
+			String dateQuery = date.format(DateTimeFormatter.ofPattern(YYYY_MM_DD));
+			String dateFile = date.format(DateTimeFormatter.ofPattern(YYYY_M_MDD));
+
+			parameters.put("Date", dateQuery);
+			parameters.put("DateReport", dateReport);
+			parameters.put("Ward", ward.getDescription());
+			parameters.put("WardCode", ward.getCode());
+			parameters.put(JRParameter.REPORT_LOCALE, locale);
+
+			String pdfFilename = compilePDFFilename(RPT_BASE, jasperFileName, Arrays.asList(dateFile), "pdf");
+
+			JasperReportResultDto result = generateJasperReport(compileJasperFilename(RPT_BASE, jasperFileName), pdfFilename, parameters);
+			JasperExportManager.exportReportToPdfFile(result.getJasperPrint(), pdfFilename);
+			return result;
+		} catch (Exception e) {
+			LOGGER.error("", e);
+			throw new OHReportException(e, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
+		}
+	}
+
 	public JasperReportResultDto getGenericReportUserInDatePdf(String fromDate, String toDate, String aUser, String jasperFileName) throws OHServiceException {
 
 		try {
