@@ -473,8 +473,6 @@ public class JasperReportsManager {
 				parameters.put(JRParameter.REPORT_LOCALE, locale);
 			}
 
-			addBundleParameter(RPT_BASE, jasperFileName, parameters);
-
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern(YYYY_MM_DD);
 			String todayFile = formatter.format(date);
 			String pdfFilename = compilePDFFilename(RPT_BASE, jasperFileName, Arrays.asList(todayFile), "pdf");
