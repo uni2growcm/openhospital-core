@@ -488,10 +488,6 @@ public class JasperReportsManager {
 
 	public JasperReportResultDto GenericReportPharmaceuticalAMCPdf(LocalDateTime date, String jasperFileName, Locale locale) throws OHServiceException {
 		try {
-			if (date == null) {
-				date = TimeTools.getNow();
-			}
-
 			HashMap<String, Object> parameters = compileGenericReportPharmaceuticalAMCparameters(date);
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern(YYYY_MM_DD);
 			String todayFile = formatter.format(date);
