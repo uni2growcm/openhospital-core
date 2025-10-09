@@ -615,6 +615,61 @@ public class JasperReportsManager {
 		}
 	}
 
+	public JasperReportResultDto getGenericReportPharmaceuticalStockPdf(
+		LocalDateTime date,
+		String jasperFileName,
+		String filter,
+		String groupBy,
+		String sortBy,
+		Locale locale
+	) throws OHServiceException {
+
+		try {
+			HashMap<String, Object> parameters = getHospitalParameters();
+			//addBundleParameter(RPT_BASE, jasperFileName, parameters);
+			if (date == null) {
+				date = TimeTools.getNow();
+			}
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern(E_D_MMMM_YYYY);
+			String dateReport = formatter.format(date);
+			formatter = DateTimeFormatter.ofPattern(YYYY_MM_DD);
+			String dateQuery = formatter.format(date);
+			formatter = DateTimeFormatter.ofPattern(YYYY_M_MDD);
+			String dateFile = formatter.format(date);
+
+			parameters.put("Date", dateReport);
+			parameters.put("todate", dateQuery);
+			if (groupBy != null) {
+				parameters.put("groupBy", groupBy);
+			}
+			if (sortBy != null) {
+				parameters.put("sortBy", sortBy);
+			}
+			if (filter != null) {
+				parameters.put("filter", filter);
+			}
+
+			if (locale != null) {
+				parameters.put(JRParameter.REPORT_LOCALE, locale);
+			}
+			String pdfFilename = compilePDFFilename(RPT_BASE, jasperFileName, Arrays.asList(dateFile), "pdf");
+
+			JasperReportResultDto result = generateJasperReport(
+				compileJasperFilename(RPT_BASE, jasperFileName),
+				pdfFilename,
+				parameters
+			);
+
+			JasperExportManager.exportReportToPdfFile(result.getJasperPrint(), pdfFilename);
+			return result;
+
+		} catch (Exception e) {
+			LOGGER.error("", e);
+			throw new OHReportException(e, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
+		}
+	}
+
+
 	public JasperReportResultDto getGenericReportPharmaceuticalStockCardPdf(String jasperFileName, String exportFileName, LocalDateTime dateFrom,
 					LocalDateTime dateTo, Medical medical, Ward ward) throws OHServiceException {
 
