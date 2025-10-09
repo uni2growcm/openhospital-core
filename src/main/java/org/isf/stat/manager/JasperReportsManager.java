@@ -65,6 +65,7 @@ import org.isf.ward.manager.WardBrowserManager;
 import org.isf.ward.model.Ward;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Component;
 
 import net.sf.jasperreports.engine.JRBand;
@@ -911,6 +912,26 @@ public class JasperReportsManager {
 
 			String pdfFilename = compilePDFFilename(jasperFileFolder, jasperFileName, null, "pdf");
 			String filename = compileJasperFilename(jasperFileFolder, jasperFileName);
+
+			JasperReportResultDto result = generateJasperReport(filename, pdfFilename, parameters);
+			JasperExportManager.exportReportToPdfFile(result.getJasperPrint(), pdfFilename);
+			return result;
+		} catch (Exception e) {
+			LOGGER.error("", e);
+			throw new OHReportException(e, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
+		}
+	}
+
+	public JasperReportResultDto getGenericReportFromDateToDate2Pdf(LocalDate fromDate, LocalDate toDate, String jasperFileName, Locale locale)
+		throws OHServiceException {
+
+		try {
+			HashMap<String, Object> parameters = compileGenericReportFromDateToDateParameters(fromDate, toDate);
+			addBundleParameter(RPT_BASE, jasperFileName, parameters);
+			parameters.put(JRParameter.REPORT_LOCALE, locale);
+
+			String pdfFilename = compilePDFFilename(RPT_BASE, jasperFileName, null, "pdf");
+			String filename = compileJasperFilename(RPT_BASE, jasperFileName);
 
 			JasperReportResultDto result = generateJasperReport(filename, pdfFilename, parameters);
 			JasperExportManager.exportReportToPdfFile(result.getJasperPrint(), pdfFilename);
