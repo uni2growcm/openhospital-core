@@ -491,12 +491,8 @@ public class JasperReportsManager {
 			if (date == null) {
 				date = TimeTools.getNow();
 			}
+
 			HashMap<String, Object> parameters = compileGenericReportPharmaceuticalAMCparameters(date);
-
-			if (locale != null) {
-				parameters.put(JRParameter.REPORT_LOCALE, locale);
-			}
-
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern(YYYY_MM_DD);
 			String todayFile = formatter.format(date);
 			String pdfFilename = compilePDFFilename(RPT_BASE, jasperFileName, Arrays.asList(todayFile), "pdf");
