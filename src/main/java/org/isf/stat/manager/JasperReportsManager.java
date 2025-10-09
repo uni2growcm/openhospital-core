@@ -937,6 +937,26 @@ public class JasperReportsManager {
 		}
 	}
 
+	public JasperReportResultDto getGenericReportFromDateToDate2Pdf(LocalDate fromDate, LocalDate toDate, String jasperFileName, Locale locale)
+		throws OHServiceException {
+
+		try {
+			HashMap<String, Object> parameters = compileGenericReportFromDateToDateParameters(fromDate, toDate);
+			addBundleParameter(RPT_BASE, jasperFileName, parameters);
+			parameters.put(JRParameter.REPORT_LOCALE, locale);
+
+			String pdfFilename = compilePDFFilename(RPT_BASE, jasperFileName, null, "pdf");
+			String filename = compileJasperFilename(RPT_BASE, jasperFileName);
+
+			JasperReportResultDto result = generateJasperReport(filename, pdfFilename, parameters);
+			JasperExportManager.exportReportToPdfFile(result.getJasperPrint(), pdfFilename);
+			return result;
+		} catch (Exception e) {
+			LOGGER.error("", e);
+			throw new OHReportException(e, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
+		}
+	}
+
 	public JasperReportResultDto getGenericReportFromDateToDatePdf(String fromDate, String toDate, String jasperFileFolder, String jasperFileName)
 					throws OHServiceException {
 
