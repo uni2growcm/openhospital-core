@@ -486,6 +486,22 @@ public class JasperReportsManager {
 		}
 	}
 
+	public JasperReportResultDto GenericReportPharmaceuticalAMCPdf(LocalDateTime date, String jasperFileName, Locale locale) throws OHServiceException {
+		try {
+			HashMap<String, Object> parameters = compileGenericReportPharmaceuticalAMCparameters(date);
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern(YYYY_MM_DD);
+			String todayFile = formatter.format(date);
+			String pdfFilename = compilePDFFilename(RPT_BASE, jasperFileName, Arrays.asList(todayFile), "pdf");
+
+			JasperReportResultDto result = generateJasperReport(compileJasperFilename(RPT_BASE, jasperFileName), pdfFilename, parameters);
+			JasperExportManager.exportReportToPdfFile(result.getJasperPrint(), pdfFilename);
+			return result;
+		} catch (Exception e) {
+			LOGGER.error("", e);
+			throw new OHReportException(e, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
+		}
+	}
+
 	public void getGenericReportPharmaceuticalAMCExcel(LocalDateTime date, String jasperFileName, String exportFilename) throws OHServiceException {
 		try {
 			if (date == null) {
