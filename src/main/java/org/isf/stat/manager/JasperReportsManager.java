@@ -51,7 +51,6 @@ import org.isf.hospital.manager.HospitalBrowsingManager;
 import org.isf.hospital.model.Hospital;
 import org.isf.medicalinventory.model.MedicalInventory;
 import org.isf.medicals.model.Medical;
-import org.isf.menu.manager.Context;
 import org.isf.patient.model.Patient;
 import org.isf.patient.service.PatientIoOperations;
 import org.isf.stat.dto.JasperReportResultDto;
@@ -66,8 +65,6 @@ import org.isf.ward.manager.WardBrowserManager;
 import org.isf.ward.model.Ward;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Component;
 
 import net.sf.jasperreports.engine.JRBand;
@@ -564,13 +561,13 @@ public class JasperReportsManager {
 
 			String queryString = query.getText();
 			queryString = queryString.replace("$P{todate}", '\'' + dateQuery + '\'');
-			if (groupBy != null && !groupBy.isEmpty()) {
+			if (groupBy != null) {
 				queryString = queryString.replace("$P{groupBy}", '\'' + groupBy + '\'');
 			}
-			if (sortBy != null && !sortBy.isEmpty()) {
+			if (sortBy != null) {
 				queryString = queryString.replace("$P!{sortBy}", '\'' + sortBy + '\'');
 			}
-			if (filter != null && !filter.isEmpty()) {
+			if (filter != null) {
 				queryString = queryString.replace("$P{filter}", '\'' + filter + '\'');
 			}
 			DbQueryLogger dbQuery = new DbQueryLogger();
