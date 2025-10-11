@@ -552,7 +552,11 @@ public class JasperReportsManager {
 
 	public void getGenericReportPharmaceuticalStockExcel(LocalDateTime date, String jasperFileName, String exportFilename, String filter, String groupBy,
 					String sortBy) throws OHServiceException {
+		
 		try {
+			if (date == null) {
+				date = TimeTools.getNow();
+			}
 			String dateQuery = TimeTools.formatDateTime(date, YYYY_MM_DD);
 			File jasperFile = new File(compileJasperFilename(RPT_BASE, jasperFileName));
 
