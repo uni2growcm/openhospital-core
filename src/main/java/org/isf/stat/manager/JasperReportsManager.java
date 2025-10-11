@@ -51,6 +51,7 @@ import org.isf.hospital.manager.HospitalBrowsingManager;
 import org.isf.hospital.model.Hospital;
 import org.isf.medicalinventory.model.MedicalInventory;
 import org.isf.medicals.model.Medical;
+import org.isf.menu.manager.Context;
 import org.isf.patient.model.Patient;
 import org.isf.patient.service.PatientIoOperations;
 import org.isf.stat.dto.JasperReportResultDto;
@@ -65,6 +66,8 @@ import org.isf.ward.manager.WardBrowserManager;
 import org.isf.ward.model.Ward;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Component;
 
 import net.sf.jasperreports.engine.JRBand;
@@ -552,11 +555,7 @@ public class JasperReportsManager {
 
 	public void getGenericReportPharmaceuticalStockExcel(LocalDateTime date, String jasperFileName, String exportFilename, String filter, String groupBy,
 					String sortBy) throws OHServiceException {
-
 		try {
-			if (date == null) {
-				date = TimeTools.getNow();
-			}
 			String dateQuery = TimeTools.formatDateTime(date, YYYY_MM_DD);
 			File jasperFile = new File(compileJasperFilename(RPT_BASE, jasperFileName));
 
@@ -565,16 +564,15 @@ public class JasperReportsManager {
 
 			String queryString = query.getText();
 			queryString = queryString.replace("$P{todate}", '\'' + dateQuery + '\'');
-			if (groupBy != null) {
+			if (groupBy != null && !groupBy.isEmpty()) {
 				queryString = queryString.replace("$P{groupBy}", '\'' + groupBy + '\'');
 			}
-			if (sortBy != null) {
+			if (sortBy != null && !sortBy.isEmpty()) {
 				queryString = queryString.replace("$P!{sortBy}", '\'' + sortBy + '\'');
 			}
-			if (filter != null) {
+			if (filter != null && !filter.isEmpty()) {
 				queryString = queryString.replace("$P{filter}", '\'' + filter + '\'');
 			}
-
 			DbQueryLogger dbQuery = new DbQueryLogger();
 			ResultSet resultSet = dbQuery.getData(queryString, true);
 
@@ -585,62 +583,6 @@ public class JasperReportsManager {
 			} else {
 				xlsExport.exportResultsetToExcel(resultSet, exportFile);
 			}
-		} catch (Exception e) {
-			LOGGER.error("", e);
-			throw new OHReportException(e, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
-		}
-	}
-
-	public void getGenericReportPharmaceuticalStockExcel(LocalDateTime date, String jasperFileName,
-														 String exportFilename, String filter, String groupBy, String sortBy, Locale locale)
-		throws OHServiceException {
-
-		try {
-			if (org.isf.menu.manager.Context.getApplicationContext() == null) {
-				org.springframework.context.annotation.AnnotationConfigApplicationContext ctx =
-					new org.springframework.context.annotation.AnnotationConfigApplicationContext();
-				ctx.refresh();
-				org.isf.menu.manager.Context.setApplicationContext(ctx);
-			}
-
-			if (date == null) {
-				date = TimeTools.getNow();
-			}
-
-			String dateQuery = TimeTools.formatDateTime(date, YYYY_MM_DD);
-			File jasperFile = new File(compileJasperFilename(RPT_BASE, jasperFileName));
-
-			JasperReport jasperReport = (JasperReport) JRLoader.loadObject(jasperFile);
-			JRQuery query = jasperReport.getMainDataset().getQuery();
-
-			String queryString = query.getText();
-			queryString = queryString.replace("$P{todate}", '\'' + dateQuery + '\'');
-
-			if (groupBy != null) {
-				queryString = queryString.replace("$P{groupBy}", '\'' + groupBy + '\'');
-			}
-			if (sortBy != null) {
-				queryString = queryString.replace("$P!{sortBy}", '\'' + sortBy + '\'');
-			}
-			if (filter != null) {
-				queryString = queryString.replace("$P{filter}", '\'' + filter + '\'');
-			}
-
-			HashMap<String, Object> parameters = new HashMap<>();
-			parameters.put(JRParameter.REPORT_LOCALE, locale);
-
-			DbQueryLogger dbQuery = new DbQueryLogger();
-			ResultSet resultSet = dbQuery.getData(queryString, true);
-
-			File exportFile = new File(exportFilename);
-			ExcelExporter xlsExport = new ExcelExporter();
-
-			if (exportFile.getName().endsWith(".xls")) {
-				xlsExport.exportResultsetToExcelOLD(resultSet, exportFile);
-			} else {
-				xlsExport.exportResultsetToExcel(resultSet, exportFile);
-			}
-
 		} catch (Exception e) {
 			LOGGER.error("", e);
 			throw new OHReportException(e, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
