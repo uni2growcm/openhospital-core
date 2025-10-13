@@ -31,15 +31,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.MissingResourceException;
-import java.util.Optional;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -51,6 +43,7 @@ import org.isf.hospital.manager.HospitalBrowsingManager;
 import org.isf.hospital.model.Hospital;
 import org.isf.medicalinventory.model.MedicalInventory;
 import org.isf.medicals.model.Medical;
+import org.isf.medicalstockward.manager.MovWardBrowserManager;
 import org.isf.patient.model.Patient;
 import org.isf.patient.service.PatientIoOperations;
 import org.isf.stat.dto.JasperReportResultDto;
@@ -851,6 +844,45 @@ public class JasperReportsManager {
 			JasperReportResultDto result = generateJasperReport(compileJasperFilename(RPT_BASE, jasperFileName), pdfFilename, parameters);
 			JasperExportManager.exportReportToPdfFile(result.getJasperPrint(), pdfFilename);
 			return result;
+		} catch (Exception e) {
+			LOGGER.error("", e);
+			throw new OHReportException(e, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
+		}
+	}
+
+	public void getGenericReportPharmaceuticalStockWardExcel(String jasperFileName, String exportFileName, String wardCode, LocalDateTime date) throws OHReportException {
+		try {
+			if (date == null) {
+				date = TimeTools.getNow();
+			}
+
+			String dateReport = date.format(DateTimeFormatter.ofPattern(E_D_MMMM_YYYY));
+			String dateQuery = TimeTools.formatDateTime(date, YYYY_MM_DD);
+
+			File jasperFile = new File(compileJasperFilename(RPT_BASE, jasperFileName));
+
+			JasperReport jasperReport = (JasperReport) JRLoader.loadObject(jasperFile);
+			JRQuery query = jasperReport.getMainDataset().getQuery();
+
+			String queryString = query.getText();
+			queryString = queryString.replace("$P{Date}", '\'' + dateQuery + '\'');
+			queryString = queryString.replace("$P{DateReport}", '\'' + dateReport + '\'');
+
+			if (wardCode != null) {
+				queryString = queryString.replace("$P{WardCode}", '\'' + wardCode + '\'');
+			}
+
+			DbQueryLogger dbQuery = new DbQueryLogger();
+			ResultSet resultSet = dbQuery.getData(queryString, true);
+
+			File exportFile = new File(exportFileName);
+			ExcelExporter xlsExport = new ExcelExporter();
+			if (exportFile.getName().endsWith(".xls")) {
+				xlsExport.exportResultsetToExcelOLD(resultSet, exportFile);
+			} else {
+				xlsExport.exportResultsetToExcel(resultSet, exportFile);
+			}
+
 		} catch (Exception e) {
 			LOGGER.error("", e);
 			throw new OHReportException(e, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
