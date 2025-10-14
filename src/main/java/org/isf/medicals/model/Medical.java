@@ -21,20 +21,28 @@
  */
 package org.isf.medicals.model;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
 import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import jakarta.persistence.Version;
 import jakarta.validation.constraints.NotNull;
 
+import org.isf.medicalstock.model.Lot;
 import org.isf.medtype.model.MedicalType;
 import org.isf.utils.db.Auditable;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -114,6 +122,12 @@ public class Medical extends Auditable<String> implements Comparable<Medical>, C
 	@NotNull
 	@Column(name = "MDSR_MIN_STOCK_QTI")
 	private double minqty;
+
+	/**
+	 * Medical lots
+	 */
+	@OneToMany(mappedBy = "medical", cascade = { CascadeType.PERSIST })
+	List<Lot> lots = new ArrayList<>();
 
 	/**
 	 * Lock control
@@ -240,25 +254,28 @@ public class Medical extends Auditable<String> implements Comparable<Medical>, C
 		this.deleted = deleted;
 	}
 
-	@Override
-	public boolean equals(Object anObject) {
-		if (!(anObject instanceof Medical)) {
-			return false;
-		}
-		if (getProdCode() == null || ((Medical) anObject).getProdCode() == null) {
-			return false;
-		}
-		if (getProdCode() != null && ((Medical) anObject).getProdCode() != null && !getProdCode().equals(((Medical) anObject).getProdCode())) {
-			return false;
-		}
-		return (getCode().equals(((Medical) anObject).getCode())
-						&& getDescription().equalsIgnoreCase(((Medical) anObject).getDescription())
-						&& getType().equals(((Medical) anObject).getType())
-						&& getInitialqty() == (((Medical) anObject).getInitialqty())
-						&& getInqty() == (((Medical) anObject).getInqty())
-						&& getOutqty() == (((Medical) anObject).getOutqty()));
+	public List<Lot> getLots() {
+		return lots;
 	}
-
+	public void setLots(List<Lot> lots) {
+		this.lots = lots;
+	}
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof Medical medical))
+			return false;
+		return Double.compare(getInitialqty(), medical.getInitialqty()) == 0 && Double.compare(getInqty(), medical.getInqty()) == 0
+			&& Double.compare(getOutqty(), medical.getOutqty()) == 0 && Double.compare(getMinqty(), medical.getMinqty()) == 0
+			&& getDeleted() == medical.getDeleted() && hashCode == medical.hashCode && Objects.equals(getCode(), medical.getCode())
+			&& Objects.equals(prod_code, medical.prod_code) && Objects.equals(getType(), medical.getType()) && Objects.equals(
+			getDescription(), medical.getDescription()) && Objects.equals(getPcsperpck(), medical.getPcsperpck()) && Objects.equals(getLots(),
+			medical.getLots()) && Objects.equals(getLock(), medical.getLock());
+	}
+	@Override
+	public int hashCode() {
+		return Objects.hash(getCode(), prod_code, getType(), getDescription(), getInitialqty(), getPcsperpck(), getInqty(), getOutqty(), getMinqty(), getLots(),
+			getLock(), getDeleted(), hashCode);
+	}
 	@Override
 	public String toString() {
 		return getDescription();
@@ -270,21 +287,15 @@ public class Medical extends Auditable<String> implements Comparable<Medical>, C
 	}
 
 	@Override
-	public int hashCode() {
-		if (this.hashCode == 0) {
-			final int m = 23;
-			int c = 133;
-
-			c = m * c + code.hashCode();
-
-			this.hashCode = c;
-		}
-
-		return this.hashCode;
-	}
-
-	@Override
 	public Object clone() throws CloneNotSupportedException {
 		return super.clone();
+	}
+
+	public void addLot(Lot lot) {
+		this.lots.add(lot);
+	}
+
+	public void addLots(List<Lot> lots) {
+		this.lots.addAll(lots);
 	}
 }

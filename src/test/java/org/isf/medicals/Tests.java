@@ -25,6 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.isf.OHCoreTestCase;
 import org.isf.medicals.manager.MedicalBrowsingManager;
@@ -54,6 +55,7 @@ import org.isf.ward.model.Ward;
 import org.isf.ward.service.WardIoOperationRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -115,8 +117,35 @@ class Tests extends OHCoreTestCase {
 	}
 
 	@Test
-	void testIoGetMedicalWithCode() throws Exception {
+	@DisplayName("Get medical with lots")
+	void testIoGetMedicalWithLots() throws Exception {
 		int code = setupTestMedical(false);
+		Medical foundMedical = medicalsIoOperationRepository.findById(code).orElse(null);
+		assertThat(foundMedical).isNotNull();
+		Lot lot = testLot.setup(foundMedical, false);
+		foundMedical.addLot(lot);
+		Medical medical = medicalsIoOperations.getMedical(code);
+		assertThat(medical).isNotNull();
+		assertThat(medical.getLots()).hasSize(1);
+		assertThat(medical.getCode()).isEqualTo(foundMedical.getCode());
+	}
+
+	@Test
+	@DisplayName("Get medicals with lots")
+	void testIoGetMedicalsWithLots() throws Exception {
+		int code = setupTestMedical(false);
+		Medical foundMedical = medicalsIoOperationRepository.findById(code).orElse(null);
+		assertThat(foundMedical).isNotNull();
+		Lot lot = testLot.setup(foundMedical, false);
+		foundMedical.addLot(lot);
+		List<Medical> medicals = medicalsIoOperations.getMedicals();
+		assertThat(medicals.get(medicals.size() - 1).getCode()).isEqualTo((Integer) code);
+		assertThat(medicals.get(0).getLots()).hasSize(1);
+	}
+
+	@Test
+	void testIoGetMedicalWithCode() throws Exception {
+			int code = setupTestMedical(false);
 		Medical foundMedical = medicalsIoOperationRepository.findById(code).orElse(null);
 		assertThat(foundMedical).isNotNull();
 		Medical medical = medicalsIoOperations.getMedical(code);
