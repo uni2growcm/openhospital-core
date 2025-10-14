@@ -653,7 +653,7 @@ public class ExcelExporter {
 					h++;
 				}
 				header = true;
-				continue;
+//				continue;
 			}
 
 			HSSFRow row = worksheet.createRow((short) index);

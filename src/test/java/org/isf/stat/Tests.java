@@ -35,6 +35,9 @@ import javax.sql.DataSource;
 import org.isf.OHCoreTestCase;
 import org.isf.hospital.manager.HospitalBrowsingManager;
 import org.isf.hospital.model.Hospital;
+import org.isf.medicals.manager.MedicalBrowsingManager;
+import org.isf.medicalstock.manager.MovBrowserManager;
+import org.isf.medicalstockward.manager.MovWardBrowserManager;
 import org.isf.stat.dto.JasperReportResultDto;
 import org.isf.stat.manager.JasperReportsManager;
 import org.isf.ward.manager.WardBrowserManager;
@@ -71,6 +74,12 @@ class Tests extends OHCoreTestCase {
 	Connection connection;
 	@Mock
 	WardBrowserManager wardBrowserManager;
+	@Mock
+	MovWardBrowserManager movWardBrowserManager;
+	@Mock
+	MovBrowserManager movBrowserManager;
+	@Mock
+	MedicalBrowsingManager medicalBrowsingManager;
 
 	private AutoCloseable closeable;
 
@@ -104,7 +113,7 @@ class Tests extends OHCoreTestCase {
 		try (MockedStatic<JRLoader> mockedJRLoader = mockStatic(JRLoader.class);
 						MockedStatic<JasperFillManager> mockedJasperFillManager = mockStatic(JasperFillManager.class);
 						MockedStatic<JasperExportManager> mockedJasperExportManager = mockStatic(JasperExportManager.class)) {
-			JasperReportsManager jasperReportsManager = new JasperReportsManager(hospitalBrowsingManager, dataSource, wardBrowserManager);
+			JasperReportsManager jasperReportsManager = new JasperReportsManager(hospitalBrowsingManager, dataSource, wardBrowserManager, movWardBrowserManager, movBrowserManager, medicalBrowsingManager);
 
 			when(hospitalBrowsingManager.getHospital()).thenReturn(hospital);
 			when(hospital.getDescription()).thenReturn("Description");
@@ -128,7 +137,7 @@ class Tests extends OHCoreTestCase {
 		try (MockedStatic<JRLoader> mockedJRLoader = mockStatic(JRLoader.class);
 						MockedStatic<JasperFillManager> mockedJasperFillManager = mockStatic(JasperFillManager.class);
 						MockedStatic<JasperExportManager> mockedJasperExportManager = mockStatic(JasperExportManager.class)) {
-			JasperReportsManager jasperReportsManager = new JasperReportsManager(hospitalBrowsingManager, dataSource, wardBrowserManager);
+			JasperReportsManager jasperReportsManager = new JasperReportsManager(hospitalBrowsingManager, dataSource, wardBrowserManager, movWardBrowserManager, movBrowserManager, medicalBrowsingManager);
 
 			when(hospitalBrowsingManager.getHospital()).thenReturn(hospital);
 			when(hospital.getDescription()).thenReturn("Description");
@@ -152,7 +161,7 @@ class Tests extends OHCoreTestCase {
 		try (MockedStatic<JRLoader> mockedJRLoader = mockStatic(JRLoader.class);
 						MockedStatic<JasperFillManager> mockedJasperFillManager = mockStatic(JasperFillManager.class);
 						MockedStatic<JasperExportManager> mockedJasperExportManager = mockStatic(JasperExportManager.class)) {
-			JasperReportsManager jasperReportsManager = new JasperReportsManager(hospitalBrowsingManager, dataSource, wardBrowserManager);
+			JasperReportsManager jasperReportsManager = new JasperReportsManager(hospitalBrowsingManager, dataSource, wardBrowserManager, movWardBrowserManager, movBrowserManager, medicalBrowsingManager);
 
 			when(hospitalBrowsingManager.getHospital()).thenReturn(hospital);
 			when(hospital.getDescription()).thenReturn("Description");
