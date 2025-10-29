@@ -24,6 +24,8 @@ package org.isf.medicals.service;
 import java.util.List;
 
 import org.isf.medicals.model.Medical;
+import org.isf.medicalstock.model.Lot;
+import org.isf.medicalstock.service.LotIoOperationRepository;
 import org.isf.medicalstock.service.MovementIoOperationRepository;
 import org.isf.utils.db.TranslateOHServiceException;
 import org.isf.utils.exception.OHServiceException;
@@ -53,9 +55,12 @@ public class MedicalsIoOperations {
 
 	private MovementIoOperationRepository moveRepository;
 
-	public MedicalsIoOperations(MedicalsIoOperationRepository medicalsIoOperationRepository, MovementIoOperationRepository movementIoOperationRepository) {
+	private LotIoOperationRepository lotRepository;
+
+	public MedicalsIoOperations(MedicalsIoOperationRepository medicalsIoOperationRepository, MovementIoOperationRepository movementIoOperationRepository, LotIoOperationRepository lotRepository) {
 		this.repository = medicalsIoOperationRepository;
 		this.moveRepository = movementIoOperationRepository;
+		this.lotRepository = lotRepository;
 	}
 
 	/**
@@ -96,9 +101,19 @@ public class MedicalsIoOperations {
 	 */
 	public List<Medical> getMedicals(String description) throws OHServiceException {
 		if (description != null) {
-			return repository.findAllWhereDescriptionOrderByDescription(description);
+			List<Medical> medicals = repository.findAllWhereDescriptionOrderByDescription(description);
+			for (Medical medical : medicals) {
+				List<Lot> lots = getLotsWithQuantitiesByMedical(medical);
+				medical.setLots(lots);
+			}
+			return medicals;
 		}
-		return repository.findAllByOrderByDescription();
+		List<Medical> medicals = repository.findAllByOrderByDescription();
+		for (Medical medical : medicals) {
+			List<Lot> lots = getLotsWithQuantitiesByMedical(medical);
+			medical.setLots(lots);
+		}
+		return medicals;
 	}
 	
 	/**
@@ -271,7 +286,12 @@ public class MedicalsIoOperations {
 		if (nameSorted) {
 			return getMedicals(null);
 		}
-		return repository.findAllOrderBySmartCodeAndDescription();
+		List<Medical> medicals = repository.findAllOrderBySmartCodeAndDescription();
+		for (Medical medical : medicals) {
+			List<Lot> lots = getLotsWithQuantitiesByMedical(medical);
+			medical.setLots(lots);
+		}
+		return medicals;
 	}
 
 	/**
@@ -288,5 +308,35 @@ public class MedicalsIoOperations {
 		}
 		return repository.findAllWhereTypeOrderBySmartCodeAndDescription(type);
 	}
+
+	public List<Lot> getLotsWithQuantitiesByMedical(Medical medical) throws OHServiceException {
+		List<Lot> lots = lotRepository.findByMedicalOrderByDueDate(medical.getCode());
+		if (lots.isEmpty()) return lots;
+
+		List<String> lotCodes = lots.stream()
+			.map(Lot::getCode)
+			.toList();
+
+		// Récupération en batch des quantités principales
+		List<Object[]> mainStoreQuantities = lotRepository.getMainStoreQuantities(lotCodes);
+		List<Object[]> wardsTotalQuantities = lotRepository.getWardsTotalQuantities(lotCodes);
+
+		// Appliquer les quantités à chaque lot
+		for (Lot lot : lots) {
+			for (Object[] result : mainStoreQuantities) {
+				if (lot.getCode().equals(result[0])) {
+					lot.setMainStoreQuantity(((Long) result[1]).intValue());
+				}
+			}
+			for (Object[] result : wardsTotalQuantities) {
+				if (lot.getCode().equals(result[0])) {
+					lot.setWardsTotalQuantity((Double) result[1]);
+				}
+			}
+		}
+
+		return lots;
+	}
+
 
 }
