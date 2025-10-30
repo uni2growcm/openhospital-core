@@ -309,6 +309,15 @@ public class MedicalsIoOperations {
 		return repository.findAllWhereTypeOrderBySmartCodeAndDescription(type);
 	}
 
+	/**
+	 * Retrieves all lots associated with the given medical item, including their main store and wards quantities.
+	 * The lots are ordered by their due date.
+	 *
+	 * @param medical the {@link Medical} object for which the lots should be retrieved.
+	 * @return a {@link List} of {@link Lot} objects containing the corresponding quantities,
+	 *         or an empty list if no lots are found.
+	 * @throws OHServiceException if an error occurs while retrieving data from the repository.
+	 */
 	public List<Lot> getLotsWithQuantitiesByMedical(Medical medical) throws OHServiceException {
 		List<Lot> lots = lotRepository.findByMedicalOrderByDueDate(medical.getCode());
 		if (lots.isEmpty()) return lots;
@@ -317,11 +326,9 @@ public class MedicalsIoOperations {
 			.map(Lot::getCode)
 			.toList();
 
-		// Récupération en batch des quantités principales
 		List<Object[]> mainStoreQuantities = lotRepository.getMainStoreQuantities(lotCodes);
 		List<Object[]> wardsTotalQuantities = lotRepository.getWardsTotalQuantities(lotCodes);
 
-		// Appliquer les quantités à chaque lot
 		for (Lot lot : lots) {
 			for (Object[] result : mainStoreQuantities) {
 				if (lot.getCode().equals(result[0])) {
