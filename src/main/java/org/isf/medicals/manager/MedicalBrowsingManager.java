@@ -63,12 +63,12 @@ public class MedicalBrowsingManager {
 	/**
 	 * Returns the requested medical.
 	 *
-	 * @param prod_code the medical prod_code.
+	 * @param prodCode the medical prodCode.
 	 * @return the retrieved medical.
 	 * @throws OHServiceException
 	 */
-	public Medical getMedicalByMedicalCode(String prod_code) throws OHServiceException {
-		return ioOperations.getMedicalByMedicalCode(prod_code);
+	public Medical getMedicalByMedicalCode(String prodCode) throws OHServiceException {
+		return ioOperations.getMedicalByMedicalCode(prodCode);
 	}
 
 	/**

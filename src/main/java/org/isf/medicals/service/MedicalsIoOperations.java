@@ -75,12 +75,12 @@ public class MedicalsIoOperations {
 	
 	/**
 	 * Retrieves the specified {@link Medical}.
-	 * @param prod_code the medical prod_code.
+	 * @param prodCode the medical prodCode.
 	 * @return the stored medical.
 	 * @throws OHServiceException if an error occurs retrieving the stored medical.
 	 */
-	public Medical getMedicalByMedicalCode(String prod_code) throws OHServiceException {
-		return repository.findOneWhereProductCode(prod_code);
+	public Medical getMedicalByMedicalCode(String prodCode) throws OHServiceException {
+		return repository.findOneWhereProductCode(prodCode);
 	}
 
 	/**
@@ -278,7 +278,7 @@ public class MedicalsIoOperations {
 	/**
 	 * Retrieves all stored medicals, sorted by description or smart code.
 	 * @param nameSorted if true the found medicals are sorted by description, otherwise sorted by
-	 *                      prod_code and description.
+	 *                      prodCode and description.
 	 * @return sorted List of medicals or empty list if none found.
 	 * @throws OHServiceException
 	 */
@@ -298,7 +298,7 @@ public class MedicalsIoOperations {
 	 * Retrieves all stored medicals by a given type, sorted by description or smart code.
 	 * @param type the type the found medicals should have.
 	 * @param nameSorted if true the found medicals are sorted by description, otherwise sorted by
-	 *                      prod_code and description.
+	 *                      prodCode and description.
 	 * @return sorted List of medicals or empty list if none found.
 	 * @throws OHServiceException
 	 */
