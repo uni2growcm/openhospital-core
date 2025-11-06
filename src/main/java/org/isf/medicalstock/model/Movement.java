@@ -95,7 +95,7 @@ public class Movement extends Auditable<String> {
 	private String refNo;
 
 	@Transient
-	private volatile Integer hashCode;
+	private volatile int hashCode;
 
 	public Movement() {
 	}
