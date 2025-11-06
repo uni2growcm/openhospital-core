@@ -255,6 +255,21 @@ public class MedicalStockIoOperations {
 	}
 
 	/**
+	 * ajust the quantity of the specified {@link Movement}.
+	 *
+	 * @param movementId id of the movement stored.
+	 * @param newQuantity the new quantity to use.
+	 * @return returns the stored {@link Movement} object.
+	 * @throws OHServiceException if an error occurs storing the movement.
+	 */
+	public Movement adjustQuantity(int movementId, int newQuantity) throws OHServiceException {
+		Movement movement = movRepository.findByCode(movementId)
+			.orElseThrow(() -> new RuntimeException("Mouvement non trouvé : " + movementId));
+		movement.setQuantity(newQuantity);
+		return movRepository.save(movement);
+	}
+
+	/**
 	 * Creates a new unique lot code.
 	 * 
 	 * @return the new unique code.

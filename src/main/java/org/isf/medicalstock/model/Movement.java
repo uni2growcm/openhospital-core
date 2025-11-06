@@ -58,7 +58,7 @@ public class Movement extends Auditable<String> {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "MMV_ID")
-	private int code;
+	private Integer code;
 
 	@NotNull
 	@ManyToOne
@@ -84,7 +84,7 @@ public class Movement extends Auditable<String> {
 
 	@NotNull
 	@Column(name = "MMV_QTY")
-	private int quantity;
+	private Integer quantity;
 
 	@ManyToOne(optional = true, targetEntity = Supplier.class)
 	@JoinColumn(name = "MMV_FROM")
@@ -95,12 +95,12 @@ public class Movement extends Auditable<String> {
 	private String refNo;
 
 	@Transient
-	private volatile int hashCode;
+	private volatile Integer hashCode;
 
 	public Movement() {
 	}
 
-	public Movement(Medical aMedical, MovementType aType, Ward aWard, Lot aLot, LocalDateTime aDate, int aQuantity, Supplier aSupplier, String aRefNo) {
+	public Movement(Medical aMedical, MovementType aType, Ward aWard, Lot aLot, LocalDateTime aDate, Integer aQuantity, Supplier aSupplier, String aRefNo) {
 		medical = aMedical;
 		type = aType;
 		ward = aWard;
@@ -111,7 +111,7 @@ public class Movement extends Auditable<String> {
 		refNo = aRefNo;
 	}
 
-	public int getCode() {
+	public Integer getCode() {
 		return code;
 	}
 
@@ -139,11 +139,11 @@ public class Movement extends Auditable<String> {
 		return supplier;
 	}
 
-	public int getQuantity() {
+	public Integer getQuantity() {
 		return quantity;
 	}
 
-	public void setQuantity(int quantity) {
+	public void setQuantity(Integer quantity) {
 		this.quantity = quantity;
 	}
 
@@ -167,7 +167,7 @@ public class Movement extends Auditable<String> {
 		this.supplier = supplier;
 	}
 
-	public void setCode(int aCode) {
+	public void setCode(Integer aCode) {
 		code = aCode;
 	}
 
