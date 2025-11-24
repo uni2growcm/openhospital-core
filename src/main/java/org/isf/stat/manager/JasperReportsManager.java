@@ -31,7 +31,9 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -50,7 +52,15 @@ import org.isf.generaldata.MessageBundle;
 import org.isf.hospital.manager.HospitalBrowsingManager;
 import org.isf.hospital.model.Hospital;
 import org.isf.medicalinventory.model.MedicalInventory;
+import org.isf.medicals.manager.MedicalBrowsingManager;
 import org.isf.medicals.model.Medical;
+import org.isf.medicalstock.manager.MovBrowserManager;
+import org.isf.medicalstock.model.Movement;
+import org.isf.medicalstockward.manager.MovWardBrowserManager;
+import org.isf.medicalstockward.model.MedicalWard;
+import org.isf.medicalstockward.model.MovementWard;
+import org.isf.medstockmovtype.model.MovementType;
+import org.isf.medtype.manager.MedicalTypeBrowserManager;
 import org.isf.patient.model.Patient;
 import org.isf.patient.service.PatientIoOperations;
 import org.isf.stat.dto.JasperReportResultDto;
@@ -99,10 +109,20 @@ public class JasperReportsManager {
 	
 	private WardBrowserManager wardManager;
 
-	public JasperReportsManager(HospitalBrowsingManager hospitalBrowsingManager, DataSource dataSource, WardBrowserManager wardManager) {
+	private MovWardBrowserManager movWardBrowserManager;
+
+	private MovBrowserManager movBrowserManager;
+
+	private MedicalBrowsingManager medicalBrowsingManager;
+
+
+	public JasperReportsManager(HospitalBrowsingManager hospitalBrowsingManager, DataSource dataSource, WardBrowserManager wardManager, MovWardBrowserManager movWardBrowserManager, MovBrowserManager movBrowserManager, MedicalBrowsingManager medicalBrowsingManager) {
 		this.hospitalManager = hospitalBrowsingManager;
 		this.dataSource = dataSource;
 		this.wardManager = wardManager;
+		this.movWardBrowserManager = movWardBrowserManager;
+		this.movBrowserManager = movBrowserManager;
+		this.medicalBrowsingManager = medicalBrowsingManager;
 	}
 
 	public JasperReportResultDto getExamsListPdf() throws OHServiceException {
@@ -851,6 +871,133 @@ public class JasperReportsManager {
 			JasperReportResultDto result = generateJasperReport(compileJasperFilename(RPT_BASE, jasperFileName), pdfFilename, parameters);
 			JasperExportManager.exportReportToPdfFile(result.getJasperPrint(), pdfFilename);
 			return result;
+		} catch (Exception e) {
+			LOGGER.error("", e);
+			throw new OHReportException(e, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
+		}
+	}
+
+	public void getGenericReportPharmaceuticalStockWardExcel(
+		String exportFileName,
+		Ward wardSelected,
+		Integer medicalCode,
+		String medicalTypeCode,
+		char sex,
+		int ageFrom,
+		int ageTo,
+		float weightFrom,
+		float weightTo,
+		LocalDateTime dateFrom,
+		LocalDateTime dateTo,
+		int index
+	) throws OHReportException {
+		try {
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyy HH:mm");
+			File exportFile = new File(exportFileName);
+			ExcelExporter xlsExport = new ExcelExporter();
+			List<Map<String, Object>> result = new ArrayList<>();
+			if (index == 0) {
+				List<MovementWard> listMovementWardFromTo = movWardBrowserManager.getMovementWard(wardSelected.getCode(), dateFrom, dateTo);
+				for (MovementWard mov : listMovementWardFromTo) {
+					boolean ok = true;
+					Patient patient = mov.getPatient();
+					Medical medical = mov.getMedical();
+					int age = mov.getAge();
+					float weight = mov.getWeight();
+					Ward wardFrom = mov.getWardFrom();
+
+					// Medical control
+					if (medicalCode != null) {
+						ok = medical.getCode().equals(medicalCode);
+					} else if (medicalTypeCode != null) {
+						ok = medical.getType().getCode().equals(medicalTypeCode);
+					}
+
+					// sex control if sex not 'A'
+					if (sex != 'A') {
+						ok = ok && patient.getSex() == sex;
+					}
+
+					// age control if ageTo > 0
+					if (ageTo != 0) {
+						ok = ok && age >= ageFrom && age <= ageTo;
+					}
+
+					// weight control if weightTo > 0
+					if (weightTo != 0) {
+						ok = ok && weight >= weightFrom && weight <= weightTo;
+					}
+
+					// filter out movements to this ward, already shown in 'Incomings' table
+					if (wardFrom != null) {
+						ok = false;
+					}
+
+					if (ok) {
+						Map<String, Object> map = new HashMap<>();
+						map.put("DATE", mov.getDate().format(formatter));
+						map.put("PURPOSE", mov.getPatient().getName());
+						map.put("AGE", mov.getPatient().getAge());
+						map.put("SEX", mov.getPatient().getSex());
+						map.put("WEIGHT", mov.getWeight());
+						map.put("MEDICAL", mov.getMedical().getDescription());
+						map.put("QUANTITY", mov.getQuantity());
+						map.put("UNITS", mov.getUnits());
+						map.put("LOT NO.", mov.getLot().getCode());
+						map.put("LOT DUE DATE", mov.getLot().getDueDate().format(formatter));
+						result.add(map);
+					}
+				}
+			} else if (index == 1) {
+				List<Movement> listMovementCentral = movBrowserManager.getMovements(wardSelected.getCode(), dateFrom, dateTo);
+				for (Movement mov : listMovementCentral) {
+					if (mov.getWard().getDescription() != null) {
+						if (mov.getWard().equals(wardSelected)) {
+							Map<String, Object> map = new HashMap<>();
+							map.put("DATE", mov.getDate().format(formatter));
+							map.put("FROM", mov.getRefNo());
+							map.put("MEDICAL", mov.getMedical().getDescription());
+							map.put("QUANTITY", mov.getQuantity());
+							map.put("UNITS", "pieces");
+							map.put("LOT NO.", mov.getLot().getCode());
+							map.put("LOT DUE DATE.", mov.getLot().getDueDate().format(formatter));
+							result.add(map);
+						}
+					}
+				}
+
+				for (MovementWard wMvnt : movWardBrowserManager.getWardMovementsToWard(wardSelected.getCode(), dateFrom, dateTo)) {
+					if (wMvnt.getWardTo().getDescription() != null) {
+						if (wMvnt.getWardTo().equals(wardSelected)) {
+							MovementType typeCharge = new MovementType("fromward", wMvnt.getWard().getDescription(), "*", "*");
+							Map<String, Object> map = new HashMap<>();
+							map.put("DATE", wMvnt.getDate().format(formatter));
+							map.put("FROM", wMvnt.getWardFrom());
+							map.put("MEDICAL", wMvnt.getMedical().getDescription());
+							map.put("QUANTITY", wMvnt.getQuantity());
+							map.put("UNITS", wMvnt.getUnits());
+							map.put("LOT NO.", wMvnt.getLot().getCode());
+							map.put("LOT DUE DATE.", wMvnt.getLot().getDueDate().format(formatter));
+							result.add(map);
+						}
+					}
+				}
+			} else if (index == 2) {
+				List<MedicalWard> wardDrugs =  movWardBrowserManager.getMedicalsWardTotalQuantity(wardSelected.getCode());
+				for (MedicalWard med : wardDrugs) {
+					if (med.getWard().equals(wardSelected)) {
+						Map<String, Object> map = new HashMap<>();
+						map.put("MEDICAL", med.getMedical().getDescription());
+						map.put("QUANTITY", med.getQty());
+						map.put("UNITS", "pieces");
+						result.add(map);
+					}
+				}
+			}
+
+			Collections.reverse(result);
+			xlsExport.exportDataToExcelOLD(result, exportFile);
+
 		} catch (Exception e) {
 			LOGGER.error("", e);
 			throw new OHReportException(e, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
