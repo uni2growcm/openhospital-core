@@ -117,7 +117,7 @@ public class MovementWard extends Auditable<String> {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param ward
 	 * @param date
 	 * @param isPatient
@@ -130,7 +130,7 @@ public class MovementWard extends Auditable<String> {
 	 * @param units
 	 */
 	public MovementWard(Ward ward, LocalDateTime date, boolean isPatient, Patient patient, int age, float weight, String description, Medical medical,
-					Double quantity, String units) {
+						Double quantity, String units) {
 		super();
 		this.ward = ward;
 		this.date = TimeTools.truncateToSeconds(date);
@@ -145,7 +145,7 @@ public class MovementWard extends Auditable<String> {
 	}
 
 	public MovementWard(Ward ward, LocalDateTime date, boolean isPatient, Patient patient, int age, float weight, String description, Medical medical,
-					Double quantity, String units, Lot lot) {
+						Double quantity, String units, Lot lot) {
 		super();
 		this.ward = ward;
 		this.date = TimeTools.truncateToSeconds(date);
@@ -161,7 +161,7 @@ public class MovementWard extends Auditable<String> {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param ward
 	 * @param date
 	 * @param isPatient
@@ -176,7 +176,7 @@ public class MovementWard extends Auditable<String> {
 	 * @param wardFrom
 	 */
 	public MovementWard(Ward ward, LocalDateTime date, boolean isPatient, Patient patient, int age, float weight, String description, Medical medical,
-					Double quantity, String units, Ward wardTo, Ward wardFrom, Lot lot) {
+						Double quantity, String units, Ward wardTo, Ward wardFrom, Lot lot) {
 		super();
 		this.ward = ward;
 		this.date = TimeTools.truncateToSeconds(date);
@@ -244,12 +244,20 @@ public class MovementWard extends Auditable<String> {
 		this.isPatient = isPatient;
 	}
 
+	public void setIsPatient(boolean isPatient) {
+		this.setPatient(isPatient);
+	}
+
 	public Patient getPatient() {
 		return patient;
 	}
 
 	public void setPatient(Patient patient) {
 		this.patient = patient;
+	}
+
+	public void setFullPatient(Patient patient) {
+		this.setPatient(patient);
 	}
 
 	public int getAge() {
