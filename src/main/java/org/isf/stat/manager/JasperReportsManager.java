@@ -47,6 +47,7 @@ import java.util.regex.Pattern;
 
 import javax.sql.DataSource;
 
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.isf.generaldata.GeneralData;
 import org.isf.generaldata.MessageBundle;
 import org.isf.hospital.manager.HospitalBrowsingManager;
@@ -871,6 +872,38 @@ public class JasperReportsManager {
 			JasperReportResultDto result = generateJasperReport(compileJasperFilename(RPT_BASE, jasperFileName), pdfFilename, parameters);
 			JasperExportManager.exportReportToPdfFile(result.getJasperPrint(), pdfFilename);
 			return result;
+		} catch (Exception e) {
+			LOGGER.error("", e);
+			throw new OHReportException(e, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
+		}
+	}
+
+	public JasperReportResultDto printIncomesOrOutComes(String filename, List<?> toPrint) throws OHServiceException {
+		Map<String, Object> parameters = new HashMap<>();
+		Hospital hospital = this.hospitalManager.getHospital();
+		parameters.put("ospedaleNome", hospital.getDescription());
+		parameters.put("ospedaleIndirizzo", hospital.getAddress());
+		parameters.put("ospedaleCitta", hospital.getCity());
+		parameters.put("ospedaleTel", hospital.getTelephone());
+		parameters.put("ospedaleFax", hospital.getFax());
+		parameters.put("ospedaleMail", hospital.getEmail());
+		String dateFile = LocalDateTime.now().format(DateTimeFormatter.ofPattern(YYYY_M_MDD));
+
+		if (toPrint.isEmpty()) {
+			throw new OHServiceException(new OHExceptionMessage(MessageBundle.getMessage("angal.medicalstockward.datanotfoundwiththespecificparam.msg")));
+		}
+
+		JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(toPrint);
+		File jasperFile = new File("rpt_base/" + filename + ".jasper");
+		String pdfFilename = compilePDFFilename(RPT_BASE, filename, Arrays.asList(dateFile), "pdf");
+
+		try {
+			JasperReport jasperReport = (JasperReport) JRLoader.loadObject(jasperFile);
+			JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
+			JasperReportResultDto jasperReportResultDto = new JasperReportResultDto(jasperPrint, filename, pdfFilename);
+			JasperExportManager.exportReportToPdfFile(jasperPrint, pdfFilename);
+
+			return jasperReportResultDto;
 		} catch (Exception e) {
 			LOGGER.error("", e);
 			throw new OHReportException(e, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
