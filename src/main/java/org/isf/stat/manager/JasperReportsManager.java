@@ -878,7 +878,7 @@ public class JasperReportsManager {
 		}
 	}
 
-	public JasperReportResultDto printIncomesOrOutComes(String filename, List<?> toPrint) throws OHServiceException {
+	public JasperReportResultDto getIncomesOrOutComesStockWardPdf(String filename, List<?> toPrint) throws OHServiceException {
 		Map<String, Object> parameters = new HashMap<>();
 		Hospital hospital = this.hospitalManager.getHospital();
 		parameters.put("ospedaleNome", hospital.getDescription());
@@ -890,7 +890,7 @@ public class JasperReportsManager {
 		String dateFile = LocalDateTime.now().format(DateTimeFormatter.ofPattern(YYYY_M_MDD));
 
 		if (toPrint.isEmpty()) {
-			throw new OHServiceException(new OHExceptionMessage(MessageBundle.getMessage("angal.medicalstockward.datanotfoundwiththespecificparam.msg")));
+			throw new OHServiceException(new OHExceptionMessage(MessageBundle.getMessage("Data not found with those specifics parameters")));
 		}
 
 		JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(toPrint);
