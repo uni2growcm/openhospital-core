@@ -889,10 +889,6 @@ public class JasperReportsManager {
 		parameters.put("ospedaleMail", hospital.getEmail());
 		String dateFile = LocalDateTime.now().format(DateTimeFormatter.ofPattern(YYYY_M_MDD));
 
-		if (toPrint.isEmpty()) {
-			throw new OHServiceException(new OHExceptionMessage(MessageBundle.getMessage("Data not found with those specifics parameters")));
-		}
-
 		JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(toPrint);
 		File jasperFile = new File("rpt_base/" + filename + ".jasper");
 		String pdfFilename = compilePDFFilename(RPT_BASE, filename, Arrays.asList(dateFile), "pdf");
