@@ -965,9 +965,9 @@ public class JasperReportsManager {
 					if (ok) {
 						Map<String, Object> map = new HashMap<>();
 						map.put("DATE", mov.getDate().format(formatter));
-						map.put("PURPOSE", mov.getPatient().getName());
-						map.put("AGE", mov.getPatient().getAge());
-						map.put("SEX", mov.getPatient().getSex());
+						map.put("PURPOSE", mov.getDescription());
+						map.put("AGE", mov.getPatient() == null ? "NaN" : mov.getPatient().getAge());
+						map.put("SEX", mov.getPatient() == null ? "NaN" : mov.getPatient().getSex());
 						map.put("WEIGHT", mov.getWeight());
 						map.put("MEDICAL", mov.getMedical().getDescription());
 						map.put("QUANTITY", mov.getQuantity());
