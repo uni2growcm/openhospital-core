@@ -1,0 +1,3 @@
+--Add column oh_update_from
+
+ALTER TABLE OH_PATIENT ADD COLUMN PAT_UPDATE_FROM VARCHAR(20);
