@@ -87,7 +87,7 @@ public class TestMovementWard {
 		movementWard.setWeight(weight);
 		movementWard.setWardFrom(wardFrom);
 		movementWard.setWardTo(wardTo);
-		movementWard.setlot(lot);
+		movementWard.setLot(lot);
 	}
 
 	public void check(MovementWard movementWard) {
