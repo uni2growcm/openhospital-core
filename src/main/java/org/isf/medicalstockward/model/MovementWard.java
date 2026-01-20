@@ -232,7 +232,7 @@ public class MovementWard extends Auditable<String> {
 		return lot;
 	}
 
-	public void setlot(Lot lot) {
+	public void setLot(Lot lot) {
 		this.lot = lot;
 	}
 

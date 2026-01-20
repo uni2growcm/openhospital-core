@@ -81,7 +81,7 @@ public class TimeTools {
 	}
 
 	/**
-	 * Extra method to be sure to exclude {@link ChronoUnit.SECONDS} from comparison as GoodDateTime* pickers do not return dates with seconds
+	 * Extra method to be sure to exclude {@link ChronoUnit} from comparison as GoodDateTime* pickers do not return dates with seconds
 	 * 
 	 * @param date1
 	 * @param date2

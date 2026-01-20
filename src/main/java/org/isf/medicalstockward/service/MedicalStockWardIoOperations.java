@@ -149,7 +149,7 @@ public class MedicalStockWardIoOperations {
 			destinationWardIncomeMovement.setUnits(savedMovement.getUnits());
 			destinationWardIncomeMovement.setWard(savedMovement.getWardTo());
 			destinationWardIncomeMovement.setWardFrom(savedMovement.getWard());
-			destinationWardIncomeMovement.setlot(savedMovement.getLot());
+			destinationWardIncomeMovement.setLot(savedMovement.getLot());
 			movementRepository.save(destinationWardIncomeMovement);
 		}
 		updateStockWardQuantity(movement);
