@@ -51,6 +51,7 @@ public class TestDisease {
 		disease.setIpdInInclude(includeIpdIn);
 		disease.setIpdOutInclude(includeIpdOut);
 		disease.setOpdInclude(includeOpd);
+		disease.setLock(0);
 
 		return disease;
 	}

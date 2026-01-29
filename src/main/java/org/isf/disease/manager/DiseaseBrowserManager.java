@@ -23,6 +23,7 @@ package org.isf.disease.manager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.isf.disease.model.Disease;
 import org.isf.disease.service.DiseaseIoOperations;
@@ -158,6 +159,7 @@ public class DiseaseBrowserManager {
 	 */
 	public Disease newDisease(Disease disease) throws OHServiceException {
 		validateDisease(disease, true);
+		disease.setLock(0);
 		return ioOperations.newDisease(disease);
 	}
 
@@ -171,7 +173,17 @@ public class DiseaseBrowserManager {
 	 */
 	public Disease updateDisease(Disease disease) throws OHServiceException {
 		validateDisease(disease, false);
-		return ioOperations.updateDisease(disease);
+		Disease oldDisease = this.getDiseaseByCode(disease.getCode());
+		if (oldDisease == null){
+			throw new OHServiceException(new OHExceptionMessage("The disease doesn't exist."));
+		} else {
+			if(!Objects.equals(disease.getLock(), oldDisease.getLock())){
+				throw new OHServiceException(new OHExceptionMessage("The data has been updated by someone else."));
+			} else {
+				disease.setLock(oldDisease.getLock() + 1);
+				return ioOperations.updateDisease(disease);
+			}
+		}
 	}
 
 	/**

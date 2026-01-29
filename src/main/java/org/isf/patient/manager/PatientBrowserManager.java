@@ -110,6 +110,14 @@ public class PatientBrowserManager {
 	}
 
 	/**
+	 * Updates the age of all patients based on their date of birth
+	 * @return Number of patients updated
+	 */
+	public PagedResponse<Patient> AgeFromBirthDate(int age, int page, int size) {
+		return ioOperations.AgeFromBirthDate(age, page, size);
+	}
+
+	/**
 	 * Method that gets a {@link Patient} by his/her ID.
 	 *
 	 * @param code
@@ -432,5 +440,18 @@ public class PatientBrowserManager {
 	 */
 	public List<Patient> getPatientByCodes(List<Integer> codes) throws OHServiceException {
 		return ioOperations.getPatientByCodes(codes);
+	}
+
+	/**
+	 * Method that gets a list of {@link Patient}s by his/her name.
+	 *
+	 * @param params
+	 * @param page
+	 * @param size
+	 * @return the list of {@link Patient}s that match specified name.
+	 * @throws OHServiceException
+	 */
+	public PagedResponse<Patient> getPatients(Map<String, Object> params, int page, int size) throws OHServiceException {
+		return ioOperations.getPatients(params, PageRequest.of(page, size));
 	}
 }
