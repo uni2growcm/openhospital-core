@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2024 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -76,17 +76,16 @@ class TestFileSystemPatientPhotoRepository extends OHCoreTestCase {
 	@Test
 	void testSaveAndDelete() throws Exception {
 		Blob blob = getBlob();
-		fileSystemPatientPhotoRepository.save("rsc-test/patient", 2, blob.getBytes(1, (int)blob.length()));
+		fileSystemPatientPhotoRepository.save("rsc-test/patient", 2, blob.getBytes(1, (int) blob.length()));
 		fileSystemPatientPhotoRepository.delete("rsc-test/patient", 2);
 	}
 
 	private Blob getBlob() throws Exception {
 		Method method = fileSystemPatientPhotoRepository.getClass().getDeclaredMethod("load", Integer.class, String.class);
 		method.setAccessible(true);
-		Blob blob = (Blob)method.invoke(fileSystemPatientPhotoRepository, 1, "rsc-test/patient");
+		Blob blob = (Blob) method.invoke(fileSystemPatientPhotoRepository, 1, "rsc-test/patient");
 		return blob;
 	}
-
 
 	private Integer setupTestPatient(boolean usingSet) throws OHException {
 		Patient patient = testPatient.setup(usingSet);

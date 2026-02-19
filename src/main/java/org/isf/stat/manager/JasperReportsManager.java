@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2023 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -61,6 +61,7 @@ import org.isf.utils.exception.OHReportException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.model.OHExceptionMessage;
 import org.isf.utils.time.TimeTools;
+import org.isf.ward.manager.WardBrowserManager;
 import org.isf.ward.model.Ward;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,16 +90,20 @@ public class JasperReportsManager {
 	private static final String YYYY_M_MDD = "yyyyMMdd";
 	private static final String E_D_MMMM_YYYY = "E d, MMMM yyyy";
 	private static final String STAT_REPORTERROR_MSG = "angal.stat.reporterror.msg";
+	private static final String LOGO = "./rsc/images/logo_report.png";
 
 	private static final String RPT_BASE = "rpt_base";
 
 	private HospitalBrowsingManager hospitalManager;
 
 	private DataSource dataSource;
+	
+	private WardBrowserManager wardManager;
 
-	public JasperReportsManager(HospitalBrowsingManager hospitalBrowsingManager, DataSource dataSource) {
+	public JasperReportsManager(HospitalBrowsingManager hospitalBrowsingManager, DataSource dataSource, WardBrowserManager wardManager) {
 		this.hospitalManager = hospitalBrowsingManager;
 		this.dataSource = dataSource;
+		this.wardManager = wardManager;
 	}
 
 	public JasperReportResultDto getExamsListPdf() throws OHServiceException {
@@ -1101,11 +1106,16 @@ public class JasperReportsManager {
 		try {
 			String status = inventory.getStatus();
 			Map<String, Object> parameters = new HashMap<>(getHospitalParameters());
-			parameters.put("inventoryId", String.valueOf(inventory.getId()));
 			parameters.put("inventoryReference", inventory.getInventoryReference());
-			parameters.put("inventoryStatus", status != null ? status : inventory.getStatus());
+			parameters.put("inventoryStatus", status);
 			parameters.put("printRealQty", printRealQty);
-
+			parameters.put("inventoryId", inventory.getId());
+			if (inventory.getWardCode() != null) {
+				Ward ward = wardManager.findWard(inventory.getWardCode());
+				parameters.put("ward", ward.getDescription());
+			} else {
+				parameters.put("ward", "Main Store");
+			}
 			LocalDateTime inventoryDateTime = inventory.getInventoryDate();
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DD_MM_YYYY);
 			String formattedDate = inventoryDateTime.format(formatter);
@@ -1124,4 +1134,39 @@ public class JasperReportsManager {
 		}
 	}
 
+	public JasperReportResultDto getGenericReportPatientExaminationPdf(Integer patientID, Integer examId, Locale locale) throws OHServiceException {
+		try {
+			HashMap<String, Object> parameters = new HashMap();
+			String patID = String.valueOf(patientID);
+			parameters.put("PATIENT_PHOTO", this.getPatientPhotoFile(patID));
+			parameters.put("examId", examId);
+			parameters.put("REPORT_LOCALE", locale);
+			String jasperFileName = "patient_examination";
+			String pdfFilename = this.compilePDFFilename(RPT_BASE, jasperFileName, Arrays.asList(String.valueOf(patientID)), "pdf");
+			JasperReportResultDto result = this.generateJasperReport(this.compileJasperFilename(RPT_BASE, jasperFileName), pdfFilename, parameters);
+			JasperExportManager.exportReportToPdfFile(result.getJasperPrint(), pdfFilename);
+			return result;
+		} catch (Exception e) {
+			LOGGER.error("", e);
+			throw new OHReportException(e, new OHExceptionMessage(MessageBundle.getMessage("angal.stat.reporterror.msg")));
+		}
+	}
+
+	public JasperReportResultDto getGenericReportPatientExamRequestPdf(int patientID, Locale locale) throws OHServiceException {
+
+		try {
+			HashMap<String, Object> parameters = new HashMap<>(getHospitalParameters());
+			String jasperFileName = "patient_exam_request";
+			parameters.put(JRParameter.REPORT_LOCALE, locale);
+			parameters.put("patientId", patientID);
+			parameters.put("LOGO_PATH", LOGO);
+			String pdfFilename = compilePDFFilename(RPT_BASE, jasperFileName, Arrays.asList(String.valueOf(patientID)), "pdf");
+			JasperReportResultDto result = generateJasperReport(compileJasperFilename(RPT_BASE, jasperFileName), pdfFilename, parameters);
+			JasperExportManager.exportReportToPdfFile(result.getJasperPrint(), pdfFilename);
+			return result;
+		} catch (Exception e) {
+			LOGGER.error("", e);
+			throw new OHReportException(e, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
+		}
+	}
 }

@@ -228,7 +228,7 @@ class Tests<BillRepository> extends OHCoreTestCase {
 			.isEqualTo(foundBill);
 		foundBill2.setId(-1);
 		assertThat(bill).isNotEqualTo(foundBill2);
-		assertThat(bill.compareTo(foundBill2)).isEqualTo(id + 1);   // id - (-1)
+		assertThat(bill.compareTo(foundBill2)).isEqualTo(id + 1); // id - (-1)
 		foundBill.setId(id);
 
 		assertThat(bill.hashCode()).isPositive();
@@ -323,38 +323,83 @@ class Tests<BillRepository> extends OHCoreTestCase {
 
 	@Test
 	void testIoNewBillItems() throws Exception {
-		List<BillItems> billItems = new ArrayList<>();
-		int deleteId = setupTestBillItems(false);
-		BillItems deleteBillItem = accountingBillItemsIoOperationRepository.findById(deleteId).orElse(null);
-		assertThat(deleteBillItem).isNotNull();
+		// given: an existing bill with one item already stored
+		int existingId = setupTestBillItems(false);
+		BillItems existingManaged = accountingBillItemsIoOperationRepository.findById(existingId).orElse(null);
+		assertThat(existingManaged).isNotNull();
 
-		Bill bill = deleteBillItem.getBill();
-		BillItems insertBillItem = testBillItems.setup(null, false);
-		int insertId = deleteId + 1;
-		billItems.add(insertBillItem);
+		Bill bill = existingManaged.getBill();
+
+		// Simulate same item as new object from GUI
+		BillItems existingFromGui = testBillItems.setup(null, false);
+		existingFromGui.setId(existingId);
+
+		// and: a second (new) item created by the GUI (id = null / 0)
+		BillItems newItemFromGui = testBillItems.setup(null, false);
+
+		// GUI behaviour: resend the whole list: existing + new
+		List<BillItems> billItems = new ArrayList<>();
+		billItems.add(existingFromGui);
+		billItems.add(newItemFromGui);
+
+		// when: we call the service that internally does delete + re-insert
 		accountingIoOperation.newBillItems(bill, billItems);
 
-		BillItems foundBillItems = accountingBillItemsIoOperationRepository.findById(insertId).orElse(null);
-		assertThat(foundBillItems).isNotNull();
-		assertThat(foundBillItems.getBill().getId()).isEqualTo(bill.getId());
+		// then: for that bill we now have exactly two items
+		List<BillItems> persisted = accountingIoOperation.getItems(bill.getId());
+		assertThat(persisted).hasSize(2);
+
+		// all items belong to the correct bill
+		assertThat(persisted)
+			.extracting(i -> i.getBill().getId())
+			.containsOnly(bill.getId());
+
+		// and none of them keeps the old id (they've been re-inserted)
+		assertThat(persisted)
+			.extracting(BillItems::getId)
+			.doesNotContain(existingId);
 	}
 
 	@Test
-	void testIoNewBillPayments() throws Exception {
-		List<BillPayments> billPayments = new ArrayList<>();
-		int deleteId = setupTestBillPayments(false);
-		BillPayments deleteBillPayment = accountingBillPaymentIoOperationRepository.findById(deleteId).orElse(null);
-		assertThat(deleteBillPayment).isNotNull();
+	void testIoNewBillPaymentsResendExistingAndNew() throws Exception {
+		// given: an existing bill with one payment already stored
+		int existingId = setupTestBillPayments(false);
+		BillPayments existingPayment = accountingBillPaymentIoOperationRepository.findById(existingId).orElse(null);
+		assertThat(existingPayment).isNotNull();
 
-		Bill bill = deleteBillPayment.getBill();
-		BillPayments insertBillPayment = testBillPayments.setup(null, false);
-		int insertId = deleteId + 1;
-		billPayments.add(insertBillPayment);
+		// Simulate same payment as new object from GUI
+		Bill bill = existingPayment.getBill();
+		BillPayments existingFromGui = new BillPayments();
+		existingFromGui.setId(existingPayment.getId());
+		existingFromGui.setAmount(existingPayment.getAmount());
+		existingFromGui.setDate(existingPayment.getDate());
+		existingFromGui.setUser(existingPayment.getUser());
+		existingFromGui.setBill(bill); // oppure null, tanto lo setti in newBillPayments
+
+		// and: a second (new) payment created by the GUI (id = null / 0)
+		BillPayments newPayment = testBillPayments.setup(null, false);
+
+		// GUI behaviour: resend the whole list: existing + new
+		List<BillPayments> billPayments = new ArrayList<>();
+		billPayments.add(existingFromGui); // existing, with original id
+		billPayments.add(newPayment); // new, with no id
+
+		// when: we call the service that internally does delete + re-insert
 		accountingIoOperation.newBillPayments(bill, billPayments);
 
-		BillPayments foundBillPayments = accountingBillPaymentIoOperationRepository.findById(insertId).orElse(null);
-		assertThat(foundBillPayments).isNotNull();
-		assertThat(foundBillPayments.getBill().getId()).isEqualTo(bill.getId());
+		// then: for that bill we now have exactly two payments
+		List<BillPayments> persisted = accountingIoOperation.getPayments(bill.getId());
+		assertThat(persisted).hasSize(2);
+
+		// all payments belong to the correct bill
+		assertThat(persisted)
+			.extracting(p -> p.getBill().getId())
+			.containsOnly(bill.getId());
+
+		// and none of them keeps the old id (they've been re-inserted)
+		assertThat(persisted)
+			.extracting(BillPayments::getId)
+			.doesNotContain(existingId);
 	}
 
 	@Test
@@ -572,7 +617,7 @@ class Tests<BillRepository> extends OHCoreTestCase {
 		int id = setupTestBillPayments(false);
 		BillPayments foundBillPayment = accountingBillPaymentIoOperationRepository.findById(id).orElse(null);
 		assertThat(foundBillPayment).isNotNull();
-		List<BillPayments> billItems = billBrowserManager.getPayments(0);  // get all
+		List<BillPayments> billItems = billBrowserManager.getPayments(0); // get all
 		assertThat(billItems).isNotEmpty();
 		assertThat(billItems.get(0).getAmount()).isCloseTo(foundBillPayment.getAmount(), offset(0.1));
 	}

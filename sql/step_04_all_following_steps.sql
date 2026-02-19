@@ -108,7 +108,6 @@ source step_a111_add_missing_lock_columns.sql;
 source step_a112_users_and_groups_soft_deletion.sql;
 source step_a113_alter_table_medicalinventory.sql;
 source step_a114_medical_type_soft_deletion.sql;
-source step_a115_add_missing_foreign_key_for_auditable_entities.sql
 source u2g_update/step_01_add_column_medicaldsr.sql;
 source u2g_update/step_02_add_collumn_exa_target_to_table_oh_exam.sql;
 source u2g_update/step_03_mortuarystays_table.sql;
@@ -120,3 +119,6 @@ source u2g_update/step_09_add_bodycompartment_table.sql;
 source u2g_update/step_10_reorganize_mortuary_menu.sql;
 source u2g_update/step_11_add_deathreanson_on_mortuary_menu.sql;
 source u2g_update/step_12_add_foreign_key_on_death_table.sql;
+source step_a115_add_missing_foreign_key_for_auditable_entities.sql;
+source step_a116_fix_alcohol_and_bowel_column.sql;
+source step_a117_fix_ward_pharmacy.sql;

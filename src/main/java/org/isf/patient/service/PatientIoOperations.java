@@ -317,4 +317,18 @@ public class PatientIoOperations {
 		return repository.countAllActiveNotDeletedPatients();
 	}
 
+	/**
+	 * Method that returns the list of {@link Patient}s with specified codes.
+	 *
+	 * @param codes - the list of patient's code.
+	 * @return the list of {@link Patient}s.
+	 * @throws OHServiceException
+	 */
+	public List<Patient> getPatientByCodes(List<Integer> codes) throws OHServiceException {
+		List<Patient> patients = repository.findAllByCodeIn(codes);
+		for (Patient patient : patients) {
+			retrievePatientProfilePhoto(patient);
+		}
+		return patients;
+	}
 }

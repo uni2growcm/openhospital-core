@@ -51,8 +51,8 @@ public class AccountingIoOperations {
 	private AccountingBillItemsIoOperationRepository billItemsRepository;
 
 	public AccountingIoOperations(AccountingBillIoOperationRepository accountingBillIoOperationRepository,
-					AccountingBillPaymentIoOperationRepository accountingBillPaymentIoOperationRepository,
-					AccountingBillItemsIoOperationRepository accountingBillItemsIoOperationRepository) {
+		AccountingBillPaymentIoOperationRepository accountingBillPaymentIoOperationRepository,
+		AccountingBillItemsIoOperationRepository accountingBillItemsIoOperationRepository) {
 		this.billRepository = accountingBillIoOperationRepository;
 		this.billPaymentRepository = accountingBillPaymentIoOperationRepository;
 		this.billItemsRepository = accountingBillItemsIoOperationRepository;
@@ -168,6 +168,7 @@ public class AccountingIoOperations {
 		billItemsRepository.deleteWhereId(bill.getId());
 		for (BillItems item : billItems) {
 			item.setBill(bill);
+			item.setId(0);
 			billItemsRepository.save(item);
 		}
 	}
@@ -183,6 +184,7 @@ public class AccountingIoOperations {
 		billPaymentRepository.deleteWhereId(bill.getId());
 		for (BillPayments payment : payItems) {
 			payment.setBill(bill);
+			payment.setId(0);
 			billPaymentRepository.save(payment);
 		}
 	}
@@ -256,7 +258,7 @@ public class AccountingIoOperations {
 	 * @throws OHServiceException
 	 */
 	public List<BillPayments> getPaymentsBetweenDatesWherePatient(LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient)
-					throws OHServiceException {
+		throws OHServiceException {
 		return billPaymentRepository.findByDateAndPatient(TimeTools.getBeginningOfDay(dateFrom), TimeTools.getBeginningOfNextDay(dateTo), patient.getCode());
 	}
 
@@ -294,7 +296,7 @@ public class AccountingIoOperations {
 	}
 
 	/**
-	 * Return distinct BillItems added by u2g
+	 * Return distinct BillItems
 	 * 
 	 * @return BillItems list
 	 * @throws OHServiceException
@@ -317,7 +319,7 @@ public class AccountingIoOperations {
 			return billRepository.findByDateBetween(TimeTools.getBeginningOfDay(dateFrom), TimeTools.getBeginningOfNextDay(dateTo));
 		}
 		return billRepository.findAllWhereDatesAndBillItem(TimeTools.getBeginningOfDay(dateFrom), TimeTools.getBeginningOfNextDay(dateTo),
-						billItem.getItemDescription());
+			billItem.getItemDescription());
 	}
 
 	/**

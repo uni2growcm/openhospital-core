@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2024 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -31,7 +31,7 @@ import org.isf.utils.exception.OHException;
 
 public class TestMedicalInventoryRow {
 
-	private int id = 1;
+	private Integer id = null;
 	private double theoreticQty = 50.0;
 	private double realQty = 50.0;
 	private boolean isNew = false;
