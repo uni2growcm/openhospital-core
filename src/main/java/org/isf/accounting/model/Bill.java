@@ -116,6 +116,9 @@ public class Bill extends Auditable<String> implements Cloneable, Comparable<Bil
 	private Admission admission;
 
 	@Transient
+	private int reductionPlanId;
+
+	@Transient
 	private volatile int hashCode;
 
 	public Bill() {
@@ -131,6 +134,27 @@ public class Bill extends Auditable<String> implements Cloneable, Comparable<Bil
 		this.amount = 0.0;
 		this.balance = 0.0;
 		this.user = "admin";
+	}
+
+	public Bill(int id, LocalDateTime date, LocalDateTime update,
+				boolean isList, PriceList list, String listName, boolean isPatient,
+				Patient billPatient, String patName, String status, Double amount, Double balance, String user, Admission admission, int reductionPlanId) {
+		super();
+		this.id = id;
+		this.date = TimeTools.truncateToSeconds(date);
+		this.update = TimeTools.truncateToSeconds(update);
+		this.isList = isList;
+		this.list = list;
+		this.listName = listName;
+		this.isPatient = isPatient;
+		this.billPatient = billPatient;
+		this.patName = patName;
+		this.status = status;
+		this.amount = amount;
+		this.balance = balance;
+		this.user = user;
+		this.admission = admission;
+		this.reductionPlanId = reductionPlanId;
 	}
 
 	public Bill(int id, LocalDateTime date, LocalDateTime update,
@@ -258,6 +282,14 @@ public class Bill extends Auditable<String> implements Cloneable, Comparable<Bil
 	public int getLock() { return lock; }
 
 	public void setLock(int lock) { this.lock = lock; }
+
+	public int getReductionPlanID() {
+		return reductionPlanId;
+	}
+
+	public void setReductionPlanID(int reductionPlanId) {
+		this.reductionPlanId = reductionPlanId;
+	}
 
 	@Override
 	public int compareTo(Bill obj) {

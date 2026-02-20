@@ -53,6 +53,7 @@ import org.isf.operation.service.OperationIoOperationRepository;
 import org.isf.opetype.TestOperationType;
 import org.isf.opetype.model.OperationType;
 import org.isf.opetype.service.OperationTypeIoOperationRepository;
+import org.isf.priceslist.model.Price;
 import org.isf.pricesothers.TestPricesOthers;
 import org.isf.pricesothers.model.PricesOthers;
 import org.isf.pricesothers.service.PriceOthersIoOperationRepository;
@@ -348,6 +349,82 @@ class ReductionPlanManagerTest extends OHCoreTestCase {
 		reductionPlan.getPriceOtherReductions().clear();
 		assertThat(reductionPlan.getPriceOtherReductions().size()).isEqualTo(0);
 		assertThat(manager.getPriceOtherReductionsByReductionPlanId(reductionPlan.getId()).size()).isEqualTo(0);
+	}
+
+	@Test
+	@DisplayName("Should apply global exam reduction when no specific reduction found")
+	void testGetExamPriceWithGlobalReduction() throws Exception {
+		ReductionPlanDataGenerate generate = new ReductionPlanDataGenerate();
+		ReductionPlan reductionPlan = generate.generateReductionPlanFixtures(1, null).get(0);
+		repository.saveAndFlush(reductionPlan);
+
+		Price price = new Price();
+		price.setItem("NOT_EXISTING");
+		price.setPrice(100.0);
+
+		Price reduced = manager.getExamPrice(price, reductionPlan.getId());
+
+		assertThat(reduced.getPrice()).isEqualTo(97.0);
+	}
+
+	@Test
+	@DisplayName("Should return original price when reduction plan not found")
+	void testGetExamPriceWithoutReductionPlan() throws Exception {
+		Price price = new Price();
+		price.setItem("ANY");
+		price.setPrice(100.0);
+
+		Price result = manager.getExamPrice(price, -1);
+
+		assertThat(result.getPrice()).isEqualTo(100.0);
+	}
+
+	@Test
+	@DisplayName("Should apply global operation reduction")
+	void testGetOperationPrice() throws Exception {
+		ReductionPlanDataGenerate generate = new ReductionPlanDataGenerate();
+		ReductionPlan reductionPlan = generate.generateReductionPlanFixtures(1, null).get(0);
+		repository.saveAndFlush(reductionPlan);
+
+		Price price = new Price();
+		price.setItem("NOT_EXISTING");
+		price.setPrice(200.0);
+
+		Price reduced = manager.getOperationPrice(price, reductionPlan.getId());
+
+		assertThat(reduced.getPrice()).isEqualTo(198.0);
+	}
+
+	@Test
+	@DisplayName("Should apply global medical reduction")
+	void testGetMedicalPrice() throws Exception {
+		ReductionPlanDataGenerate generate = new ReductionPlanDataGenerate();
+		ReductionPlan reductionPlan = generate.generateReductionPlanFixtures(1, null).get(0);
+		repository.saveAndFlush(reductionPlan);
+
+		Price price = new Price();
+		price.setItem("NOT_EXISTING");
+		price.setPrice(300.0);
+
+		Price reduced = manager.getMedicalPrice(price, reductionPlan.getId());
+
+		assertThat(reduced.getPrice()).isEqualTo(294.0);
+	}
+
+	@Test
+	@DisplayName("Should apply global other reduction")
+	void testGetOtherPrice() throws Exception {
+		ReductionPlanDataGenerate generate = new ReductionPlanDataGenerate();
+		ReductionPlan reductionPlan = generate.generateReductionPlanFixtures(1, null).get(0);
+		repository.saveAndFlush(reductionPlan);
+
+		Price price = new Price();
+		price.setItem("NOT_EXISTING");
+		price.setPrice(400.0);
+
+		Price reduced = manager.getOtherPrice(price, reductionPlan.getId());
+
+		assertThat(reduced.getPrice()).isEqualTo(388.0);
 	}
 
 	public class ReductionPlanDataGenerate {

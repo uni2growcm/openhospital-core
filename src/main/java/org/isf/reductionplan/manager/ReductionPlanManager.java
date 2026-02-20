@@ -22,7 +22,11 @@
 
 package org.isf.reductionplan.manager;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
+
+import org.isf.priceslist.model.Price;
 import org.isf.reductionplan.model.ExamReduction;
 import org.isf.reductionplan.model.MedicalReduction;
 import org.isf.reductionplan.model.OperationReduction;
@@ -135,5 +139,136 @@ public class ReductionPlanManager {
 	 */
 	public List<PriceOtherReduction> getPriceOtherReductionsByReductionPlanId(int reductionPlanId) throws OHServiceException {
 		return reductionPlanIoOperations.getPriceOtherReductionsByReductionPlanId(reductionPlanId);
+	}
+
+	private Double applyReduction(Double price, Double rate) {
+
+		if (price == null || rate == null) {
+			return price;
+		}
+
+		return price - ((price * rate) / 100);
+	}
+
+	public Price getExamPrice(Price price, int reductionPlanId) throws OHServiceException {
+
+		ReductionPlan reductionPlan = reductionPlanIoOperations.getById(reductionPlanId);
+
+		if (reductionPlan == null) {
+			return price;
+		}
+
+		List<ExamReduction> reductions = reductionPlanIoOperations.getExamReductionsByReductionPlanId(reductionPlanId);
+
+		Double newPrice = price.getPrice();
+
+		for (ExamReduction reduction : reductions) {
+
+			if (price.getItem().equals(String.valueOf(reduction.getExam().getCode()))) {
+
+				newPrice = applyReduction(price.getPrice(), reduction.getReductionRate().doubleValue());
+				price.setPrice(newPrice);
+				return price;
+			}
+		}
+
+		newPrice = applyReduction(price.getPrice(), reductionPlan.getExamRate().doubleValue());
+
+		price.setPrice(newPrice);
+
+		return price;
+	}
+
+	public Price getOperationPrice(Price price, int reductionPlanId) throws OHServiceException {
+
+		ReductionPlan reductionPlan = reductionPlanIoOperations.getById(reductionPlanId);
+
+		if (reductionPlan == null) {
+			return price;
+		}
+
+		List<OperationReduction> reductions = reductionPlanIoOperations.getOperationReductionsByReductionPlanId(reductionPlanId);
+
+		Double newPrice = price.getPrice();
+
+		for (OperationReduction reduction : reductions) {
+
+			if (price.getItem().equals(String.valueOf(reduction.getOperation().getCode()))) {
+
+				newPrice = applyReduction(
+					price.getPrice(),
+					reduction.getReductionRate().doubleValue()
+				);
+
+				price.setPrice(newPrice);
+				return price;
+			}
+		}
+
+		newPrice = applyReduction(price.getPrice(), reductionPlan.getOperationRate().doubleValue());
+
+		price.setPrice(newPrice);
+
+		return price;
+	}
+
+	public Price getMedicalPrice(Price price, int reductionPlanId) throws OHServiceException {
+
+		ReductionPlan reductionPlan = reductionPlanIoOperations.getById(reductionPlanId);
+
+		if (reductionPlan == null) {
+			return price;
+		}
+
+		List<MedicalReduction> reductions = reductionPlanIoOperations.getMedicalReductionsByReductionPlanId(reductionPlanId);
+
+		Double newPrice = price.getPrice();
+
+		for (MedicalReduction reduction : reductions) {
+
+			if (price.getItem().equals(String.valueOf(reduction.getMedical().getCode()))) {
+
+				newPrice = applyReduction(price.getPrice(), reduction.getReductionRate().doubleValue());
+
+				price.setPrice(newPrice);
+				return price;
+			}
+		}
+
+		newPrice = applyReduction(price.getPrice(), reductionPlan.getMedicalRate().doubleValue());
+
+		price.setPrice(newPrice);
+
+		return price;
+	}
+
+	public Price getOtherPrice(Price price, int reductionPlanId) throws OHServiceException {
+
+		ReductionPlan reductionPlan = reductionPlanIoOperations.getById(reductionPlanId);
+
+		if (reductionPlan == null) {
+			return price;
+		}
+
+		List<PriceOtherReduction> reductions = reductionPlanIoOperations.getPriceOtherReductionsByReductionPlanId(reductionPlanId);
+
+		Double newPrice = price.getPrice();
+
+		for (PriceOtherReduction reduction : reductions) {
+
+			if (price.getItem().equals(String.valueOf(reduction.getPricesOthers().getId()))) {
+
+				newPrice = applyReduction(price.getPrice(), reduction.getReductionRate().doubleValue());
+
+				price.setPrice(newPrice);
+				return price;
+			}
+		}
+
+		newPrice = applyReduction(price.getPrice(), reductionPlan.getOtherRate().doubleValue());
+
+		price.setPrice(newPrice);
+
+		return price;
 	}
 }
