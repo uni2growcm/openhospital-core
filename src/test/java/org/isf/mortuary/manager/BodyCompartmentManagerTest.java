@@ -91,7 +91,7 @@ public class BodyCompartmentManagerTest  extends OHCoreTestCase {
 	@Test
 	@DisplayName("Should successfully update a body compartment")
 	void testUpdate() throws OHException, OHServiceException {
-		BodyCompartment bodyCompartment = testBodyCompartment.setup(false);
+		BodyCompartment bodyCompartment = testBodyCompartment.setup();
 		assertThatThrownBy(() -> bodyComportmentManager.update(bodyCompartment))
 			.isInstanceOf(OHServiceException.class);
 		BodyCompartment bodyCompartmentSaved = bodyCompartmentIoOperations.add(bodyCompartment);
@@ -111,7 +111,7 @@ public class BodyCompartmentManagerTest  extends OHCoreTestCase {
 	}
 
 	private String setupTestBodyCompartment(boolean usingSet) throws OHException, OHServiceException {
-		BodyCompartment bodyCompartment = testBodyCompartment.setup(usingSet);
+		BodyCompartment bodyCompartment = testBodyCompartment.setup();
 		bodyCompartmentIoOperations.add(bodyCompartment);
 		return bodyCompartment.getLabel();
 	}
@@ -131,32 +131,20 @@ public class BodyCompartmentManagerTest  extends OHCoreTestCase {
 	}
 
 	private static class TestBodyCompartment {
-		private final int id = 1;
+
 		private final String label = "BC001";
 		private final String description = "Casier de la salle A";
 		private final boolean deleted = false;
 
-		public BodyCompartment setup(boolean usingSet) throws OHException {
-			BodyCompartment bodyCompartment;
-
-			if (usingSet) {
-				bodyCompartment = new BodyCompartment();
-				setParameters(bodyCompartment);
-			} else {
-				bodyCompartment = new BodyCompartment(id, label, description, deleted);
-			}
-			return bodyCompartment;
-		}
-
-		public void setParameters(BodyCompartment bodyCompartment) {
-			bodyCompartment.setId(id);
+		public BodyCompartment setup() {
+			BodyCompartment bodyCompartment = new BodyCompartment();
 			bodyCompartment.setLabel(label);
 			bodyCompartment.setDescription(description);
 			bodyCompartment.setDeleted(deleted);
+			return bodyCompartment;
 		}
 
 		public void check(BodyCompartment bodyCompartment) {
-			assertThat(bodyCompartment.getId()).isEqualTo(id);
 			assertThat(bodyCompartment.getLabel()).isEqualTo(label);
 			assertThat(bodyCompartment.getDescription()).isEqualTo(description);
 		}

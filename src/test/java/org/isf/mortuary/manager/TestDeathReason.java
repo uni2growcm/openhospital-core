@@ -35,15 +35,15 @@ public class TestDeathReason {
 	private final boolean deleted = false;
 
 	public DeathReason setup(boolean usingSet) throws OHException {
-		DeathReason deathReason;
+		DeathReason reason;
 
 		if (usingSet) {
-			deathReason = new DeathReason();
-			setParameters(deathReason);
+			reason = new DeathReason();
+			reason.setTitle("Test reason");
 		} else {
-			deathReason = new DeathReason(id, title, description, deleted);
+			reason = new DeathReason(id, title, description, deleted);
 		}
-		return deathReason;
+		return reason;
 	}
 
 	public void setParameters(DeathReason deathReason) {

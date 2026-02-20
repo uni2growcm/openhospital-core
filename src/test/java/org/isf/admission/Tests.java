@@ -1717,32 +1717,46 @@ class Tests extends OHCoreTestCase {
 
 		String secondName = "Second Name";
 
-		return IntStream.range(0, number).mapToObj(i -> {
-			Patient patient;
+		Patient sharedPatient = null;
+
+		if (samePatient) {
 			try {
-				patient = testPatient.setup(false);
+				sharedPatient = testPatient.setup(false);
 			} catch (OHException e) {
 				throw new RuntimeException(e);
 			}
 
-			if (!samePatient) {
-				patient.setCode(1 + i);
-				patient.setSecondName(secondName + " " + i);
+			sharedPatient.setSex('F');
+			patientIoOperationRepository.saveAndFlush(sharedPatient);
+		}
+
+		Patient finalSharedPatient = sharedPatient;
+		return IntStream.range(0, number).mapToObj(i -> {
+
+			Patient patient;
+
+			if (samePatient) {
+				patient =  finalSharedPatient;   // reuse SAME entity
 			} else {
-				patient.setCode(1);
+				try {
+					patient = testPatient.setup(false);
+				} catch (OHException e) {
+					throw new RuntimeException(e);
+				}
+
+				patient.setSecondName("Second Name " + i);
+				patient.setSex(i % 2 == 0 ? 'F' : 'M');
+
+				patientIoOperationRepository.saveAndFlush(patient);
 			}
-
-			patient.setSex(i % 2 == 0 ? 'F' : 'M');
-
-			patientIoOperationRepository.saveAndFlush(patient);
 
 			Admission admission;
 
 			try {
 				admission = testAdmission.setup(
 					ward, patient, admissionType, diseaseIn, diseaseOut1,
-					diseaseOut2, diseaseOut3, operation, dischargeType, pregnantTreatmentType,
-					deliveryType, deliveryResult, false
+					diseaseOut2, diseaseOut3, operation, dischargeType,
+					pregnantTreatmentType, deliveryType, deliveryResult, false
 				);
 			} catch (OHException e) {
 				throw new RuntimeException(e);
@@ -1753,6 +1767,7 @@ class Tests extends OHCoreTestCase {
 			} catch (OHServiceException e) {
 				throw new RuntimeException(e);
 			}
+
 		}).toList();
 	}
 
@@ -1761,7 +1776,6 @@ class Tests extends OHCoreTestCase {
 		testAdmission.check(foundAdmission);
 	}
 
-	// Typically used to build a second admission record thus the need to set new codes because of database key values
 	private Admission buildNewAdmission() throws Exception {
 		Ward ward = testWard.setup(false);
 		Patient patient = testPatient.setup(true);

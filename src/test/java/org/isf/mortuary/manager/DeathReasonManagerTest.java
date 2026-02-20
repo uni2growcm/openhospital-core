@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2025 Informatici Senza Frontiere
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -13,11 +13,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 
 package org.isf.mortuary.manager;
@@ -46,13 +42,13 @@ public class DeathReasonManagerTest extends OHCoreTestCase {
 	private static TestDeathReason testDeathReason;
 
 	@Autowired
-	DeathReasonManager deathReasonManager;
+	private DeathReasonManager deathReasonManager;
 
 	@Autowired
-	DeathReasonIoOperations deathReasonIoOperations;
+	private DeathReasonIoOperations deathReasonIoOperations;
 
 	@Autowired
-	DeathReasonRepository deathReasonRepository;
+	private DeathReasonRepository deathReasonRepository;
 
 	@BeforeAll
 	static void setUpClass() {
@@ -64,10 +60,15 @@ public class DeathReasonManagerTest extends OHCoreTestCase {
 		cleanH2InMemoryDb();
 	}
 
+	// =======================
+	// TEST CASES
+	// =======================
+
 	@Test
 	void testGetAll() throws Exception {
-		List<DeathReason> deathReasonsSaved = generateDeathReasons(10);
+		generateDeathReasons(10);
 		List<DeathReason> deathReasons = deathReasonManager.getAll();
+
 		assertThat(deathReasons).isNotNull();
 		assertThat(deathReasons.size()).isEqualTo(10);
 	}
@@ -75,59 +76,62 @@ public class DeathReasonManagerTest extends OHCoreTestCase {
 	@Test
 	@DisplayName("Should successfully add a death reason")
 	void testAdd() throws OHServiceException {
-		DeathReason deathReason = new DeathReason("BC001", "Description", false);
-		DeathReason deathReasonSaved = deathReasonManager.add(deathReason);
-		assertThat(deathReason.getTitle()).isEqualTo(deathReasonSaved.getTitle());
-		assertThat(deathReason.getDescription()).isEqualTo(deathReasonSaved.getDescription());
-		assertThat(deathReason.getDeleted()).isEqualTo(deathReasonSaved.getDeleted());
+		DeathReason dr = new DeathReason("BC001", "Description", false);
+		DeathReason saved = deathReasonManager.add(dr);
+
+		assertThat(saved).isNotNull();
+		assertThat(saved.getTitle()).isEqualTo(dr.getTitle());
+		assertThat(saved.getDescription()).isEqualTo(dr.getDescription());
+		assertThat(saved.getDeleted()).isEqualTo(dr.getDeleted());
 	}
 
 	@Test
-	@DisplayName("It should be possible to retrieve death reason pages based on the title or description")
-	void testGetByCodeOrDescriptionPageable() throws Exception {
-		List<DeathReason> deathReasons = generateDeathReasons(20);
+	@DisplayName("Retrieve death reason pages by title or description")
+	void testGetByTitleOrDescriptionPageable() throws Exception {
+		generateDeathReasons(20);
 
-		Page<DeathReason> deathReason = deathReasonManager.getByTitleOrDescriptionPageable("",0, 4);
+		Page<DeathReason> page = deathReasonManager.getByTitleOrDescriptionPageable("", 0, 4);
 
-		assertThat(deathReason).isNotNull();
-		assertThat(deathReason.getContent().size()).isEqualTo(4);
-		assertThat(deathReason.getTotalElements()).isEqualTo(20);
-		assertThat(deathReason.getTotalPages()).isEqualTo(5);
-		assertThat(deathReason.getSize()).isEqualTo(4);
+		assertThat(page).isNotNull();
+		assertThat(page.getContent().size()).isEqualTo(4);
+		assertThat(page.getTotalElements()).isEqualTo(20);
+		assertThat(page.getTotalPages()).isEqualTo(5);
+		assertThat(page.getSize()).isEqualTo(4);
 	}
 
 	@Test
 	@DisplayName("Should successfully update a death reason")
 	void testUpdate() throws OHException, OHServiceException {
-		DeathReason deathReason = testDeathReason.setup(false);
-		assertThatThrownBy(() -> deathReasonManager.update(deathReason))
+		DeathReason dr = new DeathReason("CARD001", "Arrêt cardiaque", false);
+
+		assertThatThrownBy(() -> deathReasonManager.update(dr))
 			.isInstanceOf(OHServiceException.class);
-		DeathReason deathReasonSaved = deathReasonIoOperations.add(deathReason);
-		deathReasonSaved.setDescription("Updated");
-		DeathReason deathReasonUpdated = deathReasonManager.update(deathReasonSaved);
-		assertThat(deathReasonUpdated.getDescription()).isEqualTo("Updated");
+
+		DeathReason saved = deathReasonIoOperations.add(dr);
+		saved.setDescription("Updated");
+
+		DeathReason updated = deathReasonManager.update(saved);
+		assertThat(updated.getDescription()).isEqualTo("Updated");
 	}
 
 	@Test
 	@DisplayName("Should successfully delete a death reason")
 	void testDelete() throws OHException, OHServiceException {
-		List<DeathReason> deathReasonSaved = generateDeathReasons(1);
-		DeathReason deathReason = deathReasonRepository.findByTitleAndDeleted(deathReasonSaved.get(0).getTitle(), false);
-		assertThat(deathReason).isNotNull();
-		boolean isDeleted = deathReasonManager.delete(deathReason);
-		assertThat(isDeleted).isEqualTo(true);
+		List<DeathReason> savedList = generateDeathReasons(1);
+		DeathReason toDelete = deathReasonRepository.findByTitleAndDeleted(savedList.get(0).getTitle(), false);
+
+		assertThat(toDelete).isNotNull();
+		boolean deleted = deathReasonManager.delete(toDelete);
+		assertThat(deleted).isTrue();
 	}
 
 	private List<DeathReason> generateDeathReasons(int size) {
 		String codePrefix = "DTHR";
-		String desc = "Description for death reason";
-		List<DeathReason> deathReasons = IntStream.range(0, size).mapToObj(i -> {
-			return new DeathReason(
-				codePrefix + i,
-				desc + i,
-				false
-			);
-		}).toList();
+		String descPrefix = "Description for death reason";
+
+		List<DeathReason> deathReasons = IntStream.range(0, size).mapToObj(i ->
+			new DeathReason(codePrefix + i, descPrefix + i, false)
+		).toList();
 
 		return deathReasonRepository.saveAllAndFlush(deathReasons);
 	}
