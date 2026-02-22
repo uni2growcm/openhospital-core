@@ -177,6 +177,27 @@ public class Bill extends Auditable<String> implements Cloneable, Comparable<Bil
 		this.admission = admission;
 	}
 
+	public Bill(int id, LocalDateTime date, LocalDateTime update,
+				boolean isList, PriceList list, String listName, boolean isPatient,
+				Patient billPatient, String patName, String status, Double amount, Double balance, int lock, String user, Admission admission) {
+		super();
+		this.id = id;
+		this.date = TimeTools.truncateToSeconds(date);
+		this.update = TimeTools.truncateToSeconds(update);
+		this.isList = isList;
+		this.list = list;
+		this.listName = listName;
+		this.isPatient = isPatient;
+		this.billPatient = billPatient;
+		this.patName = patName;
+		this.status = status;
+		this.amount = amount;
+		this.balance = balance;
+		this.lock = lock;
+		this.user = user;
+		this.admission = admission;
+	}
+
 	public int getId() {
 		return id;
 	}
