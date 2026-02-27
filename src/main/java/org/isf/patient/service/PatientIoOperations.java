@@ -21,6 +21,9 @@
  */
 package org.isf.patient.service;
 
+import java.time.LocalDate;
+import java.time.Period;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -105,6 +108,70 @@ public class PatientIoOperations {
 	 */
 	public List<Patient> getPatients(Map<String, Object> parameters) throws OHServiceException {
 		return repository.getPatientsByParams(parameters);
+	}
+
+	/**
+	 * Get the age of all patients based on the age
+	 * @return list of patients
+	 */
+	public PagedResponse<Patient> AgeFromBirthDate(int age, int page, int size) {
+		List<Patient> allPatients = repository.findAll();
+		List<Patient> filtered = new ArrayList<>();
+
+		for (Patient patient : allPatients) {
+			if (patient.getBirthDate() != null) {
+				int currentAge = calculateAgeFromBirthDate(patient.getBirthDate());
+				if (currentAge == age) {
+					filtered.add(patient);
+				}
+			}
+		}
+
+		int start = page * size;
+		int end = Math.min(start + size, filtered.size());
+		List<Patient> content = start >= filtered.size() ? new ArrayList<>() : filtered.subList(start, end);
+
+		PageInfo pageInfo = new PageInfo();
+		pageInfo.setPage(page);
+		pageInfo.setSize(size);
+		pageInfo.setTotalNbOfElements(filtered.size());
+		pageInfo.setTotalPages((int) Math.ceil((double) filtered.size() / size));
+
+		PagedResponse<Patient> response = new PagedResponse<>();
+		response.setData(content);
+		response.setPageInfo(pageInfo);
+
+		return response;
+	}
+
+
+
+	/**
+	 * Updates the age of a specific patient
+	 * @param patientCode Patient code
+	 * @return true if updated, false otherwise
+	 */
+	public boolean updatePatientAge(Integer patientCode) {
+		Patient patient = repository.findById(patientCode).orElse(null);
+		if (patient == null || patient.getBirthDate() == null) {
+			return false;
+		}
+
+		int currentAge = calculateAgeFromBirthDate(patient.getBirthDate());
+		if (patient.getAge() == null || !patient.getAge().equals(currentAge)) {
+			patient.setAge(currentAge);
+			repository.save(patient);
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Calculates age from date of birth
+	 */
+	private int calculateAgeFromBirthDate(LocalDate birthDate) {
+		return Period.between(birthDate, LocalDate.now()).getYears();
 	}
 
 	/**
@@ -330,5 +397,17 @@ public class PatientIoOperations {
 			retrievePatientProfilePhoto(patient);
 		}
 		return patients;
+	}
+
+	/**
+	 * Method that returns the full list of {@link Patient}s with specified parameters.
+	 *
+	 * @param parameters
+	 * @return the list of {@link Patient}s.
+	 * @throws OHServiceException
+	 */
+	public PagedResponse<Patient> getPatients(Map<String, Object> parameters, Pageable pageable) throws OHServiceException {
+		Page<Patient> patientPageResult = repository.getPatientsByParams(parameters, pageable);
+		return setPaginationData(patientPageResult);
 	}
 }

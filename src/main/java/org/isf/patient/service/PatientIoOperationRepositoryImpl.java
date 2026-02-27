@@ -21,7 +21,7 @@
  */
 package org.isf.patient.service;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -30,12 +30,15 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
+import jakarta.persistence.TypedQuery;
 
 import org.isf.patient.model.Patient;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 @Transactional
 public class PatientIoOperationRepositoryImpl implements PatientIoOperationRepositoryCustom {
@@ -119,22 +122,130 @@ public class PatientIoOperationRepositoryImpl implements PatientIoOperationRepos
 
 		List<Predicate> predicates = new ArrayList<>();
 		predicates.add(notDeleted);
-		for (Map.Entry<String, Object> entry : params.entrySet()) {
-			Path<String> keyPath = patient.get(entry.getKey());
 
-			if (entry.getKey().equals("birthDate")) {
-				LocalDateTime birthDateFrom = (LocalDateTime) entry.getValue();
-				LocalDateTime birthDateTo = birthDateFrom.plusDays(1);
-				predicates.add(cb.between(keyPath.as(LocalDateTime.class), birthDateFrom, birthDateTo));
+		query.select(patient).where(cb.and(predicates.toArray(new Predicate[0])));
+
+		return entityManager.createQuery(query).getResultList();
+	}
+
+	public Page<Patient> getPatientsByParams(Map<String, Object> params, Pageable pageable) {
+
+		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+		CriteriaQuery<Patient> query = cb.createQuery(Patient.class);
+		Root<Patient> patient = query.from(Patient.class);
+
+		// Only not deleted patient
+		Predicate deletedN = cb.equal(patient.get("deleted"), 'N');
+		Predicate deletedNull = cb.isNull(patient.get("deleted"));
+		Predicate notDeleted = cb.or(deletedN, deletedNull);
+
+		List<Predicate> predicates = new ArrayList<>();
+		predicates.add(notDeleted);
+
+		for (Map.Entry<String, Object> entry : params.entrySet()) {
+			String key = entry.getKey();
+			Object value = entry.getValue();
+
+			if (key.equals("birthDate")) {
+				LocalDate birthDateFrom = (LocalDate) value;
+				LocalDate birthDateTo = birthDateFrom.plusDays(1);
+				predicates.add(cb.between(patient.get(key).as(LocalDate.class), birthDateFrom, birthDateTo));
+			} else if (key.equals("age")) {
+				if (value instanceof String) {
+					try {
+						Integer ageValue = Integer.parseInt((String) value);
+						predicates.add(cb.equal(patient.get("age"), ageValue));
+					} catch (NumberFormatException e) {
+						predicates.add(cb.disjunction());
+					}
+				} else if (value instanceof Integer) {
+					predicates.add(cb.equal(patient.get("age"), value));
+				}
 			} else {
-				if (entry.getValue() instanceof String) {
-					predicates.add(cb.like(cb.lower(keyPath), like(((String) entry.getValue()).toLowerCase())));
+				if (value instanceof String) {
+					String stringValue = ((String) value).toLowerCase();
+
+					if ("code".equals(key) || "age".equals(key)) {
+						try {
+							if ("code".equals(key)) {
+								Integer intValue = Integer.parseInt((String) value);
+								predicates.add(cb.equal(patient.get(key), intValue));
+							} else {
+								predicates.add(cb.like(patient.get(key).as(String.class), like(stringValue)));
+							}
+						} catch (NumberFormatException e) {
+							predicates.add(cb.disjunction());
+						}
+					} else {
+						predicates.add(cb.like(cb.lower(patient.get(key)), like(stringValue)));
+					}
+				} else {
+					predicates.add(cb.equal(patient.get(key), value));
 				}
 			}
 		}
 		query.select(patient).where(cb.and(predicates.toArray(new Predicate[0])));
 
-		return entityManager.createQuery(query).getResultList();
+		TypedQuery<Patient> typedQuery = entityManager.createQuery(query);
+		typedQuery.setFirstResult((int) pageable.getOffset());
+		typedQuery.setMaxResults(pageable.getPageSize());
+		List<Patient> patients = typedQuery.getResultList();
+
+		Long total = countPatients(params);
+
+		return new PageImpl<>(patients, pageable, total);
+	}
+
+	private Long countPatients(Map<String, Object> params) {
+
+		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+		CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
+		Root<Patient> countRoot = countQuery.from(Patient.class);
+
+		Predicate deletedN = cb.equal(countRoot.get("deleted"), 'N');
+		Predicate deletedNull = cb.isNull(countRoot.get("deleted"));
+		Predicate notDeleted = cb.or(deletedN, deletedNull);
+
+		List<Predicate> predicates = new ArrayList<>();
+		predicates.add(notDeleted);
+
+		for (Map.Entry<String, Object> entry : params.entrySet()) {
+			String key = entry.getKey();
+			Object value = entry.getValue();
+
+			if (key.equals("birthDate")) {
+				LocalDate birthDateFrom = (LocalDate) value;
+				LocalDate birthDateTo = birthDateFrom.plusDays(1);
+				predicates.add(cb.between(countRoot.get(key).as(LocalDate.class), birthDateFrom, birthDateTo));
+			} else {
+				if (value instanceof String) {
+					String stringValue = ((String) value).toLowerCase();
+
+					if ("age".equals(key) || "code".equals(key)) {
+						try {
+							if ("age".equals(key)) {
+								Integer ageValue = Integer.parseInt((String) value);
+								predicates.add(cb.equal(countRoot.get(key), ageValue));
+							} else {
+								Integer codeValue = Integer.parseInt((String) value);
+								predicates.add(cb.equal(countRoot.get(key), codeValue));
+							}
+						} catch (NumberFormatException e) {
+							predicates.add(cb.disjunction());
+						}
+					} else {
+						predicates.add(cb.like(cb.lower(countRoot.get(key)), like(stringValue)));
+					}
+				} else {
+					predicates.add(cb.equal(countRoot.get(key), value));
+				}
+			}
+		}
+
+		countQuery.select(cb.count(countRoot))
+			.where(cb.and(predicates.toArray(new Predicate[0])));
+
+		return entityManager.createQuery(countQuery).getSingleResult();
 	}
 
 }
