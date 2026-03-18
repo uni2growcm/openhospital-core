@@ -42,6 +42,7 @@ import jakarta.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.StringUtils;
 import org.isf.anamnesis.model.PatientHistory;
+import org.isf.integrations.labbook.listener.LabbookPatientListener;
 import org.isf.opd.model.Opd;
 import org.isf.patconsensus.model.PatientConsensus;
 import org.isf.utils.db.Auditable;
@@ -49,7 +50,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
 @Table(name="OH_PATIENT")
-@EntityListeners(AuditingEntityListener.class)
+@EntityListeners({AuditingEntityListener.class, LabbookPatientListener.class})
 @AttributeOverride(name = "createdBy", column = @Column(name = "PAT_CREATED_BY", updatable = false))
 @AttributeOverride(name = "createdDate", column = @Column(name = "PAT_CREATED_DATE", updatable = false))
 @AttributeOverride(name = "lastModifiedBy", column = @Column(name = "PAT_LAST_MODIFIED_BY"))
