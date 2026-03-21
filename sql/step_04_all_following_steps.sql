@@ -122,3 +122,4 @@ source u2g_update/step_11_add_foreign_key_on_death_table.sql;
 source u2g_update/step_07_create_table_for_reductionplan.sql;
 source u2g_update/step_06_add_reduction_plan_in_table_patient.sql;
 source u2g_update/step_05_add_column_bll_guarantor_to_table_oh_bills.sql;
+source u2g_update/step_12_add_column_bll_ward_to_table_oh_bills.sql;

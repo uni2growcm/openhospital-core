@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2024 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -37,6 +37,7 @@ public final class GeneralData extends ConfigurationProperties {
 	public static boolean APISERVER;
 
 	public static boolean ALLOWBILLGUARANTOR;
+	public static boolean STOCKMVTONBILLSAVE;
 	public static String LANGUAGE;
 	public static boolean AUTOMATICLOT_IN;
 	public static boolean AUTOMATICLOT_OUT;
@@ -93,6 +94,7 @@ public final class GeneralData extends ConfigurationProperties {
 	public static int PASSWORDIDLE;
 
 	private static final boolean DEFAULT_ALLOWBILLGUARANTOR  = false;
+	public static final boolean DEFAULT_STOCKMVTONBILLSAVE = false;
 	private static final String DEFAULT_LANGUAGE = "en";
 	private static final boolean DEFAULT_SINGLEUSER = false;
 	private static final boolean DEFAULT_USERSLISTLOGIN = false;
@@ -162,6 +164,7 @@ public final class GeneralData extends ConfigurationProperties {
 	private GeneralData(String fileProperties) {
 		super(fileProperties, EXIT_ON_FAIL);
 		ALLOWBILLGUARANTOR = myGetProperty("ALLOWBILLGUARANTOR", DEFAULT_ALLOWBILLGUARANTOR);
+		STOCKMVTONBILLSAVE = myGetProperty("STOCKMVTONBILLSAVE", DEFAULT_STOCKMVTONBILLSAVE);
 		SINGLEUSER = myGetProperty("SINGLEUSER", DEFAULT_SINGLEUSER);
 		USERSLISTLOGIN = myGetProperty("USERSLISTLOGIN", DEFAULT_USERSLISTLOGIN);
 		MODE = myGetProperty("MODE", DEFAULT_MODE);
