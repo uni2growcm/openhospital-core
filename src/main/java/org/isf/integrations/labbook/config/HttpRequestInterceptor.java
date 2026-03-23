@@ -21,8 +21,6 @@
  */
 package org.isf.integrations.labbook.config;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
@@ -34,12 +32,11 @@ import java.io.IOException;
 @Component
 public class HttpRequestInterceptor implements ClientHttpRequestInterceptor {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(HttpRequestInterceptor.class);
+//	private final String bearerToken = "vjhdf dn dd,";
 
 	@Override
 	public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
-		LOGGER.info(request.toString());
-		LOGGER.info(body.toString());
+		request.getHeaders().setBearerAuth("lA2smN3k9eZO7shKnjUB6LuN462GlJKjpGz7cNjdvs");
 		return execution.execute(request, body);
 	}
 }

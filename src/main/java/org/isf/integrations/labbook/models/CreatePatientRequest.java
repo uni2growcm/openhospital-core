@@ -25,7 +25,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class CreatePatientRequest {
-	private Integer pat_code;
+	private Integer id_user;
+	private String pat_code;
 	private String pat_name;
 	private String pat_firstname;
 	private String pat_birth;
@@ -34,14 +35,15 @@ public class CreatePatientRequest {
 	private String pat_city;
 	private String pat_phone1;
 	private String pat_profession;
-	private String pat_blood_group;
-	private String pat_rhesus;
+	private Integer pat_blood_group;
+	private Integer pat_blood_rhesus;
+	private Integer pat_age;
 
-	public Integer getPat_code() {
+	public String getPat_code() {
 		return pat_code;
 	}
 
-	public void setPat_code(Integer pat_code) {
+	public void setPat_code(String pat_code) {
 		this.pat_code = pat_code;
 	}
 
@@ -109,19 +111,35 @@ public class CreatePatientRequest {
 		this.pat_profession = pat_profession;
 	}
 
-	public String getPat_blood_group() {
+	public Integer getPat_blood_group() {
 		return pat_blood_group;
 	}
 
-	public void setPat_blood_group(String pat_blood_group) {
+	public void setPat_blood_group(Integer pat_blood_group) {
 		this.pat_blood_group = pat_blood_group;
 	}
 
-	public String getPat_rhesus() {
-		return pat_rhesus;
+	public Integer getPat_blood_rhesus() {
+		return pat_blood_rhesus;
 	}
 
-	public void setPat_rhesus(String pat_rhesus) {
-		this.pat_rhesus = pat_rhesus;
+	public void setPat_blood_rhesus(Integer pat_blood_rhesus) {
+		this.pat_blood_rhesus = pat_blood_rhesus;
+	}
+
+	public Integer getId_user() {
+		return id_user;
+	}
+
+	public void setId_user(Integer id_user) {
+		this.id_user = id_user;
+	}
+
+	public Integer getPat_age() {
+		return pat_age;
+	}
+
+	public void setPat_age(Integer pat_age) {
+		this.pat_age = pat_age;
 	}
 }

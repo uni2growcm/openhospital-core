@@ -25,7 +25,6 @@ import org.isf.integrations.labbook.models.CreatePatientRequest;
 import org.isf.patient.model.Patient;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 @Component
@@ -39,7 +38,8 @@ public class LabbookPatientMapper {
 
 		CreatePatientRequest labbookPatient = new CreatePatientRequest();
 
-		labbookPatient.setPat_code(ohPatient.getCode());
+		labbookPatient.setId_user(1);
+		labbookPatient.setPat_code(ohPatient.getCode().toString());
 		labbookPatient.setPat_name(ohPatient.getSecondName());
 		labbookPatient.setPat_firstname(ohPatient.getFirstName());
 
@@ -47,6 +47,7 @@ public class LabbookPatientMapper {
 			labbookPatient.setPat_birth(ohPatient.getBirthDate().format(DATE_FORMATTER));
 		}
 
+		labbookPatient.setPat_age(ohPatient.getAge());
 		labbookPatient.setPat_sex(mapSexToLabbook(ohPatient.getSex()));
 		labbookPatient.setPat_address(ohPatient.getAddress());
 		labbookPatient.setPat_city(ohPatient.getCity());
@@ -57,43 +58,11 @@ public class LabbookPatientMapper {
 		return labbookPatient;
 	}
 
-	public Patient toPatient(CreatePatientRequest labbookPatient) {
-		if (labbookPatient == null) {
-			return null;
-		}
-
-		Patient ohpatient = new Patient();
-
-		ohpatient.setCode(labbookPatient.getPat_code());
-		ohpatient.setSecondName(labbookPatient.getPat_name());
-		ohpatient.setFirstName(labbookPatient.getPat_firstname());
-		ohpatient.setSex(mapSexToPatient(labbookPatient.getPat_sex()));
-
-		if (labbookPatient.getPat_birth() != null && !labbookPatient.getPat_birth().isEmpty()) {
-			ohpatient.setBirthDate(LocalDate.parse(labbookPatient.getPat_birth(), DATE_FORMATTER));
-		}
-
-		ohpatient.setAddress(labbookPatient.getPat_address());
-		ohpatient.setCity(labbookPatient.getPat_city());
-		ohpatient.setTelephone(labbookPatient.getPat_phone1());
-		ohpatient.setBloodType(labbookPatient.getPat_blood_group() + labbookPatient.getPat_rhesus());
-
-		return ohpatient;
-	};
-
 	private Integer mapSexToLabbook(char ohSex) {
 		return switch (ohSex) {
 			case 'M' -> 1;
 			case 'F' -> 2;
 			default  -> 3;
-		};
-	}
-
-	private char mapSexToPatient(int labbookSex) {
-		return switch (labbookSex) {
-			case 1 -> 'M';
-			case 2 -> 'F';
-			default  -> 'O';
 		};
 	}
 
@@ -103,17 +72,19 @@ public class LabbookPatientMapper {
 		}
 
 		String cleaned = ohBloodType.trim().toUpperCase();
-		String patRhesus = cleaned.contains("+") ? "+" : (cleaned.contains("-") ? "-" : null);
+		Integer patRhesus = cleaned.contains("+") ? 232 : (cleaned.contains("-") ? 233 : 0);
 
 		if (cleaned.startsWith("AB")) {
-			req.setPat_blood_group("AB");
+			req.setPat_blood_group(903);
 		} else if (cleaned.startsWith("B")) {
-			req.setPat_blood_group("B");
+			req.setPat_blood_group(902);
 		} else if (cleaned.startsWith("A")) {
-			req.setPat_blood_group("A");
+			req.setPat_blood_group(901);
 		} else if (cleaned.startsWith("O")) {
-			req.setPat_blood_group("O");
+			req.setPat_blood_group(904);
+		} else {
+			req.setPat_blood_group(0);
 		}
-		req.setPat_rhesus(patRhesus);
+		req.setPat_blood_rhesus(patRhesus);
 	}
 }

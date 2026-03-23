@@ -23,16 +23,13 @@ package org.isf.integrations.labbook.listener;
 
 import jakarta.persistence.PostPersist;
 import jakarta.persistence.PostUpdate;
-import org.isf.integrations.labbook.exceptions.LabbookException;
 import org.isf.integrations.labbook.mappers.LabbookPatientMapper;
-import org.isf.integrations.labbook.services.LabbookAPIService;
 import org.isf.patient.model.Patient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.event.TransactionPhase;
-import org.springframework.transaction.event.TransactionalEventListener;
-import org.springframework.web.client.RestClientResponseException;
 
 @Component
 @ConditionalOnProperty(
@@ -42,25 +39,26 @@ import org.springframework.web.client.RestClientResponseException;
 )
 public class LabbookPatientListener {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(LabbookPatientListener.class);
+
 	private static ApplicationEventPublisher publisher;
-	private final LabbookAPIService labbookAPIService;
 	private final LabbookPatientMapper mapper;
 
-	public LabbookPatientListener(LabbookAPIService labbookAPIService, LabbookPatientMapper mapper, ApplicationEventPublisher publisher) {
-		this.labbookAPIService = labbookAPIService;
+	public LabbookPatientListener(LabbookPatientMapper mapper, ApplicationEventPublisher publisher) {
 		this.mapper = mapper;
 		LabbookPatientListener.publisher = publisher;
 	}
 
 	@PostPersist
 	@PostUpdate
-	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-	public void onPatientChange(Patient patient) {
-		if (patient == null || patient.getCode() == null) return;
+	public void afterPersist(Patient patient) {
 		try {
-			labbookAPIService.createPatient(mapper.toCreatePatientRequest(patient));
-		} catch (RestClientResponseException ex) {
-			throw new LabbookException(ex.getMessage(), ex.getCause(), ex.getStatusCode());
+			if (patient == null || patient.getCode() == null) return;
+			publisher.publishEvent(
+				new PatientCreateEvent(mapper.toCreatePatientRequest(patient))
+			);
+		} catch (Exception e) {
+			LOGGER.error("Event publishing error", e);
 		}
 	}
 }

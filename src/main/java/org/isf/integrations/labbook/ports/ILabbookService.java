@@ -23,6 +23,7 @@ package org.isf.integrations.labbook.ports;
 
 import org.isf.integrations.labbook.models.CreatePatientRequest;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.service.annotation.HttpExchange;
@@ -30,7 +31,7 @@ import org.springframework.web.service.annotation.PostExchange;
 
 @HttpExchange("/patient")
 public interface ILabbookService {
-	@PostExchange(contentType = MediaType.APPLICATION_JSON_VALUE)
+	@PostExchange(value="/det/{patCode}", contentType = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus
-	public void sendLabbookRequest(@RequestBody CreatePatientRequest request);
+	public void sendLabbookRequest(@PathVariable Integer patCode,  @RequestBody CreatePatientRequest request);
 }

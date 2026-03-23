@@ -47,45 +47,23 @@ public class LabbookException extends RuntimeException{
 	}
 
 	/**
-	 * Creates a new {@code LabbookException} with the specified message and cause
-	 * @param message the detail message
-	 * @param cause the cause of the exception
-	 */
-	public LabbookException(String message, Throwable cause) {
-		this(cause);
-		this.message = message;
-	}
-
-	/**
 	 * Creates a new {@code LabbookException} with the specified HTTP status and message.
 	 * @param status the HTTP status code
 	 * @param message the detail message
 	 */
-	public LabbookException(int status, String message) {
+	public LabbookException(String message, int status) {
 		super(message);
 		this.statusCode = status;
 		this.message = message;
 	}
 
-	/**
-	 * Creates a new {@code LabbookException} with the specified HTTP status, message and args.
-	 * @param status the HTTP status code
-	 * @param message the detail message
-	 * @param args the translation params
-	 */
-	public LabbookException(int status, String message, Object[] args) {
-		this(status, message);
-		this.args = args;
-	}
 
 	/**
 	 * Creates a new {@code LabbookException} with the specified message, cause and status code
 	 * @param message the detail message
-	 * @param cause the cause of the exception
 	 * @param statusCode the HTTP status code
 	 */
-	public LabbookException(String message, Throwable cause, HttpStatusCode statusCode) {
-		this(message, cause);
-		this.statusCode = statusCode.value();
+	public LabbookException(String message, HttpStatusCode statusCode) {
+		this(message, statusCode.value());
 	}
 }

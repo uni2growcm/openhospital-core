@@ -19,26 +19,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.isf.integrations.labbook.services;
+package org.isf.integrations.labbook.listener;
 
-import org.isf.integrations.labbook.config.LabbookAPIClientFactory;
 import org.isf.integrations.labbook.models.CreatePatientRequest;
-import org.isf.integrations.labbook.ports.ILabbookService;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClientResponseException;
 
-@Service
-public class LabbookAPIService {
-
-	private final ILabbookService iLabbookService;
-
-	public LabbookAPIService(LabbookAPIClientFactory labbookAPIClientFactory) {
-		this.iLabbookService = labbookAPIClientFactory.getILabbookService();
-	}
-
-	public void createPatient(CreatePatientRequest patient) throws RestClientResponseException {
-		if (LabbookAPIClientFactory.labbookEnabled != null && !LabbookAPIClientFactory.labbookEnabled.isBlank() && LabbookAPIClientFactory.labbookEnabled.equals("yes")) {
-			iLabbookService.sendLabbookRequest(0, patient);
-		}
-	}
+public record PatientCreateEvent(CreatePatientRequest patient) {
 }
