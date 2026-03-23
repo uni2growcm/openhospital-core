@@ -19,18 +19,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.isf.integrations.labbook.ports;
+package org.isf.integrations.labbook.config;
 
-import org.isf.integrations.labbook.models.CreatePatientRequest;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.service.annotation.HttpExchange;
-import org.springframework.web.service.annotation.PostExchange;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpRequest;
+import org.springframework.http.client.ClientHttpRequestExecution;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
+import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.stereotype.Component;
 
-@HttpExchange("/patient")
-public interface ILabbookService {
-	@PostExchange(contentType = MediaType.APPLICATION_JSON_VALUE)
-	@ResponseStatus
-	public void sendLabbookRequest(@RequestBody CreatePatientRequest request);
+import java.io.IOException;
+
+@Component
+public class HttpRequestInterceptor implements ClientHttpRequestInterceptor {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(HttpRequestInterceptor.class);
+
+	@Override
+	public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
+		LOGGER.info(request.toString());
+		LOGGER.info(body.toString());
+		return execution.execute(request, body);
+	}
 }

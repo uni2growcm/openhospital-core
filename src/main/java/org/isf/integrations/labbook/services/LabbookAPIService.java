@@ -19,18 +19,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.isf.integrations.labbook.ports;
+package org.isf.integrations.labbook.services;
 
+import org.isf.integrations.labbook.config.LabbookAPIClientFactory;
 import org.isf.integrations.labbook.models.CreatePatientRequest;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.service.annotation.HttpExchange;
-import org.springframework.web.service.annotation.PostExchange;
+import org.isf.integrations.labbook.ports.ILabbookService;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientResponseException;
 
-@HttpExchange("/patient")
-public interface ILabbookService {
-	@PostExchange(contentType = MediaType.APPLICATION_JSON_VALUE)
-	@ResponseStatus
-	public void sendLabbookRequest(@RequestBody CreatePatientRequest request);
+@Service
+public class LabbookAPIService {
+
+	private final ILabbookService iLabbookService;
+
+	public LabbookAPIService(LabbookAPIClientFactory labbookAPIClientFactory) {
+		this.iLabbookService = labbookAPIClientFactory.getILabbookService();
+	}
+
+	public void createPatient(CreatePatientRequest patient) throws RestClientResponseException {
+		if (LabbookAPIClientFactory.labbookEnabled != null && !LabbookAPIClientFactory.labbookEnabled.isBlank() && LabbookAPIClientFactory.labbookEnabled.equals("yes")) {
+			iLabbookService.sendLabbookRequest(patient);
+		}
+	}
 }

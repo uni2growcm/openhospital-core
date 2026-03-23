@@ -18,4 +18,13 @@ spring:
   cloud:
     compatibility-verifier:
       enabled: false
-
+  labbook:
+    api:
+      url: ${labbook.api.url}
+      timeout:
+        connect: 5000
+        read: 5000
+      enabled: ${labbook.api.enabled}
+      auth:
+        username: ${labbook.auth.username}
+        password: ${labbook.auth.password}
