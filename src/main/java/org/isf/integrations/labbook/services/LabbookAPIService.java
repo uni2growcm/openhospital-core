@@ -37,7 +37,7 @@ public class LabbookAPIService {
 	}
 
 	public void createPatient(CreatePatientRequest patient) throws RestClientResponseException {
-		if (LabbookAPIClientFactory.labbookEnabled != null && !LabbookAPIClientFactory.labbookEnabled.isBlank() && LabbookAPIClientFactory.labbookEnabled.equals("yes")) {
+		if (LabbookAPIClientFactory.labbookEnabled != null && !LabbookAPIClientFactory.labbookEnabled.isBlank() && LabbookAPIClientFactory.labbookEnabled.equals("no")) {
 			iLabbookService.sendLabbookRequest(0, patient);
 		}
 	}

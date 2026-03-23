@@ -30,7 +30,6 @@ import jakarta.persistence.EntityManager;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.isf.generaldata.GeneralData;
-import org.isf.integrations.labbook.exceptions.LabbookException;
 import org.isf.patient.model.Patient;
 import org.isf.patient.model.PatientMergedEvent;
 import org.isf.patient.model.PatientProfilePhoto;
@@ -198,8 +197,6 @@ public class PatientIoOperations {
 			return patientSaved;
 		} catch (OHServiceException e) {
 			LOGGER.error("Exception in savePatient method.", e);
-		} catch (LabbookException e) {
-			LOGGER.error("Exception in Labbook Api call method.", e);
 		}
 		return null;
 	}

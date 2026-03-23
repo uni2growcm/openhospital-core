@@ -3,6 +3,4 @@ jdbc.username=isf
 jdbc.password=isf123
 
 labbook.api.url=http://192.168.1.132:5000/sigl/services
-labbook.auth.username=root
-labbook.auth.password=root
 labbook.api.enabled=no

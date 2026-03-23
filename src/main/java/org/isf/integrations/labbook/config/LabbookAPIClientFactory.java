@@ -24,24 +24,29 @@ package org.isf.integrations.labbook.config;
 import org.isf.integrations.labbook.ports.ILabbookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.support.RestClientAdapter;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 
 @Component
+//@ConditionalOnProperty(name = "labbook.api.enabled", havingValue = "yes")
 public class LabbookAPIClientFactory {
 
 	@Value("${labbook.api.url}")
 	private String baseUrl;
 
 	@Value("${labbook.api.enabled}")
-	public static String labbookEnabled = "yes";
+	public static String labbookEnabled;
 
 	private ILabbookService iLabbookService;
 
-	@Autowired
-	private HttpRequestInterceptor requestInterceptor;
+	private final HttpRequestInterceptor requestInterceptor;
+
+	public LabbookAPIClientFactory(HttpRequestInterceptor requestInterceptor) {
+		this.requestInterceptor = requestInterceptor;
+	}
 
 	public ILabbookService getILabbookService() {
 		if (iLabbookService != null) {

@@ -15,3 +15,7 @@ spring:
   cloud:
     compatibility-verifier:
       enabled: false
+  labbook:
+    api:
+      url: ${labbook.api.url}
+      enabled: ${labbook.api.enabled}
