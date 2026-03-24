@@ -27,16 +27,10 @@ import org.isf.integrations.labbook.mappers.LabbookPatientMapper;
 import org.isf.patient.model.Patient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
 @Component
-@ConditionalOnProperty(
-	name = "labbook.api.enabled",
-	havingValue = "true",
-	matchIfMissing = false
-)
 public class LabbookPatientListener {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(LabbookPatientListener.class);

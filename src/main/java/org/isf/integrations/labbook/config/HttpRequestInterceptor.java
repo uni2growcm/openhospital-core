@@ -32,11 +32,9 @@ import java.io.IOException;
 @Component
 public class HttpRequestInterceptor implements ClientHttpRequestInterceptor {
 
-//	private final String bearerToken = "vjhdf dn dd,";
-
 	@Override
 	public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
-		request.getHeaders().setBearerAuth("lA2smN3k9eZO7shKnjUB6LuN462GlJKjpGz7cNjdvs");
+		request.getHeaders().setBearerAuth("pPoYTflUMz6gs1JJ03MZVelk2K1th8Sgh5HgwPb8In");
 		return execution.execute(request, body);
 	}
 }
