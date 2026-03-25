@@ -22,14 +22,25 @@
 package org.isf.integrations.labbook.ports;
 
 import org.isf.integrations.labbook.models.CreatePatientRequest;
+import org.isf.integrations.labbook.models.GetPatientRequest;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.service.annotation.HttpExchange;
 import org.springframework.web.service.annotation.PostExchange;
 
-@HttpExchange("/patient")
-public interface ILabbookService {
+/**
+ * HTTP contract for create patient endpoint.
+ * Used to create/update Labbook patient from Labbook's /services/patient/det/{patcCode} API.
+ *
+ * @author Tatemsa B
+ */
+
+@HttpExchange("/services/patient")
+public interface ICreatePatientService {
 	@PostExchange(value="/det/{patCode}", contentType = MediaType.APPLICATION_JSON_VALUE)
-	public void sendLabbookRequest(@PathVariable Integer patCode,  @RequestBody CreatePatientRequest request);
+	public void createLabbookPatientRequest(@PathVariable Integer patCode, @RequestBody CreatePatientRequest request);
+
+	@PostExchange(value = "/search", contentType = MediaType.APPLICATION_JSON_VALUE)
+	public Object getPatientsByCode(@RequestBody GetPatientRequest request);
 }

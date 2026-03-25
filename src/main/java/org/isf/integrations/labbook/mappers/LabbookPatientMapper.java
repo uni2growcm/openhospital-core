@@ -27,6 +27,13 @@ import org.springframework.stereotype.Component;
 
 import java.time.format.DateTimeFormatter;
 
+/**
+ * Labbook Mapper
+ * Maps the OH patient model to the Labbook patient model.
+ *
+ * @author Tatemsa B.
+ */
+
 @Component
 public class LabbookPatientMapper {
 	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE;

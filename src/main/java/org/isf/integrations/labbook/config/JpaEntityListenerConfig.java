@@ -43,9 +43,16 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Configuration for Jpa entity listener.
+ * Listen to the patient model and trigger an event if the model is saved or updated
+ *
+ * @author Tatemsa B.
+ */
+
 @Configuration
 @ConfigurationPropertiesScan("org.isf.integrations.labbook")
-//@ConditionalOnProperty(name = "labbook.enabled", havingValue = "true")
+@ConditionalOnProperty(name = "labbook.enabled", havingValue = "true")
 public class JpaEntityListenerConfig {
 
 	private final LabbookPatientListener labbookPatientListener;

@@ -23,10 +23,19 @@ package org.isf.integrations.labbook.models;
 
 import org.springframework.stereotype.Component;
 
+/**
+ * Reauest for create/update Labbook patient .
+ *
+ * @author Tatemsa B.
+ */
+
 @Component
 public class CreatePatientRequest {
 	private Integer id_user;
+	private Integer id_data;
 	private String pat_code;
+	private Integer pat_ano;
+	private String pat_code_lab;
 	private String pat_name;
 	private String pat_firstname;
 	private String pat_birth;
@@ -38,6 +47,18 @@ public class CreatePatientRequest {
 	private Integer pat_blood_group;
 	private Integer pat_blood_rhesus;
 	private Integer pat_age;
+	private String pat_zipcode;
+	private String pat_phone2;
+	private String pat_midname;
+	private String pat_nationality;
+	private String pat_agreement;
+	private String pat_email;
+	private String pat_resident;
+	private String pat_age_unit;
+	private String pat_maiden;
+	private String pat_district;
+	private String pat_pbox;
+	private Integer pat_birth_approx;
 
 	public String getPat_code() {
 		return pat_code;
@@ -141,5 +162,125 @@ public class CreatePatientRequest {
 
 	public void setPat_age(Integer pat_age) {
 		this.pat_age = pat_age;
+	}
+
+	public Integer getId_data() {
+		return id_data;
+	}
+
+	public void setId_data(Integer id_data) {
+		this.id_data = id_data;
+	}
+
+	public Integer getPat_ano() {
+		return pat_ano;
+	}
+
+	public void setPat_ano(Integer pat_ano) {
+		this.pat_ano = pat_ano;
+	}
+
+	public String getPat_code_lab() {
+		return pat_code_lab;
+	}
+
+	public void setPat_code_lab(String pat_code_lab) {
+		this.pat_code_lab = pat_code_lab;
+	}
+
+	public String getPat_zipcode() {
+		return pat_zipcode;
+	}
+
+	public void setPat_zipcode(String pat_zipcode) {
+		this.pat_zipcode = pat_zipcode;
+	}
+
+	public String getPat_phone2() {
+		return pat_phone2;
+	}
+
+	public void setPat_phone2(String pat_phone2) {
+		this.pat_phone2 = pat_phone2;
+	}
+
+	public String getPat_midname() {
+		return pat_midname;
+	}
+
+	public void setPat_midname(String pat_midname) {
+		this.pat_midname = pat_midname;
+	}
+
+	public String getPat_nationality() {
+		return pat_nationality;
+	}
+
+	public void setPat_nationality(String pat_nationality) {
+		this.pat_nationality = pat_nationality;
+	}
+
+	public String getPat_agreement() {
+		return pat_agreement;
+	}
+
+	public void setPat_agreement(String pat_agreement) {
+		this.pat_agreement = pat_agreement;
+	}
+
+	public String getPat_email() {
+		return pat_email;
+	}
+
+	public void setPat_email(String pat_email) {
+		this.pat_email = pat_email;
+	}
+
+	public String getPat_resident() {
+		return pat_resident;
+	}
+
+	public void setPat_resident(String pat_resident) {
+		this.pat_resident = pat_resident;
+	}
+
+	public String getPat_age_unit() {
+		return pat_age_unit;
+	}
+
+	public void setPat_age_unit(String pat_age_unit) {
+		this.pat_age_unit = pat_age_unit;
+	}
+
+	public String getPat_maiden() {
+		return pat_maiden;
+	}
+
+	public void setPat_maiden(String pat_maiden) {
+		this.pat_maiden = pat_maiden;
+	}
+
+	public String getPat_district() {
+		return pat_district;
+	}
+
+	public void setPat_district(String pat_district) {
+		this.pat_district = pat_district;
+	}
+
+	public String getPat_pbox() {
+		return pat_pbox;
+	}
+
+	public void setPat_pbox(String pat_pbox) {
+		this.pat_pbox = pat_pbox;
+	}
+
+	public Integer getPat_birth_approx() {
+		return pat_birth_approx;
+	}
+
+	public void setPat_birth_approx(Integer pat_birth_approx) {
+		this.pat_birth_approx = pat_birth_approx;
 	}
 }

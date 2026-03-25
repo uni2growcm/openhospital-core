@@ -23,5 +23,11 @@ package org.isf.integrations.labbook.listener;
 
 import org.isf.integrations.labbook.models.CreatePatientRequest;
 
+/**
+ * Event recording published
+ *
+ * @author Tatemsa B.
+ */
+
 public record PatientCreateEvent(CreatePatientRequest patient) {
 }

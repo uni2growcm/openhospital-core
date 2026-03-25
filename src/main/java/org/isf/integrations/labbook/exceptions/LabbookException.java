@@ -24,15 +24,18 @@ package org.isf.integrations.labbook.exceptions;
 import org.isf.generaldata.MessageBundle;
 import org.springframework.http.HttpStatusCode;
 
+/**
+ * Labbook specific exception.
+ * To display exceptions related to the execution of requests to the Labbook API
+ *
+ * @author Tatemsa B.
+ */
+
 public class LabbookException extends RuntimeException{
 
 	private String message;
 
-	private Object[] args;
-
 	private int statusCode;
-
-	private String debugMessage;
 
 	private boolean isFatal = false;
 
@@ -47,9 +50,9 @@ public class LabbookException extends RuntimeException{
 	}
 
 	/**
-	 * Creates a new {@code LabbookException} with the specified HTTP status and message.
-	 * @param status the HTTP status code
+	 * Creates a new {@code LabbookException} with the specified message and status.
 	 * @param message the detail message
+	 * @param status the status code
 	 */
 	public LabbookException(String message, int status) {
 		super(message);
@@ -59,7 +62,7 @@ public class LabbookException extends RuntimeException{
 
 
 	/**
-	 * Creates a new {@code LabbookException} with the specified message, cause and status code
+	 * Creates a new {@code LabbookException} with the specified message and HTTP status code
 	 * @param message the detail message
 	 * @param statusCode the HTTP status code
 	 */

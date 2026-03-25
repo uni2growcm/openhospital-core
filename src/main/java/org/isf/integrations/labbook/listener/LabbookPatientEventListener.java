@@ -22,7 +22,7 @@
 package org.isf.integrations.labbook.listener;
 
 import org.isf.integrations.labbook.exceptions.LabbookException;
-import org.isf.integrations.labbook.services.LabbookAPIService;
+import org.isf.integrations.labbook.services.PatientService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -31,22 +31,30 @@ import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 import org.springframework.web.client.RestClientResponseException;
 
+
+/**
+ * Listen to the event published by LabbookPatientListener
+ * Listen for the event published by LabbookPatientListener to trigger the patient creation/modification process in Labbook.
+ *
+ * @author Tatemsa B.
+ */
+
 @Component
 @ConditionalOnProperty(name = "labbook.enabled", havingValue = "true")
 public class LabbookPatientEventListener {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(LabbookPatientEventListener.class);
 
-	private final LabbookAPIService labbookAPIService;
+	private final PatientService patientService;
 
-	public LabbookPatientEventListener(LabbookAPIService labbookAPIService) {
-		this.labbookAPIService = labbookAPIService;
+	public LabbookPatientEventListener(PatientService patientService) {
+		this.patientService = patientService;
 	}
 
 	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
 	public void onPatientChange(PatientCreateEvent event) {
 		try {
-			labbookAPIService.createPatient(event.patient());
+			patientService.createPatient(event.patient());
 		} catch (RestClientResponseException ex) {
 			throw new LabbookException(ex.getMessage(), ex.getStatusCode());
 		}

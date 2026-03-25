@@ -21,7 +21,7 @@
  */
 package org.isf.integrations.labbook.config;
 
-import org.isf.integrations.labbook.ports.ILabbookService;
+import org.isf.integrations.labbook.ports.ICreatePatientService;
 import org.isf.integrations.labbook.ports.IOauthTokenService;
 import org.isf.integrations.labbook.services.ITokenService;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -85,9 +85,9 @@ public class LabBookConfig {
 	 * HttpExchange proxy for Create patient service.
 	 */
 	@Bean(LabBookBeanNames.CREATE_PATIENT_CLIENT)
-	public ILabbookService labbookCreatePatientClient(@Qualifier(LabBookBeanNames.REST_CLIENT) RestClient client) {
+	public ICreatePatientService labbookCreatePatientClient(@Qualifier(LabBookBeanNames.REST_CLIENT) RestClient client) {
 		return HttpServiceProxyFactory.builderFor(
 			RestClientAdapter.create(client)
-		).build().createClient(ILabbookService.class);
+		).build().createClient(ICreatePatientService.class);
 	}
 }

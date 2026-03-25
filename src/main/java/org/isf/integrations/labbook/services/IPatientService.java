@@ -19,22 +19,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.isf.integrations.labbook.config;
+package org.isf.integrations.labbook.services;
 
-import org.springframework.http.HttpRequest;
-import org.springframework.http.client.ClientHttpRequestExecution;
-import org.springframework.http.client.ClientHttpRequestInterceptor;
-import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.stereotype.Component;
+import org.isf.integrations.labbook.models.CreatePatientRequest;
+import org.springframework.web.client.RestClientResponseException;
 
-import java.io.IOException;
+/**
+ * Port interface for creating/updating patient.
+ *
+ * @author Steve Tsala
+ */
 
-@Component
-public class HttpRequestInterceptor implements ClientHttpRequestInterceptor {
+public interface IPatientService {
 
-	@Override
-	public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
-		request.getHeaders().setBearerAuth("pPoYTflUMz6gs1JJ03MZVelk2K1th8Sgh5HgwPb8In");
-		return execution.execute(request, body);
-	}
+	/**
+	 * Create/update patient in labbook after its creation in OH.
+	 * @param patient The patient has created a labbook.
+	 *
+	 */
+	void createPatient(CreatePatientRequest patient) throws RestClientResponseException;
 }

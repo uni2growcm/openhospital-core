@@ -31,6 +31,13 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
+/**
+ * Listener for listening to events from the patient model.
+ * Listen specifically for the PostPersist and PostUpdate events, then publish an event
+ *
+ * @author Tatemsa B.
+ */
+
 @Component
 @ConditionalOnProperty(name = "labbook.enabled", havingValue = "true")
 public class LabbookPatientListener {
