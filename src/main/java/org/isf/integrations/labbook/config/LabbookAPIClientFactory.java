@@ -23,19 +23,19 @@ package org.isf.integrations.labbook.config;
 
 import org.isf.integrations.labbook.ports.ILabbookService;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.support.RestClientAdapter;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 
 @Component
+@ConfigurationProperties(prefix = "labbook")
 public class LabbookAPIClientFactory {
 
-	@Value("${labbook.api.url}")
 	private String baseUrl;
 
-	@Value("${labbook.api.enabled}")
-	public static String labbookEnabled = "yes";
+	public static String labbookEnabled = "true";
 
 	private ILabbookService iLabbookService;
 

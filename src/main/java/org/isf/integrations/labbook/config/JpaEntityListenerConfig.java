@@ -31,6 +31,8 @@ import org.hibernate.persister.entity.EntityPersister;
 import org.hibernate.service.spi.SessionFactoryServiceRegistry;
 import org.isf.integrations.labbook.listener.LabbookPatientListener;
 import org.isf.patient.model.Patient;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -42,6 +44,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
+@ConfigurationPropertiesScan("org.isf.integrations.labbook")
+//@ConditionalOnProperty(name = "labbook.enabled", havingValue = "true")
 public class JpaEntityListenerConfig {
 
 	private final LabbookPatientListener labbookPatientListener;

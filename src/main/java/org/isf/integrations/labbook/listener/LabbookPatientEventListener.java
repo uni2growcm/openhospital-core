@@ -25,12 +25,14 @@ import org.isf.integrations.labbook.exceptions.LabbookException;
 import org.isf.integrations.labbook.services.LabbookAPIService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 import org.springframework.web.client.RestClientResponseException;
 
 @Component
+@ConditionalOnProperty(name = "labbook.enabled", havingValue = "true")
 public class LabbookPatientEventListener {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(LabbookPatientEventListener.class);

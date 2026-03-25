@@ -33,6 +33,8 @@ public final class LabBookBeanNames {
 	public static final String OAUTH_TOKEN_SERVICE = "labbookOauthTokenService";
 	public static final String TOKEN_SERVICE = "labbookTokenService";
 	public static final String REST_CLIENT = "labbookRestClient";
+	public static final String CREATE_PATIENT_CLIENT = "labbookCreatePatientClient";
+	public static final String CREATE_PATIENT_SERVICE = "labbookCreatePatientService";
 	private LabBookBeanNames() {
 	}
 }

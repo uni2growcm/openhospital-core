@@ -2,5 +2,5 @@ jdbc.url=jdbc:mariadb://localhost:3306/oh
 jdbc.username=isf
 jdbc.password=isf123
 
-labbook.api.url=http://192.168.1.132:5000/sigl/services
-labbook.api.enabled=no
+labbook.baseUrl=http://192.168.1.132:5000/sigl/services
+labbook.enabled=true

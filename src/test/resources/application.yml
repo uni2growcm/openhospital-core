@@ -16,6 +16,5 @@ spring:
     compatibility-verifier:
       enabled: false
   labbook:
-    api:
-      url: ${labbook.api.url}
-      enabled: ${labbook.api.enabled}
+      baseUrl: ${labbook.baseUrl}
+      enabled: ${labbook.enabled}
