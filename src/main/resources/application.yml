@@ -18,6 +18,3 @@ spring:
   cloud:
     compatibility-verifier:
       enabled: false
-  labbook:
-      baseUrl: ${labbook.baseUrl}
-      enabled: ${labbook.enabled}
