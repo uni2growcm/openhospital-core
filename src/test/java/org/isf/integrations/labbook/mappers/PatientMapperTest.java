@@ -22,13 +22,16 @@
 package org.isf.integrations.labbook.mappers;
 
 import org.isf.OpenHospitalCoreApplication;
+import org.isf.integrations.labbook.config.LabBookBeanNames;
 import org.isf.integrations.labbook.models.PatientDetRequest;
+import org.isf.integrations.labbook.ports.IPatientService;
 import org.isf.patient.model.Patient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 
@@ -79,6 +82,10 @@ class PatientMapperTest {
 	class WhenLabBookEnabled {
 
 		@Autowired
+		IPatientService patientService;
+
+		@Autowired
+		@Qualifier(LabBookBeanNames.PATIENT_MAPPER)
 		private PatientMapper patientMapper;
 
 		private Patient patient;
@@ -145,8 +152,8 @@ class PatientMapperTest {
 		void shouldMapBloodType() {
 			PatientDetRequest request = patientMapper.toDetRequest(patient);
 
-			assertThat(request.bloodGroup()).isEqualTo("AB");
-			assertThat(request.bloodRhesus()).isEqualTo("+");
+			assertThat(request.bloodGroup()).isEqualTo(3);
+			assertThat(request.bloodRhesus()).isEqualTo(1);
 		}
 	}
 

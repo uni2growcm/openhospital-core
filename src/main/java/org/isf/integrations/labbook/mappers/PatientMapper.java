@@ -22,9 +22,13 @@
 package org.isf.integrations.labbook.mappers;
 
 import org.isf.integrations.labbook.annotations.EnableLabBook;
+import org.isf.integrations.labbook.config.LabBookBeanNames;
 import org.isf.integrations.labbook.models.PatientDetRequest;
 import org.isf.patient.model.Patient;
 import org.springframework.stereotype.Component;
+
+import java.util.AbstractMap;
+import java.util.Map;
 
 /**
  * Maps Open Hospital domain objects to LabBook API request models.
@@ -50,8 +54,8 @@ import org.springframework.stereotype.Component;
  *
  * @author Steve Tsala
  */
-@Component
 @EnableLabBook
+@Component(LabBookBeanNames.PATIENT_MAPPER)
 public class PatientMapper {
 
 	/**
@@ -67,6 +71,46 @@ public class PatientMapper {
 	 */
 	private static final int SEX_UNKNOWN = 3;
 
+	public static Map.Entry<Integer, Integer> parseBloodType(String bloodType) {
+		if (bloodType == null || bloodType.trim().isEmpty()) {
+			return null;
+		}
+
+		String input = bloodType.trim().toUpperCase();
+
+		// Extract the Rh factor (+ or -) if present
+		int rhesus = 0; // default negative
+		if (input.endsWith("+")) {
+			rhesus = 1;
+			input = input.substring(0, input.length() - 1).trim();
+		} else if (input.endsWith("-")) {
+			rhesus = 0;
+			input = input.substring(0, input.length() - 1).trim();
+		}
+
+		// Map blood group to number
+		int group;
+		switch (input) {
+			case "O":
+				group = 0;
+				break;
+			case "A":
+				group = 1;
+				break;
+			case "B":
+				group = 2;
+				break;
+			case "AB":
+				group = 3;
+				break;
+			default:
+				throw new IllegalArgumentException("Invalid blood group: " + input
+					+ ". Valid groups are: O, A, B, AB");
+		}
+
+		return new AbstractMap.SimpleEntry<>(group, rhesus);
+	}
+
 	/**
 	 * Maps an Open Hospital {@link Patient} to a {@link PatientDetRequest}.
 	 *
@@ -81,13 +125,10 @@ public class PatientMapper {
 	public PatientDetRequest toDetRequest(Patient patient) {
 		var bloodType = patient.getBloodType();
 
-		String bloodGroup = bloodType;
-		String bloodRhesus = null;
+		var result = parseBloodType(bloodType);
 
-		if(bloodType != null && (bloodType.contains("+") ||  bloodType.contains("-"))) {
-			bloodGroup = bloodType.substring(0, bloodType.length() - 1);
-			bloodRhesus = bloodType.substring(bloodType.length() - 1);
-		}
+		var bloodGroup = result == null ? null : result.getKey();
+		var bloodRhesus = result == null ? null : result.getValue();
 
 		return new PatientDetRequest(
 			/* idUser         */ 1, // If oh users are synced with labbook users, then this could be replaced by the current logged-in user

@@ -21,6 +21,7 @@
  */
 package org.isf.integrations.labbook.models;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -44,6 +45,7 @@ public record PatientDetRequest(
 	@JsonProperty("pat_code_lab") String codeLab,
 	@JsonProperty("pat_name") String name,
 	@JsonProperty("pat_firstname") String firstname,
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 	@JsonProperty("pat_birth") LocalDate birth,
 	/** 1 = Male, 2 = Female, 3 = Unknown */
 	@JsonProperty("pat_sex") Integer sex,
@@ -64,8 +66,8 @@ public record PatientDetRequest(
 	@JsonProperty("pat_nationality") Integer nationality,
 	/** "Y" or "N" */
 	@JsonProperty("pat_resident") String resident,
-	@JsonProperty("pat_blood_group") String bloodGroup,
-	@JsonProperty("pat_blood_rhesus") String bloodRhesus,
+	@JsonProperty("pat_blood_group") Integer bloodGroup,
+	@JsonProperty("pat_blood_rhesus") Integer bloodRhesus,
 	@JsonProperty("pat_email") String email,
 	/** "Y" or "N" */
 	@JsonProperty("pat_agreement") String agreement

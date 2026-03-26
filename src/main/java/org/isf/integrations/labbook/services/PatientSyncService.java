@@ -51,7 +51,7 @@ public class PatientSyncService implements IPatientSyncService {
 
 	public PatientSyncService(
 		@Qualifier(LabBookBeanNames.PATIENT_SERVICE) IPatientService patientService,
-		PatientMapper patientMapper) {
+		@Qualifier(LabBookBeanNames.PATIENT_MAPPER) PatientMapper patientMapper) {
 		this.patientService = patientService;
 		this.patientMapper = patientMapper;
 	}
@@ -59,15 +59,19 @@ public class PatientSyncService implements IPatientSyncService {
 	@Override
 	@EventListener
 	public void onPatientCreatedOrUpdated(PatientCreatedOrUpdatedEvent event) {
+		if(!event.isNew()) {
+			LOGGER.debug("Passthrough");
+			return;
+		}
 		Patient patient = event.patient();
 		if (patient == null || patient.getCode() == null) {
 			LOGGER.warn("LabBook patient sync skipped: patient or code is null");
 			return;
 		}
 		try {
-			patientService.saveOrUpdatePatient(patient.getCode(), patientMapper.toDetRequest(patient));
+			patientService.saveOrUpdatePatient(0, patientMapper.toDetRequest(patient));
 			LOGGER.debug("LabBook patient sync succeeded for patient code={} (isNew={})",
-				patient.getCode(), event.isNew());
+				patient.getCode(), true);
 		} catch (RestClientException ex) {
 			LOGGER.warn("LabBook patient sync failed for patient code={}: {}",
 				patient.getCode(), ex.getMessage());
