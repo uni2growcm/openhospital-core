@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -47,6 +47,8 @@ import static org.mockito.Mockito.*;
  *
  * <p>Uses {@code @MockitoBean} on {@link IPatientService} to avoid real HTTP calls —
  * consistent with the approach used in {@code TokenServiceTest}.
+ *
+ * @author Steve Tsala
  */
 class PatientSyncServiceTest {
 
