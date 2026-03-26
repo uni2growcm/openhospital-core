@@ -25,7 +25,6 @@ import org.isf.integrations.labbook.models.LabBookPatient;
 import org.isf.integrations.labbook.models.PatientDetRequest;
 import org.isf.integrations.labbook.models.PatientDetResponse;
 import org.isf.integrations.labbook.models.PatientListRequest;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.service.annotation.GetExchange;
@@ -72,7 +71,7 @@ public interface IPatientService {
 	 * @param request the patient data payload
 	 * @return the persisted patient record returned by LabBook
 	 */
-	@PostExchange(value = "/det/{id}", contentType = MediaType.APPLICATION_JSON_VALUE)
+	@PostExchange(value = "/det/{id}")
 	PatientDetResponse saveOrUpdatePatient(
 		@PathVariable Integer id,
 		@RequestBody PatientDetRequest request

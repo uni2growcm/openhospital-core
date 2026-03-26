@@ -29,6 +29,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.support.RestClientAdapter;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
@@ -72,6 +74,7 @@ public class LabBookConfig {
 	public RestClient labBookRestClient(LabBookProperties properties,
 										@Qualifier(LabBookBeanNames.TOKEN_SERVICE) ITokenService tokenService) {
 		return RestClient.builder()
+			.defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
 			.baseUrl(properties.getBaseUrl())
 			.requestInterceptor((request, body, execution) -> {
 				String token = tokenService.getAccessToken();

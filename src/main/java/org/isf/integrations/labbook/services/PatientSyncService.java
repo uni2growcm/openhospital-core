@@ -59,7 +59,7 @@ public class PatientSyncService implements IPatientSyncService {
 	@Override
 	@EventListener
 	public void onPatientCreatedOrUpdated(PatientCreatedOrUpdatedEvent event) {
-		if(!event.isNew()) {
+		if (!event.isNew()) {
 			LOGGER.debug("Passthrough");
 			return;
 		}
