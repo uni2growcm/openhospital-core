@@ -34,9 +34,9 @@ import org.springframework.web.service.annotation.PostExchange;
  * @author Steve Tsala
  */
 
-@HttpExchange
+@HttpExchange("/services/oauth")
 public interface IOauthTokenService {
-	@PostExchange(url = "/services/oauth/token", contentType = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+	@PostExchange(url = "/token", contentType = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 	OauthTokenResponse obtainToken(
 		@RequestParam("grant_type") String grantType,
 		@RequestParam("client_id") String clientId,

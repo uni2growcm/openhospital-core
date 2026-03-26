@@ -23,6 +23,7 @@ package org.isf.integrations.labbook.config;
 
 import org.isf.OpenHospitalCoreApplication;
 import org.isf.integrations.labbook.ports.IOauthTokenService;
+import org.isf.integrations.labbook.ports.IPatientService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -87,6 +88,13 @@ class LabBookConfigTest {
 			// but we can verify the bean exists and has the expected type
 			assertThat(client).isInstanceOf(RestClient.class);
 		}
+
+		@Test
+		@DisplayName("Should register labbookPatientService bean")
+		void shouldRegisterLabbookPatientServiceBean() {
+			IPatientService service = context.getBean(LabBookBeanNames.PATIENT_SERVICE, IPatientService.class);
+			assertThat(service).isNotNull();
+		}
 	}
 
 	@Nested
@@ -114,6 +122,12 @@ class LabBookConfigTest {
 		@DisplayName("Should not register labbookTokenService bean")
 		void shouldNotRegisterLabbookTokenServiceBean() {
 			assertThat(context.containsBean(LabBookBeanNames.TOKEN_SERVICE)).isFalse();
+		}
+
+		@Test
+		@DisplayName("Should not register labbookPatientService bean")
+		void shouldNotRegisterLabbookPatientServiceBean() {
+			assertThat(context.containsBean(LabBookBeanNames.PATIENT_SERVICE)).isFalse();
 		}
 	}
 }

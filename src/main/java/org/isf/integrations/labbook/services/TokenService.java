@@ -21,11 +21,11 @@
  */
 package org.isf.integrations.labbook.services;
 
+import org.isf.integrations.labbook.annotations.EnableLabBook;
 import org.isf.integrations.labbook.config.LabBookBeanNames;
 import org.isf.integrations.labbook.config.LabBookProperties;
 import org.isf.integrations.labbook.models.OauthTokenResponse;
 import org.isf.integrations.labbook.ports.IOauthTokenService;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -37,7 +37,7 @@ import java.time.Instant;
  * @author Steve Tsala
  */
 @Service(LabBookBeanNames.TOKEN_SERVICE)
-@ConditionalOnProperty(name = "labbook.enabled", havingValue = "true")
+@EnableLabBook
 public class TokenService implements ITokenService {
 
 	private final IOauthTokenService oauthTokenService;

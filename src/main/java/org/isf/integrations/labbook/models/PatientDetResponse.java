@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -19,22 +19,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.isf.integrations.labbook.config;
+package org.isf.integrations.labbook.models;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * Constants for bean names used in the LabBook integration.
- * Used to avoid hardcoded bean names scattered across annotations.
+ * DTO representing the response from {@code POST /services/patient/det/{idPat}}.
  *
  * @author Steve Tsala
  */
-public final class LabBookBeanNames {
-	public static final String LABBOOK_PROPERTIES = "labBookProperties";
-	public static final String OAUTH_REST_CLIENT = "labbookOauthRestClient";
-	public static final String OAUTH_TOKEN_SERVICE = "labbookOauthTokenService";
-	public static final String TOKEN_SERVICE = "labbookTokenService";
-	public static final String REST_CLIENT = "labbookRestClient";
-	public static final String PATIENT_SERVICE = "labbookPatientService";
+public record PatientDetResponse(
+	@JsonProperty("id_pat") Integer id
+) {
 
-	private LabBookBeanNames() {
-	}
 }

@@ -21,10 +21,11 @@
  */
 package org.isf.integrations.labbook.config;
 
+import org.isf.integrations.labbook.annotations.EnableLabBook;
 import org.isf.integrations.labbook.ports.IOauthTokenService;
+import org.isf.integrations.labbook.ports.IPatientService;
 import org.isf.integrations.labbook.services.ITokenService;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -41,7 +42,7 @@ import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 
 @Configuration
 @ConfigurationPropertiesScan("org.isf.integrations.labbook")
-@ConditionalOnProperty(name = "labbook.enabled", havingValue = "true")
+@EnableLabBook
 public class LabBookConfig {
 
 	/**
@@ -78,5 +79,18 @@ public class LabBookConfig {
 				return execution.execute(request, body);
 			})
 			.build();
+	}
+
+	/**
+	 * HttpExchange proxy for the LabBook patient API.
+	 *
+	 * <p>Backed by the authenticated {@code labbookRestClient} so every call
+	 * automatically carries an OAuth2 Bearer token.
+	 */
+	@Bean(LabBookBeanNames.PATIENT_SERVICE)
+	public IPatientService patientService(@Qualifier(LabBookBeanNames.REST_CLIENT) RestClient client) {
+		return HttpServiceProxyFactory.builderFor(
+			RestClientAdapter.create(client)
+		).build().createClient(IPatientService.class);
 	}
 }

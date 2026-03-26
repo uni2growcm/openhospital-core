@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -19,22 +19,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.isf.integrations.labbook.config;
+package org.isf.patient.model;
 
 /**
- * Constants for bean names used in the LabBook integration.
- * Used to avoid hardcoded bean names scattered across annotations.
+ * Spring application event published after a {@link Patient} is successfully persisted.
  *
- * @author Steve Tsala
+ * <p>Published by {@code PatientIoOperations} immediately after the database save completes,
+ * still within the same transaction. Listeners must not throw unchecked exceptions if the
+ * associated side-effect (e.g. external system sync) is non-critical — they should log and
+ * swallow to avoid rolling back the patient transaction.
+ *
+ * @param patient the patient that was just created or updated
+ * @param isNew   {@code true} when the patient was newly inserted; {@code false} for updates
  */
-public final class LabBookBeanNames {
-	public static final String LABBOOK_PROPERTIES = "labBookProperties";
-	public static final String OAUTH_REST_CLIENT = "labbookOauthRestClient";
-	public static final String OAUTH_TOKEN_SERVICE = "labbookOauthTokenService";
-	public static final String TOKEN_SERVICE = "labbookTokenService";
-	public static final String REST_CLIENT = "labbookRestClient";
-	public static final String PATIENT_SERVICE = "labbookPatientService";
+public record PatientCreatedOrUpdatedEvent(Patient patient, boolean isNew) {
 
-	private LabBookBeanNames() {
-	}
 }
