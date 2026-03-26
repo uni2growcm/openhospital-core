@@ -79,8 +79,18 @@ public class PatientMapper {
 	 * @return a fully populated {@link PatientDetRequest} ready to send to the LabBook API
 	 */
 	public PatientDetRequest toDetRequest(Patient patient) {
+		var bloodType = patient.getBloodType();
+
+		String bloodGroup = bloodType;
+		String bloodRhesus = null;
+
+		if(bloodType != null && (bloodType.contains("+") ||  bloodType.contains("-"))) {
+			bloodGroup = bloodType.substring(0, bloodType.length() - 1);
+			bloodRhesus = bloodType.substring(bloodType.length() - 1);
+		}
+
 		return new PatientDetRequest(
-			/* idUser         */ null,
+			/* idUser         */ 1, // If oh users are synced with labbook users, then this could be replaced by the current logged-in user
 			/* ano            */ null,
 			/* code           */ String.valueOf(patient.getCode()),
 			/* codeLab        */ null,
@@ -103,8 +113,8 @@ public class PatientMapper {
 			/* midname        */ null,
 			/* nationality    */ null,
 			/* resident       */ null,
-			/* bloodGroup     */ null,
-			/* bloodRhesus    */ null,
+			/* bloodGroup     */ bloodGroup,
+			/* bloodRhesus    */ bloodRhesus,
 			/* email          */ null,
 			/* agreement      */ null
 		);

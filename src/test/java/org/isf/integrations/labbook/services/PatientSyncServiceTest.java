@@ -21,16 +21,6 @@
  */
 package org.isf.integrations.labbook.services;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-
-import java.time.LocalDate;
-
 import org.isf.OpenHospitalCoreApplication;
 import org.isf.integrations.labbook.config.LabBookBeanNames;
 import org.isf.integrations.labbook.ports.IOauthTokenService;
@@ -46,6 +36,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.web.client.ResourceAccessException;
+
+import java.time.LocalDate;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 
 /**
  * Integration tests for {@link PatientSyncService}.
@@ -69,6 +67,7 @@ class PatientSyncServiceTest {
 		patient.setAddress("123 Main St");
 		patient.setCity("Testville");
 		patient.setTelephone("555-1234");
+		patient.setBloodType("AB+");
 		return patient;
 	}
 
@@ -95,7 +94,7 @@ class PatientSyncServiceTest {
 		private IPatientService patientService;
 
 		@Autowired
-		private PatientSyncService patientSyncService;
+		private IPatientSyncService patientSyncService;
 
 		private Patient patient;
 

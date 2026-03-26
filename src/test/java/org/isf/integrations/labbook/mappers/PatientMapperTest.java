@@ -21,10 +21,6 @@
  */
 package org.isf.integrations.labbook.mappers;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.time.LocalDate;
-
 import org.isf.OpenHospitalCoreApplication;
 import org.isf.integrations.labbook.models.PatientDetRequest;
 import org.isf.patient.model.Patient;
@@ -35,6 +31,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
+
+import java.time.LocalDate;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Unit tests for {@link PatientMapper}.
@@ -58,6 +58,7 @@ class PatientMapperTest {
 		patient.setAddress("123 Main St");
 		patient.setCity("Testville");
 		patient.setTelephone("555-1234");
+		patient.setBloodType("AB+");
 		return patient;
 	}
 
@@ -137,6 +138,15 @@ class PatientMapperTest {
 			PatientDetRequest request = patientMapper.toDetRequest(patient);
 
 			assertThat(request.birth()).isEqualTo(LocalDate.of(1990, 6, 15));
+		}
+
+		@Test
+		@DisplayName("Should map bloodType from patient to request")
+		void shouldMapBloodType() {
+			PatientDetRequest request = patientMapper.toDetRequest(patient);
+
+			assertThat(request.bloodGroup()).isEqualTo("AB");
+			assertThat(request.bloodRhesus()).isEqualTo("+");
 		}
 	}
 

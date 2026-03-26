@@ -64,8 +64,8 @@ public record PatientDetRequest(
 	@JsonProperty("pat_nationality") Integer nationality,
 	/** "Y" or "N" */
 	@JsonProperty("pat_resident") String resident,
-	@JsonProperty("pat_blood_group") Integer bloodGroup,
-	@JsonProperty("pat_blood_rhesus") Integer bloodRhesus,
+	@JsonProperty("pat_blood_group") String bloodGroup,
+	@JsonProperty("pat_blood_rhesus") String bloodRhesus,
 	@JsonProperty("pat_email") String email,
 	/** "Y" or "N" */
 	@JsonProperty("pat_agreement") String agreement
