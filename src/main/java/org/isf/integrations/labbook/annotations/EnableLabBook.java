@@ -19,20 +19,33 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.isf.integrations.labbook.services;
+package org.isf.integrations.labbook.annotations;
+
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+
+import java.lang.annotation.*;
 
 /**
- * Port interface for token management.
- * Provides access to OAuth tokens for LabBook API authentication.
+ * Meta-annotation that activates a bean only when the LabBook integration is enabled.
  *
- * @author Steve Tsala
+ * <p>Equivalent to:
+ * <pre>{@code @ConditionalOnProperty(name = "labbook.enabled", havingValue = "true")}</pre>
+ *
+ * <p>Apply to any {@code @Component}, {@code @Service}, {@code @Configuration} class,
+ * or {@code @Bean} factory method that should be absent from the Spring context when
+ * {@code labbook.enabled} is {@code false} or not set.
+ *
+ * <p>Example:
+ * <pre>{@code
+ * @Service
+ * @EnableLabBook
+ * public class MyLabBookService { ... }
+ * }</pre>
  */
-public interface ITokenService {
-	/**
-	 * Returns a valid access token for LabBook API calls.
-	 * Automatically refreshes the token if expired.
-	 *
-	 * @return valid OAuth access token
-	 */
-	String getAccessToken();
+@Target({ElementType.TYPE, ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@ConditionalOnProperty(name = "labbook.enabled", havingValue = "true")
+public @interface EnableLabBook {
+
 }

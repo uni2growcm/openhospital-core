@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -33,6 +33,9 @@ public final class LabBookBeanNames {
 	public static final String OAUTH_TOKEN_SERVICE = "labbookOauthTokenService";
 	public static final String TOKEN_SERVICE = "labbookTokenService";
 	public static final String REST_CLIENT = "labbookRestClient";
+	public static final String PATIENT_SERVICE = "labbookPatientService";
+	public static final String PATIENT_MAPPER = "labbookPatientMapper";
+
 	private LabBookBeanNames() {
 	}
 }

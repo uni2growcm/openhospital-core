@@ -19,20 +19,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.isf.integrations.labbook.services;
+package org.isf.integrations.labbook.models;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * Port interface for token management.
- * Provides access to OAuth tokens for LabBook API authentication.
+ * Request body for {@code POST /services/patient/list}.
+ *
+ * <p>Maps the {@code PatientListRequest} schema in the LabBook OpenAPI specification.
+ * Both filter fields are optional — when {@code null} they are omitted from the JSON body.
  *
  * @author Steve Tsala
  */
-public interface ITokenService {
+public record PatientListRequest(
+	String code,
+	@JsonProperty("code_lab") String codeLab
+) {
+
 	/**
-	 * Returns a valid access token for LabBook API calls.
-	 * Automatically refreshes the token if expired.
-	 *
-	 * @return valid OAuth access token
+	 * Convenience factory — list all patients without filters.
 	 */
-	String getAccessToken();
+	public static PatientListRequest listAll() {
+		return new PatientListRequest(null, null);
+	}
 }

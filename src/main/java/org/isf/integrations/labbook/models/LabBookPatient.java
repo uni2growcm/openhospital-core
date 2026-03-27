@@ -19,20 +19,44 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.isf.integrations.labbook.services;
+package org.isf.integrations.labbook.models;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.time.LocalDate;
 
 /**
- * Port interface for token management.
- * Provides access to OAuth tokens for LabBook API authentication.
+ * DTO representing a patient record returned by the LabBook API.
+ *
+ * <p>Maps the {@code Patient} schema defined in the LabBook OpenAPI specification
+ * (endpoints {@code GET /services/patient/det/{idPat}} and {@code POST /services/patient/list}).
  *
  * @author Steve Tsala
  */
-public interface ITokenService {
-	/**
-	 * Returns a valid access token for LabBook API calls.
-	 * Automatically refreshes the token if expired.
-	 *
-	 * @return valid OAuth access token
-	 */
-	String getAccessToken();
+public record LabBookPatient(
+	@JsonProperty("id_data") Integer idData,
+	@JsonProperty("id_owner") Integer idOwner,
+	String code,
+	@JsonProperty("code_lab") String codeLab,
+	String lastname,
+	String firstname,
+	String midname,
+	String maidenname,
+	LocalDate birth,
+	@JsonProperty("birth_approx") Integer birthApprox,
+	Integer sex,
+	String phone1,
+	String phone2,
+	String email,
+	String address,
+	String zipcode,
+	String city,
+	String suburb,
+	String job,
+	String pbox,
+	String resident,
+	Integer lite,
+	String agreement
+) {
+
 }

@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -19,20 +19,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.isf.integrations.labbook.services;
+package org.isf.patient.model;
 
 /**
- * Port interface for token management.
- * Provides access to OAuth tokens for LabBook API authentication.
+ * Spring application event published after a {@link Patient} is successfully persisted.
  *
- * @author Steve Tsala
+ * <p>Published by {@code PatientIoOperations} immediately after the database save completes,
+ * still within the same transaction. Listeners must not throw unchecked exceptions if the
+ * associated side-effect (e.g. external system sync) is non-critical — they should log and
+ * swallow to avoid rolling back the patient transaction.
+ *
+ * @param patient the patient that was just created or updated
+ * @param isNew   {@code true} when the patient was newly inserted; {@code false} for updates
  */
-public interface ITokenService {
-	/**
-	 * Returns a valid access token for LabBook API calls.
-	 * Automatically refreshes the token if expired.
-	 *
-	 * @return valid OAuth access token
-	 */
-	String getAccessToken();
+public record PatientCreatedOrUpdatedEvent(Patient patient, boolean isNew) {
+
 }

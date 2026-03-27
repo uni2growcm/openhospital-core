@@ -19,20 +19,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.isf.integrations.labbook.services;
+package org.isf.integrations.labbook.models;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * Port interface for token management.
- * Provides access to OAuth tokens for LabBook API authentication.
+ * DTO representing the response from {@code POST /services/patient/det/{idPat}}.
  *
  * @author Steve Tsala
  */
-public interface ITokenService {
-	/**
-	 * Returns a valid access token for LabBook API calls.
-	 * Automatically refreshes the token if expired.
-	 *
-	 * @return valid OAuth access token
-	 */
-	String getAccessToken();
+public record PatientDetResponse(
+	@JsonProperty("id_pat") Integer id
+) {
+
 }
