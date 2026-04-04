@@ -55,6 +55,7 @@ public final class GeneralData extends ConfigurationProperties {
 	public static String BILLSREPORTMONTHLY;
 	public static String PHARMACEUTICALORDER;
 	public static String PHARMACEUTICALSTOCK;
+	public static String PHARMACEUTICALSTOCKNOZERO;
 	public static String PHARMACEUTICALSTOCKLOT;
 	public static String PHARMACEUTICALAMC;
 	public static boolean PATIENTEXTENDED;
@@ -117,6 +118,7 @@ public final class GeneralData extends ConfigurationProperties {
 	private static final String DEFAULT_BILLSREPORTMONTHLY = "BillsReportMonthly";
 	private static final String DEFAULT_PHARMACEUTICALORDER = "PharmaceuticalOrder";
 	private static final String DEFAULT_PHARMACEUTICALSTOCK = "PharmaceuticalStock_ver4";
+	private static final String DEFAULT_PHARMACEUTICALSTOCKNOZERO = "PharmaceuticalStock_ver4_1";
 	private static final String DEFAULT_PHARMACEUTICALSTOCKLOT = "PharmaceuticalStock_ver5"; // TODO: verify if really used
 	private static final String DEFAULT_PHARMACEUTICALAMC = "PharmaceuticalAMC";
 	private static final boolean DEFAULT_PATIENTEXTENDED = false;
@@ -187,6 +189,7 @@ public final class GeneralData extends ConfigurationProperties {
 		BILLSREPORTMONTHLY = myGetProperty("BILLSREPORTMONTHLY", DEFAULT_BILLSREPORTMONTHLY);
 		PHARMACEUTICALORDER = myGetProperty("PHARMACEUTICALORDER", DEFAULT_PHARMACEUTICALORDER);
 		PHARMACEUTICALSTOCK = myGetProperty("PHARMACEUTICALSTOCK", DEFAULT_PHARMACEUTICALSTOCK);
+		PHARMACEUTICALSTOCKNOZERO = myGetProperty("PHARMACEUTICALSTOCKNOZERO", DEFAULT_PHARMACEUTICALSTOCKNOZERO);
 		PHARMACEUTICALSTOCKLOT = myGetProperty("PHARMACEUTICALSTOCKLOT", DEFAULT_PHARMACEUTICALSTOCKLOT);
 		PHARMACEUTICALAMC = myGetProperty("PHARMACEUTICALAMC", DEFAULT_PHARMACEUTICALAMC);
 		PATIENTEXTENDED = myGetProperty("PATIENTEXTENDED", DEFAULT_PATIENTEXTENDED);
