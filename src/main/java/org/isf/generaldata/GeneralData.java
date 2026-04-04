@@ -39,6 +39,8 @@ public final class GeneralData extends ConfigurationProperties {
 	public static boolean ALLOWBILLGUARANTOR;
 	public static boolean STOCKMVTONBILLSAVE;
 	public static String LANGUAGE;
+	public static boolean HIGHLIGHTEXPIRINGMEDICAL;
+	public static Integer HIGHLIGHTEXPIRINGMEDICALDAYS;
 	public static boolean AUTOMATICLOT_IN;
 	public static boolean AUTOMATICLOT_OUT;
 	public static boolean AUTOMATICLOTWARD_TOWARD;
@@ -102,6 +104,8 @@ public final class GeneralData extends ConfigurationProperties {
 	private static final String DEFAULT_MODE = "";
 	private static final boolean DEFAULT_DEMODATA = false;
 	private static final boolean DEFAULT_APISERVER = false;
+	private static final boolean DEFAULT_HIGHLIGHTEXPIRINGMEDICAL = false;
+	private static final Integer DEFAULT_HIGHLIGHTEXPIRINGMEDICALDAYS = 30;
 	private static final boolean DEFAULT_AUTOMATICLOT_IN = true;
 	private static final boolean DEFAULT_AUTOMATICLOT_OUT = true;
 	private static final boolean DEFAULT_AUTOMATICLOTWARD_TOWARD = true;
@@ -174,6 +178,8 @@ public final class GeneralData extends ConfigurationProperties {
 		APISERVER = myGetProperty("APISERVER", DEFAULT_APISERVER);
 		LANGUAGE = myGetProperty("LANGUAGE", DEFAULT_LANGUAGE);
 		AUTOMATICLOT_IN = myGetProperty("AUTOMATICLOT_IN", DEFAULT_AUTOMATICLOT_IN);
+		HIGHLIGHTEXPIRINGMEDICAL = myGetProperty("HIGHLIGHTEXPIRINGMEDICAL", DEFAULT_HIGHLIGHTEXPIRINGMEDICAL);
+		HIGHLIGHTEXPIRINGMEDICALDAYS = myGetProperty("HIGHLIGHTEXPIRINGMEDICALDAYS", DEFAULT_HIGHLIGHTEXPIRINGMEDICALDAYS);
 		AUTOMATICLOT_OUT = myGetProperty("AUTOMATICLOT_OUT", DEFAULT_AUTOMATICLOT_OUT);
 		AUTOMATICLOTWARD_TOWARD = myGetProperty("AUTOMATICLOTWARD_TOWARD", DEFAULT_AUTOMATICLOTWARD_TOWARD);
 		LOTWITHCOST = myGetProperty("LOTWITHCOST", DEFAULT_LOTWITHCOST);
