@@ -24,6 +24,7 @@ package org.isf.integrations.labbook.services;
 import org.isf.integrations.labbook.annotations.EnableLabBook;
 import org.isf.integrations.labbook.config.LabBookBeanNames;
 import org.isf.integrations.labbook.mappers.PatientMapper;
+import org.isf.integrations.labbook.models.PatientAnalysisResponse;
 import org.isf.integrations.labbook.ports.IPatientService;
 import org.isf.patient.model.Patient;
 import org.isf.patient.model.PatientCreatedOrUpdatedEvent;
@@ -75,6 +76,15 @@ public class PatientSyncService implements IPatientSyncService {
 		} catch (RestClientException ex) {
 			LOGGER.warn("LabBook patient sync failed for patient code={}: {}",
 				patient.getCode(), ex.getMessage());
+		}
+	}
+
+	public PatientAnalysisResponse getPatientAnalysis(Integer id) {
+		try {
+			return patientService.getPatientAnalysis(id);
+		} catch (RestClientException ex) {
+			LOGGER.error("Failed to retrieve patient analysis for id={}", id, ex);
+			throw new RuntimeException("Failed to retrieve patient analysis", ex);
 		}
 	}
 }

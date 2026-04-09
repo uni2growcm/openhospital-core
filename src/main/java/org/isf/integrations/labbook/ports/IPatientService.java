@@ -22,6 +22,7 @@
 package org.isf.integrations.labbook.ports;
 
 import org.isf.integrations.labbook.models.LabBookPatient;
+import org.isf.integrations.labbook.models.PatientAnalysisResponse;
 import org.isf.integrations.labbook.models.PatientDetRequest;
 import org.isf.integrations.labbook.models.PatientDetResponse;
 import org.isf.integrations.labbook.models.PatientListRequest;
@@ -85,4 +86,7 @@ public interface IPatientService {
 	 */
 	@PostExchange("/list")
 	List<LabBookPatient> listPatients(@RequestBody PatientListRequest request);
+
+	@GetExchange("/historic/{id}")
+	PatientAnalysisResponse getPatientAnalysis(@PathVariable Integer id);
 }
