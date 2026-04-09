@@ -24,9 +24,12 @@ package org.isf.integrations.labbook.services;
 import org.isf.integrations.labbook.annotations.EnableLabBook;
 import org.isf.integrations.labbook.config.LabBookBeanNames;
 import org.isf.integrations.labbook.mappers.PatientMapper;
+import org.isf.integrations.labbook.models.PatientDetResponse;
 import org.isf.integrations.labbook.ports.IPatientService;
 import org.isf.patient.model.Patient;
 import org.isf.patient.model.PatientCreatedOrUpdatedEvent;
+import org.isf.patient.service.PatientIoOperations;
+import org.isf.utils.exception.OHServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -48,12 +51,14 @@ public class PatientSyncService implements IPatientSyncService {
 
 	private final IPatientService patientService;
 	private final PatientMapper patientMapper;
+	private final PatientIoOperations patientIoOperations;
 
 	public PatientSyncService(
 		@Qualifier(LabBookBeanNames.PATIENT_SERVICE) IPatientService patientService,
-		@Qualifier(LabBookBeanNames.PATIENT_MAPPER) PatientMapper patientMapper) {
+		@Qualifier(LabBookBeanNames.PATIENT_MAPPER) PatientMapper patientMapper, PatientIoOperations patientIoOperations) {
 		this.patientService = patientService;
 		this.patientMapper = patientMapper;
+		this.patientIoOperations = patientIoOperations;
 	}
 
 	@Override
@@ -69,12 +74,22 @@ public class PatientSyncService implements IPatientSyncService {
 			return;
 		}
 		try {
-			patientService.saveOrUpdatePatient(0, patientMapper.toDetRequest(patient));
+			PatientDetResponse result = patientService.saveOrUpdatePatient(0, patientMapper.toDetRequest(patient));
+			if (result != null) {
+				if (patient.getLabBookId() != null) {
+					return;
+				}
+
+				patient.setLabBookId(result.id());
+				patientIoOperations.updatePatient(patient);
+			}
 			LOGGER.debug("LabBook patient sync succeeded for patient code={} (isNew={})",
 				patient.getCode(), true);
 		} catch (RestClientException ex) {
 			LOGGER.warn("LabBook patient sync failed for patient code={}: {}",
 				patient.getCode(), ex.getMessage());
+		} catch (OHServiceException e) {
+			throw new RuntimeException(e);
 		}
 	}
 }
