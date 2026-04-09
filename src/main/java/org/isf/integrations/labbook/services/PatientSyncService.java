@@ -70,7 +70,7 @@ public class PatientSyncService implements IPatientSyncService {
 			return;
 		}
 		try {
-			Integer labBookID = patient.getLabBookId() != null ? patient.getLabBookId() : (patient.getLabBookId() == null && event.isNew()) ? 0 : null;
+			Integer labBookID = event.isNew() ? 0 : patient.getLabBookId();
 
 			if (labBookID != null) {
 				PatientDetResponse result =
@@ -95,7 +95,7 @@ public class PatientSyncService implements IPatientSyncService {
 			LOGGER.warn("LabBook patient sync failed for patient code={}: {}",
 				patient.getCode(), ex.getMessage());
 		} catch (OHServiceException e) {
-			throw new RuntimeException(e);
+			LOGGER.warn("LabBook patient sync failed for patient");
 		}
 	}
 }
