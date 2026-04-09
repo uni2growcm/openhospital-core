@@ -24,6 +24,7 @@ package org.isf.integrations.labbook.config;
 import org.isf.integrations.labbook.annotations.EnableLabBook;
 import org.isf.integrations.labbook.ports.IOauthTokenService;
 import org.isf.integrations.labbook.ports.IPatientService;
+import org.isf.integrations.labbook.ports.IReportService;
 import org.isf.integrations.labbook.services.ITokenService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
@@ -95,5 +96,17 @@ public class LabBookConfig {
 		return HttpServiceProxyFactory.builderFor(
 			RestClientAdapter.create(client)
 		).build().createClient(IPatientService.class);
+	}
+
+	/**
+	 * HttpExchange proxy for the LabBook report generation API.
+	 *
+	 * <p>Backed by the authenticated {@code labbookRestClient} (with JSON content type).
+	 */
+	@Bean(LabBookBeanNames.REPORT_SERVICE)
+	public IReportService reportService(@Qualifier(LabBookBeanNames.REST_CLIENT) RestClient client) {
+		return HttpServiceProxyFactory.builderFor(
+			RestClientAdapter.create(client)
+		).build().createClient(IReportService.class);
 	}
 }
