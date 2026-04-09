@@ -64,25 +64,31 @@ public class PatientSyncService implements IPatientSyncService {
 	@Override
 	@EventListener
 	public void onPatientCreatedOrUpdated(PatientCreatedOrUpdatedEvent event) {
-		if (!event.isNew()) {
-			LOGGER.debug("Passthrough");
-			return;
-		}
 		Patient patient = event.patient();
 		if (patient == null || patient.getCode() == null) {
 			LOGGER.warn("LabBook patient sync skipped: patient or code is null");
 			return;
 		}
 		try {
-			PatientDetResponse result = patientService.saveOrUpdatePatient(0, patientMapper.toDetRequest(patient));
-			if (result != null) {
-				if (patient.getLabBookId() != null) {
-					return;
-				}
+			Integer labBookID = patient.getLabBookId() != null ? patient.getLabBookId() : (patient.getLabBookId() == null && event.isNew()) ? 0 : null;
 
-				patient.setLabBookId(result.id());
-				patientIoOperations.updatePatient(patient);
+			if (labBookID != null) {
+				PatientDetResponse result =
+					patientService.saveOrUpdatePatient(
+						labBookID,
+						patientMapper.toDetRequest(patient)
+					);
+
+				if (result != null) {
+					if (patient.getLabBookId() != null) {
+						return;
+					}
+
+					patient.setLabBookId(result.id());
+					patientIoOperations.updatePatient(patient);
+				}
 			}
+
 			LOGGER.debug("LabBook patient sync succeeded for patient code={} (isNew={})",
 				patient.getCode(), true);
 		} catch (RestClientException ex) {
