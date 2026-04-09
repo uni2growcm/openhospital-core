@@ -70,7 +70,7 @@ public class PatientSyncService implements IPatientSyncService {
 			return;
 		}
 		try {
-			Integer labBookID = event.isNew() ? 0 : patient.getLabBookId();
+			Integer labBookID = event.isNew() ? Integer.valueOf(0) : patient.getLabBookId();
 
 			if (labBookID != null) {
 				PatientDetResponse result =
