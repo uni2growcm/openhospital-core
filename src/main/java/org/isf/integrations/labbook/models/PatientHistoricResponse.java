@@ -22,36 +22,21 @@
 package org.isf.integrations.labbook.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.List;
 
 /**
- * DTO representing an analysis from LabBook patient history.
- * Retrieved from {@code GET /services/patient/historic/{idPat}}.
+ * DTO representing the full response from {@code GET /services/patient/historic/{id}}.
  *
- * @param idRecord        Record identifier
- * @param recordType      Record type (e.g., "E" for exam)
- * @param prescriptionDate   Prescription date (YYYY-MM-DD)
- * @param analysis     Analysis name
- * @param recordNumber       Record number
- * @param variable     Variable name of the analysis
- * @param result       Result value
+ * @param patient   Patient information
+ * @param analyzes  List of analyses for the patient
  *
  * @author Duval Donfack
  */
-public record PatientAnalysisResponse(
+public record PatientHistoricResponse(
 
-	@JsonProperty("id_rec") Integer idRecord,
+	@JsonProperty("patient") LabBookPatient patient,
 
-	@JsonProperty("type_rec") String recordType,
-
-	@JsonProperty("date_prescr") String prescriptionDate,
-
-	@JsonProperty("analysis") String analysis,
-
-	@JsonProperty("rec_num") String recordNumber,
-
-	@JsonProperty String variable,
-
-	@JsonProperty String result
+	@JsonProperty("analyzes") List<PatientAnalysisResponse> analyzes
 
 ) {
 }

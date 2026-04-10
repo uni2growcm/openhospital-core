@@ -21,7 +21,11 @@
  */
 package org.isf.integrations.labbook.services;
 
+import org.isf.integrations.labbook.models.PatientAnalysisResponse;
 import org.isf.patient.model.PatientCreatedOrUpdatedEvent;
+import org.isf.utils.exception.OHException;
+
+import java.util.List;
 
 /**
  * Contract for synchronising Open Hospital patient data with the LabBook system.
@@ -56,4 +60,13 @@ public interface IPatientSyncService {
 	 *              whether it was newly inserted ({@code isNew=true}) or updated ({@code isNew=false})
 	 */
 	void onPatientCreatedOrUpdated(PatientCreatedOrUpdatedEvent event);
+
+	/**
+	 * Retrieves the analysis history for a specific patient from LabBook.
+	 *
+	 * @param patientId the LabBook patient identifier (id_data)
+	 * @return a list of analyses for the patient
+	 * @throws OHException if the request fails
+	 */
+	List<PatientAnalysisResponse> getPatientAnalysis(Integer patientId) throws OHException;
 }
