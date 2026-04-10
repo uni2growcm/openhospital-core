@@ -27,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * DTO representing an analysis from LabBook patient history.
  * Retrieved from {@code GET /services/patient/historic/{idPat}}.
  *
- * @param idRecord        Record identifier
+ * @param id        Record identifier
  * @param recordType      Record type (e.g., "E" for exam)
  * @param prescriptionDate   Prescription date (YYYY-MM-DD)
  * @param analysis     Analysis name
@@ -37,9 +37,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *
  * @author Duval Donfack
  */
-public record PatientAnalysisResponse(
+public record AnalysisResponse(
 
-	@JsonProperty("id_rec") Integer idRecord,
+	@JsonProperty("id_rec") Integer id,
 
 	@JsonProperty("type_rec") String recordType,
 

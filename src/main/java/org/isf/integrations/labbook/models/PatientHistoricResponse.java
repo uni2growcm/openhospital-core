@@ -34,9 +34,9 @@ import java.util.List;
  */
 public record PatientHistoricResponse(
 
-	@JsonProperty("patient") LabBookPatient patient,
+	@JsonProperty LabbookRawPatient patient,
 
-	@JsonProperty("analyzes") List<PatientAnalysisResponse> analyzes
+	@JsonProperty List<AnalysisResponse> analyzes
 
 ) {
 }

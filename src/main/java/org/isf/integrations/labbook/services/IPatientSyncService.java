@@ -21,7 +21,7 @@
  */
 package org.isf.integrations.labbook.services;
 
-import org.isf.integrations.labbook.models.PatientAnalysisResponse;
+import org.isf.integrations.labbook.models.PatientHistoricResponse;
 import org.isf.patient.model.PatientCreatedOrUpdatedEvent;
 import org.isf.utils.exception.OHException;
 
@@ -62,11 +62,11 @@ public interface IPatientSyncService {
 	void onPatientCreatedOrUpdated(PatientCreatedOrUpdatedEvent event);
 
 	/**
-	 * Retrieves the analysis history for a specific patient from LabBook.
+	 * Retrieves the complete patient history including patient info and analyses from LabBook.
 	 *
 	 * @param patientId the LabBook patient identifier (id_data)
-	 * @return a list of analyses for the patient
+	 * @return complete patient history with patient details and analyses list
 	 * @throws OHException if the request fails
 	 */
-	List<PatientAnalysisResponse> getPatientAnalysis(Integer patientId) throws OHException;
+	PatientHistoricResponse getPatientAnalysis(Integer patientId) throws OHException;
 }

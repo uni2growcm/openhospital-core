@@ -24,7 +24,6 @@ package org.isf.integrations.labbook.services;
 import org.isf.integrations.labbook.annotations.EnableLabBook;
 import org.isf.integrations.labbook.config.LabBookBeanNames;
 import org.isf.integrations.labbook.mappers.PatientMapper;
-import org.isf.integrations.labbook.models.PatientAnalysisResponse;
 import org.isf.integrations.labbook.models.PatientHistoricResponse;
 import org.isf.integrations.labbook.models.PatientDetResponse;
 import org.isf.integrations.labbook.ports.IPatientService;
@@ -105,11 +104,15 @@ public class PatientSyncService implements IPatientSyncService {
 	}
 
 	@Override
-	public List<PatientAnalysisResponse> getPatientAnalysis(Integer patientId) throws OHException {
+	public PatientHistoricResponse getPatientAnalysis(Integer patientId) throws OHException {
+		LOGGER.debug("getPatientAnalysis() called for patientId={}", patientId);
 		try {
 			PatientHistoricResponse response = patientService.getPatientHistory(patientId);
-			return response != null ? response.analyzes() : List.of();
+			LOGGER.debug("getPatientAnalysis() completed, found {} analyses",
+				response != null && response.analyzes() != null ? response.analyzes().size() : 0);
+			return response;
 		} catch (Exception e) {
+			LOGGER.error("Failed to retrieve patient analysis for patientId={}", patientId, e);
 			throw new OHException("Failed to retrieve patient analysis", e);
 		}
 	}
