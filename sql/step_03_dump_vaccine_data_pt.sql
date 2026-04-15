@@ -1,14 +1,14 @@
-delete from OH_VACCINE;
-delete from OH_VACCINETYPE;
+delete from oh_vaccine;
+delete from oh_vaccinetype;
 
--- VACCINETYPE
-LOAD DATA LOCAL INFILE './data_pt/vaccinetype.csv'
-	INTO TABLE OH_VACCINETYPE
-	FIELDS TERMINATED BY ';' 
-	LINES TERMINATED BY '\n';
+-- vaccinetype
+load data local infile './data_pt/vaccinetype.csv'
+	into table oh_vaccinetype
+	fields terminated by ';' 
+	lines terminated by '\n';
 	
--- VACCINE
-LOAD DATA LOCAL INFILE './data_pt/vaccine.csv'
-	INTO TABLE OH_VACCINE
-	FIELDS TERMINATED BY ';' 
-	LINES TERMINATED BY '\n';
+-- vaccine
+load data local infile './data_pt/vaccine.csv'
+	into table oh_vaccine
+	fields terminated by ';' 
+	lines terminated by '\n';

@@ -1,13 +1,13 @@
--- Change PAT_BDATE from VARCHAR(50) to DATE
--- Needed conversion from LONG (old values) to DATE
-ALTER TABLE PATIENT ADD TEMP_BDATE DATE AFTER PAT_NAME;
+-- change pat_bdate from varchar(50) to date
+-- Needed conversion from lonG (old values) to date
+alter table patient add temp_bdate date after pat_name;
 
-UPDATE PATIENT SET TEMP_BDATE = CASE PAT_BDATE 
-WHEN NULL THEN NULL 
-WHEN "" THEN NULL
-WHEN "-" THEN NULL
-ELSE DATE(FROM_UNIXTIME(PAT_BDATE/1000)) END;
+update patient set temp_bdate = case pat_bdate 
+when null then null 
+when "" then null
+when "-" then null
+else date(from_unixtime(pat_bdate/1000)) end;
 
-ALTER TABLE PATIENT DROP PAT_BDATE;
+alter table patient drop pat_bdate;
 
-ALTER TABLE PATIENT CHANGE TEMP_BDATE PAT_BDATE DATE;
+alter table patient change temp_bdate pat_bdate date;

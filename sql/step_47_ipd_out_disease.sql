@@ -1,3 +1,3 @@
-ALTER TABLE DISEASE ADD COLUMN DIS_IPD_OUT_INCLUDE INT(11) NOT NULL DEFAULT '0' AFTER DIS_IPD_IN_INCLUDE, CHANGE COLUMN DIS_IPD_INCLUDE DIS_IPD_IN_INCLUDE INT(11) NOT NULL DEFAULT '0';
+alter table disease add column dis_ipd_out_include int(11) not null default '0' after dis_ipd_in_include, change column dis_ipd_include dis_ipd_in_include int(11) not null default '0';
 
-UPDATE DISEASE SET DIS_IPD_OUT_INCLUDE = 1 WHERE DIS_IPD_IN_INCLUDE = 1;
+update disease set dis_ipd_out_include = 1 where dis_ipd_in_include = 1;

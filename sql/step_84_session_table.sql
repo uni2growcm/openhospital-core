@@ -1,13 +1,13 @@
-CREATE TABLE OH_SESSION_AUDIT (
-  SEA_ID INT(11) NOT NULL AUTO_INCREMENT,
-  SEA_US_ID_A VARCHAR(50) NOT NULL,
-  SEA_LOGIN datetime NOT NULL,
-  SEA_LOGOUT datetime NULL,
-  SEA_CREATED_BY VARCHAR(50) NULL DEFAULT NULL,
-  SEA_CREATED_DATE datetime NULL DEFAULT NULL,
-  SEA_LAST_MODIFIED_BY VARCHAR(50) NULL DEFAULT NULL,
-  SEA_LAST_MODIFIED_DATE datetime NULL DEFAULT NULL,
-  SEA_ACTIVE TINYINT(1) NOT NULL DEFAULT 1,
-  PRIMARY KEY (SEA_ID),
-  FOREIGN KEY (SEA_US_ID_A) REFERENCES OH_USER (US_ID_A)
-) ENGINE = INNODB DEFAULT CHARACTER SET utf8;
+create table oh_session_audit (
+  sea_id int(11) not null auto_increment,
+  sea_us_id_a varchar(50) not null,
+  sea_login datetime not null,
+  sea_logout datetime null,
+  sea_created_by varchar(50) null default null,
+  sea_created_date datetime null default null,
+  sea_last_modified_by varchar(50) null default null,
+  sea_last_modified_date datetime null default null,
+  sea_active tinyint(1) not null default 1,
+  primary key (sea_id),
+  foreign key (sea_us_id_a) references oh_user (us_id_a)
+) engine = innodb default character set utf8;

@@ -1,21 +1,21 @@
 --
--- Definition of table MEDICALSRSTOCKMOV_N
+-- Definition of table medicalsrstockmov_n
 --
 
-DROP TABLE IF EXISTS MEDICALSRSTOCKMOV_N;
-CREATE TABLE  MEDICALSRSTOCKMOV_N (
-  MMVN_ID int(10) NOT NULL auto_increment,
-  MMVN_WRD_ID_A char(1) NOT NULL,
-  MMVN_DATE datetime NOT NULL,
-  MMVN_PAT_ID varchar(100) character set latin1 NOT NULL,
-  MMVN_MDSR_ID varchar(100) character set latin1 NOT NULL,
-  MMVN_MDSR_QTY int(10) NOT NULL,
-  MMVN_MDSR_UNITS varchar(10) NOT NULL,
-  PRIMARY KEY  USING BTREE (MMVN_ID)
-) ENGINE=MyISAM;
+drop table if exists medicalsrstockmov_n;
+create table  medicalsrstockmov_n (
+  mmvn_id int(10) not null auto_increment,
+  mmvn_wrd_id_a char(1) not null,
+  mmvn_date datetime not null,
+  mmvn_pat_id varchar(100) character set latin1 not null,
+  mmvn_mdsr_id varchar(100) character set latin1 not null,
+  mmvn_mdsr_qty int(10) not null,
+  mmvn_mdsr_units varchar(10) not null,
+  primary key  using btree (mmvn_id)
+) engine=MyISAM;
 
-INSERT INTO MENUITEM VALUES ('medicalsward', 'angal.menu.btn.medicalsward', 'angal.menu.medicalsward', 'x', 'W', 'pharmacy', 'org.isf.medicalstockward.gui.WardPharmacy','N', 2);
+insert into menuitem values ('medicalsward', 'angal.menu.btn.medicalsward', 'angal.menu.medicalsward', 'x', 'W', 'pharmacy', 'org.isf.medicalstockward.gui.WardPharmacy','N', 2);
 
 -- Functionality initially disabled. Put 'Y' to activate it
 
-INSERT INTO GROUPMENU (GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE) VALUES ('admin','medicalsward','Y');
+insert into groupmenu (gm_ug_id_a, gm_mni_id_a, gm_active) values ('admin','medicalsward','Y');

@@ -1,31 +1,31 @@
-DROP TABLE IF EXISTS THERAPIES;
-CREATE TABLE  THERAPIES (
-  THR_ID int(11) NOT NULL AUTO_INCREMENT,
-  THR_CODE int(11) NOT NULL,
-  THR_PAT_ID int(11) NOT NULL,
-  THR_STARTDATE datetime NOT NULL,
-  THR_ENDDATE datetime NOT NULL,
-  THR_MDSR_ID int(11) NOT NULL,
-  THR_QTY double NOT NULL,
-  THR_UNT_ID int(11) NOT NULL,
-  THR_FREQINDAY int(11) NOT NULL,
-  THR_FREQINPRD int(11) NOT NULL,
-  THR_NOTE text,
-  THR_NOTIFY tinyint(1) NOT NULL DEFAULT '0',
-  THR_SMS tinyint(1) NOT NULL DEFAULT '0',
-  PRIMARY KEY (THR_ID)
-) ENGINE=MyISAM;
+drop table if exists therapies;
+create table  therapies (
+  thr_id int(11) not null auto_increment,
+  thr_code int(11) not null,
+  thr_pat_id int(11) not null,
+  thr_startdate datetime not null,
+  thr_enddate datetime not null,
+  thr_mdsr_id int(11) not null,
+  thr_qty double not null,
+  thr_unt_id int(11) not null,
+  thr_freqinday int(11) not null,
+  thr_freqinprd int(11) not null,
+  thr_note text,
+  thr_notify tinyint(1) not null default '0',
+  thr_sms tinyint(1) not null default '0',
+  primary key (thr_id)
+) engine=MyISAM;
 
-DROP TABLE IF EXISTS VISITS;
-CREATE TABLE VISITS (
-  VST_ID int(11) NOT NULL AUTO_INCREMENT,
-  VST_PAT_ID int(11) NOT NULL,
-  VST_DATE datetime NOT NULL,
-  VST_NOTE text,
-  PRIMARY KEY (VST_ID)
-) ENGINE=MyISAM;
+drop table if exists visits;
+create table visits (
+  vst_id int(11) not null auto_increment,
+  vst_pat_id int(11) not null,
+  vst_date datetime not null,
+  vst_note text,
+  primary key (vst_id)
+) engine=MyISAM;
 
-INSERT INTO MENUITEM VALUES ('btnadmtherapy','angal.admission.therapy','angal.admission.therapy','x','T','admission','none','N',6);
+insert into menuitem values ('btnadmtherapy','angal.admission.therapy','angal.admission.therapy','x','T','admission','none','N',6);
 
-INSERT INTO GROUPMENU (GM_UG_ID_A, GM_MNI_ID_A,  GM_ACTIVE) VALUES ('admin','btnadmtherapy','Y');
+insert into groupmenu (gm_ug_id_a, gm_mni_id_a,  gm_active) values ('admin','btnadmtherapy','Y');
 

@@ -1,17 +1,17 @@
 --
 -- Instead of manipulating and resorting system global variables just
--- drop and regenerate the offending Foreign Key constraint.
+-- drop and regenerate the offending foreign key constraint.
 -- This makes the script database version independent.
 -- See OP-1335  (https://openhospital.atlassian.net/browse/OP-1335)
 --
-ALTER TABLE OH_DICOM DROP FOREIGN KEY FK_DICOM_DICOMTYPE;
+alter table oh_dicom drop foreign key fk_dicom_dicomtype;
 
-ALTER TABLE OH_DICOM ENGINE = INNODB, CONVERT TO CHARACTER SET utf8;
-ALTER TABLE OH_DICOMTYPE ENGINE = INNODB, CONVERT TO CHARACTER SET utf8;
+alter table oh_dicom engine = innodb, convert to character set utf8;
+alter table oh_dicomtype engine = innodb, convert to character set utf8;
 
-ALTER TABLE OH_DICOM
-    ADD CONSTRAINT FK_DICOM_DICOMTYPE
-        FOREIGN KEY (DM_DCMT_ID)
-            REFERENCES OH_DICOMTYPE (DCMT_ID)
-            ON DELETE NO ACTION
-            ON UPDATE NO ACTION;
+alter table oh_dicom
+    add constraint fk_dicom_dicomtype
+        foreign key (dm_dcmt_id)
+            references oh_dicomtype (dcmt_id)
+            on delete no action
+            on update no action;

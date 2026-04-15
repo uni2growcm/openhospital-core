@@ -1,8 +1,8 @@
-ALTER TABLE OH_ADMISSION 
-DROP FOREIGN KEY FK_ADMISSION_OPERATION;
+alter table oh_admission 
+drop foreign key fk_admission_operation;
 
-ALTER TABLE OH_ADMISSION 
-DROP COLUMN ADM_RESOP,
-DROP COLUMN ADM_DATE_OP,
-DROP COLUMN ADM_OPE_ID_A,
-DROP INDEX FK_ADMISSION_OPERATION;
+alter table oh_admission 
+drop column adm_resop,
+drop column adm_date_op,
+drop column adm_ope_id_a,
+drop index fk_admission_operation;

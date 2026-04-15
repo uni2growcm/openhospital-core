@@ -1,2 +1,2 @@
-ALTER TABLE PATIENT ADD COLUMN PAT_PROFESSION varchar(50) NOT NULL DEFAULT 'unknown';
-ALTER TABLE PATIENT ADD COLUMN PAT_MAR_STAT varchar(50) NOT NULL DEFAULT 'unknown';
+alter table patient add column pat_profession varchar(50) not null default 'unknown';
+alter table patient add column pat_mar_stat varchar(50) not null default 'unknown';

@@ -1,125 +1,125 @@
 -- version 10-06-2014
-delete from HOSPITAL;
-delete from MEDICALDSR;
-delete from MEDICALDSRTYPE;
-delete from MEDICALDSRSTOCKMOVTYPE;
-delete from DELIVERYTYPE;
-delete from DELIVERYRESULTTYPE;
-delete from PREGNANTTREATMENTTYPE;
-delete from EXAMROW;
-delete from EXAM;
-delete from EXAMTYPE;
-delete from OPERATION;
-delete from OPERATIONTYPE;
-delete from DISEASE;
-delete from DISEASETYPE;
-delete from VACCINE;
-delete from ADMISSIONTYPE;
-delete from DISCHARGETYPE;
-delete from WARD;
+delete from hospital;
+delete from medicaldsr;
+delete from medicaldsrtype;
+delete from medicaldsrstockmovtype;
+delete from deliverytype;
+delete from deliveryresulttype;
+delete from pregnanttreatmenttype;
+delete from examrow;
+delete from exam;
+delete from examtype;
+delete from operation;
+delete from operationtype;
+delete from disease;
+delete from diseasetype;
+delete from vaccine;
+delete from admissiontype;
+delete from dischargetype;
+delete from ward;
 
--- HOSPITAL
-INSERT INTO HOSPITAL (HOS_ID_A,HOS_NAME,HOS_ADDR,HOS_CITY,HOS_TELE,HOS_FAX,HOS_EMAIL,HOS_LOCK) VALUES 
- ('STLUKE','St. Luke HOSPITAL - Angal','P.O. BOX 85 - NEBBI','ANGAL','+256 0472621076','+256 0','angal@ucmb.ug.co.',0);
+-- hospital
+insert into hospital (hos_id_a,hos_name,hos_addr,hos_city,hos_tele,hos_fax,hos_email,hos_lock) values 
+ ('stluke','St. Luke hospital - Angal','P.O. box 85 - nebbi','angal','+256 0472621076','+256 0','angal@ucmb.ug.co.',0);
 
--- MEDICALDSRTYPE
-LOAD DATA LOCAL INFILE './data_al/medicaldsrtype.csv'
-	INTO TABLE MEDICALDSRTYPE 
-	FIELDS TERMINATED BY ';' 
-	LINES TERMINATED BY '\n';
+-- medicaldsrtype
+load data local infile './data_al/medicaldsrtype.csv'
+	into table medicaldsrtype 
+	fields terminated by ';' 
+	lines terminated by '\n';
 
--- MEDICALDSRSTOCKMOVTYPE
-LOAD DATA LOCAL INFILE './data_al/medicaldsrstockmovtype.csv'
-	INTO TABLE MEDICALDSRSTOCKMOVTYPE 
-	FIELDS TERMINATED BY ';' 
-	LINES TERMINATED BY '\n';
+-- medicaldsrstockmovtype
+load data local infile './data_al/medicaldsrstockmovtype.csv'
+	into table medicaldsrstockmovtype 
+	fields terminated by ';' 
+	lines terminated by '\n';
 
--- DELIVERYTYPE
-LOAD DATA LOCAL INFILE './data_al/deliverytype.csv'
-	INTO TABLE DELIVERYTYPE 
-	FIELDS TERMINATED BY ';' 
-	LINES TERMINATED BY '\n';
+-- deliverytype
+load data local infile './data_al/deliverytype.csv'
+	into table deliverytype 
+	fields terminated by ';' 
+	lines terminated by '\n';
 
--- DELIVERYRESULTTYPE
-LOAD DATA LOCAL INFILE './data_al/deliveryresulttype.csv'
-	INTO TABLE DELIVERYRESULTTYPE 
-	FIELDS TERMINATED BY ';' 
-	LINES TERMINATED BY '\n';
+-- deliveryresulttype
+load data local infile './data_al/deliveryresulttype.csv'
+	into table deliveryresulttype 
+	fields terminated by ';' 
+	lines terminated by '\n';
 
--- PREGNANTTREATMENTTYPE
-LOAD DATA LOCAL INFILE './data_al/pregnanttreatmenttype.csv'
-	INTO TABLE PREGNANTTREATMENTTYPE 
-	FIELDS TERMINATED BY ';' 
-	LINES TERMINATED BY '\n';
+-- pregnanttreatmenttype
+load data local infile './data_al/pregnanttreatmenttype.csv'
+	into table pregnanttreatmenttype 
+	fields terminated by ';' 
+	lines terminated by '\n';
 
--- EXAMTYPE
-LOAD DATA LOCAL INFILE './data_al/examtype.csv'
-	INTO TABLE EXAMTYPE 
-	FIELDS TERMINATED BY ';' 
-	LINES TERMINATED BY '\n';
+-- examtype
+load data local infile './data_al/examtype.csv'
+	into table examtype 
+	fields terminated by ';' 
+	lines terminated by '\n';
 
--- EXAM
-LOAD DATA LOCAL INFILE './data_al/exam.csv'
-	INTO TABLE EXAM 
-	FIELDS TERMINATED BY ';' 
-	LINES TERMINATED BY '\n';
+-- exam
+load data local infile './data_al/exam.csv'
+	into table exam 
+	fields terminated by ';' 
+	lines terminated by '\n';
 
--- EXAMROW
-LOAD DATA LOCAL INFILE './data_al/examrow.csv'
-	INTO TABLE EXAMROW 
-	FIELDS TERMINATED BY ';' 
-	LINES TERMINATED BY '\n';
+-- examrow
+load data local infile './data_al/examrow.csv'
+	into table examrow 
+	fields terminated by ';' 
+	lines terminated by '\n';
 
--- OPERATIONTYPE
-LOAD DATA LOCAL INFILE './data_al/operationtype.csv'
-	INTO TABLE OPERATIONTYPE 
-	FIELDS TERMINATED BY ';' 
-	LINES TERMINATED BY '\n';
+-- operationtype
+load data local infile './data_al/operationtype.csv'
+	into table operationtype 
+	fields terminated by ';' 
+	lines terminated by '\n';
 
--- VACCINE
-LOAD DATA LOCAL INFILE './data_al/vaccine.csv'
-	INTO TABLE VACCINE 
-	FIELDS TERMINATED BY ';' 
-	LINES TERMINATED BY '\n';
+-- vaccine
+load data local infile './data_al/vaccine.csv'
+	into table vaccine 
+	fields terminated by ';' 
+	lines terminated by '\n';
 
--- ADMISSIONTYPE
-LOAD DATA LOCAL INFILE './data_al/admissiontype.csv'
-	INTO TABLE ADMISSIONTYPE 
-	FIELDS TERMINATED BY ';' 
-	LINES TERMINATED BY '\n';
+-- admissiontype
+load data local infile './data_al/admissiontype.csv'
+	into table admissiontype 
+	fields terminated by ';' 
+	lines terminated by '\n';
 
--- DISCHARGETYPE
-LOAD DATA LOCAL INFILE './data_al/dischargetype.csv'
-	INTO TABLE DISCHARGETYPE 
-	FIELDS TERMINATED BY ';' 
-	LINES TERMINATED BY '\n';
+-- dischargetype
+load data local infile './data_al/dischargetype.csv'
+	into table dischargetype 
+	fields terminated by ';' 
+	lines terminated by '\n';
 
--- DISEASETYPE
-LOAD DATA LOCAL INFILE './data_al/diseasetype.csv'
-	INTO TABLE DISEASETYPE 
-	FIELDS TERMINATED BY ';' 
-	LINES TERMINATED BY '\n';
+-- diseasetype
+load data local infile './data_al/diseasetype.csv'
+	into table diseasetype 
+	fields terminated by ';' 
+	lines terminated by '\n';
 
--- DISEASE
-LOAD DATA LOCAL INFILE './data_al/disease.csv'
-	INTO TABLE DISEASE 
-	FIELDS TERMINATED BY ';' 
-	LINES TERMINATED BY '\n';
+-- disease
+load data local infile './data_al/disease.csv'
+	into table disease 
+	fields terminated by ';' 
+	lines terminated by '\n';
 
--- OPERATION
-LOAD DATA LOCAL INFILE './data_al/operation.csv'
-	INTO TABLE OPERATION 
-	FIELDS TERMINATED BY ';' 
-	LINES TERMINATED BY '\n';
+-- operation
+load data local infile './data_al/operation.csv'
+	into table operation 
+	fields terminated by ';' 
+	lines terminated by '\n';
 
--- MEDICALDSR
-LOAD DATA LOCAL INFILE './data_al/medicaldsr.csv'
-	INTO TABLE MEDICALDSR 
-	FIELDS TERMINATED BY ';' 
-	LINES TERMINATED BY '\n';
+-- medicaldsr
+load data local infile './data_al/medicaldsr.csv'
+	into table medicaldsr 
+	fields terminated by ';' 
+	lines terminated by '\n';
 
--- WARD
-LOAD DATA LOCAL INFILE './data_al/ward.csv'
-	INTO TABLE WARD 
-	FIELDS TERMINATED BY ';' 
-	LINES TERMINATED BY '\n';
+-- ward
+load data local infile './data_al/ward.csv'
+	into table ward 
+	fields terminated by ';' 
+	lines terminated by '\n';

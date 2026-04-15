@@ -1,1 +1,1 @@
-ALTER TABLE OH_PATIENT CHANGE COLUMN PROFILE_PHOTO_ID PAT_PROFILE_PHOTO_ID INT(11) DEFAULT NULL;
+alter table oh_patient change column profile_photo_id pat_profile_photo_id int(11) default null;

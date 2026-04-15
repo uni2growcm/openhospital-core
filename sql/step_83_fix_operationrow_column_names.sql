@@ -1,16 +1,16 @@
-ALTER TABLE OH_OPERATIONROW CHANGE OPER_ID OPER_OPE_ID_A VARCHAR(10) NOT NULL;
+alter table oh_operationrow change oper_id oper_ope_id_a varchar(10) not null;
 
-ALTER TABLE OH_OPERATIONROW ENGINE = INNODB, CONVERT TO CHARACTER SET utf8;
+alter table oh_operationrow engine = innodb, convert to character set utf8;
 
-ALTER TABLE OH_OPERATIONROW 
-ADD INDEX FK_OPERATIONROW_OPERATION_idx (OPER_OPE_ID_A ASC);
+alter table oh_operationrow 
+add index FK_OPERATIONROW_OPERATION_idx (oper_ope_id_a asc);
 
-ALTER TABLE OH_OPERATIONROW 
-ADD CONSTRAINT FK_OPERATIONROW_OPERATION
-  FOREIGN KEY (OPER_OPE_ID_A)
-  REFERENCES oh_operation (OPE_ID_A)
-  ON DELETE NO ACTION
-  ON UPDATE NO ACTION;
+alter table oh_operationrow 
+add constraint fk_operationrow_operation
+  foreign key (oper_ope_id_a)
+  references oh_operation (ope_id_a)
+  on delete no action
+  on update no action;
 
 
   

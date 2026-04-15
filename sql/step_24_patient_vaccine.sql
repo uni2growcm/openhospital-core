@@ -1,26 +1,26 @@
-DROP TABLE IF EXISTS VACCINETYPE;
-CREATE TABLE VACCINETYPE (
-	VACT_ID_A char (1)  NOT NULL ,
-	VACT_DESC varchar (50)  NOT NULL ,
-	PRIMARY KEY ( VACT_ID_A )
-) ENGINE=MyISAM;
+drop table if exists vaccinetype;
+create table vaccinetype (
+	vact_id_a char (1)  not null ,
+	vact_desc varchar (50)  not null ,
+	primary key ( vact_id_a )
+) engine=MyISAM;
 
-ALTER TABLE VACCINE 
-   CHANGE VAC_PATI  VAC_VACT_ID_A char(1) not null;
+alter table vaccine 
+   change vac_pati  vac_vact_id_a char(1) not null;
 
-INSERT INTO VACCINETYPE (VACT_ID_A, VACT_DESC)  
-SELECT DISTINCT  VAC_VACT_ID_A, CASE VAC_VACT_ID_A WHEN "C" THEN "Child" WHEN "P" THEN "Pregnant" WHEN "N" THEN "No pregnant" END
-FROM VACCINE;
+insert into vaccinetype (vact_id_a, vact_desc)  
+select distinct  vac_vact_id_a, case vac_vact_id_a when "C" then "Child" when "P" then "Pregnant" when "N" then "No pregnant" end
+from vaccine;
 
-INSERT INTO MENUITEM VALUES ('vaccinetype','angal.menu.btn.vaccinetype','angal.menu.vaccinetype','x','V','types','org.isf.vactype.gui.VaccineTypeBrowser','N', 12);
-INSERT INTO GROUPMENU (GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE)  VALUES  ('admin','vaccinetype','Y');
+insert into menuitem values ('vaccinetype','angal.menu.btn.vaccinetype','angal.menu.vaccinetype','x','V','types','org.isf.vactype.gui.VaccineTypeBrowser','N', 12);
+insert into groupmenu (gm_ug_id_a, gm_mni_id_a, gm_active)  values  ('admin','vaccinetype','Y');
 
-INSERT INTO MENUITEM VALUES ('patientvaccine','angal.menu.btn.patientvaccine','angal.menu.patientvaccine','x','V','main','org.isf.patvac.gui.PatVacBrowser','N', 5);
-INSERT INTO MENUITEM VALUES ('btnpatientvaccinenew','angal.patvac.new','angal.patvac.new','x','N','patientvaccine','none','N',0);
-INSERT INTO MENUITEM VALUES ('btnpatientvaccineedit','angal.patvac.edit','angal.patvac.edit','x','E','patientvaccine','none','N',1);
-INSERT INTO MENUITEM VALUES ('btnpatientvaccinedel','angal.patvac.delete','angal.patvac.delete','x','D','patientvaccine','none','N',2);
+insert into menuitem values ('patientvaccine','angal.menu.btn.patientvaccine','angal.menu.patientvaccine','x','V','main','org.isf.patvac.gui.PatVacBrowser','N', 5);
+insert into menuitem values ('btnpatientvaccinenew','angal.patvac.new','angal.patvac.new','x','N','patientvaccine','none','N',0);
+insert into menuitem values ('btnpatientvaccineedit','angal.patvac.edit','angal.patvac.edit','x','E','patientvaccine','none','N',1);
+insert into menuitem values ('btnpatientvaccinedel','angal.patvac.delete','angal.patvac.delete','x','D','patientvaccine','none','N',2);
 
-INSERT INTO GROUPMENU (GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE)  VALUES  ('admin','patientvaccine','Y');
-INSERT INTO GROUPMENU (GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE)  VALUES  ('admin','btnpatientvaccinenew','Y');
-INSERT INTO GROUPMENU (GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE)  VALUES  ('admin','btnpatientvaccineedit','Y');
-INSERT INTO GROUPMENU (GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE)  VALUES  ('admin','btnpatientvaccinedel','Y');
+insert into groupmenu (gm_ug_id_a, gm_mni_id_a, gm_active)  values  ('admin','patientvaccine','Y');
+insert into groupmenu (gm_ug_id_a, gm_mni_id_a, gm_active)  values  ('admin','btnpatientvaccinenew','Y');
+insert into groupmenu (gm_ug_id_a, gm_mni_id_a, gm_active)  values  ('admin','btnpatientvaccineedit','Y');
+insert into groupmenu (gm_ug_id_a, gm_mni_id_a, gm_active)  values  ('admin','btnpatientvaccinedel','Y');

@@ -1,1 +1,1 @@
-ALTER TABLE WARD ADD COLUMN WRD_VISIT_DURATION int(11) NOT NULL DEFAULT 30 AFTER WRD_IS_FEMALE;
+alter table ward add column wrd_visit_duration int(11) not null default 30 after wrd_is_female;

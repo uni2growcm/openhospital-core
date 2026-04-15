@@ -1,5 +1,5 @@
-ALTER TABLE LOG CHANGE COLUMN LOG_TYME LOG_TIME DATETIME NOT NULL;
-ALTER TABLE LOG ADD COLUMN LOG_METHOD VARCHAR(64) NULL AFTER LOG_CLASS;
-ALTER TABLE LOG ADD COLUMN LOG_USER VARCHAR(50) NULL AFTER LOG_MESS;
+alter table log change column log_tyme log_time datetime not null;
+alter table log add column log_method varchar(64) null after log_class;
+alter table log add column log_user varchar(50) null after log_mess;
 
-ALTER TABLE LOG CHANGE COLUMN LOG_MESS LOG_MESS VARCHAR(1024) NULL DEFAULT NULL;
+alter table log change column log_mess log_mess varchar(1024) null default null;

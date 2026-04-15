@@ -1,8 +1,8 @@
-delete from OH_DICOM;
-delete from OH_DICOMTYPE;
+delete from oh_dicom;
+delete from oh_dicomtype;
 
--- DICOMTYPE
-LOAD DATA LOCAL INFILE './data_de/dicomtype.csv'
-	INTO TABLE OH_DICOMTYPE
-	FIELDS TERMINATED BY ';'
-	LINES TERMINATED BY '\n';
+-- dicomtype
+load data local infile './data_de/dicomtype.csv'
+	into table oh_dicomtype
+	fields terminated by ';'
+	lines terminated by '\n';

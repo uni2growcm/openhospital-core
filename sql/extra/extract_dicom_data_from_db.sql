@@ -1,24 +1,24 @@
-DROP PROCEDURE IF EXISTS dump_image;
-DELIMITER //
-  CREATE PROCEDURE dump_image()
-  BEGIN
+drop procedure if exists dump_image;
+delimiter //
+  create procedure dump_image()
+  begin
 
-	DECLARE done INT;
-	DECLARE this_id INT;
-	DECLARE cur1 CURSOR FOR SELECT DMD_DATA_ID FROM OH_DICOM WHERE DMD_DATA_ID IS NOT NULL;
-	DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
-	OPEN cur1;
-	  read_loop: LOOP
-		FETCH cur1 INTO this_id;
-		IF done = 1 THEN
-			LEAVE read_loop;
-		END IF;
-		SET @QUERY = CONCAT('SELECT DMD_DATA FROM OH_DICOM_DATA WHERE DMD_DATA_ID=', this_id, ' INTO DUMPFILE "OH_PATH_SUBSTITUTE/DATA_DIR', this_id,'.png"');
-		PREPARE WRITE_FILE FROM @QUERY;
-		EXECUTE WRITE_FILE;
-	  END LOOP;
-	CLOSE cur1;
-  END //
-DELIMITER ;
+	declare done int;
+	declare this_id int;
+	declare cur1 cursor for select dmd_data_id from oh_dicom where dmd_data_id IS not null;
+	declare continue handler for not found set done = 1;
+	open cur1;
+	  read_loop: loop
+		fetch cur1 into this_id;
+		if done = 1 then
+			leave read_loop;
+		end if;
+		set @query = concat('select dmd_data from oh_dicom_data where dmd_data_id=', this_id, ' into dumpfile "oh_path_substitute/data_dir', this_id,'.png"');
+		prepare write_file from @query;
+		execute write_file;
+	  end loop;
+	close cur1;
+  end //
+delimiter ;
 
-CALL dump_image();
+call dump_image();

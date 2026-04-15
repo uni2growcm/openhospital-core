@@ -1,1 +1,1 @@
-ALTER TABLE BILLPAYMENTS ADD COLUMN BLP_USR_ID_A VARCHAR(50)  NOT NULL DEFAULT 'admin' AFTER BLP_AMOUNT;
+alter table billpayments add column blp_usr_id_a varchar(50)  not null default 'admin' after blp_amount;

@@ -1,83 +1,83 @@
 --
--- Definition of table PRICELISTS
+-- Definition of table pricelists
 --
 
-DROP TABLE IF EXISTS PRICELISTS;
-CREATE TABLE  PRICELISTS (
-  LST_ID int(11) NOT NULL auto_increment,
-  LST_CODE varchar(7) NOT NULL,
-  LST_NAME varchar(50) NOT NULL,
-  LST_DESC varchar(100) NOT NULL,
-  LST_CURRENCY varchar(10) NOT NULL,
-  PRIMARY KEY  (LST_ID)
-) ENGINE=MyISAM;
+drop table if exists pricelists;
+create table  pricelists (
+  lst_id int(11) not null auto_increment,
+  lst_code varchar(7) not null,
+  lst_name varchar(50) not null,
+  lst_desc varchar(100) not null,
+  lst_currency varchar(10) not null,
+  primary key  (lst_id)
+) engine=MyISAM;
 
 --
--- Dumping data for table PRICELISTS
+-- Dumping data for table pricelists
 --
 
-LOCK TABLES PRICELISTS WRITE;
-INSERT INTO PRICELISTS (LST_CODE, LST_NAME, LST_DESC, LST_CURRENCY) VALUES  ('LIST001','Basic','Basic price list','');
-UNLOCK TABLES;
+lock tables pricelists write;
+insert into pricelists (lst_code, lst_name, lst_desc, lst_currency) values  ('list001','Basic','Basic price list','');
+unlock tables;
 
 --
--- Definition of table PRICES
+-- Definition of table prices
 --
 
-DROP TABLE IF EXISTS PRICES;
-CREATE TABLE  PRICES (
-  PRC_ID int(11) NOT NULL auto_increment,
-  PRC_LST_ID int(11) NOT NULL,
-  PRC_GRP char(3) NOT NULL,
-  PRC_ITEM varchar(10) NOT NULL,
-  PRC_DESC varchar(100) NOT NULL,
-  PRC_PRICE double NOT NULL,
-  PRIMARY KEY  (PRC_ID)
-) ENGINE=MyISAM;
+drop table if exists prices;
+create table  prices (
+  prc_id int(11) not null auto_increment,
+  prc_lst_id int(11) not null,
+  prc_grp char(3) not null,
+  prc_item varchar(10) not null,
+  prc_desc varchar(100) not null,
+  prc_price double not null,
+  primary key  (prc_id)
+) engine=MyISAM;
 
 --
--- Definition of table PRICESOTHERS
+-- Definition of table pricesothers
 --
 
-DROP TABLE IF EXISTS PRICESOTHERS;
-CREATE TABLE  PRICESOTHERS (
-  OTH_ID int(11) NOT NULL auto_increment,
-  OTH_CODE varchar(10) NOT NULL,
-  OTH_DESC varchar(100) NOT NULL,
-  OTH_OPD_INCLUDE int(11) NOT NULL default '0',
-  OTH_IPD_INCLUDE int(11) NOT NULL default '0',
-  OTH_DAILY int(11) NOT NULL default '0',
-  PRIMARY KEY  (OTH_ID)
-) ENGINE=MyISAM;
+drop table if exists pricesothers;
+create table  pricesothers (
+  oth_id int(11) not null auto_increment,
+  oth_code varchar(10) not null,
+  oth_desc varchar(100) not null,
+  oth_opd_include int(11) not null default '0',
+  oth_ipd_include int(11) not null default '0',
+  oth_daily int(11) not null default '0',
+  primary key  (oth_id)
+) engine=MyISAM;
 
 --
--- Dumping data for table PRICESOTHERS
+-- Dumping data for table pricesothers
 --
 
-LOCK TABLES PRICESOTHERS WRITE;
-INSERT INTO PRICESOTHERS (OTH_CODE, OTH_DESC, OTH_OPD_INCLUDE, OTH_IPD_INCLUDE, OTH_DAILY) VALUES  ('OTH001','Amount per day',0,1,1);
-UNLOCK TABLES;
+lock tables pricesothers write;
+insert into pricesothers (oth_code, oth_desc, oth_opd_include, oth_ipd_include, oth_daily) values  ('oth001','Amount per day',0,1,1);
+unlock tables;
 
 --
--- Dumping data for table PRICES
+-- Dumping data for table prices
 --
 
-INSERT INTO PRICES (PRC_LST_ID, PRC_GRP, PRC_ITEM, PRC_DESC, PRC_PRICE) SELECT 1, 'EXA', EXA_ID_A, EXA_DESC, 0 FROM EXAM ORDER BY EXA_DESC;
+insert into prices (prc_lst_id, prc_grp, prc_item, prc_desc, prc_price) select 1, 'exa', exa_id_a, exa_desc, 0 from exam order by exa_desc;
 
-INSERT INTO PRICES (PRC_LST_ID, PRC_GRP, PRC_ITEM, PRC_DESC, PRC_PRICE) SELECT 1, 'OPE', OPE_ID_A, OPE_DESC, 0 FROM OPERATION ORDER BY OPE_DESC;
+insert into prices (prc_lst_id, prc_grp, prc_item, prc_desc, prc_price) select 1, 'ope', ope_id_a, ope_desc, 0 from operation order by ope_desc;
 
-INSERT INTO PRICES (PRC_LST_ID, PRC_GRP, PRC_ITEM, PRC_DESC, PRC_PRICE) SELECT 1, 'MED', MDSR_ID, MDSR_DESC, 0 FROM MEDICALDSR ORDER BY MDSR_DESC;
+insert into prices (prc_lst_id, prc_grp, prc_item, prc_desc, prc_price) select 1, 'med', mdsr_id, mdsr_desc, 0 from medicaldsr order by mdsr_desc;
 
-INSERT INTO PRICES (PRC_LST_ID, PRC_GRP, PRC_ITEM, PRC_DESC, PRC_PRICE) SELECT 1, 'OTH', OTH_ID, OTH_DESC, 0 FROM PRICESOTHERS ORDER BY OTH_DESC;
+insert into prices (prc_lst_id, prc_grp, prc_item, prc_desc, prc_price) select 1, 'oth', oth_id, oth_desc, 0 from pricesothers order by oth_desc;
 
 -- Menu items
 
-INSERT INTO MENUITEM VALUES ('priceslists', 'angal.menu.btn.priceslists', 'angal.menu.priceslists', 'x', 'P', 'generaldata', 'org.isf.priceslist.gui.PricesBrowser','N', 7);
+insert into menuitem values ('priceslists', 'angal.menu.btn.priceslists', 'angal.menu.priceslists', 'x', 'P', 'generaldata', 'org.isf.priceslist.gui.PricesBrowser','N', 7);
 
-INSERT INTO MENUITEM VALUES ('otherprices', 'angal.menu.btn.otherprices', 'angal.menu.otherprices', 'x', 'H', 'types', 'org.isf.pricesothers.gui.PricesOthersBrowser','N', 10);
+insert into menuitem values ('otherprices', 'angal.menu.btn.otherprices', 'angal.menu.otherprices', 'x', 'H', 'types', 'org.isf.pricesothers.gui.PricesOthersBrowser','N', 10);
 
 -- Admin grants
 
-INSERT INTO GROUPMENU (GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE) VALUES ('admin','priceslists','Y');
+insert into groupmenu (gm_ug_id_a, gm_mni_id_a, gm_active) values ('admin','priceslists','Y');
 
-INSERT INTO GROUPMENU (GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE) VALUES ('admin','otherprices','Y');
+insert into groupmenu (gm_ug_id_a, gm_mni_id_a, gm_active) values ('admin','otherprices','Y');

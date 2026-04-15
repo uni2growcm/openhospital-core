@@ -1,3 +1,3 @@
-ALTER TABLE WARD ADD COLUMN WRD_IS_MALE TINYINT(1) NOT NULL DEFAULT '1' AFTER WRD_IS_PHARMACY, 
-	ADD COLUMN WRD_IS_FEMALE TINYINT(1) NOT NULL DEFAULT '1' AFTER WRD_IS_MALE;
-UPDATE WARD SET WRD_IS_MALE = 0 WHERE WRD_ID_A = 'M';
+alter table ward add column wrd_is_male tinyint(1) not null default '1' after wrd_is_pharmacy, 
+	add column wrd_is_female tinyint(1) not null default '1' after wrd_is_male;
+update ward set wrd_is_male = 0 where wrd_id_a = 'M';

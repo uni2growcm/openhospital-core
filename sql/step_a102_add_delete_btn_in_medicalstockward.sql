@@ -1,2 +1,2 @@
-INSERT INTO OH_MENUITEM (MNI_ID_A, MNI_BTN_LABEL, MNI_LABEL, MNI_TOOLTIP, MNI_SHORTCUT, MNI_SUBMENU, MNI_CLASS, MNI_IS_SUBMENU, MNI_POSITION) VALUES ('btnmedicalswarddelete','angal.menu.btn.btnmedicalswarddelete','angal.common.delete.btn','X','D','medicalsward','none','N','4');
-INSERT INTO OH_GROUPMENU (GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE) VALUE ('admin','btnmedicalswarddelete', 1);
+insert into oh_menuitem (mni_id_a, mni_btn_label, mni_label, mni_tooltip, mni_shortcut, mni_submenu, mni_class, mni_is_submenu, mni_position) values ('btnmedicalswarddelete','angal.menu.btn.btnmedicalswarddelete','angal.common.delete.btn','X','D','medicalsward','none','N','4');
+insert into oh_groupmenu (gm_ug_id_a, gm_mni_id_a, gm_active) value ('admin','btnmedicalswarddelete', 1);

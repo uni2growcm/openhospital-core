@@ -1,20 +1,20 @@
-DROP TABLE IF EXISTS OH_TELEMETRY;
-CREATE TABLE OH_TELEMETRY (
+drop table if exists oh_telemetry;
+create table oh_telemetry (
   -- identification
-  TEL_UUID VARCHAR(36) NOT NULL COMMENT 'Software ID',
-  TEL_DBID VARCHAR(36) NOT NULL COMMENT 'Database ID',
-  TEL_HWID VARCHAR(36) NOT NULL COMMENT 'Hardware ID',
-  TEL_OSID VARCHAR(36) NOT NULL COMMENT 'Operating System ID',
+  tel_uuid varchar(36) not null comment 'Software ID',
+  tel_dbid varchar(36) not null comment 'Database ID',
+  tel_hwid varchar(36) not null comment 'Hardware ID',
+  tel_osid varchar(36) not null comment 'Operating System ID',
   -- settings
-  TEL_ACTIVE TINYINT(1) COMMENT 'true|false|null',
-  TEL_CONSENT TEXT COMMENT 'User consent informations',
+  tel_active tinyint(1) comment 'true|false|null',
+  tel_consent text comment 'User consent informations',
   -- history
-  TEL_INFO TEXT COMMENT 'Last collected data',
-  TEL_SENT_TIME DATETIME COMMENT 'Timestamp when message sent',
-  TEL_OPTIN_DATE DATETIME COMMENT 'When user enables telemetry',
-  TEL_OPTOUT_DATE DATETIME COMMENT 'When user disables telemetry',
-  PRIMARY KEY (TEL_UUID,TEL_DBID,TEL_HWID,TEL_OSID)
-) ENGINE=MyISAM;
+  tel_info text comment 'Last collected data',
+  tel_sent_time datetime comment 'Timestamp when message sent',
+  tel_optin_date datetime comment 'when user enables telemetry',
+  tel_optout_date datetime comment 'when user disables telemetry',
+  primary key (tel_uuid,tel_dbid,tel_hwid,tel_osid)
+) engine=MyISAM;
 
-INSERT INTO OH_MENUITEM VALUES ('telemetry', 'angal.menu.btn.telemetry', 'angal.menu.telemetry', 'x', 'M', 'generaldata', 'org.isf.telemetry.gui.TelemetryEdit','N', 9);
-INSERT INTO OH_GROUPMENU (GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE) VALUES ('admin','telemetry',1);
+insert into oh_menuitem values ('telemetry', 'angal.menu.btn.telemetry', 'angal.menu.telemetry', 'x', 'M', 'generaldata', 'org.isf.telemetry.gui.TelemetryEdit','N', 9);
+insert into oh_groupmenu (gm_ug_id_a, gm_mni_id_a, gm_active) values ('admin','telemetry',1);

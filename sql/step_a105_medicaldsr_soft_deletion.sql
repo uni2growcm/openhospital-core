@@ -1,2 +1,2 @@
-ALTER TABLE OH_MEDICALDSR 
-ADD COLUMN MDSR_DELETED CHAR(1) NOT NULL DEFAULT 'N' AFTER MDSR_LOCK;
+alter table oh_medicaldsr 
+add column mdsr_deleted char(1) not null default 'N' after mdsr_lock;

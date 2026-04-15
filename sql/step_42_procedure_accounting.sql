@@ -1,31 +1,31 @@
-DELIMITER //
+delimiter //
 
-DROP PROCEDURE IF EXISTS calcAmount;
-CREATE PROCEDURE calcAmount()
-BEGIN
-    DECLARE v_id INT;
-	DECLARE v_amount DOUBLE;
-    DECLARE done INT DEFAULT FALSE;
-    DECLARE cur CURSOR FOR SELECT BLL_ID, AMOUNT FROM 
-							(SELECT BLL_ID, BLL_AMOUNT, SUM(BLI_ITEM_AMOUNT * BLI_QTY) AS AMOUNT
-							FROM BILLS JOIN BILLITEMS ON BLL_ID = BLI_ID_BILL
-							WHERE BLI_ITEM_AMOUNT > 0
-							GROUP BY BLL_ID
-							ORDER BY BLL_ID) BILLS
-							WHERE BLL_AMOUNT <> AMOUNT;
-    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+drop procedure if exists calcAmount;
+create procedure calcAmount()
+begin
+    declare v_id int;
+	declare v_amount double;
+    declare done int default false;
+    declare cur cursor for select bll_id, amount from 
+							(select bll_id, bll_amount, sum(bli_item_amount * bli_qty) AS amount
+							from bills join billitems on bll_id = bli_id_bill
+							where bli_item_amount > 0
+							group by bll_id
+							order by bll_id) bills
+							where bll_amount <> amount;
+    declare continue handler for not found set done = 1;
 
-    OPEN cur;
-    read_loop: LOOP
-        FETCH cur INTO v_id, v_amount;
-        IF done THEN
-            LEAVE read_loop;
-        END IF;
-        UPDATE BILLS SET BLL_AMOUNT = v_amount WHERE BLL_ID = v_id;
-    END LOOP;
-  CLOSE cur;
+    open cur;
+    read_loop: loop
+        fetch cur into v_id, v_amount;
+        if done then
+            leave read_loop;
+        end if;
+        update bills set bll_amount = v_amount where bll_id = v_id;
+    end loop;
+  close cur;
 
-END; //
-DELIMITER ;
+end; //
+delimiter ;
 
-CALL calcAmount();
+call calcAmount();

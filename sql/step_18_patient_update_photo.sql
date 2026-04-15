@@ -1,1 +1,1 @@
-ALTER TABLE PATIENT ADD COLUMN PAT_PHOTO BLOB;
+alter table patient add column pat_photo blob;

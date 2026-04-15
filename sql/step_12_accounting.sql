@@ -1,64 +1,64 @@
 --
--- Definition of table BILLITEMS
+-- Definition of table billitems
 --
 
-DROP TABLE IF EXISTS BILLITEMS;
-CREATE TABLE  BILLITEMS (
-  BLI_ID int(11) NOT NULL auto_increment,
-  BLI_ID_BILL int(11) default NULL,
-  BLI_IS_PRICE tinyint(1) NOT NULL,
-  BLI_ID_PRICE varchar(10) default NULL,
-  BLI_ITEM_DESC varchar(100) default NULL,
-  BLI_ITEM_AMOUNT double NOT NULL,
-  BLI_QTY int(11) NOT NULL,
-  PRIMARY KEY (BLI_ID)
-) ENGINE=MyISAM;
+drop table if exists billitems;
+create table  billitems (
+  bli_id int(11) not null auto_increment,
+  bli_id_bill int(11) default null,
+  bli_is_price tinyint(1) not null,
+  bli_id_price varchar(10) default null,
+  bli_item_desc varchar(100) default null,
+  bli_item_amount double not null,
+  bli_qty int(11) not null,
+  primary key (bli_id)
+) engine=MyISAM;
 
 --
--- Definition of table BILLPAYMENTS
+-- Definition of table billpayments
 --
 
-DROP TABLE IF EXISTS BILLPAYMENTS;
-CREATE TABLE  BILLPAYMENTS (
-  BLP_ID int(11) NOT NULL auto_increment,
-  BLP_ID_BILL int(11) default NULL,
-  BLP_DATE datetime NOT NULL,
-  BLP_AMOUNT double NOT NULL,
-  PRIMARY KEY (BLP_ID)
-) ENGINE=MyISAM;
+drop table if exists billpayments;
+create table  billpayments (
+  blp_id int(11) not null auto_increment,
+  blp_id_bill int(11) default null,
+  blp_date datetime not null,
+  blp_amount double not null,
+  primary key (blp_id)
+) engine=MyISAM;
 
 --
--- Definition of table BILLS
+-- Definition of table bills
 --
 
-DROP TABLE IF EXISTS BILLS;
-CREATE TABLE  BILLS (
-  BLL_ID int(11) NOT NULL auto_increment,
-  BLL_DATE datetime NOT NULL,
-  BLL_UPDATE datetime NOT NULL,
-  BLL_IS_LST tinyint(1) NOT NULL,
-  BLL_ID_LST int(11) default NULL,
-  BLL_LST_NAME varchar(50) default NULL,
-  BLL_IS_PAT tinyint(1) NOT NULL,
-  BLL_ID_PAT int(11) default NULL,
-  BLL_PAT_NAME varchar(100) default NULL,
-  BLL_STATUS varchar(1) default NULL,
-  BLL_AMOUNT double default NULL,
-  BLL_BALANCE double default NULL,
-  PRIMARY KEY (BLL_ID)
-) ENGINE=MyISAM;
+drop table if exists bills;
+create table  bills (
+  bll_id int(11) not null auto_increment,
+  bll_date datetime not null,
+  bll_update datetime not null,
+  bll_is_lst tinyint(1) not null,
+  bll_id_lst int(11) default null,
+  bll_lst_name varchar(50) default null,
+  bll_is_pat tinyint(1) not null,
+  bll_id_pat int(11) default null,
+  bll_pat_name varchar(100) default null,
+  bll_status varchar(1) default null,
+  bll_amount double default null,
+  bll_balance double default null,
+  primary key (bll_id)
+) engine=MyISAM;
 
-INSERT INTO MENUITEM VALUES ('accounting', 'angal.menu.btn.accounting', 'angal.menu.accounting', 'x', 'C', 'main', 'none','Y', 5);
+insert into menuitem values ('accounting', 'angal.menu.btn.accounting', 'angal.menu.accounting', 'x', 'C', 'main', 'none','Y', 5);
 
-INSERT INTO MENUITEM VALUES ('newbill', 'angal.menu.btn.newbill', 'angal.menu.newbill', 'x', 'N', 'accounting', 'org.isf.accounting.gui.PatientBillEdit','N', 0);
+insert into menuitem values ('newbill', 'angal.menu.btn.newbill', 'angal.menu.newbill', 'x', 'N', 'accounting', 'org.isf.accounting.gui.PatientBillEdit','N', 0);
 
-INSERT INTO MENUITEM VALUES ('billsmanager', 'angal.menu.btn.billsmanager', 'angal.menu.billsmanager', 'x', 'M', 'accounting', 'org.isf.accounting.gui.BillBrowser','N', 1);
+insert into menuitem values ('billsmanager', 'angal.menu.btn.billsmanager', 'angal.menu.billsmanager', 'x', 'M', 'accounting', 'org.isf.accounting.gui.BillBrowser','N', 1);
 
 -- Functionalities initially disabled. Put 'Y' to activate them
 
-INSERT INTO GROUPMENU (GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE) VALUES ('admin','accounting','Y');
+insert into groupmenu (gm_ug_id_a, gm_mni_id_a, gm_active) values ('admin','accounting','Y');
 
-INSERT INTO GROUPMENU (GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE) VALUES ('admin','newbill','Y');
+insert into groupmenu (gm_ug_id_a, gm_mni_id_a, gm_active) values ('admin','newbill','Y');
 
-INSERT INTO GROUPMENU (GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE) VALUES ('admin','billsmanager','Y');
+insert into groupmenu (gm_ug_id_a, gm_mni_id_a, gm_active) values ('admin','billsmanager','Y');
 

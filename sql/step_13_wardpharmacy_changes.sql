@@ -1,2 +1,2 @@
-ALTER TABLE MEDICALSRSTOCKMOV_N RENAME TO MEDICALDSRSTOCKMOVWARD,
- MODIFY COLUMN MMVN_MDSR_QTY FLOAT NOT NULL;
+alter table medicalsrstockmov_n rename TO medicaldsrstockmovward,
+ modify column mmvn_mdsr_qty float not null;

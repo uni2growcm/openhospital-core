@@ -1,54 +1,54 @@
-DELIMITER //
+delimiter //
 
-DROP PROCEDURE IF EXISTS moveOperationsToNewTable;
-CREATE PROCEDURE moveOperationsToNewTable()
-BEGIN
-	DECLARE v_adm_id INT(11);
-	DECLARE v_adm_user VARCHAR(50);
-    DECLARE v_ope_id VARCHAR(10);
-	DECLARE v_ope_date DATETIME;
-	DECLARE v_ope_result VARCHAR(10);
-	DECLARE v_trans FLOAT;
-    DECLARE done INT DEFAULT FALSE;
+drop procedure if exists moveOperationsToNewTable;
+create procedure moveOperationsToNewTable()
+begin
+	declare v_adm_id int(11);
+	declare v_adm_user varchar(50);
+    declare v_ope_id varchar(10);
+	declare v_ope_date datetime;
+	declare v_ope_result varchar(10);
+	declare v_trans float;
+    declare done int default false;
     
-    DECLARE cur CURSOR FOR SELECT ADM_ID, ADM_USR_ID_A, ADM_OPE_ID_A, ADM_DATE_OP, 
-    						CASE COALESCE(ADM_RESOP, 'U') WHEN 'P' THEN 'success' WHEN 'N' THEN 'failure' WHEN 'U' THEN 'unknown' END AS ADM_RESOP, ADM_TRANS
-							FROM ADMISSION
-							WHERE ADM_OPE_ID_A IS NOT NULL;
+    declare cur cursor for select adm_id, adm_usr_id_a, adm_ope_id_a, adm_date_op, 
+    						case coalesce(adm_resop, 'U') when 'P' then 'success' when 'N' then 'failure' when 'U' then 'unknown' end AS adm_resop, adm_trans
+							from admission
+							where adm_ope_id_a IS not null;
 							
-    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+    declare continue handler for not found set done = 1;
 
-    OPEN cur;
-    read_loop: LOOP
-        FETCH cur INTO v_adm_id, v_adm_user, v_ope_id, v_ope_date, v_ope_result, v_trans;
-        IF done THEN
-            LEAVE read_loop;
-        END IF;
+    open cur;
+    read_loop: loop
+        fetch cur into v_adm_id, v_adm_user, v_ope_id, v_ope_date, v_ope_result, v_trans;
+        if done then
+            leave read_loop;
+        end if;
         
-        INSERT INTO OPERATIONROW SET OPER_ID = v_ope_id, 
-        						 OPER_PRESCRIBER = v_adm_user,
-        						 OPER_RESULT = v_ope_result,
-        						 OPER_OPDATE = v_ope_date,
-        						 OPER_ADMISSION_ID = v_adm_id,
-        						 OPER_TRANS_UNIT = v_trans;
-    END LOOP;
-  	CLOSE cur;
-END; //
+        insert into operationrow set oper_id = v_ope_id, 
+        						 oper_prescriber = v_adm_user,
+        						 oper_result = v_ope_result,
+        						 oper_opdate = v_ope_date,
+        						 oper_admission_id = v_adm_id,
+        						 oper_trans_unit = v_trans;
+    end loop;
+  	close cur;
+end; //
 
-DELIMITER ;
+delimiter ;
 
-CREATE TABLE OPERATIONROW(
-	OPER_ID_A INT (11) NOT NULL AUTO_INCREMENT,
-	OPER_ID VARCHAR (11) NOT NULL,
-	OPER_PRESCRIBER VARCHAR (150) NOT NULL,
-	OPER_RESULT VARCHAR (250) NOT NULL,
-	OPER_OPDATE DATETIME NOT NULL,
-	OPER_REMARKS VARCHAR (250) NOT NULL,
-	OPER_ADMISSION_ID INT(11) DEFAULT NULL, 
-	OPER_OPD_ID INT(11) DEFAULT NULL,
-	OPER_BILL_ID INT(11) DEFAULT NULL,
-	OPER_TRANS_UNIT FLOAT NULL DEFAULT 0,	
-	PRIMARY KEY (OPER_ID_A)
+create table operationrow(
+	oper_id_a int (11) not null auto_increment,
+	oper_id varchar (11) not null,
+	oper_prescriber varchar (150) not null,
+	oper_result varchar (250) not null,
+	oper_opdate datetime not null,
+	oper_remarks varchar (250) not null,
+	oper_admission_id int(11) default null, 
+	oper_opd_id int(11) default null,
+	oper_bill_id int(11) default null,
+	oper_trans_unit float null default 0,	
+	primary key (oper_id_a)
 );
 
-CALL moveOperationsToNewTable();
+call moveOperationsToNewTable();

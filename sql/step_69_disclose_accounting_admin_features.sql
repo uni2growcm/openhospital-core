@@ -1,11 +1,11 @@
-UPDATE MENUITEM SET MNI_POSITION='1' WHERE MNI_ID_A='btnbillnew';
-UPDATE MENUITEM SET MNI_POSITION='2' WHERE MNI_ID_A='btnbilledit';
-UPDATE MENUITEM SET MNI_POSITION='4' WHERE MNI_ID_A='btnbilldelete';
-UPDATE MENUITEM SET MNI_POSITION='5' WHERE MNI_ID_A='btnbillreport';
-UPDATE MENUITEM SET MNI_POSITION='6' WHERE MNI_ID_A='btnbillreceipt';
+update menuitem set mni_position='1' where mni_id_a='btnbillnew';
+update menuitem set mni_position='2' where mni_id_a='btnbilledit';
+update menuitem set mni_position='4' where mni_id_a='btnbilldelete';
+update menuitem set mni_position='5' where mni_id_a='btnbillreport';
+update menuitem set mni_position='6' where mni_id_a='btnbillreceipt';
 
-INSERT INTO MENUITEM (MNI_ID_A, MNI_BTN_LABEL, MNI_LABEL, MNI_TOOLTIP, MNI_SHORTCUT, MNI_SUBMENU, MNI_CLASS, MNI_IS_SUBMENU, MNI_POSITION) VALUES ('cashiersfilter', 'angal.menu.accounting.cashiersfilter', 'angal.menu.accounting.cashiersfilter', 'x', 'X', 'billsmanager', 'none', 'N', '0');
-INSERT INTO MENUITEM (MNI_ID_A, MNI_BTN_LABEL, MNI_LABEL, MNI_TOOLTIP, MNI_SHORTCUT, MNI_SUBMENU, MNI_CLASS, MNI_IS_SUBMENU, MNI_POSITION) VALUES ('editclosedbills', 'angal.menu.accounting.editclosedbills', 'angal.menu.accounting.editclosedbills', 'x', 'E', 'billsmanager', 'none', 'N', '3');
+insert into menuitem (mni_id_a, mni_btn_label, mni_label, mni_tooltip, mni_shortcut, mni_submenu, mni_class, mni_is_submenu, mni_position) values ('cashiersfilter', 'angal.menu.accounting.cashiersfilter', 'angal.menu.accounting.cashiersfilter', 'x', 'X', 'billsmanager', 'none', 'N', '0');
+insert into menuitem (mni_id_a, mni_btn_label, mni_label, mni_tooltip, mni_shortcut, mni_submenu, mni_class, mni_is_submenu, mni_position) values ('editclosedbills', 'angal.menu.accounting.editclosedbills', 'angal.menu.accounting.editclosedbills', 'x', 'E', 'billsmanager', 'none', 'N', '3');
 
-INSERT INTO GROUPMENU (GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE) VALUES ('admin', 'cashiersfilter', 1);
-INSERT INTO GROUPMENU (GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE) VALUES ('admin', 'editclosedbills', 1);
+insert into groupmenu (gm_ug_id_a, gm_mni_id_a, gm_active) values ('admin', 'cashiersfilter', 1);
+insert into groupmenu (gm_ug_id_a, gm_mni_id_a, gm_active) values ('admin', 'editclosedbills', 1);

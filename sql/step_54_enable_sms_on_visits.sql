@@ -1,1 +1,1 @@
-ALTER TABLE VISITS ADD COLUMN VST_SMS TINYINT(1) NULL DEFAULT 0 AFTER VST_NOTE;
+alter table visits add column vst_sms tinyint(1) null default 0 after vst_note;

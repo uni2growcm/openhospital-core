@@ -1,1 +1,1 @@
-ALTER TABLE PATIENT ADD COLUMN PAT_TAXCODE VARCHAR(30) NULL DEFAULT '';
+alter table patient add column pat_taxcode varchar(30) null default '';

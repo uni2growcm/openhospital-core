@@ -1,20 +1,20 @@
--- Alter VISITS
-ALTER TABLE VISITS
-	ADD COLUMN VST_WRD_ID_A char(1) DEFAULT NULL,
-	ADD COLUMN VST_DURATION int(11) DEFAULT NULL,
-	ADD COLUMN VST_SERVICE varchar(45) DEFAULT NULL;
+-- alter visits
+alter table visits
+	add column vst_wrd_id_a char(1) default null,
+	add column vst_duration int(11) default null,
+	add column vst_service varchar(45) default null;
 	
-ALTER TABLE VISITS
-	ADD CONSTRAINT FK_VISITS_WARD FOREIGN KEY (VST_WRD_ID_A) REFERENCES WARD (WRD_ID_A) ON DELETE NO ACTION ON UPDATE NO ACTION;
+alter table visits
+	add constraint fk_visits_ward foreign key (vst_wrd_id_a) references ward (wrd_id_a) on delete no action on update no action;
 
--- Create menus
-UPDATE MENUITEM SET MNI_POSITION = '6' WHERE (MNI_ID_A = 'accounting');
-UPDATE MENUITEM SET MNI_POSITION = '7' WHERE (MNI_ID_A = 'patientvaccine');
-UPDATE MENUITEM SET MNI_POSITION = '9' WHERE (MNI_ID_A = 'printing');
-UPDATE MENUITEM SET MNI_POSITION = '11' WHERE (MNI_ID_A = 'help');
-UPDATE MENUITEM SET MNI_POSITION = '10' WHERE (MNI_ID_A = 'communication');
-UPDATE MENUITEM SET MNI_SHORTCUT = 'M' WHERE (MNI_ID_A = 'communication');
+-- create menus
+update menuitem set mni_position = '6' where (mni_id_a = 'accounting');
+update menuitem set mni_position = '7' where (mni_id_a = 'patientvaccine');
+update menuitem set mni_position = '9' where (mni_id_a = 'printing');
+update menuitem set mni_position = '11' where (mni_id_a = 'help');
+update menuitem set mni_position = '10' where (mni_id_a = 'communication');
+update menuitem set mni_shortcut = 'M' where (mni_id_a = 'communication');
 
-INSERT INTO MENUITEM VALUES ('worksheet','angal.menu.btn.worksheet','angal.menu.worksheet','x','W','main','org.isf.visits.gui.VisitView','N',8);
-INSERT INTO GROUPMENU (GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE) VALUES ('admin','worksheet',1);
+insert into menuitem values ('worksheet','angal.menu.btn.worksheet','angal.menu.worksheet','x','W','main','org.isf.visits.gui.VisitView','N',8);
+insert into groupmenu (gm_ug_id_a, gm_mni_id_a, gm_active) values ('admin','worksheet',1);
 

@@ -1,1 +1,1 @@
-ALTER TABLE OPD ADD OPD_DATE_NEXT_VIS datetime NULL;
+alter table opd add opd_date_next_vis datetime null;

@@ -1,25 +1,25 @@
 -- add the new table
 -- adding primary key with auto increment. We will not be setting this auto increment manually
-CREATE TABLE OH_DICOM_DATA (
-    DMD_DATA_ID bigint(20) NOT NULL AUTO_INCREMENT,
-    DMD_FILE_ID bigint(20),
-    DMD_DATA longblob,
-    PRIMARY KEY (DMD_DATA_ID)
-) ENGINE=InnoDB CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+create table oh_dicom_data (
+    dmd_data_id bigint(20) not null auto_increment,
+    dmd_file_id bigint(20),
+    dmd_data longblob,
+    primary key (dmd_data_id)
+) engine=innodb charset=utf8mb3 collate=utf8mb3_general_ci;
 
--- migrate data from DICOM table to the new table, using the DMD_FILE_ID
-INSERT INTO OH_DICOM_DATA(DMD_FILE_ID, DMD_DATA)
-    (SELECT d.DM_FILE_ID, d.DM_DATA
-     FROM OH_DICOM d
-     WHERE d.DM_DATA IS NOT NULL);
+-- migrate data from dicom table to the new table, using the dmd_file_id
+insert into oh_dicom_data(dmd_file_id, dmd_data)
+    (select d.dm_file_id, d.dm_data
+     from oh_dicom d
+     where d.dm_data IS not null);
 
 -- drop original column
-ALTER TABLE OH_DICOM DROP DM_DATA;
+alter table oh_dicom drop dm_data;
 
--- add DMD_FILE_ID foreign key
-ALTER TABLE OH_DICOM_DATA
-    ADD CONSTRAINT FK_DICOM_DATA_DICOM
-        FOREIGN KEY (DMD_FILE_ID)
-        REFERENCES OH_DICOM (DM_FILE_ID)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE;
+-- add dmd_file_id foreign key
+alter table oh_dicom_data
+    add constraint fk_dicom_data_dicom
+        foreign key (dmd_file_id)
+        references oh_dicom (dm_file_id)
+        on delete cascade
+        on update cascade;

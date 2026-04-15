@@ -1,37 +1,37 @@
--- BDATE FROM AGETYPE
--- SELECT PAT_TIMESTAMP, PAT_BDATE, PAT_AGE, PAT_AGETYPE, substring(PAT_AGETYPE, LOCATE('/', PAT_AGETYPE)+1) AS MONTHS, DATE((date_sub(PAT_TIMESTAMP, INTERVAL substring(PAT_AGETYPE, LOCATE('/', PAT_AGETYPE)+1) MONTH))) AS BDATE 
--- FROM PATIENT
--- WHERE PAT_TIMESTAMP > 0
--- AND PAT_ID > 0
--- AND PAT_AGETYPE NOT LIKE "" 
--- AND PAT_BDATE IS NULL;
+-- bdate from agetype
+-- select pat_timestamp, pat_bdate, pat_age, pat_agetype, substring(pat_agetype, locate('/', pat_agetype)+1) AS months, date((date_sub(pat_timestamp, interval substring(pat_agetype, locate('/', pat_agetype)+1) month))) AS bdate 
+-- from patient
+-- where pat_timestamp > 0
+-- and pat_id > 0
+-- and pat_agetype not like "" 
+-- and pat_bdate IS null;
 
-UPDATE PATIENT SET PAT_BDATE = DATE((date_sub(PAT_TIMESTAMP, INTERVAL substring(PAT_AGETYPE, LOCATE('/', PAT_AGETYPE)+1) MONTH))), PAT_AGETYPE = ""
-WHERE PAT_TIMESTAMP > 0
-AND PAT_ID > 0
-AND PAT_AGETYPE NOT LIKE "" 
-AND PAT_BDATE IS NULL;
+update patient set pat_bdate = date((date_sub(pat_timestamp, interval substring(pat_agetype, locate('/', pat_agetype)+1) month))), pat_agetype = ""
+where pat_timestamp > 0
+and pat_id > 0
+and pat_agetype not like "" 
+and pat_bdate IS null;
 
--- BDATE FROM AGE
--- SELECT PAT_TIMESTAMP, PAT_BDATE, PAT_AGE, DATE(date_sub(PAT_TIMESTAMP, INTERVAL PAT_AGE YEAR)) AS BDATE
--- FROM PATIENT
--- WHERE PAT_TIMESTAMP > 0
--- AND PAT_ID > 0
--- AND PAT_BDATE IS NULL;
+-- bdate from age
+-- select pat_timestamp, pat_bdate, pat_age, date(date_sub(pat_timestamp, interval pat_age year)) AS bdate
+-- from patient
+-- where pat_timestamp > 0
+-- and pat_id > 0
+-- and pat_bdate IS null;
 
-UPDATE PATIENT SET PAT_BDATE = DATE(date_sub(PAT_TIMESTAMP, INTERVAL PAT_AGE YEAR))
-WHERE PAT_TIMESTAMP > 0
-AND PAT_ID > 0
-AND PAT_BDATE IS NULL;
+update patient set pat_bdate = date(date_sub(pat_timestamp, interval pat_age year))
+where pat_timestamp > 0
+and pat_id > 0
+and pat_bdate IS null;
 
--- AGE FROM BDATE
--- SELECT PAT_TIMESTAMP, PAT_BDATE, PAT_AGE, PAT_AGETYPE, TIMESTAMPDIFF(YEAR, PAT_BDATE, CURDATE()) AS AGE
--- FROM PATIENT
--- WHERE PAT_TIMESTAMP > 0
--- AND PAT_ID > 0
--- AND PAT_BDATE IS NOT NULL;
+-- age from bdate
+-- select pat_timestamp, pat_bdate, pat_age, pat_agetype, timestampdiff(year, pat_bdate, curdate()) AS age
+-- from patient
+-- where pat_timestamp > 0
+-- and pat_id > 0
+-- and pat_bdate IS not null;
 
-UPDATE PATIENT SET PAT_AGE = TIMESTAMPDIFF(YEAR, PAT_BDATE, CURDATE())
-WHERE PAT_TIMESTAMP > 0
-AND PAT_ID > 0
-AND PAT_BDATE IS NOT NULL;
+update patient set pat_age = timestampdiff(year, pat_bdate, curdate())
+where pat_timestamp > 0
+and pat_id > 0
+and pat_bdate IS not null;

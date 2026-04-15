@@ -1,1 +1,1 @@
-ALTER TABLE PATIENTEXAMINATION CHANGE COLUMN PEX_NOTE PEX_NOTE VARCHAR(2000) NULL DEFAULT NULL ;
+alter table patientexamination change column pex_note pex_note varchar(2000) null default null ;

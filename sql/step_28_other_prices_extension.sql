@@ -1,4 +1,4 @@
 -- alterazione tabelle
-ALTER TABLE PRICESOTHERS 
-ADD COLUMN OTH_DISCHARGE INT(11) NULL DEFAULT '0' AFTER OTH_DAILY, 
-ADD COLUMN OTH_UNDEFINED INT(11) NULL DEFAULT '0' AFTER OTH_DISCHARGE;
+alter table pricesothers 
+add column oth_discharge int(11) null default '0' after oth_daily, 
+add column oth_undefined int(11) null default '0' after oth_discharge;

@@ -1,24 +1,24 @@
 -- Remove "exit" and "file"
-DELETE FROM MENUITEM WHERE MNI_ID_A IN ('exit', 'file');
-DELETE FROM GROUPMENU WHERE GM_MNI_ID_A IN ('exit', 'file');
+delete from menuitem where mni_id_a IN ('exit', 'file');
+delete from groupmenu where gm_mni_id_a IN ('exit', 'file');
 
 -- "General Data" is now "Settings" so change shortcut key
 -- Note: the label is set in the properties file
-UPDATE MENUITEM SET MNI_SHORTCUT='S' WHERE MNI_ID_A='generaldata';
+update menuitem set mni_shortcut='S' where mni_id_a='generaldata';
 
 -- Move the "Users" menu to the end of "Settings"
-UPDATE MENUITEM SET MNI_SUBMENU="generaldata", MNI_POSITION=10 WHERE MNI_ID_A="users";
+update menuitem set mni_submenu="generaldata", mni_position=10 where mni_id_a="users";
 
 -- Rearrange main menu
-UPDATE MENUITEM SET MNI_POSITION=1 WHERE MNI_ID_A="opd";
-UPDATE MENUITEM SET MNI_POSITION=2 WHERE MNI_ID_A="admission";
-UPDATE MENUITEM SET MNI_POSITION=3 WHERE MNI_ID_A="laboratory";
-UPDATE MENUITEM SET MNI_POSITION=4 WHERE MNI_ID_A="pharmacy";
-UPDATE MENUITEM SET MNI_POSITION=5 WHERE MNI_ID_A="patientvaccine";
-UPDATE MENUITEM SET MNI_POSITION=6 WHERE MNI_ID_A="accounting";
-UPDATE MENUITEM SET MNI_POSITION=7 WHERE MNI_ID_A="worksheet";
-UPDATE MENUITEM SET MNI_POSITION=8 WHERE MNI_ID_A="statistics";
-UPDATE MENUITEM SET MNI_POSITION=9 WHERE MNI_ID_A="printing";
-UPDATE MENUITEM SET MNI_POSITION=10 WHERE MNI_ID_A="communication";
-UPDATE MENUITEM SET MNI_POSITION=11 WHERE MNI_ID_A="generaldata";
-UPDATE MENUITEM SET MNI_POSITION=12 WHERE MNI_ID_A="help";
+update menuitem set mni_position=1 where mni_id_a="opd";
+update menuitem set mni_position=2 where mni_id_a="admission";
+update menuitem set mni_position=3 where mni_id_a="laboratory";
+update menuitem set mni_position=4 where mni_id_a="pharmacy";
+update menuitem set mni_position=5 where mni_id_a="patientvaccine";
+update menuitem set mni_position=6 where mni_id_a="accounting";
+update menuitem set mni_position=7 where mni_id_a="worksheet";
+update menuitem set mni_position=8 where mni_id_a="statistics";
+update menuitem set mni_position=9 where mni_id_a="printing";
+update menuitem set mni_position=10 where mni_id_a="communication";
+update menuitem set mni_position=11 where mni_id_a="generaldata";
+update menuitem set mni_position=12 where mni_id_a="help";

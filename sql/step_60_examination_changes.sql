@@ -1,22 +1,22 @@
-ALTER TABLE PATIENTEXAMINATION 
-CHANGE COLUMN PEX_HEIGHT PEX_HEIGHT INT(11) NULL DEFAULT NULL COMMENT 'Height in cm' ,
-CHANGE COLUMN PEX_WEIGHT PEX_WEIGHT DOUBLE NULL DEFAULT NULL COMMENT 'Weight in Kg' ,
-CHANGE COLUMN PEX_PA_MIN PEX_AP_MIN INT(11) NULL DEFAULT NULL COMMENT 'Blood Pressure MIN in mmHg' ,
-CHANGE COLUMN PEX_PA_MAX PEX_AP_MAX INT(11) NULL DEFAULT NULL COMMENT 'Blood Pressure MAX in mmHg' ,
-CHANGE COLUMN PEX_FC PEX_HR INT(11) NULL DEFAULT NULL COMMENT 'Heart Rate in APm' ,
-CHANGE COLUMN PEX_TEMP PEX_TEMP DOUBLE NULL DEFAULT NULL COMMENT 'Temperature in °C' ,
-CHANGE COLUMN PEX_SAT PEX_SAT DOUBLE NULL DEFAULT NULL COMMENT 'Saturation in %' ,
-ADD COLUMN PEX_HGT INT(3) NULL DEFAULT NULL COMMENT 'Hemo Glucose Test' AFTER PEX_SAT,
-ADD COLUMN PEX_DIURESIS INT(11) NULL DEFAULT NULL COMMENT 'Daily Urine Volume in ml' AFTER PEX_HGT,
-ADD COLUMN PEX_DIURESIS_DESC VARCHAR(45) NULL DEFAULT NULL COMMENT 'Diuresis: physiological, oliguria, anuria, fequent, nocturia, stranguria, hematuria, pyuria' AFTER PEX_DIURESIS,
-ADD COLUMN PEX_BOWEL_DESC VARCHAR(45) NULL DEFAULT NULL COMMENT 'Bowel Function: regular, irregular, constipation, diarrheal' AFTER PEX_DIURESIS_DESC;
+alter table patientexamination 
+change column pex_height pex_height int(11) null default null comment 'Height in cm' ,
+change column pex_weight pex_weight double null default null comment 'Weight in Kg' ,
+change column pex_pa_min pex_ap_min int(11) null default null comment 'Blood Pressure min in mmHg' ,
+change column pex_pa_max pex_ap_max int(11) null default null comment 'Blood Pressure max in mmHg' ,
+change column pex_fc pex_hr int(11) null default null comment 'Heart Rate in APm' ,
+change column pex_temp pex_temp double null default null comment 'Temperature in °C' ,
+change column pex_sat pex_sat double null default null comment 'Saturation in %' ,
+add column pex_hgt int(3) null default null comment 'Hemo Glucose Test' after pex_sat,
+add column pex_diuresis int(11) null default null comment 'Daily Urine Volume in ml' after pex_hgt,
+add column pex_diuresis_desc varchar(45) null default null comment 'Diuresis: physiological, oliguria, anuria, fequent, nocturia, stranguria, hematuria, pyuria' after pex_diuresis,
+add column pex_bowel_desc varchar(45) null default null comment 'Bowel Function: regular, irregular, constipation, diarrheal' after pex_diuresis_desc;
 
 
-UPDATE PATIENTEXAMINATION SET PEX_HEIGHT = NULL WHERE PEX_HEIGHT = 0;
-UPDATE PATIENTEXAMINATION SET PEX_WEIGHT = NULL WHERE PEX_WEIGHT = 0;
-UPDATE PATIENTEXAMINATION SET PEX_AP_MIN = NULL WHERE PEX_AP_MIN = 0;
-UPDATE PATIENTEXAMINATION SET PEX_AP_MAX = NULL WHERE PEX_AP_MAX = 0;
-UPDATE PATIENTEXAMINATION SET PEX_HR = NULL WHERE PEX_HR = 0;
-UPDATE PATIENTEXAMINATION SET PEX_TEMP = NULL WHERE PEX_TEMP = 0;
-UPDATE PATIENTEXAMINATION SET PEX_SAT = NULL WHERE PEX_SAT = 0;
-UPDATE PATIENTEXAMINATION SET PEX_NOTE = NULL WHERE PEX_NOTE = '';
+update patientexamination set pex_height = null where pex_height = 0;
+update patientexamination set pex_weight = null where pex_weight = 0;
+update patientexamination set pex_ap_min = null where pex_ap_min = 0;
+update patientexamination set pex_ap_max = null where pex_ap_max = 0;
+update patientexamination set pex_hr = null where pex_hr = 0;
+update patientexamination set pex_temp = null where pex_temp = 0;
+update patientexamination set pex_sat = null where pex_sat = 0;
+update patientexamination set pex_note = null where pex_note = '';

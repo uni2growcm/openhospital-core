@@ -1,26 +1,26 @@
--- changing date type from VARCHAR to DATETIME to ease sorting
-ALTER TABLE DICOM
-CHANGE COLUMN DM_FILE_ST_DATE DM_FILE_ST_DATE DATETIME NULL DEFAULT NULL ,
-CHANGE COLUMN DM_FILE_SER_DATE DM_FILE_SER_DATE DATETIME NULL DEFAULT NULL ;
+-- changing date type from varchar to datetime to ease sorting
+alter table dicom
+change column dm_file_st_date dm_file_st_date datetime null default null ,
+change column dm_file_ser_date dm_file_ser_date datetime null default null ;
 
-CREATE TABLE DICOMTYPE (
-  DCMT_ID VARCHAR(3) NOT NULL,
-  DCMT_DESC VARCHAR(50) NOT NULL,
-  PRIMARY KEY (DCMT_ID)
+create table dicomtype (
+  dcmt_id varchar(3) not null,
+  dcmt_desc varchar(50) not null,
+  primary key (dcmt_id)
 );
 
-ALTER TABLE DICOM 
-ADD COLUMN DM_DCMT_ID VARCHAR(3) NULL AFTER DM_THUMBNAIL,
-ADD INDEX FK_DICOM_DICOMTYPE_idx (DM_DCMT_ID ASC);
+alter table dicom 
+add column dm_dcmt_id varchar(3) null after dm_thumbnail,
+add index FK_DICOM_DICOMTYPE_idx (dm_dcmt_id asc);
 
-ALTER TABLE DICOM 
-ADD CONSTRAINT FK_DICOM_DICOMTYPE
-  FOREIGN KEY (DM_DCMT_ID)
-  REFERENCES DICOMTYPE (DCMT_ID)
-  ON DELETE NO ACTION
-  ON UPDATE NO ACTION;
+alter table dicom 
+add constraint fk_dicom_dicomtype
+  foreign key (dm_dcmt_id)
+  references dicomtype (dcmt_id)
+  on delete no action
+  on update no action;
   
-INSERT INTO MENUITEM (MNI_ID_A, MNI_BTN_LABEL, MNI_LABEL, MNI_TOOLTIP, MNI_SHORTCUT, MNI_SUBMENU, MNI_CLASS, MNI_IS_SUBMENU, MNI_POSITION) VALUES ('dicomtype', 'angal.menu.btn.dicomtype', 'angal.menu.dicomtype', 'x', 'X', 'types', 'org.isf.dicomtype.gui.DicomTypeBrowser', 'N', '13');
-INSERT INTO GROUPMENU (GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE) VALUES ('admin','dicomtype',1);
+insert into menuitem (mni_id_a, mni_btn_label, mni_label, mni_tooltip, mni_shortcut, mni_submenu, mni_class, mni_is_submenu, mni_position) values ('dicomtype', 'angal.menu.btn.dicomtype', 'angal.menu.dicomtype', 'x', 'X', 'types', 'org.isf.dicomtype.gui.DicomTypeBrowser', 'N', '13');
+insert into groupmenu (gm_ug_id_a, gm_mni_id_a, gm_active) values ('admin','dicomtype',1);
   
 

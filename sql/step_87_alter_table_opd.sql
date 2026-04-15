@@ -1,1 +1,1 @@
-ALTER TABLE OH_OPD ADD OPD_PRESCRIPTION VARCHAR(255);
+alter table oh_opd add opd_prescription varchar(255);

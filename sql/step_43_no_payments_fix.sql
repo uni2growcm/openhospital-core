@@ -1,1 +1,1 @@
-ALTER TABLE BILLS ADD COLUMN BLL_USR_ID_A VARCHAR(50) NOT NULL DEFAULT 'admin' AFTER BLL_BALANCE;
+alter table bills add column bll_usr_id_a varchar(50) not null default 'admin' after bll_balance;

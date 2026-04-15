@@ -1,5 +1,5 @@
-UPDATE OPD SET OPD_CREATED_DATE = OPD_DATE;
-UPDATE OPD SET OPD_DATE = CAST(CONCAT(OPD_DATE_VIS, ' ', TIME(OPD_DATE)) AS DATETIME);
+update opd set opd_created_date = opd_date;
+update opd set opd_date = cast(concat(opd_date_vis, ' ', time(opd_date)) as datetime);
 
--- now we could drop OPD_DATE_VIS field for next release
-ALTER TABLE OPD DROP COLUMN OPD_DATE_VIS;
+-- now we could drop opd_date_vis field for next release
+alter table opd drop column opd_date_vis;

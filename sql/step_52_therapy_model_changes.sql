@@ -1,1 +1,1 @@
-ALTER TABLE THERAPIES DROP COLUMN THR_CODE;
+alter table therapies drop column thr_code;

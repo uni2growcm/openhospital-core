@@ -1,1 +1,1 @@
-ALTER TABLE PATIENT MODIFY COLUMN PAT_BTYPE VARCHAR(15) NOT NULL DEFAULT 'Unknown';
+alter table patient modify column pat_btype varchar(15) not null default 'Unknown';

@@ -1,5 +1,5 @@
--- This script adds a "link button" to the DICOM functionality in the Admission/Patient window
+-- This script adds a "link button" to the dicom functionality in the Admission/Patient window
 
--- Add DICOM button in Admission/Patient
-INSERT INTO OH_MENUITEM VALUES ('btnadmdicom','angal.menu.btn.dicom','angal.menu.dicom','x','L','admission','none','N',4);
-INSERT INTO OH_GROUPMENU (GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE) VALUES ('admin','btnadmdicom',1);
+-- add dicom button in Admission/Patient
+insert into oh_menuitem values ('btnadmdicom','angal.menu.btn.dicom','angal.menu.dicom','x','L','admission','none','N',4);
+insert into oh_groupmenu (gm_ug_id_a, gm_mni_id_a, gm_active) values ('admin','btnadmdicom',1);

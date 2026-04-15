@@ -1,26 +1,26 @@
-DROP TABLE IF EXISTS SUPPLIER;
-CREATE TABLE SUPPLIER (
-	SUP_ID INT(11) NOT NULL AUTO_INCREMENT,
-	SUP_NAME VARCHAR(100) NOT NULL,
-	SUP_ADDRESS VARCHAR(150) NULL,
-	SUP_TAXCODE VARCHAR(50) NULL,
-	SUP_PHONE VARCHAR(20) NULL,
-	SUP_FAX VARCHAR(20) NULL,
-	SUP_EMAIL VARCHAR(100) NULL,
-	SUP_NOTE VARCHAR(200) NULL,
-	SUP_DELETED char(1) DEFAULT 'N',
-	PRIMARY KEY (SUP_ID)
+drop table if exists supplier;
+create table supplier (
+	sup_id int(11) not null auto_increment,
+	sup_name varchar(100) not null,
+	sup_address varchar(150) null,
+	sup_taxcode varchar(50) null,
+	sup_phone varchar(20) null,
+	sup_fax varchar(20) null,
+	sup_email varchar(100) null,
+	sup_note varchar(200) null,
+	sup_deleted char(1) default 'N',
+	primary key (sup_id)
 );
 
-INSERT INTO MENUITEM VALUES ('supplier', 'angal.menu.btn.supplier', 'angal.menu.supplier', 'x', 'S', 'generaldata', 'org.isf.supplier.gui.SupplierBrowser','N', 8);
-INSERT INTO GROUPMENU (GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE) VALUES ('admin','supplier','Y');
+insert into menuitem values ('supplier', 'angal.menu.btn.supplier', 'angal.menu.supplier', 'x', 'S', 'generaldata', 'org.isf.supplier.gui.SupplierBrowser','N', 8);
+insert into groupmenu (gm_ug_id_a, gm_mni_id_a, gm_active) values ('admin','supplier','Y');
 
 -- Collecting supplier old informations
-INSERT INTO SUPPLIER (SUP_NAME) SELECT DISTINCT(MMV_FROM) FROM MEDICALDSRSTOCKMOV WHERE MMV_FROM IS NOT NULL;
+insert into supplier (sup_name) select distinct(mmv_from) from medicaldsrstockmov where mmv_from IS not null;
 
--- Updating MEDICALDSRSTOCKMOV table with new codes
-UPDATE MEDICALDSRSTOCKMOV JOIN SUPPLIER ON MMV_FROM = SUP_NAME SET MMV_FROM = SUP_ID;
--- UPDATE MEDICALDSRSTOCKMOV SET MMV_FROM = 0 WHERE MMV_FROM IS NULL;
+-- Updating medicaldsrstockmov table with new codes
+update medicaldsrstockmov join supplier on mmv_from = sup_name set mmv_from = sup_id;
+-- update medicaldsrstockmov set mmv_from = 0 where mmv_from IS null;
 
--- Altering MEDICALDSRSTOCKMOV table to reflect codes type
-ALTER TABLE MEDICALDSRSTOCKMOV CHANGE COLUMN MMV_FROM MMV_FROM INT(11) NULL DEFAULT NULL; 
+-- Altering medicaldsrstockmov table to reflect codes type
+alter table medicaldsrstockmov change column mmv_from mmv_from int(11) null default null; 

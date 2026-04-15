@@ -1,2 +1,2 @@
-INSERT INTO OH_MENUITEM (MNI_ID_A, MNI_BTN_LABEL, MNI_LABEL, MNI_TOOLTIP, MNI_SHORTCUT, MNI_SUBMENU, MNI_CLASS, MNI_IS_SUBMENU, MNI_POSITION) VALUES ('btnpharmstockcmovdelete','angal.common.delete.btn','angal.common.delete.btn','x','X','medicalstock','none','N',3);
-INSERT INTO OH_GROUPMENU (GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE) VALUE ('admin','btnpharmstockcmovdelete', 1);
+insert into oh_menuitem (mni_id_a, mni_btn_label, mni_label, mni_tooltip, mni_shortcut, mni_submenu, mni_class, mni_is_submenu, mni_position) values ('btnpharmstockcmovdelete','angal.common.delete.btn','angal.common.delete.btn','x','X','medicalstock','none','N',3);
+insert into oh_groupmenu (gm_ug_id_a, gm_mni_id_a, gm_active) value ('admin','btnpharmstockcmovdelete', 1);

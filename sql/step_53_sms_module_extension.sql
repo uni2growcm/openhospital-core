@@ -1,3 +1,3 @@
-ALTER TABLE SMS 
-ADD COLUMN SMS_MOD VARCHAR(45) NOT NULL DEFAULT 'smsmanager' AFTER SMS_USER,
-ADD COLUMN SMS_MOD_ID VARCHAR(45) NULL DEFAULT NULL AFTER SMS_MOD;
+alter table sms 
+add column sms_mod varchar(45) not null default 'smsmanager' after sms_user,
+add column sms_mod_id varchar(45) null default null after sms_mod;

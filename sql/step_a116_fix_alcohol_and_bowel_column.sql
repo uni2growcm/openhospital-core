@@ -1,6 +1,6 @@
-ALTER TABLE OH_PATIENTHISTORY
-CHANGE COLUMN `PAH_PHY_ALCOOL` `PAH_PHY_ALCOHOL` TINYINT(1) NULL DEFAULT 0 ;
+alter table oh_patienthistory
+change column `pah_phy_alcool` `pah_phy_alcohol` tinyint(1) null default 0 ;
 
-ALTER TABLE OH_PATIENTHISTORY
-CHANGE COLUMN `PAH_PHY_ALVO_NOR` `PAH_PHY_BOWEL_NOR` TINYINT(1) NULL DEFAULT 1 ,
-CHANGE COLUMN `PAH_PHY_ALVO_ABN` `PAH_PHY_BOWEL_ABN` VARCHAR(30) NULL DEFAULT NULL ;
+alter table oh_patienthistory
+change column `pah_phy_alvo_nor` `pah_phy_bowel_nor` tinyint(1) null default 1 ,
+change column `pah_phy_alvo_abn` `pah_phy_bowel_abn` varchar(30) null default null ;

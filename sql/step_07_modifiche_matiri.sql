@@ -1,14 +1,14 @@
-ALTER TABLE MEDICALDSR ADD COLUMN MDSR_CODE varchar(5) NOT NULL AFTER MDSR_MDSRT_ID_A;
-ALTER TABLE MEDICALDSR ADD COLUMN MDSR_PCS_X_PCK integer NOT NULL AFTER MDSR_INI_STOCK_QTI;
+alter table medicaldsr add column mdsr_code varchar(5) not null after mdsr_mdsrt_id_a;
+alter table medicaldsr add column mdsr_pcs_x_pck integer not null after mdsr_ini_stock_qti;
 
-ALTER TABLE PATIENT ADD COLUMN PAT_MOTH_NAME varchar(50) NOT NULL DEFAULT '' AFTER PAT_TELE;
-ALTER TABLE PATIENT ADD COLUMN PAT_FATH_NAME varchar(50) NOT NULL DEFAULT '' AFTER PAT_MOTH;
-ALTER TABLE PATIENT ADD COLUMN PAT_BTYPE varchar(7) NOT NULL DEFAULT 'Unknown';
-ALTER TABLE PATIENT ADD COLUMN PAT_BDATE varchar(50) NOT NULL DEFAULT '' AFTER PAT_NAME;
-ALTER TABLE PATIENT MODIFY COLUMN PAT_AGE varchar(50) NOT NULL;
+alter table patient add column pat_moth_name varchar(50) not null default '' after pat_tele;
+alter table patient add column pat_fath_name varchar(50) not null default '' after pat_moth;
+alter table patient add column pat_btype varchar(7) not null default 'Unknown';
+alter table patient add column pat_bdate varchar(50) not null default '' after pat_name;
+alter table patient modify column pat_age varchar(50) not null;
 
-ALTER TABLE OPD ADD COLUMN OPD_PAT_FULLNAME varchar(50) NOT NULL DEFAULT '' AFTER OPD_PAT_ID;
-ALTER TABLE OPD MODIFY COLUMN OPD_AGE varchar(50) NOT NULL;
-ALTER TABLE OPD ADD COLUMN OPD_NOTE TEXT NOT NULL AFTER OPD_REFERRAL_TO;
+alter table opd add column opd_pat_fullname varchar(50) not null default '' after opd_pat_id;
+alter table opd modify column opd_age varchar(50) not null;
+alter table opd add column opd_note text not null after opd_referral_to;
 
-UPDATE MENUITEM SET MNI_CLASS='org.isf.menu.gui.UserGroupBrowsing' WHERE MNI_ID_A='groups';
+update menuitem set mni_class='org.isf.menu.gui.UserGroupBrowsing' where mni_id_a='groups';

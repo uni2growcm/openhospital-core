@@ -1,2 +1,2 @@
-ALTER TABLE OPD ADD COLUMN OPD_USR_ID_A VARCHAR(50) NOT NULL DEFAULT 'admin' AFTER OPD_PAT_ID;
-ALTER TABLE ADMISSION ADD COLUMN ADM_USR_ID_A VARCHAR(50) NOT NULL DEFAULT 'admin' AFTER ADM_PRG_DATE_ABORT;
+alter table opd add column opd_usr_id_a varchar(50) not null default 'admin' after opd_pat_id;
+alter table admission add column adm_usr_id_a varchar(50) not null default 'admin' after adm_prg_date_abort;

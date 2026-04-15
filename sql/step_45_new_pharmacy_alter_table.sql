@@ -1,13 +1,13 @@
-ALTER TABLE MEDICALDSRSTOCKMOV ADD COLUMN MMV_REFNO VARCHAR(50) NOT NULL DEFAULT ''  AFTER MMV_LOCK;
+alter table medicaldsrstockmov add column mmv_refno varchar(50) not null default ''  after mmv_lock;
 -- porting previous data
-UPDATE MEDICALDSRSTOCKMOV AS t
-INNER JOIN 
-(SELECT DISTINCT(MMV_MMVT_ID_A) AS type FROM MEDICALDSRSTOCKMOV) AS t1 
-ON t.MMV_MMVT_ID_A = t1.type 
-SET MMV_REFNO = CONCAT("Auto-Refno-", MMV_MMVT_ID_A);
+update medicaldsrstockmov AS t
+inner join 
+(select distinct(mmv_mmvt_id_a) AS type from medicaldsrstockmov) AS t1 
+on t.mmv_mmvt_id_a = t1.type 
+set mmv_refno = concat("Auto-Refno-", mmv_mmvt_id_a);
 
-INSERT INTO MENUITEM VALUES ('btnpharmstockcharge','angal.menu.btn.btnpharmstockcharge','angal.menu.btnpharmstockcharge','x','C','medicalstock','none','N', 1);
-INSERT INTO GROUPMENU (GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE) VALUES ('admin','btnpharmstockcharge','Y');
+insert into menuitem values ('btnpharmstockcharge','angal.menu.btn.btnpharmstockcharge','angal.menu.btnpharmstockcharge','x','C','medicalstock','none','N', 1);
+insert into groupmenu (gm_ug_id_a, gm_mni_id_a, gm_active) values ('admin','btnpharmstockcharge','Y');
 
-INSERT INTO MENUITEM VALUES ('btnpharmstockdischarge','angal.menu.btn.btnpharmstockdischarge','angal.menu.btnpharmstockdischarge','x','D','medicalstock','none','N', 2);
-INSERT INTO GROUPMENU (GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE) VALUES ('admin','btnpharmstockdischarge','Y');
+insert into menuitem values ('btnpharmstockdischarge','angal.menu.btn.btnpharmstockdischarge','angal.menu.btnpharmstockdischarge','x','D','medicalstock','none','N', 2);
+insert into groupmenu (gm_ug_id_a, gm_mni_id_a, gm_active) values ('admin','btnpharmstockdischarge','Y');

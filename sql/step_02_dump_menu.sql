@@ -1,28 +1,28 @@
--- v 17-11-2006  (ADDED 3 NEW MENU ITEMS, printing, examlist, diseaselist)
+-- v 17-11-2006  (added 3 new menu items, printing, examlist, diseaselist)
 
 -- 
 --  deleting existing data
 -- 
-delete from GROUPMENU;
-delete from MENUITEM;
-delete from USER;
-delete from USERGROUP;
+delete from groupmenu;
+delete from menuitem;
+delete from user;
+delete from usergroup;
 
 -- 
---  Dumping data for table 'USERGROUP'
+--  Dumping data for table 'usergroup'
 -- 
-INSERT INTO USERGROUP VALUES("admin","User with all the privileges");
+insert into usergroup values("admin","User with all the privileges");
 
 -- 
---  Dumping data for table 'USER'
+--  Dumping data for table 'user'
 -- 
-INSERT INTO USER VALUES("admin","admin","admin","administrator");
+insert into user values("admin","admin","admin","administrator");
 
 
 -- 
---  Dumping data for table 'MENUITEM'
+--  Dumping data for table 'menuitem'
 -- 
-INSERT INTO MENUITEM (MNI_ID_A,MNI_BTN_LABEL,MNI_LABEL,MNI_TOOLTIP,MNI_SHORTCUT,MNI_SUBMENU,MNI_CLASS,MNI_IS_SUBMENU,MNI_POSITION) VALUES 
+insert into menuitem (mni_id_a,mni_btn_label,mni_label,mni_tooltip,mni_shortcut,mni_submenu,mni_class,mni_is_submenu,mni_position) values 
  ('admission','Admission/Patient','Admission/Patient','x','A','main','org.isf.admission.gui.AdmittedPatientBrowser','N',5),
  ('admtype','Admission Type','AdmissionType','x','A','types','org.isf.admtype.gui.AdmissionTypeBrowser','N',0),
  ('deliverytype','Delivery Type','Delivery','x','L','types','org.isf.dlvrtype.gui.DeliveryTypeBrowser','N',2),
@@ -36,9 +36,9 @@ INSERT INTO MENUITEM (MNI_ID_A,MNI_BTN_LABEL,MNI_LABEL,MNI_TOOLTIP,MNI_SHORTCUT,
  ('examtype','Exam Type','Exam Type','x','E','types','org.isf.exatype.gui.ExamTypeBrowser','N',5),
  ('exit','Exit','Exit','x','E','file','none','N',0),
  ('file','File','File','x','F','main','none','Y',0),
- ('generaldata','General Data','GeneralData','x','G','main','none','Y',1),
+ ('generaldata','General data','GeneralData','x','G','main','none','Y',1),
  ('groups','Groups','Groups','x','G','users','org.isf.menu.gui.UsrGroupBrowsing','N',1),
- ('help','HELP','HELP','x','H','main','none','N',8),
+ ('help','help','help','x','H','main','none','N',8),
  ('hospital','Hospital','Hospital','x','H','generaldata','org.isf.hospital.gui.HospitalBrowser','N',1),
  ('labbrowsing','Laboratory Browsing','LaboratoryBrowsing','x','B','laboratory','org.isf.lab.gui.LabBrowser','N',0),
  ('laboratory','Laboratory','Laboratory','x','L','main','none','Y',4),
@@ -47,7 +47,7 @@ INSERT INTO MENUITEM (MNI_ID_A,MNI_BTN_LABEL,MNI_LABEL,MNI_TOOLTIP,MNI_SHORTCUT,
  ('medicalstock','Pharmaceutical Stock','PharmaceuticalStock','x','S','pharmacy','org.isf.medicalstock.gui.MovStockBrowser','N',1),
  ('medicalstype','Medicals Type','Medicals','x','M','types','org.isf.medtype.gui.MedicalTypeBrowser','N',7),
  ('medstockmovtype','Medicals Stock Mov Type','MedicalsStock Mov','x','S','types','org.isf.medstockmovtype.gui.MedicaldsrstockmovTypeBrowser','N',6),
- ('opd','OPD','OPD','x','O','main','org.isf.opd.gui.OpdBrowser','N',2),
+ ('opd','opd','opd','x','O','main','org.isf.opd.gui.OpdBrowser','N',2),
  ('operation','Operation','Operation','x','O','generaldata','org.isf.operation.gui.OperationBrowser','N',5),
  ('operationtype','Operation Type','Operation','x','O','types','org.isf.opetype.gui.OperationTypeBrowser','N',8),
  ('pharmacy','Pharmacy','Pharmacy','x','P','main','none','Y',3),
@@ -61,9 +61,9 @@ INSERT INTO MENUITEM (MNI_ID_A,MNI_BTN_LABEL,MNI_LABEL,MNI_TOOLTIP,MNI_SHORTCUT,
  ('ward','Ward','Ward','x','W','generaldata','org.isf.ward.gui.WardBrowser','N',2);
 
 -- 
---  Dumping data for table 'GROUPMENU'
+--  Dumping data for table 'groupmenu'
 -- 
-INSERT INTO GROUPMENU (GM_ID,GM_UG_ID_A,GM_MNI_ID_A,GM_ACTIVE) VALUES 
+insert into groupmenu (gm_id,gm_ug_id_a,gm_mni_id_a,gm_active) values 
  ( 1,'admin','admtype','Y'),
  ( 2,'admin','disctype','Y'),
  ( 3,'admin','laboratoryresulttype','Y'),

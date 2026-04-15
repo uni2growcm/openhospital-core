@@ -1,2 +1,2 @@
--- Add HelpViewer Class entry in the DB
-UPDATE MENUITEM SET MNI_CLASS='org.isf.help.HelpViewer' WHERE MNI_ID_A='help';
+-- add HelpViewer Class entry in the DB
+update menuitem set mni_class='org.isf.help.HelpViewer' where mni_id_a='help';

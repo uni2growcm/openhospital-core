@@ -1,5 +1,5 @@
-ALTER TABLE OH_USER
-ADD US_DELETED BOOLEAN DEFAULT false;
+alter table oh_user
+add us_deleted boolean default false;
 
-ALTER TABLE OH_USERGROUP
-ADD UG_DELETED BOOLEAN DEFAULT false;
+alter table oh_usergroup
+add ug_deleted boolean default false;

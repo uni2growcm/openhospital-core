@@ -1,1 +1,1 @@
-ALTER TABLE OH_PATIENT ADD COLUMN PAT_ALLERGIES VARCHAR(255), ADD COLUMN PAT_ANAMNESIS VARCHAR(255);
+alter table oh_patient add column pat_allergies varchar(255), add column pat_anamnesis varchar(255);

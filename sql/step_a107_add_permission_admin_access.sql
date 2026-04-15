@@ -1,4 +1,4 @@
--- Add permission
-INSERT INTO `oh_permissions` (`P_ID_A`, `P_NAME`, `P_DESCRIPTION`, `P_ACTIVE`, `P_CREATED_BY`, `P_CREATED_DATE`, `P_LAST_MODIFIED_BY`, `P_LAST_MODIFIED_DATE`) VALUES (167,'admin.access','','1',NULL,NULL,NULL,NULL);
--- Add group permisson
-INSERT INTO `oh_grouppermission` (`GP_ID`, `GP_UG_ID_A`, `GP_P_ID_A`, `GP_ACTIVE`, `GP_CREATED_BY`, `GP_CREATED_DATE`, `GP_LAST_MODIFIED_BY`, `GP_LAST_MODIFIED_DATE`) VALUES (312,'admin',167,'1',NULL,NULL,NULL,NULL);
+-- add permission
+insert into `oh_permissions` (`p_id_a`, `p_name`, `p_description`, `p_active`, `p_created_by`, `p_created_date`, `p_last_modified_by`, `p_last_modified_date`) values (167,'admin.access','','1',null,null,null,null);
+-- add group permisson
+insert into `oh_grouppermission` (`gp_id`, `gp_ug_id_a`, `gp_p_id_a`, `gp_active`, `gp_created_by`, `gp_created_date`, `gp_last_modified_by`, `gp_last_modified_date`) values (312,'admin',167,'1',null,null,null,null);

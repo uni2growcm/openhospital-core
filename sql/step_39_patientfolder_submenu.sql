@@ -1,13 +1,13 @@
-UPDATE MENUITEM SET MNI_IS_SUBMENU='Y' WHERE MNI_ID_A='btnadmpatientfolder';
+update menuitem set mni_is_submenu='Y' where mni_id_a='btnadmpatientfolder';
 
-INSERT INTO MENUITEM VALUES ('btnpatfoldopdrpt', 'angal.menu.btn.opdchart', 'angal.menu.opdchart', 'x', 'O', 'btnadmpatientfolder', 'none','N', 1);
-INSERT INTO GROUPMENU (GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE) VALUES ('admin','btnpatfoldopdrpt','Y');
+insert into menuitem values ('btnpatfoldopdrpt', 'angal.menu.btn.opdchart', 'angal.menu.opdchart', 'x', 'O', 'btnadmpatientfolder', 'none','N', 1);
+insert into groupmenu (gm_ug_id_a, gm_mni_id_a, gm_active) values ('admin','btnpatfoldopdrpt','Y');
 
-INSERT INTO MENUITEM VALUES ('btnpatfoldadmrpt', 'angal.menu.btn.admchart', 'angal.menu.admchart', 'x', 'A', 'btnadmpatientfolder', 'none','N', 2);
-INSERT INTO GROUPMENU (GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE) VALUES ('admin','btnpatfoldadmrpt','Y');
+insert into menuitem values ('btnpatfoldadmrpt', 'angal.menu.btn.admchart', 'angal.menu.admchart', 'x', 'A', 'btnadmpatientfolder', 'none','N', 2);
+insert into groupmenu (gm_ug_id_a, gm_mni_id_a, gm_active) values ('admin','btnpatfoldadmrpt','Y');
 
-INSERT INTO MENUITEM VALUES ('btnpatfoldpatrpt', 'angal.menu.btn.patreport', 'angal.menu.patreport', 'x', 'R', 'btnadmpatientfolder', 'none','N', 3);
-INSERT INTO GROUPMENU (GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE) VALUES ('admin','btnpatfoldpatrpt','Y');
+insert into menuitem values ('btnpatfoldpatrpt', 'angal.menu.btn.patreport', 'angal.menu.patreport', 'x', 'R', 'btnadmpatientfolder', 'none','N', 3);
+insert into groupmenu (gm_ug_id_a, gm_mni_id_a, gm_active) values ('admin','btnpatfoldpatrpt','Y');
 
-INSERT INTO MENUITEM VALUES ('btnpatfolddicom', 'angal.menu.btn.dicom', 'angal.menu.dicom', 'x', 'D', 'btnadmpatientfolder', 'none','N', 4);
-INSERT INTO GROUPMENU (GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE) VALUES ('admin','btnpatfolddicom','Y');
+insert into menuitem values ('btnpatfolddicom', 'angal.menu.btn.dicom', 'angal.menu.dicom', 'x', 'D', 'btnadmpatientfolder', 'none','N', 4);
+insert into groupmenu (gm_ug_id_a, gm_mni_id_a, gm_active) values ('admin','btnpatfolddicom','Y');

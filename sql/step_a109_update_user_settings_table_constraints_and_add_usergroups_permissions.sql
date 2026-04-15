@@ -1,15 +1,15 @@
-ALTER TABLE OH_USER_SETTINGS DROP FOREIGN KEY oh_user_settings_ibfk_1;
-ALTER TABLE OH_USER_SETTINGS DROP INDEX USS_US_ID_A;
-ALTER TABLE OH_USER_SETTINGS
-ADD CONSTRAINT USS_US_ID_A_FK FOREIGN KEY (USS_US_ID_A) REFERENCES OH_USER(US_ID_A) ON DELETE CASCADE;
-ALTER TABLE OH_USER_SETTINGS ADD CONSTRAINT USS_US_ID_A_CONFIG_NAME_IDX UNIQUE (USS_US_ID_A, USS_CONFIG_NAME);
+alter table oh_user_settings drop foreign key oh_user_settings_ibfk_1;
+alter table oh_user_settings drop index uss_us_id_a;
+alter table oh_user_settings
+add constraint uss_us_id_a_fk foreign key (uss_us_id_a) references oh_user(us_id_a) on delete cascade;
+alter table oh_user_settings add constraint uss_us_id_a_config_name_idx unique (uss_us_id_a, uss_config_name);
 
-INSERT INTO `oh_permissions` (`P_ID_A`, `P_NAME`, `P_DESCRIPTION`, `P_ACTIVE`, `P_CREATED_BY`, `P_CREATED_DATE`, `P_LAST_MODIFIED_BY`, `P_LAST_MODIFIED_DATE`) VALUES (168,'usergroups.create','','1',NULL,NULL,NULL,NULL);
-INSERT INTO `oh_permissions` (`P_ID_A`, `P_NAME`, `P_DESCRIPTION`, `P_ACTIVE`, `P_CREATED_BY`, `P_CREATED_DATE`, `P_LAST_MODIFIED_BY`, `P_LAST_MODIFIED_DATE`) VALUES (169,'usergroups.read','','1',NULL,NULL,NULL,NULL);
-INSERT INTO `oh_permissions` (`P_ID_A`, `P_NAME`, `P_DESCRIPTION`, `P_ACTIVE`, `P_CREATED_BY`, `P_CREATED_DATE`, `P_LAST_MODIFIED_BY`, `P_LAST_MODIFIED_DATE`) VALUES (170,'usergroups.update','','1',NULL,NULL,NULL,NULL);
-INSERT INTO `oh_permissions` (`P_ID_A`, `P_NAME`, `P_DESCRIPTION`, `P_ACTIVE`, `P_CREATED_BY`, `P_CREATED_DATE`, `P_LAST_MODIFIED_BY`, `P_LAST_MODIFIED_DATE`) VALUES (171,'usergroups.delete','','1',NULL,NULL,NULL,NULL);
+insert into `oh_permissions` (`p_id_a`, `p_name`, `p_description`, `p_active`, `p_created_by`, `p_created_date`, `p_last_modified_by`, `p_last_modified_date`) values (168,'usergroups.create','','1',null,null,null,null);
+insert into `oh_permissions` (`p_id_a`, `p_name`, `p_description`, `p_active`, `p_created_by`, `p_created_date`, `p_last_modified_by`, `p_last_modified_date`) values (169,'usergroups.read','','1',null,null,null,null);
+insert into `oh_permissions` (`p_id_a`, `p_name`, `p_description`, `p_active`, `p_created_by`, `p_created_date`, `p_last_modified_by`, `p_last_modified_date`) values (170,'usergroups.update','','1',null,null,null,null);
+insert into `oh_permissions` (`p_id_a`, `p_name`, `p_description`, `p_active`, `p_created_by`, `p_created_date`, `p_last_modified_by`, `p_last_modified_date`) values (171,'usergroups.delete','','1',null,null,null,null);
 
-INSERT INTO `oh_grouppermission` (`GP_ID`, `GP_UG_ID_A`, `GP_P_ID_A`, `GP_ACTIVE`, `GP_CREATED_BY`, `GP_CREATED_DATE`, `GP_LAST_MODIFIED_BY`, `GP_LAST_MODIFIED_DATE`) VALUES (313,'admin',168,'1',NULL,NULL,NULL,NULL);
-INSERT INTO `oh_grouppermission` (`GP_ID`, `GP_UG_ID_A`, `GP_P_ID_A`, `GP_ACTIVE`, `GP_CREATED_BY`, `GP_CREATED_DATE`, `GP_LAST_MODIFIED_BY`, `GP_LAST_MODIFIED_DATE`) VALUES (314,'admin',169,'1',NULL,NULL,NULL,NULL);
-INSERT INTO `oh_grouppermission` (`GP_ID`, `GP_UG_ID_A`, `GP_P_ID_A`, `GP_ACTIVE`, `GP_CREATED_BY`, `GP_CREATED_DATE`, `GP_LAST_MODIFIED_BY`, `GP_LAST_MODIFIED_DATE`) VALUES (315,'admin',170,'1',NULL,NULL,NULL,NULL);
-INSERT INTO `oh_grouppermission` (`GP_ID`, `GP_UG_ID_A`, `GP_P_ID_A`, `GP_ACTIVE`, `GP_CREATED_BY`, `GP_CREATED_DATE`, `GP_LAST_MODIFIED_BY`, `GP_LAST_MODIFIED_DATE`) VALUES (316,'admin',171,'1',NULL,NULL,NULL,NULL);
+insert into `oh_grouppermission` (`gp_id`, `gp_ug_id_a`, `gp_p_id_a`, `gp_active`, `gp_created_by`, `gp_created_date`, `gp_last_modified_by`, `gp_last_modified_date`) values (313,'admin',168,'1',null,null,null,null);
+insert into `oh_grouppermission` (`gp_id`, `gp_ug_id_a`, `gp_p_id_a`, `gp_active`, `gp_created_by`, `gp_created_date`, `gp_last_modified_by`, `gp_last_modified_date`) values (314,'admin',169,'1',null,null,null,null);
+insert into `oh_grouppermission` (`gp_id`, `gp_ug_id_a`, `gp_p_id_a`, `gp_active`, `gp_created_by`, `gp_created_date`, `gp_last_modified_by`, `gp_last_modified_date`) values (315,'admin',170,'1',null,null,null,null);
+insert into `oh_grouppermission` (`gp_id`, `gp_ug_id_a`, `gp_p_id_a`, `gp_active`, `gp_created_by`, `gp_created_date`, `gp_last_modified_by`, `gp_last_modified_date`) values (316,'admin',171,'1',null,null,null,null);

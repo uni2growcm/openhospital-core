@@ -1,1 +1,1 @@
-ALTER TABLE OH_USER ADD US_LAST_LOGIN datetime NULL DEFAULT NULL;
+alter table oh_user add us_last_login datetime null default null;

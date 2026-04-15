@@ -1,3 +1,3 @@
-ALTER TABLE MEDICALDSRSTOCKMOVWARD ADD COLUMN MMVN_IS_PATIENT TINYINT(1)  NOT NULL AFTER MMVN_DATE,
- ADD COLUMN MMVN_DESC VARCHAR(100)  NOT NULL AFTER MMVN_PAT_ID;
+alter table medicaldsrstockmovward add column mmvn_is_patient tinyint(1)  not null after mmvn_date,
+ add column mmvn_desc varchar(100)  not null after mmvn_pat_id;
 

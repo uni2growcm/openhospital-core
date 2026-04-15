@@ -1,21 +1,21 @@
-ALTER TABLE MALNUTRITIONCONTROL ADD COLUMN MLN_PAT_ID INT(11) NULL DEFAULT NULL AFTER MLN_ADM_ID, CHANGE COLUMN MLN_ADM_ID MLN_ADM_ID INT(11) NULL DEFAULT NULL;
-ALTER TABLE MEDICALDSRSTOCKMOVWARD ADD COLUMN MMVN_PAT_AGE SMALLINT NOT NULL AFTER MMVN_PAT_ID;
-ALTER TABLE MEDICALDSRSTOCKMOVWARD ADD COLUMN MMVN_PAT_WEIGHT FLOAT NOT NULL AFTER MMVN_PAT_AGE;
-UPDATE MEDICALDSRSTOCKMOVWARD SET MMVN_PAT_AGE = (SELECT PAT_AGE from PATIENT WHERE PATIENT.PAT_ID = MEDICALDSRSTOCKMOVWARD.MMVN_PAT_ID) WHERE EXISTS (SELECT 1 from PATIENT WHERE PATIENT.PAT_ID = MEDICALDSRSTOCKMOVWARD.MMVN_PAT_ID);
+alter table malnutritioncontrol add column mln_pat_id int(11) null default null after mln_adm_id, change column mln_adm_id mln_adm_id int(11) null default null;
+alter table medicaldsrstockmovward add column mmvn_pat_age smallint not null after mmvn_pat_id;
+alter table medicaldsrstockmovward add column mmvn_pat_weight float not null after mmvn_pat_age;
+update medicaldsrstockmovward set mmvn_pat_age = (select pat_age from patient where patient.pat_id = medicaldsrstockmovward.mmvn_pat_id) where exists (select 1 from patient where patient.pat_id = medicaldsrstockmovward.mmvn_pat_id);
 
-DROP TABLE IF EXISTS MEDICALDSRWARD;
-CREATE TABLE MEDICALDSRWARD (
-  MDSRWRD_WRD_ID_A char(1) NOT NULL,
-  MDSRWRD_MDSR_ID int(11) NOT NULL,
-  MDSRWRD_IN_QTI float,
-  MDSRWRD_OUT_QTI float,
-  PRIMARY KEY (MDSRWRD_WRD_ID_A, MDSRWRD_MDSR_ID)
+drop table if exists medicaldsrward;
+create table medicaldsrward (
+  mdsrwrd_wrd_id_a char(1) not null,
+  mdsrwrd_mdsr_id int(11) not null,
+  mdsrwrd_in_qti float,
+  mdsrwrd_out_qti float,
+  primary key (mdsrwrd_wrd_id_a, mdsrwrd_mdsr_id)
 );
 
-INSERT INTO MEDICALDSRWARD(MDSRWRD_WRD_ID_A, MDSRWRD_MDSR_ID, MDSRWRD_IN_QTI, MDSRWRD_OUT_QTI)
-SELECT MMV_WRD_ID_A AS WARD, MMV_MDSR_ID AS MED, SUM(MMV_QTY), 0 AS TOTAL FROM MEDICALDSRSTOCKMOV WHERE MMV_MMVT_ID_A like "discharge" AND MMV_WRD_ID_A is not null GROUP BY MMV_WRD_ID_A, MMV_MDSR_ID;
+insert into medicaldsrward(mdsrwrd_wrd_id_a, mdsrwrd_mdsr_id, mdsrwrd_in_qti, mdsrwrd_out_qti)
+select mmv_wrd_id_a AS ward, mmv_mdsr_id AS med, sum(mmv_qty), 0 AS total from medicaldsrstockmov where mmv_mmvt_id_a like "discharge" and mmv_wrd_id_a is not null group by mmv_wrd_id_a, mmv_mdsr_id;
   
-INSERT INTO MEDICALDSRWARD(MDSRWRD_WRD_ID_A, MDSRWRD_MDSR_ID, MDSRWRD_OUT_QTI)
-SELECT OUT_QTI.WARD, OUT_QTI.MED, OUT_QTI.QTI FROM
-(SELECT MMVN_WRD_ID_A AS WARD, MMVN_MDSR_ID AS MED, SUM(MMVN_MDSR_QTY) AS QTI FROM MEDICALDSRSTOCKMOVWARD GROUP BY MMVN_WRD_ID_A, MMVN_MDSR_ID) AS OUT_QTI
-ON DUPLICATE KEY UPDATE MDSRWRD_OUT_QTI = QTI;
+insert into medicaldsrward(mdsrwrd_wrd_id_a, mdsrwrd_mdsr_id, mdsrwrd_out_qti)
+select out_qti.ward, out_qti.med, out_qti.qti from
+(select mmvn_wrd_id_a AS ward, mmvn_mdsr_id AS med, sum(mmvn_mdsr_qty) AS qti from medicaldsrstockmovward group by mmvn_wrd_id_a, mmvn_mdsr_id) AS out_qti
+on duplicate key update mdsrwrd_out_qti = qti;

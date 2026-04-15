@@ -1,3 +1,3 @@
-ALTER TABLE ADMISSION 
-ADD COLUMN ADM_OUT_DIS_ID_A_2 VARCHAR(10) NULL DEFAULT NULL AFTER ADM_OUT_DIS_ID_A,
-ADD COLUMN ADM_OUT_DIS_ID_A_3 VARCHAR(10) NULL DEFAULT NULL AFTER ADM_OUT_DIS_ID_A_2;
+alter table admission 
+add column adm_out_dis_id_a_2 varchar(10) null default null after adm_out_dis_id_a,
+add column adm_out_dis_id_a_3 varchar(10) null default null after adm_out_dis_id_a_2;

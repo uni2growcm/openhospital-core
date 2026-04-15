@@ -1,43 +1,43 @@
-UPDATE MENUITEM SET MNI_BTN_LABEL='angal.menu.btn.file', MNI_LABEL='angal.menu.file' WHERE MNI_ID_A='file';
-UPDATE MENUITEM SET MNI_BTN_LABEL='angal.menu.btn.generaldata', MNI_LABEL='angal.menu.generaldata' WHERE MNI_ID_A='generaldata';
-UPDATE MENUITEM SET MNI_BTN_LABEL='angal.menu.btn.opd', MNI_LABEL='angal.menu.opd' WHERE MNI_ID_A='opd';
-UPDATE MENUITEM SET MNI_BTN_LABEL='angal.menu.btn.pharmacy', MNI_LABEL='angal.menu.pharmacy' WHERE MNI_ID_A='pharmacy';
-UPDATE MENUITEM SET MNI_BTN_LABEL='angal.menu.btn.laboratory', MNI_LABEL='angal.menu.laboratory' WHERE MNI_ID_A='laboratory';
-UPDATE MENUITEM SET MNI_BTN_LABEL='angal.menu.btn.admission', MNI_LABEL='angal.menu.admission' WHERE MNI_ID_A='admission';
-UPDATE MENUITEM SET MNI_BTN_LABEL='angal.menu.btn.statistics', MNI_LABEL='angal.menu.statistics' WHERE MNI_ID_A='statistics';
-UPDATE MENUITEM SET MNI_BTN_LABEL='angal.menu.btn.printing', MNI_LABEL='angal.menu.printing' WHERE MNI_ID_A='printing';
-UPDATE MENUITEM SET MNI_BTN_LABEL='angal.menu.btn.help', MNI_LABEL='angal.menu.help' WHERE MNI_ID_A='help';
+update menuitem set mni_btn_label='angal.menu.btn.file', mni_label='angal.menu.file' where mni_id_a='file';
+update menuitem set mni_btn_label='angal.menu.btn.generaldata', mni_label='angal.menu.generaldata' where mni_id_a='generaldata';
+update menuitem set mni_btn_label='angal.menu.btn.opd', mni_label='angal.menu.opd' where mni_id_a='opd';
+update menuitem set mni_btn_label='angal.menu.btn.pharmacy', mni_label='angal.menu.pharmacy' where mni_id_a='pharmacy';
+update menuitem set mni_btn_label='angal.menu.btn.laboratory', mni_label='angal.menu.laboratory' where mni_id_a='laboratory';
+update menuitem set mni_btn_label='angal.menu.btn.admission', mni_label='angal.menu.admission' where mni_id_a='admission';
+update menuitem set mni_btn_label='angal.menu.btn.statistics', mni_label='angal.menu.statistics' where mni_id_a='statistics';
+update menuitem set mni_btn_label='angal.menu.btn.printing', mni_label='angal.menu.printing' where mni_id_a='printing';
+update menuitem set mni_btn_label='angal.menu.btn.help', mni_label='angal.menu.help' where mni_id_a='help';
 
-UPDATE MENUITEM SET MNI_BTN_LABEL='angal.menu.btn.exit', MNI_LABEL='angal.menu.exit' WHERE MNI_ID_A='exit';
-UPDATE MENUITEM SET MNI_BTN_LABEL='angal.menu.btn.users', MNI_LABEL='angal.menu.users' WHERE MNI_ID_A='users';
+update menuitem set mni_btn_label='angal.menu.btn.exit', mni_label='angal.menu.exit' where mni_id_a='exit';
+update menuitem set mni_btn_label='angal.menu.btn.users', mni_label='angal.menu.users' where mni_id_a='users';
 
-UPDATE MENUITEM SET MNI_BTN_LABEL='angal.menu.btn.types', MNI_LABEL='angal.menu.types' WHERE MNI_ID_A='types';
-UPDATE MENUITEM SET MNI_BTN_LABEL='angal.menu.btn.hospital', MNI_LABEL='angal.menu.hospital' WHERE MNI_ID_A='hospital';
-UPDATE MENUITEM SET MNI_BTN_LABEL='angal.menu.btn.ward', MNI_LABEL='angal.menu.ward' WHERE MNI_ID_A='ward';
-UPDATE MENUITEM SET MNI_BTN_LABEL='angal.menu.btn.disease', MNI_LABEL='angal.menu.disease' WHERE MNI_ID_A='disease';
-UPDATE MENUITEM SET MNI_BTN_LABEL='angal.menu.btn.exams', MNI_LABEL='angal.menu.exams' WHERE MNI_ID_A='exams';
-UPDATE MENUITEM SET MNI_BTN_LABEL='angal.menu.btn.operation', MNI_LABEL='angal.menu.operation' WHERE MNI_ID_A='operation';
-UPDATE MENUITEM SET MNI_BTN_LABEL='angal.menu.btn.vaccine', MNI_LABEL='angal.menu.vaccine' WHERE MNI_ID_A='vaccine';
+update menuitem set mni_btn_label='angal.menu.btn.types', mni_label='angal.menu.types' where mni_id_a='types';
+update menuitem set mni_btn_label='angal.menu.btn.hospital', mni_label='angal.menu.hospital' where mni_id_a='hospital';
+update menuitem set mni_btn_label='angal.menu.btn.ward', mni_label='angal.menu.ward' where mni_id_a='ward';
+update menuitem set mni_btn_label='angal.menu.btn.disease', mni_label='angal.menu.disease' where mni_id_a='disease';
+update menuitem set mni_btn_label='angal.menu.btn.exams', mni_label='angal.menu.exams' where mni_id_a='exams';
+update menuitem set mni_btn_label='angal.menu.btn.operation', mni_label='angal.menu.operation' where mni_id_a='operation';
+update menuitem set mni_btn_label='angal.menu.btn.vaccine', mni_label='angal.menu.vaccine' where mni_id_a='vaccine';
 
-UPDATE MENUITEM SET MNI_BTN_LABEL='angal.menu.btn.labbrowsing', MNI_LABEL='angal.menu.labbrowsing' WHERE MNI_ID_A='labbrowsing';
+update menuitem set mni_btn_label='angal.menu.btn.labbrowsing', mni_label='angal.menu.labbrowsing' where mni_id_a='labbrowsing';
 
-UPDATE MENUITEM SET MNI_BTN_LABEL='angal.menu.btn.medicals', MNI_LABEL='angal.menu.medicals' WHERE MNI_ID_A='medicals';
-UPDATE MENUITEM SET MNI_BTN_LABEL='angal.menu.btn.medicalstock', MNI_LABEL='angal.menu.medicalstock' WHERE MNI_ID_A='medicalstock';
+update menuitem set mni_btn_label='angal.menu.btn.medicals', mni_label='angal.menu.medicals' where mni_id_a='medicals';
+update menuitem set mni_btn_label='angal.menu.btn.medicalstock', mni_label='angal.menu.medicalstock' where mni_id_a='medicalstock';
 
-UPDATE MENUITEM SET MNI_BTN_LABEL='angal.menu.btn.diseaselist', MNI_LABEL='angal.menu.diseaselist' WHERE MNI_ID_A='diseaselist';
-UPDATE MENUITEM SET MNI_BTN_LABEL='angal.menu.btn.examlist1', MNI_LABEL='angal.menu.examlist1' WHERE MNI_ID_A='examlist1';
+update menuitem set mni_btn_label='angal.menu.btn.diseaselist', mni_label='angal.menu.diseaselist' where mni_id_a='diseaselist';
+update menuitem set mni_btn_label='angal.menu.btn.examlist1', mni_label='angal.menu.examlist1' where mni_id_a='examlist1';
 
-UPDATE MENUITEM SET MNI_BTN_LABEL='angal.menu.btn.disctype', MNI_LABEL='angal.menu.disctype' WHERE MNI_ID_A='disctype';
-UPDATE MENUITEM SET MNI_BTN_LABEL='angal.menu.btn.delresulttype', MNI_LABEL='angal.menu.delresulttype' WHERE MNI_ID_A='delresulttype';
-UPDATE MENUITEM SET MNI_BTN_LABEL='angal.menu.btn.deliverytype', MNI_LABEL='angal.menu.deliverytype' WHERE MNI_ID_A='deliverytype';
-UPDATE MENUITEM SET MNI_BTN_LABEL='angal.menu.btn.admtype', MNI_LABEL='angal.menu.admtype' WHERE MNI_ID_A='admtype';
-UPDATE MENUITEM SET MNI_BTN_LABEL='angal.menu.btn.pretreatmenttype', MNI_LABEL='angal.menu.pretreatmenttype' WHERE MNI_ID_A='pretreatmenttype';
-UPDATE MENUITEM SET MNI_BTN_LABEL='angal.menu.btn.diseasetype', MNI_LABEL='angal.menu.diseasetype' WHERE MNI_ID_A='diseasetype';
-UPDATE MENUITEM SET MNI_BTN_LABEL='angal.menu.btn.operationtype', MNI_LABEL='angal.menu.operationtype' WHERE MNI_ID_A='operationtype';
-UPDATE MENUITEM SET MNI_BTN_LABEL='angal.menu.btn.examtype', MNI_LABEL='angal.menu.examtype' WHERE MNI_ID_A='examtype';
-UPDATE MENUITEM SET MNI_BTN_LABEL='angal.menu.btn.medstockmovtype', MNI_LABEL='angal.menu.medstockmovtype' WHERE MNI_ID_A='medstockmovtype';
-UPDATE MENUITEM SET MNI_BTN_LABEL='angal.menu.btn.medicalstype', MNI_LABEL='angal.menu.medicalstype' WHERE MNI_ID_A='medicalstype';
-UPDATE MENUITEM SET MNI_BTN_LABEL='angal.menu.btn.laboratoryresulttype', MNI_LABEL='angal.menu.laboratoryresulttype' WHERE MNI_ID_A='laboratoryresulttype';
+update menuitem set mni_btn_label='angal.menu.btn.disctype', mni_label='angal.menu.disctype' where mni_id_a='disctype';
+update menuitem set mni_btn_label='angal.menu.btn.delresulttype', mni_label='angal.menu.delresulttype' where mni_id_a='delresulttype';
+update menuitem set mni_btn_label='angal.menu.btn.deliverytype', mni_label='angal.menu.deliverytype' where mni_id_a='deliverytype';
+update menuitem set mni_btn_label='angal.menu.btn.admtype', mni_label='angal.menu.admtype' where mni_id_a='admtype';
+update menuitem set mni_btn_label='angal.menu.btn.pretreatmenttype', mni_label='angal.menu.pretreatmenttype' where mni_id_a='pretreatmenttype';
+update menuitem set mni_btn_label='angal.menu.btn.diseasetype', mni_label='angal.menu.diseasetype' where mni_id_a='diseasetype';
+update menuitem set mni_btn_label='angal.menu.btn.operationtype', mni_label='angal.menu.operationtype' where mni_id_a='operationtype';
+update menuitem set mni_btn_label='angal.menu.btn.examtype', mni_label='angal.menu.examtype' where mni_id_a='examtype';
+update menuitem set mni_btn_label='angal.menu.btn.medstockmovtype', mni_label='angal.menu.medstockmovtype' where mni_id_a='medstockmovtype';
+update menuitem set mni_btn_label='angal.menu.btn.medicalstype', mni_label='angal.menu.medicalstype' where mni_id_a='medicalstype';
+update menuitem set mni_btn_label='angal.menu.btn.laboratoryresulttype', mni_label='angal.menu.laboratoryresulttype' where mni_id_a='laboratoryresulttype';
 
-UPDATE MENUITEM SET MNI_BTN_LABEL='angal.menu.btn.usersusers', MNI_LABEL='angal.menu.usersusers' WHERE MNI_ID_A='usersusers';
-UPDATE MENUITEM SET MNI_BTN_LABEL='angal.menu.btn.groups', MNI_LABEL='angal.menu.groups' WHERE MNI_ID_A='groups';
+update menuitem set mni_btn_label='angal.menu.btn.usersusers', mni_label='angal.menu.usersusers' where mni_id_a='usersusers';
+update menuitem set mni_btn_label='angal.menu.btn.groups', mni_label='angal.menu.groups' where mni_id_a='groups';

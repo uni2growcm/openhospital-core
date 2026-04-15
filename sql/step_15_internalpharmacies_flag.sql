@@ -1,2 +1,2 @@
-ALTER TABLE WARD ADD COLUMN WRD_IS_PHARMACY TINYINT(1) NOT NULL DEFAULT 1 AFTER WRD_NDOC;
+alter table ward add column wrd_is_pharmacy tinyint(1) not null default 1 after wrd_ndoc;
 

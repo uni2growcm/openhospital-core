@@ -1,1 +1,1 @@
-UPDATE OH_MENUITEM SET MNI_CLASS = 'org.isf.medstockmovtype.gui.MedicalDsrStockMovementTypeBrowser' WHERE MNI_ID_A = 'medstockmovtype';
+update oh_menuitem set mni_class = 'org.isf.medstockmovtype.gui.MedicalDsrStockMovementTypeBrowser' where mni_id_a = 'medstockmovtype';

@@ -1,2 +1,2 @@
-ALTER TABLE `oh_examrow` MODIFY COLUMN EXR_DESC VARCHAR(100);
-ALTER TABLE `oh_laboratoryrow` MODIFY COLUMN LABR_DESC VARCHAR(100);
+alter table `oh_examrow` modify column exr_desc varchar(100);
+alter table `oh_laboratoryrow` modify column labr_desc varchar(100);

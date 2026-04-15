@@ -1,47 +1,47 @@
-ALTER TABLE oh_bills ADD COLUMN BLL_ADM_ID INT(11) NULL DEFAULT NULL AFTER BLL_USR_ID_A;
-ALTER TABLE oh_bills
-ADD INDEX FK_BILLS_ADMISSION_idx (BLL_ADM_ID ASC);
-ALTER TABLE oh_bills
-ADD CONSTRAINT FK_BILLS_ADMISSION
-  FOREIGN KEY (BLL_ADM_ID)
-  REFERENCES oh_admission (ADM_ID)
-  ON DELETE NO ACTION
-  ON UPDATE NO ACTION;
+alter table oh_bills add column bll_adm_id int(11) null default null after bll_usr_id_a;
+alter table oh_bills
+add index FK_BILLS_ADMISSION_idx (bll_adm_id asc);
+alter table oh_bills
+add constraint fk_bills_admission
+  foreign key (bll_adm_id)
+  references oh_admission (adm_id)
+  on delete no action
+  on update no action;
 
 
 -- Link previous bills related admissions (using admission and discharge date)
-DROP PROCEDURE IF EXISTS link_bill_admission;
-DELIMITER //
-  CREATE PROCEDURE link_bill_admission()
-  BEGIN
+drop procedure if exists link_bill_admission;
+delimiter //
+  create procedure link_bill_admission()
+  begin
 
-	DECLARE done INT;
-	DECLARE $adm_id INT;
-	DECLARE $adm_pat_id INT;
-	DECLARE $adm_date_adm DATETIME;
-	DECLARE $adm_date_dis DATETIME;
+	declare done int;
+	declare $adm_id int;
+	declare $adm_pat_id int;
+	declare $adm_date_adm datetime;
+	declare $adm_date_dis datetime;
     
-	DECLARE cur1 CURSOR FOR SELECT ADM_ID, ADM_PAT_ID, ADM_DATE_ADM, ADM_DATE_DIS FROM OH_ADMISSION WHERE ADM_DELETED = 'N';
-	DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+	declare cur1 cursor for select adm_id, adm_pat_id, adm_date_adm, adm_date_dis from oh_admission where adm_deleted = 'N';
+	declare continue handler for not found set done = 1;
     
-	OPEN cur1;
-	  read_loop: LOOP
-		FETCH cur1 INTO $adm_id, $adm_pat_id, $adm_date_adm, $adm_date_dis;
-		IF done = 1 THEN
-			LEAVE read_loop;
-		END IF;
+	open cur1;
+	  read_loop: loop
+		fetch cur1 into $adm_id, $adm_pat_id, $adm_date_adm, $adm_date_dis;
+		if done = 1 then
+			leave read_loop;
+		end if;
         
-		-- SELECT $adm_id, $adm_pat_id, $adm_date_adm, $adm_date_dis;
-		IF $adm_date_dis IS NOT NULL THEN
-			-- SELECT "Discharged";
-			UPDATE OH_BILLS SET BLL_ADM_ID = $adm_id WHERE BLL_ID_PAT = $adm_pat_id AND BLL_DATE BETWEEN $adm_date_adm AND $adm_date_dis;
-		ELSE
-			-- SELECT "Current admission";
-			UPDATE OH_BILLS SET BLL_ADM_ID = $adm_id WHERE BLL_ID_PAT = $adm_pat_id AND BLL_DATE >= $adm_date_adm;
-		END IF;
-	  END LOOP;
-	CLOSE cur1;
-  END //
-DELIMITER ;
+		-- select $adm_id, $adm_pat_id, $adm_date_adm, $adm_date_dis;
+		if $adm_date_dis IS not null then
+			-- select "Discharged";
+			update oh_bills set bll_adm_id = $adm_id where bll_id_pat = $adm_pat_id and bll_date between $adm_date_adm and $adm_date_dis;
+		else
+			-- select "Current admission";
+			update oh_bills set bll_adm_id = $adm_id where bll_id_pat = $adm_pat_id and bll_date >= $adm_date_adm;
+		end if;
+	  end loop;
+	close cur1;
+  end //
+delimiter ;
 
-CALL link_bill_admission();
+call link_bill_admission();

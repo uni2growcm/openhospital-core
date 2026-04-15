@@ -1,97 +1,97 @@
---- MEDICALDSRINVENTORY --
+--- medicaldsrinventory --
 
-ALTER TABLE OH_MEDICALDSRINVENTORY 
-DROP CONSTRAINT FK_MEDICALDSRINVENTORY_USER;
+alter table oh_medicaldsrinventory 
+drop constraint fk_medicaldsrinventory_user;
 
-ALTER TABLE OH_MEDICALDSRINVENTORY 
-ADD CONSTRAINT FK_MEDICALDSRINVENTORY_USER_1
-FOREIGN KEY (MINVT_US_ID_A) REFERENCES OH_USER (US_ID_A) ON DELETE NO ACTION ON UPDATE NO ACTION;
+alter table oh_medicaldsrinventory 
+add constraint fk_medicaldsrinventory_user_1
+foreign key (minvt_us_id_a) references oh_user (us_id_a) on delete no action on update no action;
 
-ALTER TABLE OH_MEDICALDSRINVENTORY 
-ADD CONSTRAINT FK_MEDICALDSRINVENTORY_USER_2
-FOREIGN KEY (MINVT_CREATED_BY) REFERENCES OH_USER (US_ID_A) ON DELETE NO ACTION ON UPDATE NO ACTION;
+alter table oh_medicaldsrinventory 
+add constraint fk_medicaldsrinventory_user_2
+foreign key (minvt_created_by) references oh_user (us_id_a) on delete no action on update no action;
 
-ALTER TABLE OH_MEDICALDSRINVENTORY 
-ADD CONSTRAINT FK_MEDICALDSRINVENTORY_USER_3
-FOREIGN KEY (MINVT_LAST_MODIFIED_BY) REFERENCES OH_USER (US_ID_A) ON DELETE NO ACTION ON UPDATE NO ACTION;
+alter table oh_medicaldsrinventory 
+add constraint fk_medicaldsrinventory_user_3
+foreign key (minvt_last_modified_by) references oh_user (us_id_a) on delete no action on update no action;
 
--- OH_MEDICALDSRINVENTORYROW --
+-- oh_medicaldsrinventoryrow --
 
-ALTER TABLE OH_MEDICALDSRINVENTORYROW 
-ADD CONSTRAINT FK_MEDICALDSRINVENTORYROW_USER_1
-FOREIGN KEY (MINVTR_CREATED_BY) REFERENCES OH_USER (US_ID_A) ON DELETE NO ACTION ON UPDATE NO ACTION;
+alter table oh_medicaldsrinventoryrow 
+add constraint fk_medicaldsrinventoryrow_user_1
+foreign key (minvtr_created_by) references oh_user (us_id_a) on delete no action on update no action;
 
-ALTER TABLE OH_MEDICALDSRINVENTORYROW 
-ADD CONSTRAINT FK_MEDICALDSRINVENTORYROW_USER_2
-FOREIGN KEY (MINVTR_LAST_MODIFIED_BY) REFERENCES OH_USER (US_ID_A) ON DELETE NO ACTION ON UPDATE NO ACTION;
+alter table oh_medicaldsrinventoryrow 
+add constraint fk_medicaldsrinventoryrow_user_2
+foreign key (minvtr_last_modified_by) references oh_user (us_id_a) on delete no action on update no action;
 
-ALTER TABLE OH_MEDICALDSRINVENTORYROW 
-DROP CONSTRAINT oh_medicaldsrinventoryrow_ibfk_1;
+alter table oh_medicaldsrinventoryrow 
+drop constraint oh_medicaldsrinventoryrow_ibfk_1;
 
-ALTER TABLE OH_MEDICALDSRINVENTORYROW 
-ADD CONSTRAINT FK_MEDICALDSRINVENTORYROW_MEDICALDSRINVENTORY
-FOREIGN KEY (MINVTR_INVT_ID) REFERENCES OH_MEDICALDSRINVENTORY (MINVT_ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+alter table oh_medicaldsrinventoryrow 
+add constraint fk_medicaldsrinventoryrow_medicaldsrinventory
+foreign key (minvtr_invt_id) references oh_medicaldsrinventory (minvt_id) on delete no action on update no action;
 
-ALTER TABLE OH_MEDICALDSRINVENTORYROW 
-DROP CONSTRAINT oh_medicaldsrinventoryrow_ibfk_2;
+alter table oh_medicaldsrinventoryrow 
+drop constraint oh_medicaldsrinventoryrow_ibfk_2;
 
-ALTER TABLE OH_MEDICALDSRINVENTORYROW 
-ADD CONSTRAINT FK_MEDICALDSRINVENTORYROW_MEDICALDSR
-FOREIGN KEY (MINVTR_MDSR_ID) REFERENCES OH_MEDICALDSR (MDSR_ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+alter table oh_medicaldsrinventoryrow 
+add constraint fk_medicaldsrinventoryrow_medicaldsr
+foreign key (minvtr_mdsr_id) references oh_medicaldsr (mdsr_id) on delete no action on update no action;
 
-ALTER TABLE OH_MEDICALDSRINVENTORYROW 
-DROP CONSTRAINT oh_medicaldsrinventoryrow_ibfk_3;
+alter table oh_medicaldsrinventoryrow 
+drop constraint oh_medicaldsrinventoryrow_ibfk_3;
 
-ALTER TABLE OH_MEDICALDSRINVENTORYROW 
-ADD CONSTRAINT FK_MEDICALDSRINVENTORYROW_MEDICALDSRLOT
-FOREIGN KEY (MINVTR_LT_ID_A) REFERENCES OH_MEDICALDSRLOT (LT_ID_A) ON DELETE NO ACTION ON UPDATE NO ACTION;
+alter table oh_medicaldsrinventoryrow 
+add constraint fk_medicaldsrinventoryrow_medicaldsrlot
+foreign key (minvtr_lt_id_a) references oh_medicaldsrlot (lt_id_a) on delete no action on update no action;
 
--- OH_MEDICALDSRSTOCK --
+-- oh_medicaldsrstock --
 
-ALTER TABLE OH_MEDICALDSRSTOCK
-MODIFY COLUMN MS_CREATED_BY VARCHAR(50) CHARACTER SET utf8 COLLATE utf8_general_ci;
+alter table oh_medicaldsrstock
+modify column ms_created_by varchar(50) character set utf8 collate utf8_general_ci;
 
-ALTER TABLE OH_MEDICALDSRSTOCK
-MODIFY COLUMN MS_LAST_MODIFIED_BY VARCHAR(50) CHARACTER SET utf8 COLLATE utf8_general_ci;
+alter table oh_medicaldsrstock
+modify column ms_last_modified_by varchar(50) character set utf8 collate utf8_general_ci;
 
-ALTER TABLE OH_MEDICALDSRSTOCK
-ADD CONSTRAINT FK_MEDICALDSRSTOCK_USER_1
-FOREIGN KEY (MS_CREATED_BY) REFERENCES OH_USER (US_ID_A) ON DELETE NO ACTION ON UPDATE NO ACTION;
+alter table oh_medicaldsrstock
+add constraint fk_medicaldsrstock_user_1
+foreign key (ms_created_by) references oh_user (us_id_a) on delete no action on update no action;
 
-ALTER TABLE OH_MEDICALDSRSTOCK 
-ADD CONSTRAINT FK_MEDICALDSRSTOCK_USER_2
-FOREIGN KEY (MS_LAST_MODIFIED_BY) REFERENCES OH_USER (US_ID_A) ON DELETE NO ACTION ON UPDATE NO ACTION;
+alter table oh_medicaldsrstock 
+add constraint fk_medicaldsrstock_user_2
+foreign key (ms_last_modified_by) references oh_user (us_id_a) on delete no action on update no action;
 
--- OH_USER_SETTINGS --
+-- oh_user_settings --
 
-ALTER TABLE OH_USER_SETTINGS
-DROP CONSTRAINT USS_US_ID_A_FK;
+alter table oh_user_settings
+drop constraint uss_us_id_a_fk;
 
-ALTER TABLE OH_USER_SETTINGS
-ADD CONSTRAINT FK_USER_SETTINGS_USER_1
-FOREIGN KEY (USS_US_ID_A) REFERENCES OH_USER (US_ID_A) ON DELETE NO ACTION ON UPDATE NO ACTION;
+alter table oh_user_settings
+add constraint fk_user_settings_user_1
+foreign key (uss_us_id_a) references oh_user (us_id_a) on delete no action on update no action;
 
-ALTER TABLE OH_USER_SETTINGS
-ADD CONSTRAINT FK_USER_SETTINGS_USER_2
-FOREIGN KEY (USS_CREATED_BY) REFERENCES OH_USER (US_ID_A) ON DELETE NO ACTION ON UPDATE NO ACTION;
+alter table oh_user_settings
+add constraint fk_user_settings_user_2
+foreign key (uss_created_by) references oh_user (us_id_a) on delete no action on update no action;
 
-ALTER TABLE OH_USER_SETTINGS
-ADD CONSTRAINT FK_USER_SETTINGS_USER_3
-FOREIGN KEY (USS_LAST_MODIFIED_BY) REFERENCES OH_USER (US_ID_A) ON DELETE NO ACTION ON UPDATE NO ACTION;
+alter table oh_user_settings
+add constraint fk_user_settings_user_3
+foreign key (uss_last_modified_by) references oh_user (us_id_a) on delete no action on update no action;
 
--- OH_PATIENT_CONSENSUS --
+-- oh_patient_consensus --
 
-ALTER TABLE OH_PATIENT_CONSENSUS
-ADD CONSTRAINT FK_PATIENT_CONSENSUS_USER_1
-FOREIGN KEY (PTC_CREATED_BY) REFERENCES OH_USER (US_ID_A) ON DELETE NO ACTION ON UPDATE NO ACTION;
+alter table oh_patient_consensus
+add constraint fk_patient_consensus_user_1
+foreign key (ptc_created_by) references oh_user (us_id_a) on delete no action on update no action;
 
-ALTER TABLE OH_PATIENT_CONSENSUS
-ADD CONSTRAINT FK_PATIENT_CONSENSUS_USER_2
-FOREIGN KEY (PTC_LAST_MODIFIED_BY) REFERENCES OH_USER (US_ID_A) ON DELETE NO ACTION ON UPDATE NO ACTION;
+alter table oh_patient_consensus
+add constraint fk_patient_consensus_user_2
+foreign key (ptc_last_modified_by) references oh_user (us_id_a) on delete no action on update no action;
 
-ALTER TABLE OH_PATIENT_CONSENSUS 
-DROP CONSTRAINT oh_patient_consensus_ibfk_1;
+alter table oh_patient_consensus 
+drop constraint oh_patient_consensus_ibfk_1;
 
-ALTER TABLE OH_PATIENT_CONSENSUS 
-ADD CONSTRAINT FK_PATIENT_CONSENSUS_PATIENT
-FOREIGN KEY (PTC_PAT_ID) REFERENCES OH_PATIENT (PAT_ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+alter table oh_patient_consensus 
+add constraint fk_patient_consensus_patient
+foreign key (ptc_pat_id) references oh_patient (pat_id) on delete no action on update no action;

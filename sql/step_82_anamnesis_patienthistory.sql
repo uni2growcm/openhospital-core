@@ -1,100 +1,100 @@
-CREATE TABLE OH_PATIENTHISTORY (
- 	PAH_ID int(11) NOT NULL AUTO_INCREMENT,
-	PAH_PAT_ID int NOT NULL,
-	PAH_ACTIVE tinyint(1) NOT NULL DEFAULT 1,
-	PAH_CREATED_BY varchar(50) DEFAULT NULL,
-  	PAH_CREATED_DATE datetime DEFAULT NULL,
-  	PAH_LAST_MODIFIED_BY varchar(50) DEFAULT NULL,
-  	PAH_LAST_MODIFIED_DATE datetime DEFAULT NULL,
-	PAH_FAM_NOTHING tinyint(1)  default 1 ,
-	PAH_FAM_HYPER tinyint(1)  default 0 ,
-	PAH_FAM_DRUGADD tinyint(1)  default 0 ,
-	PAH_FAM_CARDIO tinyint(1)  default 0 ,
-	PAH_FAM_INFECT tinyint(1)  default 0 ,
-	PAH_FAM_ENDO tinyint(1)  default 0 ,
-	PAH_FAM_RESP tinyint(1)  default 0 ,
-	PAH_FAM_CANCER tinyint(1)  default 0 ,
-	PAH_FAM_ORTO tinyint(1)  default 0 ,
-	PAH_FAM_GYNO tinyint(1)  default 0 ,
-	PAH_FAM_OTHER tinyint(1)  default 0 ,
-	PAH_FAM_NOTE varchar(100) NULL ,
-	PAH_PAT_CLO_NOTHING tinyint(1)  default 1 ,
-	PAH_PAT_CLO_HYPER tinyint(1)  default 0 ,
-	PAH_PAT_CLO_DRUGADD tinyint(1)  default 0 ,
-	PAH_PAT_CLO_CARDIO tinyint(1)  default 0 ,
-	PAH_PAT_CLO_INFECT tinyint(1)  default 0 ,
-	PAH_PAT_CLO_ENDO tinyint(1)  default 0 ,
-	PAH_PAT_CLO_RESP tinyint(1)  default 0 ,
-	PAH_PAT_CLO_CANCER tinyint(1)  default 0 ,
-	PAH_PAT_CLO_ORTO tinyint(1)  default 0 ,
-	PAH_PAT_CLO_GYNO tinyint(1)  default 0 ,
-	PAH_PAT_CLO_OTHER tinyint(1)  default 0 ,
-	PAH_PAT_CLO_NOTE varchar(100) NULL ,
-	PAH_PAT_OPN_NOTHING tinyint(1)  default 1 ,
-	PAH_PAT_OPN_HYPER tinyint(1)  default 0 ,
-	PAH_PAT_OPN_DRUGADD tinyint(1)  default 0 ,
-	PAH_PAT_OPN_CARDIO tinyint(1)  default 0 ,
-	PAH_PAT_OPN_INFECT tinyint(1)  default 0 ,
-	PAH_PAT_OPN_ENDO tinyint(1)  default 0 ,
-	PAH_PAT_OPN_RESP tinyint(1)  default 0 ,
-	PAH_PAT_OPN_CANCER tinyint(1)  default 0 ,
-	PAH_PAT_OPN_ORTO tinyint(1)  default 0 ,
-	PAH_PAT_OPN_GYNO tinyint(1)  default 0 ,
-	PAH_PAT_OPN_OTHER tinyint(1)  default 0 ,
-	PAH_PAT_OPN_NOTE varchar(100) NULL ,
-	PAH_PAT_SURGERY varchar(200) NULL ,
-	PAH_PAT_ALLERGY varchar(100) NULL ,
-	PAH_PAT_THERAPY	varchar(200) NULL ,
-	PAH_PAT_MEDICINE varchar(200) NULL ,
-	PAH_PAT_NOTE varchar(100) NULL ,
-	PAH_PHY_NUTR_NOR tinyint(1)  default 1 ,
-	PAH_PHY_NUTR_ABN varchar(30) NULL ,
-	PAH_PHY_ALVO_NOR tinyint(1)  default 1 ,
-	PAH_PHY_ALVO_ABN varchar(30) NULL ,
-	PAH_PHY_DIURE_NOR tinyint(1)  NULL default 1 ,
-	PAH_PHY_DIURE_ABN varchar(30) NULL ,
-	PAH_PHY_ALCOOL tinyint(1)  default 0 ,
-	PAH_PHY_SMOKE tinyint(1)  default 0 ,
-	PAH_PHY_DRUG tinyint(1)  default 0 ,
-	PAH_PHY_PERIOD_NOR tinyint(1)  default 1 ,
-	PAH_PHY_PERIOD_ABN varchar(30) NULL ,
-	PAH_PHY_MENOP tinyint(1)  default 0 ,
-	PAH_PHY_MENOP_Y int  NULL ,
-	PAH_PHY_HRT_NOR tinyint(1)  default 1 ,
-	PAH_PHY_HRT_ABN varchar(30) NULL ,
-	PAH_PHY_PREG tinyint(1)  default 0 ,
-	PAH_PHY_PREG_N int  NULL ,
-	PAH_PHY_PREG_BIRTH int  NULL ,
-	PAH_PHY_PREG_ABORT int  NULL ,
-	PAH_DATE_UPDATE	timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP ,
+create table oh_patienthistory (
+ 	pah_id int(11) not null auto_increment,
+	pah_pat_id int not null,
+	pah_active tinyint(1) not null default 1,
+	pah_created_by varchar(50) default null,
+  	pah_created_date datetime default null,
+  	pah_last_modified_by varchar(50) default null,
+  	pah_last_modified_date datetime default null,
+	pah_fam_nothing tinyint(1)  default 1 ,
+	pah_fam_hyper tinyint(1)  default 0 ,
+	pah_fam_drugadd tinyint(1)  default 0 ,
+	pah_fam_cardio tinyint(1)  default 0 ,
+	pah_fam_infect tinyint(1)  default 0 ,
+	pah_fam_endo tinyint(1)  default 0 ,
+	pah_fam_resp tinyint(1)  default 0 ,
+	pah_fam_cancer tinyint(1)  default 0 ,
+	pah_fam_orto tinyint(1)  default 0 ,
+	pah_fam_gyno tinyint(1)  default 0 ,
+	pah_fam_other tinyint(1)  default 0 ,
+	pah_fam_note varchar(100) null ,
+	pah_pat_clo_nothing tinyint(1)  default 1 ,
+	pah_pat_clo_hyper tinyint(1)  default 0 ,
+	pah_pat_clo_drugadd tinyint(1)  default 0 ,
+	pah_pat_clo_cardio tinyint(1)  default 0 ,
+	pah_pat_clo_infect tinyint(1)  default 0 ,
+	pah_pat_clo_endo tinyint(1)  default 0 ,
+	pah_pat_clo_resp tinyint(1)  default 0 ,
+	pah_pat_clo_cancer tinyint(1)  default 0 ,
+	pah_pat_clo_orto tinyint(1)  default 0 ,
+	pah_pat_clo_gyno tinyint(1)  default 0 ,
+	pah_pat_clo_other tinyint(1)  default 0 ,
+	pah_pat_clo_note varchar(100) null ,
+	pah_pat_opn_nothing tinyint(1)  default 1 ,
+	pah_pat_opn_hyper tinyint(1)  default 0 ,
+	pah_pat_opn_drugadd tinyint(1)  default 0 ,
+	pah_pat_opn_cardio tinyint(1)  default 0 ,
+	pah_pat_opn_infect tinyint(1)  default 0 ,
+	pah_pat_opn_endo tinyint(1)  default 0 ,
+	pah_pat_opn_resp tinyint(1)  default 0 ,
+	pah_pat_opn_cancer tinyint(1)  default 0 ,
+	pah_pat_opn_orto tinyint(1)  default 0 ,
+	pah_pat_opn_gyno tinyint(1)  default 0 ,
+	pah_pat_opn_other tinyint(1)  default 0 ,
+	pah_pat_opn_note varchar(100) null ,
+	pah_pat_surgery varchar(200) null ,
+	pah_pat_allergy varchar(100) null ,
+	pah_pat_therapy varchar(200) null ,
+	pah_pat_medicine varchar(200) null ,
+	pah_pat_note varchar(100) null ,
+	pah_phy_nutr_nor tinyint(1)  default 1 ,
+	pah_phy_nutr_abn varchar(30) null ,
+	pah_phy_alvo_nor tinyint(1)  default 1 ,
+	pah_phy_alvo_abn varchar(30) null ,
+	pah_phy_diure_nor tinyint(1)  null default 1 ,
+	pah_phy_diure_abn varchar(30) null ,
+	pah_phy_alcool tinyint(1)  default 0 ,
+	pah_phy_smoke tinyint(1)  default 0 ,
+	pah_phy_drug tinyint(1)  default 0 ,
+	pah_phy_period_nor tinyint(1)  default 1 ,
+	pah_phy_period_abn varchar(30) null ,
+	pah_phy_menop tinyint(1)  default 0 ,
+	pah_phy_menop_y int  null ,
+	pah_phy_hrt_nor tinyint(1)  default 1 ,
+	pah_phy_hrt_abn varchar(30) null ,
+	pah_phy_preg tinyint(1)  default 0 ,
+	pah_phy_preg_n int  null ,
+	pah_phy_preg_birth int  null ,
+	pah_phy_preg_abort int  null ,
+	pah_date_update timestamp default current_timestamp on update current_timestamp ,
 
-	INDEX ( PAH_PAT_ID  ) ,
-	PRIMARY KEY ( PAH_ID )
-) ENGINE=MyISAM;
+	index ( pah_pat_id  ) ,
+	primary key ( pah_id )
+) engine=MyISAM;
 
 
 --
--- CONSTRAINTS
+-- constraints
 --
-ALTER TABLE OH_PATIENTHISTORY
-	ADD CONSTRAINT FK_PATIENTHISTORY_PATIENT
-	FOREIGN KEY (PAH_PAT_ID)
-	REFERENCES PATIENT (PAT_ID)
-	ON DELETE CASCADE
-	ON UPDATE CASCADE;
+alter table oh_patienthistory
+	add constraint fk_patienthistory_patient
+	foreign key (pah_pat_id)
+	references patient (pat_id)
+	on delete cascade
+	on update cascade;
 	
 -- Anamnesis Button
-INSERT INTO OH_MENUITEM VALUES ('btnadmpatnewanamnesis','angal.patient.anamnesis','angal.patient.anamnesis','x','A','btnadmnew','none','N', 1);
-INSERT INTO OH_MENUITEM VALUES ('btnadmpateditanamnesis','angal.patient.anamnesis','angal.patient.anamnesis','x','A','btnadmedit','none','N', 1);
-INSERT INTO OH_MENUITEM VALUES ('btnadmanamnesis','angal.admission.anamnesis','angal.admission.anamnesis','x','A','admission','none','N', 1);
-INSERT INTO OH_MENUITEM VALUES ('btnopdnewanamnesis','angal.opd.anamnesis','angal.opd.anamnesis','x','A','btnopdnew','none','N', 1);
-INSERT INTO OH_MENUITEM VALUES ('btnopdeditanamnesis','angal.opd.anamnesis','angal.opd.anamnesis','x','A','btnopdedit','none','N', 1);
+insert into oh_menuitem values ('btnadmpatnewanamnesis','angal.patient.anamnesis','angal.patient.anamnesis','x','A','btnadmnew','none','N', 1);
+insert into oh_menuitem values ('btnadmpateditanamnesis','angal.patient.anamnesis','angal.patient.anamnesis','x','A','btnadmedit','none','N', 1);
+insert into oh_menuitem values ('btnadmanamnesis','angal.admission.anamnesis','angal.admission.anamnesis','x','A','admission','none','N', 1);
+insert into oh_menuitem values ('btnopdnewanamnesis','angal.opd.anamnesis','angal.opd.anamnesis','x','A','btnopdnew','none','N', 1);
+insert into oh_menuitem values ('btnopdeditanamnesis','angal.opd.anamnesis','angal.opd.anamnesis','x','A','btnopdedit','none','N', 1);
 
 
 -- Admin activation (default: btnadmpatnewanamnesis, btnadmpateditanamnesis, btnopdnewxamination, btnopdeditxamination)
-INSERT INTO OH_GROUPMENU (GM_ID,GM_UG_ID_A,GM_MNI_ID_A,GM_ACTIVE) VALUES  (190, 'admin', 'btnadmanamnesis',1);
-INSERT INTO OH_GROUPMENU (GM_ID,GM_UG_ID_A,GM_MNI_ID_A,GM_ACTIVE) VALUES  (191, 'admin', 'btnadmpatnewanamnesis',1);
-INSERT INTO OH_GROUPMENU (GM_ID,GM_UG_ID_A,GM_MNI_ID_A,GM_ACTIVE) VALUES  (192, 'admin', 'btnadmpateditanamnesis',1);
-INSERT INTO OH_GROUPMENU (GM_ID,GM_UG_ID_A,GM_MNI_ID_A,GM_ACTIVE) VALUES  (193, 'admin', 'btnopdnewanamnesis',0);
-INSERT INTO OH_GROUPMENU (GM_ID,GM_UG_ID_A,GM_MNI_ID_A,GM_ACTIVE) VALUES  (194, 'admin', 'btnopdeditanamnesis',0);	
+insert into oh_groupmenu (gm_id,gm_ug_id_a,gm_mni_id_a,gm_active) values  (190, 'admin', 'btnadmanamnesis',1);
+insert into oh_groupmenu (gm_id,gm_ug_id_a,gm_mni_id_a,gm_active) values  (191, 'admin', 'btnadmpatnewanamnesis',1);
+insert into oh_groupmenu (gm_id,gm_ug_id_a,gm_mni_id_a,gm_active) values  (192, 'admin', 'btnadmpateditanamnesis',1);
+insert into oh_groupmenu (gm_id,gm_ug_id_a,gm_mni_id_a,gm_active) values  (193, 'admin', 'btnopdnewanamnesis',0);
+insert into oh_groupmenu (gm_id,gm_ug_id_a,gm_mni_id_a,gm_active) values  (194, 'admin', 'btnopdeditanamnesis',0);	
 	

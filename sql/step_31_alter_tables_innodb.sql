@@ -1,326 +1,325 @@
--- Preliminary modifications to the DB
-SET sql_mode = NO_AUTO_VALUE_ON_ZERO; 
-INSERT INTO PATIENT (PAT_ID,PAT_FNAME,PAT_SNAME,PAT_NAME,PAT_BDATE,PAT_AGE,PAT_AGETYPE,PAT_SEX,PAT_ADDR,PAT_CITY,PAT_NEXT_KIN,PAT_TELE,PAT_MOTH_NAME,PAT_MOTH,PAT_FATH_NAME,PAT_FATH,PAT_LEDU,PAT_ESTA,PAT_PTOGE,PAT_NOTE,PAT_DELETED,PAT_LOCK,PAT_BTYPE,PAT_PHOTO,PAT_TAXCODE) VALUES (0,'Patient','Null','Null Patient','-',0,'-','U','-','-','-','-','-','U','-','U',NULL,'U','U','-','Y',0,'-',NULL,'-');
-ALTER TABLE PATIENT ADD COLUMN PAT_TIMESTAMP TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
-ALTER TABLE ADMISSION CHANGE COLUMN ADM_DATE_ADM ADM_DATE_ADM DATETIME NOT NULL;
-ALTER TABLE MEDICALDSRSTOCKMOVWARD
-	CHANGE COLUMN MMVN_PAT_ID MMVN_PAT_ID INT(11) NULL,
-	CHANGE COLUMN MMVN_PAT_AGE MMVN_PAT_AGE SMALLINT(6) NULL,
-	CHANGE COLUMN MMVN_PAT_WEIGHT MMVN_PAT_WEIGHT FLOAT NULL;
+-- Preliminary modifications to the db set sql_mode = no_auto_value_on_zero; 
+insert into patient (pat_id,pat_fname,pat_sname,pat_name,pat_bdate,pat_age,pat_agetype,pat_sex,pat_addr,pat_city,pat_next_kin,pat_tele,pat_moth_name,pat_moth,pat_fath_name,pat_fath,pat_ledu,pat_esta,pat_ptoge,pat_note,pat_deleted,pat_lock,pat_btype,pat_photo,pat_taxcode) values (0,'Patient','null','null Patient','-',0,'-','U','-','-','-','-','-','U','-','U',null,'U','U','-','Y',0,'-',null,'-');
+alter table patient add column pat_timestamp timeSTAMP default current_timestamp;
+alter table admission change column adm_date_adm adm_date_adm datetime not null;
+alter table medicaldsrstockmovward
+	change column mmvn_pat_id mmvn_pat_id int(11) null,
+	change column mmvn_pat_age mmvn_pat_age smallint(6) null,
+	change column mmvn_pat_weight mmvn_pat_weight float null;
 	
--- Altering TABLES and creating FKs
+-- Altering tables and creating FKs
 -- on Windows system my.cnf should be set as follow:
--- lower_case_file_system = ON <-- automatically set by the system
--- lower_case_table_names = 1 <-- If you are using InnoDB tables, you should set this variable to 1 on all platforms to force names to be converted to lowercase.  
+-- lower_case_file_system = on <-- automatically set by the system
+-- lower_case_table_names = 1 <-- if you are using innodb tables, you should set this variable to 1 on all platforms to force names to be converted to lowercase.  
 
-SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
-SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
-SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL';
+set @old_unique_checks=@@unique_checks, unique_checks=0;
+set @old_foreign_key_checks=@@foreign_key_checks, foreign_key_checks=0;
+set @old_sql_mode=@@sql_mode, sql_mode='traditional';
 
-ALTER TABLE HOSPITAL ENGINE = INNODB, CONVERT TO CHARACTER SET utf8;
-ALTER TABLE ADMISSION ENGINE = INNODB, CONVERT TO CHARACTER SET utf8;
-ALTER TABLE DISCHARGETYPE ENGINE = INNODB, CONVERT TO CHARACTER SET utf8;
-ALTER TABLE DELIVERYTYPE ENGINE = INNODB, CONVERT TO CHARACTER SET utf8;
-ALTER TABLE DELIVERYRESULTTYPE ENGINE = INNODB, CONVERT TO CHARACTER SET utf8;
-ALTER TABLE ADMISSIONTYPE ENGINE = INNODB, CONVERT TO CHARACTER SET utf8;
-ALTER TABLE OPERATION ENGINE = INNODB, CONVERT TO CHARACTER SET utf8;
-ALTER TABLE OPERATIONTYPE ENGINE = INNODB, CONVERT TO CHARACTER SET utf8;
-ALTER TABLE WARD ENGINE = INNODB, CONVERT TO CHARACTER SET utf8;
-ALTER TABLE PREGNANTTREATMENTTYPE ENGINE = INNODB, CONVERT TO CHARACTER SET utf8;
-ALTER TABLE DISEASE ENGINE = INNODB, CONVERT TO CHARACTER SET utf8;
-ALTER TABLE PATIENT ENGINE = INNODB, CONVERT TO CHARACTER SET utf8;
-ALTER TABLE PRICELISTS ENGINE = INNODB, CONVERT TO CHARACTER SET utf8;
-ALTER TABLE BILLS ENGINE = INNODB, CONVERT TO CHARACTER SET utf8;
-ALTER TABLE PRICES ENGINE = INNODB, CONVERT TO CHARACTER SET utf8;
-ALTER TABLE BILLITEMS ENGINE = INNODB, CONVERT TO CHARACTER SET utf8;
-ALTER TABLE BILLPAYMENTS ENGINE = INNODB, CONVERT TO CHARACTER SET utf8;
-ALTER TABLE EXAM ENGINE = INNODB, CONVERT TO CHARACTER SET utf8;
-ALTER TABLE EXAMTYPE ENGINE = INNODB, CONVERT TO CHARACTER SET utf8;
-ALTER TABLE EXAMROW ENGINE = INNODB, CONVERT TO CHARACTER SET utf8;
-ALTER TABLE LABORATORY ENGINE = INNODB, CONVERT TO CHARACTER SET utf8;
-ALTER TABLE LABORATORYROW ENGINE = INNODB, CONVERT TO CHARACTER SET utf8;
-ALTER TABLE MEDICALDSR ENGINE = INNODB, CONVERT TO CHARACTER SET utf8;
-ALTER TABLE MEDICALDSRTYPE ENGINE = INNODB, CONVERT TO CHARACTER SET utf8;
-ALTER TABLE MEDICALDSRSTOCKMOV ENGINE = INNODB, CONVERT TO CHARACTER SET utf8;
-ALTER TABLE MEDICALDSRLOT ENGINE = INNODB, CONVERT TO CHARACTER SET utf8;
-ALTER TABLE MEDICALDSRSTOCKMOVTYPE ENGINE = INNODB, CONVERT TO CHARACTER SET utf8;
-ALTER TABLE MEDICALDSRSTOCKMOVWARD ENGINE = INNODB, CONVERT TO CHARACTER SET utf8;
-ALTER TABLE MEDICALDSRWARD ENGINE = INNODB, CONVERT TO CHARACTER SET utf8;
-ALTER TABLE VACCINE ENGINE = INNODB, CONVERT TO CHARACTER SET utf8;
-ALTER TABLE VACCINETYPE ENGINE = INNODB, CONVERT TO CHARACTER SET utf8;
-ALTER TABLE PATIENTVACCINE ENGINE = INNODB, CONVERT TO CHARACTER SET utf8;
-ALTER TABLE DISEASETYPE ENGINE = INNODB, CONVERT TO CHARACTER SET utf8;
-ALTER TABLE MALNUTRITIONCONTROL ENGINE = INNODB, CONVERT TO CHARACTER SET utf8;
-ALTER TABLE OPD ENGINE = INNODB, CONVERT TO CHARACTER SET utf8;
-ALTER TABLE THERAPIES ENGINE = INNODB, CONVERT TO CHARACTER SET utf8;
-ALTER TABLE USER ENGINE = INNODB, CONVERT TO CHARACTER SET utf8;
-ALTER TABLE USERGROUP ENGINE = INNODB, CONVERT TO CHARACTER SET utf8;
-ALTER TABLE VISITS ENGINE = INNODB, CONVERT TO CHARACTER SET utf8;
+alter table hospital engine = innodb, convert to character set utf8;
+alter table admission engine = innodb, convert to character set utf8;
+alter table dischargetype engine = innodb, convert to character set utf8;
+alter table deliverytype engine = innodb, convert to character set utf8;
+alter table deliveryresulttype engine = innodb, convert to character set utf8;
+alter table admissiontype engine = innodb, convert to character set utf8;
+alter table operation engine = innodb, convert to character set utf8;
+alter table operationtype engine = innodb, convert to character set utf8;
+alter table ward engine = innodb, convert to character set utf8;
+alter table pregnanttreatmenttype engine = innodb, convert to character set utf8;
+alter table disease engine = innodb, convert to character set utf8;
+alter table patient engine = innodb, convert to character set utf8;
+alter table pricelists engine = innodb, convert to character set utf8;
+alter table bills engine = innodb, convert to character set utf8;
+alter table prices engine = innodb, convert to character set utf8;
+alter table billitems engine = innodb, convert to character set utf8;
+alter table billpayments engine = innodb, convert to character set utf8;
+alter table exam engine = innodb, convert to character set utf8;
+alter table examtype engine = innodb, convert to character set utf8;
+alter table examrow engine = innodb, convert to character set utf8;
+alter table laboratory engine = innodb, convert to character set utf8;
+alter table laboratoryrow engine = innodb, convert to character set utf8;
+alter table medicaldsr engine = innodb, convert to character set utf8;
+alter table medicaldsrtype engine = innodb, convert to character set utf8;
+alter table medicaldsrstockmov engine = innodb, convert to character set utf8;
+alter table medicaldsrlot engine = innodb, convert to character set utf8;
+alter table medicaldsrstockmovtype engine = innodb, convert to character set utf8;
+alter table medicaldsrstockmovward engine = innodb, convert to character set utf8;
+alter table medicaldsrward engine = innodb, convert to character set utf8;
+alter table vaccine engine = innodb, convert to character set utf8;
+alter table vaccinetype engine = innodb, convert to character set utf8;
+alter table patientvaccine engine = innodb, convert to character set utf8;
+alter table diseasetype engine = innodb, convert to character set utf8;
+alter table malnutritioncontrol engine = innodb, convert to character set utf8;
+alter table opd engine = innodb, convert to character set utf8;
+alter table therapies engine = innodb, convert to character set utf8;
+alter table user engine = innodb, convert to character set utf8;
+alter table usergroup engine = innodb, convert to character set utf8;
+alter table visits engine = innodb, convert to character set utf8;
 
-ALTER TABLE ADMISSION
-	ADD CONSTRAINT FK_ADMISSION_DISCHARGETYPE
-		FOREIGN KEY (ADM_DIST_ID_A )
-	    REFERENCES DISCHARGETYPE (DIST_ID_A )
-	    ON DELETE NO ACTION
-	    ON UPDATE NO ACTION,
-	ADD CONSTRAINT FK_ADMISSION_DELIVERYTYPE
-	    FOREIGN KEY (ADM_PRG_DLT_ID_A )
-	    REFERENCES DELIVERYTYPE (DLT_ID_A )
-	    ON DELETE NO ACTION
-	    ON UPDATE NO ACTION,
-	ADD CONSTRAINT FK_ADMISSION_DELIVERYRESULTTYPE
-	    FOREIGN KEY (ADM_PRG_DRT_ID_A )
-	    REFERENCES DELIVERYRESULTTYPE (DRT_ID_A )
-	    ON DELETE NO ACTION
-	    ON UPDATE NO ACTION,
-	ADD CONSTRAINT FK_ADMISSION_ADMISSIONTYPE
-	    FOREIGN KEY (ADM_ADMT_ID_A_ADM )
-	    REFERENCES ADMISSIONTYPE (ADMT_ID_A )
-	    ON DELETE NO ACTION
-	    ON UPDATE NO ACTION,
-	ADD CONSTRAINT FK_ADMISSION_OPERATION
-	    FOREIGN KEY (ADM_OPE_ID_A )
-	    REFERENCES OPERATION (OPE_ID_A )
-	    ON DELETE NO ACTION
-	    ON UPDATE NO ACTION,
-	ADD CONSTRAINT FK_ADMISSION_WARD
-	    FOREIGN KEY (ADM_WRD_ID_A )
-	    REFERENCES WARD (WRD_ID_A )
-	    ON DELETE NO ACTION
-	    ON UPDATE NO ACTION,
-	ADD CONSTRAINT FK_ADMISSION_PREGNANTTREATMENTTYPE
-	    FOREIGN KEY (ADM_PRG_PTT_ID_A )
-	    REFERENCES PREGNANTTREATMENTTYPE (PTT_ID_A )
-	    ON DELETE NO ACTION
-	    ON UPDATE NO ACTION,
-	ADD CONSTRAINT FK_ADMISSION_IN_DISEASE
-	    FOREIGN KEY (ADM_IN_DIS_ID_A )
-	    REFERENCES DISEASE (DIS_ID_A )
-	    ON DELETE NO ACTION
-	    ON UPDATE NO ACTION,
-	ADD CONSTRAINT FK_ADMISSION_OUT_DISEASE1
-	    FOREIGN KEY (ADM_OUT_DIS_ID_A )
-	    REFERENCES DISEASE (DIS_ID_A )
-	    ON DELETE NO ACTION
-	    ON UPDATE NO ACTION,
-	ADD CONSTRAINT FK_ADMISSION_OUT_DISEASE2
-	    FOREIGN KEY (ADM_OUT_DIS_ID_A_2 )
-	    REFERENCES DISEASE (DIS_ID_A )
-	    ON DELETE NO ACTION
-	    ON UPDATE NO ACTION,
-	ADD CONSTRAINT FK_ADMISSION_OUT_DISEASE3
-	    FOREIGN KEY (ADM_OUT_DIS_ID_A_3 )
-	    REFERENCES DISEASE (DIS_ID_A )
-	    ON DELETE NO ACTION
-	    ON UPDATE NO ACTION,
-	ADD CONSTRAINT FK_ADMISSION_PATIENT
-	    FOREIGN KEY (ADM_PAT_ID )
-	    REFERENCES PATIENT (PAT_ID )
-	    ON DELETE CASCADE
-	    ON UPDATE CASCADE;
+alter table admission
+	add constraint fk_admission_dischargetype
+		foreign key (adm_dist_id_a )
+	    references dischargetype (dist_id_a )
+	    on delete no action
+	    on update no action,
+	add constraint fk_admission_deliverytype
+	    foreign key (adm_prg_dlt_id_a )
+	    references deliverytype (dlt_id_a )
+	    on delete no action
+	    on update no action,
+	add constraint fk_admission_deliveryresulttype
+	    foreign key (adm_prg_drt_id_a )
+	    references deliveryresulttype (drt_id_a )
+	    on delete no action
+	    on update no action,
+	add constraint fk_admission_admissiontype
+	    foreign key (adm_admt_id_a_adm )
+	    references admissiontype (admt_id_a )
+	    on delete no action
+	    on update no action,
+	add constraint fk_admission_operation
+	    foreign key (adm_ope_id_a )
+	    references operation (ope_id_a )
+	    on delete no action
+	    on update no action,
+	add constraint fk_admission_ward
+	    foreign key (adm_wrd_id_a )
+	    references ward (wrd_id_a )
+	    on delete no action
+	    on update no action,
+	add constraint fk_admission_pregnanttreatmenttype
+	    foreign key (adm_prg_ptt_id_a )
+	    references pregnanttreatmenttype (ptt_id_a )
+	    on delete no action
+	    on update no action,
+	add constraint fk_admission_in_disease
+	    foreign key (adm_in_dis_id_a )
+	    references disease (dis_id_a )
+	    on delete no action
+	    on update no action,
+	add constraint fk_admission_out_disease1
+	    foreign key (adm_out_dis_id_a )
+	    references disease (dis_id_a )
+	    on delete no action
+	    on update no action,
+	add constraint fk_admission_out_disease2
+	    foreign key (adm_out_dis_id_a_2 )
+	    references disease (dis_id_a )
+	    on delete no action
+	    on update no action,
+	add constraint fk_admission_out_disease3
+	    foreign key (adm_out_dis_id_a_3 )
+	    references disease (dis_id_a )
+	    on delete no action
+	    on update no action,
+	add constraint fk_admission_patient
+	    foreign key (adm_pat_id )
+	    references patient (pat_id )
+	    on delete cascade
+	    on update cascade;
     
-ALTER TABLE BILLS
-	ADD CONSTRAINT FK_BILLS_PATIENT
-	    FOREIGN KEY (BLL_ID_PAT )
-	    REFERENCES PATIENT (PAT_ID )
-	    ON DELETE CASCADE
-	    ON UPDATE CASCADE,
-  	ADD CONSTRAINT FK_BILLS_PRICELISTS
-	    FOREIGN KEY (BLL_ID_LST )
-	    REFERENCES PRICELISTS (LST_ID )
-	    ON DELETE NO ACTION
-	    ON UPDATE NO ACTION;
+alter table bills
+	add constraint fk_bills_patient
+	    foreign key (bll_id_pat )
+	    references patient (pat_id )
+	    on delete cascade
+	    on update cascade,
+  	add constraint fk_bills_pricelists
+	    foreign key (bll_id_lst )
+	    references pricelists (lst_id )
+	    on delete no action
+	    on update no action;
 	    
-ALTER TABLE PRICES
-	ADD CONSTRAINT FK_PRICES_PRICELISTS
-	    FOREIGN KEY (PRC_LST_ID )
-	    REFERENCES PRICELISTS (LST_ID )
-	    ON DELETE CASCADE
-	    ON UPDATE CASCADE;
+alter table prices
+	add constraint fk_prices_pricelists
+	    foreign key (prc_lst_id )
+	    references pricelists (lst_id )
+	    on delete cascade
+	    on update cascade;
     
-ALTER TABLE BILLITEMS
-    ADD CONSTRAINT FK_BILLITEMS_BILLS
-	    FOREIGN KEY (BLI_ID_BILL )
-	    REFERENCES BILLS (BLL_ID )
-	    ON DELETE CASCADE
-	    ON UPDATE CASCADE;
+alter table billitems
+    add constraint fk_billitems_bills
+	    foreign key (bli_id_bill )
+	    references bills (bll_id )
+	    on delete cascade
+	    on update cascade;
 	    
-ALTER TABLE BILLPAYMENTS
-	ADD CONSTRAINT FK_BILLPAYMENTS_BILLS
-	    FOREIGN KEY (BLP_ID_BILL )
-	    REFERENCES BILLS (BLL_ID )
-	    ON DELETE CASCADE
-	    ON UPDATE CASCADE;
+alter table billpayments
+	add constraint fk_billpayments_bills
+	    foreign key (blp_id_bill )
+	    references bills (bll_id )
+	    on delete cascade
+	    on update cascade;
 	    
-ALTER TABLE EXAM 
-    ADD CONSTRAINT FK_EXAM_EXAMTYPE
-	    FOREIGN KEY (EXA_EXC_ID_A )
-	    REFERENCES EXAMTYPE (EXC_ID_A )
-	    ON DELETE NO ACTION
-	    ON UPDATE CASCADE;
+alter table exam 
+    add constraint fk_exam_examtype
+	    foreign key (exa_exc_id_a )
+	    references examtype (exc_id_a )
+	    on delete no action
+	    on update cascade;
     
-ALTER TABLE EXAMROW
-    ADD CONSTRAINT FK_EXAMROW_EXAM
-	    FOREIGN KEY (EXR_EXA_ID_A )
-	    REFERENCES EXAM (EXA_ID_A )
-	    ON DELETE NO ACTION
-	    ON UPDATE CASCADE;
+alter table examrow
+    add constraint fk_examrow_exam
+	    foreign key (exr_exa_id_a )
+	    references exam (exa_id_a )
+	    on delete no action
+	    on update cascade;
     
-ALTER TABLE LABORATORY    
-    ADD CONSTRAINT FK_LABORATORY_EXAM
-    	FOREIGN KEY (LAB_EXA_ID_A )
-    	REFERENCES EXAM (EXA_ID_A )
-    	ON DELETE NO ACTION
-    	ON UPDATE NO ACTION,
-  	ADD CONSTRAINT FK_LABORATORY_PATIENT
-	    FOREIGN KEY (LAB_PAT_ID )
-	    REFERENCES PATIENT (PAT_ID )
-	    ON DELETE CASCADE
-	    ON UPDATE CASCADE;
+alter table laboratory    
+    add constraint fk_laboratory_exam
+    	foreign key (lab_exa_id_a )
+    	references exam (exa_id_a )
+    	on delete no action
+    	on update no action,
+  	add constraint fk_laboratory_patient
+	    foreign key (lab_pat_id )
+	    references patient (pat_id )
+	    on delete cascade
+	    on update cascade;
 	    
-ALTER TABLE LABORATORYROW	    
-	ADD CONSTRAINT FK_LABORATORYROW_LABORATORY
-	    FOREIGN KEY (LABR_LAB_ID )
-	    REFERENCES LABORATORY (LAB_ID )
-	    ON DELETE NO ACTION
-		ON UPDATE CASCADE;
+alter table laboratoryrow	    
+	add constraint fk_laboratoryrow_laboratory
+	    foreign key (labr_lab_id )
+	    references laboratory (lab_id )
+	    on delete no action
+		on update cascade;
 
-ALTER TABLE MEDICALDSR 
-    ADD CONSTRAINT FK_MEDICALDSR_MEDICALDSRTYPE
-	    FOREIGN KEY (MDSR_MDSRT_ID_A )
-	    REFERENCES MEDICALDSRTYPE (MDSRT_ID_A )
-	    ON DELETE NO ACTION
-	    ON UPDATE CASCADE;
+alter table medicaldsr 
+    add constraint fk_medicaldsr_medicaldsrtype
+	    foreign key (mdsr_mdsrt_id_a )
+	    references medicaldsrtype (mdsrt_id_a )
+	    on delete no action
+	    on update cascade;
     
-ALTER TABLE MEDICALDSRSTOCKMOV
-    ADD CONSTRAINT FK_MEDICALDSRSTOCKMOV_MEDICALDSR
-	    FOREIGN KEY (MMV_MDSR_ID )
-	    REFERENCES MEDICALDSR (MDSR_ID )
-	    ON DELETE NO ACTION
-    	ON UPDATE NO ACTION,
-    ADD CONSTRAINT FK_MEDICALDSRSTOCKMOV_MEDICALDSRSTOCKMOVTYPE
-	    FOREIGN KEY (MMV_MMVT_ID_A )
-	    REFERENCES MEDICALDSRSTOCKMOVTYPE (MMVT_ID_A )
-	    ON DELETE NO ACTION
-    	ON UPDATE NO ACTION, 
- 	ADD CONSTRAINT FK_MEDICALDSRSTOCKMOV_WARD
-	    FOREIGN KEY (MMV_WRD_ID_A )
-	    REFERENCES WARD (WRD_ID_A )
-	    ON DELETE NO ACTION
-    	ON UPDATE NO ACTION;
+alter table medicaldsrstockmov
+    add constraint fk_medicaldsrstockmov_medicaldsr
+	    foreign key (mmv_mdsr_id )
+	    references medicaldsr (mdsr_id )
+	    on delete no action
+    	on update no action,
+    add constraint fk_medicaldsrstockmov_medicaldsrstockmovtype
+	    foreign key (mmv_mmvt_id_a )
+	    references medicaldsrstockmovtype (mmvt_id_a )
+	    on delete no action
+    	on update no action, 
+ 	add constraint fk_medicaldsrstockmov_ward
+	    foreign key (mmv_wrd_id_a )
+	    references ward (wrd_id_a )
+	    on delete no action
+    	on update no action;
 
-ALTER TABLE MEDICALDSRSTOCKMOVWARD  	
-    ADD CONSTRAINT FK_MEDICALDSRSTOCKMOVWARD_WARD
-	    FOREIGN KEY (MMVN_WRD_ID_A )
-	    REFERENCES WARD (WRD_ID_A )
-	    ON DELETE NO ACTION
-	    ON UPDATE NO ACTION,
-  	ADD CONSTRAINT FK_MEDICALDSRSTOCKMOVWARD_PATIENT
-	    FOREIGN KEY (MMVN_PAT_ID )
-	    REFERENCES PATIENT (PAT_ID )
-	    ON DELETE CASCADE
-	    ON UPDATE CASCADE;
+alter table medicaldsrstockmovward  	
+    add constraint fk_medicaldsrstockmovward_ward
+	    foreign key (mmvn_wrd_id_a )
+	    references ward (wrd_id_a )
+	    on delete no action
+	    on update no action,
+  	add constraint fk_medicaldsrstockmovward_patient
+	    foreign key (mmvn_pat_id )
+	    references patient (pat_id )
+	    on delete cascade
+	    on update cascade;
 
-ALTER TABLE MEDICALDSRWARD  	    
- 	ADD CONSTRAINT FK_MEDICALDSRWARD_WARD
-	    FOREIGN KEY (MDSRWRD_WRD_ID_A )
-	    REFERENCES WARD (WRD_ID_A )
-	    ON DELETE NO ACTION
-	    ON UPDATE NO ACTION,
-  	ADD CONSTRAINT FK_MEDICALDSRWARD_MEDICALDSR
-	    FOREIGN KEY (MDSRWRD_MDSR_ID )
-	    REFERENCES MEDICALDSR (MDSR_ID )
-	    ON DELETE NO ACTION
-	    ON UPDATE NO ACTION;
+alter table medicaldsrward  	    
+ 	add constraint fk_medicaldsrward_ward
+	    foreign key (mdsrwrd_wrd_id_a )
+	    references ward (wrd_id_a )
+	    on delete no action
+	    on update no action,
+  	add constraint fk_medicaldsrward_medicaldsr
+	    foreign key (mdsrwrd_mdsr_id )
+	    references medicaldsr (mdsr_id )
+	    on delete no action
+	    on update no action;
 	    
-ALTER TABLE VACCINE 
-    ADD CONSTRAINT FK_VACCINE_VACCINETYPE
-	    FOREIGN KEY (VAC_VACT_ID_A )
-	    REFERENCES VACCINETYPE (VACT_ID_A )
-	    ON DELETE NO ACTION
-	    ON UPDATE CASCADE;
+alter table vaccine 
+    add constraint fk_vaccine_vaccinetype
+	    foreign key (vac_vact_id_a )
+	    references vaccinetype (vact_id_a )
+	    on delete no action
+	    on update cascade;
     
-ALTER TABLE PATIENTVACCINE
-	ADD CONSTRAINT FK_PATIENTVACCINE_PATIENT
-	    FOREIGN KEY (PAV_PAT_ID )
-	    REFERENCES PATIENT (PAT_ID )
-	    ON DELETE CASCADE
-    	ON UPDATE CASCADE,
-  	ADD CONSTRAINT FK_PATIENTVACCINE_VACCINE
-	    FOREIGN KEY (PAV_VAC_ID_A )
-	    REFERENCES VACCINE (VAC_ID_A )
-	    ON DELETE NO ACTION
-    	ON UPDATE NO ACTION;
+alter table patientvaccine
+	add constraint fk_patientvaccine_patient
+	    foreign key (pav_pat_id )
+	    references patient (pat_id )
+	    on delete cascade
+    	on update cascade,
+  	add constraint fk_patientvaccine_vaccine
+	    foreign key (pav_vac_id_a )
+	    references vaccine (vac_id_a )
+	    on delete no action
+    	on update no action;
     	
-ALTER TABLE OPERATION
-	ADD CONSTRAINT FK_OPERATION_OPERATIONTYPE
-	    FOREIGN KEY (OPE_OCL_ID_A )
-	    REFERENCES OPERATIONTYPE (OCL_ID_A )
-	    ON DELETE NO ACTION
-	    ON UPDATE CASCADE;
+alter table operation
+	add constraint fk_operation_operationtype
+	    foreign key (ope_ocl_id_a )
+	    references operationtype (ocl_id_a )
+	    on delete no action
+	    on update cascade;
     
-ALTER TABLE DISEASE 
-    ADD CONSTRAINT FK_DISEASE_DISEASETYPE
-	    FOREIGN KEY (DIS_DCL_ID_A )
-	    REFERENCES DISEASETYPE (DCL_ID_A )
-	    ON DELETE NO ACTION
-	    ON UPDATE CASCADE;
+alter table disease 
+    add constraint fk_disease_diseasetype
+	    foreign key (dis_dcl_id_a )
+	    references diseasetype (dcl_id_a )
+	    on delete no action
+	    on update cascade;
    
--- ALTER TABLE MALNUTRITIONCONTROL 
---    ADD CONSTRAINT FK_MALNUTRITIONCONTROL_ADMISSION
---	    FOREIGN KEY (MLN_ADM_ID )
---	    REFERENCES ADMISSION (ADM_ID )
---	    ON DELETE CASCADE
---	    ON UPDATE CASCADE;
+-- alter table malnutritioncontrol 
+--    add constraint fk_malnutritioncontrol_admission
+--	    foreign key (mln_adm_id )
+--	    references admission (adm_id )
+--	    on delete cascade
+--	    on update cascade;
     
-ALTER TABLE OPD     
-    ADD CONSTRAINT FK_OPD_DISEASE
-	    FOREIGN KEY (OPD_DIS_ID_A )
-	    REFERENCES DISEASE (DIS_ID_A )
-	    ON DELETE NO ACTION
-	    ON UPDATE NO ACTION,
-  	ADD CONSTRAINT FK_OPD_DISEASE_2
-	    FOREIGN KEY (OPD_DIS_ID_A_2 )
-	    REFERENCES DISEASE (DIS_ID_A )
-	    ON DELETE NO ACTION
-	    ON UPDATE NO ACTION,
-  	ADD CONSTRAINT FK_OPD_DISEASE_3
-	    FOREIGN KEY (OPD_DIS_ID_A_3 )
-	    REFERENCES DISEASE (DIS_ID_A )
-	    ON DELETE NO ACTION
-	    ON UPDATE NO ACTION,
-  	ADD CONSTRAINT FK_OPD_PATIENT
-	    FOREIGN KEY (OPD_PAT_ID )
-	    REFERENCES PATIENT (PAT_ID )
-	    ON DELETE CASCADE
-	    ON UPDATE CASCADE;
+alter table opd     
+    add constraint fk_opd_disease
+	    foreign key (opd_dis_id_a )
+	    references disease (dis_id_a )
+	    on delete no action
+	    on update no action,
+  	add constraint fk_opd_disease_2
+	    foreign key (opd_dis_id_a_2 )
+	    references disease (dis_id_a )
+	    on delete no action
+	    on update no action,
+  	add constraint fk_opd_disease_3
+	    foreign key (opd_dis_id_a_3 )
+	    references disease (dis_id_a )
+	    on delete no action
+	    on update no action,
+  	add constraint fk_opd_patient
+	    foreign key (opd_pat_id )
+	    references patient (pat_id )
+	    on delete cascade
+	    on update cascade;
 	    
-ALTER TABLE THERAPIES 
-    ADD CONSTRAINT FK_THERAPIES_PATIENT
-	    FOREIGN KEY (THR_PAT_ID )
-	    REFERENCES PATIENT (PAT_ID )
-	    ON DELETE CASCADE
-	    ON UPDATE CASCADE,
-	ADD CONSTRAINT FK_THERAPIES_MDSR
-  		FOREIGN KEY (THR_MDSR_ID)
-  		REFERENCES MEDICALDSR (MDSR_ID)
-  		ON DELETE NO ACTION
-  		ON UPDATE NO ACTION;
+alter table therapies 
+    add constraint fk_therapies_patient
+	    foreign key (thr_pat_id )
+	    references patient (pat_id )
+	    on delete cascade
+	    on update cascade,
+	add constraint fk_therapies_mdsr
+  		foreign key (thr_mdsr_id)
+  		references medicaldsr (mdsr_id)
+  		on delete no action
+  		on update no action;
     
-ALTER TABLE USER     
-    ADD CONSTRAINT FK_USER_USERGROUP
-	    FOREIGN KEY (US_UG_ID_A )
-	    REFERENCES USERGROUP (UG_ID_A )
-	    ON DELETE NO ACTION
-	    ON UPDATE CASCADE;
+alter table user     
+    add constraint fk_user_usergroup
+	    foreign key (us_ug_id_a )
+	    references usergroup (ug_id_a )
+	    on delete no action
+	    on update cascade;
     
-ALTER TABLE VISITS
-    ADD CONSTRAINT FK_VISITS_PATIENT
-	    FOREIGN KEY (VST_PAT_ID )
-	    REFERENCES PATIENT (PAT_ID )
-	    ON DELETE CASCADE
-	    ON UPDATE CASCADE;
+alter table visits
+    add constraint fk_visits_patient
+	    foreign key (vst_pat_id )
+	    references patient (pat_id )
+	    on delete cascade
+	    on update cascade;
 	    
-SET SQL_MODE=@OLD_SQL_MODE;
-SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
-SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+set sql_mode=@old_sql_mode;
+set foreign_key_checks=@old_foreign_key_checks;
+set unique_checks=@old_unique_checks;

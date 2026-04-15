@@ -1,11 +1,8 @@
-ALTER TABLE OH_OPERATION MODIFY COLUMN OPE_FOR VARCHAR(20);
+alter table oh_operation modify column ope_for varchar(20);
 
-UPDATE OH_OPERATION
-    SET OPE_FOR='opd_admission' WHERE OPE_FOR='1';
-UPDATE OH_OPERATION
-    SET OPE_FOR='admission' WHERE OPE_FOR='2';
-UPDATE OH_OPERATION
-    SET OPE_FOR='opd' WHERE OPE_FOR='3';
+update oh_operation set ope_for='opd_admission' where ope_for='1';
+update oh_operation set ope_for='admission' where ope_for='2';
+update oh_operation set ope_for='opd' where ope_for='3';
 
-ALTER TABLE OH_OPERATION
-    MODIFY COLUMN OPE_FOR ENUM('opd_admission', 'admission', 'opd') DEFAULT 'opd_admission';
+alter table oh_operation
+    modify column ope_for enum('opd_admission', 'admission', 'opd') default 'opd_admission';

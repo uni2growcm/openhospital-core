@@ -1,3 +1,3 @@
-ALTER TABLE OH_USER ADD US_FAILED_ATTEMPTS INT DEFAULT 0;
-ALTER TABLE OH_USER ADD US_ACCOUNT_LOCKED TINYINT(1) NOT NULL DEFAULT '0';
-ALTER TABLE OH_USER ADD US_LOCK_TIME datetime NULL DEFAULT NULL;
+alter table oh_user add us_failed_attempts int default 0;
+alter table oh_user add us_account_locked tinyint(1) not null default '0';
+alter table oh_user add us_lock_time datetime null default null;

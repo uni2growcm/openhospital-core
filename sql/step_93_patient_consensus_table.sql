@@ -1,18 +1,18 @@
-CREATE TABLE OH_PATIENT_CONSENSUS (
-  PTC_ID INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-  PTC_PAT_ID int(11) NOT NULL,
-  PTC_CONSENSUS TINYINT(1) NOT NULL DEFAULT 0,
-  PTC_SERVICE  TINYINT(1) NOT NULL DEFAULT 0,
-  PTC_CREATED_BY VARCHAR(50) NULL DEFAULT NULL,
-  PTC_CREATED_DATE datetime NULL DEFAULT NULL,
-  PTC_LAST_MODIFIED_BY VARCHAR(50) NULL DEFAULT NULL,
-  PTC_LAST_MODIFIED_DATE datetime NULL DEFAULT NULL,
-  PTC_ACTIVE TINYINT(1) NOT NULL DEFAULT 1,
-  PRIMARY KEY (PTC_ID),
-  FOREIGN KEY (PTC_PAT_ID) REFERENCES OH_PATIENT(PAT_ID),
-  UNIQUE (PTC_PAT_ID)
-) ENGINE = INNODB DEFAULT CHARACTER SET utf8;
+create table oh_patient_consensus (
+  ptc_id int(11) unsigned not null auto_increment,
+  ptc_pat_id int(11) not null,
+  ptc_consensus tinyint(1) not null default 0,
+  ptc_service  tinyint(1) not null default 0,
+  ptc_created_by varchar(50) null default null,
+  ptc_created_date datetime null default null,
+  ptc_last_modified_by varchar(50) null default null,
+  ptc_last_modified_date datetime null default null,
+  ptc_active tinyint(1) not null default 1,
+  primary key (ptc_id),
+  foreign key (ptc_pat_id) references oh_patient(pat_id),
+  unique (ptc_pat_id)
+) engine = innodb default character set utf8;
 
 -- update previous data
-INSERT INTO OH_PATIENT_CONSENSUS (PTC_PAT_ID, PTC_CONSENSUS, PTC_SERVICE, PTC_CREATED_BY, PTC_CREATED_DATE, PTC_LAST_MODIFIED_BY, PTC_LAST_MODIFIED_DATE)
-SELECT PAT_ID, 1, 0, 'admin', NOW(), 'admin', NOW() FROM OH_PATIENT;
+insert into oh_patient_consensus (ptc_pat_id, ptc_consensus, ptc_service, ptc_created_by, ptc_created_date, ptc_last_modified_by, ptc_last_modified_date)
+select pat_id, 1, 0, 'admin', now(), 'admin', now() from oh_patient;

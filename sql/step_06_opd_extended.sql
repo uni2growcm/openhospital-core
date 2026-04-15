@@ -1,8 +1,8 @@
-ALTER TABLE OPD ADD COLUMN OPD_REFERRAL_FROM varchar(1) DEFAULT NULL AFTER OPD_DIS_ID_A_3;
-ALTER TABLE OPD ADD COLUMN OPD_REFERRAL_TO varchar(1) DEFAULT NULL AFTER OPD_REFERRAL_FROM;
-ALTER TABLE OPD ADD COLUMN OPD_PAT_ID int(11) DEFAULT NULL AFTER OPD_REFERRAL_TO;
-ALTER TABLE OPD ADD COLUMN OPD_PAT_FNAME varchar(50) DEFAULT NULL AFTER OPD_PAT_ID;
-ALTER TABLE OPD ADD COLUMN OPD_PAT_SNAME varchar(50) DEFAULT NULL AFTER OPD_PAT_FNAME;
-ALTER TABLE OPD ADD COLUMN OPD_PAT_NEXT_KIN varchar(50) DEFAULT NULL AFTER OPD_PAT_SNAME;
-ALTER TABLE OPD ADD COLUMN OPD_PAT_ADDR varchar(50) DEFAULT NULL AFTER OPD_PAT_NEXT_KIN;
-ALTER TABLE OPD ADD COLUMN OPD_PAT_CITY varchar(50) DEFAULT NULL AFTER OPD_PAT_ADDR;
+alter table opd add column opd_referral_from varchar(1) default null after opd_dis_id_a_3;
+alter table opd add column opd_referral_to varchar(1) default null after opd_referral_from;
+alter table opd add column opd_pat_id int(11) default null after opd_referral_to;
+alter table opd add column opd_pat_fname varchar(50) default null after opd_pat_id;
+alter table opd add column opd_pat_sname varchar(50) default null after opd_pat_fname;
+alter table opd add column opd_pat_next_kin varchar(50) default null after opd_pat_sname;
+alter table opd add column opd_pat_addr varchar(50) default null after opd_pat_next_kin;
+alter table opd add column opd_pat_city varchar(50) default null after opd_pat_addr;

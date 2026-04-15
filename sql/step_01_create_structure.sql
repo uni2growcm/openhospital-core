@@ -1,389 +1,389 @@
 -- version 7-4-2006
 -- version 27-8-2006
--- version 29-8-2006  EXAM,LABORATORY
--- version 17-9-2006  ADMISSION, MENU , MENUITEM
--- version 17-11-2006 OPD (new) SURGERY (deleted), DISEASE, EXAM, LABORATORY modified
--- 	DISEASE	(added DIS_OPD_INCLUDE, DIS_IPD_INCLUDE)
--- 	EXAM	(EXA_DESC from 50 to 100)
--- 	LABORATORY (added LAB_AGE, LAB_SEX, LAB_MATERIAL, LAB_EXAM_DATE, LAB_PAT_INOUT)
+-- version 29-8-2006  exam,laboratory
+-- version 17-9-2006  admission, menu , menuitem
+-- version 17-11-2006 opd (new) surgery (deleted), disease, exam, laboratory modified
+-- 	disease	(added dis_opd_include, dis_ipd_include)
+-- 	exam	(exa_desc from 50 to 100)
+-- 	laboratory (added lab_age, lab_sex, lab_material, lab_exam_date, lab_pat_inout)
 -- version 17-6-2008
--- 	OPD (added OPD_REFERRAL_FROM, OPD_REFERRAL_TO, OPD_PAT_ID, OPD_PAT_FNAME, OPD_PAT_SNAME, OPD_PAT_NEXT_KIN, OPD_PAT_ADDR, OPD_PAT_CITY)
+-- 	opd (added opd_referral_from, opd_referral_to, opd_pat_id, opd_pat_fname, opd_pat_sname, opd_pat_next_kin, opd_pat_addr, opd_pat_city)
 -- version 10-12-2012
--- 	IMPORTANT MYSQL SETTINGS:
---   If you are using InnoDB tables, you should set this variable to 1 on all platforms 
+-- 	important mysql setTINGS:
+--   if you are using innodb tables, you should set this variable to 1 on all platforms 
 --   to force names to be converted to lowercase.
 --   lower_case_table_names = 1   
 
 --
--- TABLES creation
+-- tables creation
 --
-CREATE TABLE ADMISSION  (
-	ADM_ID  int NOT NULL auto_increment,
-	ADM_IN  int NOT NULL default '0',
-	ADM_TYPE  char(1) NOT NULL default 'N',
-	ADM_WRD_ID_A  char(1) NOT NULL default '',
-	ADM_YPROG  int NOT NULL default '0',
-	ADM_PAT_ID  int NOT NULL default '0',
-	ADM_DATE_ADM datetime NOT NULL,
-	ADM_ADMT_ID_A_ADM  varchar(10) NOT NULL default '',
-	ADM_FHU  varchar(50) default NULL,
-	ADM_IN_DIS_ID_A  varchar(10) default NULL,
-	ADM_OUT_DIS_ID_A  varchar(10) default NULL,
-	ADM_OPE_ID_A  varchar(10) default NULL,
-	ADM_DATE_OP datetime NULL ,			
-	ADM_RESOP  varchar(10) default NULL,
-	ADM_DATE_DIS  datetime default NULL,
-	ADM_DIST_ID_A  varchar(10) default NULL,
-	ADM_NOTE  text NULL,
-	ADM_TRANS float NULL default 0,	
-	ADM_PRG_DATE_VIS  datetime default NULL,
-	ADM_PRG_PTT_ID_A  varchar(10) default NULL,
-	ADM_PRG_DATE_DEL  datetime default NULL,
-	ADM_PRG_DLT_ID_A  char(1) default NULL,
-	ADM_PRG_DRT_ID_A  char(1) default NULL,
-	ADM_PRG_WEIGHT  float default NULL,
-	ADM_PRG_DATE_CTRL1  datetime default NULL,
-	ADM_PRG_DATE_CTRL2  datetime default NULL,
-	ADM_PRG_DATE_ABORT  datetime default NULL,
-	ADM_LOCK  int NOT NULL default '0',
-	ADM_DELETED  char(1) NOT NULL default 'N',
-	PRIMARY KEY  ( ADM_ID )
-) ENGINE=MyISAM;
+create table admission  (
+	adm_id int not null auto_increment,
+	adm_in int not null default '0',
+	adm_type char(1) not null default 'N',
+	adm_wrd_id_a char(1) not null default '',
+	adm_yprog int not null default '0',
+	adm_pat_id int not null default '0',
+	adm_date_adm datetime not null,
+	adm_admt_id_a_adm varchar(10) not null default '',
+	adm_fhu varchar(50) default null,
+	adm_in_dis_id_a varchar(10) default null,
+	adm_out_dis_id_a varchar(10) default null,
+	adm_ope_id_a varchar(10) default null,
+	adm_date_op datetime null ,			
+	adm_resop varchar(10) default null,
+	adm_date_dis datetime default null,
+	adm_dist_id_a varchar(10) default null,
+	adm_note text null,
+	adm_trans float null default 0,	
+	adm_prg_date_vis datetime default null,
+	adm_prg_ptt_id_a varchar(10) default null,
+	adm_prg_date_del datetime default null,
+	adm_prg_dlt_id_a char(1) default null,
+	adm_prg_drt_id_a char(1) default null,
+	adm_prg_weight float default null,
+	adm_prg_date_ctrl1 datetime default null,
+	adm_prg_date_ctrl2 datetime default null,
+	adm_prg_date_abort datetime default null,
+	adm_lock int not null default '0',
+	adm_deleted char(1) not null default 'N',
+	primary key  ( adm_id )
+) engine=MyISAM;
 
-CREATE TABLE ADMISSIONTYPE (
-	ADMT_ID_A varchar (10)  NOT NULL ,
-	ADMT_DESC varchar (50)  NOT NULL ,
-	PRIMARY KEY ( ADMT_ID_A )
-) ENGINE=MyISAM;
+create table admissiontype (
+	admt_id_a varchar (10)  not null ,
+	admt_desc varchar (50)  not null ,
+	primary key ( admt_id_a )
+) engine=MyISAM;
 
-CREATE TABLE DISCHARGETYPE (
-	DIST_ID_A varchar (10)  NOT NULL ,
-	DIST_DESC varchar (50)  NOT NULL ,
-	PRIMARY KEY ( DIST_ID_A )
-) ENGINE=MyISAM;
-
-
-CREATE TABLE DELIVERYRESULTTYPE (
-	DRT_ID_A char (1)  NOT NULL ,
-	DRT_DESC varchar (50)  NOT NULL ,
-	PRIMARY KEY ( DRT_ID_A )
-) ENGINE=MyISAM;
+create table dischargetype (
+	dist_id_a varchar (10)  not null ,
+	dist_desc varchar (50)  not null ,
+	primary key ( dist_id_a )
+) engine=MyISAM;
 
 
-CREATE TABLE DELIVERYTYPE (
-	DLT_ID_A char (1)  NOT NULL ,
-	DLT_DESC varchar (50)  NOT NULL ,
-	PRIMARY KEY ( DLT_ID_A )
-) ENGINE=MyISAM;
-
-CREATE TABLE DISEASE (
-	DIS_ID_A varchar (10)  NOT NULL ,
-	DIS_DESC varchar (160)  NOT NULL ,
-	DIS_DCL_ID_A char (2)  NOT NULL ,
-	DIS_LOCK int NOT NULL default 0,
-	DIS_OPD_INCLUDE int(11) NOT NULL  default 0, 
-	DIS_IPD_INCLUDE int(11) NOT NULL  default 0,
-	PRIMARY KEY ( DIS_ID_A )
-) ENGINE=MyISAM;
-
-CREATE TABLE DISEASETYPE (
-	DCL_ID_A char (2)  NOT NULL ,
-	DCL_DESC varchar (110)  NOT NULL ,
-	PRIMARY KEY ( DCL_ID_A )
-) ENGINE=MyISAM;
-
-CREATE TABLE EXAM (
-	EXA_ID_A varchar (10)  NOT NULL ,
-	EXA_DESC varchar (100)  NOT NULL ,
-	EXA_EXC_ID_A char (2)  NOT NULL ,
-	EXA_PROC int NOT NULL,					
-	EXA_DEFAULT varchar(50) ,				
-	EXA_LOCK int NOT NULL default 0,
-	PRIMARY KEY ( EXA_ID_A )
-) ENGINE=MyISAM;
-
-CREATE TABLE EXAMROW (
-	EXR_ID int NOT NULL AUTO_INCREMENT,
-	EXR_EXA_ID_A varchar (10)  NOT NULL ,
-	EXR_DESC varchar (50)  NOT NULL ,
-	PRIMARY KEY ( EXR_ID )
-) ENGINE=MyISAM;
-
-CREATE TABLE EXAMTYPE (
-	EXC_ID_A char (2)  NOT NULL ,
-	EXC_DESC varchar (50)  NOT NULL ,
-	PRIMARY KEY ( EXC_ID_A )
-) ENGINE=MyISAM;
+create table deliveryresulttype (
+	drt_id_a char (1)  not null ,
+	drt_desc varchar (50)  not null ,
+	primary key ( drt_id_a )
+) engine=MyISAM;
 
 
-CREATE TABLE HOSPITAL (
-	HOS_ID_A varchar (10)  NOT NULL ,
-	HOS_NAME varchar (255)  NOT NULL ,
-	HOS_ADDR varchar (255)  NOT NULL ,
-	HOS_CITY varchar (255)  NOT NULL ,
-	HOS_TELE varchar (50)  NULL ,
-	HOS_FAX varchar (50)  NULL ,
-	HOS_EMAIL varchar (50)  NULL ,
-	HOS_LOCK int NOT NULL default 0,
-	PRIMARY KEY ( HOS_ID_A )
-) ENGINE=MyISAM;
+create table deliverytype (
+	dlt_id_a char (1)  not null ,
+	dlt_desc varchar (50)  not null ,
+	primary key ( dlt_id_a )
+) engine=MyISAM;
 
-CREATE TABLE HELP(
-	HL_ID int NOT NULL AUTO_INCREMENT,
-	HL_MASK int NOT NULL,
-	HL_FIELD int NOT NULL,
-	HL_LANG char(2),
-	HL_MSG varchar(255),
-	PRIMARY KEY (HL_ID)
-) ENGINE=MyISAM;
+create table disease (
+	dis_id_a varchar (10)  not null ,
+	dis_desc varchar (160)  not null ,
+	dis_dcl_id_a char (2)  not null ,
+	dis_lock int not null default 0,
+	dis_opd_include int(11) not null  default 0, 
+	dis_ipd_include int(11) not null  default 0,
+	primary key ( dis_id_a )
+) engine=MyISAM;
 
+create table diseasetype (
+	dcl_id_a char (2)  not null ,
+	dcl_desc varchar (110)  not null ,
+	primary key ( dcl_id_a )
+) engine=MyISAM;
 
-CREATE TABLE LABORATORY (
-	LAB_ID int NOT NULL AUTO_INCREMENT ,
-	LAB_EXA_ID_A varchar (10)  NOT NULL ,
-	LAB_DATE datetime NOT NULL  , 
-	LAB_RES varchar (50)  NOT NULL ,
-	LAB_NOTE varchar (255) NULL ,
-	LAB_PAT_ID int NULL,					
-	LAB_PAT_NAME varchar(100) NULL ,		
-	LAB_CROSS1 int NULL ,				
-	LAB_CROSS2 int NULL ,
-	LAB_CROSS3 int NULL ,
-	LAB_CROSS4 int NULL ,
-	LAB_CROSS5 int NULL ,
-	LAB_CROSS6 int NULL ,
-	LAB_CROSS7 int NULL ,
-	LAB_CROSS8 int NULL ,
-	LAB_CROSS9 int NULL ,
-	LAB_CROSS10 int NULL ,
-	LAB_CROSS11 int NULL ,
-	LAB_CROSS12 int NULL ,
-	LAB_CROSS13 int NULL ,	
-	LAB_LOCK int NOT NULL default 0,		
-	LAB_AGE int(11) NULL, 
-	LAB_SEX char(1) NULL,
-	LAB_MATERIAL varchar(25) NULL,
-	LAB_EXAM_DATE date NULL,
-	LAB_PAT_INOUT char(1) NULL,
-	PRIMARY KEY ( LAB_ID )
-) ENGINE=MyISAM;
+create table exam (
+	exa_id_a varchar (10)  not null ,
+	exa_desc varchar (100)  not null ,
+	exa_exc_id_a char (2)  not null ,
+	exa_proc int not null,					
+	exa_default varchar(50) ,				
+	exa_lock int not null default 0,
+	primary key ( exa_id_a )
+) engine=MyISAM;
+
+create table examrow (
+	exr_id int not null auto_increment,
+	exr_exa_id_a varchar (10)  not null ,
+	exr_desc varchar (50)  not null ,
+	primary key ( exr_id )
+) engine=MyISAM;
+
+create table examtype (
+	exc_id_a char (2)  not null ,
+	exc_desc varchar (50)  not null ,
+	primary key ( exc_id_a )
+) engine=MyISAM;
 
 
-CREATE TABLE LABORATORYROW (					
-	LABR_ID int NOT NULL AUTO_INCREMENT ,
-	LABR_LAB_ID int  NOT NULL ,
-	LABR_DESC varchar (50)  NOT NULL ,
-	PRIMARY KEY ( LABR_ID )
-) ENGINE=MyISAM;
+create table hospital (
+	hos_id_a varchar (10)  not null ,
+	hos_name varchar (255)  not null ,
+	hos_addr varchar (255)  not null ,
+	hos_city varchar (255)  not null ,
+	hos_tele varchar (50)  null ,
+	hos_fax varchar (50)  null ,
+	hos_email varchar (50)  null ,
+	hos_lock int not null default 0,
+	primary key ( hos_id_a )
+) engine=MyISAM;
+
+create table help(
+	hl_id int not null auto_increment,
+	hl_mask int not null,
+	hl_field int not null,
+	hl_lang char(2),
+	hl_msg varchar(255),
+	primary key (hl_id)
+) engine=MyISAM;
 
 
-CREATE TABLE LOG (
-	LOG_ID int NOT NULL AUTO_INCREMENT ,
-	LOG_TYPE int  NOT NULL ,
-	LOG_CLASS varchar (100)  NULL ,
-	LOG_TYME datetime NOT NULL,
-	LOG_MESS varchar (255) NULL , 
-	PRIMARY KEY ( LOG_ID )
-) ENGINE=MyISAM;
-
-CREATE TABLE MALNUTRITIONCONTROL (
-	MLN_ID int NOT NULL AUTO_INCREMENT ,
-	MLN_DATE_SUPP datetime NOT NULL ,		
-	MNL_DATE_CONF datetime NULL ,
-	MLN_ADM_ID int NOT NULL ,
-	MLN_HEIGHT float NOT NULL ,
-	MLN_WEIGHT float NOT NULL ,
-	MLN_LOCK int NOT NULL default 0,
-	PRIMARY KEY ( MLN_ID )
-) ENGINE=MyISAM;
-
-
-CREATE TABLE MEDICALDSR (
-	MDSR_ID int NOT NULL AUTO_INCREMENT ,
-	MDSR_MDSRT_ID_A char (1)  NOT NULL ,
-	MDSR_DESC varchar (100)  NOT NULL ,
-	MDSR_MIN_STOCK_QTI float NOT NULL default 0,
-	MDSR_INI_STOCK_QTI float NOT NULL default 0,
-	MDSR_IN_QTI float  NOT NULL default 0,
-	MDSR_OUT_QTI float  NOT NULL default 0,
-	MDSR_LOCK int NOT NULL default 0,
-	UNIQUE INDEX ( MDSR_MDSRT_ID_A,MDSR_DESC) ,
-	PRIMARY KEY (MDSR_ID )
-) ENGINE=MyISAM;
-
-CREATE TABLE MEDICALDSRLOT(
-	LT_ID_A varchar(50) NOT NULL,
-	LT_PREP_DATE datetime NOT NULL ,
-	LT_DUE_DATE datetime NOT NULL ,
-	LT_LOCK int NOT NULL default 0,
-	PRIMARY KEY ( LT_ID_A )
-) ENGINE=MyISAM;
-
-CREATE TABLE MEDICALDSRSTOCKMOV (
-	MMV_ID int NOT NULL AUTO_INCREMENT ,
-	MMV_MDSR_ID int  NOT NULL ,
-	MMV_WRD_ID_A char(1) NULL ,
-	MMV_MMVT_ID_A varchar (10) NOT NULL ,
-	MMV_LT_ID_A varchar (50)   NULL ,
-	MMV_DATE datetime NOT NULL ,
-	MMV_QTY float NOT NULL default 0,
-	MMV_FROM varchar(30) NULL default 'JMS' ,
-	MMV_LOCK int NOT NULL default 0,
-	PRIMARY KEY ( MMV_ID )
-) ENGINE=MyISAM;
-
-CREATE TABLE MEDICALDSRSTOCKMOVTYPE (
-	MMVT_ID_A varchar(10) NOT NULL ,
-	MMVT_DESC varchar (50)  NOT NULL ,
-	MMVT_TYPE char (2)  NOT NULL ,
-	PRIMARY KEY ( MMVT_ID_A )
-) ENGINE=MyISAM;
-
-CREATE TABLE MEDICALDSRTYPE(
-	MDSRT_ID_A char(1) NOT NULL,
-	MDSRT_DESC varchar(30),
-	PRIMARY KEY (MDSRT_ID_A)
-) ENGINE=MyISAM;
+create table laboratory (
+	lab_id int not null auto_increment ,
+	lab_exa_id_a varchar (10)  not null ,
+	lab_date datetime not null  , 
+	lab_res varchar (50)  not null ,
+	lab_note varchar (255) null ,
+	lab_pat_id int null,					
+	lab_pat_name varchar(100) null ,		
+	lab_cross1 int null ,				
+	lab_cross2 int null ,
+	lab_cross3 int null ,
+	lab_cross4 int null ,
+	lab_cross5 int null ,
+	lab_cross6 int null ,
+	lab_cross7 int null ,
+	lab_cross8 int null ,
+	lab_cross9 int null ,
+	lab_cross10 int null ,
+	lab_cross11 int null ,
+	lab_cross12 int null ,
+	lab_cross13 int null ,	
+	lab_lock int not null default 0,		
+	lab_age int(11) null, 
+	lab_sex char(1) null,
+	lab_material varchar(25) null,
+	lab_exam_date date null,
+	lab_pat_inout char(1) null,
+	primary key ( lab_id )
+) engine=MyISAM;
 
 
-CREATE TABLE OPD ( 
-	OPD_ID        	  int(11) AUTO_INCREMENT NOT NULL,
-	OPD_DATE      	  datetime NOT NULL,
-	OPD_NEW_PAT   	  char(1) NOT NULL DEFAULT 'N',
-	OPD_DATE_VIS  	  date NOT NULL,
-	OPD_PROG_YEAR 	  int(11) NOT NULL,
-	OPD_SEX       	  char(1) NOT NULL,
-	OPD_AGE       	  int(11) NOT NULL DEFAULT 0,
-	OPD_DIS_ID_A  	  varchar(10) NULL,
-	OPD_DIS_ID_A_2	  varchar(10) NULL,	
-	OPD_DIS_ID_A_3	  varchar(10) NULL,
-	OPD_LOCK      	  int(11) NOT NULL DEFAULT '0',
-	PRIMARY KEY(OPD_ID)
-) ENGINE=MyISAM;
-
-CREATE TABLE OPERATION (
-	OPE_ID_A varchar (10)  NOT NULL ,
-	OPE_OCL_ID_A char (2)  NOT NULL ,
-	OPE_DESC varchar (50)  NOT NULL ,
-	OPE_STAT int NOT NULL default 0,			
-	OPE_LOCK int NOT NULL default 0,
-	PRIMARY KEY ( OPE_ID_A )
-) ENGINE=MyISAM;
-
-CREATE TABLE OPERATIONTYPE (
-	OCL_ID_A char (2)  NOT NULL ,
-	OCL_DESC varchar (50)  NOT NULL ,
-	OCL_TYPE varchar (20) NOT NULL default 'MAJOR', 
-	PRIMARY KEY ( OCL_ID_A )
-) ENGINE=MyISAM;
+create table laboratoryrow (					
+	labr_id int not null auto_increment ,
+	labr_lab_id int  not null ,
+	labr_desc varchar (50)  not null ,
+	primary key ( labr_id )
+) engine=MyISAM;
 
 
-CREATE TABLE PATIENT (
-	PAT_ID int NOT NULL AUTO_INCREMENT ,
-	PAT_FNAME varchar(50) NOT NULL,
-	PAT_SNAME varchar(50) NOT NULL,
-	PAT_NAME varchar(100) NULL,
-	PAT_AGE int NOT NULL ,
-	PAT_SEX char (1)  NOT NULL ,
-	PAT_ADDR varchar (50)  NULL ,
-	PAT_CITY varchar (50)  NOT NULL ,
-	PAT_NEXT_KIN varchar (50)  NULL ,
-	PAT_TELE varchar (50)  NULL ,
-	PAT_MOTH char (1)  NULL ,
-	PAT_FATH char (1)  NULL ,
-	PAT_LEDU char (1)  NULL ,
-	PAT_ESTA char (1)  NULL ,
-	PAT_PTOGE char (1)  NULL ,
-	PAT_NOTE text NULL,
-	PAT_DELETED char(1) NOT NULL default 'N',
-	PAT_LOCK int NOT NULL default 0,
-	PRIMARY KEY ( PAT_ID )
-) ENGINE=MyISAM;
+create table log (
+	log_id int not null auto_increment ,
+	log_type int  not null ,
+	log_class varchar (100)  null ,
+	log_tyme datetime not null,
+	log_mess varchar (255) null , 
+	primary key ( log_id )
+) engine=MyISAM;
 
-CREATE TABLE PATIENTVACCINE (
-	PAV_ID int NOT NULL AUTO_INCREMENT ,
-	PAV_YPROG int NOT NULL ,
-	PAV_DATE datetime NOT NULL ,
-	PAV_PAT_ID int NOT NULL ,
-	PAV_VAC_ID_A varchar (10)  NOT NULL ,
-	PAV_LOCK int NOT NULL default 0,
-	PRIMARY KEY ( PAV_ID )
-) ENGINE=MyISAM;
+create table malnutritioncontrol (
+	mln_id int not null auto_increment ,
+	mln_date_supp datetime not null ,		
+	mnl_date_conf datetime null ,
+	mln_adm_id int not null ,
+	mln_height float not null ,
+	mln_weight float not null ,
+	mln_lock int not null default 0,
+	primary key ( mln_id )
+) engine=MyISAM;
 
 
-CREATE TABLE PREGNANTTREATMENTTYPE (
-	PTT_ID_A varchar (10)  NOT NULL ,
-	PTT_DESC varchar (50)  NOT NULL ,
-	PRIMARY KEY ( PTT_ID_A )
-) ENGINE=MyISAM;
+create table medicaldsr (
+	mdsr_id int not null auto_increment ,
+	mdsr_mdsrt_id_a char (1)  not null ,
+	mdsr_desc varchar (100)  not null ,
+	mdsr_min_stock_qti float not null default 0,
+	mdsr_ini_stock_qti float not null default 0,
+	mdsr_in_qti float  not null default 0,
+	mdsr_out_qti float  not null default 0,
+	mdsr_lock int not null default 0,
+	unique index ( mdsr_mdsrt_id_a,mdsr_desc) ,
+	primary key (mdsr_id )
+) engine=MyISAM;
+
+create table medicaldsrlot(
+	lt_id_a varchar(50) not null,
+	lt_prep_date datetime not null ,
+	lt_due_date datetime not null ,
+	lt_lock int not null default 0,
+	primary key ( lt_id_a )
+) engine=MyISAM;
+
+create table medicaldsrstockmov (
+	mmv_id int not null auto_increment ,
+	mmv_mdsr_id int  not null ,
+	mmv_wrd_id_a char(1) null ,
+	mmv_mmvt_id_a varchar (10) not null ,
+	mmv_lt_id_a varchar (50)   null ,
+	mmv_date datetime not null ,
+	mmv_qty float not null default 0,
+	mmv_from varchar(30) null default 'jms' ,
+	mmv_lock int not null default 0,
+	primary key ( mmv_id )
+) engine=MyISAM;
+
+create table medicaldsrstockmovtype (
+	mmvt_id_a varchar(10) not null ,
+	mmvt_desc varchar (50)  not null ,
+	mmvt_type char (2)  not null ,
+	primary key ( mmvt_id_a )
+) engine=MyISAM;
+
+create table medicaldsrtype(
+	mdsrt_id_a char(1) not null,
+	mdsrt_desc varchar(30),
+	primary key (mdsrt_id_a)
+) engine=MyISAM;
 
 
-CREATE TABLE  USER (
-	US_ID_A varchar(50) NOT NULL DEFAULT '' ,
-	US_UG_ID_A varchar(50) NOT NULL DEFAULT '' ,
-	US_PASSWD varchar(50) NOT NULL DEFAULT '' ,
-	US_DESC varchar(128) ,
-	PRIMARY KEY (US_ID_A)
-) ENGINE=MyISAM;
+create table opd ( 
+	opd_id int(11) auto_increment not null,
+	opd_date datetime not null,
+	opd_new_pat char(1) not null default 'N',
+	opd_date_vis date not null,
+	opd_prog_year int(11) not null,
+	opd_sex char(1) not null,
+	opd_age int(11) not null default 0,
+	opd_dis_id_a varchar(10) null,
+	opd_dis_id_a_2 varchar(10) null,	
+	opd_dis_id_a_3 varchar(10) null,
+	opd_lock int(11) not null default '0',
+	primary key(opd_id)
+) engine=MyISAM;
 
-CREATE TABLE  USERGROUP (
-	UG_ID_A varchar(50) NOT NULL DEFAULT '' ,
-	UG_DESC varchar(128) ,
-	PRIMARY KEY (UG_ID_A)
-) ENGINE=MyISAM;
+create table operation (
+	ope_id_a varchar (10)  not null ,
+	ope_ocl_id_a char (2)  not null ,
+	ope_desc varchar (50)  not null ,
+	ope_stat int not null default 0,			
+	ope_lock int not null default 0,
+	primary key ( ope_id_a )
+) engine=MyISAM;
 
-
-CREATE TABLE VACCINE (
-	VAC_ID_A varchar (10)  NOT NULL ,
-	VAC_DESC varchar (50)  NOT NULL ,
-	VAC_PATI char (1)  NOT NULL ,
-	VAC_LOCK int NOT NULL default 0,
-	PRIMARY KEY ( VAC_ID_A )
-) ENGINE=MyISAM;
-
-
-CREATE TABLE VERSION (
-	VER_MAJOR int  NOT NULL ,
-	VER_MINOR int NOT  NULL ,
-	VER_SOURCE LONGBLOB  NULL, 
-	VER_DATE datetime NOT NULL,
-	VER_CURRENT char (1) default 'N' NOT NULL,
-	PRIMARY KEY ( VER_MAJOR,VER_MINOR )
-) ENGINE=MyISAM;
+create table operationtype (
+	ocl_id_a char (2)  not null ,
+	ocl_desc varchar (50)  not null ,
+	ocl_type varchar (20) not null default 'major', 
+	primary key ( ocl_id_a )
+) engine=MyISAM;
 
 
-CREATE TABLE WARD (
-	WRD_ID_A char (1)  NOT NULL ,
-	WRD_NAME varchar (50)  NOT NULL ,
-	WRD_TELE varchar (50)  NULL ,
-	WRD_FAX varchar (50)  NULL ,
-	WRD_EMAIL varchar (50)  NULL ,
-	WRD_NBEDS int NOT NULL ,
-	WRD_NQUA_NURS int NOT NULL ,
-	WRD_NDOC int NOT NULL ,
-	WRD_LOCK int NOT NULL default 0,
-	PRIMARY KEY ( WRD_ID_A )
-) ENGINE=MyISAM;
+create table patient (
+	pat_id int not null auto_increment ,
+	pat_fname varchar(50) not null,
+	pat_sname varchar(50) not null,
+	pat_name varchar(100) null,
+	pat_age int not null ,
+	pat_sex char (1)  not null ,
+	pat_addr varchar (50)  null ,
+	pat_city varchar (50)  not null ,
+	pat_next_kin varchar (50)  null ,
+	pat_tele varchar (50)  null ,
+	pat_moth char (1)  null ,
+	pat_fath char (1)  null ,
+	pat_ledu char (1)  null ,
+	pat_esta char (1)  null ,
+	pat_ptoge char (1)  null ,
+	pat_note text null,
+	pat_deleted char(1) not null default 'N',
+	pat_lock int not null default 0,
+	primary key ( pat_id )
+) engine=MyISAM;
 
--- MENU area
+create table patientvaccine (
+	pav_id int not null auto_increment ,
+	pav_yprog int not null ,
+	pav_date datetime not null ,
+	pav_pat_id int not null ,
+	pav_vac_id_a varchar (10)  not null ,
+	pav_lock int not null default 0,
+	primary key ( pav_id )
+) engine=MyISAM;
 
-CREATE TABLE GROUPMENU (
-  	GM_ID int NOT NULL AUTO_INCREMENT ,
-  	GM_UG_ID_A varchar(50) NOT NULL default '',
-  	GM_MNI_ID_A varchar(50) NOT NULL default '',
-  	GM_ACTIVE char(1) NOT NULL default '',
-  	PRIMARY KEY  (GM_ID)
-) ENGINE=MyISAM;
 
-CREATE TABLE MENUITEM (
-  	MNI_ID_A varchar(50) NOT NULL default '',
-  	MNI_BTN_LABEL varchar(50) NOT NULL default '',
-  	MNI_LABEL varchar(50) NOT NULL default '',
-  	MNI_TOOLTIP varchar(100) default NULL,
-  	MNI_SHORTCUT char(1) default NULL,
-  	MNI_SUBMENU varchar(50) NOT NULL default '',
-  	MNI_CLASS varchar(100) NOT NULL default '',
-  	MNI_IS_SUBMENU char(1) NOT NULL default 'N',
-  	MNI_POSITION int(10) unsigned NOT NULL default '0',
-  	PRIMARY KEY  (MNI_ID_A)
-) ENGINE=MyISAM;
+create table pregnanttreatmenttype (
+	ptt_id_a varchar (10)  not null ,
+	ptt_desc varchar (50)  not null ,
+	primary key ( ptt_id_a )
+) engine=MyISAM;
+
+
+create table  user (
+	us_id_a varchar(50) not null default '' ,
+	us_ug_id_a varchar(50) not null default '' ,
+	us_passwd varchar(50) not null default '' ,
+	us_desc varchar(128) ,
+	primary key (us_id_a)
+) engine=MyISAM;
+
+create table  usergroup (
+	ug_id_a varchar(50) not null default '' ,
+	ug_desc varchar(128) ,
+	primary key (ug_id_a)
+) engine=MyISAM;
+
+
+create table vaccine (
+	vac_id_a varchar (10)  not null ,
+	vac_desc varchar (50)  not null ,
+	vac_pati char (1)  not null ,
+	vac_lock int not null default 0,
+	primary key ( vac_id_a )
+) engine=MyISAM;
+
+
+create table version (
+	ver_major int  not null ,
+	ver_minor int not  null ,
+	ver_source longblob  null, 
+	ver_date datetime not null,
+	ver_current char (1) default 'N' not null,
+	primary key ( ver_major,ver_minor )
+) engine=MyISAM;
+
+
+create table ward (
+	wrd_id_a char (1)  not null ,
+	wrd_name varchar (50)  not null ,
+	wrd_tele varchar (50)  null ,
+	wrd_fax varchar (50)  null ,
+	wrd_email varchar (50)  null ,
+	wrd_nbeds int not null ,
+	wrd_nqua_nurs int not null ,
+	wrd_ndoc int not null ,
+	wrd_lock int not null default 0,
+	primary key ( wrd_id_a )
+) engine=MyISAM;
+
+-- menu area
+
+create table groupmenu (
+  	gm_id int not null auto_increment ,
+  	gm_ug_id_a varchar(50) not null default '',
+  	gm_mni_id_a varchar(50) not null default '',
+  	gm_active char(1) not null default '',
+  	primary key  (gm_id)
+) engine=MyISAM;
+
+create table menuitem (
+  	mni_id_a varchar(50) not null default '',
+  	mni_btn_label varchar(50) not null default '',
+  	mni_label varchar(50) not null default '',
+  	mni_tooltip varchar(100) default null,
+  	mni_shortcut char(1) default null,
+  	mni_submenu varchar(50) not null default '',
+  	mni_class varchar(100) not null default '',
+  	mni_is_submenu char(1) not null default 'N',
+  	mni_position int(10) unsigned not null default '0',
+  	primary key  (mni_id_a)
+) engine=MyISAM;

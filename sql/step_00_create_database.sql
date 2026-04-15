@@ -1,6 +1,6 @@
 -- drop oh database
 drop database if exists oh;
 -- create oh database
-create database oh CHARACTER SET utf8;
+create database oh character set utf8;
 
 use oh;

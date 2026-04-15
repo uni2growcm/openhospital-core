@@ -1,3 +1,3 @@
-ALTER TABLE OH_PATIENT
-ADD COLUMN PAT_LABBOOK_ID INTEGER NULL
-AFTER PAT_ID;
+alter table oh_patient
+add column pat_labbook_id intEGER null
+after pat_id;

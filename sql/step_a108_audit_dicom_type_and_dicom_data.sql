@@ -1,17 +1,17 @@
 -- alter table oh_dicomtype --------------
 
-ALTER TABLE `oh_dicomtype` 
-ADD COLUMN DCMT_CREATED_BY VARCHAR(50) NULL DEFAULT NULL,
-ADD COLUMN DCMT_CREATED_DATE datetime NULL DEFAULT NULL,
-ADD COLUMN DCMT_LAST_MODIFIED_BY VARCHAR(50) NULL DEFAULT NULL,
-ADD COLUMN DCMT_LAST_MODIFIED_DATE datetime NULL DEFAULT NULL,
-ADD COLUMN DCMT_ACTIVE TINYINT(1) NOT NULL DEFAULT 1;
+alter table `oh_dicomtype` 
+add column dcmt_created_by varchar(50) null default null,
+add column dcmt_created_date datetime null default null,
+add column dcmt_last_modified_by varchar(50) null default null,
+add column dcmt_last_modified_date datetime null default null,
+add column dcmt_active tinyint(1) not null default 1;
 
 -- alter table oh_dicom_data --------------
 
-ALTER TABLE `oh_dicom_data`
-ADD COLUMN DMD_CREATED_BY VARCHAR(50) NULL DEFAULT NULL,
-ADD COLUMN DMD_CREATED_DATE datetime NULL DEFAULT NULL,
-ADD COLUMN DMD_LAST_MODIFIED_BY VARCHAR(50) NULL DEFAULT NULL,
-ADD COLUMN DMD_LAST_MODIFIED_DATE datetime NULL DEFAULT NULL,
-ADD COLUMN DMD_ACTIVE TINYINT(1) NOT NULL DEFAULT 1;
+alter table `oh_dicom_data`
+add column dmd_created_by varchar(50) null default null,
+add column dmd_created_date datetime null default null,
+add column dmd_last_modified_by varchar(50) null default null,
+add column dmd_last_modified_date datetime null default null,
+add column dmd_active tinyint(1) not null default 1;

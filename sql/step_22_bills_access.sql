@@ -1,9 +1,9 @@
-INSERT INTO MENUITEM VALUES ('btnbillnew','angal.billbrowser.newbill.btn','angal.billbrowser.newbill.btn','x','N','billsmanager','none','N',0);
-INSERT INTO MENUITEM VALUES ('btnbilledit','angal.billbrowser.editbill','angal.billbrowser.editbill','x','N','billsmanager','none','N',1);
-INSERT INTO MENUITEM VALUES ('btnbilldelete','angal.billbrowser.deletebill.btn','angal.billbrowser.deletebill.btn','x','N','billsmanager','none','N',2);
-INSERT INTO MENUITEM VALUES ('btnbillreport','angal.billbrowser.report','angal.billbrowser.report','x','N','billsmanager','none','N',3);
+insert into menuitem values ('btnbillnew','angal.billbrowser.newbill.btn','angal.billbrowser.newbill.btn','x','N','billsmanager','none','N',0);
+insert into menuitem values ('btnbilledit','angal.billbrowser.editbill','angal.billbrowser.editbill','x','N','billsmanager','none','N',1);
+insert into menuitem values ('btnbilldelete','angal.billbrowser.deletebill.btn','angal.billbrowser.deletebill.btn','x','N','billsmanager','none','N',2);
+insert into menuitem values ('btnbillreport','angal.billbrowser.report','angal.billbrowser.report','x','N','billsmanager','none','N',3);
 
-INSERT INTO GROUPMENU (GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE) VALUES ('admin','btnbillnew','Y');
-INSERT INTO GROUPMENU (GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE) VALUES ('admin','btnbilledit','Y');
-INSERT INTO GROUPMENU (GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE) VALUES ('admin','btnbilldelete','Y');
-INSERT INTO GROUPMENU (GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE) VALUES ('admin','btnbillreport','Y');
+insert into groupmenu (gm_ug_id_a, gm_mni_id_a, gm_active) values ('admin','btnbillnew','Y');
+insert into groupmenu (gm_ug_id_a, gm_mni_id_a, gm_active) values ('admin','btnbilledit','Y');
+insert into groupmenu (gm_ug_id_a, gm_mni_id_a, gm_active) values ('admin','btnbilldelete','Y');
+insert into groupmenu (gm_ug_id_a, gm_mni_id_a, gm_active) values ('admin','btnbillreport','Y');

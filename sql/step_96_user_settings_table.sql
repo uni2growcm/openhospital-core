@@ -1,9 +1,9 @@
-CREATE TABLE OH_USER_SETTINGS(
- USS_ID INT(11) NOT NULL AUTO_INCREMENT, 
- USS_US_ID_A varchar(50) NOT NULL, 
- USS_CONFIG_NAME varchar(50) NOT NULL,  
- USS_CONFIG_VALUE TEXT NOT NULL,
- PRIMARY KEY (USS_ID),
- FOREIGN KEY (USS_US_ID_A) REFERENCES OH_USER(US_ID_A) ON DELETE CASCADE,
- UNIQUE (USS_US_ID_A)
-) ENGINE = INNODB DEFAULT CHARACTER SET utf8;
+create table oh_user_settings(
+ uss_id int(11) not null auto_increment, 
+ uss_us_id_a varchar(50) not null, 
+ uss_config_name varchar(50) not null,  
+ uss_config_value text not null,
+ primary key (uss_id),
+ foreign key (uss_us_id_a) references oh_user(us_id_a) on delete cascade,
+ unique (uss_us_id_a)
+) engine = innodb default character set utf8;

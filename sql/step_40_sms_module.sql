@@ -1,13 +1,13 @@
-CREATE TABLE SMS (
-  SMS_ID INT(11) NOT NULL AUTO_INCREMENT ,
-  SMS_DATE TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
-  SMS_DATE_SCHED DATETIME NOT NULL ,
-  SMS_NUMBER VARCHAR(45) NOT NULL ,
-  SMS_TEXT VARCHAR(160) NOT NULL ,
-  SMS_DATE_SENT DATETIME NULL ,
-  SMS_USER VARCHAR(50) NOT NULL DEFAULT 'admin' ,
-  PRIMARY KEY (SMS_ID) 
+create table sms (
+  sms_id int(11) not null auto_increment ,
+  sms_date timeSTAMP not null default current_timestamp ,
+  sms_date_sched datetime not null ,
+  sms_number varchar(45) not null ,
+  sms_text varchar(160) not null ,
+  sms_date_sent datetime null ,
+  sms_user varchar(50) not null default 'admin' ,
+  primary key (sms_id) 
 );
 
-INSERT INTO MENUITEM VALUES ('smsmanager', 'angal.menu.btn.smsmanager', 'angal.menu.smsmanager', 'x', 'M', 'generaldata', 'org.isf.sms.gui.SmsBrowser','N', 9);
-INSERT INTO GROUPMENU (GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE) VALUES ('admin','smsmanager','Y');
+insert into menuitem values ('smsmanager', 'angal.menu.btn.smsmanager', 'angal.menu.smsmanager', 'x', 'M', 'generaldata', 'org.isf.sms.gui.SmsBrowser','N', 9);
+insert into groupmenu (gm_ug_id_a, gm_mni_id_a, gm_active) values ('admin','smsmanager','Y');

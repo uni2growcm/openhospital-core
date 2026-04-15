@@ -1,7 +1,7 @@
-ALTER TABLE OPD 
-DROP COLUMN OPD_PAT_CITY, 
-DROP COLUMN OPD_PAT_ADDR, 
-DROP COLUMN OPD_PAT_NEXT_KIN, 
-DROP COLUMN OPD_PAT_SNAME, 
-DROP COLUMN OPD_PAT_FNAME, 
-DROP COLUMN OPD_PAT_FULLNAME;
+alter table opd 
+drop column opd_pat_city, 
+drop column opd_pat_addr, 
+drop column opd_pat_next_kin, 
+drop column opd_pat_sname, 
+drop column opd_pat_fname, 
+drop column opd_pat_fullname;

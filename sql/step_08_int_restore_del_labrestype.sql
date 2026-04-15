@@ -1,7 +1,7 @@
-ALTER TABLE PATIENT MODIFY COLUMN PAT_AGE INT NOT NULL DEFAULT 0;
-ALTER TABLE OPD MODIFY COLUMN OPD_AGE INT NOT NULL DEFAULT 0;
-DELETE FROM GROUPMENU WHERE GM_MNI_ID_A = 'laboratoryresulttype';
-DELETE FROM MENUITEM WHERE MNI_ID_A = 'laboratoryresulttype';
-UPDATE MENUITEM SET MNI_CLASS = 'org.isf.lab.gui.LabBrowser', MNI_IS_SUBMENU = 'N' WHERE MNI_ID_A = 'laboratory';
-DELETE FROM GROUPMENU WHERE GM_MNI_ID_A = 'labbrowsing';
-DELETE FROM MENUITEM WHERE MNI_ID_A = 'labbrowsing';
+alter table patient modify column pat_age int not null default 0;
+alter table opd modify column opd_age int not null default 0;
+delete from groupmenu where gm_mni_id_a = 'laboratoryresulttype';
+delete from menuitem where mni_id_a = 'laboratoryresulttype';
+update menuitem set mni_class = 'org.isf.lab.gui.LabBrowser', mni_is_submenu = 'N' where mni_id_a = 'laboratory';
+delete from groupmenu where gm_mni_id_a = 'labbrowsing';
+delete from menuitem where mni_id_a = 'labbrowsing';

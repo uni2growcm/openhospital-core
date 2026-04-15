@@ -1,1 +1,1 @@
-ALTER TABLE MEDICALDSRLOT ADD COLUMN LT_COST DOUBLE NULL AFTER LT_DUE_DATE;
+alter table medicaldsrlot add column lt_cost double null after lt_due_date;

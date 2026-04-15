@@ -1,4 +1,4 @@
-UPDATE OH_LABORATORY SET LAB_CREATED_DATE = LAB_DATE;
-UPDATE OH_LABORATORY SET LAB_DATE = CAST(CONCAT(LAB_EXAM_DATE, ' ', TIME(LAB_DATE)) AS DATETIME);
+update oh_laboratory set lab_created_date = lab_date;
+update oh_laboratory set lab_date = cast(concat(lab_exam_date, ' ', time(lab_date)) as datetime);
 
-ALTER TABLE OH_LABORATORY DROP COLUMN LAB_EXAM_DATE;
+alter table oh_laboratory drop column lab_exam_date;

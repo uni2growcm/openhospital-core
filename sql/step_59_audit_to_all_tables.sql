@@ -1,284 +1,284 @@
-ALTER TABLE ADMISSION 
-  ADD COLUMN ADM_CREATED_BY VARCHAR(50) NULL DEFAULT NULL AFTER ADM_DELETED, 
-  ADD COLUMN ADM_CREATED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN ADM_LAST_MODIFIED_BY VARCHAR(50) NULL DEFAULT NULL, 
-  ADD COLUMN ADM_LAST_MODIFIED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN ADM_ACTIVE TINYINT(1) NOT NULL DEFAULT 1; 
-ALTER TABLE ADMISSIONTYPE 
-  ADD COLUMN ADMT_CREATED_BY VARCHAR(50) NULL DEFAULT NULL AFTER ADMT_DESC, 
-  ADD COLUMN ADMT_CREATED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN ADMT_LAST_MODIFIED_BY VARCHAR(50) NULL DEFAULT NULL, 
-  ADD COLUMN ADMT_LAST_MODIFIED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN ADMT_ACTIVE TINYINT(1) NOT NULL DEFAULT 1; 
-ALTER TABLE AGETYPE 
-  ADD COLUMN AT_CREATED_BY VARCHAR(50) NULL DEFAULT NULL AFTER AT_DESC, 
-  ADD COLUMN AT_CREATED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN AT_LAST_MODIFIED_BY VARCHAR(50) NULL DEFAULT NULL, 
-  ADD COLUMN AT_LAST_MODIFIED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN AT_ACTIVE TINYINT(1) NOT NULL DEFAULT 1; 
-ALTER TABLE BILLITEMS 
-  ADD COLUMN BLI_CREATED_BY VARCHAR(50) NULL DEFAULT NULL AFTER BLI_QTY, 
-  ADD COLUMN BLI_CREATED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN BLI_LAST_MODIFIED_BY VARCHAR(50) NULL DEFAULT NULL, 
-  ADD COLUMN BLI_LAST_MODIFIED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN BLI_ACTIVE TINYINT(1) NOT NULL DEFAULT 1; 
-ALTER TABLE BILLPAYMENTS 
-  ADD COLUMN BLP_CREATED_BY VARCHAR(50) NULL DEFAULT NULL AFTER BLP_USR_ID_A, 
-  ADD COLUMN BLP_CREATED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN BLP_LAST_MODIFIED_BY VARCHAR(50) NULL DEFAULT NULL, 
-  ADD COLUMN BLP_LAST_MODIFIED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN BLP_ACTIVE TINYINT(1) NOT NULL DEFAULT 1; 
-ALTER TABLE BILLS 
-  ADD COLUMN BLL_CREATED_BY VARCHAR(50) NULL DEFAULT NULL AFTER BLL_USR_ID_A, 
-  ADD COLUMN BLL_CREATED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN BLL_LAST_MODIFIED_BY VARCHAR(50) NULL DEFAULT NULL, 
-  ADD COLUMN BLL_LAST_MODIFIED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN BLL_ACTIVE TINYINT(1) NOT NULL DEFAULT 1; 
-ALTER TABLE DELIVERYRESULTTYPE 
-  ADD COLUMN DRT_CREATED_BY VARCHAR(50) NULL DEFAULT NULL AFTER DRT_DESC, 
-  ADD COLUMN DRT_CREATED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN DRT_LAST_MODIFIED_BY VARCHAR(50) NULL DEFAULT NULL, 
-  ADD COLUMN DRT_LAST_MODIFIED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN DRT_ACTIVE TINYINT(1) NOT NULL DEFAULT 1; 
-ALTER TABLE DELIVERYTYPE 
-  ADD COLUMN DLT_CREATED_BY VARCHAR(50) NULL DEFAULT NULL AFTER DLT_DESC, 
-  ADD COLUMN DLT_CREATED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN DLT_LAST_MODIFIED_BY VARCHAR(50) NULL DEFAULT NULL, 
-  ADD COLUMN DLT_LAST_MODIFIED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN DLT_ACTIVE TINYINT(1) NOT NULL DEFAULT 1; 
-ALTER TABLE DICOM 
-  ADD COLUMN DM_CREATED_BY VARCHAR(50) NULL DEFAULT NULL AFTER DM_THUMBNAIL, 
-  ADD COLUMN DM_CREATED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN DM_LAST_MODIFIED_BY VARCHAR(50) NULL DEFAULT NULL, 
-  ADD COLUMN DM_LAST_MODIFIED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN DM_ACTIVE TINYINT(1) NOT NULL DEFAULT 1; 
-ALTER TABLE DISCHARGETYPE 
-  ADD COLUMN DIST_CREATED_BY VARCHAR(50) NULL DEFAULT NULL AFTER DIST_DESC, 
-  ADD COLUMN DIST_CREATED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN DIST_LAST_MODIFIED_BY VARCHAR(50) NULL DEFAULT NULL, 
-  ADD COLUMN DIST_LAST_MODIFIED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN DIST_ACTIVE TINYINT(1) NOT NULL DEFAULT 1; 
-ALTER TABLE DISEASE 
-  ADD COLUMN DIS_CREATED_BY VARCHAR(50) NULL DEFAULT NULL AFTER DIS_IPD_OUT_INCLUDE, 
-  ADD COLUMN DIS_CREATED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN DIS_LAST_MODIFIED_BY VARCHAR(50) NULL DEFAULT NULL, 
-  ADD COLUMN DIS_LAST_MODIFIED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN DIS_ACTIVE TINYINT(1) NOT NULL DEFAULT 1; 
-ALTER TABLE DISEASETYPE 
-  ADD COLUMN DCL_CREATED_BY VARCHAR(50) NULL DEFAULT NULL  AFTER DCL_DESC, 
-  ADD COLUMN DCL_CREATED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN DCL_LAST_MODIFIED_BY VARCHAR(50) NULL DEFAULT NULL, 
-  ADD COLUMN DCL_LAST_MODIFIED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN DCL_ACTIVE TINYINT(1) NOT NULL DEFAULT 1; 
-ALTER TABLE EXAM 
-  ADD COLUMN EXA_CREATED_BY VARCHAR(50) NULL DEFAULT NULL AFTER EXA_LOCK, 
-  ADD COLUMN EXA_CREATED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN EXA_LAST_MODIFIED_BY VARCHAR(50) NULL DEFAULT NULL, 
-  ADD COLUMN EXA_LAST_MODIFIED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN EXA_ACTIVE TINYINT(1) NOT NULL DEFAULT 1; 
-ALTER TABLE EXAMROW 
-  ADD COLUMN EXR_CREATED_BY VARCHAR(50) NULL DEFAULT NULL AFTER EXR_DESC, 
-  ADD COLUMN EXR_CREATED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN EXR_LAST_MODIFIED_BY VARCHAR(50) NULL DEFAULT NULL, 
-  ADD COLUMN EXR_LAST_MODIFIED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN EXR_ACTIVE TINYINT(1) NOT NULL DEFAULT 1; 
-ALTER TABLE EXAMTYPE 
-  ADD COLUMN EXC_CREATED_BY VARCHAR(50) NULL DEFAULT NULL AFTER EXC_DESC, 
-  ADD COLUMN EXC_CREATED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN EXC_LAST_MODIFIED_BY VARCHAR(50) NULL DEFAULT NULL, 
-  ADD COLUMN EXC_LAST_MODIFIED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN EXC_ACTIVE TINYINT(1) NOT NULL DEFAULT 1; 
+alter table admission 
+  add column adm_created_by varchar(50) null default null after adm_deleted, 
+  add column adm_created_date datetime null default null, 
+  add column adm_last_modified_by varchar(50) null default null, 
+  add column adm_last_modified_date datetime null default null, 
+  add column adm_active tinyint(1) not null default 1; 
+alter table admissiontype 
+  add column admt_created_by varchar(50) null default null after admt_desc, 
+  add column admt_created_date datetime null default null, 
+  add column admt_last_modified_by varchar(50) null default null, 
+  add column admt_last_modified_date datetime null default null, 
+  add column admt_active tinyint(1) not null default 1; 
+alter table agetype 
+  add column at_created_by varchar(50) null default null after at_desc, 
+  add column at_created_date datetime null default null, 
+  add column at_last_modified_by varchar(50) null default null, 
+  add column at_last_modified_date datetime null default null, 
+  add column at_active tinyint(1) not null default 1; 
+alter table billitems 
+  add column bli_created_by varchar(50) null default null after bli_qty, 
+  add column bli_created_date datetime null default null, 
+  add column bli_last_modified_by varchar(50) null default null, 
+  add column bli_last_modified_date datetime null default null, 
+  add column bli_active tinyint(1) not null default 1; 
+alter table billpayments 
+  add column blp_created_by varchar(50) null default null after blp_usr_id_a, 
+  add column blp_created_date datetime null default null, 
+  add column blp_last_modified_by varchar(50) null default null, 
+  add column blp_last_modified_date datetime null default null, 
+  add column blp_active tinyint(1) not null default 1; 
+alter table bills 
+  add column bll_created_by varchar(50) null default null after bll_usr_id_a, 
+  add column bll_created_date datetime null default null, 
+  add column bll_last_modified_by varchar(50) null default null, 
+  add column bll_last_modified_date datetime null default null, 
+  add column bll_active tinyint(1) not null default 1; 
+alter table deliveryresulttype 
+  add column drt_created_by varchar(50) null default null after drt_desc, 
+  add column drt_created_date datetime null default null, 
+  add column drt_last_modified_by varchar(50) null default null, 
+  add column drt_last_modified_date datetime null default null, 
+  add column drt_active tinyint(1) not null default 1; 
+alter table deliverytype 
+  add column dlt_created_by varchar(50) null default null after dlt_desc, 
+  add column dlt_created_date datetime null default null, 
+  add column dlt_last_modified_by varchar(50) null default null, 
+  add column dlt_last_modified_date datetime null default null, 
+  add column dlt_active tinyint(1) not null default 1; 
+alter table dicom 
+  add column dm_created_by varchar(50) null default null after dm_thumbnail, 
+  add column dm_created_date datetime null default null, 
+  add column dm_last_modified_by varchar(50) null default null, 
+  add column dm_last_modified_date datetime null default null, 
+  add column dm_active tinyint(1) not null default 1; 
+alter table dischargetype 
+  add column dist_created_by varchar(50) null default null after dist_desc, 
+  add column dist_created_date datetime null default null, 
+  add column dist_last_modified_by varchar(50) null default null, 
+  add column dist_last_modified_date datetime null default null, 
+  add column dist_active tinyint(1) not null default 1; 
+alter table disease 
+  add column dis_created_by varchar(50) null default null after dis_ipd_out_include, 
+  add column dis_created_date datetime null default null, 
+  add column dis_last_modified_by varchar(50) null default null, 
+  add column dis_last_modified_date datetime null default null, 
+  add column dis_active tinyint(1) not null default 1; 
+alter table diseasetype 
+  add column dcl_created_by varchar(50) null default null  after dcl_desc, 
+  add column dcl_created_date datetime null default null, 
+  add column dcl_last_modified_by varchar(50) null default null, 
+  add column dcl_last_modified_date datetime null default null, 
+  add column dcl_active tinyint(1) not null default 1; 
+alter table exam 
+  add column exa_created_by varchar(50) null default null after exa_lock, 
+  add column exa_created_date datetime null default null, 
+  add column exa_last_modified_by varchar(50) null default null, 
+  add column exa_last_modified_date datetime null default null, 
+  add column exa_active tinyint(1) not null default 1; 
+alter table examrow 
+  add column exr_created_by varchar(50) null default null after exr_desc, 
+  add column exr_created_date datetime null default null, 
+  add column exr_last_modified_by varchar(50) null default null, 
+  add column exr_last_modified_date datetime null default null, 
+  add column exr_active tinyint(1) not null default 1; 
+alter table examtype 
+  add column exc_created_by varchar(50) null default null after exc_desc, 
+  add column exc_created_date datetime null default null, 
+  add column exc_last_modified_by varchar(50) null default null, 
+  add column exc_last_modified_date datetime null default null, 
+  add column exc_active tinyint(1) not null default 1; 
 
--- ALTER GROUP MENU
-ALTER TABLE GROUPMENU 
-  ADD COLUMN GM_CREATED_BY VARCHAR(50) NULL DEFAULT NULL AFTER GM_ACTIVE, 
-  ADD COLUMN GM_CREATED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN GM_LAST_MODIFIED_BY VARCHAR(50) NULL DEFAULT NULL, 
-  ADD COLUMN GM_LAST_MODIFIED_DATE datetime NULL DEFAULT NULL; 
-UPDATE GROUPMENU SET GM_ACTIVE = 1 WHERE GM_ACTIVE = 'Y';
-UPDATE GROUPMENU SET GM_ACTIVE = 0 WHERE GM_ACTIVE = 'N';
-ALTER TABLE GROUPMENU  
-  CHANGE COLUMN GM_ACTIVE GM_ACTIVE TINYINT(1) NOT NULL DEFAULT 1;
+-- alter group menu
+alter table groupmenu 
+  add column gm_created_by varchar(50) null default null after gm_active, 
+  add column gm_created_date datetime null default null, 
+  add column gm_last_modified_by varchar(50) null default null, 
+  add column gm_last_modified_date datetime null default null; 
+update groupmenu set gm_active = 1 where gm_active = 'Y';
+update groupmenu set gm_active = 0 where gm_active = 'N';
+alter table groupmenu  
+  change column gm_active gm_active tinyint(1) not null default 1;
 
-ALTER TABLE HOSPITAL 
-  ADD COLUMN HOS_CREATED_BY VARCHAR(50) NULL DEFAULT NULL AFTER HOS_LOCK, 
-  ADD COLUMN HOS_CREATED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN HOS_LAST_MODIFIED_BY VARCHAR(50) NULL DEFAULT NULL, 
-  ADD COLUMN HOS_LAST_MODIFIED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN HOS_ACTIVE TINYINT(1) NOT NULL DEFAULT 1; 
-ALTER TABLE LABORATORY 
-  ADD COLUMN LAB_CREATED_BY VARCHAR(50) NULL DEFAULT NULL  AFTER LAB_PAT_INOUT, 
-  ADD COLUMN LAB_CREATED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN LAB_LAST_MODIFIED_BY VARCHAR(50) NULL DEFAULT NULL, 
-  ADD COLUMN LAB_LAST_MODIFIED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN LAB_ACTIVE TINYINT(1) NOT NULL DEFAULT 1; 
-ALTER TABLE LABORATORYROW 
-  ADD COLUMN LABR_CREATED_BY VARCHAR(50) NULL DEFAULT NULL AFTER LABR_DESC, 
-  ADD COLUMN LABR_CREATED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN LABR_LAST_MODIFIED_BY VARCHAR(50) NULL DEFAULT NULL, 
-  ADD COLUMN LABR_LAST_MODIFIED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN LABR_ACTIVE TINYINT(1) NOT NULL DEFAULT 1; 
-ALTER TABLE MALNUTRITIONCONTROL 
-  ADD COLUMN MLN_CREATED_BY VARCHAR(50) NULL DEFAULT NULL AFTER MLN_LOCK, 
-  ADD COLUMN MLN_CREATED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN MLN_LAST_MODIFIED_BY VARCHAR(50) NULL DEFAULT NULL, 
-  ADD COLUMN MLN_LAST_MODIFIED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN MLN_ACTIVE TINYINT(1) NOT NULL DEFAULT 1; 
-ALTER TABLE MEDICALDSR 
-  ADD COLUMN MDSR_CREATED_BY VARCHAR(50) NULL DEFAULT NULL AFTER MDSR_LOCK, 
-  ADD COLUMN MDSR_CREATED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN MDSR_LAST_MODIFIED_BY VARCHAR(50) NULL DEFAULT NULL, 
-  ADD COLUMN MDSR_LAST_MODIFIED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN MDSR_ACTIVE TINYINT(1) NOT NULL DEFAULT 1; 
-ALTER TABLE MEDICALDSRLOT 
-  ADD COLUMN LT_CREATED_BY VARCHAR(50) NULL DEFAULT NULL AFTER LT_LOCK, 
-  ADD COLUMN LT_CREATED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN LT_LAST_MODIFIED_BY VARCHAR(50) NULL DEFAULT NULL, 
-  ADD COLUMN LT_LAST_MODIFIED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN LT_ACTIVE TINYINT(1) NOT NULL DEFAULT 1; 
-ALTER TABLE MEDICALDSRSTOCKMOV 
-  ADD COLUMN MMV_CREATED_BY VARCHAR(50) NULL DEFAULT NULL AFTER MMV_REFNO , 
-  ADD COLUMN MMV_CREATED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN MMV_LAST_MODIFIED_BY VARCHAR(50) NULL DEFAULT NULL, 
-  ADD COLUMN MMV_LAST_MODIFIED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN MMV_ACTIVE TINYINT(1) NOT NULL DEFAULT 1; 
-ALTER TABLE MEDICALDSRSTOCKMOVTYPE 
-  ADD COLUMN MMVT_CREATED_BY VARCHAR(50) NULL DEFAULT NULL AFTER MMVT_TYPE, 
-  ADD COLUMN MMVT_CREATED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN MMVT_LAST_MODIFIED_BY VARCHAR(50) NULL DEFAULT NULL, 
-  ADD COLUMN MMVT_LAST_MODIFIED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN MMVT_ACTIVE TINYINT(1) NOT NULL DEFAULT 1; 
-ALTER TABLE MEDICALDSRSTOCKMOVWARD 
-  ADD COLUMN MMVN_CREATED_BY VARCHAR(50) NULL DEFAULT NULL AFTER MMVN_MDSR_UNITS, 
-  ADD COLUMN MMVN_CREATED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN MMVN_LAST_MODIFIED_BY VARCHAR(50) NULL DEFAULT NULL, 
-  ADD COLUMN MMVN_LAST_MODIFIED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN MMVN_ACTIVE TINYINT(1) NOT NULL DEFAULT 1; 
-ALTER TABLE MEDICALDSRTYPE 
-  ADD COLUMN MDSRT_CREATED_BY VARCHAR(50) NULL DEFAULT NULL AFTER MDSRT_DESC, 
-  ADD COLUMN MDSRT_CREATED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN MDSRT_LAST_MODIFIED_BY VARCHAR(50) NULL DEFAULT NULL, 
-  ADD COLUMN MDSRT_LAST_MODIFIED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN MDSRT_ACTIVE TINYINT(1) NOT NULL DEFAULT 1; 
-ALTER TABLE MEDICALDSRWARD 
-  ADD COLUMN MDSRWRD_CREATED_BY VARCHAR(50) NULL DEFAULT NULL AFTER MDSRWRD_OUT_QTI, 
-  ADD COLUMN MDSRWRD_CREATED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN MDSRWRD_LAST_MODIFIED_BY VARCHAR(50) NULL DEFAULT NULL, 
-  ADD COLUMN MDSRWRD_LAST_MODIFIED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN MDSRWRD_ACTIVE TINYINT(1) NOT NULL DEFAULT 1;  
-ALTER TABLE OPD 
-  ADD COLUMN OPD_CREATED_BY VARCHAR(50) NULL DEFAULT NULL AFTER OPD_LOCK, 
-  ADD COLUMN OPD_CREATED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN OPD_LAST_MODIFIED_BY VARCHAR(50) NULL DEFAULT NULL, 
-  ADD COLUMN OPD_LAST_MODIFIED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN OPD_ACTIVE TINYINT(1) NOT NULL DEFAULT 1; 
-ALTER TABLE OPERATION 
-  ADD COLUMN OPE_CREATED_BY VARCHAR(50) NULL DEFAULT NULL AFTER OPE_LOCK, 
-  ADD COLUMN OPE_CREATED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN OPE_LAST_MODIFIED_BY VARCHAR(50) NULL DEFAULT NULL, 
-  ADD COLUMN OPE_LAST_MODIFIED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN OPE_ACTIVE TINYINT(1) NOT NULL DEFAULT 1; 
-ALTER TABLE OPERATIONROW 
-  ADD COLUMN OPER_CREATED_BY VARCHAR(50) NULL DEFAULT NULL AFTER OPER_TRANS_UNIT, 
-  ADD COLUMN OPER_CREATED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN OPER_LAST_MODIFIED_BY VARCHAR(50) NULL DEFAULT NULL, 
-  ADD COLUMN OPER_LAST_MODIFIED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN OPER_ACTIVE TINYINT(1) NOT NULL DEFAULT 1; 
-ALTER TABLE OPERATIONTYPE 
-  ADD COLUMN OCL_CREATED_BY VARCHAR(50) NULL DEFAULT NULL AFTER OCL_TYPE, 
-  ADD COLUMN OCL_CREATED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN OCL_LAST_MODIFIED_BY VARCHAR(50) NULL DEFAULT NULL, 
-  ADD COLUMN OCL_LAST_MODIFIED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN OCL_ACTIVE TINYINT(1) NOT NULL DEFAULT 1; 
-ALTER TABLE PATIENT 
-  ADD COLUMN PAT_CREATED_BY VARCHAR(50) NULL DEFAULT NULL AFTER PAT_TIMESTAMP, 
-  ADD COLUMN PAT_CREATED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN PAT_LAST_MODIFIED_BY VARCHAR(50) NULL DEFAULT NULL, 
-  ADD COLUMN PAT_LAST_MODIFIED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN PAT_ACTIVE TINYINT(1) NOT NULL DEFAULT 1; 
-ALTER TABLE PATIENTEXAMINATION 
-  ADD COLUMN PEX_CREATED_BY VARCHAR(50) NULL DEFAULT NULL AFTER PEX_NOTE, 
-  ADD COLUMN PEX_CREATED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN PEX_LAST_MODIFIED_BY VARCHAR(50) NULL DEFAULT NULL, 
-  ADD COLUMN PEX_LAST_MODIFIED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN PEX_ACTIVE TINYINT(1) NOT NULL DEFAULT 1; 
-ALTER TABLE PATIENTVACCINE 
-  ADD COLUMN PAV_CREATED_BY VARCHAR(50) NULL DEFAULT NULL AFTER PAV_LOCK, 
-  ADD COLUMN PAV_CREATED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN PAV_LAST_MODIFIED_BY VARCHAR(50) NULL DEFAULT NULL, 
-  ADD COLUMN PAV_LAST_MODIFIED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN PAV_ACTIVE TINYINT(1) NOT NULL DEFAULT 1; 
-ALTER TABLE PREGNANTTREATMENTTYPE 
-  ADD COLUMN PTT_CREATED_BY VARCHAR(50) NULL DEFAULT NULL AFTER PTT_DESC, 
-  ADD COLUMN PTT_CREATED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN PTT_LAST_MODIFIED_BY VARCHAR(50) NULL DEFAULT NULL, 
-  ADD COLUMN PTT_LAST_MODIFIED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN PTT_ACTIVE TINYINT(1) NOT NULL DEFAULT 1; 
-ALTER TABLE PRICELISTS 
-  ADD COLUMN LST_CREATED_BY VARCHAR(50) NULL DEFAULT NULL AFTER LST_CURRENCY, 
-  ADD COLUMN LST_CREATED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN LST_LAST_MODIFIED_BY VARCHAR(50) NULL DEFAULT NULL, 
-  ADD COLUMN LST_LAST_MODIFIED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN LST_ACTIVE TINYINT(1) NOT NULL DEFAULT 1; 
-ALTER TABLE PRICES 
-  ADD COLUMN PRC_CREATED_BY VARCHAR(50) NULL DEFAULT NULL AFTER PRC_PRICE, 
-  ADD COLUMN PRC_CREATED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN PRC_LAST_MODIFIED_BY VARCHAR(50) NULL DEFAULT NULL, 
-  ADD COLUMN PRC_LAST_MODIFIED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN PRC_ACTIVE TINYINT(1) NOT NULL DEFAULT 1; 
-ALTER TABLE PRICESOTHERS 
-  ADD COLUMN OTH_CREATED_BY VARCHAR(50) NULL DEFAULT NULL AFTER OTH_UNDEFINED, 
-  ADD COLUMN OTH_CREATED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN OTH_LAST_MODIFIED_BY VARCHAR(50) NULL DEFAULT NULL, 
-  ADD COLUMN OTH_LAST_MODIFIED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN OTH_ACTIVE TINYINT(1) NOT NULL DEFAULT 1;  
-ALTER TABLE SUPPLIER 
-  ADD COLUMN SUP_CREATED_BY VARCHAR(50) NULL DEFAULT NULL AFTER SUP_DELETED, 
-  ADD COLUMN SUP_CREATED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN SUP_LAST_MODIFIED_BY VARCHAR(50) NULL DEFAULT NULL, 
-  ADD COLUMN SUP_LAST_MODIFIED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN SUP_ACTIVE TINYINT(1) NOT NULL DEFAULT 1; 
-ALTER TABLE THERAPIES 
-  ADD COLUMN THR_CREATED_BY VARCHAR(50) NULL DEFAULT NULL AFTER THR_SMS, 
-  ADD COLUMN THR_CREATED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN THR_LAST_MODIFIED_BY VARCHAR(50) NULL DEFAULT NULL, 
-  ADD COLUMN THR_LAST_MODIFIED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN THR_ACTIVE TINYINT(1) NOT NULL DEFAULT 1; 
-ALTER TABLE USER 
-  ADD COLUMN US_CREATED_BY VARCHAR(50) NULL DEFAULT NULL AFTER US_DESC, 
-  ADD COLUMN US_CREATED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN US_LAST_MODIFIED_BY VARCHAR(50) NULL DEFAULT NULL, 
-  ADD COLUMN US_LAST_MODIFIED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN US_ACTIVE TINYINT(1) NOT NULL DEFAULT 1; 
-ALTER TABLE USERGROUP 
-  ADD COLUMN UG_CREATED_BY VARCHAR(50) NULL DEFAULT NULL AFTER UG_DESC, 
-  ADD COLUMN UG_CREATED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN UG_LAST_MODIFIED_BY VARCHAR(50) NULL DEFAULT NULL, 
-  ADD COLUMN UG_LAST_MODIFIED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN UG_ACTIVE TINYINT(1) NOT NULL DEFAULT 1; 
-ALTER TABLE VACCINE 
-  ADD COLUMN VAC_CREATED_BY VARCHAR(50) NULL DEFAULT NULL AFTER VAC_LOCK, 
-  ADD COLUMN VAC_CREATED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN VAC_LAST_MODIFIED_BY VARCHAR(50) NULL DEFAULT NULL, 
-  ADD COLUMN VAC_LAST_MODIFIED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN VAC_ACTIVE TINYINT(1) NOT NULL DEFAULT 1; 
-ALTER TABLE VACCINETYPE 
-  ADD COLUMN VACT_CREATED_BY VARCHAR(50) NULL DEFAULT NULL AFTER VACT_DESC, 
-  ADD COLUMN VACT_CREATED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN VACT_LAST_MODIFIED_BY VARCHAR(50) NULL DEFAULT NULL, 
-  ADD COLUMN VACT_LAST_MODIFIED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN VACT_ACTIVE TINYINT(1) NOT NULL DEFAULT 1;  
-ALTER TABLE VISITS 
-  ADD COLUMN VST_CREATED_BY VARCHAR(50) NULL DEFAULT NULL AFTER VST_SMS, 
-  ADD COLUMN VST_CREATED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN VST_LAST_MODIFIED_BY VARCHAR(50) NULL DEFAULT NULL, 
-  ADD COLUMN VST_LAST_MODIFIED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN VST_ACTIVE TINYINT(1) NOT NULL DEFAULT 1; 
-ALTER TABLE WARD 
-  ADD COLUMN WRD_CREATED_BY VARCHAR(50) NULL DEFAULT NULL AFTER WRD_LOCK, 
-  ADD COLUMN WRD_CREATED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN WRD_LAST_MODIFIED_BY VARCHAR(50) NULL DEFAULT NULL, 
-  ADD COLUMN WRD_LAST_MODIFIED_DATE datetime NULL DEFAULT NULL, 
-  ADD COLUMN WRD_ACTIVE TINYINT(1) NOT NULL DEFAULT 1; 
+alter table hospital 
+  add column hos_created_by varchar(50) null default null after hos_lock, 
+  add column hos_created_date datetime null default null, 
+  add column hos_last_modified_by varchar(50) null default null, 
+  add column hos_last_modified_date datetime null default null, 
+  add column hos_active tinyint(1) not null default 1; 
+alter table laboratory 
+  add column lab_created_by varchar(50) null default null  after lab_pat_inout, 
+  add column lab_created_date datetime null default null, 
+  add column lab_last_modified_by varchar(50) null default null, 
+  add column lab_last_modified_date datetime null default null, 
+  add column lab_active tinyint(1) not null default 1; 
+alter table laboratoryrow 
+  add column labr_created_by varchar(50) null default null after labr_desc, 
+  add column labr_created_date datetime null default null, 
+  add column labr_last_modified_by varchar(50) null default null, 
+  add column labr_last_modified_date datetime null default null, 
+  add column labr_active tinyint(1) not null default 1; 
+alter table malnutritioncontrol 
+  add column mln_created_by varchar(50) null default null after mln_lock, 
+  add column mln_created_date datetime null default null, 
+  add column mln_last_modified_by varchar(50) null default null, 
+  add column mln_last_modified_date datetime null default null, 
+  add column mln_active tinyint(1) not null default 1; 
+alter table medicaldsr 
+  add column mdsr_created_by varchar(50) null default null after mdsr_lock, 
+  add column mdsr_created_date datetime null default null, 
+  add column mdsr_last_modified_by varchar(50) null default null, 
+  add column mdsr_last_modified_date datetime null default null, 
+  add column mdsr_active tinyint(1) not null default 1; 
+alter table medicaldsrlot 
+  add column lt_created_by varchar(50) null default null after lt_lock, 
+  add column lt_created_date datetime null default null, 
+  add column lt_last_modified_by varchar(50) null default null, 
+  add column lt_last_modified_date datetime null default null, 
+  add column lt_active tinyint(1) not null default 1; 
+alter table medicaldsrstockmov 
+  add column mmv_created_by varchar(50) null default null after mmv_refno , 
+  add column mmv_created_date datetime null default null, 
+  add column mmv_last_modified_by varchar(50) null default null, 
+  add column mmv_last_modified_date datetime null default null, 
+  add column mmv_active tinyint(1) not null default 1; 
+alter table medicaldsrstockmovtype 
+  add column mmvt_created_by varchar(50) null default null after mmvt_type, 
+  add column mmvt_created_date datetime null default null, 
+  add column mmvt_last_modified_by varchar(50) null default null, 
+  add column mmvt_last_modified_date datetime null default null, 
+  add column mmvt_active tinyint(1) not null default 1; 
+alter table medicaldsrstockmovward 
+  add column mmvn_created_by varchar(50) null default null after mmvn_mdsr_units, 
+  add column mmvn_created_date datetime null default null, 
+  add column mmvn_last_modified_by varchar(50) null default null, 
+  add column mmvn_last_modified_date datetime null default null, 
+  add column mmvn_active tinyint(1) not null default 1; 
+alter table medicaldsrtype 
+  add column mdsrt_created_by varchar(50) null default null after mdsrt_desc, 
+  add column mdsrt_created_date datetime null default null, 
+  add column mdsrt_last_modified_by varchar(50) null default null, 
+  add column mdsrt_last_modified_date datetime null default null, 
+  add column mdsrt_active tinyint(1) not null default 1; 
+alter table medicaldsrward 
+  add column mdsrwrd_created_by varchar(50) null default null after mdsrwrd_out_qti, 
+  add column mdsrwrd_created_date datetime null default null, 
+  add column mdsrwrd_last_modified_by varchar(50) null default null, 
+  add column mdsrwrd_last_modified_date datetime null default null, 
+  add column mdsrwrd_active tinyint(1) not null default 1;  
+alter table opd 
+  add column opd_created_by varchar(50) null default null after opd_lock, 
+  add column opd_created_date datetime null default null, 
+  add column opd_last_modified_by varchar(50) null default null, 
+  add column opd_last_modified_date datetime null default null, 
+  add column opd_active tinyint(1) not null default 1; 
+alter table operation 
+  add column ope_created_by varchar(50) null default null after ope_lock, 
+  add column ope_created_date datetime null default null, 
+  add column ope_last_modified_by varchar(50) null default null, 
+  add column ope_last_modified_date datetime null default null, 
+  add column ope_active tinyint(1) not null default 1; 
+alter table operationrow 
+  add column oper_created_by varchar(50) null default null after oper_trans_unit, 
+  add column oper_created_date datetime null default null, 
+  add column oper_last_modified_by varchar(50) null default null, 
+  add column oper_last_modified_date datetime null default null, 
+  add column oper_active tinyint(1) not null default 1; 
+alter table operationtype 
+  add column ocl_created_by varchar(50) null default null after ocl_type, 
+  add column ocl_created_date datetime null default null, 
+  add column ocl_last_modified_by varchar(50) null default null, 
+  add column ocl_last_modified_date datetime null default null, 
+  add column ocl_active tinyint(1) not null default 1; 
+alter table patient 
+  add column pat_created_by varchar(50) null default null after pat_timestamp, 
+  add column pat_created_date datetime null default null, 
+  add column pat_last_modified_by varchar(50) null default null, 
+  add column pat_last_modified_date datetime null default null, 
+  add column pat_active tinyint(1) not null default 1; 
+alter table patientexamination 
+  add column pex_created_by varchar(50) null default null after pex_note, 
+  add column pex_created_date datetime null default null, 
+  add column pex_last_modified_by varchar(50) null default null, 
+  add column pex_last_modified_date datetime null default null, 
+  add column pex_active tinyint(1) not null default 1; 
+alter table patientvaccine 
+  add column pav_created_by varchar(50) null default null after pav_lock, 
+  add column pav_created_date datetime null default null, 
+  add column pav_last_modified_by varchar(50) null default null, 
+  add column pav_last_modified_date datetime null default null, 
+  add column pav_active tinyint(1) not null default 1; 
+alter table pregnanttreatmenttype 
+  add column ptt_created_by varchar(50) null default null after ptt_desc, 
+  add column ptt_created_date datetime null default null, 
+  add column ptt_last_modified_by varchar(50) null default null, 
+  add column ptt_last_modified_date datetime null default null, 
+  add column ptt_active tinyint(1) not null default 1; 
+alter table pricelists 
+  add column lst_created_by varchar(50) null default null after lst_currency, 
+  add column lst_created_date datetime null default null, 
+  add column lst_last_modified_by varchar(50) null default null, 
+  add column lst_last_modified_date datetime null default null, 
+  add column lst_active tinyint(1) not null default 1; 
+alter table prices 
+  add column prc_created_by varchar(50) null default null after prc_price, 
+  add column prc_created_date datetime null default null, 
+  add column prc_last_modified_by varchar(50) null default null, 
+  add column prc_last_modified_date datetime null default null, 
+  add column prc_active tinyint(1) not null default 1; 
+alter table pricesothers 
+  add column oth_created_by varchar(50) null default null after oth_undefined, 
+  add column oth_created_date datetime null default null, 
+  add column oth_last_modified_by varchar(50) null default null, 
+  add column oth_last_modified_date datetime null default null, 
+  add column oth_active tinyint(1) not null default 1;  
+alter table supplier 
+  add column sup_created_by varchar(50) null default null after sup_deleted, 
+  add column sup_created_date datetime null default null, 
+  add column sup_last_modified_by varchar(50) null default null, 
+  add column sup_last_modified_date datetime null default null, 
+  add column sup_active tinyint(1) not null default 1; 
+alter table therapies 
+  add column thr_created_by varchar(50) null default null after thr_sms, 
+  add column thr_created_date datetime null default null, 
+  add column thr_last_modified_by varchar(50) null default null, 
+  add column thr_last_modified_date datetime null default null, 
+  add column thr_active tinyint(1) not null default 1; 
+alter table user 
+  add column us_created_by varchar(50) null default null after us_desc, 
+  add column us_created_date datetime null default null, 
+  add column us_last_modified_by varchar(50) null default null, 
+  add column us_last_modified_date datetime null default null, 
+  add column us_active tinyint(1) not null default 1; 
+alter table usergroup 
+  add column ug_created_by varchar(50) null default null after ug_desc, 
+  add column ug_created_date datetime null default null, 
+  add column ug_last_modified_by varchar(50) null default null, 
+  add column ug_last_modified_date datetime null default null, 
+  add column ug_active tinyint(1) not null default 1; 
+alter table vaccine 
+  add column vac_created_by varchar(50) null default null after vac_lock, 
+  add column vac_created_date datetime null default null, 
+  add column vac_last_modified_by varchar(50) null default null, 
+  add column vac_last_modified_date datetime null default null, 
+  add column vac_active tinyint(1) not null default 1; 
+alter table vaccinetype 
+  add column vact_created_by varchar(50) null default null after vact_desc, 
+  add column vact_created_date datetime null default null, 
+  add column vact_last_modified_by varchar(50) null default null, 
+  add column vact_last_modified_date datetime null default null, 
+  add column vact_active tinyint(1) not null default 1;  
+alter table visits 
+  add column vst_created_by varchar(50) null default null after vst_sms, 
+  add column vst_created_date datetime null default null, 
+  add column vst_last_modified_by varchar(50) null default null, 
+  add column vst_last_modified_date datetime null default null, 
+  add column vst_active tinyint(1) not null default 1; 
+alter table ward 
+  add column wrd_created_by varchar(50) null default null after wrd_lock, 
+  add column wrd_created_date datetime null default null, 
+  add column wrd_last_modified_by varchar(50) null default null, 
+  add column wrd_last_modified_date datetime null default null, 
+  add column wrd_active tinyint(1) not null default 1; 
 
 
