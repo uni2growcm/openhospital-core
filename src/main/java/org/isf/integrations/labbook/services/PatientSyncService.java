@@ -74,7 +74,11 @@ public class PatientSyncService implements IPatientSyncService {
 			return;
 		}
 		try {
-			Integer labBookID = event.isNew() ? Integer.valueOf(0) : patient.getLabBookId();
+			Integer labBookID = patient.getLabBookId();
+
+			if (labBookID == null  && event.isNew()) {
+				labBookID = 0;
+			}
 
 			if (labBookID != null) {
 				PatientDetResponse result =
@@ -83,11 +87,7 @@ public class PatientSyncService implements IPatientSyncService {
 						patientMapper.toDetRequest(patient)
 					);
 
-				if (result != null) {
-					if (patient.getLabBookId() != null) {
-						return;
-					}
-
+				if (result != null  && labBookID == 0) {
 					patient.setLabBookId(result.id());
 					patientIoOperations.updatePatient(patient);
 				}
