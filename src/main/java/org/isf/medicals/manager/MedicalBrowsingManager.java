@@ -33,17 +33,23 @@ import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.model.OHExceptionMessage;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 /**
- * Class that provides gui separation from database operations and gives some useful logic manipulations of the dynamic data (memory)
+ * Class that provides gui separation from database operations and gives some
+ * useful logic manipulations of the dynamic data (memory)
  *
- * @author bob 19-dec-2005 14-jan-2006
+ * @author bob
+ * 19-dec-2005
+ * 14-jan-2006
  */
 @Component
 public class MedicalBrowsingManager {
 
-	private final MedicalsIoOperations ioOperations;
+	private MedicalsIoOperations ioOperations;
 
 	public MedicalBrowsingManager(MedicalsIoOperations medicalsIoOperations) {
 		this.ioOperations = medicalsIoOperations;
@@ -51,7 +57,6 @@ public class MedicalBrowsingManager {
 
 	/**
 	 * Returns the requested medical.
-	 *
 	 * @param code the medical code.
 	 * @return the retrieved medical.
 	 * @throws OHServiceException
@@ -59,10 +64,9 @@ public class MedicalBrowsingManager {
 	public Medical getMedical(int code) throws OHServiceException {
 		return ioOperations.getMedical(code);
 	}
-
+	
 	/**
 	 * Returns the requested medical.
-	 *
 	 * @param prod_code the medical prod_code.
 	 * @return the retrieved medical.
 	 * @throws OHServiceException
@@ -73,19 +77,18 @@ public class MedicalBrowsingManager {
 
 	/**
 	 * Returns all the medicals.
-	 *
 	 * @return all the medicals.
 	 * @throws OHServiceException
 	 */
 	public List<Medical> getMedicals() throws OHServiceException {
 		return ioOperations.getMedicals(null, false);
 	}
-
+	
 	/**
 	 * Returns the medicals pageable.
 	 *
-	 * @param page the page number.
-	 * @param size the page size.
+	 * @param page - the page number.
+	 * @param size - the page size.
 	 * @return the list of {@link Medical}s pageable. It could be {@code empty}.
 	 * @throws OHServiceException
 	 */
@@ -95,7 +98,6 @@ public class MedicalBrowsingManager {
 
 	/**
 	 * Returns all the medicals sorted by Name.
-	 *
 	 * @return all the medicals.
 	 */
 	public List<Medical> getMedicalsSortedByName() throws OHServiceException {
@@ -104,7 +106,6 @@ public class MedicalBrowsingManager {
 
 	/**
 	 * Returns all the medicals sorted by code.
-	 *
 	 * @return all the medicals.
 	 */
 	public List<Medical> getMedicalsSortedByCode() throws OHServiceException {
@@ -113,7 +114,6 @@ public class MedicalBrowsingManager {
 
 	/**
 	 * Returns all the medicals with the specified description.
-	 *
 	 * @param description the medical description.
 	 * @return all the medicals with the specified description.
 	 * @throws OHServiceException
@@ -124,10 +124,10 @@ public class MedicalBrowsingManager {
 
 	/**
 	 * Returns all the medicals with the specified description.
-	 *
 	 * @param type the medical type description.
+	 * @param nameSorted if {@code true}, returns the list in alphabetical order; otherwise, by code.
 	 * @return all the medicals with the specified description.
-	 * @param nameSorted if {@code true} return the list in alphabetical order, by code otherwise
+	 * @throws OHServiceException if an error occurs during the retrieval of medicals from the database.
 	 */
 	public List<Medical> getMedicals(String type, boolean nameSorted) throws OHServiceException {
 		return ioOperations.getMedicals(type, nameSorted);
@@ -135,7 +135,6 @@ public class MedicalBrowsingManager {
 
 	/**
 	 * Return all the medicals with the specified criteria.
-	 *
 	 * @param description the medical description or {@code null}
 	 * @param type the medical type or {@code null}.
 	 * @param critical {@code true} to include only medicals under critical level.
@@ -149,7 +148,7 @@ public class MedicalBrowsingManager {
 	/**
 	 * Saves the specified {@link Medical}. The medical is updated with the generated id.
 	 *
-	 * @param medical the medical to store.
+	 * @param medical - the medical to store.
 	 * @return {@code true} if the medical has been stored, {@code false} otherwise.
 	 * @throws OHServiceException
 	 */
@@ -160,8 +159,8 @@ public class MedicalBrowsingManager {
 	/**
 	 * Saves the specified {@link Medical}. The medical is updated with the generated id.
 	 *
-	 * @param medical the medical to store.
-	 * @param ignoreSimilar if {@code true}, it ignore the warning "similarsFoundWarning".
+	 * @param medical - the medical to store.
+	 * @param ignoreSimilar - if {@code true}, it ignore the warning "similarsFoundWarning".
 	 * @return {@code true} if the medical has been stored, {@code false} otherwise.
 	 * @throws OHServiceException
 	 */
@@ -173,7 +172,7 @@ public class MedicalBrowsingManager {
 	/**
 	 * Updates the specified medical.
 	 *
-	 * @param medical the medical to update.
+	 * @param medical - the medical to update.
 	 * @return {@code Medical}
 	 * @throws OHServiceException
 	 */
@@ -184,8 +183,8 @@ public class MedicalBrowsingManager {
 	/**
 	 * Updates the specified medical.
 	 *
-	 * @param medical the medical to update.
-	 * @param ignoreSimilar if {@code true}, it ignore the warning "similarsFoundWarning".
+	 * @param medical - the medical to update.
+	 * @param ignoreSimilar - if {@code true}, it ignore the warning "similarsFoundWarning".
 	 * @return {@code Medical}
 	 * @throws OHServiceException
 	 */
@@ -196,7 +195,6 @@ public class MedicalBrowsingManager {
 
 	/**
 	 * Deletes the specified medical.
-	 *
 	 * @param medical the medical to delete.
 	 * @throws OHServiceException
 	 */
@@ -204,7 +202,7 @@ public class MedicalBrowsingManager {
 		boolean inStockMovement = ioOperations.isMedicalReferencedInStockMovement(medical.getCode());
 		if (inStockMovement) {
 			throw new OHDataIntegrityViolationException(
-				new OHExceptionMessage(MessageBundle.getMessage("angal.medicals.therearestockmovementsreferredtothismedical.msg")));
+					new OHExceptionMessage(MessageBundle.getMessage("angal.medicals.therearestockmovementsreferredtothismedical.msg")));
 		}
 		ioOperations.deleteMedical(medical);
 	}
@@ -212,7 +210,7 @@ public class MedicalBrowsingManager {
 	/**
 	 * Common checks to validate a {@link Medical} for insert or update.
 	 *
-	 * @param medical the {@link Medical} to insert or update
+	 * @param medical - the {@link Medical} to insert or update
 	 * @return list of {@link OHExceptionMessage}
 	 */
 	private List<OHExceptionMessage> validateMedicalCommon(Medical medical) {
@@ -232,9 +230,9 @@ public class MedicalBrowsingManager {
 	/**
 	 * Perform several validation checks on the provided medical, useful for insert
 	 *
-	 * @param medical the {@link Medical} to validate
-	 * @param ignoreSimilar if {@code true}, it will not perform a similarity check. {@code warning}: same Medical description in the same {@link MedicalType}
-	 *        category is not allowed anyway
+	 * @param medical - the {@link Medical} to validate
+	 * @param ignoreSimilar - if {@code true}, it will not perform a similarity check.
+	 * {@code warning}: same Medical description in the same {@link MedicalType} category is not allowed anyway
 	 * @throws OHServiceException
 	 */
 	private void validateMedicalForInsert(Medical medical, boolean ignoreSimilar) throws OHServiceException {
@@ -244,9 +242,9 @@ public class MedicalBrowsingManager {
 	/**
 	 * Perform several validation checks on the provided medical, useful for update
 	 *
-	 * @param medical the {@link Medical} to validate
-	 * @param ignoreSimilar if {@code true}, it will not perform a similarity check. {@code warning}: same Medical description in the same {@link MedicalType}
-	 *        category is not allowed anyway
+	 * @param medical - the {@link Medical} to validate
+	 * @param ignoreSimilar - if {@code true}, it will not perform a similarity check.
+	 * {@code warning}: same Medical description in the same {@link MedicalType} category is not allowed anyway
 	 * @throws OHServiceException
 	 */
 	public void validateMedicalForUpdate(Medical medical, boolean ignoreSimilar) throws OHServiceException {
@@ -256,18 +254,18 @@ public class MedicalBrowsingManager {
 	/**
 	 * Perform several validation checks on the provided medical, useful for update
 	 *
-	 * @param medical the {@link Medical} to validate
-	 * @param ignoreSimilar if {@code true}, it will not perform a similarity check. {@code warning}: same Medical description in the same {@link MedicalType}
-	 *        category is not allowed anyway
-	 * @param update if {@code true}, it will not consider the actual {@link Medical}
+	 * @param medical - the {@link Medical} to validate
+	 * @param ignoreSimilar - if {@code true}, it will not perform a similarity check.
+	 * {@code warning}: same Medical description in the same {@link MedicalType} category is not allowed anyway
+	 * @param update - if {@code true}, it will not consider the actual {@link Medical}
 	 * @throws OHServiceException
 	 */
 	public void validateMedical(Medical medical, boolean ignoreSimilar, boolean update) throws OHServiceException {
 
-		// check commons
+		//check commons
 		List<OHExceptionMessage> errors = new ArrayList<>(validateMedicalCommon(medical));
 
-		// check existing data
+		//check existing data
 		boolean productCodeExists = !medical.getProdCode().isEmpty() && ioOperations.productCodeExists(medical, update);
 		boolean medicalExists = ioOperations.medicalExists(medical, update);
 		List<Medical> similarMedicals = ioOperations.medicalCheck(medical, update);
@@ -276,8 +274,8 @@ public class MedicalBrowsingManager {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.common.thecodeisalreadyinuse.msg")));
 		} else if (medicalExists) {
 			errors.add(new OHExceptionMessage(
-				MessageBundle.formatMessage("angal.medicals.thepairtypemedicalalreadyexists.fmt.msg", medical.getType().getDescription(),
-					medical.toString())));
+					MessageBundle.formatMessage("angal.medicals.thepairtypemedicalalreadyexists.fmt.msg", medical.getType().getDescription(),
+					                            medical.toString())));
 		} else if (!ignoreSimilar && !similarMedicals.isEmpty()) {
 			StringBuilder message = new StringBuilder(MessageBundle.getMessage("angal.medicals.theinsertedmedicalisalreadyinuse.msg")).append('\n');
 			for (Medical med : similarMedicals) {
@@ -293,5 +291,32 @@ public class MedicalBrowsingManager {
 		if (!errors.isEmpty()) {
 			throw new OHDataValidationException(errors);
 		}
+	}
+
+	/**
+	 * Retrieves a paginated list of medical records filtered by type, description, and deleted status,
+	 * with an option to sort the results either alphabetically by description or by production code.
+	 *
+	 * @param type The type of medical items to filter by. Can be {@code null} to ignore this filter.
+	 * @param description The description of medical items to filter by. Can be {@code null} to ignore this filter.
+	 * @param deleted The deletion status of medical items to filter by. If {@code null}, this filter is ignored.
+	 *  Use {@code 'Y'} for deleted records and {@code 'N'} for active records.
+	 * @param nameSorted If {@code true}, sorts the results alphabetically by the description field.
+	 * If {@code false}, sorts the results by the production code field (ascending order).
+	 * @param page The page number (0-based index) to retrieve. Must be non-negative.
+	 * @param size The number of items per page. Must be greater than 0.
+	 * @return A {@link Page} containing the filtered and sorted medical records.
+	 * @throws OHServiceException If an error occurs while fetching medical records from the database.
+	 */
+	public Page<Medical> getMedicalsByTypeAndDescription(String type, String description, Character deleted, boolean nameSorted, int page, int size) throws OHServiceException {
+		Pageable pageable;
+
+		if (nameSorted) {
+			pageable = PageRequest.of(page, size, Sort.by("description").ascending());
+		} else {
+			pageable = PageRequest.of(page, size, Sort.by("prod_code").ascending());
+		}
+
+		return ioOperations.getMedicalsByTypeDescriptionAndDeleted(type, description, deleted, pageable);
 	}
 }

@@ -1085,6 +1085,52 @@ INSERT INTO `oh_bills` VALUES (67,'2026-01-15 18:55:13','2026-01-15 18:58:00',1,
 UNLOCK TABLES;
 
 --
+-- Dumping data for table `oh_bodycompartment`
+--
+
+LOCK TABLES `oh_bodycompartment` WRITE;
+/*!40000 ALTER TABLE `oh_bodycompartment` DISABLE KEYS */;
+INSERT INTO `OH_BODYCOMPARTMENT` (`BC_ID`,`BC_LABEL`,`BC_DESC`,`BC_CREATED_BY`,`BC_CREATED_DATE`,`BC_LAST_MODIFIED_BY`,`BC_LAST_MODIFIED_DATE`,`BC_ACTIVE`,`BC_DELETED`) VALUES (1,'BC001', 'Section A lockers, level 1', 'admin', '2025-01-01 08:30:00', 'admin', '2025-01-01 08:30:00', 1, 0);
+INSERT INTO `OH_BODYCOMPARTMENT` (`BC_ID`,`BC_LABEL`,`BC_DESC`,`BC_CREATED_BY`,`BC_CREATED_DATE`,`BC_LAST_MODIFIED_BY`,`BC_LAST_MODIFIED_DATE`,`BC_ACTIVE`,`BC_DELETED`) VALUES (2, 'BC002', 'Section A lockers, level 2', 'admin', '2025-01-01 08:35:00', 'admin', '2025-01-01 08:35:00', 1, 0);
+INSERT INTO `OH_BODYCOMPARTMENT` (`BC_ID`,`BC_LABEL`,`BC_DESC`,`BC_CREATED_BY`,`BC_CREATED_DATE`,`BC_LAST_MODIFIED_BY`,`BC_LAST_MODIFIED_DATE`,`BC_ACTIVE`,`BC_DELETED`) VALUES (3, 'BC003', 'Section B lockers, level 1', 'admin', '2025-01-02 09:00:00', 'admin', '2025-01-02 09:15:00', 1, 0);
+INSERT INTO `OH_BODYCOMPARTMENT` (`BC_ID`,`BC_LABEL`,`BC_DESC`,`BC_CREATED_BY`,`BC_CREATED_DATE`,`BC_LAST_MODIFIED_BY`,`BC_LAST_MODIFIED_DATE`,`BC_ACTIVE`,`BC_DELETED`) VALUES (4, 'BC004', 'Section B lockers, level 2', 'admin', '2025-01-02 09:05:00', 'admin', '2025-01-02 09:05:00', 1, 0);
+INSERT INTO `OH_BODYCOMPARTMENT` (`BC_ID`,`BC_LABEL`,`BC_DESC`,`BC_CREATED_BY`,`BC_CREATED_DATE`,`BC_LAST_MODIFIED_BY`,`BC_LAST_MODIFIED_DATE`,`BC_ACTIVE`,`BC_DELETED`) VALUES (5, 'BC005', 'Insulated lockers for high security', 'admin', '2025-01-03 10:00:00', 'admin', '2025-01-03 10:00:00', 1, 0);
+/*!40000 ALTER TABLE `oh_bodycompartment` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Dumping data for table `oh_death`
+--
+
+LOCK TABLES `oh_death` WRITE;
+/*!40000 ALTER TABLE `oh_death` DISABLE KEYS */;
+INSERT INTO `OH_DEATH` (`DTH_ID`,`DTH_PLACE`,`DTH_PAT_ID`,`DTH_DTHR_ID`,`DTH_WRD_ID_A`,`DTH_DATE`,`DTH_ADMISSION_DATE`,`DTH_DISCHARGE_DATE`,`DTH_ESTIMATED_DISCHARGE_DATE`,`DTH_DECLARING_NAME`,`DTH_DECLARING_PHONENUMBER`,`DTH_DECLARING_NID`,`DTH_BC_ID`,`DTH_CREATED_BY`,`DTH_FAMILY_NAME`,`DTH_FAMILY_PHONENUMBER`,`DTH_FAMILY_NID`,`DTH_CREATED_DATE`,`DTH_LAST_MODIFIED_BY`,`DTH_LAST_MODIFIED_DATE`,`DTH_ACTIVE`,`DTH_DELETED`) VALUES (1, 'Salle A1', 101, 1, 'C', '2024-12-01 14:00:00', '2024-12-01 15:00:00', '2024-12-05 10:00:00', '2024-12-04 10:00:00', 'John Doe', '6543210001', '12345', 1, 'admin',null,null,null, '2024-12-01 15:10:00', 'admin', '2024-12-01 16:00:00', 1, 0);
+INSERT INTO `OH_DEATH` (`DTH_ID`,`DTH_PLACE`,`DTH_PAT_ID`,`DTH_DTHR_ID`,`DTH_WRD_ID_A`,`DTH_DATE`,`DTH_ADMISSION_DATE`,`DTH_DISCHARGE_DATE`,`DTH_ESTIMATED_DISCHARGE_DATE`,`DTH_DECLARING_NAME`,`DTH_DECLARING_PHONENUMBER`,`DTH_DECLARING_NID`,`DTH_BC_ID`,`DTH_CREATED_BY`,`DTH_FAMILY_NAME`,`DTH_FAMILY_PHONENUMBER`,`DTH_FAMILY_NID`,`DTH_CREATED_DATE`,`DTH_LAST_MODIFIED_BY`,`DTH_LAST_MODIFIED_DATE`,`DTH_ACTIVE`,`DTH_DELETED`) VALUES (2, 'Salle B2', 102, 2, 'C', '2024-11-25 18:30:00', '2024-11-25 20:00:00', '2024-11-28 14:00:00', '2024-11-27 14:00:00', 'Jane Smith', '6543210002', '67890', 2, 'admin',null,null,null, '2024-11-25 20:10:00', 'admin', '2024-11-25 21:00:00', 1, 0);
+INSERT INTO `OH_DEATH` (`DTH_ID`,`DTH_PLACE`,`DTH_PAT_ID`,`DTH_DTHR_ID`,`DTH_WRD_ID_A`,`DTH_DATE`,`DTH_ADMISSION_DATE`,`DTH_DISCHARGE_DATE`,`DTH_ESTIMATED_DISCHARGE_DATE`,`DTH_DECLARING_NAME`,`DTH_DECLARING_PHONENUMBER`,`DTH_DECLARING_NID`,`DTH_BC_ID`,`DTH_CREATED_BY`,`DTH_FAMILY_NAME`,`DTH_FAMILY_PHONENUMBER`,`DTH_FAMILY_NID`,`DTH_CREATED_DATE`,`DTH_LAST_MODIFIED_BY`,`DTH_LAST_MODIFIED_DATE`,`DTH_ACTIVE`,`DTH_DELETED`) VALUES (3, 'Salle C3', 103, 3, 'C', '2024-11-20 11:45:00', '2024-11-20 13:00:00', '2024-11-23 09:00:00', '2024-11-22 09:00:00', 'Mary Johnson', '6543210003', '54321', 3, 'admin',null,null,null, '2024-11-20 13:10:00', 'admin', '2024-11-20 14:00:00', 1, 0);
+INSERT INTO `OH_DEATH` (`DTH_ID`,`DTH_PLACE`,`DTH_PAT_ID`,`DTH_DTHR_ID`,`DTH_WRD_ID_A`,`DTH_DATE`,`DTH_ADMISSION_DATE`,`DTH_DISCHARGE_DATE`,`DTH_ESTIMATED_DISCHARGE_DATE`,`DTH_DECLARING_NAME`,`DTH_DECLARING_PHONENUMBER`,`DTH_DECLARING_NID`,`DTH_BC_ID`,`DTH_CREATED_BY`,`DTH_FAMILY_NAME`,`DTH_FAMILY_PHONENUMBER`,`DTH_FAMILY_NID`,`DTH_CREATED_DATE`,`DTH_LAST_MODIFIED_BY`,`DTH_LAST_MODIFIED_DATE`,`DTH_ACTIVE`,`DTH_DELETED`) VALUES (4, 'Salle D1', 104, 4, 'F', '2024-12-10 16:10:00', '2024-12-10 17:00:00', '2024-12-15 10:00:00', '2024-12-14 10:00:00', 'Alice Brown', '6543210004', '87654', 4, 'admin',null,null,null, '2024-12-10 17:10:00', 'admin', '2024-12-10 18:00:00', 1, 0);
+INSERT INTO `OH_DEATH` (`DTH_ID`,`DTH_PLACE`,`DTH_PAT_ID`,`DTH_DTHR_ID`,`DTH_WRD_ID_A`,`DTH_DATE`,`DTH_ADMISSION_DATE`,`DTH_DISCHARGE_DATE`,`DTH_ESTIMATED_DISCHARGE_DATE`,`DTH_DECLARING_NAME`,`DTH_DECLARING_PHONENUMBER`,`DTH_DECLARING_NID`,`DTH_BC_ID`,`DTH_CREATED_BY`,`DTH_FAMILY_NAME`,`DTH_FAMILY_PHONENUMBER`,`DTH_FAMILY_NID`,`DTH_CREATED_DATE`,`DTH_LAST_MODIFIED_BY`,`DTH_LAST_MODIFIED_DATE`,`DTH_ACTIVE`,`DTH_DELETED`) VALUES (5, 'Salle E5', 105, 5, 'F', '2024-12-03 09:30:00', '2024-12-03 10:00:00', '2024-12-07 08:00:00', '2024-12-06 08:00:00', 'Robert White', '6543210005', '23456', 5, 'admin',null,null,null, '2024-12-03 10:10:00', 'admin', '2024-12-03 11:00:00', 1, 0);
+INSERT INTO `OH_DEATH` (`DTH_ID`,`DTH_PLACE`,`DTH_PAT_ID`,`DTH_DTHR_ID`,`DTH_WRD_ID_A`,`DTH_DATE`,`DTH_ADMISSION_DATE`,`DTH_DISCHARGE_DATE`,`DTH_ESTIMATED_DISCHARGE_DATE`,`DTH_DECLARING_NAME`,`DTH_DECLARING_PHONENUMBER`,`DTH_DECLARING_NID`,`DTH_BC_ID`,`DTH_CREATED_BY`,`DTH_FAMILY_NAME`,`DTH_FAMILY_PHONENUMBER`,`DTH_FAMILY_NID`,`DTH_CREATED_DATE`,`DTH_LAST_MODIFIED_BY`,`DTH_LAST_MODIFIED_DATE`,`DTH_ACTIVE`,`DTH_DELETED`) VALUES (6, 'Salle F2', 106, 6, 'M', '2024-11-30 22:00:00', '2024-12-01 08:00:00', '2024-12-05 18:00:00', '2024-12-04 18:00:00', 'Emily Davis', '6543210006', '34567', 5, 'admin',null,null,null, '2024-12-01 08:10:00', 'admin', '2024-12-01 09:00:00', 1, 0);
+INSERT INTO `OH_DEATH` (`DTH_ID`,`DTH_PLACE`,`DTH_PAT_ID`,`DTH_DTHR_ID`,`DTH_WRD_ID_A`,`DTH_DATE`,`DTH_ADMISSION_DATE`,`DTH_DISCHARGE_DATE`,`DTH_ESTIMATED_DISCHARGE_DATE`,`DTH_DECLARING_NAME`,`DTH_DECLARING_PHONENUMBER`,`DTH_DECLARING_NID`,`DTH_BC_ID`,`DTH_CREATED_BY`,`DTH_FAMILY_NAME`,`DTH_FAMILY_PHONENUMBER`,`DTH_FAMILY_NID`,`DTH_CREATED_DATE`,`DTH_LAST_MODIFIED_BY`,`DTH_LAST_MODIFIED_DATE`,`DTH_ACTIVE`,`DTH_DELETED`) VALUES (7, 'Salle G1', 107, 2, 'M', '2024-12-12 06:45:00', '2024-12-12 07:30:00', '2024-12-16 12:00:00', '2024-12-15 12:00:00', 'Peter Martin', '6543210007', '98765', 4, 'admin',null,null,null, '2024-12-12 07:40:00', 'admin', '2024-12-12 08:00:00', 1, 0);
+INSERT INTO `OH_DEATH` (`DTH_ID`,`DTH_PLACE`,`DTH_PAT_ID`,`DTH_DTHR_ID`,`DTH_WRD_ID_A`,`DTH_DATE`,`DTH_ADMISSION_DATE`,`DTH_DISCHARGE_DATE`,`DTH_ESTIMATED_DISCHARGE_DATE`,`DTH_DECLARING_NAME`,`DTH_DECLARING_PHONENUMBER`,`DTH_DECLARING_NID`,`DTH_BC_ID`,`DTH_CREATED_BY`,`DTH_FAMILY_NAME`,`DTH_FAMILY_PHONENUMBER`,`DTH_FAMILY_NID`,`DTH_CREATED_DATE`,`DTH_LAST_MODIFIED_BY`,`DTH_LAST_MODIFIED_DATE`,`DTH_ACTIVE`,`DTH_DELETED`) VALUES (8, 'Salle H3', 108, 3, 'OPD', '2024-11-28 13:15:00', '2024-11-28 14:00:00', '2024-12-01 10:00:00', '2024-11-30 10:00:00', 'Sarah Lee', '6543210008', '45678', 3, 'admin',null,null,null, '2024-11-28 14:10:00', 'admin', '2024-11-28 15:00:00', 1, 0);
+INSERT INTO `OH_DEATH` (`DTH_ID`,`DTH_PLACE`,`DTH_PAT_ID`,`DTH_DTHR_ID`,`DTH_WRD_ID_A`,`DTH_DATE`,`DTH_ADMISSION_DATE`,`DTH_DISCHARGE_DATE`,`DTH_ESTIMATED_DISCHARGE_DATE`,`DTH_DECLARING_NAME`,`DTH_DECLARING_PHONENUMBER`,`DTH_DECLARING_NID`,`DTH_BC_ID`,`DTH_CREATED_BY`,`DTH_FAMILY_NAME`,`DTH_FAMILY_PHONENUMBER`,`DTH_FAMILY_NID`,`DTH_CREATED_DATE`,`DTH_LAST_MODIFIED_BY`,`DTH_LAST_MODIFIED_DATE`,`DTH_ACTIVE`,`DTH_DELETED`) VALUES (9, 'Salle I2', 109, 4, 'OPD', '2024-12-15 14:20:00', '2024-12-15 15:00:00', '2024-12-18 12:00:00', '2024-12-17 12:00:00', 'James Hall', '6543210009', '56789', 2, 'admin',null,null,null, '2024-12-15 15:10:00', 'admin', '2024-12-15 16:00:00', 1, 0);
+INSERT INTO `OH_DEATH` (`DTH_ID`,`DTH_PLACE`,`DTH_PAT_ID`,`DTH_DTHR_ID`,`DTH_WRD_ID_A`,`DTH_DATE`,`DTH_ADMISSION_DATE`,`DTH_DISCHARGE_DATE`,`DTH_ESTIMATED_DISCHARGE_DATE`,`DTH_DECLARING_NAME`,`DTH_DECLARING_PHONENUMBER`,`DTH_DECLARING_NID`,`DTH_BC_ID`,`DTH_CREATED_BY`,`DTH_FAMILY_NAME`,`DTH_FAMILY_PHONENUMBER`,`DTH_FAMILY_NID`,`DTH_CREATED_DATE`,`DTH_LAST_MODIFIED_BY`,`DTH_LAST_MODIFIED_DATE`,`DTH_ACTIVE`,`DTH_DELETED`) VALUES (10, 'Salle J4', 110, 5, 'OPD', '2024-12-01 19:10:00', '2024-12-01 20:00:00', '2024-12-06 09:00:00', '2024-12-05 09:00:00', 'Michael Moore', '6543210010', '67890', 1, 'admin',null,null,null, '2024-12-01 20:10:00', 'admin', '2024-12-01 21:00:00', 1, 0);
+/*!40000 ALTER TABLE `oh_death` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Dumping data for table `oh_deathreason`
+--
+
+LOCK TABLES `oh_deathreason` WRITE;
+/*!40000 ALTER TABLE `oh_deathreason` DISABLE KEYS */;
+INSERT INTO `oh_deathreason` (`DTHR_ID`,`DTHR_TITLE`,`DTHR_DESC`,`DTHR_CREATED_BY`,`DTHR_CREATED_DATE`,`DTHR_LAST_MODIFIED_BY`,`DTHR_LAST_MODIFIED_DATE`,`DTHR_ACTIVE`) VALUES (1, 'Cardiac arrest', 'Sudden and complete loss of heart function, leading to an abrupt cessation of blood circulation', 'admin', '2024-12-01 09:00:00', 'admin', '2024-12-01 09:15:00', 1);
+INSERT INTO `oh_deathreason` (`DTHR_ID`,`DTHR_TITLE`,`DTHR_DESC`,`DTHR_CREATED_BY`,`DTHR_CREATED_DATE`,`DTHR_LAST_MODIFIED_BY`,`DTHR_LAST_MODIFIED_DATE`,`DTHR_ACTIVE`) VALUES (2, 'Acute respiratory insufficiency', 'A life-threatening condition where the lungs fail to provide enough oxygen to the blood or remove carbon dioxide efficiently.', 'admin', '2024-11-20 14:30:00', 'admin', '2024-11-20 15:00:00', 1);
+INSERT INTO `oh_deathreason` (`DTHR_ID`,`DTHR_TITLE`,`DTHR_DESC`,`DTHR_CREATED_BY`,`DTHR_CREATED_DATE`,`DTHR_LAST_MODIFIED_BY`,`DTHR_LAST_MODIFIED_DATE`,`DTHR_ACTIVE`) VALUES (3, 'End-stage cancer', 'Final phase of cancer when the disease has spread extensively and is no longer responsive to curative treatments', 'admin', '2024-11-18 11:45:00', 'admin', '2024-11-18 12:15:00', 1);
+INSERT INTO `oh_deathreason` (`DTHR_ID`,`DTHR_TITLE`,`DTHR_DESC`,`DTHR_CREATED_BY`,`DTHR_CREATED_DATE`,`DTHR_LAST_MODIFIED_BY`,`DTHR_LAST_MODIFIED_DATE`,`DTHR_ACTIVE`) VALUES (4, 'Severe head trauma', 'Critical injury to the brain caused by a violent impact, fall, or penetrating wound.', 'admin', '2024-11-22 08:20:00', 'dr_lee', '2024-11-22 09:00:00', 1);
+INSERT INTO `oh_deathreason` (`DTHR_ID`,`DTHR_TITLE`,`DTHR_DESC`,`DTHR_CREATED_BY`,`DTHR_CREATED_DATE`,`DTHR_LAST_MODIFIED_BY`,`DTHR_LAST_MODIFIED_DATE`,`DTHR_ACTIVE`) VALUES (5, 'Generalized infection (septicemia)', 'A life-threatening condition where a severe infection spreads through the bloodstream, triggering a systemic inflammatory response', 'admin', '2024-12-05 16:10:00', 'admin', '2024-12-05 16:45:00', 1);
+INSERT INTO `oh_deathreason` (`DTHR_ID`,`DTHR_TITLE`,`DTHR_DESC`,`DTHR_CREATED_BY`,`DTHR_CREATED_DATE`,`DTHR_LAST_MODIFIED_BY`,`DTHR_LAST_MODIFIED_DATE`,`DTHR_ACTIVE`) VALUES (6, 'Massive ischemic stroke', 'Occurs when a major artery supplying blood to the brain becomes completely blocked, leading to extensive brain tissue death', 'admin', '2024-11-30 10:00:00', 'admin', '2024-11-30 10:30:00', 1);
+/*!40000 ALTER TABLE `oh_deathreason` ENABLE KEYS */;
+UNLOCK TABLES;
 -- Table structure for table `oh_deliveryresulttype`
 --
 
@@ -1586,6 +1632,20 @@ INSERT INTO `oh_exam` VALUES ('URI','URINALYSIS','OT',2,'',1,NULL,NULL,NULL,NULL
 UNLOCK TABLES;
 
 --
+-- Dumping data for table `oh_examsreduction`
+--
+
+LOCK TABLES `oh_examsreduction` WRITE;
+/*!40000 ALTER TABLE `oh_examsreduction` DISABLE KEYS */;
+
+INSERT INTO `oh_examsreduction`(`EXAR_ID`, `EXAR_EXA_ID_A`, `EXAR_REDUCTIONRATE`) VALUES (1, 'HB', 15.00);
+INSERT INTO `oh_examsreduction`(`EXAR_ID`, `EXAR_EXA_ID_A`, `EXAR_REDUCTIONRATE`) VALUES (2, 'BT', 20.00);
+INSERT INTO `oh_examsreduction`(`EXAR_ID`, `EXAR_EXA_ID_A`, `EXAR_REDUCTIONRATE`) VALUES (3, 'PA', 10.00);
+INSERT INTO `oh_examsreduction`(`EXAR_ID`, `EXAR_EXA_ID_A`, `EXAR_REDUCTIONRATE`) VALUES (4, 'BA', 25.00);
+INSERT INTO `oh_examsreduction`(`EXAR_ID`, `EXAR_EXA_ID_A`, `EXAR_REDUCTIONRATE`) VALUES (5, 'MC', 12.50);
+
+/*!40000 ALTER TABLE `oh_examsreduction` ENABLE KEYS */;
+UNLOCK TABLES;
 -- Table structure for table `oh_examrow`
 --
 
@@ -2168,6 +2228,12 @@ INSERT INTO `oh_groupmenu` VALUES (345,'admin','inventory',1,NULL,NULL,NULL,NULL
 INSERT INTO `oh_groupmenu` VALUES (346,'admin','inventoryward',1,NULL,NULL,NULL,NULL);
 INSERT INTO `oh_groupmenu` VALUES (347,'laboratorist','btnlaboratorynew',1,NULL,NULL,NULL,NULL);
 INSERT INTO `oh_groupmenu` VALUES (348,'laboratorist','btnlaboratoryedit',1,NULL,NULL,NULL,NULL);
+INSERT INTO `oh_groupmenu` VALUES (349,'admin','mortuarystays',1,NULL,NULL,NULL,NULL);
+INSERT INTO `oh_groupmenu` VALUES (350,'admin','mortuary',1,NULL,NULL,NULL,NULL);
+INSERT INTO `oh_groupmenu` VALUES (352,'admin','reductionplan',1,NULL,NULL,NULL,NULL);
+INSERT INTO `oh_groupmenu` VALUES (353,'admin','bodycompartments',1,NULL,NULL,NULL,NULL);
+INSERT INTO `oh_groupmenu` VALUES (354,'admin','deaths',1,NULL,NULL,NULL,NULL);
+INSERT INTO `oh_groupmenu` VALUES (355,'admin','deathreasons',1,NULL,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `oh_groupmenu` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -4139,6 +4205,25 @@ INSERT INTO `oh_medicaldsrward` VALUES ('M',98,70,2,'AUTO_M_98',NULL,NULL,NULL,N
 /*!40000 ALTER TABLE `oh_medicaldsrward` ENABLE KEYS */;
 UNLOCK TABLES;
 
+
+--
+-- Dumping data for table `oh_medicalsreduction`
+--
+
+LOCK TABLES `oh_medicalsreduction` WRITE;
+/*!40000 ALTER TABLE `oh_medicalsreduction` DISABLE KEYS */;
+
+INSERT INTO `oh_medicalsreduction`(`MR_RP_ID`, `MR_MDSR_ID`, `MR_REDUCTIONRATE`) VALUES (1, 1, 5.50);
+INSERT INTO `oh_medicalsreduction`(`MR_RP_ID`, `MR_MDSR_ID`, `MR_REDUCTIONRATE`) VALUES (2, 2, 7.00);
+INSERT INTO `oh_medicalsreduction`(`MR_RP_ID`, `MR_MDSR_ID`, `MR_REDUCTIONRATE`) VALUES (3, 3, 6.25);
+INSERT INTO `oh_medicalsreduction`(`MR_RP_ID`, `MR_MDSR_ID`, `MR_REDUCTIONRATE`) VALUES (4, 4, 8.00);
+INSERT INTO `oh_medicalsreduction`(`MR_RP_ID`, `MR_MDSR_ID`, `MR_REDUCTIONRATE`) VALUES (5, 5, 9.00);
+
+/*!40000 ALTER TABLE `oh_medicalsreduction` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+
 --
 -- Table structure for table `oh_menuitem`
 --
@@ -4275,10 +4360,45 @@ INSERT INTO `oh_menuitem` VALUES ('vaccine','angal.menu.btn.vaccine','angal.menu
 INSERT INTO `oh_menuitem` VALUES ('vaccinetype','angal.menu.btn.vaccinetype','angal.menu.vaccinetype','x','V','types','org.isf.vactype.gui.VaccineTypeBrowser','N',12);
 INSERT INTO `oh_menuitem` VALUES ('ward','angal.menu.btn.ward','angal.menu.ward','x','W','generaldata','org.isf.ward.gui.WardBrowser','N',2);
 INSERT INTO `oh_menuitem` VALUES ('worksheet','angal.menu.btn.worksheet','angal.menu.worksheet','x','W','main','org.isf.visits.gui.VisitView','N',7);
+INSERT INTO `oh_menuitem` VALUES ('mortuarystays', 'angal.menu.btn.mortuarystays', 'angal.menu.mortuarystays', 'x', 'U', 'mortuary', 'org.isf.mortuarystays.gui.MortuaryStaysBrowser','N', 2);
+INSERT INTO `oh_menuitem` VALUES ('mortuary', 'angal.menu.btn.mortuary', 'angal.menu.mortuary', 'x', 'U', 'main', 'none','Y', 11);
+INSERT INTO `oh_menuitem` VALUES ('reductionplan','angal.menu.btn.reductionplans','angal.menu.reductionplans','x','R','generaldata','org.isf.reductionplan.gui.ReductionPlanBrowser','N',13);
+INSERT INTO `oh_menuitem` VALUES ('bodycompartments', 'angal.menu.btn.bodycompartments', 'angal.menu.bodycompartments', 'x', 'B', 'mortuary', 'org.isf.mortuary.gui.BodyCompartmentBrowser','N', 1);
+INSERT INTO `oh_menuitem` VALUES ('deaths', 'angal.menu.btn.deaths', 'angal.menu.deaths', 'x', 'D', 'mortuary', 'org.isf.mortuary.gui.DeathBrowser','N', 3);
+INSERT INTO `oh_menuitem` VALUES ('deathreasons', 'angal.menu.btn.causeofdeaths', 'angal.menu.causeofdeaths', 'x', 'A', 'mortuary', 'org.isf.mortuary.gui.DeathReasonBrowser','N', 4);
 /*!40000 ALTER TABLE `oh_menuitem` ENABLE KEYS */;
 UNLOCK TABLES;
 
+
 --
+-- Dumping data for table `oh_operationsreduction`
+--
+
+LOCK TABLES `oh_operationsreduction` WRITE;
+/*!40000 ALTER TABLE `oh_operationsreduction` DISABLE KEYS */;
+
+INSERT INTO `oh_operationsreduction`(`OPR_RP_ID`, `OPR_OPE_ID_A`, `OPR_REDUCTIONRATE`) VALUES (1, '11', 10.00);
+INSERT INTO `oh_operationsreduction`(`OPR_RP_ID`, `OPR_OPE_ID_A`, `OPR_REDUCTIONRATE`) VALUES (2, '12', 12.50);
+INSERT INTO `oh_operationsreduction`(`OPR_RP_ID`, `OPR_OPE_ID_A`, `OPR_REDUCTIONRATE`) VALUES (3, '13', 7.00);
+INSERT INTO `oh_operationsreduction`(`OPR_RP_ID`, `OPR_OPE_ID_A`, `OPR_REDUCTIONRATE`) VALUES (4, '14', 15.00);
+INSERT INTO `oh_operationsreduction`(`OPR_RP_ID`, `OPR_OPE_ID_A`, `OPR_REDUCTIONRATE`) VALUES (5, '15', 20.00);
+
+/*!40000 ALTER TABLE `oh_operationsreduction` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+
+
+--
+-- Dumping data for table `oh_mortuarystays`
+--
+
+LOCK TABLES `oh_mortuarystays` WRITE;
+/*!40000 ALTER TABLE `oh_mortuarystays` DISABLE KEYS */;
+INSERT INTO `oh_mortuarystays` (`MRTST_CODE`, `MRTST_NAME`, `MRTST_DESC`, `MRTST_MAX_DAYS`, `MRTST_MIN_DAYS`, `MRTST_CREATED_BY`, `MRTST_CREATED_DATE`, `MRTST_LAST_MODIFIED_BY`, `MRTST_LAST_MODIFIED_DATE`, `MRTST_ACTIVE`, `MRTST_DELETED`) VALUES ('s', 'Short stay', 'Stays in short time', 4, 1, 'admin','2024-11-19 14:41:33','admin',NULL,1,0);
+INSERT INTO `oh_mortuarystays` (`MRTST_CODE`, `MRTST_NAME`, `MRTST_DESC`, `MRTST_MAX_DAYS`, `MRTST_MIN_DAYS`, `MRTST_CREATED_BY`, `MRTST_CREATED_DATE`, `MRTST_LAST_MODIFIED_BY`, `MRTST_LAST_MODIFIED_DATE`, `MRTST_ACTIVE`, `MRTST_DELETED`) VALUES ('l', 'Long stay', 'Stays in long time', 8, 3, 'admin','2024-11-19 14:41:33','admin',NULL,1,0);
+/*!40000 ALTER TABLE `oh_mortuarystays` ENABLE KEYS */;
+UNLOCK TABLES;
 -- Table structure for table `oh_opd`
 --
 
@@ -4921,6 +5041,8 @@ INSERT INTO `oh_operationtype` VALUES ('OR','ORTHOPEDICAL','MAJOR',NULL,NULL,NUL
 INSERT INTO `oh_operationtype` VALUES ('OS','OTHERS: SKIN AND SUBCUTANEOUS','MAJOR',NULL,NULL,NULL,NULL,1);
 /*!40000 ALTER TABLE `oh_operationtype` ENABLE KEYS */;
 UNLOCK TABLES;
+
+
 
 --
 -- Table structure for table `oh_patient`
@@ -8300,6 +8422,35 @@ LOCK TABLES `oh_pricesothers` WRITE;
 /*!40000 ALTER TABLE `oh_pricesothers` DISABLE KEYS */;
 INSERT INTO `oh_pricesothers` VALUES (1,'OTH001','Amount per day',0,1,1,0,0,NULL,NULL,NULL,NULL,1,0);
 /*!40000 ALTER TABLE `oh_pricesothers` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+
+--
+-- Dumping data for table `oh_otherreduction`
+--
+LOCK TABLES `oh_pricesothersreduction` WRITE;
+/*!40000 ALTER TABLE `oh_pricesothersreduction` DISABLE KEYS */;
+
+INSERT INTO `oh_pricesothersreduction`(`OTHR_RP_ID`, `OTHR_OTH_ID`, `OTHR_REDUCTIONRATE`) VALUES (1, 1, 5.00);
+
+/*!40000 ALTER TABLE `oh_pricesothersreduction` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+
+--
+-- Dumping data for table `oh_supplier`
+--
+
+LOCK TABLES `oh_reductionplan` WRITE;
+/*!40000 ALTER TABLE `oh_reductionplan` DISABLE KEYS */;
+INSERT INTO `oh_reductionplan`(`RP_ID`, `RP_DESCRIPTION`, `RP_OPERATIONRATE`, `RP_MEDICALRATE`, `RP_EXAMRATE`, `RP_OTHERRATE`, `RP_CREATED_BY`, `RP_CREATED_DATE`, `RP_LAST_MODIFIED_BY`, `RP_LAST_MODIFIED_DATE`, `RP_ACTIVE`, `RP_LOCK`) VALUES (1,'DRIVERS','1.00','3.00','1.00','2.00',"admin",NOW(),"admin",NOW(),1,0);
+INSERT INTO `oh_reductionplan`(`RP_ID`, `RP_DESCRIPTION`, `RP_OPERATIONRATE`, `RP_MEDICALRATE`, `RP_EXAMRATE`, `RP_OTHERRATE`, `RP_CREATED_BY`, `RP_CREATED_DATE`, `RP_LAST_MODIFIED_BY`, `RP_LAST_MODIFIED_DATE`, `RP_ACTIVE`, `RP_LOCK`) VALUES (2,'DREAM IN CHARGE','3.00','0.00','8.00','3.00',"admin",NOW(),"admin",NOW(),1,0);
+INSERT INTO `oh_reductionplan`(`RP_ID`, `RP_DESCRIPTION`, `RP_OPERATIONRATE`, `RP_MEDICALRATE`, `RP_EXAMRATE`, `RP_OTHERRATE`, `RP_CREATED_BY`, `RP_CREATED_DATE`, `RP_LAST_MODIFIED_BY`, `RP_LAST_MODIFIED_DATE`, `RP_ACTIVE`, `RP_LOCK`) VALUES (3,'ESPERANT IN CHARGE','0.00','4.00','2.00','6.00',"admin",NOW(),"admin",NOW(),1,0);
+INSERT INTO `oh_reductionplan`(`RP_ID`, `RP_DESCRIPTION`, `RP_OPERATIONRATE`, `RP_MEDICALRATE`, `RP_EXAMRATE`, `RP_OTHERRATE`, `RP_CREATED_BY`, `RP_CREATED_DATE`, `RP_LAST_MODIFIED_BY`, `RP_LAST_MODIFIED_DATE`, `RP_ACTIVE`, `RP_LOCK`) VALUES (4,'FREE IN CHARGE','9.00','4.00','2.00','1.00',"admin",NOW(),"admin",NOW(),1,0);
+INSERT INTO `oh_reductionplan`(`RP_ID`, `RP_DESCRIPTION`, `RP_OPERATIONRATE`, `RP_MEDICALRATE`, `RP_EXAMRATE`, `RP_OTHERRATE`, `RP_CREATED_BY`, `RP_CREATED_DATE`, `RP_LAST_MODIFIED_BY`, `RP_LAST_MODIFIED_DATE`, `RP_ACTIVE`, `RP_LOCK`) VALUES (5,'COMMUNITY FDLC','8.00','6.00','7.00','6.00',"admin",NOW(),"admin",NOW(),1,0);
+/*!40000 ALTER TABLE `oh_reductionplan` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
