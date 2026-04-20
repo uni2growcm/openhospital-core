@@ -76,6 +76,7 @@ public class AdmissionIoOperations {
 
 	/**
 	 * Returns all patients with ward in which they are admitted.
+	 *
 	 * @return the patient list with associated ward.
 	 * @throws OHServiceException if an error occurs during database request.
 	 */
@@ -85,6 +86,7 @@ public class AdmissionIoOperations {
 
 	/**
 	 * Returns all patients with ward in which they are admitted filtering the list using the passed search term.
+	 *
 	 * @param searchTerms the search terms to use for filter the patient list, {@code null} if no filter is to be applied.
 	 * @return the filtered patient list.
 	 * @throws OHServiceException if an error occurs during database request.
@@ -97,6 +99,7 @@ public class AdmissionIoOperations {
 
 	/**
 	 * Returns all patients based on the applied filters.
+	 *
 	 * @param admissionRange (two-dimensions array) the patient admission dates range, both {@code null} if no filter is to be applied.
 	 * @param dischargeRange (two-dimensions array) the patient discharge dates range, both {@code null} if no filter is to be applied.
 	 * @param searchTerms the search terms to use for filter the patient list, {@code null} if no filter is to be applied.
@@ -126,6 +129,7 @@ public class AdmissionIoOperations {
 
 	/**
 	 * Returns the current admission (or null if none) for the specified patient.
+	 *
 	 * @param patient the patient target of the admission.
 	 * @return the patient admission.
 	 */
@@ -135,6 +139,7 @@ public class AdmissionIoOperations {
 
 	/**
 	 * Returns the admission with the selected id.
+	 *
 	 * @param id the admission id.
 	 * @return the admission with the specified id, {@code null} otherwise.
 	 * @throws OHServiceException if an error occurs during database request.
@@ -145,6 +150,7 @@ public class AdmissionIoOperations {
 
 	/**
 	 * Returns all the admissions for the specified patient.
+	 *
 	 * @param patient the patient.
 	 * @return the admission list.
 	 * @throws OHServiceException if an error occurs during database request.
@@ -155,6 +161,7 @@ public class AdmissionIoOperations {
 
 	/**
 	 * Inserts a new admission.
+	 *
 	 * @param admission the admission to insert.
 	 * @return the new/saved Admission object.
 	 * @throws OHServiceException if an error occurs during the insertion.
@@ -165,6 +172,7 @@ public class AdmissionIoOperations {
 
 	/**
 	 * Inserts a new {@link Admission} and the returns the generated id.
+	 *
 	 * @param admission the admission to insert.
 	 * @return the generated id.
 	 * @throws OHServiceException if an error occurs during the insertion.
@@ -176,6 +184,7 @@ public class AdmissionIoOperations {
 
 	/**
 	 * Updates the specified {@link Admission} object.
+	 *
 	 * @param admission the admission object to update.
 	 * @return the updated Admission object
 	 * @throws OHServiceException if an error occurs.
@@ -186,6 +195,7 @@ public class AdmissionIoOperations {
 
 	/**
 	 * Lists the {@link AdmissionType}s.
+	 *
 	 * @return the admission types.
 	 * @throws OHServiceException
 	 */
@@ -195,6 +205,7 @@ public class AdmissionIoOperations {
 
 	/**
 	 * Lists the {@link DischargeType}s.
+	 *
 	 * @return the discharge types.
 	 * @throws OHServiceException
 	 */
@@ -204,6 +215,7 @@ public class AdmissionIoOperations {
 
 	/**
 	 * Returns the next prog in the year for a certain ward.
+	 *
 	 * @param wardId the ward id.
 	 * @return the next prog.
 	 * @throws OHServiceException if an error occurs retrieving the value.
@@ -260,6 +272,7 @@ public class AdmissionIoOperations {
 
 	/**
 	 * Sets an admission record as deleted.
+	 *
 	 * @param admissionId the admission id.
 	 * @return return the "deleted" admission object or null if the admission is not found
 	 * @throws OHServiceException if an error occurs.
@@ -275,6 +288,7 @@ public class AdmissionIoOperations {
 
 	/**
 	 * Counts the number of used bed for the specified ward.
+	 *
 	 * @param wardId the ward id.
 	 * @return the number of used beds.
 	 * @throws OHServiceException if an error occurs retrieving the bed count.
@@ -286,6 +300,7 @@ public class AdmissionIoOperations {
 
 	/**
 	 * Deletes the patient photo.
+	 *
 	 * @param patientId the patient id.
 	 * @return the updated patient object or null if patient is not found
 	 * @throws OHServiceException if an error occurs.
@@ -303,6 +318,7 @@ public class AdmissionIoOperations {
 
 	/**
 	 * Returns the list of Admissions within a date range
+	 *
 	 * @param dateFrom
 	 * @param dateTo
 	 * @return the list of {@link Admission}.
@@ -314,6 +330,7 @@ public class AdmissionIoOperations {
 
 	/**
 	 * Returns the list of Admissions with discharge
+	 *
 	 * @param dateFrom
 	 * @param dateTo
 	 * @return the list of {@link Admission}.
@@ -325,6 +342,7 @@ public class AdmissionIoOperations {
 
 	/**
 	 * Returns the list of Admissions by page
+	 *
 	 * @param dateFrom
 	 * @param dateTo
 	 * @param pageable
@@ -338,6 +356,7 @@ public class AdmissionIoOperations {
 
 	/**
 	 * Returns the list of Admissions with discharge by page
+	 *
 	 * @param dateFrom
 	 * @param dateTo
 	 * @param pageable
@@ -351,6 +370,7 @@ public class AdmissionIoOperations {
 
 	/**
 	 * Returns the list of Admissions with page info
+	 *
 	 * @param pages of admissions
 	 * @return {@link PagedResponse<Admission>}.
 	 */
@@ -363,6 +383,7 @@ public class AdmissionIoOperations {
 
 	/**
 	 * Count not deleted {@link Admission}s
+	 *
 	 * @return the number of recorded {@link Admission}s
 	 * @throws OHServiceException
 	 */
@@ -372,6 +393,7 @@ public class AdmissionIoOperations {
 
 	/**
 	 * Get admitted patients by sex and name
+	 *
 	 * @param sex Patient sex
 	 * @param name Patient name
 	 * @param pageable Page options

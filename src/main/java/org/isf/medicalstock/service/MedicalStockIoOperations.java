@@ -89,6 +89,7 @@ public class MedicalStockIoOperations {
 
 	/**
 	 * Checks if we are in automatic lot mode.
+	 *
 	 * @return {@code true} if automatic lot mode, {@code false} otherwise.
 	 */
 	private boolean isAutomaticLotInMode() {
@@ -97,6 +98,7 @@ public class MedicalStockIoOperations {
 
 	/**
 	 * Retrieves all medicals referencing the specified code.
+	 *
 	 * @param lotCode the lot code.
 	 * @return the ids of medicals referencing the specified lot.
 	 * @throws OHServiceException if an error occurs retrieving the referencing medicals.
@@ -107,6 +109,7 @@ public class MedicalStockIoOperations {
 
 	/**
 	 * Retrieves all movements referencing the specified lot.
+	 *
 	 * @param lot - the lot.
 	 * @return the movements referencing the specified lot.
 	 * @throws OHServiceException if an error occurs retrieving the referencing movement.

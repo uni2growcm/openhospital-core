@@ -63,6 +63,7 @@ public class ExamIoOperations {
 
 	/**
 	 * Returns the list of {@link Exam}s that matches passed description
+	 *
 	 * @param description - the exam description
 	 * @return the list of {@link Exam}s
 	 * @throws OHServiceException
@@ -74,6 +75,7 @@ public class ExamIoOperations {
 
 	/**
 	 * Returns the list of {@link Exam}s by {@link ExamType} description
+	 *
 	 * @param description - the exam description
 	 * @return the list of {@link Exam}s
 	 * @throws OHServiceException
@@ -85,6 +87,7 @@ public class ExamIoOperations {
 
 	/**
 	 * Returns the list of {@link Exam}s by {@link ExamTarget}
+	 *
 	 * @param target - the exam target
 	 * @return the list of {@link Exam}s
 	 * @throws OHServiceException when fail to fetch by target
