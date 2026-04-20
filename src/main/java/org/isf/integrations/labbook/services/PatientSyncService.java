@@ -24,10 +24,12 @@ package org.isf.integrations.labbook.services;
 import org.isf.integrations.labbook.annotations.EnableLabBook;
 import org.isf.integrations.labbook.config.LabBookBeanNames;
 import org.isf.integrations.labbook.mappers.PatientMapper;
+import org.isf.integrations.labbook.models.PatientHistoricResponse;
 import org.isf.integrations.labbook.models.PatientDetResponse;
 import org.isf.integrations.labbook.ports.IPatientService;
 import org.isf.patient.model.Patient;
 import org.isf.patient.model.PatientCreatedOrUpdatedEvent;
+import org.isf.utils.exception.OHException;
 import org.isf.patient.service.PatientIoOperations;
 import org.isf.utils.exception.OHServiceException;
 import org.slf4j.Logger;
@@ -36,6 +38,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
+
+import java.util.List;
 
 /**
  * {@inheritDoc}
@@ -70,7 +74,11 @@ public class PatientSyncService implements IPatientSyncService {
 			return;
 		}
 		try {
-			Integer labBookID = event.isNew() ? Integer.valueOf(0) : patient.getLabBookId();
+			Integer labBookID = patient.getLabBookId();
+
+			if (labBookID == null  && event.isNew()) {
+				labBookID = 0;
+			}
 
 			if (labBookID != null) {
 				PatientDetResponse result =
@@ -79,11 +87,7 @@ public class PatientSyncService implements IPatientSyncService {
 						patientMapper.toDetRequest(patient)
 					);
 
-				if (result != null) {
-					if (patient.getLabBookId() != null) {
-						return;
-					}
-
+				if (result != null  && labBookID == 0) {
 					patient.setLabBookId(result.id());
 					patientIoOperations.updatePatient(patient);
 				}
@@ -96,6 +100,20 @@ public class PatientSyncService implements IPatientSyncService {
 				patient.getCode(), ex.getMessage());
 		} catch (OHServiceException e) {
 			LOGGER.warn("LabBook patient sync failed for patient");
+		}
+	}
+
+	@Override
+	public PatientHistoricResponse getPatientAnalysis(Integer patientId) throws OHException {
+		LOGGER.debug("getPatientAnalysis() called for patientId={}", patientId);
+		try {
+			PatientHistoricResponse response = patientService.getPatientHistory(patientId);
+			LOGGER.debug("getPatientAnalysis() completed, found {} analyses",
+				response != null && response.analyzes() != null ? response.analyzes().size() : 0);
+			return response;
+		} catch (Exception e) {
+			LOGGER.error("Failed to retrieve patient analysis for patientId={}", patientId, e);
+			throw new OHException("Failed to retrieve patient analysis", e);
 		}
 	}
 }

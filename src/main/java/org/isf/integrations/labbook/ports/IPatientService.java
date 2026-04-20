@@ -21,10 +21,7 @@
  */
 package org.isf.integrations.labbook.ports;
 
-import org.isf.integrations.labbook.models.LabBookPatient;
-import org.isf.integrations.labbook.models.PatientDetRequest;
-import org.isf.integrations.labbook.models.PatientDetResponse;
-import org.isf.integrations.labbook.models.PatientListRequest;
+import org.isf.integrations.labbook.models.*;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.service.annotation.GetExchange;
@@ -85,4 +82,13 @@ public interface IPatientService {
 	 */
 	@PostExchange("/list")
 	List<LabBookPatient> listPatients(@RequestBody PatientListRequest request);
+
+	/**
+	 * Retrieves the complete patient history including patient info and analyses.
+	 *
+	 * @param id the LabBook patient identifier (id_data)
+	 * @return complete patient history with patient details and analyses list
+	 */
+	@GetExchange("/historic/{id}")
+	PatientHistoricResponse getPatientHistory(@PathVariable Integer id);
 }
