@@ -111,7 +111,7 @@ source step_a114_medical_type_soft_deletion.sql;
 source step_a115_add_missing_foreign_key_for_auditable_entities.sql;
 source step_a116_fix_alcohol_and_bowel_column.sql;
 source step_a117_fix_ward_pharmacy.sql;
-source u2g_update/step_01_add_collumn_exa_target_to_table_oh_exam.sql;
+source u2g_update/step_01_add_column_medicaldsr.sql;
 source u2g_update/step_02_mortuarystays_table.sql;
 source u2g_update/step_03_add_mortuary_table_and_menu.sql;
 source u2g_update/step_04_add_column_bll_guarantor_to_table_oh_bills.sql;
