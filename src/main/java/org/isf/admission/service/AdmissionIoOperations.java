@@ -391,4 +391,15 @@ public class AdmissionIoOperations {
 		return this.repository.countAllActiveNotDeletedAdmissions();
 	}
 
+	/**
+	 * Get admitted patients by sex and name
+	 * @param sex Patient sex
+	 * @param name Patient name
+	 * @param pageable Page options
+	 * @return The paged list of {@link Admission} matching the filter
+	 * @throws OHServiceException When failed to get admissions
+	 */
+	public Page<Admission> getAdmittedPatientsBySexAndNamePaged(char sex, String name, Pageable pageable) throws OHServiceException {
+		return repository.findAllByPatientSexAndPatientNameContainsAndDeleted(sex, name, 'N', pageable);
+	}
 }
