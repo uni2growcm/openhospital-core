@@ -24,9 +24,7 @@ package org.isf.exa.service;
 import java.util.List;
 
 import org.isf.exa.model.Exam;
-import org.isf.exa.model.ExamTarget;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -37,8 +35,4 @@ public interface ExamIoOperationRepository extends JpaRepository<Exam, String> {
 	List<Exam> findByDescriptionContainingOrderByExamtypeDescriptionAscDescriptionAsc(String description);
 
 	List<Exam> findByExamtype_DescriptionContainingOrderByExamtypeDescriptionAscDescriptionAsc(String description);
-
-	List<Exam> findByTargetOrderByDescriptionAsc(ExamTarget target);
-
-	List<Exam> findByTargetAndExamtypeDescriptionOrderByDescriptionAsc(ExamTarget target, String examType);
 }
