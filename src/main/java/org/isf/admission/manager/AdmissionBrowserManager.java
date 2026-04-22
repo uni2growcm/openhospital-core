@@ -41,9 +41,7 @@ import org.isf.utils.exception.model.OHExceptionMessage;
 import org.isf.utils.pagination.PagedResponse;
 import org.isf.utils.time.TimeTools;
 import org.isf.ward.model.Ward;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -537,20 +535,5 @@ public class AdmissionBrowserManager {
 		return (diseaseOut2 != null && diseaseOut1.getCode().equals(diseaseOut2.getCode()))
 			|| (diseaseOut3 != null && diseaseOut1.getCode().equals(diseaseOut3.getCode()))
 			|| (diseaseOut2 != null && diseaseOut3 != null && diseaseOut2.getCode().equals(diseaseOut3.getCode()));
-	}
-
-	/**
-	 * Get admitted patients by sex and name
-	 *
-	 * @param sex Patient sex
-	 * @param name Patient name
-	 * @param size Page size
-	 * @param page Page number
-	 * @return The paged list of {@link Admission} matching the filter
-	 * @throws OHServiceException When failed to get admissions
-	 */
-	public Page<Admission> getAdmittedPatientsBySexAndNamePaged(char sex, String name, int size, int page) throws OHServiceException {
-		Pageable pageable = PageRequest.of(page, size);
-		return ioOperations.getAdmittedPatientsBySexAndNamePaged(sex, name, pageable);
 	}
 }
