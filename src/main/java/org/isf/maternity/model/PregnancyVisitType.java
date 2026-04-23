@@ -104,8 +104,8 @@ public class PregnancyVisitType extends Auditable<String> {
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
-		if (!(o instanceof Pregnancy other)) return false;
-		return id != null && id.equals(other.getId());
+		if (!(o instanceof PregnancyVisitType other)) return false;
+		return id != null && id.equals(other.id);
 	}
 
 	@Override
