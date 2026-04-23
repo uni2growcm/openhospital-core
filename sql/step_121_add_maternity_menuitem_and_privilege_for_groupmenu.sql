@@ -1,3 +1,16 @@
+-- Replace pregnancycare with maternity
+UPDATE oh_menuitem
+SET
+    MNI_ID_A = 'maternity',
+    MNI_BTN_LABEL = 'angal.menu.btn.maternity',
+    MNI_LABEL = 'angal.menu.maternity',
+    MNI_CLASS = 'org.isf.maternity.gui.MaternityBrowser'
+WHERE MNI_ID_A = 'pregnancycare';
+
+UPDATE oh_groupmenu
+SET GM_MNI_ID_A = 'maternity'
+WHERE GM_MNI_ID_A = 'pregnancycare';
+
 -- Add maternity menuitem and privilege (if not exists)
 
 INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`)
