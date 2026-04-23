@@ -54,7 +54,7 @@ import jakarta.validation.constraints.NotNull;
 @AttributeOverride(name = "createdDate", column = @Column(name = "PVT_CREATED_DATE", updatable = false))
 @AttributeOverride(name = "lastModifiedBy", column = @Column(name = "PVT_LAST_MODIFIED_BY"))
 @AttributeOverride(name = "lastModifiedDate", column = @Column(name = "PVT_LAST_MODIFIED_DATE"))
-public class VisitType extends Auditable<String> {
+public class PregnancyVisitType extends Auditable<String> {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -69,10 +69,10 @@ public class VisitType extends Auditable<String> {
 	@Column(name = "PVT_DESCRIPTION", nullable = false, length = 255)
 	private String description;
 
-	public VisitType() {
+	public PregnancyVisitType() {
 	}
 
-	public VisitType(String code, String description) {
+	public PregnancyVisitType(String code, String description) {
 		this.code = code;
 		this.description = description;
 	}
@@ -102,15 +102,15 @@ public class VisitType extends Auditable<String> {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) return true;
-		if (!(obj instanceof VisitType other)) return false;
-		return id != null && id.equals(other.id);
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof Pregnancy other)) return false;
+		return id != null && id.equals(other.getId());
 	}
 
 	@Override
 	public int hashCode() {
-		return id != null ? id.hashCode() : 0;
+		return 31;
 	}
 
 	@Override

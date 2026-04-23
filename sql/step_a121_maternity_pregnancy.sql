@@ -3,7 +3,7 @@ DROP TABLE IF EXISTS OH_PREGNANCY;
 
 -- Create Pregnancy Table
 CREATE TABLE OH_PREGNANCY (
-    PRG_ID INT(11) NOT NULL,
+    PRG_ID INT(11) NOT NULL AUTO_INCREMENT,
     PRG_PAT_ID INT(11) NOT NULL,
 
     -- Pregnancy timeline
@@ -43,6 +43,7 @@ CREATE TABLE OH_PREGNANCY (
     INDEX idx_pregnancy_patient (PRG_PAT_ID),
     INDEX idx_pregnancy_status (PRG_STATUS),
     INDEX idx_pregnancy_risk (PRG_RISK_LEVEL),
-    INDEX idx_pregnancy_created (PRG_CREATED_DATE)
+    INDEX idx_pregnancy_created (PRG_CREATED_DATE),
+    INDEX idx_pregnancy_lmp (PRG_LMP)
 
-) ENGINE = INNODB DEFAULT CHARACTER SET utf8;
+) ENGINE = INNODB;

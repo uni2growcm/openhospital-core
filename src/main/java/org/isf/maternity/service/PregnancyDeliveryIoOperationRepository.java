@@ -21,18 +21,25 @@
  */
 package org.isf.maternity.service;
 
-import org.isf.maternity.model.DeliveryType;
+import org.isf.maternity.model.PregnancyDelivery;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
+/**
+ * Repository interface for Delivery entity
+ */
 @Repository
-public interface DeliveryTypeIoOperationRepository extends JpaRepository<DeliveryType, Integer> {
+public interface PregnancyDeliveryIoOperationRepository extends JpaRepository<PregnancyDelivery, Integer> {
+	Optional<PregnancyDelivery> findByPregnancyId(Integer pregnancyId);
 
-	List<DeliveryType> findAllByOrderByDescriptionAsc();
+	boolean existsByPregnancyId(Integer pregnancyId);
 
-	DeliveryType findByCode(String code);
-
-	boolean existsByCode(String code);
+	List<PregnancyDelivery> findByDeliveryDateTimeBetween(
+		LocalDateTime from,
+		LocalDateTime to
+	);
 }

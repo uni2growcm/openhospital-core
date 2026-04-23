@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -21,21 +21,19 @@
  */
 package org.isf.maternity.service;
 
-import org.isf.maternity.model.Delivery;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.isf.maternity.model.PregnancyVisitType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
-/**
- * Repository interface for Delivery entity
- */
 @Repository
-public interface DeliveryIoOperationRepository extends JpaRepository<Delivery, Integer> {
-	Delivery findByPregnancyId(Integer pregnancyId);
+public interface PregnancyVisitTypeIoOperationRepository extends JpaRepository<PregnancyVisitType, Integer> {
 
-	boolean existsByPregnancyId(Integer pregnancyId);
+	List<PregnancyVisitType> findAllByOrderByDescriptionAsc();
+
+	Optional<PregnancyVisitType> findByCodeIgnoreCase(String code);
+
+	boolean existsByCodeIgnoreCase(String code);
 }

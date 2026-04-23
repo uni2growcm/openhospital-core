@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -41,15 +41,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
-/**
- * Manager for Pregnancy Browser operations
- * Provides CRUD operations and business logic for pregnancies
- *
- * @author Developer
- * @version 1.0
- */
 @Component
 public class PregnancyBrowserManager {
+
 	private final PregnancyIoOperation ioOperation;
 
 	public PregnancyBrowserManager(PregnancyIoOperation ioOperation) {
@@ -57,71 +51,11 @@ public class PregnancyBrowserManager {
 	}
 
 	/**
-	 * Retrieve all pregnancies associated with a specific patient.
-	 *
-	 * @param patientId the identifier of the patient
-	 * @return list of pregnancies linked to the patient
-	 * @throws OHServiceException if an error occurs during retrieval
-	 */
-	public List<Pregnancy> getPregnanciesByPatient(Integer patientId) throws OHServiceException {
-		return ioOperation.getPregnanciesByPatient(patientId);
-	}
-
-	/**
-	 * Retrieve all active pregnancies (status = Ongoing).
-	 *
-	 * @return list of active pregnancies
-	 * @throws OHServiceException if an error occurs during retrieval
-	 */
-	public List<Pregnancy> getActivePregnancies() throws OHServiceException {
-		return ioOperation.getActivePregnancies();
-	}
-
-	/**
-	 * Retrieve pregnancies filtered by status.
-	 *
-	 * @param status pregnancy status (e.g. Ongoing, Completed, Terminated)
-	 * @return list of pregnancies matching the status
-	 * @throws OHServiceException if an error occurs during retrieval
-	 */
-	public List<Pregnancy> getPregnanciesByStatus(String status) throws OHServiceException {
-		return ioOperation.getPregnanciesByStatus(status);
-	}
-
-	/**
-	 * Retrieve pregnancies filtered by risk level.
-	 *
-	 * @param riskLevel risk classification (Low, Medium, High)
-	 * @return list of pregnancies matching the risk level
-	 * @throws OHServiceException if an error occurs during retrieval
-	 */
-	public List<Pregnancy> getPregnanciesByRiskLevel(String riskLevel) throws OHServiceException {
-		return ioOperation.getPregnanciesByRiskLevel(riskLevel);
-	}
-
-	/**
-	 * Retrieve pregnancies whose Last Menstrual Period (LMP) falls within a given date range.
-	 *
-	 * @param dateFrom start date (inclusive)
-	 * @param dateTo end date (inclusive)
-	 * @return list of pregnancies within the specified range
-	 * @throws OHServiceException if an error occurs during retrieval
-	 */
-	public List<Pregnancy> getPregnanciesByLmpRange(LocalDateTime dateFrom, LocalDateTime dateTo) throws OHServiceException {
-		return ioOperation.getPregnanciesByLmpRange(dateFrom, dateTo);
-	}
-
-	/**
 	 * Create a new pregnancy record.
 	 *
-	 * <p>
-	 * Additional business rules (risk calculation, validation, default values)
-	 * can be applied before persistence.
-	 * </p>
-	 *
-	 * @param pregnancy the pregnancy entity to create
-	 * @return the persisted pregnancy entity
-	 * @throws OHServiceException if an error occurs during creation
+	 * @param pregnancy the pregnancy entity
+	 * @return created pregnancy
+	 * @throws OHServiceException if creation fails
 	 */
 	public Pregnancy newPregnancy(Pregnancy pregnancy) throws OHServiceException {
 		return ioOperation.newPregnancy(pregnancy);
@@ -130,9 +64,9 @@ public class PregnancyBrowserManager {
 	/**
 	 * Update an existing pregnancy record.
 	 *
-	 * @param pregnancy the pregnancy entity to update
-	 * @return the updated pregnancy entity
-	 * @throws OHServiceException if an error occurs during update
+	 * @param pregnancy the pregnancy entity
+	 * @return updated pregnancy
+	 * @throws OHServiceException if update fails
 	 */
 	public Pregnancy updatePregnancy(Pregnancy pregnancy) throws OHServiceException {
 		return ioOperation.updatePregnancy(pregnancy);
@@ -141,33 +75,128 @@ public class PregnancyBrowserManager {
 	/**
 	 * Delete a pregnancy record.
 	 *
-	 * @param pregnancy the pregnancy entity to delete
-	 * @throws OHServiceException if an error occurs during deletion
+	 * @param pregnancy the pregnancy entity
+	 * @throws OHServiceException if deletion fails
 	 */
 	public void deletePregnancy(Pregnancy pregnancy) throws OHServiceException {
 		ioOperation.deletePregnancy(pregnancy);
 	}
 
+	// =========================================================
+	// READ OPERATIONS
+	// =========================================================
+
 	/**
-	 * Check whether a patient currently has an active pregnancy.
+	 * Get pregnancies for a specific patient.
 	 *
-	 * @param patientId the identifier of the patient
-	 * @return true if an active pregnancy exists, false otherwise
-	 * @throws OHServiceException if an error occurs during the check
+	 * @param patientCode patient identifier
+	 * @return list of pregnancies
+	 * @throws OHServiceException if retrieval fails
 	 */
-	public boolean hasActivePregnancy(Integer patientId) throws OHServiceException {
-		return ioOperation.hasActivePregnancy(patientId);
+	public List<Pregnancy> getPregnanciesByPatient(Integer patientCode)
+		throws OHServiceException {
+		return ioOperation.getPregnanciesByPatient(patientCode);
 	}
 
 	/**
-	 * Close a pregnancy by updating its status (e.g. Completed or Terminated).
+	 * Advanced pregnancy search with filters.
 	 *
-	 * @param pregnancyId the identifier of the pregnancy
-	 * @param status the new status to assign
-	 * @return the updated pregnancy entity
-	 * @throws OHServiceException if the pregnancy is not found or update fails
+	 * @param patientCode patient filter (nullable)
+	 * @param status pregnancy status (nullable)
+	 * @param riskLevel risk level (nullable)
+	 * @param fromDate start date (nullable)
+	 * @param toDate end date (nullable)
+	 * @param pageable pagination info
+	 * @return paginated results
+	 * @throws OHServiceException if search fails
 	 */
-	public Pregnancy closePregnancy(Integer pregnancyId, String status) throws OHServiceException {
+	public Page<Pregnancy> searchPregnancies(
+		Integer patientCode,
+		String status,
+		String riskLevel,
+		LocalDateTime fromDate,
+		LocalDateTime toDate,
+		Pageable pageable
+	) throws OHServiceException {
+		return ioOperation.searchPregnancies(
+			patientCode,
+			status,
+			riskLevel,
+			fromDate,
+			toDate,
+			pageable
+		);
+	}
+
+	/**
+	 * Get pregnancies created in a date range.
+	 *
+	 * @param fromDate start date
+	 * @param toDate end date
+	 * @param pageable pagination
+	 * @return paginated pregnancies
+	 * @throws OHServiceException if retrieval fails
+	 */
+	public Page<Pregnancy> getPregnanciesByDateRange(
+		LocalDateTime fromDate,
+		LocalDateTime toDate,
+		Pageable pageable
+	) throws OHServiceException {
+		return ioOperation.getPregnanciesByDateRange(fromDate, toDate, pageable);
+	}
+
+	/**
+	 * Get latest pregnancy for a patient and status.
+	 *
+	 * @param patientCode patient identifier
+	 * @param status pregnancy status
+	 * @return latest pregnancy or null
+	 * @throws OHServiceException if retrieval fails
+	 */
+	public Pregnancy getLatestPregnancyByPatientAndStatus(
+		Integer patientCode,
+		String status
+	) throws OHServiceException {
+		return ioOperation.getLatestPregnancyByPatientAndStatus(patientCode, status);
+	}
+
+	/**
+	 * Count pregnancies by patient and status.
+	 *
+	 * @param patientCode patient identifier
+	 * @param status pregnancy status
+	 * @return number of pregnancies
+	 * @throws OHServiceException if operation fails
+	 */
+	public long countPregnanciesByPatientAndStatus(
+		Integer patientCode,
+		String status
+	) throws OHServiceException {
+		return ioOperation.countPregnanciesByPatientAndStatus(patientCode, status);
+	}
+
+	/**
+	 * Check if a patient has an active pregnancy.
+	 *
+	 * @param patientCode patient identifier
+	 * @return true if active pregnancy exists
+	 * @throws OHServiceException if check fails
+	 */
+	public boolean hasActivePregnancy(Integer patientCode)
+		throws OHServiceException {
+		return ioOperation.hasActivePregnancy(patientCode);
+	}
+
+	/**
+	 * Close a pregnancy (mark as Completed or Terminated).
+	 *
+	 * @param pregnancyId pregnancy identifier
+	 * @param status new status
+	 * @return updated pregnancy
+	 * @throws OHServiceException if update fails
+	 */
+	public Pregnancy closePregnancy(Integer pregnancyId, String status)
+		throws OHServiceException {
 		return ioOperation.closePregnancy(pregnancyId, status);
 	}
 }

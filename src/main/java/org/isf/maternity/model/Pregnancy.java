@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -24,26 +24,16 @@ package org.isf.maternity.model;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Objects;
 
+import jakarta.persistence.*;
 import org.isf.patient.model.Patient;
 import org.isf.utils.db.Auditable;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import com.drew.lang.annotations.Nullable;
+import jakarta.annotation.Nullable;
 
-import jakarta.persistence.AttributeOverride;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
-import jakarta.persistence.Version;
 import jakarta.validation.constraints.NotNull;
 
 /**
@@ -65,12 +55,15 @@ public class Pregnancy extends Auditable<String> {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "PRG_ID")
-	private Integer ID;
+	private Integer id;
 
 	@NotNull
 	@ManyToOne
 	@JoinColumn(name = "PRG_PAT_ID")
 	private Patient patient;
+
+	@OneToMany(mappedBy = "pregnancy")
+	private List<PregnancyVisit> visits;
 
 	@Nullable
 	@Column(name = "PRG_LMP")
@@ -141,12 +134,12 @@ public class Pregnancy extends Auditable<String> {
 		return weeks + "+" + days;
 	}
 
-	public Integer getID() {
-		return ID;
+	public Integer getId() {
+		return id;
 	}
 
-	public void setID(Integer ID) {
-		this.ID = ID;
+	public void setId(Integer id) {
+		this.id = id;
 	}
 
 	public Patient getPatient() {
@@ -237,35 +230,30 @@ public class Pregnancy extends Auditable<String> {
 		this.lock = lock;
 	}
 
-	@Override
-	public int hashCode() {
-		if (this.hashCode == 0) {
-			final int prime = 31;
-			int hash = 7;
-			hash = prime * hash + ID;
-			this.hashCode = hash;
-		}
-		return this.hashCode;
+	public List<PregnancyVisit> getVisits() {
+		return visits;
+	}
+
+	public void setVisits(List<PregnancyVisit> visits) {
+		this.visits = visits;
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (!(obj instanceof Pregnancy other)) {
-			return false;
-		}
-		return Objects.equals(ID, other.ID);
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof Pregnancy other)) return false;
+		return id != null && id.equals(other.id);
+	}
+
+	@Override
+	public int hashCode() {
+		return 31;
 	}
 
 	@Override
 	public String toString() {
 		return "Pregnancy{" +
-				"ID=" + ID +
+				"ID=" + id +
 				", patient=" + patient +
 				", status='" + status + '\'' +
 				", riskLevel='" + riskLevel + '\'' +

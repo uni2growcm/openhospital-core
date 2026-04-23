@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -21,26 +21,19 @@
  */
 package org.isf.maternity.service;
 
-import org.isf.maternity.model.Visit;
+import org.isf.maternity.model.PregnancyDeliveryType;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
-/**
- * Repository interface for PregnancyVisit entity
- */
 @Repository
-public interface VisitIoOperationRepository extends JpaRepository<Visit, Integer> {
+public interface PregnancyDeliveryTypeIoOperationRepository extends JpaRepository<PregnancyDeliveryType, Integer> {
 
-	List<Visit> findByPregnancyIdOrderByVisitDateAsc(Integer pregnancyId);
+	List<PregnancyDeliveryType> findAllByOrderByDescriptionAsc();
 
-	@Query("SELECT v FROM Visit v WHERE v.pregnancy.id = :pregnancyId AND v.visitDate <= (SELECT d.deliveryDateTime FROM Delivery d WHERE d.pregnancy.id = :pregnancyId) ORDER BY v.visitDate DESC ")
-	List<Visit> findPrenatalVisits(Integer pregnancyId);
+	Optional<PregnancyDeliveryType> findByCodeIgnoreCase(String code);
 
-	@Query("SELECT v FROM Visit v WHERE v.pregnancy.id = :pregnancyId AND v.visitDate > (SELECT d.deliveryDateTime FROM Delivery d WHERE d.pregnancy.id = :pregnancyId) ORDER BY v.visitDate DESC")
-	List<Visit> findPostnatalVisits(Integer pregnancyId);
-
-	boolean existsByPregnancyId(Integer pregnancyId);
+	boolean existsByCodeIgnoreCase(String code);
 }

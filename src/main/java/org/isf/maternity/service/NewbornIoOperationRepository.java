@@ -26,6 +26,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Repository interface for Newborn entity
@@ -36,4 +37,10 @@ public interface NewbornIoOperationRepository extends JpaRepository<Newborn, Int
 	List<Newborn> findByDeliveryId(Integer deliveryId);
 
 	long countByDeliveryId(Integer deliveryId);
+
+	Optional<Newborn> findTopByDeliveryIdOrderByBirthTimeAsc(Integer deliveryId);
+
+	List<Newborn> findByBirthWeightBetween(Double min, Double max);
+
+	boolean existsByDeliveryIdAndBirthWeightLessThan(Integer deliveryId, Double weight);
 }

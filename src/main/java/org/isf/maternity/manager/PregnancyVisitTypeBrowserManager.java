@@ -25,9 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.isf.generaldata.MessageBundle;
-import org.isf.maternity.model.DeliveryType;
-import org.isf.maternity.model.VisitType;
-import org.isf.maternity.service.VisitTypeIoOperation;
+import org.isf.maternity.model.PregnancyVisitType;
+import org.isf.maternity.service.PregnancyVisitTypeIoOperation;
 import org.isf.utils.exception.OHDataIntegrityViolationException;
 import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHServiceException;
@@ -37,27 +36,33 @@ import org.springframework.stereotype.Component;
 @Component
 public class PregnancyVisitTypeBrowserManager {
 
-	private final VisitTypeIoOperation ioOperations;
+	private final PregnancyVisitTypeIoOperation ioOperations;
 
-	public PregnancyVisitTypeBrowserManager(VisitTypeIoOperation ioOperations) {
+	public PregnancyVisitTypeBrowserManager(PregnancyVisitTypeIoOperation ioOperations) {
 		this.ioOperations = ioOperations;
 	}
 
 	/**
-	 * Validate {@link VisitType} before insert/update.
+	 * Validate a {@link PregnancyVisitType} before persistence.
 	 *
-	 * @param visitType the {@link VisitType}
-	 * @param insert true if we are adding a new {@link DeliveryType}, false if we update
-	 * @throws OHServiceException when fail to validate
+	 * @param visitType entity
+	 * @param insert true if create operation, false if update
+	 * @throws OHServiceException validation error
 	 */
-	protected void validateVisitType(VisitType visitType, boolean insert) throws OHServiceException {
+	protected void validateVisitType(PregnancyVisitType visitType, boolean insert)
+		throws OHServiceException {
+
+		List<OHExceptionMessage> errors = new ArrayList<>();
 
 		String code = visitType.getCode();
 		String description = visitType.getDescription();
 
-		List<OHExceptionMessage> errors = new ArrayList<>();
+		if (code != null) {
+			code = code.trim().toUpperCase();
+			visitType.setCode(code);
+		}
 
-		if (code == null || code.trim().isEmpty()) {
+		if (code == null || code.isEmpty()) {
 			errors.add(new OHExceptionMessage(
 				MessageBundle.getMessage("angal.common.pleaseinsertacode.msg")));
 		}
@@ -72,9 +77,12 @@ public class PregnancyVisitTypeBrowserManager {
 				MessageBundle.getMessage("angal.common.pleaseinsertavaliddescription.msg")));
 		}
 
-		if (insert && isCodePresent(code)) {
-			throw new OHDataIntegrityViolationException(
-				new OHExceptionMessage(MessageBundle.getMessage("angal.common.thecodeisalreadyinuse.msg")));
+		if (insert) {
+			if (isCodePresent(code)) {
+				throw new OHDataIntegrityViolationException(
+					new OHExceptionMessage(
+						MessageBundle.getMessage("angal.common.thecodeisalreadyinuse.msg")));
+			}
 		}
 
 		if (!errors.isEmpty()) {
@@ -82,69 +90,29 @@ public class PregnancyVisitTypeBrowserManager {
 		}
 	}
 
-	/**
-	 * Get all {@link VisitType}s ordered by description.
-	 *
-	 * @return a list of all the stored {@link VisitType}s.
-	 * @throws OHServiceException if an error occurs retrieving the {@link VisitType}s.
-	 */
-	public List<VisitType> getVisitTypes() throws OHServiceException {
+	public List<PregnancyVisitType> getVisitTypes() throws OHServiceException {
 		return ioOperations.getVisitTypes();
 	}
 
-	/**
-	 * Get {@link VisitType} by Code.
-	 *
-	 * @param code the code of the {@link VisitType}
-	 * @return a list of all the stored {@link VisitType}s.
-	 * @throws OHServiceException if an error occurs retrieving the {@link VisitType}s.
-	 */
-	public VisitType getVisitTypeByCode(String code) throws OHServiceException {
-		return ioOperations.getVisitTypeByCode(code);
+	public PregnancyVisitType getVisitTypeByCode(String code) throws OHServiceException {
+		return ioOperations.getByCode(code).orElse(null);
 	}
 
-	/**
-	 * Add a new {@link VisitType}.
-	 *
-	 * @param visitType the {@link VisitType} to add
-	 * @return the new {@link VisitType}.
-	 * @throws OHServiceException if an error occurs when adding the new {@link VisitType}.
-	 */
-	public VisitType newVisitType(VisitType visitType) throws OHServiceException {
+	public boolean isCodePresent(String code) throws OHServiceException {
+		return ioOperations.existsByCode(code);
+	}
+
+	public PregnancyVisitType newVisitType(PregnancyVisitType visitType) throws OHServiceException {
 		validateVisitType(visitType, true);
 		return ioOperations.newVisitType(visitType);
 	}
 
-	/**
-	 * Update a new {@link VisitType}.
-	 *
-	 * @param visitType the {@link VisitType} to update
-	 * @return the updated {@link VisitType}.
-	 * @throws OHServiceException if an error occurs when updating the {@link VisitType}.
-	 */
-	public VisitType updateVisitType(VisitType visitType) throws OHServiceException {
+	public PregnancyVisitType updateVisitType(PregnancyVisitType visitType) throws OHServiceException {
 		validateVisitType(visitType, false);
 		return ioOperations.updateVisitType(visitType);
 	}
 
-	/**
-	 * Check if code exists
-	 *
-	 * @param code the code to check.
-	 * @return the true id the code exist and false if it doesn't.
-	 * @throws OHServiceException if an error occurs when checking.
-	 */
-	public boolean isCodePresent(String code) throws OHServiceException {
-		return ioOperations.isCodePresent(code);
-	}
-
-	/**
-	 * Delete a new {@link VisitType}.
-	 *
-	 * @param visitType the {@link VisitType} to delete.
-	 * @throws OHServiceException if an error occurs when deleting the {@link VisitType}.
-	 */
-	public void deleteVisitType(VisitType visitType) throws OHServiceException {
+	public void deleteVisitType(PregnancyVisitType visitType) throws OHServiceException {
 		ioOperations.deleteVisitType(visitType);
 	}
 }

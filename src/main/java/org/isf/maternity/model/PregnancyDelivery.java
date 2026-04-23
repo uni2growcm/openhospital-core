@@ -28,7 +28,7 @@ import jakarta.persistence.*;
 import org.isf.utils.db.Auditable;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import com.drew.lang.annotations.Nullable;
+import jakarta.annotation.Nullable;
 
 import jakarta.validation.constraints.NotNull;
 
@@ -46,12 +46,12 @@ import jakarta.validation.constraints.NotNull;
 @AttributeOverride(name = "lastModifiedBy", column = @Column(name = "PRGDLV_LAST_MODIFIED_BY"))
 @AttributeOverride(name = "active", column = @Column(name = "PRGDLV_ACTIVE"))
 @AttributeOverride(name = "lastModifiedDate", column = @Column(name = "PRGDLV_LAST_MODIFIED_DATE"))
-public class Delivery extends Auditable<String> {
+public class PregnancyDelivery extends Auditable<String> {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "PRGDLV_ID")
-	private Integer ID;
+	private Integer id;
 
 	@NotNull
 	@OneToOne
@@ -61,7 +61,7 @@ public class Delivery extends Auditable<String> {
 	@NotNull
 	@ManyToOne
 	@JoinColumn(name = "PRGDLV_TYPE_ID")
-	private DeliveryType deliveryType;
+	private PregnancyDeliveryType deliveryType;
 
 	@Nullable
 	@Column(name = "PRGDLV_LABOR_ONSET_DATETIME")
@@ -134,21 +134,21 @@ public class Delivery extends Auditable<String> {
 	@Transient
 	private volatile int hashCode;
 
-	public Delivery() {
+	public PregnancyDelivery() {
 	}
 
-	public Delivery(Pregnancy pregnancy, DeliveryType deliveryType, LocalDateTime deliveryDateTime) {
+	public PregnancyDelivery(Pregnancy pregnancy, PregnancyDeliveryType pregnancyDeliveryType, LocalDateTime deliveryDateTime) {
 		this.pregnancy = pregnancy;
 		this.deliveryDateTime = deliveryDateTime;
-		this.deliveryType = deliveryType;
+		this.deliveryType = pregnancyDeliveryType;
 	}
 
-	public Integer getID() {
-		return ID;
+	public Integer getId() {
+		return id;
 	}
 
-	public void setID(Integer ID) {
-		this.ID = ID;
+	public void setId(Integer id) {
+		this.id = id;
 	}
 
 	public Pregnancy getPregnancy() {
@@ -159,12 +159,12 @@ public class Delivery extends Auditable<String> {
 		this.pregnancy = pregnancy;
 	}
 
-	public DeliveryType getDeliveryType() {
+	public PregnancyDeliveryType getDeliveryType() {
 		return deliveryType;
 	}
 
-	public void setDeliveryType(DeliveryType deliveryType) {
-		this.deliveryType = deliveryType;
+	public void setDeliveryType(PregnancyDeliveryType pregnancyDeliveryType) {
+		this.deliveryType = pregnancyDeliveryType;
 	}
 
 	public LocalDateTime getLaborOnsetDateTime() {
@@ -304,35 +304,22 @@ public class Delivery extends Auditable<String> {
 	}
 
 	@Override
-	public int hashCode() {
-		if (this.hashCode == 0) {
-			final int prime = 31;
-			int hash = 7;
-			hash = prime * hash + ID;
-			this.hashCode = hash;
-		}
-		return this.hashCode;
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof Pregnancy other)) return false;
+		return id != null && id.equals(other.getId());
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (!(obj instanceof Delivery other)) {
-			return false;
-		}
-		return Objects.equals(ID, other.ID);
+	public int hashCode() {
+		return 31;
 	}
 
 	@Override
 	public String toString() {
 		return "Delivery{" +
-			"ID=" + ID +
-			", pregnancy=" + pregnancy.getID() +
+			"ID=" + id +
+			", pregnancyId=" + (pregnancy != null ? pregnancy.getId() : null) +
 			", modeOfDelivery='" + modeOfDelivery + '\'' +
 			", deliveryDateTime=" + deliveryDateTime +
 			'}';

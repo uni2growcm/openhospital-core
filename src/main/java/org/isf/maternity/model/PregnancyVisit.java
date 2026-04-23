@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -23,10 +23,11 @@ package org.isf.maternity.model;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.isf.utils.db.Auditable;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import com.drew.lang.annotations.Nullable;
+import jakarta.annotation.Nullable;
 
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
@@ -56,22 +57,23 @@ import jakarta.validation.constraints.NotNull;
 @AttributeOverride(name = "createdDate", column = @Column(name = "PRGV_CREATED_DATE", updatable = false))
 @AttributeOverride(name = "lastModifiedBy", column = @Column(name = "PRGV_LAST_MODIFIED_BY"))
 @AttributeOverride(name = "lastModifiedDate", column = @Column(name = "PRGV_LAST_MODIFIED_DATE"))
-public class Visit extends Auditable<String> {
+public class PregnancyVisit extends Auditable<String> {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "PRGV_ID")
-	private Integer ID;
+	private Integer id;
 
 	@NotNull
 	@ManyToOne
 	@JoinColumn(name = "PRGV_PRG_ID")
+	@JsonIgnore
 	private Pregnancy pregnancy;
 
 	@NotNull
 	@ManyToOne
 	@JoinColumn(name = "PRGV_TYPE_ID")
-	private VisitType visitType;
+	private PregnancyVisitType visitType;
 
 	@NotNull
 	@Column(name = "PRGV_DATE")
@@ -164,21 +166,21 @@ public class Visit extends Auditable<String> {
 	@Transient
 	private volatile int hashCode;
 
-	public Visit() {
+	public PregnancyVisit() {
 	}
 
-	public Visit(Pregnancy pregnancy, VisitType visitType, LocalDateTime visitDate) {
+	public PregnancyVisit(Pregnancy pregnancy, PregnancyVisitType visitType, LocalDateTime visitDate) {
 		this.pregnancy = pregnancy;
 		this.visitDate = visitDate;
 		this.visitType = visitType;
 	}
 
-	public Integer getID() {
-		return ID;
+	public Integer getId() {
+		return id;
 	}
 
-	public void setID(Integer ID) {
-		this.ID = ID;
+	public void setId(Integer ID) {
+		this.id = ID;
 	}
 
 	public Pregnancy getPregnancy() {
@@ -357,11 +359,11 @@ public class Visit extends Auditable<String> {
 		this.clinicalNotes = clinicalNotes;
 	}
 
-	public VisitType getVisitType() {
+	public PregnancyVisitType getVisitType() {
 		return visitType;
 	}
 
-	public void setVisitType(VisitType visitType) {
+	public void setVisitType(PregnancyVisitType visitType) {
 		this.visitType = visitType;
 	}
 
@@ -374,36 +376,22 @@ public class Visit extends Auditable<String> {
 	}
 
 	@Override
-	public int hashCode() {
-		if (this.hashCode == 0) {
-			final int prime = 31;
-			int hash = 7;
-			hash = prime * hash + ID;
-			this.hashCode = hash;
-		}
-		return this.hashCode;
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof Pregnancy other)) return false;
+		return id != null && id.equals(other.getId());
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (!(obj instanceof Visit)) {
-			return false;
-		}
-		Visit other = (Visit) obj;
-		return ID == other.ID;
+	public int hashCode() {
+		return 31;
 	}
 
 	@Override
 	public String toString() {
 		return "PregnancyVisit{" +
-				"ID=" + ID +
-				", pregnancy=" + pregnancy.getID() +
+				"ID=" + id +
+			", pregnancyId=" + (pregnancy != null ? pregnancy.getId() : null) +
 				", visitDate=" + visitDate +
 				", gestationalWeeks=" + gestationalWeeks +
 				'}';
