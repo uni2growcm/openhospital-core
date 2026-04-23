@@ -51,7 +51,7 @@ public class TestDelivery {
 
 	private void set(PregnancyDelivery d, Pregnancy p, PregnancyDeliveryType pregnancyDeliveryType) {
 		d.setPregnancy(p);
-		d.setDeliveryDateTime(deliveryDate);
+		d.setDeliveryDate(deliveryDate);
 		d.setModeOfDelivery(mode);
 		d.setFatherName(father);
 		d.setDeliveryType(pregnancyDeliveryType);

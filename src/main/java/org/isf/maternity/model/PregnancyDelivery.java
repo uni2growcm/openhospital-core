@@ -22,7 +22,6 @@
 package org.isf.maternity.model;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 import jakarta.persistence.*;
 import org.isf.utils.db.Auditable;
@@ -72,8 +71,8 @@ public class PregnancyDelivery extends Auditable<String> {
 	private LocalDateTime ruptureMembranesDateTime;
 
 	@NotNull
-	@Column(name = "PRGDLV_DELIVERY_DATETIME")
-	private LocalDateTime deliveryDateTime;
+	@Column(name = "PRGDLV_DATE")
+	private LocalDateTime deliveryDate;
 
 	@Nullable
 	@Column(name = "PRGDLV_MODE_OF_DELIVERY")
@@ -137,9 +136,9 @@ public class PregnancyDelivery extends Auditable<String> {
 	public PregnancyDelivery() {
 	}
 
-	public PregnancyDelivery(Pregnancy pregnancy, PregnancyDeliveryType pregnancyDeliveryType, LocalDateTime deliveryDateTime) {
+	public PregnancyDelivery(Pregnancy pregnancy, PregnancyDeliveryType pregnancyDeliveryType, LocalDateTime deliveryDate) {
 		this.pregnancy = pregnancy;
-		this.deliveryDateTime = deliveryDateTime;
+		this.deliveryDate = deliveryDate;
 		this.deliveryType = pregnancyDeliveryType;
 	}
 
@@ -183,12 +182,12 @@ public class PregnancyDelivery extends Auditable<String> {
 		this.ruptureMembranesDateTime = ruptureMembranesDateTime;
 	}
 
-	public LocalDateTime getDeliveryDateTime() {
-		return deliveryDateTime;
+	public LocalDateTime getDeliveryDate() {
+		return deliveryDate;
 	}
 
-	public void setDeliveryDateTime(LocalDateTime deliveryDateTime) {
-		this.deliveryDateTime = deliveryDateTime;
+	public void setDeliveryDate(LocalDateTime deliveryDate) {
+		this.deliveryDate = deliveryDate;
 	}
 
 	public String getModeOfDelivery() {
@@ -321,7 +320,7 @@ public class PregnancyDelivery extends Auditable<String> {
 			"ID=" + id +
 			", pregnancyId=" + (pregnancy != null ? pregnancy.getId() : null) +
 			", modeOfDelivery='" + modeOfDelivery + '\'' +
-			", deliveryDateTime=" + deliveryDateTime +
+			", deliveryDateTime=" + deliveryDate +
 			'}';
 	}
 }

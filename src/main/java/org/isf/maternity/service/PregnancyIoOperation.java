@@ -68,7 +68,7 @@ public class PregnancyIoOperation {
 	 */
 	public List<Pregnancy> getPregnanciesByPatient(Integer patientCode)
 		throws OHServiceException {
-		return repository.findByPatientCodeOrderByCreatedDateDesc(patientCode);
+		return repository.findByPatient_CodeOrderByCreatedDateDesc(patientCode);
 	}
 
 	/**
@@ -92,7 +92,7 @@ public class PregnancyIoOperation {
 		LocalDateTime toDate,
 		Pageable pageable
 	) throws OHServiceException {
-		return repository.searchPregnancies(
+		return repository.getPregnancies(
 			patientCode,
 			status,
 			riskLevel,
@@ -127,7 +127,7 @@ public class PregnancyIoOperation {
 	 * @throws OHServiceException if check fails
 	 */
 	public boolean hasActivePregnancy(Integer patientCode) throws OHServiceException {
-		return repository.existsByPatientCodeAndStatus(patientCode, "Ongoing");
+		return repository.existsByPatient_CodeAndStatus(patientCode, "Ongoing");
 	}
 
 	/**
@@ -140,7 +140,7 @@ public class PregnancyIoOperation {
 	 */
 	public long countPregnanciesByPatientAndStatus(Integer patientCode, String status)
 		throws OHServiceException {
-		return repository.countByPatientCodeAndStatus(patientCode, status);
+		return repository.countByPatient_CodeAndStatus(patientCode, status);
 	}
 
 	/**
@@ -154,7 +154,7 @@ public class PregnancyIoOperation {
 	public Pregnancy getLatestPregnancyByPatientAndStatus(Integer patientCode, String status)
 		throws OHServiceException {
 		return repository
-			.findTopByPatientCodeAndStatusOrderByCreatedDateDesc(patientCode, status)
+			.findTopByPatient_CodeAndStatusOrderByCreatedDateDesc(patientCode, status)
 			.orElse(null);
 	}
 

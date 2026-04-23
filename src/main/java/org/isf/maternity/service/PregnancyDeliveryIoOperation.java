@@ -58,7 +58,7 @@ public class PregnancyDeliveryIoOperation {
 		LocalDateTime from,
 		LocalDateTime to
 	) throws OHServiceException {
-		return repository.findByDeliveryDateTimeBetween(from, to);
+		return repository.findByDeliveryDateBetween(from, to);
 	}
 
 	/**

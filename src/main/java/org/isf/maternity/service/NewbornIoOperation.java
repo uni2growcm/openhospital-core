@@ -89,7 +89,7 @@ public class NewbornIoOperation {
 	 * @throws OHServiceException if an error occurs during retrieval
 	 */
 	public Optional<Newborn> getFirstBorn(Integer deliveryId) throws OHServiceException {
-		return repository.findTopByDeliveryIdOrderByBirthTimeAsc(deliveryId);
+		return repository.findTopByDeliveryIdOrderByBirthDateAsc(deliveryId);
 	}
 
 	/**

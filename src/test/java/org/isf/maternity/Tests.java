@@ -27,6 +27,7 @@ import org.isf.maternity.model.*;
 import org.isf.maternity.service.*;
 import org.isf.patient.TestPatient;
 import org.isf.patient.model.Patient;
+import org.isf.patient.service.PatientIoOperationRepository;
 import org.isf.utils.exception.OHException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,6 +50,8 @@ class Tests extends OHCoreTestCase {
 	private static TestPregnancy testPregnancy;
 	private static TestPatient testPatient;
 
+	@Autowired
+	PatientIoOperationRepository patientIoOperationRepository;
 	@Autowired
 	PregnancyDeliveryTypeBrowserManager pregnancyDeliveryTypeBrowserManager;
 	@Autowired
@@ -96,6 +99,7 @@ class Tests extends OHCoreTestCase {
 
 		// CREATE PATIENT
 		Patient patient = testPatient.setup(false);
+		patientIoOperationRepository.save(patient);
 
 		// CREATE PREGNANCY
 		Pregnancy pregnancy = testPregnancy.setup(patient, false);
@@ -168,6 +172,8 @@ class Tests extends OHCoreTestCase {
 
 		// ARRANGE
 		Patient patient = testPatient.setup(false);
+		patientIoOperationRepository.save(patient);
+
 		Pregnancy pregnancy = testPregnancy.setup(patient, false);
 		pregnancy = pregnancyBrowserManager.newPregnancy(pregnancy);
 
@@ -221,6 +227,8 @@ class Tests extends OHCoreTestCase {
 
 		// ARRANGE
 		Patient patient = testPatient.setup(false);
+		patientIoOperationRepository.save(patient);
+
 		Pregnancy pregnancy = testPregnancy.setup(patient, false);
 		pregnancy = pregnancyBrowserManager.newPregnancy(pregnancy);
 
@@ -318,6 +326,8 @@ class Tests extends OHCoreTestCase {
 
 		// ARRANGE
 		Patient patient = testPatient.setup(false);
+		patientIoOperationRepository.save(patient);
+
 		Pregnancy pregnancy = testPregnancy.setup(patient, false);
 		pregnancy = pregnancyBrowserManager.newPregnancy(pregnancy);
 

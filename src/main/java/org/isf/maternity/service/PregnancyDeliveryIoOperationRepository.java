@@ -38,7 +38,7 @@ public interface PregnancyDeliveryIoOperationRepository extends JpaRepository<Pr
 
 	boolean existsByPregnancyId(Integer pregnancyId);
 
-	List<PregnancyDelivery> findByDeliveryDateTimeBetween(
+	List<PregnancyDelivery> findByDeliveryDateBetween(
 		LocalDateTime from,
 		LocalDateTime to
 	);

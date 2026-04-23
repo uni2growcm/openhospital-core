@@ -38,7 +38,7 @@ public interface NewbornIoOperationRepository extends JpaRepository<Newborn, Int
 
 	long countByDeliveryId(Integer deliveryId);
 
-	Optional<Newborn> findTopByDeliveryIdOrderByBirthTimeAsc(Integer deliveryId);
+	Optional<Newborn> findTopByDeliveryIdOrderByBirthDateAsc(Integer deliveryId);
 
 	List<Newborn> findByBirthWeightBetween(Double min, Double max);
 

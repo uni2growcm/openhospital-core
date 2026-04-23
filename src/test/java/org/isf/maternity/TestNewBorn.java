@@ -26,11 +26,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.isf.maternity.model.PregnancyDelivery;
 import org.isf.maternity.model.Newborn;
 
+import java.time.LocalDateTime;
+
 public class TestNewBorn {
 
 	private final String name = "Baby Doe";
 	private final String gender = "M";
-	private final Integer weight = 3200;
+	private final double weight = 3200;
+	private final char hivStatus = 'u';
+	private final LocalDateTime date = LocalDateTime.of(2025, 10, 19, 15, 15);
 
 	public Newborn setup(PregnancyDelivery d, boolean usingSet) {
 		Newborn n;
@@ -39,7 +43,7 @@ public class TestNewBorn {
 			n = new Newborn();
 			set(n, d);
 		} else {
-			n = new Newborn(d, name, gender);
+			n = new Newborn(d, name, gender, date, hivStatus);
 			set(n, d);
 		}
 
@@ -51,11 +55,13 @@ public class TestNewBorn {
 		n.setName(name);
 		n.setGender(gender);
 		n.setBirthWeight(weight);
+		n.setHivStatus(hivStatus);
 	}
 
 	public void check(Newborn n) {
 		assertThat(n.getName()).isEqualTo(name);
 		assertThat(n.getGender()).isEqualTo(gender);
 		assertThat(n.getBirthWeight()).isEqualTo(weight);
+		assertThat(n.getHivStatus()).isEqualTo(hivStatus);
 	}
 }

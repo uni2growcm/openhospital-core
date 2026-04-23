@@ -38,16 +38,16 @@ import java.util.Optional;
  */
 @Repository
 public interface PregnancyIoOperationRepository extends JpaRepository<Pregnancy, Integer> {
-	List<Pregnancy> findByPatientCodeOrderByCreatedDateDesc(Integer patientCode);
+	List<Pregnancy> findByPatient_CodeOrderByCreatedDateDesc(Integer patientCode);
 
-	Optional<Pregnancy> findTopByPatientCodeAndStatusOrderByCreatedDateDesc(
+	Optional<Pregnancy> findTopByPatient_CodeAndStatusOrderByCreatedDateDesc(
 		Integer patientCode,
 		String status
 	);
 
-	boolean existsByPatientCodeAndStatus(Integer patientCode, String status);
+	boolean existsByPatient_CodeAndStatus(Integer patientCode, String status);
 
-	long countByPatientCodeAndStatus(Integer patientCode, String status);
+	long countByPatient_CodeAndStatus(Integer patientCode, String status);
 
 	Page<Pregnancy> findByCreatedDateBetween(
 		LocalDateTime from,
@@ -56,15 +56,15 @@ public interface PregnancyIoOperationRepository extends JpaRepository<Pregnancy,
 	);
 
 	@Query("""
-        SELECT p FROM Pregnancy p
-        WHERE (:patientCode IS NULL OR p.patientCode = :patientCode)
-          AND (:status IS NULL OR p.status = :status)
-          AND (:riskLevel IS NULL OR p.riskLevel = :riskLevel)
-          AND (:fromDate IS NULL OR p.createdDate >= :fromDate)
-          AND (:toDate IS NULL OR p.createdDate <= :toDate)
-    """)
-	Page<Pregnancy> searchPregnancies(
-		@Param("patientCode") Integer patientCode,
+		SELECT p FROM Pregnancy p
+		WHERE (:patientId IS NULL OR p.patient.code = :patientId)
+		  AND (:status IS NULL OR p.status = :status)
+		  AND (:riskLevel IS NULL OR p.riskLevel = :riskLevel)
+		  AND (:fromDate IS NULL OR p.createdDate >= :fromDate)
+		  AND (:toDate IS NULL OR p.createdDate <= :toDate)
+	""")
+	Page<Pregnancy> getPregnancies(
+		@Param("patientId") Integer patientId,
 		@Param("status") String status,
 		@Param("riskLevel") String riskLevel,
 		@Param("fromDate") LocalDateTime fromDate,

@@ -28,6 +28,8 @@ import jakarta.persistence.*;
 
 import jakarta.validation.constraints.NotNull;
 
+import java.time.LocalDateTime;
+
 /**
  * Newborn Model - Records for each newborn child from a delivery
  *
@@ -54,12 +56,14 @@ public class Newborn extends Auditable<String> {
 	@JoinColumn(name = "NBN_DLV_ID", nullable = false)
 	private PregnancyDelivery delivery;
 
+	@Column(name = "NBN_BIRTH_DATE")
+	private LocalDateTime birthDate;
+
 	@Column(name = "NBN_NAME")
 	private String name;
 
 	@Column(name = "NBN_NEONATAL_STATUS")
 	private String neonatalStatus;
-	// LIVE, STILLBORN, DEAD, CRITICAL
 
 	@Column(name = "NBN_BIRTH_ORDER")
 	private String birthOrder;
@@ -69,7 +73,7 @@ public class Newborn extends Auditable<String> {
 
 	@NotNull
 	@Column(name = "NBN_BIRTH_WEIGHT", nullable = false)
-	private Integer birthWeight;
+	private Double birthWeight;
 
 	@Column(name = "NBN_BIRTH_LENGTH")
 	private Double birthLength;
@@ -92,9 +96,8 @@ public class Newborn extends Auditable<String> {
 	@Column(name = "NBN_CONGENITAL_ANOMALIES", columnDefinition = "LONGTEXT")
 	private String congenitalAnomalies;
 
-	@NotNull
 	@Column(name = "NBN_HIV_STATUS", nullable = false)
-	private String hivStatus; // P / N / U
+	private char hivStatus; // P / N / U
 
 	@Version
 	@Column(name = "NBN_LOCK")
@@ -105,20 +108,25 @@ public class Newborn extends Auditable<String> {
 	public Newborn(
 		PregnancyDelivery delivery,
 		String name,
-		String gender
+		String gender,
+		LocalDateTime birthDate,
+		char hivStatus
 	) {
 		this.delivery = delivery;
 		this.name = name;
 		this.gender = gender;
+		this.birthDate = birthDate;
+		this.hivStatus = hivStatus;
 	}
 
 	public Newborn(
 		PregnancyDelivery delivery,
 		String name,
 		String neonatalStatus,
+		LocalDateTime birthDate,
 		String birthOrder,
 		String gender,
-		Integer birthWeight,
+		@NotNull Double birthWeight,
 		Double birthLength,
 		Double headCircumference,
 		Integer apgarScore1Min,
@@ -126,11 +134,12 @@ public class Newborn extends Auditable<String> {
 		Boolean resuscitationRequired,
 		String cryTime,
 		String congenitalAnomalies,
-		String hivStatus
+		char hivStatus
 	) {
 		this.delivery = delivery;
 		this.name = name;
 		this.neonatalStatus = neonatalStatus;
+		this.birthDate = birthDate;
 		this.birthOrder = birthOrder;
 		this.gender = gender;
 		this.birthWeight = birthWeight;
@@ -192,12 +201,20 @@ public class Newborn extends Auditable<String> {
 		this.gender = gender;
 	}
 
-	public Integer getBirthWeight() {
+	public Double getBirthWeight() {
 		return birthWeight;
 	}
 
-	public void setBirthWeight(Integer birthWeight) {
+	public void setBirthWeight(Double birthWeight) {
 		this.birthWeight = birthWeight;
+	}
+
+	public LocalDateTime getBirthDate() {
+		return birthDate;
+	}
+
+	public void setBirthDate(LocalDateTime birthDate) {
+		this.birthDate = birthDate;
 	}
 
 	public Double getBirthLength() {
@@ -256,11 +273,11 @@ public class Newborn extends Auditable<String> {
 		this.congenitalAnomalies = congenitalAnomalies;
 	}
 
-	public String getHivStatus() {
+	public char getHivStatus() {
 		return hivStatus;
 	}
 
-	public void setHivStatus(String hivStatus) {
+	public void setHivStatus(char hivStatus) {
 		this.hivStatus = hivStatus;
 	}
 
@@ -290,7 +307,7 @@ public class Newborn extends Auditable<String> {
 			"ID=" + id +
 			", name=" + (name != null ? name : null) +
 			", gender=" + (gender != null ? gender : null) +
-			", HIV status ='" + (hivStatus != null ? hivStatus : null) + '\'' +
+			", HIV status ='" + (hivStatus) + '\'' +
 			'}';
 	}
 }
