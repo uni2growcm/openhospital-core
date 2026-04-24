@@ -88,17 +88,13 @@ public class Pregnancy extends Auditable<String> {
 	@Column(name = "PRG_MISSCARRIAGES")
 	private Integer miscarriages; // Count of abortions/miscarriages
 
-	@Nullable
-	@Column(name = "PRG_BLOOD_GROUP")
-	private String bloodGroup; // Blood group and Rh factor
-
-	@Nullable
+	@Enumerated(EnumType.STRING)
 	@Column(name = "PRG_RISK_LEVEL")
-	private String riskLevel; // Low, Medium, High
+	private RiskLevel riskLevel;
 
-	@NotNull
+	@Enumerated(EnumType.STRING)
 	@Column(name = "PRG_STATUS")
-	private String status; // Ongoing, Completed, Terminated
+	private PregnancyStatus status;
 
 	@Version
 	@Column(name = "PRG_LOCK")
@@ -110,10 +106,10 @@ public class Pregnancy extends Auditable<String> {
 	public Pregnancy() {
 	}
 
-	public Pregnancy(Patient patient, String status) {
+	public Pregnancy(Patient patient, PregnancyStatus status) {
 		this.patient = patient;
 		this.status = status;
-		this.riskLevel = "Low";
+		this.riskLevel = RiskLevel.LOW;
 		this.miscarriages = 0;
 	}
 
@@ -197,27 +193,19 @@ public class Pregnancy extends Auditable<String> {
 		this.miscarriages = miscarriages;
 	}
 
-	public String getBloodGroup() {
-		return bloodGroup;
-	}
-
-	public void setBloodGroup(String bloodGroup) {
-		this.bloodGroup = bloodGroup;
-	}
-
-	public String getRiskLevel() {
+	public RiskLevel getRiskLevel() {
 		return riskLevel;
 	}
 
-	public void setRiskLevel(String riskLevel) {
+	public void setRiskLevel(RiskLevel riskLevel) {
 		this.riskLevel = riskLevel;
 	}
 
-	public String getStatus() {
+	public PregnancyStatus getStatus() {
 		return status;
 	}
 
-	public void setStatus(String status) {
+	public void setStatus(PregnancyStatus status) {
 		this.status = status;
 	}
 

@@ -67,7 +67,7 @@ public class PregnancyDelivery extends Auditable<String> {
 	private LocalDateTime laborOnsetDateTime;
 
 	@Nullable
-	@Column(name = "PRGDLV_RUPTURE_MEMBRANES_DATETIME")
+	@Column(name = "ROM_DATETIME")
 	private LocalDateTime ruptureMembranesDateTime;
 
 	@NotNull
@@ -75,8 +75,8 @@ public class PregnancyDelivery extends Auditable<String> {
 	private LocalDateTime deliveryDate;
 
 	@Nullable
-	@Column(name = "PRGDLV_MODE_OF_DELIVERY")
-	private String modeOfDelivery; // SVD, Vacuum, Forceps, Emergency C-Section, Elective C-Section
+	@Column(name = "PRGDLV_DELIVERYMODE")
+	private DeliveryMode  deliveryMode; // SVD, Vacuum, Forceps, Emergency C-Section, Elective C-Section
 
 	@Nullable
 	@Column(name = "PRGDLV_INDICATION")
@@ -88,7 +88,7 @@ public class PregnancyDelivery extends Auditable<String> {
 
 	@Nullable
 	@Column(name = "PRGDLV_PERINEAL_INTEGRITY")
-	private String perinealIntegrity;
+	private PerinealIntegrity perinealIntegrity;
 
 	@Nullable
 	@Column(name = "PRGDLV_PLACENTA_COMPLETE")
@@ -99,7 +99,7 @@ public class PregnancyDelivery extends Auditable<String> {
 	private Integer placentaWeight; // grams
 
 	@Nullable
-	@Column(name = "PRGDLV_ESTIMATED_BLOOD_LOSS")
+	@Column(name = "PRGDLV_ESTIMATED_BLD_LOSS")
 	private Integer estimatedBloodLoss; // ml
 
 	@Nullable
@@ -190,12 +190,12 @@ public class PregnancyDelivery extends Auditable<String> {
 		this.deliveryDate = deliveryDate;
 	}
 
-	public String getModeOfDelivery() {
-		return modeOfDelivery;
+	public DeliveryMode getDeliveryMode() {
+		return deliveryMode;
 	}
 
-	public void setModeOfDelivery(String modeOfDelivery) {
-		this.modeOfDelivery = modeOfDelivery;
+	public void setDeliveryMode(DeliveryMode deliveryMode) {
+		this.deliveryMode = deliveryMode;
 	}
 
 	public String getIndication() {
@@ -214,11 +214,11 @@ public class PregnancyDelivery extends Auditable<String> {
 		this.anesthesiaUsed = anesthesiaUsed;
 	}
 
-	public String getPerinealIntegrity() {
+	public PerinealIntegrity getPerinealIntegrity() {
 		return perinealIntegrity;
 	}
 
-	public void setPerinealIntegrity(String perinealIntegrity) {
+	public void setPerinealIntegrity(PerinealIntegrity perinealIntegrity) {
 		this.perinealIntegrity = perinealIntegrity;
 	}
 
@@ -319,7 +319,7 @@ public class PregnancyDelivery extends Auditable<String> {
 		return "Delivery{" +
 			"ID=" + id +
 			", pregnancyId=" + (pregnancy != null ? pregnancy.getId() : null) +
-			", modeOfDelivery='" + modeOfDelivery + '\'' +
+			", modeOfDelivery='" + deliveryMode + '\'' +
 			", deliveryDateTime=" + deliveryDate +
 			'}';
 	}

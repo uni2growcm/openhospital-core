@@ -69,7 +69,7 @@ public class Newborn extends Auditable<String> {
 	private String birthOrder;
 
 	@Column(name = "NBN_GENDER")
-	private String gender;
+	private char gender;
 
 	@NotNull
 	@Column(name = "NBN_BIRTH_WEIGHT", nullable = false)
@@ -108,7 +108,7 @@ public class Newborn extends Auditable<String> {
 	public Newborn(
 		PregnancyDelivery delivery,
 		String name,
-		String gender,
+		char gender,
 		LocalDateTime birthDate,
 		char hivStatus
 	) {
@@ -125,8 +125,8 @@ public class Newborn extends Auditable<String> {
 		String neonatalStatus,
 		LocalDateTime birthDate,
 		String birthOrder,
-		String gender,
-		@NotNull Double birthWeight,
+		char gender,
+		Double birthWeight,
 		Double birthLength,
 		Double headCircumference,
 		Integer apgarScore1Min,
@@ -193,11 +193,11 @@ public class Newborn extends Auditable<String> {
 		this.birthOrder = birthOrder;
 	}
 
-	public String getGender() {
+	public char getGender() {
 		return gender;
 	}
 
-	public void setGender(String gender) {
+	public void setGender(char gender) {
 		this.gender = gender;
 	}
 
@@ -306,7 +306,7 @@ public class Newborn extends Auditable<String> {
 		return "Newborn{" +
 			"ID=" + id +
 			", name=" + (name != null ? name : null) +
-			", gender=" + (gender != null ? gender : null) +
+			", gender=" + (gender) +
 			", HIV status ='" + (hivStatus) + '\'' +
 			'}';
 	}

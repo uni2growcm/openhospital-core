@@ -31,7 +31,7 @@ import java.time.LocalDateTime;
 public class TestNewBorn {
 
 	private final String name = "Baby Doe";
-	private final String gender = "M";
+	private final char gender = 'M';
 	private final double weight = 3200;
 	private final char hivStatus = 'u';
 	private final LocalDateTime date = LocalDateTime.of(2025, 10, 19, 15, 15);

@@ -117,10 +117,10 @@ class Tests extends OHCoreTestCase {
 
 		// UPDATE
 		Pregnancy updated = list.get(0);
-		updated.setRiskLevel("High");
+		updated.setRiskLevel(RiskLevel.HIGH);
 		updated = pregnancyBrowserManager.updatePregnancy(updated);
 
-		assertThat(updated.getRiskLevel()).isEqualTo("High");
+		assertThat(updated.getRiskLevel()).isEqualTo(RiskLevel.HIGH);
 
 		// CHECK ACTIVE PREGNANCY
 		assertThat(
@@ -148,9 +148,9 @@ class Tests extends OHCoreTestCase {
 
 		// CLOSE PREGNANCY
 		Pregnancy closed =
-			pregnancyBrowserManager.closePregnancy(updated.getId(), "Completed");
+			pregnancyBrowserManager.closePregnancy(updated.getId(), PregnancyStatus.COMPLETED);
 
-		assertThat(closed.getStatus()).isEqualTo("Completed");
+		assertThat(closed.getStatus()).isEqualTo(PregnancyStatus.COMPLETED);
 
 		// AFTER CLOSE → NO ACTIVE PREGNANCY
 		assertThat(

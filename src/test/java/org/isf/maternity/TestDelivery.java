@@ -25,6 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDateTime;
 
+import org.isf.maternity.model.DeliveryMode;
 import org.isf.maternity.model.PregnancyDelivery;
 import org.isf.maternity.model.Pregnancy;
 import org.isf.maternity.model.PregnancyDeliveryType;
@@ -32,7 +33,6 @@ import org.isf.maternity.model.PregnancyDeliveryType;
 public class TestDelivery {
 
 	private final LocalDateTime deliveryDate = LocalDateTime.of(2025, 10, 19, 12, 15);
-	private final String mode = "SVD";
 	private final String father = "John Doe";
 
 	public PregnancyDelivery setup(Pregnancy p, PregnancyDeliveryType dvt, boolean usingSet) {
@@ -52,13 +52,13 @@ public class TestDelivery {
 	private void set(PregnancyDelivery d, Pregnancy p, PregnancyDeliveryType pregnancyDeliveryType) {
 		d.setPregnancy(p);
 		d.setDeliveryDate(deliveryDate);
-		d.setModeOfDelivery(mode);
+		d.setDeliveryMode(DeliveryMode.SVD);
 		d.setFatherName(father);
 		d.setDeliveryType(pregnancyDeliveryType);
 	}
 
 	public void check(PregnancyDelivery d) {
-		assertThat(d.getModeOfDelivery()).isEqualTo(mode);
+		assertThat(d.getDeliveryMode()).isEqualTo(DeliveryMode.SVD);
 		assertThat(d.getFatherName()).isEqualTo(father);
 	}
 }

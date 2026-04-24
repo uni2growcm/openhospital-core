@@ -5,6 +5,8 @@
 package org.isf.maternity.service;
 
 import org.isf.maternity.model.Pregnancy;
+import org.isf.maternity.model.PregnancyStatus;
+import org.isf.maternity.model.RiskLevel;
 import org.isf.utils.db.TranslateOHServiceException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.model.OHExceptionMessage;
@@ -86,8 +88,8 @@ public class PregnancyIoOperation {
 	 */
 	public Page<Pregnancy> searchPregnancies(
 		Integer patientCode,
-		String status,
-		String riskLevel,
+		PregnancyStatus status,
+		RiskLevel riskLevel,
 		LocalDateTime fromDate,
 		LocalDateTime toDate,
 		Pageable pageable
@@ -127,7 +129,7 @@ public class PregnancyIoOperation {
 	 * @throws OHServiceException if check fails
 	 */
 	public boolean hasActivePregnancy(Integer patientCode) throws OHServiceException {
-		return repository.existsByPatient_CodeAndStatus(patientCode, "Ongoing");
+		return repository.existsByPatient_CodeAndStatus(patientCode, PregnancyStatus.ONGOING);
 	}
 
 	/**
@@ -138,7 +140,7 @@ public class PregnancyIoOperation {
 	 * @return number of pregnancies
 	 * @throws OHServiceException if operation fails
 	 */
-	public long countPregnanciesByPatientAndStatus(Integer patientCode, String status)
+	public long countPregnanciesByPatientAndStatus(Integer patientCode, PregnancyStatus status)
 		throws OHServiceException {
 		return repository.countByPatient_CodeAndStatus(patientCode, status);
 	}
@@ -151,7 +153,7 @@ public class PregnancyIoOperation {
 	 * @return latest pregnancy (if exists)
 	 * @throws OHServiceException if retrieval fails
 	 */
-	public Pregnancy getLatestPregnancyByPatientAndStatus(Integer patientCode, String status)
+	public Pregnancy getLatestPregnancyByPatientAndStatus(Integer patientCode, PregnancyStatus status)
 		throws OHServiceException {
 		return repository
 			.findTopByPatient_CodeAndStatusOrderByCreatedDateDesc(patientCode, status)
@@ -169,7 +171,7 @@ public class PregnancyIoOperation {
 	 * @return updated pregnancy
 	 * @throws OHServiceException if pregnancy not found or update fails
 	 */
-	public Pregnancy closePregnancy(Integer pregnancyId, String status)
+	public Pregnancy closePregnancy(Integer pregnancyId, PregnancyStatus status)
 		throws OHServiceException {
 
 		Pregnancy pregnancy = repository.findById(pregnancyId)

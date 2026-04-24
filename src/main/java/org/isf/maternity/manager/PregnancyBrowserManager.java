@@ -28,6 +28,8 @@ import java.util.Optional;
 
 import org.isf.generaldata.MessageBundle;
 import org.isf.maternity.model.Pregnancy;
+import org.isf.maternity.model.PregnancyStatus;
+import org.isf.maternity.model.RiskLevel;
 import org.isf.maternity.service.PregnancyIoOperation;
 import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHServiceException;
@@ -112,8 +114,8 @@ public class PregnancyBrowserManager {
 	 */
 	public Page<Pregnancy> searchPregnancies(
 		Integer patientCode,
-		String status,
-		String riskLevel,
+		PregnancyStatus status,
+		RiskLevel riskLevel,
 		LocalDateTime fromDate,
 		LocalDateTime toDate,
 		Pageable pageable
@@ -155,7 +157,7 @@ public class PregnancyBrowserManager {
 	 */
 	public Pregnancy getLatestPregnancyByPatientAndStatus(
 		Integer patientCode,
-		String status
+		PregnancyStatus status
 	) throws OHServiceException {
 		return ioOperation.getLatestPregnancyByPatientAndStatus(patientCode, status);
 	}
@@ -170,7 +172,7 @@ public class PregnancyBrowserManager {
 	 */
 	public long countPregnanciesByPatientAndStatus(
 		Integer patientCode,
-		String status
+		PregnancyStatus status
 	) throws OHServiceException {
 		return ioOperation.countPregnanciesByPatientAndStatus(patientCode, status);
 	}
@@ -195,7 +197,7 @@ public class PregnancyBrowserManager {
 	 * @return updated pregnancy
 	 * @throws OHServiceException if update fails
 	 */
-	public Pregnancy closePregnancy(Integer pregnancyId, String status)
+	public Pregnancy closePregnancy(Integer pregnancyId, PregnancyStatus status)
 		throws OHServiceException {
 		return ioOperation.closePregnancy(pregnancyId, status);
 	}

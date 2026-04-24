@@ -24,6 +24,8 @@ package org.isf.maternity;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.isf.maternity.model.Pregnancy;
+import org.isf.maternity.model.PregnancyStatus;
+import org.isf.maternity.model.RiskLevel;
 import org.isf.patient.model.Patient;
 import org.isf.utils.exception.OHException;
 
@@ -34,8 +36,6 @@ public class TestPregnancy {
 	private final LocalDateTime lmp = LocalDateTime.of(2025, 1, 15, 10, 0);
 	private final  LocalDateTime eddLmp = LocalDateTime.of(2025, 10, 22, 0, 0);
 	private final LocalDateTime eddScan = LocalDateTime.of(2025, 10, 20, 0, 0);
-	private final String riskLevel = "Low";
-	private final String status = "Ongoing";
 
 	public Pregnancy setup(Patient patient, boolean usingSet) throws OHException {
 		Pregnancy pregnancy;
@@ -44,7 +44,7 @@ public class TestPregnancy {
 			pregnancy = new Pregnancy();
 			setParameters(pregnancy, patient);
 		} else {
-			pregnancy = new Pregnancy(patient, status);
+			pregnancy = new Pregnancy(patient, PregnancyStatus.ONGOING);
 			setParameters(pregnancy, patient);
 		}
 
@@ -62,15 +62,13 @@ public class TestPregnancy {
 		p.setParity(parity);
 		Integer miscarriages = 0;
 		p.setMiscarriages(miscarriages);
-		String bloodGroup = "O+";
-		p.setBloodGroup(bloodGroup);
-		p.setRiskLevel(riskLevel);
-		p.setStatus(status);
+		p.setRiskLevel(RiskLevel.LOW);
+		p.setStatus(PregnancyStatus.ONGOING);
 	}
 
 	public void check(Pregnancy p) {
-		assertThat(p.getStatus()).isEqualTo(status);
-		assertThat(p.getRiskLevel()).isEqualTo(riskLevel);
+		assertThat(p.getStatus()).isEqualTo(PregnancyStatus.ONGOING);
+		assertThat(p.getRiskLevel()).isEqualTo(RiskLevel.LOW);
 		assertThat(p.getLmp()).isEqualTo(lmp);
 	}
 }

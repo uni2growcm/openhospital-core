@@ -23,6 +23,8 @@ package org.isf.maternity.service;
 
 import feign.Param;
 import org.isf.maternity.model.Pregnancy;
+import org.isf.maternity.model.PregnancyStatus;
+import org.isf.maternity.model.RiskLevel;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -42,12 +44,12 @@ public interface PregnancyIoOperationRepository extends JpaRepository<Pregnancy,
 
 	Optional<Pregnancy> findTopByPatient_CodeAndStatusOrderByCreatedDateDesc(
 		Integer patientCode,
-		String status
+		PregnancyStatus status
 	);
 
-	boolean existsByPatient_CodeAndStatus(Integer patientCode, String status);
+	boolean existsByPatient_CodeAndStatus(Integer patientCode, PregnancyStatus status);
 
-	long countByPatient_CodeAndStatus(Integer patientCode, String status);
+	long countByPatient_CodeAndStatus(Integer patientCode, PregnancyStatus status);
 
 	Page<Pregnancy> findByCreatedDateBetween(
 		LocalDateTime from,
@@ -56,17 +58,17 @@ public interface PregnancyIoOperationRepository extends JpaRepository<Pregnancy,
 	);
 
 	@Query("""
-		SELECT p FROM Pregnancy p
-		WHERE (:patientId IS NULL OR p.patient.code = :patientId)
-		  AND (:status IS NULL OR p.status = :status)
-		  AND (:riskLevel IS NULL OR p.riskLevel = :riskLevel)
-		  AND (:fromDate IS NULL OR p.createdDate >= :fromDate)
-		  AND (:toDate IS NULL OR p.createdDate <= :toDate)
-	""")
+    SELECT p FROM Pregnancy p
+    WHERE (:patientId IS NULL OR p.patient.code = :patientId)
+      AND (:status IS NULL OR p.status = :status)
+      AND (:riskLevel IS NULL OR p.riskLevel = :riskLevel)
+      AND (:fromDate IS NULL OR p.createdDate >= :fromDate)
+      AND (:toDate IS NULL OR p.createdDate <= :toDate)
+""")
 	Page<Pregnancy> getPregnancies(
 		@Param("patientId") Integer patientId,
-		@Param("status") String status,
-		@Param("riskLevel") String riskLevel,
+		@Param("status") PregnancyStatus status,
+		@Param("riskLevel") RiskLevel riskLevel,
 		@Param("fromDate") LocalDateTime fromDate,
 		@Param("toDate") LocalDateTime toDate,
 		Pageable pageable
