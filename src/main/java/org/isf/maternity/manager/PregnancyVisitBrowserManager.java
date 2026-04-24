@@ -210,7 +210,7 @@ public class PregnancyVisitBrowserManager {
 		if (visit.getPregnancy() == null || visit.getPregnancy().getId() == null) {
 			throw new OHServiceException(
 				new OHExceptionMessage(
-					MessageBundle.getMessage("angal.maternity.visitmustbelinkedtopregnancy.msg")
+					MessageBundle.getMessage("angal.maternity.visitmusthavetopregnancy.msg")
 				)
 			);
 		}
