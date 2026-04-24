@@ -234,7 +234,13 @@ public class Pregnancy extends Auditable<String> {
 
 	@Override
 	public int hashCode() {
-		return 31;
+		if (this.hashCode == 0) {
+			final int m = 23;
+			int c = 133;
+			c = m * c + id.hashCode();
+			this.hashCode = c;
+		}
+		return this.hashCode;
 	}
 
 	@Override

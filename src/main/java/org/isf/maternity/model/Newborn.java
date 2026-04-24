@@ -106,6 +106,9 @@ public class Newborn extends Auditable<String> {
 	@Column(name = "NBN_LOCK")
 	private Integer lock;
 
+	@Transient
+	private volatile int hashCode;
+
 	public Newborn () {}
 
 	public Newborn(
@@ -289,7 +292,13 @@ public class Newborn extends Auditable<String> {
 
 	@Override
 	public int hashCode() {
-		return 31;
+		if (this.hashCode == 0) {
+			final int m = 23;
+			int c = 133;
+			c = m * c + id.hashCode();
+			this.hashCode = c;
+		}
+		return this.hashCode;
 	}
 
 	@Override
