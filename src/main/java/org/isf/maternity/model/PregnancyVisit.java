@@ -56,6 +56,7 @@ import jakarta.validation.constraints.NotNull;
 @AttributeOverride(name = "createdBy", column = @Column(name = "PRGV_CREATED_BY", updatable = false))
 @AttributeOverride(name = "createdDate", column = @Column(name = "PRGV_CREATED_DATE", updatable = false))
 @AttributeOverride(name = "lastModifiedBy", column = @Column(name = "PRGV_LAST_MODIFIED_BY"))
+@AttributeOverride(name = "active", column = @Column(name = "PRGV_ACTIVE"))
 @AttributeOverride(name = "lastModifiedDate", column = @Column(name = "PRGV_LAST_MODIFIED_DATE"))
 public class PregnancyVisit extends Auditable<String> {
 
