@@ -29,9 +29,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Repository interface for Delivery entity
- */
 @Repository
 public interface PregnancyDeliveryIoOperationRepository extends JpaRepository<PregnancyDelivery, Integer> {
 	Optional<PregnancyDelivery> findByPregnancyId(Integer pregnancyId);

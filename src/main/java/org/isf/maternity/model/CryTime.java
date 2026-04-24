@@ -19,27 +19,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.isf.maternity.service;
+package org.isf.maternity.model;
 
-import org.isf.maternity.model.Newborn;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+public enum CryTime {
+	IMMEDIATE("maternity.cry.immediate"),
+	DELAYED("maternity.cry.delayed"),
+	NO_CRY("maternity.cry.none"),
+	UNKNOWN("maternity.cry.unknown");
 
-import java.util.List;
-import java.util.Optional;
+	private final String key;
 
-@Repository
-public interface NewbornIoOperationRepository extends JpaRepository<Newborn, Integer> {
+	CryTime(String key) {
+		this.key = key;
+	}
 
-	List<Newborn> findByDeliveryId(Integer deliveryId);
-
-	long countByDeliveryId(Integer deliveryId);
-
-	Optional<Newborn> findTopByDeliveryIdOrderByBirthDateAsc(Integer deliveryId);
-
-	Optional<Newborn> findByBabyPatient_Code(Integer patientCode);
-
-	List<Newborn> findByBirthWeightBetween(Double min, Double max);
-
-	boolean existsByDeliveryIdAndBirthWeightLessThan(Integer deliveryId, Double weight);
+	public String getKey() {
+		return key;
+	}
 }

@@ -21,6 +21,7 @@
  */
 package org.isf.maternity.model;
 
+import org.isf.patient.model.Patient;
 import org.isf.utils.db.Auditable;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -56,20 +57,20 @@ public class Newborn extends Auditable<String> {
 	@JoinColumn(name = "NBN_DLV_ID", nullable = false)
 	private PregnancyDelivery delivery;
 
+	@NotNull
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "NBN_PAT_ID", nullable = false)
+	private Patient babyPatient;
+
 	@Column(name = "NBN_BIRTH_DATE")
 	private LocalDateTime birthDate;
 
-	@Column(name = "NBN_NAME")
-	private String name;
-
 	@Column(name = "NBN_NEONATAL_STATUS")
-	private String neonatalStatus;
+	@Enumerated(EnumType.STRING)
+	private NeonatalStatus neonatalStatus;
 
 	@Column(name = "NBN_BIRTH_ORDER")
 	private String birthOrder;
-
-	@Column(name = "NBN_GENDER")
-	private char gender;
 
 	@NotNull
 	@Column(name = "NBN_BIRTH_WEIGHT", nullable = false)
@@ -91,13 +92,15 @@ public class Newborn extends Auditable<String> {
 	private Boolean resuscitationRequired;
 
 	@Column(name = "NBN_CRY_TIME")
-	private String cryTime;
+	@Enumerated(EnumType.STRING)
+	private CryTime cryTime;
 
 	@Column(name = "NBN_CONGENITAL_ANOMALIES", columnDefinition = "LONGTEXT")
 	private String congenitalAnomalies;
 
 	@Column(name = "NBN_HIV_STATUS", nullable = false)
-	private char hivStatus; // P / N / U
+	@Enumerated(EnumType.STRING)
+	private HivStatus hivStatus;
 
 	@Version
 	@Column(name = "NBN_LOCK")
@@ -106,42 +109,38 @@ public class Newborn extends Auditable<String> {
 	public Newborn () {}
 
 	public Newborn(
+		Patient babyPatient,
 		PregnancyDelivery delivery,
-		String name,
-		char gender,
 		LocalDateTime birthDate,
-		char hivStatus
+		HivStatus hivStatus
 	) {
+		this.babyPatient =  babyPatient;
 		this.delivery = delivery;
-		this.name = name;
-		this.gender = gender;
 		this.birthDate = birthDate;
 		this.hivStatus = hivStatus;
 	}
 
 	public Newborn(
+		Patient babyPatient,
 		PregnancyDelivery delivery,
-		String name,
-		String neonatalStatus,
+		NeonatalStatus neonatalStatus,
 		LocalDateTime birthDate,
 		String birthOrder,
-		char gender,
 		Double birthWeight,
 		Double birthLength,
 		Double headCircumference,
 		Integer apgarScore1Min,
 		Integer apgarScore5Min,
 		Boolean resuscitationRequired,
-		String cryTime,
+		CryTime cryTime,
 		String congenitalAnomalies,
-		char hivStatus
+		HivStatus hivStatus
 	) {
+		this.babyPatient = babyPatient;
 		this.delivery = delivery;
-		this.name = name;
 		this.neonatalStatus = neonatalStatus;
 		this.birthDate = birthDate;
 		this.birthOrder = birthOrder;
-		this.gender = gender;
 		this.birthWeight = birthWeight;
 		this.birthLength = birthLength;
 		this.headCircumference = headCircumference;
@@ -169,19 +168,11 @@ public class Newborn extends Auditable<String> {
 		this.delivery = delivery;
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getNeonatalStatus() {
+	public NeonatalStatus getNeonatalStatus() {
 		return neonatalStatus;
 	}
 
-	public void setNeonatalStatus(String neonatalStatus) {
+	public void setNeonatalStatus(NeonatalStatus neonatalStatus) {
 		this.neonatalStatus = neonatalStatus;
 	}
 
@@ -193,12 +184,12 @@ public class Newborn extends Auditable<String> {
 		this.birthOrder = birthOrder;
 	}
 
-	public char getGender() {
-		return gender;
+	public Patient getBabyPatient() {
+		return babyPatient;
 	}
 
-	public void setGender(char gender) {
-		this.gender = gender;
+	public void setBabyPatient(Patient babyPatient) {
+		this.babyPatient = babyPatient;
 	}
 
 	public Double getBirthWeight() {
@@ -257,11 +248,11 @@ public class Newborn extends Auditable<String> {
 		this.resuscitationRequired = resuscitationRequired;
 	}
 
-	public String getCryTime() {
+	public CryTime getCryTime() {
 		return cryTime;
 	}
 
-	public void setCryTime(String cryTime) {
+	public void setCryTime(CryTime cryTime) {
 		this.cryTime = cryTime;
 	}
 
@@ -273,11 +264,11 @@ public class Newborn extends Auditable<String> {
 		this.congenitalAnomalies = congenitalAnomalies;
 	}
 
-	public char getHivStatus() {
+	public HivStatus getHivStatus() {
 		return hivStatus;
 	}
 
-	public void setHivStatus(char hivStatus) {
+	public void setHivStatus(HivStatus hivStatus) {
 		this.hivStatus = hivStatus;
 	}
 
@@ -305,8 +296,8 @@ public class Newborn extends Auditable<String> {
 	public String toString() {
 		return "Newborn{" +
 			"ID=" + id +
-			", name=" + (name != null ? name : null) +
-			", gender=" + (gender) +
+			", name=" + (babyPatient.getName()) +
+			", gender=" + (babyPatient.getSex()) +
 			", HIV status ='" + (hivStatus) + '\'' +
 			'}';
 	}

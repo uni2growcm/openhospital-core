@@ -27,16 +27,7 @@ import org.isf.utils.exception.OHServiceException;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-
-/*
- * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
- *
- * Open Hospital is a free and open source software for healthcare data management.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License.
- */
+import java.util.Optional;
 
 @Component
 public class NewBornBrowserManager {
@@ -113,6 +104,17 @@ public class NewBornBrowserManager {
 	public java.util.Optional<Newborn> getFirstBorn(Integer deliveryId)
 		throws OHServiceException {
 		return ioOperations.getFirstBorn(deliveryId);
+	}
+
+	/**
+	 * Get the Newborn that corresponds to a patient's record.
+	 *
+	 * @param patientCode the newborn patient identifier
+	 * @return optional containing the newborn if exists
+	 * @throws OHServiceException if an error occurs during retrieval
+	 */
+	public Optional<Newborn> findByPatientCode(Integer patientCode) throws OHServiceException {
+		return ioOperations.findByPatientCode(patientCode);
 	}
 
 	/**

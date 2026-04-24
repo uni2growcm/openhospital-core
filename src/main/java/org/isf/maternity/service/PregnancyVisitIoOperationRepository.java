@@ -30,9 +30,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Repository interface for PregnancyVisit entity
- */
 @Repository("maternityVisitIoOperationRepository")
 public interface PregnancyVisitIoOperationRepository extends JpaRepository<PregnancyVisit, Integer> {
 

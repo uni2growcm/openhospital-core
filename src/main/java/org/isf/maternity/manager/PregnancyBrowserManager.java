@@ -21,25 +21,14 @@
  */
 package org.isf.maternity.manager;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
-
-import org.isf.generaldata.MessageBundle;
 import org.isf.maternity.model.Pregnancy;
 import org.isf.maternity.model.PregnancyStatus;
 import org.isf.maternity.model.RiskLevel;
 import org.isf.maternity.service.PregnancyIoOperation;
-import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHServiceException;
-import org.isf.utils.exception.model.OHExceptionMessage;
-import org.isf.utils.pagination.PageInfo;
-import org.isf.utils.pagination.PagedResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
@@ -83,10 +72,6 @@ public class PregnancyBrowserManager {
 	public void deletePregnancy(Pregnancy pregnancy) throws OHServiceException {
 		ioOperation.deletePregnancy(pregnancy);
 	}
-
-	// =========================================================
-	// READ OPERATIONS
-	// =========================================================
 
 	/**
 	 * Get pregnancies for a specific patient.

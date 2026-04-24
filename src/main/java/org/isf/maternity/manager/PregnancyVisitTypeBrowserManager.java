@@ -90,28 +90,68 @@ public class PregnancyVisitTypeBrowserManager {
 		}
 	}
 
+	/**
+	 * Retrieves all available pregnancy visit types.
+	 *
+	 * @return list of all {@link PregnancyVisitType} records
+	 * @throws OHServiceException if an error occurs during retrieval
+	 */
 	public List<PregnancyVisitType> getVisitTypes() throws OHServiceException {
 		return ioOperations.getVisitTypes();
 	}
 
+	/**
+	 * Retrieves a pregnancy visit type using its unique code.
+	 *
+	 * @param code the unique identifier of the visit type
+	 * @return the corresponding {@link PregnancyVisitType}, or {@code null} if not found
+	 * @throws OHServiceException if an error occurs during retrieval
+	 */
 	public PregnancyVisitType getVisitTypeByCode(String code) throws OHServiceException {
 		return ioOperations.getByCode(code).orElse(null);
 	}
 
+	/**
+	 * Checks whether a pregnancy visit type code already exists in the system.
+	 *
+	 * @param code the visit type code to check
+	 * @return {@code true} if the code exists, otherwise {@code false}
+	 * @throws OHServiceException if an error occurs during the check
+	 */
 	public boolean isCodePresent(String code) throws OHServiceException {
 		return ioOperations.existsByCode(code);
 	}
 
+	/**
+	 * Creates a new pregnancy visit type after validating its data.
+	 *
+	 * @param visitType the visit type entity to create
+	 * @return the persisted {@link PregnancyVisitType}
+	 * @throws OHServiceException if validation fails or persistence error occurs
+	 */
 	public PregnancyVisitType newVisitType(PregnancyVisitType visitType) throws OHServiceException {
 		validateVisitType(visitType, true);
 		return ioOperations.newVisitType(visitType);
 	}
 
+	/**
+	 * Updates an existing pregnancy visit type after validation.
+	 *
+	 * @param visitType the visit type entity to update
+	 * @return the updated {@link PregnancyVisitType}
+	 * @throws OHServiceException if validation fails or update error occurs
+	 */
 	public PregnancyVisitType updateVisitType(PregnancyVisitType visitType) throws OHServiceException {
 		validateVisitType(visitType, false);
 		return ioOperations.updateVisitType(visitType);
 	}
 
+	/**
+	 * Deletes a pregnancy visit type from the system.
+	 *
+	 * @param visitType the visit type to delete
+	 * @throws OHServiceException if an error occurs during deletion
+	 */
 	public void deleteVisitType(PregnancyVisitType visitType) throws OHServiceException {
 		ioOperations.deleteVisitType(visitType);
 	}

@@ -58,13 +58,13 @@ public interface PregnancyIoOperationRepository extends JpaRepository<Pregnancy,
 	);
 
 	@Query("""
-    SELECT p FROM Pregnancy p
-    WHERE (:patientId IS NULL OR p.patient.code = :patientId)
-      AND (:status IS NULL OR p.status = :status)
-      AND (:riskLevel IS NULL OR p.riskLevel = :riskLevel)
-      AND (:fromDate IS NULL OR p.createdDate >= :fromDate)
-      AND (:toDate IS NULL OR p.createdDate <= :toDate)
-""")
+		SELECT p FROM Pregnancy p
+		WHERE (:patientId IS NULL OR p.patient.code = :patientId)
+		  AND (:status IS NULL OR p.status = :status)
+		  AND (:riskLevel IS NULL OR p.riskLevel = :riskLevel)
+		  AND (:fromDate IS NULL OR p.createdDate >= :fromDate)
+		  AND (:toDate IS NULL OR p.createdDate <= :toDate)
+	""")
 	Page<Pregnancy> getPregnancies(
 		@Param("patientId") Integer patientId,
 		@Param("status") PregnancyStatus status,

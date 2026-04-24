@@ -28,13 +28,11 @@ import org.isf.maternity.service.*;
 import org.isf.patient.TestPatient;
 import org.isf.patient.model.Patient;
 import org.isf.patient.service.PatientIoOperationRepository;
-import org.isf.utils.exception.OHException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -319,8 +317,6 @@ class Tests extends OHCoreTestCase {
 			.isEqualTo(0);
 	}
 
-	// ---------------- NEWBORN ----------------
-
 	@Test
 	void testNewbornBrowserManagerFullFlow() throws Exception {
 
@@ -337,7 +333,14 @@ class Tests extends OHCoreTestCase {
 		PregnancyDelivery delivery = testDelivery.setup(pregnancy, type, false);
 		delivery = deliveryBrowserManager.newDelivery(delivery);
 
-		Newborn newborn = testNewBorn.setup(delivery, false);
+		Patient newbornPatient = testPatient.setup(false);
+		newbornPatient.setFirstName("first name");
+		newbornPatient.setSecondName("second name");
+		newbornPatient.setMotherName(patient.getMotherName());
+
+		Patient savedNewbornPatient = patientIoOperationRepository.save(newbornPatient);
+
+		Newborn newborn = testNewBorn.setup(savedNewbornPatient, delivery, false);
 
 		// CREATE
 		Newborn saved = newBornBrowserManager.newNewborn(newborn);
@@ -349,6 +352,8 @@ class Tests extends OHCoreTestCase {
 
 		assertThat(list).hasSize(1);
 
+		assertThat(newborn.getBabyPatient()).isEqualTo(savedNewbornPatient);
+
 		// COUNT
 		long count =
 			newBornBrowserManager.countNewbornsByDelivery(delivery.getId());
@@ -357,16 +362,21 @@ class Tests extends OHCoreTestCase {
 
 		// UPDATE
 		Newborn toUpdate = list.get(0);
-		toUpdate.setName("Updated Baby");
+		toUpdate.getBabyPatient().setMotherName(patient.getMotherName() + "mum");
 
 		Newborn updated =
 			newBornBrowserManager.updateNewborn(toUpdate);
 
-		assertThat(updated.getName()).isEqualTo("Updated Baby");
+		assertThat(newborn.getBabyPatient().getMotherName()).isEqualTo(patient.getMotherName() + "mum");
 
 		// FIRST BORN (Optional result)
 		assertThat(
 			newBornBrowserManager.getFirstBorn(delivery.getId())
+		).isPresent();
+
+		// FIRST BORN (Optional result)
+		assertThat(
+			newBornBrowserManager.findByPatientCode(savedNewbornPatient.getCode())
 		).isPresent();
 
 		// WEIGHT RANGE QUERY
@@ -446,8 +456,6 @@ class Tests extends OHCoreTestCase {
 		).isNull();
 	}
 
-	// ---------------- VISIT TYPE ----------------
-
 	@Test
 	void testVisitTypeCRUD() throws Exception {
 
@@ -492,96 +500,5 @@ class Tests extends OHCoreTestCase {
 		assertThat(
 			visitTypeBrowserManager.getVisitTypeByCode(vt.getCode())
 		).isNull();
-	}
-
-	private List<Pregnancy> setupTestPregnancies(int number, boolean samePatient) throws OHException {
-		List<Pregnancy> pregnancies = new ArrayList<>();
-		Patient patient = testPatient.setup(false);
-		if(samePatient) {
-			for (int i = 0; i <= number; i++) {
-				Pregnancy pregnancy = testPregnancy.setup(patient, false);
-				pregnancies.add(pregnancy);
-			}
-		} else {
-			for (int i = 0; i <= number; i++) {
-				patient.setCode(i);
-				Pregnancy pregnancy = testPregnancy.setup(patient, false);
-				pregnancies.add(pregnancy);
-			}
-		}
-
-		return pregnancies;
-	}
-
-	private List<PregnancyVisitType> setupTestVisitTypes(int number) throws OHException {
-		List<PregnancyVisitType> visitTypes = new ArrayList<>();
-
-		for (int i = 0; i <= number; i++) {
-			PregnancyVisitType visitType = testVisitType.setup();
-			visitTypes.add(visitType);
-		}
-
-		return visitTypes;
-	}
-
-	private List<PregnancyDeliveryType> setupTestDeliveryTypes(int number) throws OHException {
-		List<PregnancyDeliveryType> pregnancyDeliveryTypes = new ArrayList<>();
-
-		for (int i = 0; i <= number; i++) {
-			PregnancyDeliveryType pregnancyDeliveryType = testDeliveryType.setup();
-			pregnancyDeliveryTypes.add(pregnancyDeliveryType);
-		}
-
-		return pregnancyDeliveryTypes;
-	}
-
-	private List<PregnancyDelivery> setupTestDelivery(int number) throws OHException {
-		List<PregnancyDelivery> deliveries = new ArrayList<>();
-		List<Pregnancy> pregnancies = setupTestPregnancies(number, false);
-
-		for (int i = 0; i <= number; i++) {
-			PregnancyDelivery delivery = testDelivery.setup(pregnancies.get(i), testDeliveryType.setup(), false);
-			deliveries.add(delivery);
-		}
-
-		return deliveries;
-	}
-
-	private List<PregnancyVisit> setupTestVisits(int number, boolean samePregnancy) throws OHException {
-		List<Pregnancy> pregnancies = setupTestPregnancies(number, true);
-		List<PregnancyVisit> visits = new ArrayList<>();
-
-		if(samePregnancy) {
-			for (int i = 0; i <= number; i++) {
-				PregnancyVisit visit = testVisit.setup(pregnancies.get(0), testVisitType.setup(), false);
-				visits.add(visit);
-			}
-		} else {
-			for (int i = 0; i <= number; i++) {
-				PregnancyVisit visit = testVisit.setup(pregnancies.get(i), testVisitType.setup(), false);
-				visits.add(visit);
-			}
-		}
-
-		return visits;
-	}
-
-	private List<Newborn> setupTestNewBorn(int number, boolean sameDelivery) throws OHException {
-		List<PregnancyDelivery> deliveries = setupTestDelivery(number);
-		List<Newborn> newborns = new ArrayList<>();
-
-		if(sameDelivery) {
-			for (int i = 0; i <= number; i++) {
-				Newborn newborn = testNewBorn.setup(deliveries.get(0), false);
-				newborns.add(newborn);
-			}
-		} else {
-			for (int i = 0; i <= number; i++) {
-				Newborn newborn = testNewBorn.setup(deliveries.get(i), false);
-				newborns.add(newborn);
-			}
-		}
-
-		return newborns;
 	}
 }

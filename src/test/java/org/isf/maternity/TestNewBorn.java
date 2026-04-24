@@ -23,27 +23,25 @@ package org.isf.maternity;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.isf.maternity.model.HivStatus;
 import org.isf.maternity.model.PregnancyDelivery;
 import org.isf.maternity.model.Newborn;
+import org.isf.patient.model.Patient;
 
 import java.time.LocalDateTime;
 
 public class TestNewBorn {
-
-	private final String name = "Baby Doe";
-	private final char gender = 'M';
 	private final double weight = 3200;
-	private final char hivStatus = 'u';
 	private final LocalDateTime date = LocalDateTime.of(2025, 10, 19, 15, 15);
 
-	public Newborn setup(PregnancyDelivery d, boolean usingSet) {
+	public Newborn setup(Patient babyPatient, PregnancyDelivery d, boolean usingSet) {
 		Newborn n;
 
 		if (usingSet) {
 			n = new Newborn();
 			set(n, d);
 		} else {
-			n = new Newborn(d, name, gender, date, hivStatus);
+			n = new Newborn(babyPatient, d, date, HivStatus.UNKNOWN);
 			set(n, d);
 		}
 
@@ -52,16 +50,12 @@ public class TestNewBorn {
 
 	private void set(Newborn n, PregnancyDelivery d) {
 		n.setDelivery(d);
-		n.setName(name);
-		n.setGender(gender);
 		n.setBirthWeight(weight);
-		n.setHivStatus(hivStatus);
+		n.setHivStatus(HivStatus.UNKNOWN);
 	}
 
 	public void check(Newborn n) {
-		assertThat(n.getName()).isEqualTo(name);
-		assertThat(n.getGender()).isEqualTo(gender);
 		assertThat(n.getBirthWeight()).isEqualTo(weight);
-		assertThat(n.getHivStatus()).isEqualTo(hivStatus);
+		assertThat(n.getHivStatus()).isEqualTo(HivStatus.UNKNOWN);
 	}
 }

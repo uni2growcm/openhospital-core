@@ -93,6 +93,17 @@ public class NewbornIoOperation {
 	}
 
 	/**
+	 * Get the Newborn that corresponds to a patient's record.
+	 *
+	 * @param patientCode the newborn patient identifier
+	 * @return optional containing the newborn if exists
+	 * @throws OHServiceException if an error occurs during retrieval
+	 */
+	public Optional<Newborn> findByPatientCode(Integer patientCode) throws OHServiceException {
+		return repository.findByBabyPatient_Code(patientCode);
+	}
+
+	/**
 	 * Get newborns filtered by birth weight range.
 	 * Useful for detecting low birth weight or macrosomia cases.
 	 *
