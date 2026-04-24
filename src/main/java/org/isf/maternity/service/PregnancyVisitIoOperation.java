@@ -90,7 +90,7 @@ public class PregnancyVisitIoOperation {
 	 * @param pregnancyId the pregnancy identifier
 	 * @param fromDate start date (nullable)
 	 * @param toDate end date (nullable)
-	 * @param visitTypeId visit type identifier (nullable)
+	 * @param visitTypeCode visit type identifier (nullable)
 	 * @return filtered list of visits
 	 * @throws OHServiceException if an error occurs retrieving visits
 	 */
@@ -98,14 +98,14 @@ public class PregnancyVisitIoOperation {
 		Integer pregnancyId,
 		LocalDateTime fromDate,
 		LocalDateTime toDate,
-		Integer visitTypeId
+		String visitTypeCode
 	) throws OHServiceException {
 
 		return repository.findVisitsByFilters(
 			pregnancyId,
 			fromDate,
 			toDate,
-			visitTypeId
+			visitTypeCode
 		);
 	}
 

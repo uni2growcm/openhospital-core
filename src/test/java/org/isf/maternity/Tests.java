@@ -283,7 +283,7 @@ class Tests extends OHCoreTestCase {
 				pregnancy.getId(),
 				updated.getVisitDate().minusDays(1),
 				updated.getVisitDate().plusDays(1),
-				vt.getId()
+				vt.getCode()
 			);
 
 		assertThat(filtered).isNotEmpty();

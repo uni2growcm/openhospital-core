@@ -37,15 +37,11 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @AttributeOverride(name = "createdBy", column = @Column(name = "PRGDLVT_CREATED_BY", updatable = false))
 @AttributeOverride(name = "createdDate", column = @Column(name = "PRGDLVT_CREATED_DATE", updatable = false))
 @AttributeOverride(name = "lastModifiedBy", column = @Column(name = "PRGDLVT_LAST_MODIFIED_BY"))
+@AttributeOverride(name = "active", column = @Column(name = "PRGDLVT_ACTIVE"))
 @AttributeOverride(name = "lastModifiedDate", column = @Column(name = "PRGDLVT_LAST_MODIFIED_DATE"))
 public class PregnancyDeliveryType extends Auditable<String> {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "PRGDLVT_ID")
-	private Integer id;
-
-	@NotNull
 	@Column(name = "PRGDLVT_CODE", nullable = false, unique = true, length = 20)
 	private String code;
 
@@ -53,19 +49,14 @@ public class PregnancyDeliveryType extends Auditable<String> {
 	@Column(name = "PRGDLVT_DESCRIPTION", nullable = false, length = 255)
 	private String description;
 
+	@Transient
+	private volatile int hashCode;
+
 	public PregnancyDeliveryType() {}
 
 	public PregnancyDeliveryType(String code, String description) {
 		this.code = code;
 		this.description = description;
-	}
-
-	public Integer getId() {
-		return id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
 	}
 
 	public String getCode() {
@@ -86,22 +77,24 @@ public class PregnancyDeliveryType extends Auditable<String> {
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (!(o instanceof PregnancyDeliveryType other)) return false;
-		return id != null && id.equals(other.id);
+		return o instanceof PregnancyDeliveryType other
+			&& code.equals(other.code)
+			&& description.equalsIgnoreCase(other.description);
 	}
 
 	@Override
 	public int hashCode() {
-		return 31;
+		if (this.hashCode == 0) {
+			final int m = 23;
+			int c = 133;
+			c = m * c + code.hashCode();
+			this.hashCode = c;
+		}
+		return this.hashCode;
 	}
 
 	@Override
 	public String toString() {
-		return "Delivery Type{" +
-			"id=" + id +
-			", code='" + code + '\'' +
-			", description='" + description + '\'' +
-			'}';
+		return description;
 	}
 }

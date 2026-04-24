@@ -68,13 +68,13 @@ public interface PregnancyVisitIoOperationRepository extends JpaRepository<Pregn
 		WHERE v.pregnancy.id = :pregnancyId
 		AND (:fromDate IS NULL OR v.visitDate >= :fromDate)
 		AND (:toDate IS NULL OR v.visitDate <= :toDate)
-		AND (:visitTypeId IS NULL OR v.visitType.id = :visitTypeId)
+		AND (:visitTypeCode IS NULL OR v.visitType.code = :visitTypeCode)
 		ORDER BY v.visitDate ASC
 	""")
 	List<PregnancyVisit> findVisitsByFilters(
 		Integer pregnancyId,
 		LocalDateTime fromDate,
 		LocalDateTime toDate,
-		Integer visitTypeId
+		String visitTypeCode
 	);
 }

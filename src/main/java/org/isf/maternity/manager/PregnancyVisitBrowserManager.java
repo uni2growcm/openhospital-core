@@ -106,7 +106,7 @@ public class PregnancyVisitBrowserManager {
 	 * @param pregnancyId pregnancy identifier
 	 * @param fromDate start date
 	 * @param toDate end date
-	 * @param visitTypeId visit type id
+	 * @param code visit type id
 	 * @return filtered visits
 	 * @throws OHServiceException if retrieval fails
 	 */
@@ -114,14 +114,14 @@ public class PregnancyVisitBrowserManager {
 		Integer pregnancyId,
 		LocalDateTime fromDate,
 		LocalDateTime toDate,
-		Integer visitTypeId
+		String  code
 	) throws OHServiceException {
 
 		return ioOperation.getVisitsByFilters(
 			pregnancyId,
 			fromDate,
 			toDate,
-			visitTypeId
+			code
 		);
 	}
 

@@ -28,15 +28,14 @@ import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+import jakarta.persistence.Transient;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 
 /**
  * PregnancyVisitType Model - Classification of pregnancy visit types (ANC, PNC, etc.)
- * 
+ *
  * Visit types categorize different types of pregnancy-related visits:
  * - ANC (Antenatal Care)
  * - PNC (Postnatal Care)
@@ -53,36 +52,28 @@ import jakarta.validation.constraints.NotNull;
 @AttributeOverride(name = "createdBy", column = @Column(name = "PVT_CREATED_BY", updatable = false))
 @AttributeOverride(name = "createdDate", column = @Column(name = "PVT_CREATED_DATE", updatable = false))
 @AttributeOverride(name = "lastModifiedBy", column = @Column(name = "PVT_LAST_MODIFIED_BY"))
+@AttributeOverride(name = "active", column = @Column(name = "PVT_ACTIVE"))
 @AttributeOverride(name = "lastModifiedDate", column = @Column(name = "PVT_LAST_MODIFIED_DATE"))
 public class PregnancyVisitType extends Auditable<String> {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "PVT_ID")
-	private Integer id;
-
-	@NotNull
-	@Column(name = "PVT_CODE", unique = true, nullable = false, length = 20)
+	@Column(name = "PVT_CODE", length = 20)
 	private String code;
 
 	@NotNull
 	@Column(name = "PVT_DESCRIPTION", nullable = false, length = 255)
 	private String description;
 
+	@Transient
+	private volatile int hashCode;
+
 	public PregnancyVisitType() {
+		super();
 	}
 
 	public PregnancyVisitType(String code, String description) {
 		this.code = code;
 		this.description = description;
-	}
-
-	public Integer getId() {
-		return id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
 	}
 
 	public String getCode() {
@@ -103,22 +94,24 @@ public class PregnancyVisitType extends Auditable<String> {
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (!(o instanceof PregnancyVisitType other)) return false;
-		return id != null && id.equals(other.id);
+		return o instanceof PregnancyVisitType other
+			&& code.equals(other.code)
+			&& description.equalsIgnoreCase(other.description);
 	}
 
 	@Override
 	public int hashCode() {
-		return 31;
+		if (this.hashCode == 0) {
+			final int m = 23;
+			int c = 133;
+			c = m * c + code.hashCode();
+			this.hashCode = c;
+		}
+		return this.hashCode;
 	}
 
 	@Override
 	public String toString() {
-		return "PregnancyVisitType{" +
-			"id=" + id +
-			", code='" + code + '\'' +
-			", description='" + description + '\'' +
-			'}';
+		return description;
 	}
 }
