@@ -825,6 +825,47 @@ public class JasperReportsManager {
 		}
 	}
 
+	public JasperReportResultDto getGenericReportDischargeAgainstAdvicePdf(
+		Integer patID,
+		String localisation,
+		String reference,
+		String district,
+		String commune,
+		String phoneNumber,
+		LocalDateTime hospitalisationDate,
+		String patientRelationshipOccupation,
+		String patientRelationshipType,
+		String patientRelationshipName,
+		LocalDateTime madeOnDate,
+		Locale locale
+	) throws OHServiceException {
+
+		try {
+			HashMap<String, Object> parameters = new HashMap();
+			parameters.put("REPORT_LOCALE", locale);
+			parameters.put("patID", patID);
+			parameters.put("localisation", localisation);
+			parameters.put("reference", reference);
+			parameters.put("district", district);
+			parameters.put("commune", commune);
+			parameters.put("phoneNumber", phoneNumber);
+			parameters.put("hospitalisationDate", Timestamp.valueOf(hospitalisationDate));
+			parameters.put("patientRelationShipOccupation", patientRelationshipOccupation);
+			parameters.put("patientRelationShipType", patientRelationshipType);
+			parameters.put("patientRelationShipName", patientRelationshipName);
+			parameters.put("madeOnDate", Timestamp.valueOf(madeOnDate));
+			parameters.put("LOGO-PATH", "./rsc/images/labbraccio-logopng.png");
+			String jasperFileName = "discharge_againt_medical_advice_report";
+			String pdfFilename = this.compilePDFFilename("rpt_base", jasperFileName, Arrays.asList(String.valueOf(patID)), "pdf");
+			JasperReportResultDto result = this.generateJasperReport(this.compileJasperFilename("rpt_base", jasperFileName), pdfFilename, parameters);
+			JasperExportManager.exportReportToPdfFile(result.getJasperPrint(), pdfFilename);
+			return result;
+		} catch (Exception e) {
+			LOGGER.error("", e);
+			throw new OHReportException(e, new OHExceptionMessage(MessageBundle.getMessage("angal.stat.reporterror.msg")));
+		}
+	}
+
 	public void getGenericReportFromDateToDateExcel(LocalDate fromDate, LocalDate toDate, String jasperFileFolder, String jasperFileName, String exportFilename)
 					throws OHServiceException {
 

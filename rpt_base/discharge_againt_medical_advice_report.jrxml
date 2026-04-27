@@ -3,7 +3,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="discharge_againt_medical_advice_report" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" resourceBundle="discharge_againt_medical_advice_report" uuid="12ced7e6-a735-462f-b176-adcf858645f5">
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter.jrdax"/>
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
-	<parameter name="patientName" class="java.lang.String"/>
+	<parameter name="patID" class="java.lang.Integer"/>
 	<parameter name="localisation" class="java.lang.String"/>
 	<parameter name="LOGO-PATH" class="java.lang.String"/>
 	<parameter name="reference" class="java.lang.String"/>
@@ -16,8 +16,9 @@
 	<parameter name="patientRelationShipName" class="java.lang.String"/>
 	<parameter name="madeOnDate" class="java.util.Date"/>
 	<queryString>
-		<![CDATA[Select * from oh_patient where pat_id = 45]]>
+		<![CDATA[SELECT PAT_NAME FROM oh_patient WHERE PAT_ID = $P{patID}]]>
 	</queryString>
+	<field name="PAT_NAME" class="java.lang.String"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -44,8 +45,8 @@
 					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
-				<image>
-					<reportElement x="0" y="10" width="550" height="40" uuid="bebd5633-e2cd-4aa7-b61e-7d4554579b4f"/>
+				<image hAlign="Center" vAlign="Middle">
+					<reportElement x="0" y="0" width="550" height="60" uuid="bebd5633-e2cd-4aa7-b61e-7d4554579b4f"/>
 					<imageExpression><![CDATA[$P{LOGO-PATH}]]></imageExpression>
 				</image>
 			</frame>
@@ -88,7 +89,7 @@
 			<frame>
 				<reportElement x="0" y="0" width="560" height="499" uuid="6efcf01a-abf2-4745-ab4f-8179965841f0"/>
 				<textField>
-					<reportElement x="0" y="0" width="110" height="20" uuid="b3f37d07-89f4-45b8-a3c1-d0d831770053"/>
+					<reportElement x="0" y="0" width="140" height="20" uuid="b3f37d07-89f4-45b8-a3c1-d0d831770053"/>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
 						<font size="14" isBold="true"/>
 					</textElement>
@@ -148,7 +149,7 @@
 					<textElement textAlignment="Left" verticalAlignment="Middle">
 						<font size="14" isBold="true"/>
 					</textElement>
-					<textFieldExpression><![CDATA[$P{patientName}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$F{PAT_NAME}]]></textFieldExpression>
 				</textField>
 				<textField>
 					<reportElement x="0" y="160" width="560" height="20" uuid="629efa20-7ace-4291-95dd-335b6aa255ab"/>
@@ -247,7 +248,7 @@
 					<textFieldExpression><![CDATA[$P{hospitalisationDate}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement x="110" y="0" width="371" height="20" uuid="9b7c762d-9c6c-4865-a1e5-98aea4f048e4"/>
+					<reportElement x="140" y="0" width="341" height="20" uuid="9b7c762d-9c6c-4865-a1e5-98aea4f048e4"/>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
 						<font size="14" isBold="true"/>
 					</textElement>
