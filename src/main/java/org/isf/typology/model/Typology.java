@@ -19,44 +19,53 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.isf.maternity.model;
+package org.isf.typology.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import org.isf.utils.db.Auditable;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+
 /**
- * Delivery type Model
+ * Typologies model
+ *
  * @author Hema
  * @version 1.15
  */
 @Entity
-@Table(name = "OH_PREGNANCYDELIVERYTYPE")
+@Table(name = "OH_TYPOLOGIES")
 @EntityListeners(AuditingEntityListener.class)
-@AttributeOverride(name = "createdBy", column = @Column(name = "PRGDLVT_CREATED_BY", updatable = false))
-@AttributeOverride(name = "createdDate", column = @Column(name = "PRGDLVT_CREATED_DATE", updatable = false))
-@AttributeOverride(name = "lastModifiedBy", column = @Column(name = "PRGDLVT_LAST_MODIFIED_BY"))
-@AttributeOverride(name = "active", column = @Column(name = "PRGDLVT_ACTIVE"))
-@AttributeOverride(name = "lastModifiedDate", column = @Column(name = "PRGDLVT_LAST_MODIFIED_DATE"))
-public class PregnancyDeliveryType extends Auditable<String> {
+@AttributeOverride(name = "createdBy", column = @Column(name = "TYPO_CREATED_BY", updatable = false))
+@AttributeOverride(name = "createdDate", column = @Column(name = "TYPO_CREATED_DATE", updatable = false))
+@AttributeOverride(name = "lastModifiedBy", column = @Column(name = "TYPO_LAST_MODIFIED_BY"))
+@AttributeOverride(name = "active", column = @Column(name = "TYPO_ACTIVE"))
+@AttributeOverride(name = "lastModifiedDate", column = @Column(name = "TYPO_LAST_MODIFIED_DATE"))
+public class Typology extends Auditable<String> {
 
 	@Id
-	@Column(name = "PRGDLVT_CODE", nullable = false, unique = true, length = 20)
+	@Column(name = "TYPO_CODE", length = 20)
 	private String code;
 
 	@NotNull
-	@Column(name = "PRGDLVT_DESCRIPTION", nullable = false, length = 255)
+	@Column(name = "TYPO_DESCRIPTION", nullable = false, length = 255)
 	private String description;
+
+	@NotNull
+	@Column(name = "TYPO_FAMILY", nullable = false, length = 255)
+	private Family family;
 
 	@Transient
 	private volatile int hashCode;
 
-	public PregnancyDeliveryType() {}
+	public Typology() {
+		super();
+	}
 
-	public PregnancyDeliveryType(String code, String description) {
+	public Typology(String code, String description, Family family) {
 		this.code = code;
 		this.description = description;
+		this.family = family;
 	}
 
 	public String getCode() {
@@ -75,11 +84,19 @@ public class PregnancyDeliveryType extends Auditable<String> {
 		this.description = description;
 	}
 
+	public Family getFamily() {
+		return this.family;
+	}
+
+	public void setFamily(Family family) {
+		this.family = family;
+	}
+
 	@Override
 	public boolean equals(Object o) {
-		return o instanceof PregnancyDeliveryType other
-			&& code.equals(other.code)
-			&& description.equalsIgnoreCase(other.description);
+		if (this == o) return true;
+		if (!(o instanceof Typology other)) return false;
+		return code != null && code.equals(other.code);
 	}
 
 	@Override

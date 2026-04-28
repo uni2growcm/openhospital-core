@@ -28,14 +28,14 @@ import java.time.LocalDateTime;
 import org.isf.maternity.model.DeliveryMode;
 import org.isf.maternity.model.PregnancyDelivery;
 import org.isf.maternity.model.Pregnancy;
-import org.isf.maternity.model.PregnancyDeliveryType;
+import org.isf.typology.model.Typology;
 
 public class TestDelivery {
 
 	private final LocalDateTime deliveryDate = LocalDateTime.of(2025, 10, 19, 12, 15);
 	private final String father = "John Doe";
 
-	public PregnancyDelivery setup(Pregnancy p, PregnancyDeliveryType dvt, boolean usingSet) {
+	public PregnancyDelivery setup(Pregnancy p, Typology dvt, boolean usingSet) {
 		PregnancyDelivery d;
 
 		if (usingSet) {
@@ -49,7 +49,7 @@ public class TestDelivery {
 		return d;
 	}
 
-	private void set(PregnancyDelivery d, Pregnancy p, PregnancyDeliveryType pregnancyDeliveryType) {
+	private void set(PregnancyDelivery d, Pregnancy p, Typology pregnancyDeliveryType) {
 		d.setPregnancy(p);
 		d.setDeliveryDate(deliveryDate);
 		d.setDeliveryMode(DeliveryMode.SVD);

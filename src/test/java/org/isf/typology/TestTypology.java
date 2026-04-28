@@ -19,26 +19,43 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.isf.maternity;
+package org.isf.typology;
+
+import org.isf.typology.model.Family;
+import org.isf.typology.model.Typology;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.isf.maternity.model.PregnancyVisitType;
-
-public class TestVisitType {
+public class TestTypology {
 
 	private final String code = "ANC";
 	private final String description = "Antenatal Care";
 
-	public PregnancyVisitType setup() {
-		PregnancyVisitType vt = new PregnancyVisitType();
+	public Typology setupVisitType() {
+		Typology vt = new Typology();
 		vt.setCode(code);
 		vt.setDescription(description);
+		vt.setFamily(Family.VISITTYPE);
 		return vt;
 	}
 
-	public void check(PregnancyVisitType vt) {
+	public void checkVisitType(Typology vt) {
 		assertThat(vt.getCode()).isEqualTo(code);
 		assertThat(vt.getDescription()).isEqualTo(description);
+		assertThat(vt.getFamily()).isEqualTo(Family.VISITTYPE);
+	}
+
+	public Typology setupDeliveryType() {
+		Typology vt = new Typology();
+		vt.setCode(code + "Del");
+		vt.setDescription(description);
+		vt.setFamily(Family.DELIVERYTYPE);
+		return vt;
+	}
+
+	public void checkDeliveryType(Typology vt) {
+		assertThat(vt.getCode()).isEqualTo(code + "Del");
+		assertThat(vt.getDescription()).isEqualTo(description);
+		assertThat(vt.getFamily()).isEqualTo(Family.DELIVERYTYPE);
 	}
 }

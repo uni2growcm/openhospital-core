@@ -24,23 +24,13 @@ package org.isf.maternity.model;
 import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+import org.isf.typology.model.Typology;
 import org.isf.utils.db.Auditable;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import jakarta.annotation.Nullable;
 
-import jakarta.persistence.AttributeOverride;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
-import jakarta.persistence.Version;
 import jakarta.validation.constraints.NotNull;
 
 /**
@@ -73,8 +63,9 @@ public class PregnancyVisit extends Auditable<String> {
 
 	@NotNull
 	@ManyToOne
+	@Enumerated(EnumType.STRING)
 	@JoinColumn(name = "PRGV_TYPE_ID")
-	private PregnancyVisitType visitType;
+	private Typology visitType;
 
 	@NotNull
 	@Column(name = "PRGV_DATE")
@@ -170,7 +161,7 @@ public class PregnancyVisit extends Auditable<String> {
 	public PregnancyVisit() {
 	}
 
-	public PregnancyVisit(Pregnancy pregnancy, PregnancyVisitType visitType, LocalDateTime visitDate) {
+	public PregnancyVisit(Pregnancy pregnancy, Typology visitType, LocalDateTime visitDate) {
 		this.pregnancy = pregnancy;
 		this.visitDate = visitDate;
 		this.visitType = visitType;
@@ -360,11 +351,11 @@ public class PregnancyVisit extends Auditable<String> {
 		this.clinicalNotes = clinicalNotes;
 	}
 
-	public PregnancyVisitType getVisitType() {
+	public Typology getVisitType() {
 		return visitType;
 	}
 
-	public void setVisitType(PregnancyVisitType visitType) {
+	public void setVisitType(Typology visitType) {
 		this.visitType = visitType;
 	}
 

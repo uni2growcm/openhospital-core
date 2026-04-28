@@ -29,6 +29,7 @@ import org.isf.maternity.model.RiskLevel;
 import org.isf.maternity.service.PregnancyIoOperation;
 import org.isf.utils.exception.OHServiceException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
@@ -93,7 +94,8 @@ public class PregnancyBrowserManager {
 	 * @param riskLevel risk level (nullable)
 	 * @param fromDate start date (nullable)
 	 * @param toDate end date (nullable)
-	 * @param pageable pagination info
+	 * @param page the page
+	 * @param size the number of pregnancy for the page
 	 * @return paginated results
 	 * @throws OHServiceException if search fails
 	 */
@@ -103,8 +105,10 @@ public class PregnancyBrowserManager {
 		RiskLevel riskLevel,
 		LocalDateTime fromDate,
 		LocalDateTime toDate,
-		Pageable pageable
+		int page,
+		int size
 	) throws OHServiceException {
+		Pageable pageable = PageRequest.of(page, size);
 		return ioOperation.searchPregnancies(
 			patientCode,
 			status,
@@ -120,15 +124,18 @@ public class PregnancyBrowserManager {
 	 *
 	 * @param fromDate start date
 	 * @param toDate end date
-	 * @param pageable pagination
+	 * @param page the page
+	 * @param size the number of pregnancy for the page
 	 * @return paginated pregnancies
 	 * @throws OHServiceException if retrieval fails
 	 */
 	public Page<Pregnancy> getPregnanciesByDateRange(
 		LocalDateTime fromDate,
 		LocalDateTime toDate,
-		Pageable pageable
+		int page,
+		int size
 	) throws OHServiceException {
+		Pageable pageable = PageRequest.of(page, size);
 		return ioOperation.getPregnanciesByDateRange(fromDate, toDate, pageable);
 	}
 

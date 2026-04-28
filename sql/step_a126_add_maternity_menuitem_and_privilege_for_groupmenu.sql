@@ -1,27 +1,41 @@
--- Replace pregnancycare with maternity
-UPDATE oh_menuitem
-SET
-    MNI_ID_A = 'maternity',
-    MNI_BTN_LABEL = 'angal.menu.btn.maternity',
-    MNI_LABEL = 'angal.menu.maternity',
-    MNI_CLASS = 'org.isf.maternity.gui.MaternityBrowser'
-WHERE MNI_ID_A = 'pregnancycare';
+-- =========================
+-- CREATE MATERNITY MENU (SAFE)
+-- =========================
 
-UPDATE oh_groupmenu
-SET GM_MNI_ID_A = 'maternity'
-WHERE GM_MNI_ID_A = 'pregnancycare';
-
--- Add maternity menuitem and privilege (if not exists)
-
-INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`)
-SELECT 'maternity','angal.menu.btn.maternity','angal.menu.maternity','x','M','main','org.isf.maternity.gui.MaternityBrowser','N',5
+-- 1. Create menu if it does NOT exist
+INSERT INTO oh_menuitem
+(MNI_ID_A, MNI_BTN_LABEL, MNI_LABEL, MNI_TOOLTIP, MNI_SHORTCUT, MNI_SUBMENU, MNI_CLASS, MNI_IS_SUBMENU, MNI_POSITION)
+SELECT
+    'maternity',
+    'angal.menu.btn.maternity',
+    'angal.menu.maternity',
+    'x',
+    'M',
+    'main',
+    'org.isf.maternity.gui.MaternityBrowser',
+    'N',
+    5
 FROM DUAL
-WHERE NOT EXISTS (SELECT 1 FROM `oh_menuitem` WHERE `MNI_ID_A` = 'maternity');
+WHERE NOT EXISTS (
+    SELECT 1 FROM oh_menuitem WHERE MNI_ID_A = 'maternity'
+);
 
-INSERT INTO `oh_groupmenu` (`GM_ID`, `GM_UG_ID_A`, `GM_MNI_ID_A`, `GM_ACTIVE`, `GM_CREATED_BY`, `GM_CREATED_DATE`, `GM_LAST_MODIFIED_BY`, `GM_LAST_MODIFIED_DATE`)
-SELECT 351, 'admin', 'maternity', 1, NULL, NULL, NULL, NULL
+-- 2. Link to admin group (privilege)
+INSERT INTO oh_groupmenu
+(GM_ID, GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE, GM_CREATED_BY, GM_CREATED_DATE, GM_LAST_MODIFIED_BY, GM_LAST_MODIFIED_DATE)
+SELECT
+    351,
+    'admin',
+    'maternity',
+    1,
+    NULL,
+    NULL,
+    NULL,
+    NULL
 FROM DUAL
-WHERE NOT EXISTS (SELECT 1 FROM `oh_groupmenu` WHERE `GM_ID` = 351);
+WHERE NOT EXISTS (
+    SELECT 1 FROM oh_groupmenu WHERE GM_ID = 351
+);
 
 -- Update the order of positioning of menu items
 UPDATE oh_menuitem SET MNI_POSITION=7 WHERE MNI_ID_A="accounting";

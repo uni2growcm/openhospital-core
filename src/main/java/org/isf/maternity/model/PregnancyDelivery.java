@@ -24,6 +24,7 @@ package org.isf.maternity.model;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.*;
+import org.isf.typology.model.Typology;
 import org.isf.utils.db.Auditable;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -59,15 +60,16 @@ public class PregnancyDelivery extends Auditable<String> {
 
 	@NotNull
 	@ManyToOne
+	@Enumerated(EnumType.STRING)
 	@JoinColumn(name = "PRGDLV_TYPE_ID")
-	private PregnancyDeliveryType deliveryType;
+	private Typology deliveryType;
 
 	@Nullable
 	@Column(name = "PRGDLV_LABOR_ONSET_DATETIME")
 	private LocalDateTime laborOnsetDateTime;
 
 	@Nullable
-	@Column(name = "ROM_DATETIME")
+	@Column(name = "PRGDLV_ROM_DATETIME")
 	private LocalDateTime ruptureMembranesDateTime;
 
 	@NotNull
@@ -136,7 +138,7 @@ public class PregnancyDelivery extends Auditable<String> {
 	public PregnancyDelivery() {
 	}
 
-	public PregnancyDelivery(Pregnancy pregnancy, PregnancyDeliveryType pregnancyDeliveryType, LocalDateTime deliveryDate) {
+	public PregnancyDelivery(Pregnancy pregnancy, Typology pregnancyDeliveryType, LocalDateTime deliveryDate) {
 		this.pregnancy = pregnancy;
 		this.deliveryDate = deliveryDate;
 		this.deliveryType = pregnancyDeliveryType;
@@ -158,11 +160,11 @@ public class PregnancyDelivery extends Auditable<String> {
 		this.pregnancy = pregnancy;
 	}
 
-	public PregnancyDeliveryType getDeliveryType() {
+	public Typology getDeliveryType() {
 		return deliveryType;
 	}
 
-	public void setDeliveryType(PregnancyDeliveryType pregnancyDeliveryType) {
+	public void setDeliveryType(Typology pregnancyDeliveryType) {
 		this.deliveryType = pregnancyDeliveryType;
 	}
 

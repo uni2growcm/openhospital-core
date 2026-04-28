@@ -19,21 +19,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.isf.maternity.service;
+package org.isf.typology.model;
 
-import org.isf.maternity.model.PregnancyVisitType;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+public enum Family {
+	DELIVERYTYPE("maternity.pregnancy.deliverytype"),
+	VISITTYPE("maternity.pregnancy.visittype");
 
-import java.util.List;
-import java.util.Optional;
+	private final String key;
 
-@Repository
-public interface PregnancyVisitTypeIoOperationRepository extends JpaRepository<PregnancyVisitType, Integer> {
+	Family(String key) {
+		this.key = key;
+	}
 
-	List<PregnancyVisitType> findAllByOrderByDescriptionAsc();
-
-	Optional<PregnancyVisitType> findByCodeIgnoreCase(String code);
-
-	boolean existsByCodeIgnoreCase(String code);
+	public String getKey() {
+		return key;
+	}
 }

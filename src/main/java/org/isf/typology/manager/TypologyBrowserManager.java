@@ -19,47 +19,49 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.isf.maternity.manager;
-
-import java.util.ArrayList;
-import java.util.List;
+package org.isf.typology.manager;
 
 import org.isf.generaldata.MessageBundle;
-import org.isf.maternity.model.PregnancyVisitType;
-import org.isf.maternity.service.PregnancyVisitTypeIoOperation;
+import org.isf.typology.model.Family;
+import org.isf.typology.model.Typology;
+import org.isf.typology.service.TypologyIoOperation;
 import org.isf.utils.exception.OHDataIntegrityViolationException;
 import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.model.OHExceptionMessage;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
 @Component
-public class PregnancyVisitTypeBrowserManager {
+public class TypologyBrowserManager {
+	private final TypologyIoOperation ioOperations;
 
-	private final PregnancyVisitTypeIoOperation ioOperations;
-
-	public PregnancyVisitTypeBrowserManager(PregnancyVisitTypeIoOperation ioOperations) {
+	public TypologyBrowserManager(TypologyIoOperation ioOperations) {
 		this.ioOperations = ioOperations;
 	}
 
 	/**
-	 * Validate a {@link PregnancyVisitType} before persistence.
+	 * Validate a {@link Typology} before persistence.
 	 *
-	 * @param visitType entity
+	 * @param typology entity
 	 * @param insert true if create operation, false if update
 	 * @throws OHServiceException validation error
 	 */
-	protected void validateVisitType(PregnancyVisitType visitType, boolean insert)
+	protected void validateTypology(Typology typology, boolean insert)
 		throws OHServiceException {
 
 		List<OHExceptionMessage> errors = new ArrayList<>();
 
-		String code = visitType.getCode();
-		String description = visitType.getDescription();
+		String code = typology.getCode();
+		String description = typology.getDescription();
 
 		if (code != null) {
 			code = code.trim().toUpperCase();
-			visitType.setCode(code);
+			typology.setCode(code);
 		}
 
 		if (code == null || code.isEmpty()) {
@@ -91,30 +93,42 @@ public class PregnancyVisitTypeBrowserManager {
 	}
 
 	/**
-	 * Retrieves all available pregnancy visit types.
+	 * Retrieves all available pregnancy typologys.
 	 *
-	 * @return list of all {@link PregnancyVisitType} records
+	 * @return list of all {@link Typology} records
 	 * @throws OHServiceException if an error occurs during retrieval
 	 */
-	public List<PregnancyVisitType> getVisitTypes() throws OHServiceException {
-		return ioOperations.getVisitTypes();
+	public Page<Typology> getTypologies(int page, int size) throws OHServiceException {
+		Pageable pageable = PageRequest.of(page, size);
+		return ioOperations.getTypologies(pageable);
 	}
 
 	/**
-	 * Retrieves a pregnancy visit type using its unique code.
+	 * Get all {@link Typology} for a given family ordered by description.
 	 *
-	 * @param code the unique identifier of the visit type
-	 * @return the corresponding {@link PregnancyVisitType}, or {@code null} if not found
+	 * @param family the family of the {@link Typology}s to be fetched
+	 * @return list of Typologies sorted alphabetically
+	 * @throws OHServiceException if retrieval fails
+	 */
+	public List<Typology> getTypologies(Family family) throws OHServiceException {
+		return ioOperations.getTypologies(family);
+	}
+
+	/**
+	 * Retrieves a pregnancy typology using its unique code.
+	 *
+	 * @param code the unique identifier of the typology
+	 * @return the corresponding {@link Typology}, or {@code null} if not found
 	 * @throws OHServiceException if an error occurs during retrieval
 	 */
-	public PregnancyVisitType getVisitTypeByCode(String code) throws OHServiceException {
+	public Typology getTypologyByCode(String code) throws OHServiceException {
 		return ioOperations.getByCode(code).orElse(null);
 	}
 
 	/**
-	 * Checks whether a pregnancy visit type code already exists in the system.
+	 * Checks whether a pregnancy typology code already exists in the system.
 	 *
-	 * @param code the visit type code to check
+	 * @param code the typology code to check
 	 * @return {@code true} if the code exists, otherwise {@code false}
 	 * @throws OHServiceException if an error occurs during the check
 	 */
@@ -123,36 +137,36 @@ public class PregnancyVisitTypeBrowserManager {
 	}
 
 	/**
-	 * Creates a new pregnancy visit type after validating its data.
+	 * Creates a new pregnancy typology after validating its data.
 	 *
-	 * @param visitType the visit type entity to create
-	 * @return the persisted {@link PregnancyVisitType}
+	 * @param typology the typology entity to create
+	 * @return the persisted {@link Typology}
 	 * @throws OHServiceException if validation fails or persistence error occurs
 	 */
-	public PregnancyVisitType newVisitType(PregnancyVisitType visitType) throws OHServiceException {
-		validateVisitType(visitType, true);
-		return ioOperations.newVisitType(visitType);
+	public Typology newTypology(Typology typology) throws OHServiceException {
+		validateTypology(typology, true);
+		return ioOperations.newTypology(typology);
 	}
 
 	/**
-	 * Updates an existing pregnancy visit type after validation.
+	 * Updates an existing pregnancy typology after validation.
 	 *
-	 * @param visitType the visit type entity to update
-	 * @return the updated {@link PregnancyVisitType}
+	 * @param typology the typology entity to update
+	 * @return the updated {@link Typology}
 	 * @throws OHServiceException if validation fails or update error occurs
 	 */
-	public PregnancyVisitType updateVisitType(PregnancyVisitType visitType) throws OHServiceException {
-		validateVisitType(visitType, false);
-		return ioOperations.updateVisitType(visitType);
+	public Typology updateTypology(Typology typology) throws OHServiceException {
+		validateTypology(typology, false);
+		return ioOperations.updateTypology(typology);
 	}
 
 	/**
-	 * Deletes a pregnancy visit type from the system.
+	 * Deletes a pregnancy typology from the system.
 	 *
-	 * @param visitType the visit type to delete
+	 * @param typology the typology to delete
 	 * @throws OHServiceException if an error occurs during deletion
 	 */
-	public void deleteVisitType(PregnancyVisitType visitType) throws OHServiceException {
-		ioOperations.deleteVisitType(visitType);
+	public void deleteTypology(Typology typology) throws OHServiceException {
+		ioOperations.deleteTypology(typology);
 	}
 }

@@ -24,6 +24,7 @@ package org.isf.maternity.service;
 import org.isf.maternity.model.PregnancyVisit;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -53,7 +54,7 @@ public interface PregnancyVisitIoOperationRepository extends JpaRepository<Pregn
         AND v.visitDate <= :deliveryDate
         ORDER BY v.visitDate DESC
     """)
-	List<PregnancyVisit> findPrenatalVisits(Integer pregnancyId, LocalDateTime deliveryDate);
+	List<PregnancyVisit> findPrenatalVisits(@Param("pregnancyId") Integer pregnancyId, @Param("deliveryDate") LocalDateTime deliveryDate);
 
 	@Query("""
         SELECT v FROM PregnancyVisit v
@@ -61,20 +62,20 @@ public interface PregnancyVisitIoOperationRepository extends JpaRepository<Pregn
         AND v.visitDate > :deliveryDate
         ORDER BY v.visitDate ASC
     """)
-	List<PregnancyVisit> findPostnatalVisits(Integer pregnancyId, LocalDateTime deliveryDate);
+	List<PregnancyVisit> findPostnatalVisits(@Param("pregnancyId") Integer pregnancyId, @Param("deliveryDate") LocalDateTime deliveryDate);
 
 	@Query("""
-		SELECT v FROM PregnancyVisit v
-		WHERE v.pregnancy.id = :pregnancyId
-		AND (:fromDate IS NULL OR v.visitDate >= :fromDate)
-		AND (:toDate IS NULL OR v.visitDate <= :toDate)
-		AND (:visitTypeCode IS NULL OR v.visitType.code = :visitTypeCode)
-		ORDER BY v.visitDate ASC
-	""")
+        SELECT v FROM PregnancyVisit v
+        WHERE v.pregnancy.id = :pregnancyId
+        AND (:fromDate IS NULL OR v.visitDate >= :fromDate)
+        AND (:toDate IS NULL OR v.visitDate <= :toDate)
+        AND (:visitTypeCode IS NULL OR (v.visitType IS NOT NULL AND v.visitType.code = :visitTypeCode))
+        ORDER BY v.visitDate ASC
+    """)
 	List<PregnancyVisit> findVisitsByFilters(
-		Integer pregnancyId,
-		LocalDateTime fromDate,
-		LocalDateTime toDate,
-		String visitTypeCode
+		@Param("pregnancyId") Integer pregnancyId,
+		@Param("fromDate") LocalDateTime fromDate,
+		@Param("toDate") LocalDateTime toDate,
+		@Param("visitTypeCode") String visitTypeCode
 	);
 }

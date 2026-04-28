@@ -28,6 +28,9 @@ import org.isf.maternity.service.*;
 import org.isf.patient.TestPatient;
 import org.isf.patient.model.Patient;
 import org.isf.patient.service.PatientIoOperationRepository;
+import org.isf.typology.TestTypology;
+import org.isf.typology.manager.TypologyBrowserManager;
+import org.isf.typology.model.Typology;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,8 +44,7 @@ class Tests extends OHCoreTestCase {
 
 	private static TestDelivery testDelivery;
 	private static TestVisit testVisit;
-	private static TestDeliveryType testDeliveryType;
-	private static TestVisitType testVisitType;
+	private static TestTypology testTypology;
 	private static TestNewBorn testNewBorn;
 
 	private static TestPregnancy testPregnancy;
@@ -51,9 +53,7 @@ class Tests extends OHCoreTestCase {
 	@Autowired
 	PatientIoOperationRepository patientIoOperationRepository;
 	@Autowired
-	PregnancyDeliveryTypeBrowserManager pregnancyDeliveryTypeBrowserManager;
-	@Autowired
-	PregnancyVisitTypeBrowserManager visitTypeBrowserManager;
+	TypologyBrowserManager typologyBrowserManager;
 	@Autowired
 	PregnancyDeliveryBrowserManager deliveryBrowserManager;
 	@Autowired
@@ -63,25 +63,11 @@ class Tests extends OHCoreTestCase {
 	@Autowired
 	NewBornBrowserManager newBornBrowserManager;
 
-	@Autowired
-	PregnancyDeliveryTypeIoOperationRepository deliveryTypeIoOperationRepository;
-	@Autowired
-	PregnancyVisitTypeIoOperationRepository visitTypeIoOperationRepository;
-	@Autowired
-	PregnancyDeliveryIoOperationRepository pregnancyDeliveryIoOperationRepository;
-	@Autowired
-	PregnancyVisitIoOperationRepository visitIoOperationRepository;
-	@Autowired
-	PregnancyIoOperationRepository pregnancyIoOperationRepository;
-	@Autowired
-	NewbornIoOperationRepository newbornIoOperationRepository;
-
 	@BeforeAll
 	static void setUpClass() {
 		testDelivery = new TestDelivery();
-		testDeliveryType = new TestDeliveryType();
 		testVisit = new TestVisit();
-		testVisitType = new TestVisitType();
+		testTypology = new TestTypology();
 		testNewBorn = new TestNewBorn();
 		testPregnancy = new TestPregnancy();
 		testPatient = new TestPatient();
@@ -175,8 +161,8 @@ class Tests extends OHCoreTestCase {
 		Pregnancy pregnancy = testPregnancy.setup(patient, false);
 		pregnancy = pregnancyBrowserManager.newPregnancy(pregnancy);
 
-		PregnancyDeliveryType type = testDeliveryType.setup();
-		type = pregnancyDeliveryTypeBrowserManager.newDeliveryType(type);
+		Typology type = testTypology.setupDeliveryType();
+		type = typologyBrowserManager.newTypology(type);
 
 		PregnancyDelivery delivery = testDelivery.setup(pregnancy, type, false);
 
@@ -230,8 +216,8 @@ class Tests extends OHCoreTestCase {
 		Pregnancy pregnancy = testPregnancy.setup(patient, false);
 		pregnancy = pregnancyBrowserManager.newPregnancy(pregnancy);
 
-		PregnancyVisitType vt = testVisitType.setup();
-		vt = visitTypeBrowserManager.newVisitType(vt);
+		Typology vt = testTypology.setupVisitType();
+		vt = typologyBrowserManager.newTypology(vt);
 
 		PregnancyVisit visit = testVisit.setup(pregnancy, vt, false);
 
@@ -327,8 +313,8 @@ class Tests extends OHCoreTestCase {
 		Pregnancy pregnancy = testPregnancy.setup(patient, false);
 		pregnancy = pregnancyBrowserManager.newPregnancy(pregnancy);
 
-		PregnancyDeliveryType type = testDeliveryType.setup();
-		type = pregnancyDeliveryTypeBrowserManager.newDeliveryType(type);
+		Typology type = testTypology.setupDeliveryType();
+		type = typologyBrowserManager.newTypology(type);
 
 		PregnancyDelivery delivery = testDelivery.setup(pregnancy, type, false);
 		delivery = deliveryBrowserManager.newDelivery(delivery);
@@ -408,97 +394,5 @@ class Tests extends OHCoreTestCase {
 		assertThat(
 			newBornBrowserManager.countNewbornsByDelivery(delivery.getId())
 		).isEqualTo(0);
-	}
-
-	@Test
-	void testDeliveryTypeCRUD() throws Exception {
-
-		// CREATE
-		PregnancyDeliveryType dt = testDeliveryType.setup();
-		dt = pregnancyDeliveryTypeBrowserManager.newDeliveryType(dt);
-
-		assertThat(dt).isNotNull();
-		assertThat(dt.getCode()).isNotNull();
-
-		// READ by code
-		PregnancyDeliveryType found =
-			pregnancyDeliveryTypeBrowserManager.getDeliveryTypeByCode(dt.getCode());
-
-		assertThat(found).isNotNull();
-		assertThat(found.getCode()).isEqualTo(dt.getCode());
-
-		// UPDATE
-		dt.setDescription("Updated");
-		dt = pregnancyDeliveryTypeBrowserManager.updateDeliveryType(dt);
-
-		assertThat(dt.getDescription()).isEqualTo("Updated");
-
-		// EXISTS CHECK
-		assertThat(
-			pregnancyDeliveryTypeBrowserManager.isCodePresent(dt.getCode())
-		).isTrue();
-
-		// READ ALL (optional but good coverage)
-		assertThat(
-			pregnancyDeliveryTypeBrowserManager.getDeliveryTypes()
-		).isNotEmpty();
-
-		// DELETE
-		pregnancyDeliveryTypeBrowserManager.deleteDeliveryType(dt);
-
-		// VERIFY DELETION
-		assertThat(
-			pregnancyDeliveryTypeBrowserManager.isCodePresent(dt.getCode())
-		).isFalse();
-
-		assertThat(
-			pregnancyDeliveryTypeBrowserManager.getDeliveryTypeByCode(dt.getCode())
-		).isNull();
-	}
-
-	@Test
-	void testVisitTypeCRUD() throws Exception {
-
-		// CREATE
-		PregnancyVisitType vt = testVisitType.setup();
-		vt = visitTypeBrowserManager.newVisitType(vt);
-
-		assertThat(vt).isNotNull();
-		assertThat(vt.getCode()).isNotNull();
-
-		// READ by code
-		PregnancyVisitType found =
-			visitTypeBrowserManager.getVisitTypeByCode(vt.getCode());
-
-		assertThat(found).isNotNull();
-		assertThat(found.getCode()).isEqualTo(vt.getCode());
-
-		// UPDATE
-		vt.setDescription("Updated");
-		vt = visitTypeBrowserManager.updateVisitType(vt);
-
-		assertThat(vt.getDescription()).isEqualTo("Updated");
-
-		// EXISTS CHECK
-		assertThat(
-			visitTypeBrowserManager.isCodePresent(vt.getCode())
-		).isTrue();
-
-		// GET ALL (extra coverage)
-		assertThat(
-			visitTypeBrowserManager.getVisitTypes()
-		).isNotEmpty();
-
-		// DELETE
-		visitTypeBrowserManager.deleteVisitType(vt);
-
-		// VERIFY DELETE
-		assertThat(
-			visitTypeBrowserManager.isCodePresent(vt.getCode())
-		).isFalse();
-
-		assertThat(
-			visitTypeBrowserManager.getVisitTypeByCode(vt.getCode())
-		).isNull();
 	}
 }

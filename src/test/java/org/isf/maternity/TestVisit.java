@@ -27,7 +27,7 @@ import java.time.LocalDateTime;
 
 import org.isf.maternity.model.Pregnancy;
 import org.isf.maternity.model.PregnancyVisit;
-import org.isf.maternity.model.PregnancyVisitType;
+import org.isf.typology.model.Typology;
 
 public class TestVisit {
 
@@ -37,7 +37,7 @@ public class TestVisit {
 	private final Integer days = 3;
 	private final Double weight = 65.5;
 
-	public PregnancyVisit setup(Pregnancy p, PregnancyVisitType vt, boolean usingSet) {
+	public PregnancyVisit setup(Pregnancy p, Typology vt, boolean usingSet) {
 		PregnancyVisit v;
 
 		if (usingSet) {
@@ -51,7 +51,7 @@ public class TestVisit {
 		return v;
 	}
 
-	private void set(PregnancyVisit v, Pregnancy p, PregnancyVisitType vt) {
+	private void set(PregnancyVisit v, Pregnancy p, Typology vt) {
 		v.setPregnancy(p);
 		v.setVisitDate(visitDate);
 		v.setGestationalWeeks(weeks);

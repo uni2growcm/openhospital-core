@@ -19,26 +19,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.isf.maternity;
+package org.isf.typology.service;
 
-import org.isf.maternity.model.PregnancyDeliveryType;
+import org.isf.typology.model.Family;
+import org.isf.typology.model.Typology;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import java.util.List;
+import java.util.Optional;
 
-public class TestDeliveryType {
+@Repository
+public interface TypologyIoOperationRepository extends JpaRepository<Typology, String> {
 
-	private final String code = "VD";
-	private final String description = "Vaginal Delivery";
+	Page<Typology> findAllByOrderByDescriptionAsc(Pageable pageable);
 
-	public PregnancyDeliveryType setup() {
-		PregnancyDeliveryType dt = new PregnancyDeliveryType();
-		dt.setCode(code);
-		dt.setDescription(description);
-		return dt;
-	}
+	List<Typology> findAllByFamilyOrderByDescriptionAsc(Family family);
 
-	public void check(PregnancyDeliveryType dt) {
-		assertThat(dt.getCode()).isEqualTo(code);
-		assertThat(dt.getDescription()).isEqualTo(description);
-	}
+	Optional<Typology> findByCodeIgnoreCase(String code);
+
+	boolean existsByCodeIgnoreCase(String code);
 }
