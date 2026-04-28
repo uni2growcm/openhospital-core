@@ -26,6 +26,8 @@ import org.isf.typology.model.Typology;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -41,4 +43,20 @@ public interface TypologyIoOperationRepository extends JpaRepository<Typology, S
 	Optional<Typology> findByCodeIgnoreCase(String code);
 
 	boolean existsByCodeIgnoreCase(String code);
+
+	@Query("""
+    SELECT t FROM Typology t
+    WHERE (:family IS NULL OR t.family = :family)
+      AND (
+            :search IS NULL OR :search = ''
+            OR LOWER(t.code) LIKE LOWER(CONCAT('%', :search, '%'))
+            OR LOWER(t.description) LIKE LOWER(CONCAT('%', :search, '%'))
+          )
+    ORDER BY t.description ASC
+""")
+	Page<Typology> searchTypologies(
+		@Param("search") String search,
+		@Param("family") Family family,
+		Pageable pageable
+	);
 }

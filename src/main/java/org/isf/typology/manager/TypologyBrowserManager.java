@@ -95,12 +95,29 @@ public class TypologyBrowserManager {
 	/**
 	 * Retrieves all available pregnancy typologys.
 	 *
+	 * @param page the page
+	 * @param size the number of typologies to be listed
 	 * @return list of all {@link Typology} records
 	 * @throws OHServiceException if an error occurs during retrieval
 	 */
 	public Page<Typology> getTypologies(int page, int size) throws OHServiceException {
 		Pageable pageable = PageRequest.of(page, size);
 		return ioOperations.getTypologies(pageable);
+	}
+
+	/**
+	 * Get all {@link Typology} ordered by description.
+	 *
+	 * @param search the search term
+	 * @param family the family of the typology
+	 * @param page the page
+	 * @param size the number of typologies to be listed
+	 * @return list of Typologies sorted alphabetically in pages
+	 * @throws OHServiceException if retrieval fails
+	 */
+	public Page<Typology> searchTypologies(String search, Family family, int page, int size) throws OHServiceException {
+		Pageable pageable = PageRequest.of(page, size);
+		return ioOperations.searchTypologies(search, family, pageable);
 	}
 
 	/**

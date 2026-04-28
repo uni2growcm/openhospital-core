@@ -56,28 +56,28 @@ public class Tests extends OHCoreTestCase {
 		void testDeliveryTypeCRUD() throws Exception {
 
 			// CREATE
-			Typology dt = testTypology.setupDeliveryType();
-			dt = manager.newTypology(dt);
+			Typology typology = testTypology.setupDeliveryType();
+			typology = manager.newTypology(typology);
 
-			assertThat(dt).isNotNull();
-			assertThat(dt.getCode()).isNotNull();
+			assertThat(typology).isNotNull();
+			assertThat(typology.getCode()).isNotNull();
 
 			// READ by code
 			Typology found =
-				manager.getTypologyByCode(dt.getCode());
+				manager.getTypologyByCode(typology.getCode());
 
 			assertThat(found).isNotNull();
-			assertThat(found.getCode()).isEqualTo(dt.getCode());
+			assertThat(found.getCode()).isEqualTo(typology.getCode());
 
 			// UPDATE
-			dt.setDescription("Updated");
-			dt = manager.updateTypology(dt);
+			typology.setDescription("Updated");
+			typology = manager.updateTypology(typology);
 
-			assertThat(dt.getDescription()).isEqualTo("Updated");
+			assertThat(typology.getDescription()).isEqualTo("Updated");
 
 			// EXISTS CHECK
 			assertThat(
-				manager.isCodePresent(dt.getCode())
+				manager.isCodePresent(typology.getCode())
 			).isTrue();
 
 			// READ ALL (optional but good coverage)
@@ -95,16 +95,22 @@ public class Tests extends OHCoreTestCase {
 				manager.getTypologies(Family.DELIVERYTYPE)
 			).isNotEmpty();
 
+			assertThat(manager.searchTypologies("anc", Family.DELIVERYTYPE, 0, 1).getContent().get(0).getCode()).isEqualTo(found.getCode());
+
+			assertThat(manager.searchTypologies("", Family.DELIVERYTYPE, 0,1).getContent()).isNotEmpty();
+
+			assertThat(manager.searchTypologies("anc", null, 0, 1).getContent().get(0).getCode()).isEqualTo(found.getCode());
+
 			// DELETE
-			manager.deleteTypology(dt);
+			manager.deleteTypology(typology);
 
 			// VERIFY DELETION
 			assertThat(
-				manager.isCodePresent(dt.getCode())
+				manager.isCodePresent(typology.getCode())
 			).isFalse();
 
 			assertThat(
-				manager.getTypologyByCode(dt.getCode())
+				manager.getTypologyByCode(typology.getCode())
 			).isNull();
 		}
 	}

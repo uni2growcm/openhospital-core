@@ -41,11 +41,25 @@ public class TypologyIoOperation {
 	/**
 	 * Get all {@link Typology} ordered by description.
 	 *
+	 * @param pageable the pagination info
 	 * @return list of Typologies sorted alphabetically in pages
 	 * @throws OHServiceException if retrieval fails
 	 */
 	public Page<Typology> getTypologies(Pageable pageable) throws OHServiceException {
 		return repository.findAllByOrderByDescriptionAsc(pageable);
+	}
+
+	/**
+	 * Get all {@link Typology} ordered by description.
+	 *
+	 * @param search the search term
+	 * @param family the family of the typology
+	 * @param pageable the pagination info
+	 * @return list of Typologies sorted alphabetically in pages
+	 * @throws OHServiceException if retrieval fails
+	 */
+	public Page<Typology> searchTypologies(String search, Family family, Pageable pageable) throws OHServiceException {
+		return repository.searchTypologies(search, family, pageable);
 	}
 
 	/**
