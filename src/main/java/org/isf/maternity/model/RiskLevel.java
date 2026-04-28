@@ -37,4 +37,13 @@ public enum RiskLevel {
 	public String getDescription() {
 		return MessageBundle.getMessage(getMessageKey());
 	}
+
+	@Override
+	public String toString() {
+		return getDescription();
+	}
+
+	public static RiskLevel from(String value) {
+		return RiskLevel.valueOf(value.toUpperCase());
+	}
 }

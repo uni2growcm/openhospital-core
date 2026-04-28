@@ -37,4 +37,13 @@ public enum PregnancyStatus {
 	public String getDescription() {
 		return MessageBundle.getMessage(getMessageKey());
 	}
+
+	@Override
+	public String toString() {
+		return getDescription();
+	}
+
+	public static PregnancyStatus from(String value) {
+		return PregnancyStatus.valueOf(value.toUpperCase());
+	}
 }

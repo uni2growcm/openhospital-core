@@ -21,9 +21,11 @@
  */
 package org.isf.typology.model;
 
+import org.isf.generaldata.MessageBundle;
+
 public enum Family {
-	DELIVERYTYPE("maternity.pregnancy.deliverytype"),
-	VISITTYPE("maternity.pregnancy.visittype");
+	DELIVERYTYPE("angal.typology.deliverytype"),
+	VISITTYPE("angal.typology.visittype");
 
 	private final String key;
 
@@ -31,7 +33,12 @@ public enum Family {
 		this.key = key;
 	}
 
-	public String getKey() {
+	public String getMessageKey() {
 		return key;
+	}
+
+	@Override
+	public String toString() {
+		return MessageBundle.getMessage(key);
 	}
 }
