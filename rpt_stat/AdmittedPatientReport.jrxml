@@ -136,7 +136,9 @@
 				<textFieldExpression><![CDATA[$P{Telephone}]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight" pattern="dd/MM/yyyy" isBlankWhenNull="false">
-				<reportElement key="textField-8" x="51" y="122" width="64" height="17" uuid="8f3f30c9-3c5c-42aa-af2d-fbdad5c3a9d6"/>
+				<reportElement key="textField-8" x="51" y="122" width="100" height="17" uuid="8f3f30c9-3c5c-42aa-af2d-fbdad5c3a9d6">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<box>
 					<pen lineColor="#706C6C"/>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -164,8 +166,9 @@
 				<textFieldExpression><![CDATA[$R{From}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement key="staticText-2" x="116" y="122" width="30" height="17" uuid="e9b01978-74f2-4262-89df-1f3575c944ae">
+				<reportElement key="staticText-2" x="152" y="122" width="30" height="17" uuid="e9b01978-74f2-4262-89df-1f3575c944ae">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
 				</reportElement>
 				<box>
 					<pen lineColor="#706C6C"/>
@@ -180,7 +183,10 @@
 				<textFieldExpression><![CDATA[$R{To}]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight" pattern="dd/MM/yyyy" isBlankWhenNull="false">
-				<reportElement key="textField-9" x="147" y="122" width="64" height="17" uuid="72121f1c-0ee1-4231-9e78-c2da8c42596d"/>
+				<reportElement key="textField-9" x="183" y="122" width="100" height="17" uuid="72121f1c-0ee1-4231-9e78-c2da8c42596d">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</reportElement>
 				<box>
 					<pen lineColor="#706C6C"/>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
