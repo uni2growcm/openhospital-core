@@ -1168,6 +1168,28 @@ public class JasperReportsManager {
 		}
 	}
 
+	public JasperReportResultDto getAdmissionReportPdf(Integer patientID) throws OHServiceException {
+
+		try {
+			HashMap<String, Object> parameters = getHospitalParameters();
+			addBundleParameter(RPT_BASE, "admission_report", parameters);
+
+			parameters.put("patID", patientID);
+			parameters.put("LOGO-BENIN-PATH", LOGO_BENIN_PATH);
+			parameters.put("LOGO-PATH", LOGO_ABBRACCIO_PATH);
+
+			String jasperFileName = "admission_report";
+			String pdfFilename = compilePDFFilename(RPT_BASE, jasperFileName, Arrays.asList(String.valueOf(patientID)), "pdf");
+
+			JasperReportResultDto result = generateJasperReport(compileJasperFilename(RPT_BASE, jasperFileName), pdfFilename, parameters);
+			JasperExportManager.exportReportToPdfFile(result.getJasperPrint(), pdfFilename);
+			return result;
+		} catch (Exception e) {
+			LOGGER.error("", e);
+			throw new OHReportException(e, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
+		}
+	}
+
 	public JasperReportResultDto getGenericReportForEncounterPdf(Encounter encounter, Locale locale) throws OHServiceException {
 
 		try {
