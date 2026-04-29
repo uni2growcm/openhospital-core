@@ -29,4 +29,5 @@ public interface PatientIoOperationRepositoryCustom {
 
 	List<Patient> findByFieldsContainingWordsFromLiteral(String regex);
 
+	List<Patient> findFemaleByFieldsContainingWordsFromLiteral(String literal);
 }

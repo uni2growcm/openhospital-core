@@ -4,6 +4,7 @@
  */
 package org.isf.maternity.service;
 
+import feign.Param;
 import org.isf.maternity.model.Pregnancy;
 import org.isf.maternity.model.PregnancyStatus;
 import org.isf.maternity.model.RiskLevel;
@@ -70,7 +71,7 @@ public class PregnancyIoOperation {
 	 */
 	public List<Pregnancy> getPregnanciesByPatient(Integer patientCode)
 		throws OHServiceException {
-		return repository.findByPatient_CodeOrderByCreatedDateDesc(patientCode);
+		return repository.findByPatient_CodeOrderByDateDesc(patientCode);
 	}
 
 	/**
@@ -92,6 +93,8 @@ public class PregnancyIoOperation {
 		RiskLevel riskLevel,
 		LocalDateTime fromDate,
 		LocalDateTime toDate,
+		LocalDateTime lmpDateFrom,
+		LocalDateTime lmpDateTo,
 		Pageable pageable
 	) throws OHServiceException {
 		return repository.getPregnancies(
@@ -100,6 +103,8 @@ public class PregnancyIoOperation {
 			riskLevel,
 			fromDate,
 			toDate,
+			lmpDateFrom,
+			lmpDateTo,
 			pageable
 		);
 	}
@@ -118,7 +123,7 @@ public class PregnancyIoOperation {
 		LocalDateTime toDate,
 		Pageable pageable
 	) throws OHServiceException {
-		return repository.findByCreatedDateBetween(fromDate, toDate, pageable);
+		return repository.findByDateBetween(fromDate, toDate, pageable);
 	}
 
 	/**
@@ -156,7 +161,7 @@ public class PregnancyIoOperation {
 	public Pregnancy getLatestPregnancyByPatientAndStatus(Integer patientCode, PregnancyStatus status)
 		throws OHServiceException {
 		return repository
-			.findTopByPatient_CodeAndStatusOrderByCreatedDateDesc(patientCode, status)
+			.findTopByPatient_CodeAndStatusOrderByDateDesc(patientCode, status)
 			.orElse(null);
 	}
 

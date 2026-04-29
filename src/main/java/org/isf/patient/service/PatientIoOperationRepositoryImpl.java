@@ -51,6 +51,14 @@ public class PatientIoOperationRepositoryImpl implements PatientIoOperationRepos
 				getResultList();
 	}
 
+	@Override
+	public List<Patient> findFemaleByFieldsContainingWordsFromLiteral(String literal) {
+		return this.entityManager
+			.createQuery(buildSearchQueryForFemale(literal))
+			.setMaxResults(50)
+			.getResultList();
+	}
+
 	private CriteriaQuery<Patient> buildSearchQuery(String regex) {
 		String[] words = getWordsToSearchForInPatientsRepository(regex);
 		return createQuerySearchingForPatientContainingGivenWordsInHisProperties(words);
@@ -137,4 +145,36 @@ public class PatientIoOperationRepositoryImpl implements PatientIoOperationRepos
 		return entityManager.createQuery(query).getResultList();
 	}
 
+	private CriteriaQuery<Patient> buildSearchQueryForFemale(String regex) {
+		String[] words = getWordsToSearchForInPatientsRepository(regex);
+
+		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+		CriteriaQuery<Patient> query = cb.createQuery(Patient.class);
+		Root<Patient> patientRoot = query.from(Patient.class);
+
+		List<Predicate> where = new ArrayList<>();
+
+		for (String word : words) {
+			where.add(wordExistsInOneOfPatientFields(word, cb, patientRoot));
+		}
+
+		Predicate notDeleted = cb.or(
+			cb.equal(patientRoot.get("deleted"), 'N'),
+			cb.isNull(patientRoot.get("deleted"))
+		);
+
+		Predicate female = cb.equal(
+			cb.lower(patientRoot.get("sex")),
+			"f"
+		);
+
+		where.add(notDeleted);
+		where.add(female);
+
+		query.select(patientRoot)
+			.where(cb.and(where.toArray(new Predicate[0])))
+			.orderBy(cb.desc(patientRoot.get("code")));
+
+		return query;
+	}
 }

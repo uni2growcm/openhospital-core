@@ -40,9 +40,9 @@ import java.util.Optional;
  */
 @Repository
 public interface PregnancyIoOperationRepository extends JpaRepository<Pregnancy, Integer> {
-	List<Pregnancy> findByPatient_CodeOrderByCreatedDateDesc(Integer patientCode);
+	List<Pregnancy> findByPatient_CodeOrderByDateDesc(Integer patientCode);
 
-	Optional<Pregnancy> findTopByPatient_CodeAndStatusOrderByCreatedDateDesc(
+	Optional<Pregnancy> findTopByPatient_CodeAndStatusOrderByDateDesc(
 		Integer patientCode,
 		PregnancyStatus status
 	);
@@ -51,7 +51,7 @@ public interface PregnancyIoOperationRepository extends JpaRepository<Pregnancy,
 
 	long countByPatient_CodeAndStatus(Integer patientCode, PregnancyStatus status);
 
-	Page<Pregnancy> findByCreatedDateBetween(
+	Page<Pregnancy> findByDateBetween(
 		LocalDateTime from,
 		LocalDateTime to,
 		Pageable pageable
@@ -62,8 +62,10 @@ public interface PregnancyIoOperationRepository extends JpaRepository<Pregnancy,
 		WHERE (:patientId IS NULL OR p.patient.code = :patientId)
 		  AND (:status IS NULL OR p.status = :status)
 		  AND (:riskLevel IS NULL OR p.riskLevel = :riskLevel)
-		  AND (:fromDate IS NULL OR p.createdDate >= :fromDate)
-		  AND (:toDate IS NULL OR p.createdDate <= :toDate)
+		  AND (:fromDate IS NULL OR p.date >= :fromDate)
+		  AND (:toDate IS NULL OR p.date <= :toDate)
+		  AND (:fromDate IS NULL OR p.lmp >= :lmpDateFrom)
+		  AND (:toDate IS NULL OR p.lmp <= :lmpDateTo)
 	""")
 	Page<Pregnancy> getPregnancies(
 		@Param("patientId") Integer patientId,
@@ -71,6 +73,8 @@ public interface PregnancyIoOperationRepository extends JpaRepository<Pregnancy,
 		@Param("riskLevel") RiskLevel riskLevel,
 		@Param("fromDate") LocalDateTime fromDate,
 		@Param("toDate") LocalDateTime toDate,
+		@Param("fromDate") LocalDateTime lmpDateFrom,
+		@Param("toDate") LocalDateTime lmpDateTo,
 		Pageable pageable
 	);
 }

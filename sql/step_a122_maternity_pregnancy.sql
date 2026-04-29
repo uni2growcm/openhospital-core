@@ -7,14 +7,15 @@ CREATE TABLE OH_PREGNANCY (
     PRG_PAT_ID INT(11) NOT NULL,
 
     -- Pregnancy timeline
-    PRG_LMP DATE COMMENT 'Last Menstrual Period',
-    PRG_EDD_LMP DATE COMMENT 'Estimated Delivery Date (LMP)',
-    PRG_EDD_SCAN DATE COMMENT 'Estimated Delivery Date (Ultrasound adjusted)',
+    PRG_DATE DATE,
+    PRG_LMP DATE,
+    PRG_EDD_LMP DATE,
+    PRG_EDD_SCAN DATE,
 
     -- Obstetric history
-    PRG_GRAVIDITY INT(11) DEFAULT 0 COMMENT 'Total number of pregnancies',
-    PRG_PARITY INT(11) DEFAULT 0 COMMENT 'Births reaching viability',
-    PRG_MISSCARRIAGES INT(11) DEFAULT 0 COMMENT 'Miscarriages / abortions',
+    PRG_GRAVIDITY INT(11) DEFAULT 0,
+    PRG_PARITY INT(11) DEFAULT 0,
+    PRG_MISSCARRIAGES INT(11) DEFAULT 0,
 
     PRG_RISK_LEVEL VARCHAR(20) DEFAULT 'LOW',
     PRG_STATUS VARCHAR(20) DEFAULT 'ONGOING',

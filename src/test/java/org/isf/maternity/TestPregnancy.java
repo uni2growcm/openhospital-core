@@ -33,6 +33,7 @@ import java.time.LocalDateTime;
 
 public class TestPregnancy {
 
+	private final LocalDateTime date  = LocalDateTime.of(2025, 2, 15, 10, 0);
 	private final LocalDateTime lmp = LocalDateTime.of(2025, 1, 15, 10, 0);
 	private final  LocalDateTime eddLmp = LocalDateTime.of(2025, 10, 22, 0, 0);
 	private final LocalDateTime eddScan = LocalDateTime.of(2025, 10, 20, 0, 0);
@@ -44,7 +45,7 @@ public class TestPregnancy {
 			pregnancy = new Pregnancy();
 			setParameters(pregnancy, patient);
 		} else {
-			pregnancy = new Pregnancy(patient, PregnancyStatus.ONGOING);
+			pregnancy = new Pregnancy(patient, date, lmp);
 			setParameters(pregnancy, patient);
 		}
 

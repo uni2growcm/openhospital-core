@@ -61,6 +61,10 @@ public class Pregnancy extends Auditable<String> {
 	@JoinColumn(name = "PRG_PAT_ID")
 	private Patient patient;
 
+	@Nullable
+	@Column(name = "PRG_DATE")
+	private LocalDateTime date;
+
 	@OneToMany(mappedBy = "pregnancy")
 	private List<PregnancyVisit> visits;
 
@@ -106,9 +110,11 @@ public class Pregnancy extends Auditable<String> {
 	public Pregnancy() {
 	}
 
-	public Pregnancy(Patient patient, PregnancyStatus status) {
+	public Pregnancy(Patient patient, LocalDateTime date, LocalDateTime lmp) {
 		this.patient = patient;
-		this.status = status;
+		this.date = date;
+		this.lmp = lmp;
+		this.status = PregnancyStatus.ONGOING;
 		this.riskLevel = RiskLevel.LOW;
 		this.miscarriages = 0;
 	}
@@ -123,6 +129,7 @@ public class Pregnancy extends Auditable<String> {
 		if (lmp == null) {
 			return null;
 		}
+
 		long daysDifference = ChronoUnit.DAYS.between(lmp, LocalDate.now());
 		long weeks = daysDifference / 7;
 		long days = daysDifference % 7;
@@ -144,6 +151,10 @@ public class Pregnancy extends Auditable<String> {
 	public void setPatient(Patient patient) {
 		this.patient = patient;
 	}
+
+	public LocalDateTime getDate() { return this.date; }
+
+	public void setDate(LocalDateTime date) { this.date = date; }
 
 	public LocalDateTime getLmp() {
 		return lmp;

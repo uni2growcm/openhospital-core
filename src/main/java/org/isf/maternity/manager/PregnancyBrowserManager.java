@@ -105,6 +105,8 @@ public class PregnancyBrowserManager {
 		RiskLevel riskLevel,
 		LocalDateTime fromDate,
 		LocalDateTime toDate,
+		LocalDateTime lmpDateFrom,
+		LocalDateTime lmpDateTo,
 		int page,
 		int size
 	) throws OHServiceException {
@@ -115,6 +117,8 @@ public class PregnancyBrowserManager {
 			riskLevel,
 			fromDate,
 			toDate,
+			lmpDateFrom,
+			lmpDateTo,
 			pageable
 		);
 	}
