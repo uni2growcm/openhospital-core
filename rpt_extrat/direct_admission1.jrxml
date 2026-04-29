@@ -1,0 +1,729 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.21.5.final using JasperReports Library version 6.21.5-74d586df47b25dbd05bd0957999819196e59934a  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="direct_admission1" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" resourceBundle="direct_admission" uuid="0114cb24-50a9-41c4-86a6-624c7b52c3c1">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter2.jrdax"/>
+	<parameter name="patID" class="java.lang.Integer"/>
+	<queryString language="SQL">
+		<![CDATA[SELECT ADM_ID,
+	ADM_IN,
+	ADM_TYPE,
+	ADM_WRD_ID_A,
+	ADM_YPROG,
+	ADM_PAT_ID,
+	ADM_DATE_ADM,
+	ADM_ADMT_ID_A_ADM,
+	ADM_FHU,
+	ADM_IN_DIS_ID_A,
+	ADM_OUT_DIS_ID_A,
+	ADM_OUT_DIS_ID_A_2,
+	ADM_OUT_DIS_ID_A_3,
+	ADM_DATE_DIS,
+	ADM_DIST_ID_A,
+	ADM_NOTE,
+	ADM_PRG_DATE_VIS,
+	ADM_PRG_PTT_ID_A,
+	ADM_PRG_DATE_DEL,
+	ADM_PRG_DLT_ID_A,
+	ADM_PRG_DRT_ID_A,
+	ADM_PRG_WEIGHT,
+	ADM_PRG_DATE_CTRL1,
+	ADM_PRG_DATE_CTRL2,
+	ADM_PRG_DATE_ABORT,
+	ADM_ALERT_RECEIVED,
+	ADM_QUALIFIED_AGENT,
+	ADM_PHYSICAL_EXAM,
+	ADM_COURSE_OF_ACTION,
+	ADM_USR_ID_A,
+	ADM_LOCK,
+	ADM_DELETED,
+	ADM_CREATED_BY,
+	ADM_CREATED_DATE,
+	ADM_LAST_MODIFIED_BY,
+	ADM_LAST_MODIFIED_DATE,
+	ADM_ACTIVE,
+	ADM_PRE_TREATMENT,
+	ADM_PRE_ASSESSMENT,
+	ADM_ENTRY_REASON,
+	ADM_NEXT_APPOINTMENT,
+	ADM_DIAGNOSIS,
+	ADM_TREATMENT_RECEIVED,
+	ADM_OUTCOME,
+	ADM_IMPROVEMENT_FEEDBACK,
+	ADM_REFERRAL_ALERT,
+	ADM_REFERRAL_REASON,
+	ADM_REFERENCE_SHEET,
+	ADM_TRANS,
+	ADM_TRANSPORTATION,
+	PAT_ID,
+	PAT_FNAME,
+	PAT_SNAME,
+	PAT_NAME,
+	PAT_SEX,
+	PAT_BDATE,
+	PAT_AGE,
+	PAT_TELE,
+	PAT_CITY
+FROM oh_admission a JOIN oh_patient p ON a.ADM_PAT_ID = p.PAT_ID
+WHERE a.ADM_PAT_ID = $P{patID}]]>
+	</queryString>
+	<field name="ADM_ID" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="ADM_ID"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADM_ID"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_admission"/>
+	</field>
+	<field name="ADM_IN" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="ADM_IN"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADM_IN"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_admission"/>
+	</field>
+	<field name="ADM_TYPE" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ADM_TYPE"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADM_TYPE"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_admission"/>
+	</field>
+	<field name="ADM_WRD_ID_A" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ADM_WRD_ID_A"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADM_WRD_ID_A"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_admission"/>
+	</field>
+	<field name="ADM_YPROG" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="ADM_YPROG"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADM_YPROG"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_admission"/>
+	</field>
+	<field name="ADM_PAT_ID" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="ADM_PAT_ID"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADM_PAT_ID"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_admission"/>
+	</field>
+	<field name="ADM_DATE_ADM" class="java.time.LocalDateTime">
+		<property name="com.jaspersoft.studio.field.name" value="ADM_DATE_ADM"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADM_DATE_ADM"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_admission"/>
+	</field>
+	<field name="ADM_ADMT_ID_A_ADM" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ADM_ADMT_ID_A_ADM"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADM_ADMT_ID_A_ADM"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_admission"/>
+	</field>
+	<field name="ADM_FHU" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ADM_FHU"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADM_FHU"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_admission"/>
+	</field>
+	<field name="ADM_IN_DIS_ID_A" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ADM_IN_DIS_ID_A"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADM_IN_DIS_ID_A"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_admission"/>
+	</field>
+	<field name="ADM_OUT_DIS_ID_A" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ADM_OUT_DIS_ID_A"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADM_OUT_DIS_ID_A"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_admission"/>
+	</field>
+	<field name="ADM_OUT_DIS_ID_A_2" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ADM_OUT_DIS_ID_A_2"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADM_OUT_DIS_ID_A_2"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_admission"/>
+	</field>
+	<field name="ADM_OUT_DIS_ID_A_3" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ADM_OUT_DIS_ID_A_3"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADM_OUT_DIS_ID_A_3"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_admission"/>
+	</field>
+	<field name="ADM_DATE_DIS" class="java.time.LocalDateTime">
+		<property name="com.jaspersoft.studio.field.name" value="ADM_DATE_DIS"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADM_DATE_DIS"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_admission"/>
+	</field>
+	<field name="ADM_DIST_ID_A" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ADM_DIST_ID_A"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADM_DIST_ID_A"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_admission"/>
+	</field>
+	<field name="ADM_NOTE" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ADM_NOTE"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADM_NOTE"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_admission"/>
+	</field>
+	<field name="ADM_PRG_DATE_VIS" class="java.time.LocalDateTime">
+		<property name="com.jaspersoft.studio.field.name" value="ADM_PRG_DATE_VIS"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADM_PRG_DATE_VIS"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_admission"/>
+	</field>
+	<field name="ADM_PRG_PTT_ID_A" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ADM_PRG_PTT_ID_A"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADM_PRG_PTT_ID_A"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_admission"/>
+	</field>
+	<field name="ADM_PRG_DATE_DEL" class="java.time.LocalDateTime">
+		<property name="com.jaspersoft.studio.field.name" value="ADM_PRG_DATE_DEL"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADM_PRG_DATE_DEL"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_admission"/>
+	</field>
+	<field name="ADM_PRG_DLT_ID_A" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ADM_PRG_DLT_ID_A"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADM_PRG_DLT_ID_A"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_admission"/>
+	</field>
+	<field name="ADM_PRG_DRT_ID_A" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ADM_PRG_DRT_ID_A"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADM_PRG_DRT_ID_A"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_admission"/>
+	</field>
+	<field name="ADM_PRG_WEIGHT" class="java.lang.Float">
+		<property name="com.jaspersoft.studio.field.name" value="ADM_PRG_WEIGHT"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADM_PRG_WEIGHT"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_admission"/>
+	</field>
+	<field name="ADM_PRG_DATE_CTRL1" class="java.time.LocalDateTime">
+		<property name="com.jaspersoft.studio.field.name" value="ADM_PRG_DATE_CTRL1"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADM_PRG_DATE_CTRL1"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_admission"/>
+	</field>
+	<field name="ADM_PRG_DATE_CTRL2" class="java.time.LocalDateTime">
+		<property name="com.jaspersoft.studio.field.name" value="ADM_PRG_DATE_CTRL2"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADM_PRG_DATE_CTRL2"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_admission"/>
+	</field>
+	<field name="ADM_PRG_DATE_ABORT" class="java.time.LocalDateTime">
+		<property name="com.jaspersoft.studio.field.name" value="ADM_PRG_DATE_ABORT"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADM_PRG_DATE_ABORT"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_admission"/>
+	</field>
+	<field name="ADM_ALERT_RECEIVED" class="java.lang.Boolean">
+		<property name="com.jaspersoft.studio.field.name" value="ADM_ALERT_RECEIVED"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADM_ALERT_RECEIVED"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_admission"/>
+	</field>
+	<field name="ADM_QUALIFIED_AGENT" class="java.lang.Boolean">
+		<property name="com.jaspersoft.studio.field.name" value="ADM_QUALIFIED_AGENT"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADM_QUALIFIED_AGENT"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_admission"/>
+	</field>
+	<field name="ADM_PHYSICAL_EXAM" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ADM_PHYSICAL_EXAM"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADM_PHYSICAL_EXAM"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_admission"/>
+	</field>
+	<field name="ADM_COURSE_OF_ACTION" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ADM_COURSE_OF_ACTION"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADM_COURSE_OF_ACTION"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_admission"/>
+	</field>
+	<field name="ADM_USR_ID_A" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ADM_USR_ID_A"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADM_USR_ID_A"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_admission"/>
+	</field>
+	<field name="ADM_LOCK" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="ADM_LOCK"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADM_LOCK"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_admission"/>
+	</field>
+	<field name="ADM_DELETED" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ADM_DELETED"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADM_DELETED"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_admission"/>
+	</field>
+	<field name="ADM_CREATED_BY" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ADM_CREATED_BY"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADM_CREATED_BY"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_admission"/>
+	</field>
+	<field name="ADM_CREATED_DATE" class="java.time.LocalDateTime">
+		<property name="com.jaspersoft.studio.field.name" value="ADM_CREATED_DATE"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADM_CREATED_DATE"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_admission"/>
+	</field>
+	<field name="ADM_LAST_MODIFIED_BY" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ADM_LAST_MODIFIED_BY"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADM_LAST_MODIFIED_BY"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_admission"/>
+	</field>
+	<field name="ADM_LAST_MODIFIED_DATE" class="java.time.LocalDateTime">
+		<property name="com.jaspersoft.studio.field.name" value="ADM_LAST_MODIFIED_DATE"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADM_LAST_MODIFIED_DATE"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_admission"/>
+	</field>
+	<field name="ADM_ACTIVE" class="java.lang.Boolean">
+		<property name="com.jaspersoft.studio.field.name" value="ADM_ACTIVE"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADM_ACTIVE"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_admission"/>
+	</field>
+	<field name="ADM_PRE_TREATMENT" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ADM_PRE_TREATMENT"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADM_PRE_TREATMENT"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_admission"/>
+	</field>
+	<field name="ADM_PRE_ASSESSMENT" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ADM_PRE_ASSESSMENT"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADM_PRE_ASSESSMENT"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_admission"/>
+	</field>
+	<field name="ADM_ENTRY_REASON" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ADM_ENTRY_REASON"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADM_ENTRY_REASON"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_admission"/>
+	</field>
+	<field name="ADM_NEXT_APPOINTMENT" class="java.time.LocalDateTime">
+		<property name="com.jaspersoft.studio.field.name" value="ADM_NEXT_APPOINTMENT"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADM_NEXT_APPOINTMENT"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_admission"/>
+	</field>
+	<field name="ADM_DIAGNOSIS" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ADM_DIAGNOSIS"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADM_DIAGNOSIS"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_admission"/>
+	</field>
+	<field name="ADM_TREATMENT_RECEIVED" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ADM_TREATMENT_RECEIVED"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADM_TREATMENT_RECEIVED"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_admission"/>
+	</field>
+	<field name="ADM_OUTCOME" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ADM_OUTCOME"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADM_OUTCOME"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_admission"/>
+	</field>
+	<field name="ADM_IMPROVEMENT_FEEDBACK" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ADM_IMPROVEMENT_FEEDBACK"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADM_IMPROVEMENT_FEEDBACK"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_admission"/>
+	</field>
+	<field name="ADM_REFERRAL_ALERT" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ADM_REFERRAL_ALERT"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADM_REFERRAL_ALERT"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_admission"/>
+	</field>
+	<field name="ADM_REFERRAL_REASON" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ADM_REFERRAL_REASON"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADM_REFERRAL_REASON"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_admission"/>
+	</field>
+	<field name="ADM_REFERENCE_SHEET" class="java.lang.Boolean">
+		<property name="com.jaspersoft.studio.field.name" value="ADM_REFERENCE_SHEET"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADM_REFERENCE_SHEET"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_admission"/>
+	</field>
+	<field name="ADM_TRANS" class="java.lang.Float">
+		<property name="com.jaspersoft.studio.field.name" value="ADM_TRANS"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADM_TRANS"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_admission"/>
+	</field>
+	<field name="ADM_TRANSPORTATION" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ADM_TRANSPORTATION"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADM_TRANSPORTATION"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_admission"/>
+	</field>
+	<field name="PAT_ID" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="PAT_ID"/>
+		<property name="com.jaspersoft.studio.field.label" value="PAT_ID"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_patient"/>
+	</field>
+	<field name="PAT_FNAME" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="PAT_FNAME"/>
+		<property name="com.jaspersoft.studio.field.label" value="PAT_FNAME"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_patient"/>
+	</field>
+	<field name="PAT_SNAME" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="PAT_SNAME"/>
+		<property name="com.jaspersoft.studio.field.label" value="PAT_SNAME"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_patient"/>
+	</field>
+	<field name="PAT_NAME" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="PAT_NAME"/>
+		<property name="com.jaspersoft.studio.field.label" value="PAT_NAME"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_patient"/>
+	</field>
+	<field name="PAT_SEX" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="PAT_SEX"/>
+		<property name="com.jaspersoft.studio.field.label" value="PAT_SEX"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_patient"/>
+	</field>
+	<field name="PAT_BDATE" class="java.sql.Date">
+		<property name="com.jaspersoft.studio.field.name" value="PAT_BDATE"/>
+		<property name="com.jaspersoft.studio.field.label" value="PAT_BDATE"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_patient"/>
+	</field>
+	<field name="PAT_AGE" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="PAT_AGE"/>
+		<property name="com.jaspersoft.studio.field.label" value="PAT_AGE"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_patient"/>
+	</field>
+	<field name="PAT_TELE" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="PAT_TELE"/>
+		<property name="com.jaspersoft.studio.field.label" value="PAT_TELE"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_patient"/>
+	</field>
+	<field name="PAT_CITY" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="PAT_CITY"/>
+		<property name="com.jaspersoft.studio.field.label" value="PAT_CITY"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_patient"/>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<detail>
+		<band height="750" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<textField>
+				<reportElement x="40" y="10" width="180" height="30" uuid="a324d7d7-a4a3-410c-8762-7390900c9c8b"/>
+				<box padding="1">
+					<pen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{AbortionDate}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="220" y="220" width="250" height="30" uuid="c54d92b2-39ec-41d1-a6de-19dac15119e1"/>
+				<box padding="1">
+					<pen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{ADM_ENTRY_REASON}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="40" y="130" width="180" height="30" uuid="9513a965-56c6-4f0a-a592-586186adb5f3"/>
+				<box padding="1">
+					<pen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{CourseOfAction}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="40" y="250" width="180" height="30" uuid="d7c0cc78-fd6d-4144-b00b-3965eea4f2a1"/>
+				<box padding="1">
+					<pen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{NextAppointment}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="40" y="100" width="180" height="30" uuid="667f99f6-c9fd-41e3-b969-b920d92aabd3"/>
+				<box padding="1">
+					<pen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{PhysicalExam}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="40" y="190" width="180" height="30" uuid="7449ef98-b889-4056-b911-e774300e9fd9"/>
+				<box padding="1">
+					<pen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{PreAssessment}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="40" y="310" width="180" height="30" uuid="5d27cfbf-ab6f-42d6-a32a-4d36cec50a2b"/>
+				<box padding="1">
+					<pen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{TreatmentReceived}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="220" y="250" width="250" height="30" uuid="4db3ba51-aece-4499-8c95-732abd19b30c"/>
+				<box padding="1">
+					<pen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{ADM_NEXT_APPOINTMENT}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="40" y="280" width="180" height="30" uuid="22c67a56-f5ce-4c9c-b887-6fa00acbac76"/>
+				<box padding="1">
+					<pen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{Diagnosis}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="40" y="160" width="180" height="30" uuid="d4bddf30-efff-4fb2-8973-245b71324253"/>
+				<box padding="1">
+					<pen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{PreTreatment}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="40" y="40" width="180" height="30" uuid="e29ac7c8-09e2-4ec0-b68c-c4248086e352"/>
+				<box padding="1">
+					<pen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{AlertReceived}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="40" y="370" width="180" height="30" uuid="0c641ff6-aa77-4025-84d8-94ab27c161cc"/>
+				<box padding="1">
+					<pen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{ImprovementFeedback}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="220" y="370" width="250" height="30" uuid="6e38656d-6434-4699-8982-c9f873dd420a"/>
+				<box padding="1">
+					<pen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{ADM_IMPROVEMENT_FEEDBACK}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="220" y="70" width="250" height="30" uuid="a3dd9ef8-cb9c-473f-a2c7-b1eb69ed9968"/>
+				<box padding="1">
+					<pen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{ADM_QUALIFIED_AGENT}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="220" y="40" width="250" height="30" uuid="26132d80-76a1-4ac0-a567-8352b0f38f0c"/>
+				<box padding="1">
+					<pen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{ADM_ALERT_RECEIVED}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="220" y="160" width="250" height="30" uuid="a5591015-a226-41ba-9a32-3f3ad71c644b"/>
+				<box padding="1">
+					<pen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{ADM_PRE_TREATMENT}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="40" y="340" width="180" height="30" uuid="ea5b9c2b-1255-4406-8a43-c91eaea183a3"/>
+				<box padding="1">
+					<pen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{Outcome}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="220" y="100" width="250" height="30" uuid="e26d2906-714b-487d-be8c-7658f84e3e51"/>
+				<box padding="1">
+					<pen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{ADM_PHYSICAL_EXAM}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="220" y="310" width="250" height="30" uuid="76785727-fa86-4bee-9c0b-60226e4e2ba2"/>
+				<box padding="1">
+					<pen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{ADM_TREATMENT_RECEIVED}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="220" y="130" width="250" height="30" uuid="c74547ce-7d8b-4927-805f-c7192e52f05e"/>
+				<box padding="1">
+					<pen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{ADM_COURSE_OF_ACTION}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="220" y="340" width="250" height="30" uuid="374f378a-9317-4fc1-b314-6b1712ff93f2"/>
+				<box padding="1">
+					<pen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{ADM_OUTCOME}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="40" y="220" width="180" height="30" uuid="35b50e0d-9ad1-4c53-928f-5a7c539a908c"/>
+				<box padding="1">
+					<pen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{EntryReason}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="220" y="190" width="250" height="30" uuid="968b3431-5a23-4588-96da-6c622531ecc8"/>
+				<box padding="1">
+					<pen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{ADM_PRE_ASSESSMENT}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="220" y="280" width="250" height="30" uuid="bbe07841-6322-4abb-b8ef-96d91da89782"/>
+				<box padding="1">
+					<pen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{ADM_DIAGNOSIS}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="40" y="70" width="180" height="30" uuid="5d10edac-1439-4134-a094-a9434d63df3b"/>
+				<box padding="1">
+					<pen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{QualifiedAgent}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="220" y="10" width="250" height="30" uuid="51665128-23ae-422d-ac4d-bae94bd71165"/>
+				<box padding="1">
+					<pen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{ADM_PRG_DATE_ABORT}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="40" y="464" width="180" height="30" uuid="61ae3919-a009-4d07-9712-5ab176617bcb"/>
+				<box padding="1">
+					<pen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{ReferralCenter}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="220" y="494" width="250" height="30" uuid="a9e0a993-98e1-43e4-8ba8-763846252bba"/>
+				<box padding="1">
+					<pen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{ADM_REFERRAL_ALERT}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="220" y="660" width="250" height="30" uuid="ba20b057-8da5-4e15-b085-427bd0d74aa8"/>
+				<box padding="1">
+					<pen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{ADM_TRANS}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="220" y="464" width="250" height="30" uuid="6055c42e-b79f-48c8-bb92-c42c3df3c560"/>
+				<box padding="1">
+					<pen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{ADM_FHU}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="40" y="494" width="180" height="30" uuid="ca2cb3a6-c47c-496f-9d3b-0e115621958e"/>
+				<box padding="1">
+					<pen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{ReferralAlert}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="220" y="524" width="250" height="30" uuid="2d85b706-c726-4cd9-bec4-d580193f1841"/>
+				<box padding="1">
+					<pen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{ADM_REFERRAL_REASON}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="220" y="690" width="250" height="30" uuid="606fb4e9-78cd-44a7-9d63-4e7ce5958a3a"/>
+				<box padding="1">
+					<pen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{ADM_TRANSPORTATION}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="40" y="524" width="180" height="30" uuid="864cf6e0-adcc-4476-a4d3-735a11651193"/>
+				<box padding="1">
+					<pen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{ReferralReason}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="40" y="432" width="226" height="20" uuid="69ec1176-23af-4792-b893-2128cdf6cc90"/>
+				<textElement textAlignment="Left">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{ReferralData}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="40" y="554" width="180" height="30" uuid="90f39d15-72cb-4052-b328-9b97ef892bfb"/>
+				<box padding="1">
+					<pen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{ReferenceSheet}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="40" y="621" width="226" height="20" uuid="54c0604f-b487-458d-bb86-3c4d004faf9d"/>
+				<textElement textAlignment="Left">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{TransportData}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="220" y="554" width="250" height="30" uuid="900d7f9d-204e-4638-b887-6118f25337ce"/>
+				<box padding="1">
+					<pen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{ADM_REFERENCE_SHEET}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="40" y="690" width="180" height="30" uuid="f3ef15b3-4cce-4b59-b551-610099884aaa"/>
+				<box padding="1">
+					<pen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{Transportation}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="40" y="660" width="180" height="30" uuid="4317e69a-d7ff-4f4b-b025-1677969bf8a1"/>
+				<box padding="1">
+					<pen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{Trans}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>
