@@ -83,6 +83,8 @@ public class PregnancyIoOperation {
 	 * @param riskLevel filter by risk level (optional)
 	 * @param fromDate filter start date (optional)
 	 * @param toDate filter end date (optional)
+	 * @param lmpDateFrom filter start date (optional)
+	 * @param lmpDateTo filter end date (optional)
 	 * @param pageable pagination information
 	 * @return paginated list of pregnancies
 	 * @throws OHServiceException if search fails

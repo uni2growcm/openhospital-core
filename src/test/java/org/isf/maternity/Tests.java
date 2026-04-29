@@ -35,7 +35,9 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -149,6 +151,158 @@ class Tests extends OHCoreTestCase {
 			pregnancyBrowserManager.getPregnanciesByPatient(patient.getCode());
 
 		assertThat(afterDelete).isEmpty();
+	}
+
+	@Test
+	void testSearchPregnancies() throws Exception {
+
+		// ================= SETUP =================
+		Patient patient1 = testPatient.setup(false);
+		patientIoOperationRepository.save(patient1);
+
+		Patient patient2 = testPatient.setup(false);
+		patientIoOperationRepository.save(patient2);
+
+		LocalDateTime now = LocalDateTime.now();
+
+		// Pregnancy 1 (match)
+		Pregnancy p1 = new Pregnancy(patient1, now.minusDays(10), now.minusDays(20));
+		p1.setRiskLevel(RiskLevel.HIGH);
+		p1.setStatus(PregnancyStatus.ONGOING);
+		p1 = pregnancyBrowserManager.newPregnancy(p1);
+
+		// Pregnancy 2 (different risk)
+		Pregnancy p2 = new Pregnancy(patient1, now.minusDays(5), now.minusDays(15));
+		p2.setRiskLevel(RiskLevel.LOW);
+		p2.setStatus(PregnancyStatus.ONGOING);
+		p2 = pregnancyBrowserManager.newPregnancy(p2);
+
+		// Pregnancy 3 (different patient)
+		Pregnancy p3 = new Pregnancy(patient2, now.minusDays(3), now.minusDays(10));
+		p3.setRiskLevel(RiskLevel.HIGH);
+		p3.setStatus(PregnancyStatus.COMPLETED);
+		p3 = pregnancyBrowserManager.newPregnancy(p3);
+
+		// ================= TEST 1: NO FILTER =================
+		Page<Pregnancy> all =
+			pregnancyBrowserManager.searchPregnancies(
+				null, null, null,
+				null, null,
+				null, null,
+				0, 10
+			);
+
+		assertThat(all).isNotNull();
+		assertThat(all.getContent().size()).isGreaterThanOrEqualTo(3);
+
+		// ================= TEST 2: FILTER BY PATIENT =================
+		Page<Pregnancy> byPatient =
+			pregnancyBrowserManager.searchPregnancies(
+				patient1.getCode(),
+				null, null,
+				null, null,
+				null, null,
+				0, 10
+			);
+
+		assertThat(byPatient.getContent())
+			.allMatch(p -> p.getPatient().getCode().equals(patient1.getCode()));
+
+		// ================= TEST 3: FILTER BY STATUS =================
+		Page<Pregnancy> byStatus =
+			pregnancyBrowserManager.searchPregnancies(
+				null,
+				PregnancyStatus.ONGOING,
+				null,
+				null, null,
+				null, null,
+				0, 10
+			);
+
+		assertThat(byStatus.getContent())
+			.allMatch(p -> p.getStatus() == PregnancyStatus.ONGOING);
+
+		// ================= TEST 4: FILTER BY RISK =================
+		Page<Pregnancy> byRisk =
+			pregnancyBrowserManager.searchPregnancies(
+				null,
+				null,
+				RiskLevel.HIGH,
+				null, null,
+				null, null,
+				0, 10
+			);
+
+		assertThat(byRisk.getContent())
+			.allMatch(p -> p.getRiskLevel() == RiskLevel.HIGH);
+
+		// ================= TEST 5: DATE RANGE =================
+		Page<Pregnancy> byDate =
+			pregnancyBrowserManager.searchPregnancies(
+				null,
+				null,
+				null,
+				now.minusDays(7), // from
+				now,              // to
+				null, null,
+				0, 10
+			);
+
+		assertThat(byDate.getContent())
+			.allMatch(p -> p.getDate().isAfter(now.minusDays(7)));
+
+		// ================= TEST 6: LMP RANGE =================
+		Page<Pregnancy> byLmp =
+			pregnancyBrowserManager.searchPregnancies(
+				null,
+				null,
+				null,
+				null, null,
+				now.minusDays(18),
+				now.minusDays(12),
+				0, 10
+			);
+
+		assertThat(byLmp.getContent())
+			.allMatch(p ->
+				p.getLmp().isAfter(now.minusDays(18)) &&
+					p.getLmp().isBefore(now.minusDays(12))
+			);
+
+		// ================= TEST 7: COMBINED FILTER =================
+		Page<Pregnancy> combined =
+			pregnancyBrowserManager.searchPregnancies(
+				patient1.getCode(),
+				PregnancyStatus.ONGOING,
+				RiskLevel.HIGH,
+				null, null,
+				null, null,
+				0, 10
+			);
+
+		assertThat(combined.getContent()).hasSize(1);
+		assertThat(combined.getContent().get(0).getId()).isEqualTo(p1.getId());
+
+		// ================= TEST 8: PAGINATION =================
+		Page<Pregnancy> page1 =
+			pregnancyBrowserManager.searchPregnancies(
+				null, null, null,
+				null, null,
+				null, null,
+				0, 2
+			);
+
+		Page<Pregnancy> page2 =
+			pregnancyBrowserManager.searchPregnancies(
+				null, null, null,
+				null, null,
+				null, null,
+				1, 2
+			);
+
+		assertThat(page1.getContent()).isNotEmpty();
+		assertThat(page2.getContent()).isNotEmpty();
+		assertThat(page1.getContent()).isNotEqualTo(page2.getContent());
 	}
 
 	@Test

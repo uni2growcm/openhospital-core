@@ -64,8 +64,8 @@ public interface PregnancyIoOperationRepository extends JpaRepository<Pregnancy,
 		  AND (:riskLevel IS NULL OR p.riskLevel = :riskLevel)
 		  AND (:fromDate IS NULL OR p.date >= :fromDate)
 		  AND (:toDate IS NULL OR p.date <= :toDate)
-		  AND (:fromDate IS NULL OR p.lmp >= :lmpDateFrom)
-		  AND (:toDate IS NULL OR p.lmp <= :lmpDateTo)
+		  AND (:lmpDateFrom IS NULL OR p.lmp >= :lmpDateFrom)
+		  AND (:lmpDateTo IS NULL OR p.lmp <= :lmpDateTo)
 	""")
 	Page<Pregnancy> getPregnancies(
 		@Param("patientId") Integer patientId,
@@ -73,8 +73,8 @@ public interface PregnancyIoOperationRepository extends JpaRepository<Pregnancy,
 		@Param("riskLevel") RiskLevel riskLevel,
 		@Param("fromDate") LocalDateTime fromDate,
 		@Param("toDate") LocalDateTime toDate,
-		@Param("fromDate") LocalDateTime lmpDateFrom,
-		@Param("toDate") LocalDateTime lmpDateTo,
+		@Param("lmpDateFrom") LocalDateTime lmpDateFrom,
+		@Param("lmpDateTo") LocalDateTime lmpDateTo,
 		Pageable pageable
 	);
 }

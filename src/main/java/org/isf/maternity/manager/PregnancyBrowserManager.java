@@ -94,6 +94,8 @@ public class PregnancyBrowserManager {
 	 * @param riskLevel risk level (nullable)
 	 * @param fromDate start date (nullable)
 	 * @param toDate end date (nullable)
+	 * @param lmpDateFrom filter start date (optional)
+	 * @param lmpDateTo filter end date (optional)
 	 * @param page the page
 	 * @param size the number of pregnancy for the page
 	 * @return paginated results
