@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.21.5.final using JasperReports Library version 6.21.5-74d586df47b25dbd05bd0957999819196e59934a  -->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="admission_report" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" resourceBundle="admission_report" uuid="a7bcded8-8061-4336-8e7f-bef8584be5e4">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="admission_report" language="javascript" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" resourceBundle="admission_report" uuid="a7bcded8-8061-4336-8e7f-bef8584be5e4">
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter2.jrdax"/>
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<parameter name="patID" class="java.lang.Integer"/>
@@ -731,12 +731,12 @@ WHERE a.ADM_PAT_ID = $P{patID}]]>
 				<textFieldExpression><![CDATA[$F{ADM_PRG_WEIGHT}]]></textFieldExpression>
 			</textField>
 			<subreport>
-				<reportElement x="20" y="740" width="60" height="40" uuid="285e9a46-572e-4f42-ab70-c8f1c5de1a49"/>
+				<reportElement x="18" y="770" width="62" height="32" uuid="038b7d38-d2ad-40d0-8016-caa958204cf6"/>
 				<subreportParameter name="patID">
 					<subreportParameterExpression><![CDATA[$P{patID}]]></subreportParameterExpression>
 				</subreportParameter>
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-				<subreportExpression><![CDATA["/home/uni2grow/Documents/oh/openhospital-core/rpt_extrat/direct_admission1.jasper"]]></subreportExpression>
+				<subreportExpression><![CDATA["direct_admission1.jasper"]]></subreportExpression>
 			</subreport>
 		</band>
 	</detail>
