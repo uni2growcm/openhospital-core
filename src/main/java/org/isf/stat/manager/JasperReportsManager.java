@@ -1191,7 +1191,7 @@ public class JasperReportsManager {
 		}
 	}
 
-	public JasperReportResultDto getAdmissionReportPdf(Integer patientID) throws OHServiceException {
+	public JasperReportResultDto getAdmissionReportPdf(Integer patientID, Locale locale) throws OHServiceException {
 
 		try {
 			HashMap<String, Object> parameters = getHospitalParameters();
@@ -1200,6 +1200,7 @@ public class JasperReportsManager {
 			parameters.put("patID", patientID);
 			parameters.put("LOGO-BENIN-PATH", LOGO_BENIN_PATH);
 			parameters.put("LOGO-PATH", LOGO_ABBRACCIO_PATH);
+			parameters.put(JRParameter.REPORT_LOCALE, locale);
 
 			String jasperFileName = "admission_report";
 			String pdfFilename = compilePDFFilename(RPT_BASE, jasperFileName, Arrays.asList(String.valueOf(patientID)), "pdf");
