@@ -55,7 +55,7 @@ public class PatientIoOperationRepositoryImpl implements PatientIoOperationRepos
 	public List<Patient> findFemaleByFieldsContainingWordsFromLiteral(String literal) {
 		return this.entityManager
 			.createQuery(buildSearchQueryForFemale(literal))
-			.setMaxResults(50)
+			.setMaxResults(100)
 			.getResultList();
 	}
 
