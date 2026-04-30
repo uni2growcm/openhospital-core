@@ -120,7 +120,7 @@ AND a.ADM_ID = $P{admID}]]>
 		<band splitType="Stretch"/>
 	</columnHeader>
 	<detail>
-		<band height="502" splitType="Stretch">
+		<band height="420" splitType="Stretch">
 			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<frame>
 				<reportElement x="1" y="30" width="559" height="60" uuid="6efcf01a-abf2-4745-ab4f-8179965841f0"/>
