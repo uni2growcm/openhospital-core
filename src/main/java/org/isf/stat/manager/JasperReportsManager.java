@@ -1256,7 +1256,7 @@ public class JasperReportsManager {
 		}
 	}
 
-	public JasperReportResultDto getAdmittedPatientReportFromDateToDatePdf(LocalDate fromDate, LocalDate toDate, String jasperFileName, Locale locale)
+	public JasperReportResultDto getStatisticsReportPdf(LocalDate fromDate, LocalDate toDate, String jasperFileName, Locale locale)
 		throws OHServiceException {
 
 		try {
@@ -1276,23 +1276,4 @@ public class JasperReportsManager {
 		}
 	}
 
-	public JasperReportResultDto getPathologiesByAgeGenderFromDateToDatePdf(LocalDate fromDate, LocalDate toDate, String jasperFileName, Locale locale)
-		throws OHServiceException {
-
-		try {
-			HashMap<String, Object> parameters = compileGenericReportFromDateToDateParameters(fromDate, toDate);
-			addBundleParameter(RPT_STAT, jasperFileName, parameters);
-			parameters.put(JRParameter.REPORT_LOCALE, locale);
-
-			String pdfFilename = compilePDFFilename(RPT_STAT, jasperFileName, null, "pdf");
-			String filename = compileJasperFilename(RPT_STAT, jasperFileName);
-
-			JasperReportResultDto result = generateJasperReport(filename, pdfFilename, parameters);
-			JasperExportManager.exportReportToPdfFile(result.getJasperPrint(), pdfFilename);
-			return result;
-		} catch (Exception e) {
-			LOGGER.error("", e);
-			throw new OHReportException(e, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
-		}
-	}
 }
