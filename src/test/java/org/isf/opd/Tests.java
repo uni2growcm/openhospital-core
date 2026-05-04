@@ -166,35 +166,35 @@ class Tests extends OHCoreTestCase {
 		opd2.setSex(foundOpd.getSex());
 		opd2.setNewPatient(foundOpd.getNewPatient());
 		opd2.setUserID(foundOpd.getUserID());
-		Pageable pageable = PageRequest.of(0, 1);
-		Pageable pageable2 = PageRequest.of(1, 1);
-		List<Opd> opds = opdIoOperation.getOpdList(
-			foundOpd.getWard(),
-			foundOpd.getDisease().getType().getCode(),
-			foundOpd.getDisease().getCode(),
-			foundOpd.getDate().toLocalDate(),
-			foundOpd.getDate().toLocalDate(),
-			foundOpd.getAge() - 1,
-			foundOpd.getAge() + 1,
-			foundOpd.getSex(),
-			foundOpd.getNewPatient(),
-			foundOpd.getUserID(),
-			pageable);
-		List<Opd> opds2 = opdIoOperation.getOpdList(
-			foundOpd.getWard(),
-			foundOpd.getDisease().getType().getCode(),
-			foundOpd.getDisease().getCode(),
-			foundOpd.getDate().toLocalDate(),
-			foundOpd.getDate().toLocalDate(),
-			foundOpd.getAge() - 1,
-			foundOpd.getAge() + 1,
-			foundOpd.getSex(),
-			foundOpd.getNewPatient(),
-			foundOpd.getUserID(),
-			pageable2);
 
-		assertThat(opds.get(0).getCode()).isEqualTo(foundOpd.getCode());
-		assertThat(opds2.get(0).getCode()).isEqualTo(opd2.getCode());
+		var response = opdIoOperation.getOpdListPageable(
+			foundOpd.getWard(),
+			foundOpd.getDisease().getType().getCode(),
+			foundOpd.getDisease().getCode(),
+			foundOpd.getDate().toLocalDate(),
+			foundOpd.getDate().toLocalDate(),
+			foundOpd.getAge() - 1,
+			foundOpd.getAge() + 1,
+			foundOpd.getSex(),
+			foundOpd.getNewPatient(),
+			foundOpd.getUserID(),
+			0, 1);
+
+		var response2 = opdIoOperation.getOpdListPageable(
+			foundOpd.getWard(),
+			foundOpd.getDisease().getType().getCode(),
+			foundOpd.getDisease().getCode(),
+			foundOpd.getDate().toLocalDate(),
+			foundOpd.getDate().toLocalDate(),
+			foundOpd.getAge() - 1,
+			foundOpd.getAge() + 1,
+			foundOpd.getSex(),
+			foundOpd.getNewPatient(),
+			foundOpd.getUserID(),
+			1, 1);
+
+		assertThat(response.getData().get(0).getCode()).isEqualTo(foundOpd.getCode());
+		assertThat(response2.getData().get(0).getCode()).isEqualTo(opd2.getCode());
 	}
 
 	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
@@ -210,6 +210,7 @@ class Tests extends OHCoreTestCase {
 
 	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
 	@MethodSource("opdExtended")
+
 	void testIoGetOpdListPatientIdPageable(boolean opdExtended) throws Exception {
 		GeneralData.OPDEXTENDED = opdExtended;
 		int code = setupTestOpd(false);
@@ -220,14 +221,16 @@ class Tests extends OHCoreTestCase {
 		opd2.setDate(foundOpd.getDate().minusMinutes(3));
 		opdIoOperationRepository.saveAndFlush(opd2);
 
-		Pageable pageable = PageRequest.of(0, 1);
-		Pageable pageable2 = PageRequest.of(1, 1);
-		assertThat(opdIoOperation.getOpdList(foundOpd.getPatient().getCode(), pageable).get(0).getCode()).isEqualTo(foundOpd.getCode());
-		assertThat(opdIoOperation.getOpdList(foundOpd.getPatient().getCode(), pageable2).get(0).getCode()).isEqualTo(opd2.getCode());
+		var response = opdIoOperation.getOpdListPageable(foundOpd.getPatient().getCode(), 0, 1);
+		var response2 = opdIoOperation.getOpdListPageable(foundOpd.getPatient().getCode(), 1, 1);
+
+		assertThat(response.getData().get(0).getCode()).isEqualTo(foundOpd.getCode());
+		assertThat(response2.getData().get(0).getCode()).isEqualTo(opd2.getCode());
 	}
 
 	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
 	@MethodSource("opdExtended")
+
 	void testIoGetOpdListProgYearPageable(boolean opdExtended) throws Exception {
 		GeneralData.OPDEXTENDED = opdExtended;
 		int code = setupTestOpd(false);
@@ -237,11 +240,11 @@ class Tests extends OHCoreTestCase {
 		opd2.setProgYear(foundOpd.getProgYear());
 		opdIoOperationRepository.saveAndFlush(opd2);
 
-		Pageable pageable = PageRequest.of(0, 1);
-		Pageable pageable2 = PageRequest.of(1, 1);
+		var response = opdIoOperation.getOpdByProgYearPageable(foundOpd.getProgYear(), 0, 1);
+		var response2 = opdIoOperation.getOpdByProgYearPageable(foundOpd.getProgYear(), 1, 1);
 
-		assertThat(opdIoOperation.getOpdByProgYear(foundOpd.getProgYear(), pageable).get(0).getCode()).isEqualTo(foundOpd.getCode());
-		assertThat(opdIoOperation.getOpdByProgYear(foundOpd.getProgYear(), pageable2).get(0).getCode()).isEqualTo(opd2.getCode());
+		assertThat(response.getData().get(0).getCode()).isEqualTo(foundOpd.getCode());
+		assertThat(response2.getData().get(0).getCode()).isEqualTo(opd2.getCode());
 	}
 
 	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
@@ -276,6 +279,7 @@ class Tests extends OHCoreTestCase {
 
 	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
 	@MethodSource("opdExtended")
+	@Test
 	void testIoGetOpdListPatientIdZeroPageable(boolean opdExtended) throws Exception {
 		GeneralData.OPDEXTENDED = opdExtended;
 		int code = setupTestOpd(false);
@@ -286,11 +290,11 @@ class Tests extends OHCoreTestCase {
 		opd2.setDate(foundOpd.getDate().minusMinutes(3));
 		opdIoOperationRepository.saveAndFlush(opd2);
 
-		Pageable pageable = PageRequest.of(0, 1);
-		Pageable pageable2 = PageRequest.of(1, 1);
+		var response = opdIoOperation.getOpdListPageable(0, 0, 1);
+		var response2 = opdIoOperation.getOpdListPageable(0, 1, 1);
 
-		assertThat(opdIoOperation.getOpdList(0, pageable).get(0).getCode()).isEqualTo(foundOpd.getCode());
-		assertThat(opdIoOperation.getOpdList(0, pageable2).get(0).getCode()).isEqualTo(opd2.getCode());
+		assertThat(response.getData().get(0).getCode()).isEqualTo(foundOpd.getCode());
+		assertThat(response2.getData().get(0).getCode()).isEqualTo(opd2.getCode());
 	}
 
 	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
@@ -609,6 +613,7 @@ class Tests extends OHCoreTestCase {
 
 	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
 	@MethodSource("opdExtended")
+	@Test
 	void testMgrGetOpd(boolean opdExtended) throws Exception {
 		GeneralData.OPDEXTENDED = opdExtended;
 		int code = setupTestOpd(false);
@@ -622,7 +627,9 @@ class Tests extends OHCoreTestCase {
 		opd2.setSex(foundOpd.getSex());
 		opd2.setNewPatient(foundOpd.getNewPatient());
 		opd2.setUserID(foundOpd.getUserID());
-		List<Opd> opds = opdBrowserManager.getOpd(
+
+
+		var response = opdBrowserManager.getOpdPageable(
 			foundOpd.getWard(),
 			foundOpd.getDisease().getType().getCode(),
 			foundOpd.getDisease().getCode(),
@@ -632,9 +639,9 @@ class Tests extends OHCoreTestCase {
 			foundOpd.getAge() + 1,
 			foundOpd.getSex(),
 			foundOpd.getNewPatient(),
-			foundOpd.getUserID(),
-			0,1);
-		List<Opd> opds2 = opdBrowserManager.getOpd(
+			0, 1);
+
+		var response2 = opdBrowserManager.getOpdPageable(
 			foundOpd.getWard(),
 			foundOpd.getDisease().getType().getCode(),
 			foundOpd.getDisease().getCode(),
@@ -644,15 +651,15 @@ class Tests extends OHCoreTestCase {
 			foundOpd.getAge() + 1,
 			foundOpd.getSex(),
 			foundOpd.getNewPatient(),
-			foundOpd.getUserID(),
 			1, 1);
 
-		assertThat(opds.get(0).getCode()).isEqualTo(foundOpd.getCode());
-		assertThat(opds2.get(0).getCode()).isEqualTo(opd2.getCode());
+		assertThat(response.getData().get(0).getCode()).isEqualTo(foundOpd.getCode());
+		assertThat(response2.getData().get(0).getCode()).isEqualTo(opd2.getCode());
 	}
 
 	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
 	@MethodSource("opdExtended")
+	@Test
 	void testMgrGetOpdListPatientId(boolean opdExtended) throws Exception {
 		GeneralData.OPDEXTENDED = opdExtended;
 		int code = setupTestOpd(false);
@@ -663,8 +670,11 @@ class Tests extends OHCoreTestCase {
 		opd2.setDate(foundOpd.getDate().minusMinutes(3));
 		opdIoOperationRepository.saveAndFlush(opd2);
 
-		assertThat(opdBrowserManager.getOpdList(foundOpd.getPatient().getCode(), 0, 1).get(0).getCode()).isEqualTo(foundOpd.getCode());
-		assertThat(opdBrowserManager.getOpdList(foundOpd.getPatient().getCode(), 1, 1).get(0).getCode()).isEqualTo(opd2.getCode());
+		var response = opdBrowserManager.getOpdByPatientIdPageable(foundOpd.getPatient().getCode(), 0, 1);
+		var response2 = opdBrowserManager.getOpdByPatientIdPageable(foundOpd.getPatient().getCode(), 1, 1);
+
+		assertThat(response.getData().get(0).getCode()).isEqualTo(foundOpd.getCode());
+		assertThat(response2.getData().get(0).getCode()).isEqualTo(opd2.getCode());
 	}
 
 	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
@@ -717,6 +727,7 @@ class Tests extends OHCoreTestCase {
 
 	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
 	@MethodSource("opdExtended")
+	@Test
 	void testMgrGetOpdListPatientIdZeroPageable(boolean opdExtended) throws Exception {
 		GeneralData.OPDEXTENDED = opdExtended;
 		int code = setupTestOpd(false);
@@ -727,12 +738,14 @@ class Tests extends OHCoreTestCase {
 		opd2.setDate(foundOpd.getDate().minusMinutes(3));
 		opdIoOperationRepository.saveAndFlush(opd2);
 
-		assertThat(opdBrowserManager.getOpdList(0, 0, 1).get(0).getCode()).isEqualTo(foundOpd.getCode());
-		assertThat(opdBrowserManager.getOpdList(0, 1, 1).get(0).getCode()).isEqualTo(opd2.getCode());
+		var response = opdBrowserManager.getOpdListPageable(0, 0, 1);
+		var response2 = opdBrowserManager.getOpdListPageable(0, 1, 1);
+
+		assertThat(response.getData().get(0).getCode()).isEqualTo(foundOpd.getCode());
+		assertThat(response2.getData().get(0).getCode()).isEqualTo(opd2.getCode());
 	}
 
-	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
-	@MethodSource("opdExtended")
+	@Test
 	void testMgrGetOpdListProgYearPageable(boolean opdExtended) throws Exception {
 		GeneralData.OPDEXTENDED = opdExtended;
 		int code = setupTestOpd(false);
@@ -741,9 +754,11 @@ class Tests extends OHCoreTestCase {
 		Opd opd2 = setupOpd("333", "C");
 		opd2.setProgYear(foundOpd.getProgYear());
 		opdIoOperationRepository.saveAndFlush(opd2);
+		var response = opdBrowserManager.getOpdByProgYearPageable(foundOpd.getProgYear(), 0, 1);
+		var response2 = opdBrowserManager.getOpdByProgYearPageable(foundOpd.getProgYear(), 1, 1);
 
-		assertThat(opdBrowserManager.getOpdByProgYear(foundOpd.getProgYear(), 0, 1).get(0).getCode()).isEqualTo(foundOpd.getCode());
-		assertThat(opdBrowserManager.getOpdByProgYear(foundOpd.getProgYear(), 1, 1).get(0).getCode()).isEqualTo(opd2.getCode());
+		assertThat(response.getData().get(0).getCode()).isEqualTo(foundOpd.getCode());
+		assertThat(response2.getData().get(0).getCode()).isEqualTo(opd2.getCode());
 	}
 
 	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
