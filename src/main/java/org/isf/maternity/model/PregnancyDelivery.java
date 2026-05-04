@@ -224,7 +224,7 @@ public class PregnancyDelivery extends Auditable<String> {
 		this.perinealIntegrity = perinealIntegrity;
 	}
 
-	public Boolean getPlacentaComplete() {
+	public Boolean isPlacentaComplete() {
 		return placentaComplete;
 	}
 

@@ -28,7 +28,7 @@ public enum RiskLevel {
 	MEDIUM,
 	HIGH;
 
-	private static final String PREFIX = "maternity.risklevel.";
+	private static final String PREFIX = "angal.maternity.risklevel.";
 
 	public String getMessageKey() {
 		return PREFIX + name().toLowerCase();

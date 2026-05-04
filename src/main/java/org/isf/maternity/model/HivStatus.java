@@ -22,9 +22,9 @@
 package org.isf.maternity.model;
 
 public enum HivStatus {
-	POSITIVE("maternity.hiv.positive"),
-	NEGATIVE("maternity.hiv.negative"),
-	UNKNOWN("maternity.hiv.unknown");
+	POSITIVE("angal.maternity.hiv.positive"),
+	NEGATIVE("angal.maternity.hiv.negative"),
+	UNKNOWN("angal.maternity.hiv.unknown");
 
 	private final String key;
 

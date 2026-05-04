@@ -22,11 +22,11 @@
 package org.isf.maternity.model;
 
 public enum DeliveryMode {
-	SVD("maternity.delivery.mode.svd"),
-	VACUUM("maternity.delivery.mode.vacuum"),
-	FORCEPS("maternity.delivery.mode.forceps"),
-	C_SECTION_ELECTIVE("maternity.delivery.mode.csection.elective"),
-	C_SECTION_EMERGENCY("maternity.delivery.mode.csection.emergency");
+	SVD("angal.maternity.delivery.mode.svd"),
+	VACUUM("angal.maternity.delivery.mode.vacuum"),
+	FORCEPS("angal.maternity.delivery.mode.forceps"),
+	C_SECTION_ELECTIVE("angal.maternity.delivery.mode.csection.elective"),
+	C_SECTION_EMERGENCY("angal.maternity.delivery.mode.csection.emergency");
 
 	private final String key;
 

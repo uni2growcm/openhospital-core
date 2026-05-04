@@ -28,7 +28,7 @@ public enum PregnancyStatus {
 	COMPLETED,
 	TERMINATED;
 
-	private static final String PREFIX = "maternity.pregnancystatus.";
+	private static final String PREFIX = "angal.maternity.pregnancystatus.";
 
 	public String getMessageKey() {
 		return PREFIX + name().toLowerCase();

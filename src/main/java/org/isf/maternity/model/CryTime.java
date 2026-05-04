@@ -22,10 +22,10 @@
 package org.isf.maternity.model;
 
 public enum CryTime {
-	IMMEDIATE("maternity.cry.immediate"),
-	DELAYED("maternity.cry.delayed"),
-	NO_CRY("maternity.cry.none"),
-	UNKNOWN("maternity.cry.unknown");
+	IMMEDIATE("angal.maternity.cry.immediate"),
+	DELAYED("angal.maternity.cry.delayed"),
+	NO_CRY("angal.maternity.cry.none"),
+	UNKNOWN("angal.maternity.cry.unknown");
 
 	private final String key;
 

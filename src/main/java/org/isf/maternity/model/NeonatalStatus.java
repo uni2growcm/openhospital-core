@@ -22,11 +22,11 @@
 package org.isf.maternity.model;
 
 public enum NeonatalStatus {
-	ALIVE("maternity.neonatal.alive"),
-	STILLBORN("maternity.neonatal.stillborn"),
-	EARLY_NEONATAL_DEATH("maternity.neonatal.early_death"),
-	TRANSFERRED("maternity.neonatal.transferred"),
-	CRITICAL("maternity.neonatal.critical");
+	ALIVE("anagl.maternity.neonatal.alive"),
+	STILLBORN("angal.maternity.neonatal.stillborn"),
+	EARLY_NEONATAL_DEATH("angal.maternity.neonatal.early_death"),
+	TRANSFERRED("angal.maternity.neonatal.transferred"),
+	CRITICAL("angal.maternity.neonatal.critical");
 
 	private final String key;
 
