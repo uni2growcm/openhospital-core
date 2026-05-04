@@ -36,6 +36,8 @@ import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.time.TimeTools;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 
 /**
  * Persistence class for Accounting module.
@@ -59,7 +61,7 @@ public class AccountingIoOperations {
 
 	/**
 	 * Returns all the pending {@link Bill}s for the specified patient.
-	 * 
+	 *
 	 * @param patID the patient id.
 	 * @return the list of pending bills.
 	 * @throws OHServiceException if an error occurs retrieving the pending bills.
@@ -73,7 +75,7 @@ public class AccountingIoOperations {
 
 	/**
 	 * Get all the {@link Bill}s.
-	 * 
+	 *
 	 * @return a list of bills.
 	 * @throws OHServiceException if an error occurs retrieving the bills.
 	 */
@@ -83,7 +85,7 @@ public class AccountingIoOperations {
 
 	/**
 	 * Get the {@link Bill} with specified billID.
-	 * 
+	 *
 	 * @param billID
 	 * @return the {@link Bill}.
 	 * @throws OHServiceException if an error occurs retrieving the bill.
@@ -94,7 +96,7 @@ public class AccountingIoOperations {
 
 	/**
 	 * Returns all user ids from {@link BillPayments}.
-	 * 
+	 *
 	 * @return a list of user id.
 	 * @throws OHServiceException if an error occurs retrieving the users list.
 	 */
@@ -107,7 +109,7 @@ public class AccountingIoOperations {
 
 	/**
 	 * Returns the {@link BillItems} associated to the specified {@link Bill} id or all the stored {@link BillItems} if no id is provided.
-	 * 
+	 *
 	 * @param billID the bill id or {@code 0}.
 	 * @return a list of {@link BillItems} associated to the bill id or all the stored bill items.
 	 * @throws OHServiceException if an error occurs retrieving the bill items.
@@ -121,7 +123,7 @@ public class AccountingIoOperations {
 
 	/**
 	 * Retrieves all the {@link BillPayments} for the specified date range.
-	 * 
+	 *
 	 * @param dateFrom low endpoint, inclusive, for the date range.
 	 * @param dateTo high endpoint, inclusive, for the date range.
 	 * @return a list of {@link BillPayments} for the specified date range.
@@ -133,7 +135,7 @@ public class AccountingIoOperations {
 
 	/**
 	 * Retrieves all the {@link BillPayments} for the specified {@link Bill} id, or all the stored {@link BillPayments} if no id is indicated.
-	 * 
+	 *
 	 * @param billID the bill id or {@code 0}.
 	 * @return the list of bill payments.
 	 * @throws OHServiceException if an error occurs retrieving the bill payments.
@@ -147,7 +149,7 @@ public class AccountingIoOperations {
 
 	/**
 	 * Stores a new {@link Bill}.
-	 * 
+	 *
 	 * @param newBill the bill to store.
 	 * @return the persisted Bill object
 	 * @throws OHServiceException if an error occurs storing the bill.
@@ -158,7 +160,7 @@ public class AccountingIoOperations {
 
 	/**
 	 * Stores a list of {@link BillItems} associated to a {@link Bill}.
-	 * 
+	 *
 	 * @param bill the bill.
 	 * @param billItems the bill items to store.
 	 * @throws OHServiceException if an error occurs during the store operation.
@@ -174,7 +176,7 @@ public class AccountingIoOperations {
 
 	/**
 	 * Stores a list of {@link BillPayments} associated to a {@link Bill}.
-	 * 
+	 *
 	 * @param bill the bill.
 	 * @param payItems the bill payments.
 	 * @throws OHServiceException if an error occurs during the store procedure.
@@ -190,7 +192,7 @@ public class AccountingIoOperations {
 
 	/**
 	 * Updates the specified {@link Bill}.
-	 * 
+	 *
 	 * @param updateBill the bill to update.
 	 * @return the updated Bill object
 	 * @throws OHServiceException if an error occurs during the update.
@@ -201,7 +203,7 @@ public class AccountingIoOperations {
 
 	/**
 	 * Deletes the specified {@link Bill}. If the argument is NULL then an error is thrown. If the Bill is not found it is silently ignored.
-	 * 
+	 *
 	 * @param deleteBill the bill to delete.
 	 * @throws OHServiceException if an error occurs deleting the bill.
 	 */
@@ -211,7 +213,7 @@ public class AccountingIoOperations {
 
 	/**
 	 * Retrieves all the {@link Bill}s for the specified date range.
-	 * 
+	 *
 	 * @param dateFrom the low date range endpoint, inclusive.
 	 * @param dateTo the high date range endpoint, inclusive.
 	 * @return a list of retrieved {@link Bill}s.
@@ -223,7 +225,7 @@ public class AccountingIoOperations {
 
 	/**
 	 * Gets all the {@link Bill}s associated to the passed {@link BillPayments}.
-	 * 
+	 *
 	 * @param payments the {@link BillPayments} associated to the bill to retrieve.
 	 * @return a list of {@link Bill} associated to the passed {@link BillPayments}.
 	 * @throws OHServiceException if an error occurs retrieving the bill list.
@@ -238,7 +240,7 @@ public class AccountingIoOperations {
 
 	/**
 	 * Retrieves all the {@link BillPayments} associated to the passed {@link Bill} list.
-	 * 
+	 *
 	 * @param bills the bill list.
 	 * @return a list of {@link BillPayments} associated to the passed bill list.
 	 * @throws OHServiceException if an error occurs retrieving the payments.
@@ -249,7 +251,7 @@ public class AccountingIoOperations {
 
 	/**
 	 * Retrieves all billPayments for a given patient in the period dateFrom -> dateTo
-	 * 
+	 *
 	 * @param dateFrom
 	 * @param dateTo
 	 * @param patient
@@ -263,7 +265,7 @@ public class AccountingIoOperations {
 
 	/**
 	 * Retrieves all the bills for a given patient in the period dateFrom -> dateTo
-	 * 
+	 *
 	 * @param dateFrom
 	 * @param dateTo
 	 * @param patient
@@ -275,7 +277,7 @@ public class AccountingIoOperations {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param patID
 	 * @return
 	 * @throws OHServiceException
@@ -296,7 +298,7 @@ public class AccountingIoOperations {
 
 	/**
 	 * Return distinct BillItems
-	 * 
+	 *
 	 * @return BillItems list
 	 * @throws OHServiceException
 	 */
@@ -323,7 +325,7 @@ public class AccountingIoOperations {
 
 	/**
 	 * Count active {@link Bill}s
-	 * 
+	 *
 	 * @return the number of recorded {@link Bill}s
 	 * @throws OHServiceException
 	 */
@@ -331,4 +333,22 @@ public class AccountingIoOperations {
 		return this.billRepository.countAllActiveBills();
 	}
 
+	/**
+	 * Count bills with filters
+	 */
+	public long countBills(String status, LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient) throws OHServiceException {
+		LocalDateTime from = dateFrom != null ? TimeTools.getBeginningOfDay(dateFrom) : null;
+		LocalDateTime to = dateTo != null ? TimeTools.getBeginningOfNextDay(dateTo) : null;
+		return billRepository.countBillsWithFilters(status, from, to, patient);
+	}
+
+	/**
+	 * Get paginated bills with filters
+	 */
+	public List<Bill> getBills(String status, LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient, int limit, int offset) throws OHServiceException {
+		LocalDateTime from = dateFrom != null ? TimeTools.getBeginningOfDay(dateFrom) : null;
+		LocalDateTime to = dateTo != null ? TimeTools.getBeginningOfNextDay(dateTo) : null;
+		Pageable pageable = PageRequest.of(offset / limit, limit);
+		return billRepository.findBillsWithFilters(status, from, to, patient, pageable);
+	}
 }

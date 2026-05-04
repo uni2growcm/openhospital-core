@@ -360,4 +360,30 @@ public class BillBrowserManager {
 	public List<Bill> getBills(LocalDateTime dateFrom, LocalDateTime dateTo, BillItems billItem) throws OHServiceException {
 		return ioOperations.getBillsBetweenDatesWhereBillItem(dateFrom, dateTo, billItem);
 	}
+
+	/**
+	 * Get paginated bills with filters
+	 * @param status Status of bill (O=open, C=closed, null=all)
+	 * @param dateFrom Start date
+	 * @param dateTo End date
+	 * @param patient Patient filter (can be null)
+	 * @param limit Number of items per page
+	 * @param offset Starting index (page number * limit)
+	 * @return List of bills
+	 */
+	public List<Bill> getBills(String status, LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient, int limit, int offset) throws OHServiceException {
+		return ioOperations.getBills(status, dateFrom, dateTo, patient, limit, offset);
+	}
+
+	/**
+	 * Count bills with filters
+	 * @param status Status of bill (O=open, C=closed, null=all)
+	 * @param dateFrom Start date
+	 * @param dateTo End date
+	 * @param patient Patient filter (can be null)
+	 * @return Total count of bills matching filters
+	 */
+	public long countBills(String status, LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient) throws OHServiceException {
+		return ioOperations.countBills(status, dateFrom, dateTo, patient);
+	}
 }

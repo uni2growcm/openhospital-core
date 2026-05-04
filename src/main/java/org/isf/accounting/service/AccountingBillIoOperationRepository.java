@@ -29,6 +29,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.isf.patient.model.Patient;
+import org.springframework.data.domain.Pageable;
 
 @Repository
 public interface AccountingBillIoOperationRepository extends JpaRepository<Bill, Integer> {
@@ -67,4 +69,44 @@ public interface AccountingBillIoOperationRepository extends JpaRepository<Bill,
 
 	@Query("select count(b) from Bill b where active=1")
 	long countAllActiveBills();
+
+	@Query("SELECT COUNT(b) FROM Bill b WHERE " +
+		"(:status IS NULL OR b.status = :status) AND " +
+		"(:dateFrom IS NULL OR b.date >= :dateFrom) AND " +
+		"(:dateTo IS NULL OR b.date <= :dateTo) AND " +
+		"(:patient IS NULL OR b.billPatient = :patient)")
+	long countBillsWithFilters(@Param("status") String status,
+	                           @Param("dateFrom") LocalDateTime dateFrom,
+	                           @Param("dateTo") LocalDateTime dateTo,
+	                           @Param("patient") Patient patient);
+
+
+	@Query("SELECT b FROM Bill b WHERE " +
+		"(:status IS NULL OR b.status = :status) AND " +
+		"(:dateFrom IS NULL OR b.date >= :dateFrom) AND " +
+		"(:dateTo IS NULL OR b.date <= :dateTo) AND " +
+		"(:patient IS NULL OR b.billPatient = :patient) " +
+		"ORDER BY b.date DESC")
+	List<Bill> findBillsWithFilters(@Param("status") String status,
+	                                @Param("dateFrom") LocalDateTime dateFrom,
+	                                @Param("dateTo") LocalDateTime dateTo,
+	                                @Param("patient") Patient patient,
+	                                Pageable pageable);
+
+	/**
+	 * Find bills with filters using native query with LIMIT and OFFSET
+	 */
+	@Query(value = "SELECT * FROM OH_BILLS b WHERE " +
+		"(:status IS NULL OR b.BLL_STATUS = :status) AND " +
+		"(:dateFrom IS NULL OR b.BLL_DATE >= :dateFrom) AND " +
+		"(:dateTo IS NULL OR b.BLL_DATE <= :dateTo) AND " +
+		"(:patientId IS NULL OR b.BLL_ID_PAT = :patientId) " +
+		"ORDER BY b.BLL_DATE DESC LIMIT :limit OFFSET :offset",
+		nativeQuery = true)
+	List<Bill> findBillsWithFiltersNative(@Param("status") String status,
+	                                      @Param("dateFrom") LocalDateTime dateFrom,
+	                                      @Param("dateTo") LocalDateTime dateTo,
+	                                      @Param("patientId") Integer patientId,
+	                                      @Param("limit") int limit,
+	                                      @Param("offset") int offset);
 }
