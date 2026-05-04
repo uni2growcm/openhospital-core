@@ -224,6 +224,9 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 	@Column(name = "ADM_NEXT_APPOINTMENT")
 	private LocalDateTime nextAppointment;
 
+	@Column(name = "ADM_DEATH_PERIOD")
+	private String deathPeriod;
+
 	public Admission() {
 		super();
 	}
@@ -343,7 +346,7 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 					 LocalDateTime abortDate, String userID, char deleted,
 					 String preTreatment, String preAssessment, String entryReason,
 					 Boolean alertReceived, Boolean referenceSheet, Boolean qualifiedAgent, String transportation,
-					 String courseOfAction, LocalDateTime nextAppointment ) {
+					 String courseOfAction, LocalDateTime nextAppointment, String deathPeriod ) {
 
 		this(id, admitted, type, ward, prog, patient, admDate, admType, fhu,
 			diseaseIn, diseaseOut1, diseaseOut2, diseaseOut3,
@@ -360,6 +363,7 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 		this.transportation = transportation;
 		this.courseOfAction = courseOfAction;
 		this.nextAppointment = nextAppointment;
+		this.deathPeriod = deathPeriod;
 	}
 
 	public Float getTransUnit() {
@@ -672,6 +676,14 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 
 	public void setCourseOfAction(String courseOfAction) {
 		this.courseOfAction = courseOfAction;
+	}
+
+	public String getDeathPeriod() {
+		return deathPeriod;
+	}
+
+	public void setDeathPeriod(String deathPeriod) {
+		this.deathPeriod = deathPeriod;
 	}
 
 	@Override
