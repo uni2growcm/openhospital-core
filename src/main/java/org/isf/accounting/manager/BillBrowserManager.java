@@ -38,6 +38,7 @@ import org.isf.utils.exception.model.OHExceptionMessage;
 import org.isf.utils.time.TimeTools;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.isf.utils.pagination.PagedResponse;
 
 @Component
 public class BillBrowserManager {
@@ -386,4 +387,11 @@ public class BillBrowserManager {
 	public long countBills(String status, LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient) throws OHServiceException {
 		return ioOperations.countBills(status, dateFrom, dateTo, patient);
 	}
+	/**
+	 * Returns paged list of bills with filters
+	 */
+	public PagedResponse<Bill> getBillsPageable(String status, LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient, int page, int size) throws OHServiceException {
+		return ioOperations.getBillsPageable(status, dateFrom, dateTo, patient, page, size);
+	}
+
 }
