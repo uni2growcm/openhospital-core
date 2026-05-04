@@ -41,6 +41,7 @@ import org.isf.utils.exception.model.OHExceptionMessage;
 import org.isf.utils.pagination.PagedResponse;
 import org.isf.utils.time.TimeTools;
 import org.isf.ward.model.Ward;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
@@ -155,7 +156,7 @@ public class AdmissionBrowserManager {
 
 	/**
 	 * Method that returns the list of completed Admissions (Discharges) not logically deleted within the specified date range, divided by pages
-	 * 
+	 *
 	 * @param dateFrom
 	 * @param dateTo
 	 * @param page
@@ -536,4 +537,23 @@ public class AdmissionBrowserManager {
 			|| (diseaseOut3 != null && diseaseOut1.getCode().equals(diseaseOut3.getCode()))
 			|| (diseaseOut2 != null && diseaseOut3 != null && diseaseOut2.getCode().equals(diseaseOut3.getCode()));
 	}
+
+	public Page<AdmittedPatient> getAdmittedPatientsPaginated(
+		int page, int size,
+		String searchTerms,
+		String admissionStatus,
+		List<String> wardCodes,
+		LocalDateTime[] admissionRange,
+		LocalDateTime[] dischargeRange,
+		Integer ageFrom,
+		Integer ageTo,
+		Character sex) throws OHServiceException {
+
+		return ioOperations.getAdmittedPatientsByFilters(
+			page, size, searchTerms, admissionStatus, wardCodes,
+			admissionRange, dischargeRange, ageFrom, ageTo, sex
+		);
+	}
+
+
 }

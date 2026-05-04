@@ -83,7 +83,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 class Tests extends OHCoreTestCase {
@@ -1595,6 +1597,15 @@ class Tests extends OHCoreTestCase {
 		public List<AdmittedPatient> findPatientAdmissionsBySearchAndDateRanges(String searchTerms, LocalDateTime[] admissionRange,
 			LocalDateTime[] dischargeRange) throws OHServiceException {
 			return null;
+		}
+
+		@Override
+		public Page<AdmittedPatient> findPatientAdmissionsByFiltersPaginated(
+			String searchTerms, String admissionStatus, List<String> wardCodes,
+			LocalDateTime[] admissionRange, LocalDateTime[] dischargeRange,
+			Integer ageFrom, Integer ageTo, Character sex,
+			Pageable pageable) throws OHServiceException {
+			return Page.empty(pageable);
 		}
 	}
 

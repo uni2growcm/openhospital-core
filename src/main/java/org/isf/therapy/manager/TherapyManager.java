@@ -338,4 +338,43 @@ public class TherapyManager {
 		return new TherapyRow(therapyID, patient, startDate, endDate, medical, qty, unitID, freqInDay, freqInPeriod, note, notify, sms);
 	}
 
+	/**
+	 * Returns the list of {@link TherapyRow}s for a specific therapyID
+	 */
+	public List<TherapyRow> getTherapyRowsByTherapyId(int therapyID) throws OHServiceException {
+		return ioOperations.getTherapyRowsByTherapyId(therapyID);
+	}
+
+	/**
+	 * Clones a {@link TherapyRow} with a new start date, preserving duration
+	 */
+	public TherapyRow cloneWithNewStartDate(TherapyRow oldTherapy, LocalDateTime newStartDate) throws OHServiceException {
+		Patient patient = patientManager.getPatientById(oldTherapy.getPatient().getCode());
+
+		long durationDays = java.time.temporal.ChronoUnit.DAYS.between(
+			oldTherapy.getStartDate().toLocalDate(),
+			oldTherapy.getEndDate().toLocalDate()
+		);
+
+		LocalDateTime newEndDate = newStartDate.plusDays(durationDays);
+
+		Medical medical = medManager.getMedical(oldTherapy.getMedical());
+
+		TherapyRow newTherapy = new TherapyRow(
+			0,
+			patient,
+			newStartDate,
+			newEndDate,
+			medical,
+			oldTherapy.getQty(),
+			oldTherapy.getUnitID(),
+			oldTherapy.getFreqInDay(),
+			oldTherapy.getFreqInPeriod(),
+			oldTherapy.getNote(),
+			oldTherapy.isNotify(),
+			oldTherapy.isSms()
+		);
+		return newTherapy;
+	}
+
 }
