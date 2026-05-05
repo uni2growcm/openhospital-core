@@ -5,6 +5,8 @@
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter2.jrdax"/>
 	<parameter name="LOGO-PATH" class="java.lang.String"/>
 	<parameter name="LOGO-BENIN-PATH" class="java.lang.String"/>
+	<parameter name="firstDate" class="java.sql.Timestamp"/>
+	<parameter name="secondDate" class="java.sql.Timestamp"/>
 	<queryString language="SQL">
 		<![CDATA[SELECT 
     COUNT(CASE WHEN ADM_DEATH_PERIOD = 'BEFORE_ADMISSION' THEN 1 END) AS DEATH_BEFORE_ADMISSION,
@@ -18,7 +20,8 @@
     COUNT(CASE WHEN ADM_DEATH_PERIOD IN ('BEFORE_ADMISSION', 'AFTER_ADMISSION') THEN 1 END) AS TOTAL_GENERAL_DEATH
 FROM oh_admission
 WHERE ADM_DELETED = 'N'
-  AND ADM_ACTIVE = 1;]]>
+  AND ADM_ACTIVE = 1
+  AND ADM_CREATED_DATE BETWEEN $P{firstDate} AND $P{secondDate};]]>
 	</queryString>
 	<field name="DEATH_BEFORE_ADMISSION" class="java.lang.Long">
 		<property name="com.jaspersoft.studio.field.name" value="DEATH_BEFORE_ADMISSION"/>
@@ -195,9 +198,10 @@ WHERE ADM_DELETED = 'N'
 				<textFieldExpression><![CDATA[$R{TotalGeneralDeath}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="80" y="198" width="400" height="30" uuid="e5a72834-ece0-4268-b81e-05fd4208994a"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="14" isBold="true"/>
+				<reportElement x="80" y="197" width="400" height="30" uuid="e5a72834-ece0-4268-b81e-05fd4208994a"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font size="14" isBold="true" isUnderline="true"/>
+					<paragraph lineSpacing="Single" lineSpacingSize="1.0"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$R{DeathStatistics}]]></textFieldExpression>
 			</textField>
