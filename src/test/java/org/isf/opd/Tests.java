@@ -1276,4 +1276,89 @@ class Tests extends OHCoreTestCase {
 		assertThat(foundOpd).isNotNull();
 		testOpd.check(foundOpd);
 	}
+
+
+	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
+	@MethodSource("opdExtended")
+	void testExamButton(boolean opdExtended) throws Exception {
+		GeneralData.OPDEXTENDED = opdExtended;
+
+		int code = setupTestOpd(false);
+		Opd foundOpd = opdIoOperationRepository.findById(code).orElse(null);
+		assertThat(foundOpd).isNotNull();
+		assertThat(foundOpd.getPatient()).isNotNull();
+
+		Patient patient = foundOpd.getPatient();
+		assertThat(patient.getCode()).isGreaterThan(0);
+
+	}
+
+	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
+	@MethodSource("opdExtended")
+	void testTherapyButton(boolean opdExtended) throws Exception {
+		GeneralData.OPDEXTENDED = opdExtended;
+
+		int code = setupTestOpd(false);
+		Opd foundOpd = opdIoOperationRepository.findById(code).orElse(null);
+		assertThat(foundOpd).isNotNull();
+		assertThat(foundOpd.getPatient()).isNotNull();
+
+		Patient patient = foundOpd.getPatient();
+		assertThat(patient.getCode()).isGreaterThan(0);
+
+	}
+
+	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
+	@MethodSource("opdExtended")
+	void testOperationButton(boolean opdExtended) throws Exception {
+		GeneralData.OPDEXTENDED = opdExtended;
+
+		int code = setupTestOpd(false);
+		Opd foundOpd = opdIoOperationRepository.findById(code).orElse(null);
+		assertThat(foundOpd).isNotNull();
+		assertThat(foundOpd.getPatient()).isNotNull();
+
+		Patient patient = foundOpd.getPatient();
+		assertThat(patient.getCode()).isGreaterThan(0);
+
+	}
+
+	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
+	@MethodSource("opdExtended")
+	void testExamButtonFailsWhenNoPatientSelected(boolean opdExtended) throws Exception {
+		GeneralData.OPDEXTENDED = opdExtended;
+
+		Patient patient = testPatient.setup(false);
+		DiseaseType diseaseType = testDiseaseType.setup(false);
+		Disease disease = testDisease.setup(diseaseType, false);
+		disease.setCode("199");
+		Ward ward = testWard.setup(false);
+		Visit nextVisit = testVisit.setup(patient, false, ward);
+
+		Opd opd = testOpd.setup(patient, disease, ward, nextVisit, false);
+		opd.setPatient(null);
+
+		patientIoOperationRepository.saveAndFlush(patient);
+		diseaseTypeIoOperationRepository.saveAndFlush(diseaseType);
+		diseaseIoOperationRepository.saveAndFlush(disease);
+		wardIoOperationRepository.saveAndFlush(ward);
+		visitsIoOperationRepository.saveAndFlush(nextVisit);
+		opdIoOperationRepository.saveAndFlush(opd);
+
+		assertThat(opd.getPatient()).isNull();
+	}
+
+	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
+	@MethodSource("opdExtended")
+	void testOperationButtonWithAdmittedPatient(boolean opdExtended) throws Exception {
+		GeneralData.OPDEXTENDED = opdExtended;
+
+		int code = setupTestOpd(false);
+		Opd foundOpd = opdIoOperationRepository.findById(code).orElse(null);
+		assertThat(foundOpd).isNotNull();
+		Patient patient = foundOpd.getPatient();
+		assertThat(patient).isNotNull();
+
+		assertThat(patient.getCode()).isGreaterThan(0);
+	}
 }

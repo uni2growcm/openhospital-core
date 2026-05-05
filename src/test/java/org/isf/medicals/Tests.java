@@ -669,4 +669,95 @@ class Tests extends OHCoreTestCase {
 		movementIoOperationRepository.saveAndFlush(movement);
 		return movement.getCode();
 	}
+
+	@Test
+	void testSearchMedicalByDescription() throws Exception {
+
+		MedicalType medicalType = testMedicalType.setup(false);
+		medicalTypeIoOperationRepository.saveAndFlush(medicalType);
+
+		Medical medical1 = testMedical.setup(medicalType, false);
+		medical1.setDescription("Aspirine 500mg");
+		medical1.setProdCode("ASP001");
+
+		Medical medical2 = testMedical.setup(medicalType, false);
+		medical2.setDescription("Paracétamol 1000mg");
+		medical2.setProdCode("PAR001");
+
+		Medical medical3 = testMedical.setup(medicalType, false);
+		medical3.setDescription("Amoxicilline 500mg");
+		medical3.setProdCode("AMO001");
+
+		medicalsIoOperationRepository.saveAndFlush(medical1);
+		medicalsIoOperationRepository.saveAndFlush(medical2);
+		medicalsIoOperationRepository.saveAndFlush(medical3);
+
+
+		List<Medical> results = medicalsIoOperations.getMedicals("Aspirine");
+
+
+		assertThat(results).hasSize(1);
+		assertThat(results.get(0).getDescription()).isEqualTo("Aspirine 500mg");
+
+
+		List<Medical> results2 = medicalsIoOperations.getMedicals("500mg");
+
+		assertThat(results2).hasSize(2);
+	}
+
+	@Test
+	void testSearchMedicalByIdentifier() throws Exception {
+
+		MedicalType medicalType = testMedicalType.setup(false);
+		medicalTypeIoOperationRepository.saveAndFlush(medicalType);
+
+		Medical medical = testMedical.setup(medicalType, false);
+		medical.setDescription("Ibuprofène 400mg");
+		medical.setProdCode("IBU001");
+		medicalsIoOperationRepository.saveAndFlush(medical);
+
+		Medical result = medicalsIoOperations.getMedicalByMedicalCode("IBU001");
+
+		assertThat(result).isNotNull();
+		assertThat(result.getDescription()).isEqualTo("Ibuprofène 400mg");
+	}
+
+	@Test
+	void testSearchMedicalByDescriptionCaseInsensitive() throws Exception {
+
+		MedicalType medicalType = testMedicalType.setup(false);
+		medicalTypeIoOperationRepository.saveAndFlush(medicalType);
+
+		Medical medical = testMedical.setup(medicalType, false);
+		medical.setDescription("VITAMINE C 1000mg");
+		medicalsIoOperationRepository.saveAndFlush(medical);
+
+		List<Medical> results = medicalsIoOperations.getMedicals("vitamine");
+
+		assertThat(results).isNotEmpty();
+		assertThat(results.get(0).getDescription()).isEqualTo("VITAMINE C 1000mg");
+	}
+
+	@Test
+	void testSearchMedicalByEmptyDescription() throws Exception {
+
+		MedicalType medicalType = testMedicalType.setup(false);
+		medicalTypeIoOperationRepository.saveAndFlush(medicalType);
+
+		Medical medical = testMedical.setup(medicalType, false);
+		medical.setDescription("Test Médical");
+		medicalsIoOperationRepository.saveAndFlush(medical);
+
+		List<Medical> results = medicalsIoOperations.getMedicals((String) null);
+
+		assertThat(results).isNotEmpty();
+	}
+
+	@Test
+	void testSearchMedicalByNonExistentDescription() throws Exception {
+
+		List<Medical> results = medicalsIoOperations.getMedicals("Médicament inexistant");
+
+		assertThat(results).isEmpty();
+	}
 }
