@@ -66,6 +66,7 @@ public interface PregnancyIoOperationRepository extends JpaRepository<Pregnancy,
 		  AND (:toDate IS NULL OR p.date <= :toDate)
 		  AND (:lmpDateFrom IS NULL OR p.lmp >= :lmpDateFrom)
 		  AND (:lmpDateTo IS NULL OR p.lmp <= :lmpDateTo)
+		ORDER BY p.date DESC
 	""")
 	Page<Pregnancy> getPregnancies(
 		@Param("patientId") Integer patientId,
