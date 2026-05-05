@@ -47,6 +47,7 @@ import org.isf.utils.pagination.PageInfo;
 import org.isf.utils.pagination.PagedResponse;
 import org.isf.utils.time.TimeTools;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -389,6 +390,25 @@ public class AdmissionIoOperations {
 	 */
 	public long countAllActiveAdmissions() {
 		return this.repository.countAllActiveNotDeletedAdmissions();
+	}
+
+	public Page<AdmittedPatient> getAdmittedPatientsByFilters(
+		int page, int size,
+		String searchTerms,
+		String admissionStatus,
+		List<String> wardCodes,
+		LocalDateTime[] admissionRange,
+		LocalDateTime[] dischargeRange,
+		Integer ageFrom,
+		Integer ageTo,
+		Character sex) throws OHServiceException {
+
+		Pageable pageable = PageRequest.of(page, size);
+		return repository.findPatientAdmissionsByFiltersPaginated(
+			searchTerms, admissionStatus, wardCodes,
+			admissionRange, dischargeRange,
+			ageFrom, ageTo, sex, pageable
+		);
 	}
 
 }

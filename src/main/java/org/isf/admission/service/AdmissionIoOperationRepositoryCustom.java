@@ -26,11 +26,25 @@ import java.util.List;
 
 import org.isf.admission.model.AdmittedPatient;
 import org.isf.utils.exception.OHServiceException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface AdmissionIoOperationRepositoryCustom {
 
 	List<AdmittedPatient> findPatientAdmissionsBySearchAndDateRanges(String searchTerms, LocalDateTime[] admissionRange, LocalDateTime[] dischargeRange)
 			throws OHServiceException;
+
+	Page<AdmittedPatient> findPatientAdmissionsByFiltersPaginated(
+		String searchTerms,
+		String admissionStatus,
+		List<String> wardCodes,
+		LocalDateTime[] admissionRange,
+		LocalDateTime[] dischargeRange,
+		Integer ageFrom,
+		Integer ageTo,
+		Character sex,
+		Pageable pageable
+	) throws OHServiceException;
 
 	/**
 	 * @param patientId
