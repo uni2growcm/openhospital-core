@@ -42,6 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -330,5 +331,22 @@ public class PatientIoOperations {
 			retrievePatientProfilePhoto(patient);
 		}
 		return patients;
+	}
+
+
+	// Version plus simple avec Pageable
+	public List<Patient> findBySearchStringPaginated(String search, int limit, int offset) {
+		Pageable pageable = PageRequest.of(offset / limit, limit);
+		return repository.findBySearchStringPaginated(search, pageable);
+	}
+
+	public long countPatientsByOneOfFieldsLike(String search) {
+		return repository.countBySearchString(search);
+	}
+
+
+	public Page<Patient> getPatientsByOneOfFieldsLikePaginated(String keyword, int page, int size) throws OHServiceException {
+		Pageable pageable = PageRequest.of(page, size);
+		return repository.findByFieldsContainingWordsFromLiteralPaginated(keyword, pageable);
 	}
 }

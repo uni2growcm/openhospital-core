@@ -64,4 +64,20 @@ public interface PatientIoOperationRepository extends JpaRepository<Patient, Int
 	long countAllActiveNotDeletedPatients();
 	
 	List<Patient> findAllByCodeIn(List<Integer> codes);
+
+
+	@Query("SELECT p FROM Patient p WHERE " +
+		"LOWER(p.firstName) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+		"LOWER(p.secondName) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+		"LOWER(p.name) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+		"CAST(p.code AS string) LIKE CONCAT('%', :search, '%')")
+	List<Patient> findBySearchStringPaginated(@Param("search") String search, Pageable pageable);
+
+
+	@Query("SELECT COUNT(p) FROM Patient p WHERE " +
+		"LOWER(p.firstName) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+		"LOWER(p.secondName) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+		"LOWER(p.name) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+		"CAST(p.code AS string) LIKE CONCAT('%', :search, '%')")
+	long countBySearchString(@Param("search") String search);
 }

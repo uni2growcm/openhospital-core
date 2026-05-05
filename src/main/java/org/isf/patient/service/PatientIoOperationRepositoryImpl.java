@@ -35,6 +35,9 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
 import org.isf.patient.model.Patient;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
@@ -49,6 +52,44 @@ public class PatientIoOperationRepositoryImpl implements PatientIoOperationRepos
 		return this.entityManager.
 				createQuery(buildSearchQuery(literal)).
 				getResultList();
+	}
+
+	@Override
+	public Page<Patient> findByFieldsContainingWordsFromLiteralPaginated(String literal, Pageable pageable) {
+
+		CriteriaQuery<Patient> query = buildSearchQuery(literal);
+
+		List<Patient> result = entityManager.createQuery(query)
+			.setFirstResult((int) pageable.getOffset())
+			.setMaxResults(pageable.getPageSize())
+			.getResultList();
+
+		long total = countResults(literal);
+
+		return new PageImpl<>(result, pageable, total);
+	}
+
+	private long countResults(String literal) {
+		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+		CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
+		Root<Patient> patientRoot = countQuery.from(Patient.class);
+		countQuery.select(cb.count(patientRoot));
+
+		String[] words = getWordsToSearchForInPatientsRepository(literal);
+		List<Predicate> where = new ArrayList<>();
+
+		for (String word : words) {
+			where.add(wordExistsInOneOfPatientFields(word, cb, patientRoot));
+		}
+
+		where.add(cb.or(
+			cb.equal(patientRoot.get("deleted"), 'N'),
+			cb.isNull(patientRoot.get("deleted"))
+		));
+
+		countQuery.where(cb.and(where.toArray(new Predicate[0])));
+
+		return entityManager.createQuery(countQuery).getSingleResult();
 	}
 
 	private CriteriaQuery<Patient> buildSearchQuery(String regex) {

@@ -39,6 +39,7 @@ import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.model.OHExceptionMessage;
 import org.isf.utils.pagination.PagedResponse;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
@@ -432,5 +433,18 @@ public class PatientBrowserManager {
 	 */
 	public List<Patient> getPatientByCodes(List<Integer> codes) throws OHServiceException {
 		return ioOperations.getPatientByCodes(codes);
+	}
+
+
+//	public List<Patient> getPatientsByOneOfFieldsLikePaginated(String search, int limit, int offset) throws OHServiceException {
+//		return ioOperations.findBySearchStringPaginated(search, limit, offset);
+//	}
+
+	public long countPatientsByOneOfFieldsLike(String search) throws OHServiceException {
+		return ioOperations.countPatientsByOneOfFieldsLike(search);
+	}
+
+	public Page<Patient> getPatientsByOneOfFieldsLikePaginated(String keyword, int page, int size) throws OHServiceException {
+		return ioOperations.getPatientsByOneOfFieldsLikePaginated(keyword, page, size);
 	}
 }

@@ -24,9 +24,13 @@ package org.isf.patient.service;
 import java.util.List;
 
 import org.isf.patient.model.Patient;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface PatientIoOperationRepositoryCustom {
 
 	List<Patient> findByFieldsContainingWordsFromLiteral(String regex);
+
+	Page<Patient> findByFieldsContainingWordsFromLiteralPaginated(String regex, Pageable pageable);
 
 }

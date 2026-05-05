@@ -24,24 +24,12 @@ package org.isf.patient.model;
 import java.time.LocalDate;
 import java.time.Period;
 
-import jakarta.persistence.AttributeOverride;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
-import jakarta.persistence.Version;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.StringUtils;
 import org.isf.anamnesis.model.PatientHistory;
+import org.isf.country.model.Country;
 import org.isf.opd.model.Opd;
 import org.isf.patconsensus.model.PatientConsensus;
 import org.isf.utils.db.Auditable;
@@ -112,6 +100,37 @@ public class Patient extends Auditable<String> {
 
 	@Column(name="PAT_MOTH")
 	private char mother = ' '; // D=dead, A=alive
+
+	@Column(name="PAT_BIRTH_PLACE")
+	private String birthPlace;
+
+	@Column(name="PAT_NUMBER_OF_CHILDREN")
+	private Integer numberOfChildren = 0;
+
+	@Column(name="PAT_GEOGRAPHIC_POSITION")
+	private String geographicPosition;
+
+	@Column(name="PAT_PARENTS_RESIDENCE")
+	private String parentsResidence;
+
+	@Column(name="PAT_TRANSPORT_MEANS")
+	private String transportMeans;
+
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "PAT_COUNTRY_ID")
+	private Country country;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "PAT_AFFILIATED_PATIENT_ID")
+	private Patient affiliatedPatient;
+
+	// Pour stocker l'ID simple (optionnel, pratique pour les formulaires)
+	@Column(name="PAT_COUNTRY_ID", insertable = false, updatable = false)
+	private Long countryId;
+
+	@Column(name="PAT_AFFILIATED_PATIENT_ID", insertable = false, updatable = false)
+	private Integer affiliatedPatientId;
 
 	@NotNull
 	@Column(name="PAT_FATH_NAME")
@@ -278,6 +297,48 @@ public class Patient extends Auditable<String> {
 		this.taxCode = taxCode;
 		this.maritalStatus = maritalStatus;
 		this.profession = profession;
+	}
+
+	public Patient(Integer code, String firstName, String secondName, String name, LocalDate birthDate, int age, String agetype, char sex,
+	               String address, String city, String nextKin, String telephone, String note,
+	               String motherName, char mother, String fatherName, char father,
+	               String bloodType, char hasInsurance, char parentTogether, String taxCode,
+	               String maritalStatus, String profession, char deleted, int lock,
+	               String birthPlace, Integer numberOfChildren, String geographicPosition,
+	               String parentsResidence, String transportMeans, Country country, Patient affiliatedPatient) {
+		this.code = code;
+		this.firstName = firstName;
+		this.secondName = secondName;
+		this.name = name;
+		this.birthDate = birthDate;
+		this.age = age;
+		this.agetype = agetype;
+		this.sex = sex;
+		this.address = address;
+		this.city = city;
+		this.nextKin = nextKin;
+		this.telephone = telephone;
+		this.note = note;
+		this.motherName = motherName;
+		this.mother = mother;
+		this.fatherName = fatherName;
+		this.father = father;
+		this.bloodType = bloodType;
+		this.hasInsurance = hasInsurance;
+		this.parentTogether = parentTogether;
+		this.taxCode = taxCode;
+		this.maritalStatus = maritalStatus;
+		this.profession = profession;
+		this.deleted = deleted;
+		this.lock = lock;
+
+		this.birthPlace = birthPlace;
+		this.numberOfChildren = numberOfChildren;
+		this.geographicPosition = geographicPosition;
+		this.parentsResidence = parentsResidence;
+		this.transportMeans = transportMeans;
+		this.country = country;
+		this.affiliatedPatient = affiliatedPatient;
 	}
 
 	public PatientConsensus getPatientConsensus() {
@@ -634,5 +695,76 @@ public class Patient extends Auditable<String> {
 			infoBfr.append(taxCode);
 		}
 		return infoBfr.toString();
+	}
+
+
+	public String getBirthPlace() {
+		return birthPlace;
+	}
+
+	public void setBirthPlace(String birthPlace) {
+		this.birthPlace = birthPlace;
+	}
+
+	public Integer getNumberOfChildren() {
+		return numberOfChildren;
+	}
+
+	public void setNumberOfChildren(Integer numberOfChildren) {
+		this.numberOfChildren = numberOfChildren;
+	}
+
+	public String getGeographicPosition() {
+		return geographicPosition;
+	}
+
+	public void setGeographicPosition(String geographicPosition) {
+		this.geographicPosition = geographicPosition;
+	}
+
+	public String getParentsResidence() {
+		return parentsResidence;
+	}
+
+	public void setParentsResidence(String parentsResidence) {
+		this.parentsResidence = parentsResidence;
+	}
+
+	public String getTransportMeans() {
+		return transportMeans;
+	}
+
+	public void setTransportMeans(String transportMeans) {
+		this.transportMeans = transportMeans;
+	}
+
+	public Country getCountry() {
+		return country;
+	}
+
+	public void setCountry(Country country) {
+		this.country = country;
+		if (country != null) {
+			this.countryId = country.getId();
+		}
+	}
+
+	public Patient getAffiliatedPatient() {
+		return affiliatedPatient;
+	}
+
+	public void setAffiliatedPatient(Patient affiliatedPatient) {
+		this.affiliatedPatient = affiliatedPatient;
+		if (affiliatedPatient != null) {
+			this.affiliatedPatientId = affiliatedPatient.getCode();
+		}
+	}
+
+	public Long getCountryId() {
+		return countryId;
+	}
+
+	public Integer getAffiliatedPatientId() {
+		return affiliatedPatientId;
 	}
 }
