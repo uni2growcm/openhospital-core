@@ -67,11 +67,8 @@ public class TestAdmission {
 	private String transportation = "transportation";
 	private String courseOfAction = "Course of action";
 	private LocalDateTime nextAppointment = LocalDateTime.of(2007, 2, 1, 0, 0);
-	private String referringCenter = "Referring Center";
 	private String referralAlert = "Referral Alert";
-	private String transportationMode = "Transportation Mode";
 	private String referralReason = "Referral Reason";
-	private String diagnosis = "Diagnosis";
 	private String treatmentReceived = "Treatment Received";
 	private String outcome = "Outcome";
 	private String improvementFeedback = "Improvement Feedback";
@@ -103,7 +100,7 @@ public class TestAdmission {
 					transUnit, VISITDATE, pregTreatmentType, DELIVERYDATE, deliveryType, deliveryResult, weight,
 					CTRLDATE1, CTRLDATE2, ABORTDATE, userID, deleted, preTreatment, preAssessment, entryReason,
 					alertReceived, referenceSheet, qualifiedAgent, transportation, courseOfAction, nextAppointment,
-					referringCenter, referralAlert, transportationMode, referralReason, diagnosis, treatmentReceived,
+					referralAlert, referralReason, treatmentReceived,
 					outcome, improvementFeedback);
 		}
 
@@ -160,11 +157,8 @@ public class TestAdmission {
 		admission.setTransportation(transportation);
 		admission.setCourseOfAction(courseOfAction);
 		admission.setNextAppointment(nextAppointment);
-		admission.setReferringCenter(referringCenter);
 		admission.setReferralAlert(referralAlert);
-		admission.setTransportationMode(transportationMode);
 		admission.setReferralReason(referralReason);
-		admission.setDiagnosis(diagnosis);
 		admission.setTreatmentReceived(treatmentReceived);
 		admission.setOutcome(outcome);
 		admission.setImprovementFeedback(improvementFeedback);
@@ -199,11 +193,8 @@ public class TestAdmission {
 		assertThat(admission.getCourseOfAction()).isEqualTo(courseOfAction);
 		assertThat(admission.getNextAppointment()).isEqualTo(nextAppointment);
 
-		assertThat(admission.getReferringCenter()).isEqualTo(referringCenter);
 		assertThat(admission.getReferralAlert()).isEqualTo(referralAlert);
-		assertThat(admission.getTransportationMode()).isEqualTo(transportationMode);
 		assertThat(admission.getReferralReason()).isEqualTo(referralReason);
-		assertThat(admission.getDiagnosis()).isEqualTo(diagnosis);
 		assertThat(admission.getTreatmentReceived()).isEqualTo(treatmentReceived);
 		assertThat(admission.getOutcome()).isEqualTo(outcome);
 		assertThat(admission.getImprovementFeedback()).isEqualTo(improvementFeedback);
