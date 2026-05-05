@@ -9,3 +9,5 @@ logs
 .vscode/
 *.iml
 /.env
+*.properties
+*.dist
