@@ -67,4 +67,7 @@ public interface AccountingBillIoOperationRepository extends JpaRepository<Bill,
 
 	@Query("select count(b) from Bill b where active=1")
 	long countAllActiveBills();
+
+	@Query("SELECT b FROM Bill b WHERE b.date >= :dateFrom AND b.date < :dateTo ORDER BY b.date")
+	List<Bill> findBillsForSage(@Param("dateFrom") LocalDateTime dateFrom, @Param("dateTo") LocalDateTime dateTo);
 }

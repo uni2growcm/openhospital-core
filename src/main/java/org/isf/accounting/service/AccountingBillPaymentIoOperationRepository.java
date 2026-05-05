@@ -60,4 +60,7 @@ public interface AccountingBillPaymentIoOperationRepository extends JpaRepositor
 			"ORDER BY BP.bill, BP.date ASC")
 	List<BillPayments> findByDateAndPatient(@Param("dateFrom") LocalDateTime dateFrom, @Param("dateTo") LocalDateTime dateTo,
 			@Param("patientCode") Integer patientCode);
+
+	@Query("SELECT bp FROM BillPayments bp WHERE bp.date >= :dateFrom AND bp.date < :dateTo ORDER BY bp.date")
+	List<BillPayments> findPaymentsForSage(@Param("dateFrom") LocalDateTime dateFrom, @Param("dateTo") LocalDateTime dateTo);
 }

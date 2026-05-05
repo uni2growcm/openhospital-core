@@ -38,6 +38,8 @@ import org.isf.utils.exception.model.OHExceptionMessage;
 import org.isf.utils.time.TimeTools;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import java.io.File;
+import java.io.IOException;
 
 @Component
 public class BillBrowserManager {
@@ -359,5 +361,22 @@ public class BillBrowserManager {
 	 */
 	public List<Bill> getBills(LocalDateTime dateFrom, LocalDateTime dateTo, BillItems billItem) throws OHServiceException {
 		return ioOperations.getBillsBetweenDatesWhereBillItem(dateFrom, dateTo, billItem);
+	}
+
+
+	public List<BillPayments> getPaymentsForSage(LocalDateTime dateFrom, LocalDateTime dateTo) throws OHServiceException {
+		return ioOperations.getPaymentsForSage(dateFrom, dateTo);
+	}
+
+	public List<Bill> getBillsForSage(LocalDateTime dateFrom, LocalDateTime dateTo) throws OHServiceException {
+		return ioOperations.getBillsForSage(dateFrom, dateTo);
+	}
+
+	public boolean exportSagePayments(File file, LocalDateTime dateFrom, LocalDateTime dateTo) throws OHServiceException, IOException {
+		return ioOperations.exportSagePayments(file, dateFrom, dateTo);
+	}
+
+	public boolean exportSageBills(File file, LocalDateTime dateFrom, LocalDateTime dateTo) throws OHServiceException, IOException {
+		return ioOperations.exportSageBills(file, dateFrom, dateTo);
 	}
 }

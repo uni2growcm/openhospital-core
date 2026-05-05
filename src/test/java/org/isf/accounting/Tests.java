@@ -53,6 +53,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import java.io.File;
 
 class Tests extends OHCoreTestCase {
 
@@ -922,5 +923,119 @@ class Tests extends OHCoreTestCase {
 		Patient patient = testPatient.setup(usingSet);
 		patientIoOperationRepository.saveAndFlush(patient);
 		return patient;
+	}
+
+	@Test
+	void testGetPaymentsForSage() throws Exception {
+		int id = setupTestBillPayments(false);
+		BillPayments foundPayment = accountingBillPaymentIoOperationRepository.findById(id).orElse(null);
+		assertThat(foundPayment).isNotNull();
+
+		LocalDateTime dateFrom = foundPayment.getDate().minusDays(1);
+		LocalDateTime dateTo = foundPayment.getDate().plusDays(1);
+
+		List<BillPayments> payments = accountingIoOperation.getPaymentsForSage(dateFrom, dateTo);
+
+		assertThat(payments).isNotEmpty();
+		assertThat(payments).contains(foundPayment);
+	}
+
+	@Test
+	void testGetBillsForSage() throws Exception {
+
+		int id = setupTestBill(false);
+		Bill foundBill = accountingBillIoOperationRepository.findById(id).orElse(null);
+		assertThat(foundBill).isNotNull();
+
+		LocalDateTime dateFrom = foundBill.getDate().minusDays(1);
+		LocalDateTime dateTo = foundBill.getDate().plusDays(1);
+
+		// When
+		List<Bill> bills = accountingIoOperation.getBillsForSage(dateFrom, dateTo);
+
+		// Then
+		assertThat(bills).isNotEmpty();
+		assertThat(bills).contains(foundBill);
+	}
+
+	@Test
+	void testExportSagePayments() throws Exception {
+		int id = setupTestBillPayments(false);
+		BillPayments foundPayment = accountingBillPaymentIoOperationRepository.findById(id).orElse(null);
+		assertThat(foundPayment).isNotNull();
+
+		LocalDateTime dateFrom = foundPayment.getDate().minusDays(1);
+		LocalDateTime dateTo = foundPayment.getDate().plusDays(1);
+
+		File tempFile = File.createTempFile("sage_payments_test", ".txt");
+
+		// When
+		boolean result = accountingIoOperation.exportSagePayments(tempFile, dateFrom, dateTo);
+
+		// Then
+		assertThat(result).isTrue();
+		assertThat(tempFile.exists()).isTrue();
+		assertThat(tempFile.length()).isGreaterThan(0);
+
+		// Cleanup
+		tempFile.delete();
+	}
+
+	@Test
+	void testExportSageBills() throws Exception {
+		int id = setupTestBill(false);
+		Bill foundBill = accountingBillIoOperationRepository.findById(id).orElse(null);
+		assertThat(foundBill).isNotNull();
+
+		LocalDateTime dateFrom = foundBill.getDate().minusDays(1);
+		LocalDateTime dateTo = foundBill.getDate().plusDays(1);
+
+		File tempFile = File.createTempFile("sage_bills_test", ".txt");
+
+		// When
+		boolean result = accountingIoOperation.exportSageBills(tempFile, dateFrom, dateTo);
+
+		// Then
+		assertThat(result).isTrue();
+		assertThat(tempFile.exists()).isTrue();
+		assertThat(tempFile.length()).isGreaterThan(0);
+
+		// Cleanup
+		tempFile.delete();
+	}
+
+	@Test
+	void testFormatSagePayment() throws Exception {
+		// Given
+		int id = setupTestBillPayments(false);
+		BillPayments payment = accountingBillPaymentIoOperationRepository.findById(id).orElse(null);
+		assertThat(payment).isNotNull();
+
+		// When
+		String formatted = accountingIoOperation.formatSagePaymentForTest(payment);
+
+		// Then
+		assertThat(formatted).isNotNull();
+		assertThat(formatted).contains(String.valueOf(payment.getBill().getId()));
+		assertThat(formatted).contains(String.valueOf(payment.getAmount()).replace('.', ','));  // ← Remplacer . par ,
+		assertThat(formatted).contains(payment.getUser());
+	}
+
+	@Test
+	void testFormatSageBill() throws Exception {
+		// Given
+		int id = setupTestBill(false);
+		Bill bill = accountingBillIoOperationRepository.findById(id).orElse(null);
+		assertThat(bill).isNotNull();
+
+		// When
+		String formatted = accountingIoOperation.formatSageBillForTest(bill);
+
+		// Then
+		assertThat(formatted).isNotNull();
+		assertThat(formatted).contains(String.valueOf(bill.getId()));
+		assertThat(formatted).contains(String.valueOf(bill.getAmount()).replace('.', ','));  // ← Remplacer . par ,
+		assertThat(formatted).contains(String.valueOf(bill.getBalance()).replace('.', ',')); // ← Remplacer . par ,
+		assertThat(formatted).contains(bill.getStatus());
 	}
 }

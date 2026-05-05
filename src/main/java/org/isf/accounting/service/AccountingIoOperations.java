@@ -36,6 +36,11 @@ import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.time.TimeTools;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.io.File;
+import java.io.IOException;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.time.format.DateTimeFormatter;
 
 /**
  * Persistence class for Accounting module.
@@ -331,4 +336,65 @@ public class AccountingIoOperations {
 		return this.billRepository.countAllActiveBills();
 	}
 
+
+	public List<BillPayments> getPaymentsForSage(LocalDateTime dateFrom, LocalDateTime dateTo) throws OHServiceException {
+		return billPaymentRepository.findPaymentsForSage(
+			TimeTools.getBeginningOfDay(dateFrom),
+			TimeTools.getBeginningOfNextDay(dateTo)
+		);
+	}
+
+	public List<Bill> getBillsForSage(LocalDateTime dateFrom, LocalDateTime dateTo) throws OHServiceException {
+		return billRepository.findBillsForSage(
+			TimeTools.getBeginningOfDay(dateFrom),
+			TimeTools.getBeginningOfNextDay(dateTo)
+		);
+	}
+
+	public boolean exportSagePayments(File file, LocalDateTime dateFrom, LocalDateTime dateTo) throws OHServiceException, IOException {
+		List<BillPayments> payments = getPaymentsForSage(dateFrom, dateTo);
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+			for (BillPayments payment : payments) {
+				writer.write(formatSagePayment(payment));
+				writer.newLine();
+			}
+		}
+		return true;
+	}
+
+	public boolean exportSageBills(File file, LocalDateTime dateFrom, LocalDateTime dateTo) throws OHServiceException, IOException {
+		List<Bill> bills = getBillsForSage(dateFrom, dateTo);
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+			for (Bill bill : bills) {
+				writer.write(formatSageBill(bill));
+				writer.newLine();
+			}
+		}
+		return true;
+	}
+
+	private String formatSagePayment(BillPayments payment) {
+		DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyyMMdd");
+		return payment.getBill().getId() + ";" +
+			payment.getDate().format(fmt) + ";" +
+			String.format("%.2f", payment.getAmount()) + ";" +
+			payment.getUser();
+	}
+
+	private String formatSageBill(Bill bill) {
+		DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyyMMdd");
+		return bill.getId() + ";" +
+			bill.getDate().format(fmt) + ";" +
+			String.format("%.2f", bill.getAmount()) + ";" +
+			String.format("%.2f", bill.getBalance()) + ";" +
+			bill.getStatus();
+	}
+	// For test
+	public String formatSagePaymentForTest(BillPayments payment) {
+		return formatSagePayment(payment);
+	}
+
+	public String formatSageBillForTest(Bill bill) {
+		return formatSageBill(bill);
+	}
 }
