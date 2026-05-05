@@ -392,24 +392,6 @@ public class AdmissionIoOperations {
 		return this.repository.countAllActiveNotDeletedAdmissions();
 	}
 
-	public Page<AdmittedPatient> getAdmittedPatientsByFilters(
-		int page, int size,
-		String searchTerms,
-		String admissionStatus,
-		List<String> wardCodes,
-		LocalDateTime[] admissionRange,
-		LocalDateTime[] dischargeRange,
-		Integer ageFrom,
-		Integer ageTo,
-		Character sex) throws OHServiceException {
-
-		Pageable pageable = PageRequest.of(page, size);
-		return repository.findPatientAdmissionsByFiltersPaginated(
-			searchTerms, admissionStatus, wardCodes,
-			admissionRange, dischargeRange,
-			ageFrom, ageTo, sex, pageable
-		);
-	}
 
 
 }

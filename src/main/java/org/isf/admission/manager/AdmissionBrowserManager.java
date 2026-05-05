@@ -538,22 +538,6 @@ public class AdmissionBrowserManager {
 			|| (diseaseOut2 != null && diseaseOut3 != null && diseaseOut2.getCode().equals(diseaseOut3.getCode()));
 	}
 
-	public Page<AdmittedPatient> getAdmittedPatientsPaginated(
-		int page, int size,
-		String searchTerms,
-		String admissionStatus,
-		List<String> wardCodes,
-		LocalDateTime[] admissionRange,
-		LocalDateTime[] dischargeRange,
-		Integer ageFrom,
-		Integer ageTo,
-		Character sex) throws OHServiceException {
-
-		return ioOperations.getAdmittedPatientsByFilters(
-			page, size, searchTerms, admissionStatus, wardCodes,
-			admissionRange, dischargeRange, ageFrom, ageTo, sex
-		);
-	}
 
 
 }

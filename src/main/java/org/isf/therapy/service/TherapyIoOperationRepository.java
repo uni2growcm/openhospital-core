@@ -42,6 +42,4 @@ public interface TherapyIoOperationRepository extends JpaRepository<TherapyRow, 
 	@Query("select count(t) from TherapyRow t where active=1")
 	long countAllActiveTherapies();
 
-	@Query("SELECT t FROM TherapyRow t WHERE t.therapyID = :therapyID")
-	List<TherapyRow> findByTherapyID(@Param("therapyID") int therapyID);
 }

@@ -341,9 +341,6 @@ public class TherapyManager {
 	/**
 	 * Returns the list of {@link TherapyRow}s for a specific therapyID
 	 */
-	public List<TherapyRow> getTherapyRowsByTherapyId(int therapyID) throws OHServiceException {
-		return ioOperations.getTherapyRowsByTherapyId(therapyID);
-	}
 
 	/**
 	 * Clones a {@link TherapyRow} with a new start date, preserving duration

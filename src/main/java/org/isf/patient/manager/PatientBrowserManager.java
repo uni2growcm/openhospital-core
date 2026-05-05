@@ -435,11 +435,6 @@ public class PatientBrowserManager {
 		return ioOperations.getPatientByCodes(codes);
 	}
 
-
-//	public List<Patient> getPatientsByOneOfFieldsLikePaginated(String search, int limit, int offset) throws OHServiceException {
-//		return ioOperations.findBySearchStringPaginated(search, limit, offset);
-//	}
-
 	public long countPatientsByOneOfFieldsLike(String search) throws OHServiceException {
 		return ioOperations.countPatientsByOneOfFieldsLike(search);
 	}

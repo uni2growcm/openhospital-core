@@ -1598,15 +1598,6 @@ class Tests extends OHCoreTestCase {
 			LocalDateTime[] dischargeRange) throws OHServiceException {
 			return null;
 		}
-
-		@Override
-		public Page<AdmittedPatient> findPatientAdmissionsByFiltersPaginated(
-			String searchTerms, String admissionStatus, List<String> wardCodes,
-			LocalDateTime[] admissionRange, LocalDateTime[] dischargeRange,
-			Integer ageFrom, Integer ageTo, Character sex,
-			Pageable pageable) throws OHServiceException {
-			return Page.empty(pageable);
-		}
 	}
 
 	private int setupTestAdmission(boolean usingSet) throws OHException, InterruptedException, OHServiceException {
