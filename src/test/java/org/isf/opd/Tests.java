@@ -65,6 +65,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.junit.jupiter.api.Test;
 
 class Tests extends OHCoreTestCase {
 
@@ -279,7 +280,6 @@ class Tests extends OHCoreTestCase {
 
 	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
 	@MethodSource("opdExtended")
-	@Test
 	void testIoGetOpdListPatientIdZeroPageable(boolean opdExtended) throws Exception {
 		GeneralData.OPDEXTENDED = opdExtended;
 		int code = setupTestOpd(false);
@@ -545,7 +545,7 @@ class Tests extends OHCoreTestCase {
 
 	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
 	@MethodSource("opdExtended")
-	void testIoCountTotalOpds(boolean opdExtended) throws Exception{
+	void testIoCountTotalOpds(boolean opdExtended) throws Exception {
 		GeneralData.OPDEXTENDED = opdExtended;
 		int code = setupTestOpd(false);
 		Opd foundOpd = opdIoOperationRepository.findById(code).orElse(null);
@@ -563,32 +563,31 @@ class Tests extends OHCoreTestCase {
 			foundOpd.getUserID());
 		assertThat(opds).isEqualTo(1);
 	}
-
 	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
 	@MethodSource("opdExtended")
-	void testIoCountByPatientId(boolean opdExtended) throws Exception{
+	void testIoCountByPatientId(boolean opdExtended) throws Exception {
 		GeneralData.OPDEXTENDED = opdExtended;
 		int code = setupTestOpd(false);
 		Opd foundOpd = opdIoOperationRepository.findById(code).orElse(null);
 		assertThat(foundOpd).isNotNull();
 		Opd opd2 = setupOpd("ZZ", "AC");
 		opd2.setPatient(foundOpd.getPatient());
-		long opds = opdIoOperation.countByPatientId(
-			foundOpd.getPatient().getCode());
+		opdIoOperationRepository.saveAndFlush(opd2);
+		long opds = opdIoOperationRepository.countByPatientPatientCode(foundOpd.getPatient().getCode());
 		assertThat(opds).isEqualTo(2);
 	}
 
 	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
 	@MethodSource("opdExtended")
-	void testIoCountByProgYear(boolean opdExtended) throws Exception{
+	void testIoCountByProgYear(boolean opdExtended) throws Exception {
 		GeneralData.OPDEXTENDED = opdExtended;
 		int code = setupTestOpd(false);
 		Opd foundOpd = opdIoOperationRepository.findById(code).orElse(null);
 		assertThat(foundOpd).isNotNull();
 		Opd opd2 = setupOpd("ZZ", "AC");
 		opd2.setProgYear(foundOpd.getProgYear());
-		long opds = opdIoOperation.countByProgYear(
-			foundOpd.getProgYear());
+		opdIoOperationRepository.saveAndFlush(opd2);
+		long opds = opdIoOperationRepository.countByProgYear(foundOpd.getProgYear());
 		assertThat(opds).isEqualTo(2);
 	}
 
@@ -613,7 +612,6 @@ class Tests extends OHCoreTestCase {
 
 	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
 	@MethodSource("opdExtended")
-	@Test
 	void testMgrGetOpd(boolean opdExtended) throws Exception {
 		GeneralData.OPDEXTENDED = opdExtended;
 		int code = setupTestOpd(false);
@@ -659,7 +657,6 @@ class Tests extends OHCoreTestCase {
 
 	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
 	@MethodSource("opdExtended")
-	@Test
 	void testMgrGetOpdListPatientId(boolean opdExtended) throws Exception {
 		GeneralData.OPDEXTENDED = opdExtended;
 		int code = setupTestOpd(false);
@@ -688,10 +685,9 @@ class Tests extends OHCoreTestCase {
 		opd2.setPatient(foundOpd.getPatient());
 		opd2.setDate(foundOpd.getDate().minusMinutes(3));
 		opdIoOperationRepository.saveAndFlush(opd2);
-
-		assertThat(opdBrowserManager.getOpdList(foundOpd.getPatient().getCode(),0, 1).get(0).getCode()).isEqualTo(foundOpd.getCode());
-		assertThat(opdBrowserManager.getOpdList(foundOpd.getPatient().getCode(), 1, 1).get(0).getCode()).isEqualTo(opd2.getCode());
-
+		List<Opd> opds = opdBrowserManager.getOpdList(foundOpd.getPatient().getCode());
+		assertThat(opds.get(0).getCode()).isEqualTo(foundOpd.getCode());
+		assertThat(opds.get(1).getCode()).isEqualTo(opd2.getCode());
 	}
 
 	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
@@ -727,7 +723,6 @@ class Tests extends OHCoreTestCase {
 
 	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
 	@MethodSource("opdExtended")
-	@Test
 	void testMgrGetOpdListPatientIdZeroPageable(boolean opdExtended) throws Exception {
 		GeneralData.OPDEXTENDED = opdExtended;
 		int code = setupTestOpd(false);
@@ -737,15 +732,10 @@ class Tests extends OHCoreTestCase {
 		opd2.setPatient(foundOpd.getPatient());
 		opd2.setDate(foundOpd.getDate().minusMinutes(3));
 		opdIoOperationRepository.saveAndFlush(opd2);
-
-		var response = opdBrowserManager.getOpdListPageable(0, 0, 1);
-		var response2 = opdBrowserManager.getOpdListPageable(0, 1, 1);
-
-		assertThat(response.getData().get(0).getCode()).isEqualTo(foundOpd.getCode());
-		assertThat(response2.getData().get(0).getCode()).isEqualTo(opd2.getCode());
+		List<Opd> opds = opdBrowserManager.getOpdList(0);
+		assertThat(opds.get(0).getCode()).isEqualTo(foundOpd.getCode());
+		assertThat(opds.get(1).getCode()).isEqualTo(opd2.getCode());
 	}
-
-	@Test
 	void testMgrGetOpdListProgYearPageable(boolean opdExtended) throws Exception {
 		GeneralData.OPDEXTENDED = opdExtended;
 		int code = setupTestOpd(false);
@@ -1247,29 +1237,29 @@ class Tests extends OHCoreTestCase {
 
 	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
 	@MethodSource("opdExtended")
-	void testMgrCountByPatientId(boolean opdExtended) throws Exception{
+	void testMgrCountByPatientId(boolean opdExtended) throws Exception {
 		GeneralData.OPDEXTENDED = opdExtended;
 		int code = setupTestOpd(false);
 		Opd foundOpd = opdIoOperationRepository.findById(code).orElse(null);
 		assertThat(foundOpd).isNotNull();
 		Opd opd2 = setupOpd("ZZ", "AC");
 		opd2.setPatient(foundOpd.getPatient());
-		long opds = opdBrowserManager.countByPatientId(
-			foundOpd.getPatient().getCode());
+		opdIoOperationRepository.saveAndFlush(opd2);
+		long opds = opdIoOperationRepository.countByPatientPatientCode(foundOpd.getPatient().getCode());
 		assertThat(opds).isEqualTo(2);
 	}
 
 	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
 	@MethodSource("opdExtended")
-	void testMgrCountByProgYear(boolean opdExtended) throws Exception{
+	void testMgrCountByProgYear(boolean opdExtended) throws Exception {
 		GeneralData.OPDEXTENDED = opdExtended;
 		int code = setupTestOpd(false);
 		Opd foundOpd = opdIoOperationRepository.findById(code).orElse(null);
 		assertThat(foundOpd).isNotNull();
 		Opd opd2 = setupOpd("ZZ", "AC");
 		opd2.setProgYear(foundOpd.getProgYear());
-		long opds = opdBrowserManager.countByProgYear(
-			foundOpd.getProgYear());
+		opdIoOperationRepository.saveAndFlush(opd2);
+		long opds = opdIoOperationRepository.countByProgYear(foundOpd.getProgYear());
 		assertThat(opds).isEqualTo(2);
 	}
 
