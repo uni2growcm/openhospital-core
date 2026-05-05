@@ -1,4 +1,3 @@
-
 CREATE TABLE `oh_hospitalizationconsultation` (
   `HPC_ID` int NOT NULL AUTO_INCREMENT,
   `HPC_ENC_ID` int NOT NULL,
@@ -12,6 +11,8 @@ CREATE TABLE `oh_hospitalizationconsultation` (
   `HPC_CREATED_DATE` datetime DEFAULT NULL,
   `HPC_LAST_MODIFIED_BY` varchar(50) DEFAULT NULL,
   `HPC_LAST_MODIFIED_DATE` datetime DEFAULT NULL,
+  `HPC_ACTIVE` tinyint(1) NOT NULL DEFAULT '1',
+  `HPC_LOCK` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`HPC_ID`),
   CONSTRAINT `FK_HPC_ENC`
     FOREIGN KEY (`HPC_ENC_ID`)
@@ -19,12 +20,3 @@ CREATE TABLE `oh_hospitalizationconsultation` (
     ON DELETE CASCADE
     ON UPDATE CASCADE
 ) ENGINE=InnoDB;
-
-
-
-
-
-
-
-
-

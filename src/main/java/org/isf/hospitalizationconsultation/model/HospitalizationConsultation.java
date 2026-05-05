@@ -209,3 +209,4 @@ public class HospitalizationConsultation extends Auditable<String> implements Co
 		return this.hashCode;
 	}
 }
+
