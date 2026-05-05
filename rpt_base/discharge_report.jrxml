@@ -16,8 +16,7 @@ ON d.DIS_ID_A = a.ADM_IN_DIS_ID_A
 LEFT JOIN oh_dischargetype dist
 ON dist.DIST_ID_A = a.ADM_DIST_ID_A
  WHERE p.PAT_ID = $P{patID}
-AND a.ADM_ID = $P{admID}
-]]>
+AND a.ADM_ID = $P{admID}]]>
 	</queryString>
 	<field name="PAT_NAME" class="java.lang.String"/>
 	<field name="PAT_MOTH_NAME" class="java.lang.String"/>
@@ -31,6 +30,7 @@ AND a.ADM_ID = $P{admID}
 	<field name="ADM_DATE_DIS" class="java.sql.Timestamp"/>
 	<field name="ADM_NEXT_APPOINTMENT" class="java.sql.Timestamp"/>
 	<field name="ADM_NOTE" class="java.lang.String"/>
+	<field name="ADM_TREATMENT_RECEIVED" class="java.lang.String"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -300,12 +300,17 @@ AND a.ADM_ID = $P{admID}
 						</textElement>
 						<textFieldExpression><![CDATA[$R{OutDiagnosis}]]></textFieldExpression>
 					</textField>
-					<textField isBlankWhenNull="true">
-						<reportElement x="160" y="0" width="400" height="20" uuid="f32c3390-103b-4030-b403-2faa0f8b097a"/>
-						<textElement>
-							<font size="14"/>
-						</textElement>
-					</textField>
+					<subreport>
+						<reportElement x="160" y="0" width="398" height="20" uuid="dbe6cbe2-f6c9-491c-8658-0f77a1838221"/>
+						<subreportParameter name="admID">
+							<subreportParameterExpression><![CDATA[$P{admID}]]></subreportParameterExpression>
+						</subreportParameter>
+						<subreportParameter name="patID">
+							<subreportParameterExpression><![CDATA[$P{patID}]]></subreportParameterExpression>
+						</subreportParameter>
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+						<subreportExpression><![CDATA["discharge_subreport.jasper"]]></subreportExpression>
+					</subreport>
 				</frame>
 				<frame>
 					<reportElement x="-2" y="80" width="560" height="20" uuid="77fcfc2a-6105-4566-8116-daec586542aa"/>
@@ -321,6 +326,7 @@ AND a.ADM_ID = $P{admID}
 						<textElement>
 							<font size="14"/>
 						</textElement>
+						<textFieldExpression><![CDATA[$F{ADM_TREATMENT_RECEIVED}]]></textFieldExpression>
 					</textField>
 				</frame>
 				<frame>

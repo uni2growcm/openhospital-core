@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.21.2.final using JasperReports Library version 6.21.2-8434a0bd7c3bbc37cbf916f2968d35e4b165821a  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="cross_reference_subreport" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="0" bottomMargin="0" uuid="640bf666-6531-4dbe-a2f9-5c66825a5335">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter.jrdax"/>
+	<parameter name="admID" class="java.lang.Integer"/>
+	<parameter name="patID" class="java.lang.Integer"/>
+	<queryString language="SQL">
+		<![CDATA[SELECT * FROM oh_patient p
+INNER JOIN oh_admission a
+ON p.PAT_ID = a.ADM_PAT_ID
+LEFT JOIN oh_disease d
+ON d.DIS_ID_A = a.ADM_OUT_DIS_ID_A 
+LEFT JOIN oh_dischargetype dist
+ON dist.DIST_ID_A = a.ADM_DIST_ID_A
+ WHERE p.PAT_ID = $P{patID}
+AND a.ADM_ID = $P{admID}]]>
+	</queryString>
+	<field name="DIS_DESC" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<detail>
+		<band height="21" splitType="Stretch">
+			<textField>
+				<reportElement x="-20" y="0" width="591" height="21" uuid="59ebe3c8-ba11-4d25-bdd4-9a17e8008eb5"/>
+				<textElement>
+					<font size="14" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{DIS_DESC}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>
