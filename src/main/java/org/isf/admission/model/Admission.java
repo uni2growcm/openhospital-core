@@ -224,14 +224,8 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 	@Column(name = "ADM_NEXT_APPOINTMENT")
 	private LocalDateTime nextAppointment;
 
-	@Column(name = "ADM_REFERRING_CENTER")
-	private String referringCenter;
-
 	@Column(name = "ADM_REFERRAL_ALERT")
 	private String referralAlert;
-
-	@Column(name = "ADM_TRANSPORTATION_MODE")
-	private String transportationMode;
 
 	@Column(name = "ADM_REFERRAL_REASON", columnDefinition = "TEXT")
 	private String referralReason;
@@ -367,8 +361,7 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 					 LocalDateTime abortDate, String userID, char deleted,
 					 String preTreatment, String preAssessment, String entryReason,
 					 Boolean alertReceived, Boolean referenceSheet, Boolean qualifiedAgent, String transportation,
-					 String courseOfAction, LocalDateTime nextAppointment, String referringCenter, String referralAlert,
-					 String transportationMode, String referralReason, String diagnosis, String treatmentReceived,
+					 String courseOfAction, LocalDateTime nextAppointment, String referralAlert, String referralReason, String diagnosis, String treatmentReceived,
 					 String outcome, String improvementFeedback ) {
 
 		this(id, admitted, type, ward, prog, patient, admDate, admType, fhu,
@@ -386,9 +379,7 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 		this.transportation = transportation;
 		this.courseOfAction = courseOfAction;
 		this.nextAppointment = nextAppointment;
-		this.referringCenter = referringCenter;
 		this.referralAlert = referralAlert;
-		this.transportationMode = transportationMode;
 		this.referralReason = referralReason;
 		this.diagnosis = diagnosis;
 		this.treatmentReceived = treatmentReceived;
@@ -708,28 +699,12 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 		this.courseOfAction = courseOfAction;
 	}
 
-	public String getReferringCenter() {
-		return referringCenter;
-	}
-
-	public void setReferringCenter(String referringCenter) {
-		this.referringCenter = referringCenter;
-	}
-
 	public String getReferralAlert() {
 		return referralAlert;
 	}
 
 	public void setReferralAlert(String referralAlert) {
 		this.referralAlert = referralAlert;
-	}
-
-	public String getTransportationMode() {
-		return transportationMode;
-	}
-
-	public void setTransportationMode(String transportationMode) {
-		this.transportationMode = transportationMode;
 	}
 
 	public String getReferralReason() {
