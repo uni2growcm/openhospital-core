@@ -1,25 +1,25 @@
 /*
- * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
- *
- * Open Hospital is a free and open source software for healthcare data management.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * https://www.gnu.org/licenses/gpl-3.0-standalone.html
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
- */
-package org.isf.therapy.manager;
+	 * Open Hospital (www.open-hospital.org)
+	 * Copyright � 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+	 *
+	 * Open Hospital is a free and open source software for healthcare data management.
+	 *
+	 * This program is free software: you can redistribute it and/or modify
+	 * it under the terms of the GNU General Public License as published by
+	 * the Free Software Foundation, either version 3 of the License, or
+	 * (at your option) any later version.
+	 *
+	 * https://www.gnu.org/licenses/gpl-3.0-standalone.html
+	 *
+	 * This program is distributed in the hope that it will be useful,
+	 * but WITHOUT ANY WARRANTY; without even the implied warranty of
+	 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	 * GNU General Public License for more details.
+	 *
+	 * You should have received a copy of the GNU General Public License
+	 * along with this program. If not, see <https://www.gnu.org/licenses/>.
+	 */
+	package org.isf.therapy.manager;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -58,7 +58,7 @@ public class TherapyManager {
 	private final MovWardBrowserManager wardManager;
 
 	public TherapyManager(TherapyIoOperations therapyIoOperations, SmsOperations smsOperations, PatientBrowserManager patientBrowserManager,
-		MedicalBrowsingManager medicalBrowsingManager, MovWardBrowserManager movWardBrowserManager) {
+	                      MedicalBrowsingManager medicalBrowsingManager, MovWardBrowserManager movWardBrowserManager) {
 		this.ioOperations = therapyIoOperations;
 		this.smsOp = smsOperations;
 		this.patientManager = patientBrowserManager;
@@ -95,8 +95,8 @@ public class TherapyManager {
 	 * @return the {@link Therapy}
 	 */
 	private Therapy createTherapy(int therapyID, int patID, Integer medId, Double qty,
-		LocalDateTime startDate, LocalDateTime endDate, int freqInPeriod,
-		int freqInDay, String note, boolean notify, boolean sms) throws OHServiceException {
+	                              LocalDateTime startDate, LocalDateTime endDate, int freqInPeriod,
+	                              int freqInDay, String note, boolean notify, boolean sms) throws OHServiceException {
 
 		List<LocalDateTime> datesArray = new ArrayList<>();
 
@@ -291,7 +291,7 @@ public class TherapyManager {
 
 	/**
 	 * Insert a new {@link TherapyRow} (therapy) for related Patient
-	 * 
+	 *
 	 * @param therapyID
 	 * @param patID
 	 * @param startDate
@@ -308,7 +308,7 @@ public class TherapyManager {
 	 * @throws OHServiceException
 	 */
 	public TherapyRow newTherapy(int therapyID, int patID, LocalDateTime startDate, LocalDateTime endDate, Medical medical, Double qty, int unitID,
-		int freqInDay, int freqInPeriod, String note, boolean notify, boolean sms) throws OHServiceException {
+	                             int freqInDay, int freqInPeriod, String note, boolean notify, boolean sms) throws OHServiceException {
 		Patient patient = patientManager.getPatientById(patID);
 		TherapyRow thRow = new TherapyRow(therapyID, patient, startDate, endDate, medical, qty, unitID, freqInDay, freqInPeriod, note, notify, sms);
 		return newTherapy(thRow);
@@ -333,9 +333,48 @@ public class TherapyManager {
 	 * @throws OHServiceException
 	 */
 	public TherapyRow getTherapyRow(int therapyID, int patID, LocalDateTime startDate, LocalDateTime endDate, Medical medical, Double qty, int unitID,
-		int freqInDay, int freqInPeriod, String note, boolean notify, boolean sms) throws OHServiceException {
+	                                int freqInDay, int freqInPeriod, String note, boolean notify, boolean sms) throws OHServiceException {
 		Patient patient = patientManager.getPatientById(patID);
 		return new TherapyRow(therapyID, patient, startDate, endDate, medical, qty, unitID, freqInDay, freqInPeriod, note, notify, sms);
+	}
+
+	/**
+	 * Returns the list of {@link TherapyRow}s for a specific therapyID
+	 */
+	public List<TherapyRow> getTherapyRowsByTherapyId(int therapyID) throws OHServiceException {
+		return ioOperations.getTherapyRowsByTherapyId(therapyID);
+	}
+
+	/**
+	 * Clones a {@link TherapyRow} with a new start date, preserving duration
+	 */
+	public TherapyRow cloneWithNewStartDate(TherapyRow oldTherapy, LocalDateTime newStartDate) throws OHServiceException {
+		Patient patient = patientManager.getPatientById(oldTherapy.getPatient().getCode());
+
+		long durationDays = java.time.temporal.ChronoUnit.DAYS.between(
+			oldTherapy.getStartDate().toLocalDate(),
+			oldTherapy.getEndDate().toLocalDate()
+		);
+
+		LocalDateTime newEndDate = newStartDate.plusDays(durationDays);
+
+		Medical medical = medManager.getMedical(oldTherapy.getMedical());
+
+		TherapyRow newTherapy = new TherapyRow(
+			0,
+			patient,
+			newStartDate,
+			newEndDate,
+			medical,
+			oldTherapy.getQty(),
+			oldTherapy.getUnitID(),
+			oldTherapy.getFreqInDay(),
+			oldTherapy.getFreqInPeriod(),
+			oldTherapy.getNote(),
+			oldTherapy.isNotify(),
+			oldTherapy.isSms()
+		);
+		return newTherapy;
 	}
 
 }
