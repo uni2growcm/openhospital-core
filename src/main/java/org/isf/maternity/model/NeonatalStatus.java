@@ -24,7 +24,7 @@ package org.isf.maternity.model;
 public enum NeonatalStatus {
 	ALIVE("anagl.maternity.neonatal.alive"),
 	STILLBORN("angal.maternity.neonatal.stillborn"),
-	EARLY_NEONATAL_DEATH("angal.maternity.neonatal.early_death"),
+	EARLY_NEONATAL_DEATH("angal.maternity.neonatal.earlydeath"),
 	TRANSFERRED("angal.maternity.neonatal.transferred"),
 	CRITICAL("angal.maternity.neonatal.critical");
 
