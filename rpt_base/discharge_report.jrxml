@@ -225,40 +225,26 @@ AND a.ADM_ID = $P{admID}]]>
 				</frame>
 			</frame>
 			<frame>
-				<reportElement x="2" y="90" width="558" height="230" uuid="b931a744-69ff-41af-87dc-95a9fe0ef726"/>
+				<reportElement x="2" y="90" width="558" height="250" uuid="b931a744-69ff-41af-87dc-95a9fe0ef726"/>
 				<frame>
 					<reportElement x="-1" y="0" width="559" height="20" uuid="2614618d-cc74-4ffa-8e38-4b42ec2da8f9"/>
 					<textField>
-						<reportElement x="0" y="0" width="159" height="20" uuid="42689b7a-902c-460b-abb3-7485586495d5"/>
+						<reportElement x="0" y="0" width="210" height="20" uuid="42689b7a-902c-460b-abb3-7485586495d5"/>
 						<textElement>
 							<font size="14" isBold="true"/>
 						</textElement>
 						<textFieldExpression><![CDATA[$R{InDate}]]></textFieldExpression>
 					</textField>
 					<textField isBlankWhenNull="true">
-						<reportElement x="159" y="0" width="121" height="20" uuid="0c89300b-62de-4080-abd3-94a693e39ba2"/>
+						<reportElement x="210" y="0" width="170" height="20" uuid="0c89300b-62de-4080-abd3-94a693e39ba2"/>
 						<textElement>
 							<font size="14"/>
 						</textElement>
 						<textFieldExpression><![CDATA[$F{ADM_DATE_ADM}]]></textFieldExpression>
 					</textField>
-					<textField>
-						<reportElement x="280" y="0" width="160" height="20" uuid="095ccd72-208b-4f8d-868a-2611582b10bc"/>
-						<textElement>
-							<font size="14" isBold="true"/>
-						</textElement>
-						<textFieldExpression><![CDATA[$R{OutDate}]]></textFieldExpression>
-					</textField>
-					<textField isBlankWhenNull="true">
-						<reportElement x="440" y="0" width="119" height="20" uuid="50c18ccb-5f7b-49e4-904c-3312cb459283"/>
-						<textElement>
-							<font size="14"/>
-						</textElement>
-						<textFieldExpression><![CDATA[$F{ADM_DATE_DIS}]]></textFieldExpression>
-					</textField>
 				</frame>
 				<frame>
-					<reportElement x="-1" y="20" width="559" height="20" uuid="af58d5e0-28ef-45f6-a621-2a31e708c6a6"/>
+					<reportElement x="-1" y="40" width="559" height="20" uuid="af58d5e0-28ef-45f6-a621-2a31e708c6a6"/>
 					<textField>
 						<reportElement x="0" y="0" width="159" height="20" uuid="2a7f4151-145e-4d7f-84d7-1913737aaea0"/>
 						<textElement>
@@ -275,7 +261,7 @@ AND a.ADM_ID = $P{admID}]]>
 					</textField>
 				</frame>
 				<frame>
-					<reportElement x="-1" y="60" width="559" height="20" uuid="11fd82df-526e-4e4e-b311-90ad5f10b47e"/>
+					<reportElement x="-1" y="80" width="559" height="20" uuid="11fd82df-526e-4e4e-b311-90ad5f10b47e"/>
 					<textField>
 						<reportElement x="0" y="0" width="139" height="20" uuid="76c93f06-14ba-4206-9a06-3369a415c1d6"/>
 						<textElement>
@@ -284,7 +270,7 @@ AND a.ADM_ID = $P{admID}]]>
 						<textFieldExpression><![CDATA[$R{OutPutType}]]></textFieldExpression>
 					</textField>
 					<textField isBlankWhenNull="true">
-						<reportElement x="139" y="0" width="418" height="20" uuid="cf42a8fa-4585-438f-bb27-2b0d125870db"/>
+						<reportElement x="139" y="0" width="420" height="20" uuid="cf42a8fa-4585-438f-bb27-2b0d125870db"/>
 						<textElement>
 							<font size="14"/>
 						</textElement>
@@ -292,7 +278,7 @@ AND a.ADM_ID = $P{admID}]]>
 					</textField>
 				</frame>
 				<frame>
-					<reportElement x="-2" y="40" width="560" height="20" uuid="ee32b163-7f4d-4580-b79c-561c4920fa23"/>
+					<reportElement x="-2" y="60" width="560" height="20" uuid="ee32b163-7f4d-4580-b79c-561c4920fa23"/>
 					<textField>
 						<reportElement x="1" y="0" width="159" height="20" uuid="4d762fd8-5774-4b92-8b37-3d32f84acb38"/>
 						<textElement>
@@ -313,7 +299,7 @@ AND a.ADM_ID = $P{admID}]]>
 					</subreport>
 				</frame>
 				<frame>
-					<reportElement x="-2" y="80" width="560" height="20" uuid="77fcfc2a-6105-4566-8116-daec586542aa"/>
+					<reportElement x="-2" y="100" width="560" height="20" uuid="77fcfc2a-6105-4566-8116-daec586542aa"/>
 					<textField>
 						<reportElement x="0" y="0" width="231" height="20" uuid="7f40c34f-425a-4d85-bdea-552e8c881fbd"/>
 						<textElement>
@@ -330,7 +316,7 @@ AND a.ADM_ID = $P{admID}]]>
 					</textField>
 				</frame>
 				<frame>
-					<reportElement x="-1" y="100" width="559" height="20" uuid="42d4de56-95c6-429b-a111-08fe0f69152a"/>
+					<reportElement x="-1" y="120" width="559" height="20" uuid="42d4de56-95c6-429b-a111-08fe0f69152a"/>
 					<textField>
 						<reportElement x="0" y="0" width="230" height="20" uuid="9999ca49-7a5f-4453-926a-4d51a0cbc202"/>
 						<textElement>
@@ -339,7 +325,7 @@ AND a.ADM_ID = $P{admID}]]>
 						<textFieldExpression><![CDATA[$R{NextAppointment}]]></textFieldExpression>
 					</textField>
 					<textField isBlankWhenNull="true">
-						<reportElement x="230" y="0" width="329" height="20" uuid="ce641794-4ac9-4b00-a25b-08599cae70f3"/>
+						<reportElement x="230" y="0" width="327" height="20" uuid="ce641794-4ac9-4b00-a25b-08599cae70f3"/>
 						<textElement>
 							<font size="14"/>
 						</textElement>
@@ -347,7 +333,7 @@ AND a.ADM_ID = $P{admID}]]>
 					</textField>
 				</frame>
 				<frame>
-					<reportElement x="-1" y="120" width="559" height="60" uuid="53b91d4d-0e0f-4dbf-8443-f709f404453c"/>
+					<reportElement x="-1" y="140" width="559" height="60" uuid="53b91d4d-0e0f-4dbf-8443-f709f404453c"/>
 					<textField>
 						<reportElement x="0" y="0" width="190" height="20" uuid="577fbe46-6ea8-4fea-b646-b54b486e8093"/>
 						<textElement>
@@ -364,13 +350,30 @@ AND a.ADM_ID = $P{admID}]]>
 					</textField>
 				</frame>
 				<frame>
-					<reportElement x="339" y="190" width="219" height="20" uuid="4538319c-0082-43d8-ba9c-c219738fe1a1"/>
+					<reportElement x="339" y="210" width="219" height="20" uuid="4538319c-0082-43d8-ba9c-c219738fe1a1"/>
 					<textField>
 						<reportElement x="0" y="0" width="219" height="20" uuid="e4c14161-6d00-4b54-acec-047b86100fc1"/>
 						<textElement>
 							<font size="14" isBold="true"/>
 						</textElement>
 						<textFieldExpression><![CDATA[$R{DoctorSignature}]]></textFieldExpression>
+					</textField>
+				</frame>
+				<frame>
+					<reportElement x="-1" y="20" width="559" height="20" uuid="b89dec59-9112-4ba2-9132-ba7fe2644828"/>
+					<textField>
+						<reportElement x="1" y="0" width="209" height="20" uuid="84d7dd28-32c2-4475-8867-0b66709868da"/>
+						<textElement>
+							<font size="14" isBold="true"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$R{OutDate}]]></textFieldExpression>
+					</textField>
+					<textField isBlankWhenNull="true">
+						<reportElement x="210" y="0" width="170" height="20" uuid="4078beb6-a79b-4606-a490-e9b9c987a185"/>
+						<textElement>
+							<font size="14"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$F{ADM_DATE_DIS}]]></textFieldExpression>
 					</textField>
 				</frame>
 			</frame>
