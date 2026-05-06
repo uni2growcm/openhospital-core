@@ -304,4 +304,55 @@ public class OpdBrowserManager {
 		int ageTo, char sex, char newPatient, int page, int size) throws OHServiceException {
 		return ioOperations.getOpdListPageable(ward, diseaseTypeCode, diseaseCode, dateFrom, dateTo, ageFrom, ageTo, sex, newPatient, null, page, size);
 	}
+	/**
+	 * Returns paged list of Opds with database-level pagination
+	 *
+	 * @param ward the ward filter
+	 * @param diseaseTypeCode the disease type code filter
+	 * @param diseaseCode the disease code filter
+	 * @param dateFrom start date
+	 * @param dateTo end date
+	 * @param ageFrom minimum age
+	 * @param ageTo maximum age
+	 * @param sex gender filter ('A' = all, 'M' = male, 'F' = female)
+	 * @param newPatient patient type filter ('A' = all, 'N' = new, 'R' = returning)
+	 * @param page page number (0-indexed)
+	 * @param size page size (number of rows per page)
+	 * @return PagedResponse containing the Opd list and pagination info
+	 * @throws OHServiceException
+	 */
+	public PagedResponse<Opd> getOpdPageableDatabase(Ward ward, String diseaseTypeCode, String diseaseCode,
+	                                                 LocalDate dateFrom, LocalDate dateTo, int ageFrom, int ageTo,
+	                                                 char sex, char newPatient, int page, int size) throws OHServiceException {
+		return ioOperations.getOpdListPageableDatabase(ward, diseaseTypeCode, diseaseCode,
+			dateFrom, dateTo, ageFrom, ageTo, sex, newPatient, null, page, size);
+	}
+
+	/**
+	 * Returns paged list of OPDs by patient ID with database pagination
+	 *
+	 * @param patientcode the patient ID
+	 * @param page page number (0-indexed)
+	 * @param size page size
+	 * @return PagedResponse containing the Opd list and pagination info
+	 * @throws OHServiceException
+	 */
+	public PagedResponse<Opd> getOpdByPatientIdPageableDatabase(int patientcode, int page, int size)
+		throws OHServiceException {
+		return ioOperations.getOpdListPageableDatabase(patientcode, page, size);
+	}
+
+	/**
+	 * Returns paged list of OPDs by progressive year with database pagination
+	 *
+	 * @param progYear the progressive year number
+	 * @param page page number (0-indexed)
+	 * @param size page size
+	 * @return PagedResponse containing the Opd list and pagination info
+	 * @throws OHServiceException
+	 */
+	public PagedResponse<Opd> getOpdByProgYearPageableDatabase(int progYear, int page, int size)
+		throws OHServiceException {
+		return ioOperations.getOpdByProgYearPageableDatabase(progYear, page, size);
+	}
 }
