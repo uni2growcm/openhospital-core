@@ -393,7 +393,6 @@ public class AdmissionIoOperations {
 	}
 
 	public Page<AdmittedPatient> getAdmittedPatientsByFilters(
-		int page, int size,
 		String searchTerms,
 		String admissionStatus,
 		List<String> wardCodes,
@@ -401,9 +400,9 @@ public class AdmissionIoOperations {
 		LocalDateTime[] dischargeRange,
 		Integer ageFrom,
 		Integer ageTo,
-		Character sex) throws OHServiceException {
+		Character sex,
+		Pageable pageable) throws OHServiceException {
 
-		Pageable pageable = PageRequest.of(page, size);
 		return repository.findPatientAdmissionsByFiltersPaginated(
 			searchTerms, admissionStatus, wardCodes,
 			admissionRange, dischargeRange,

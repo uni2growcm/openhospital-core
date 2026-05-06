@@ -158,8 +158,8 @@ public class AdmissionIoOperationRepositoryImpl implements AdmissionIoOperationR
 		String searchTerms,
 		String admissionStatus,
 		List<String> wardCodes,
-		LocalDateTime[] admissionRange,
-		LocalDateTime[] dischargeRange,
+		LocalDateTime[] dateTo,
+		LocalDateTime[] dateFrom,
 		Integer ageFrom,
 		Integer ageTo,
 		Character sex,
@@ -167,19 +167,14 @@ public class AdmissionIoOperationRepositoryImpl implements AdmissionIoOperationR
 
 		StringBuilder where = new StringBuilder();
 		where.append(" WHERE ((p.PAT_DELETED='N') OR (p.PAT_DELETED IS NULL))");
-
 		String[] terms = getTermsToSearch(searchTerms);
 		String paramTerms = like(terms);
 		where.append(" AND (lower(concat_ws(' ', p.PAT_ID, p.PAT_SNAME, p.PAT_FNAME,")
 			.append(" p.PAT_NAME, p.PAT_NOTE, p.PAT_TAXCODE, p.PAT_CITY,")
 			.append(" p.PAT_ADDR, p.PAT_TELE)) LIKE :search)");
-
-
 		if (sex != null) {
 			where.append(" AND p.PAT_SEX = :sex");
 		}
-
-
 		if (ageFrom != null) {
 			where.append(" AND p.PAT_BDATE IS NOT NULL")
 				.append(" AND TIMESTAMPDIFF(YEAR, p.PAT_BDATE, CURDATE()) >= :ageFrom");
@@ -188,15 +183,12 @@ public class AdmissionIoOperationRepositoryImpl implements AdmissionIoOperationR
 			where.append(" AND p.PAT_BDATE IS NOT NULL")
 				.append(" AND TIMESTAMPDIFF(YEAR, p.PAT_BDATE, CURDATE()) <= :ageTo");
 		}
-
-
 		if (wardCodes != null && !wardCodes.isEmpty()) {
 			String wardList = wardCodes.stream()
 				.map(c -> "'" + c + "'")
 				.collect(java.util.stream.Collectors.joining(","));
 
 			if ("admitted".equals(admissionStatus)) {
-				// Admis dans les wards coch�s uniquement
 				where.append(" AND a.ADM_ID IS NOT NULL")
 					.append(" AND a.ADM_WRD_ID_A IN (").append(wardList).append(")");
 
@@ -218,36 +210,31 @@ public class AdmissionIoOperationRepositoryImpl implements AdmissionIoOperationR
 			}
 
 		}
-
-		// Filtre dates admission
-		if (admissionRange != null) {
-			if (admissionRange[0] != null) {
+		if (dateTo != null) {
+			if (dateTo[0] != null) {
 				where.append(" AND DATE(a.ADM_DATE_ADM) >= '")
-					.append(TimeTools.formatDateTime(admissionRange[0], "yyyy-MM-dd")).append("'");
+					.append(TimeTools.formatDateTime(dateTo[0], "yyyy-MM-dd")).append("'");
 			}
-			if (admissionRange[1] != null) {
+			if (dateTo[1] != null) {
 				where.append(" AND DATE(a.ADM_DATE_ADM) <= '")
-					.append(TimeTools.formatDateTime(admissionRange[1], "yyyy-MM-dd")).append("'");
+					.append(TimeTools.formatDateTime(dateTo[1], "yyyy-MM-dd")).append("'");
 			}
 		}
 
-		if (dischargeRange != null) {
-			if (dischargeRange[0] != null) {
+		if (dateFrom != null) {
+			if (dateFrom[0] != null) {
 				where.append(" AND DATE(a.ADM_DATE_DIS) >= '")
-					.append(TimeTools.formatDateTime(dischargeRange[0], "yyyy-MM-dd")).append("'");
+					.append(TimeTools.formatDateTime(dateFrom[0], "yyyy-MM-dd")).append("'");
 			}
-			if (dischargeRange[1] != null) {
+			if (dateFrom[1] != null) {
 				where.append(" AND DATE(a.ADM_DATE_DIS) <= '")
-					.append(TimeTools.formatDateTime(dischargeRange[1], "yyyy-MM-dd")).append("'");
+					.append(TimeTools.formatDateTime(dateFrom[1], "yyyy-MM-dd")).append("'");
 			}
 		}
-
-
 		String from = " FROM OH_PATIENT as p"
 			+ " LEFT JOIN (SELECT * FROM OH_ADMISSION WHERE ADM_IN = 1"
 			+ "   AND ((ADM_DELETED='N') OR (ADM_DELETED IS NULL))) as a"
 			+ "   ON p.PAT_ID = a.ADM_PAT_ID";
-
 
 		String dataSql = "SELECT *" + from + where
 			+ " ORDER BY p.PAT_ID DESC";
@@ -268,7 +255,6 @@ public class AdmissionIoOperationRepositoryImpl implements AdmissionIoOperationR
 		if (ageTo != null) countQuery.setParameter("ageTo", ageTo);
 		long total = ((Number) countQuery.getSingleResult()).longValue();
 
-
 		List<AdmittedPatient> admittedPatients = new ArrayList<>();
 		List<Object[]> results = dataQuery.getResultList();
 		results.forEach(record -> {
@@ -279,5 +265,4 @@ public class AdmissionIoOperationRepositoryImpl implements AdmissionIoOperationR
 
 		return new PageImpl<>(admittedPatients, pageable, total);
 	}
-
 }

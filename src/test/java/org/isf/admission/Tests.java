@@ -1602,7 +1602,7 @@ class Tests extends OHCoreTestCase {
 		@Override
 		public Page<AdmittedPatient> findPatientAdmissionsByFiltersPaginated(
 			String searchTerms, String admissionStatus, List<String> wardCodes,
-			LocalDateTime[] admissionRange, LocalDateTime[] dischargeRange,
+			LocalDateTime[] dateTo, LocalDateTime[] dateFrom,
 			Integer ageFrom, Integer ageTo, Character sex,
 			Pageable pageable) throws OHServiceException {
 			return Page.empty(pageable);

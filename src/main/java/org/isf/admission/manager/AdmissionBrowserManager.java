@@ -43,6 +43,7 @@ import org.isf.utils.time.TimeTools;
 import org.isf.ward.model.Ward;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -539,7 +540,6 @@ public class AdmissionBrowserManager {
 	}
 
 	public Page<AdmittedPatient> getAdmittedPatientsPaginated(
-		int page, int size,
 		String searchTerms,
 		String admissionStatus,
 		List<String> wardCodes,
@@ -547,11 +547,13 @@ public class AdmissionBrowserManager {
 		LocalDateTime[] dischargeRange,
 		Integer ageFrom,
 		Integer ageTo,
-		Character sex) throws OHServiceException {
+		Character sex,
+		int page, int size) throws OHServiceException {
 
+		Pageable pageable = PageRequest.of(page, size);
 		return ioOperations.getAdmittedPatientsByFilters(
-			page, size, searchTerms, admissionStatus, wardCodes,
-			admissionRange, dischargeRange, ageFrom, ageTo, sex
+			searchTerms, admissionStatus, wardCodes,
+			admissionRange, dischargeRange, ageFrom, ageTo, sex, pageable
 		);
 	}
 }
