@@ -537,7 +537,4 @@ public class AdmissionBrowserManager {
 			|| (diseaseOut3 != null && diseaseOut1.getCode().equals(diseaseOut3.getCode()))
 			|| (diseaseOut2 != null && diseaseOut3 != null && diseaseOut2.getCode().equals(diseaseOut3.getCode()));
 	}
-
-
-
 }
