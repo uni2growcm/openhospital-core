@@ -145,7 +145,7 @@ public class PatientMapper {
 			/* phone1         */ patient.getTelephone(),
 			/* phone2         */ null,
 			/* profession     */ patient.getProfession(),
-			/* maiden         */ patient.getMotherName(),
+			/* maiden         */ null,
 			/* district       */ null,
 			/* pbox           */ null,
 			/* birthApprox    */ null,
