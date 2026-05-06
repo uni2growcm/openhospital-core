@@ -9,12 +9,6 @@ import java.util.Optional;
 public interface CountryIoOperationRepository extends JpaRepository<Country, Long> {
 
 	Optional<Country> findByIsoCode(String isoCode);
-
-	Optional<Country> findByPhoneCode(Integer phoneCode);
-
-	Optional<Country> findByName(String name);
-
 	List<Country> findAllByOrderByNameAsc();
 
-//	List<Country> findByIsDeletedFalse();
 }

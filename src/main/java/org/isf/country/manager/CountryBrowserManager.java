@@ -1,5 +1,6 @@
 package org.isf.country.manager;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.isf.country.model.Country;
 import org.isf.country.service.CountryIoOperations;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,11 @@ public class CountryBrowserManager {
 	}
 
 	public Country getCountry(Long id) {
-		return countryIoOperations.getCountryById(id);
+		if (id == null) {
+			throw new IllegalArgumentException("id is null");
+		}
+		return countryIoOperations.getCountryById(id)
+			.orElseThrow(() -> new EntityNotFoundException("Country not found with id: " + id));
 	}
 
 	public Country saveCountry(Country country) {

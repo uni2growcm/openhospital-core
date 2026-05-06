@@ -15,14 +15,14 @@ public class Country implements Serializable {
 	private String isoCode;
 
 	@Column(name = "phone_code", nullable = false)
-	private Integer phoneCode;
+	private String phoneCode;
 
 	@Column(length = 100, nullable = false, unique = true)
 	private String name;
 
 	public Country() {}
 
-	public Country(String isoCode, Integer phoneCode, String name) {
+	public Country(String isoCode, String phoneCode, String name) {
 		this.isoCode = isoCode;
 		this.phoneCode = phoneCode;
 		this.name = name;
@@ -34,8 +34,8 @@ public class Country implements Serializable {
 	public String getIsoCode() { return isoCode; }
 	public void setIsoCode(String isoCode) { this.isoCode = isoCode; }
 
-	public Integer getPhoneCode() { return phoneCode; }
-	public void setPhoneCode(Integer phoneCode) { this.phoneCode = phoneCode; }
+	public String getPhoneCode() { return phoneCode; }
+	public void setPhoneCode(String phoneCode) { this.phoneCode = phoneCode; }
 
 	public String getName() { return name; }
 	public void setName(String name) { this.name = name; }

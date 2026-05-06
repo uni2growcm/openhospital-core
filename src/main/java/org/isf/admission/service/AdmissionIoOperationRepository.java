@@ -68,8 +68,4 @@ public interface AdmissionIoOperationRepository extends JpaRepository<Admission,
 
 	@Query("select count(a) from Admission a where active=1 and deleted not like 'Y'")
 	long countAllActiveNotDeletedAdmissions();
-
-
-
-
 }

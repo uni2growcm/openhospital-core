@@ -34,6 +34,10 @@ import org.isf.opd.model.Opd;
 import org.isf.patconsensus.model.PatientConsensus;
 import org.isf.utils.db.Auditable;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+import jakarta.persistence.Version;
 
 @Entity
 @Table(name="OH_PATIENT")

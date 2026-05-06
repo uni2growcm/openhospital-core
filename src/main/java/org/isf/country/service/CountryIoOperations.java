@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -17,12 +18,13 @@ public class CountryIoOperations {
 		return repository.findAllByOrderByNameAsc();
 	}
 
-	public Country getCountryById(Long id) {
-		return repository.findById(id).orElse(null);
+
+	public Optional<Country> getCountryById(Long id) {
+		return repository.findById(id);
 	}
 
-	public Country getCountryByIsoCode(String isoCode) {
-		return repository.findByIsoCode(isoCode).orElse(null);
+	public Optional<Country> getCountryByIsoCode(String isoCode) {
+		return repository.findByIsoCode(isoCode);
 	}
 
 	public Country saveCountry(Country country) {
@@ -34,7 +36,12 @@ public class CountryIoOperations {
 	}
 
 	public boolean isCodeUnique(String isoCode, Long excludeId) {
-		Country existing = getCountryByIsoCode(isoCode);
-		return existing == null || existing.getId().equals(excludeId);
+		Optional<Country> existing = repository.findByIsoCode(isoCode);
+
+		if (excludeId == null) {
+			return existing.isEmpty();
+		}
+
+		return existing.isEmpty() || existing.get().getId().equals(excludeId);
 	}
 }

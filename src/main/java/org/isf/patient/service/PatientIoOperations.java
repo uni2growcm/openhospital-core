@@ -333,8 +333,6 @@ public class PatientIoOperations {
 		return patients;
 	}
 
-
-	// Version plus simple avec Pageable
 	public List<Patient> findBySearchStringPaginated(String search, int limit, int offset) {
 		Pageable pageable = PageRequest.of(offset / limit, limit);
 		return repository.findBySearchStringPaginated(search, pageable);
