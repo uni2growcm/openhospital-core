@@ -1,0 +1,692 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.21.2.final using JasperReports Library version 6.21.2-8434a0bd7c3bbc37cbf916f2968d35e4b165821a  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="PathologyReport" pageWidth="1133" pageHeight="793" orientation="Landscape" columnWidth="1073" leftMargin="30" rightMargin="30" topMargin="20" bottomMargin="20" resourceBundle="PathologyReport" whenResourceMissingType="Key" uuid="c1d2e3f4-a5b6-7890-cdef-123456789abc">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.encoding" value="UTF-8"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="oh_data_adapter"/>
+	<import value="net.sf.jasperreports.engine.*"/>
+	<import value="java.util.*"/>
+	<import value="net.sf.jasperreports.engine.data.*"/>
+	<parameter name="fromdate" class="java.util.Date"/>
+	<parameter name="todate" class="java.util.Date"/>
+	<parameter name="Hospital" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="Address" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="City" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="Email" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="Telephone" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="LOGO_PATH" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["./rsc/images/"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT
+            d.DIS_ID_A                              AS PATHOLOGY_CODE,
+            COALESCE(d.DIS_DESC, '---')             AS PATHOLOGY_DESC,
+            ag.AT_CODE                              AS AGE_GROUP_CODE,
+            ag.AT_FROM                              AS AGE_FROM,
+            ag.AT_TO                                AS AGE_TO,
+
+            SUM(CASE WHEN w.WRD_IS_OPD = 1
+                     THEN 1 ELSE 0 END)             AS CONSULTATIONS,
+
+            SUM(CASE WHEN w.WRD_IS_OPD = 0
+                     THEN 1 ELSE 0 END)             AS ADMISSIONS,
+
+            SUM(CASE WHEN w.WRD_IS_OPD = 0
+                      AND a.ADM_DATE_DIS IS NULL
+                     THEN 1 ELSE 0 END)             AS HOSPITALIZED,
+
+            SUM(CASE WHEN w.WRD_IS_OPD = 0
+                      AND a.ADM_DIST_ID_A = 'EQ'
+                     THEN 1 ELSE 0 END)             AS NORMALE_DISCHARGE,
+            SUM(CASE WHEN w.WRD_IS_OPD = 0
+                      AND a.ADM_DIST_ID_A = 'ES'
+                     THEN 1 ELSE 0 END)             AS ESCAPE_DISCHARGE,
+            SUM(CASE WHEN w.WRD_IS_OPD = 0
+                      AND a.ADM_DIST_ID_A = 'B'
+                     THEN 1 ELSE 0 END)             AS REFERRED_DISCHARGE,
+            SUM(CASE WHEN w.WRD_IS_OPD = 0
+                      AND a.ADM_DIST_ID_A = 'D'
+                     THEN 1 ELSE 0 END)             AS DEATHS
+
+        FROM oh_admission a
+        INNER JOIN oh_patient p
+            ON a.ADM_PAT_ID = p.PAT_ID
+        LEFT JOIN oh_disease d
+            ON a.ADM_IN_DIS_ID_A = d.DIS_ID_A
+        LEFT JOIN oh_ward w
+            ON a.ADM_WRD_ID_A = w.WRD_ID_A
+        LEFT JOIN oh_agetype ag
+            ON COALESCE(p.PAT_AGE, -1) BETWEEN ag.AT_FROM AND ag.AT_TO
+            AND ag.AT_ACTIVE = 1
+        WHERE
+            (
+                DATE(a.ADM_DATE_ADM) BETWEEN $P{fromdate} AND $P{todate}
+                OR
+                DATE(a.ADM_DATE_DIS) BETWEEN $P{fromdate} AND $P{todate}
+            )
+            AND COALESCE(a.ADM_DELETED, 'N') = 'N'
+            AND COALESCE(p.PAT_DELETED, 0)   = 0
+        GROUP BY
+            d.DIS_ID_A,
+            COALESCE(d.DIS_DESC, '---'),
+            ag.AT_CODE,
+            ag.AT_FROM,
+            ag.AT_TO
+        ORDER BY
+            PATHOLOGY_DESC,
+            ag.AT_FROM]]>
+	</queryString>
+	<field name="PATHOLOGY_CODE" class="java.lang.String"/>
+	<field name="PATHOLOGY_DESC" class="java.lang.String"/>
+	<field name="AGE_GROUP_CODE" class="java.lang.String"/>
+	<field name="AGE_FROM" class="java.lang.Integer"/>
+	<field name="AGE_TO" class="java.lang.Integer"/>
+	<field name="CONSULTATIONS" class="java.lang.Long"/>
+	<field name="ADMISSIONS" class="java.lang.Long"/>
+	<field name="HOSPITALIZED" class="java.lang.Long"/>
+	<field name="NORMALE_DISCHARGE" class="java.lang.Long"/>
+	<field name="ESCAPE_DISCHARGE" class="java.lang.Long"/>
+	<field name="REFERRED_DISCHARGE" class="java.lang.Long"/>
+	<field name="DEATHS" class="java.lang.Long"/>
+	<variable name="TOTAL_CONSULTATIONS" class="java.lang.Long" calculation="Sum">
+		<variableExpression><![CDATA[$F{CONSULTATIONS}  == null ? 0L : $F{CONSULTATIONS}]]></variableExpression>
+	</variable>
+	<variable name="TOTAL_ADMISSIONS" class="java.lang.Long" calculation="Sum">
+		<variableExpression><![CDATA[$F{ADMISSIONS}     == null ? 0L : $F{ADMISSIONS}]]></variableExpression>
+	</variable>
+	<variable name="TOTAL_HOSPITALIZED" class="java.lang.Long" calculation="Sum">
+		<variableExpression><![CDATA[$F{HOSPITALIZED}   == null ? 0L : $F{HOSPITALIZED}]]></variableExpression>
+	</variable>
+	<variable name="TOTAL_NORMALE_DISCHARGE" class="java.lang.Long" calculation="Sum">
+		<variableExpression><![CDATA[$F{NORMALE_DISCHARGE} == null ? 0L : $F{NORMALE_DISCHARGE}]]></variableExpression>
+	</variable>
+	<variable name="TOTAL_ESCAPE_DISCHARGE" class="java.lang.Long" calculation="Sum">
+		<variableExpression><![CDATA[$F{ESCAPE_DISCHARGE}  == null ? 0L : $F{ESCAPE_DISCHARGE}]]></variableExpression>
+	</variable>
+	<variable name="TOTAL_REFERRED_DISCHARGE" class="java.lang.Long" calculation="Sum">
+		<variableExpression><![CDATA[$F{REFERRED_DISCHARGE}== null ? 0L : $F{REFERRED_DISCHARGE}]]></variableExpression>
+	</variable>
+	<variable name="TOTAL_DEATHS" class="java.lang.Long" calculation="Sum">
+		<variableExpression><![CDATA[$F{DEATHS}          == null ? 0L : $F{DEATHS}]]></variableExpression>
+	</variable>
+	<variable name="AGE_FROM_d0" class="java.lang.Integer" calculation="Highest">
+		<variableExpression><![CDATA["d0".equals($F{AGE_GROUP_CODE}) ? $F{AGE_FROM} : null]]></variableExpression>
+	</variable>
+	<variable name="AGE_TO_d0" class="java.lang.Integer" calculation="Highest">
+		<variableExpression><![CDATA["d0".equals($F{AGE_GROUP_CODE}) ? $F{AGE_TO} : null]]></variableExpression>
+	</variable>
+	<variable name="AGE_FROM_d1" class="java.lang.Integer" calculation="Highest">
+		<variableExpression><![CDATA["d1".equals($F{AGE_GROUP_CODE}) ? $F{AGE_FROM} : null]]></variableExpression>
+	</variable>
+	<variable name="AGE_TO_d1" class="java.lang.Integer" calculation="Highest">
+		<variableExpression><![CDATA["d1".equals($F{AGE_GROUP_CODE}) ? $F{AGE_TO} : null]]></variableExpression>
+	</variable>
+	<variable name="AGE_FROM_d2" class="java.lang.Integer" calculation="Highest">
+		<variableExpression><![CDATA["d2".equals($F{AGE_GROUP_CODE}) ? $F{AGE_FROM} : null]]></variableExpression>
+	</variable>
+	<variable name="AGE_TO_d2" class="java.lang.Integer" calculation="Highest">
+		<variableExpression><![CDATA["d2".equals($F{AGE_GROUP_CODE}) ? $F{AGE_TO} : null]]></variableExpression>
+	</variable>
+	<variable name="AGE_FROM_d3" class="java.lang.Integer" calculation="Highest">
+		<variableExpression><![CDATA["d3".equals($F{AGE_GROUP_CODE}) ? $F{AGE_FROM} : null]]></variableExpression>
+	</variable>
+	<variable name="AGE_TO_d3" class="java.lang.Integer" calculation="Highest">
+		<variableExpression><![CDATA["d3".equals($F{AGE_GROUP_CODE}) ? $F{AGE_TO} : null]]></variableExpression>
+	</variable>
+	<variable name="AGE_FROM_d4" class="java.lang.Integer" calculation="Highest">
+		<variableExpression><![CDATA["d4".equals($F{AGE_GROUP_CODE}) ? $F{AGE_FROM} : null]]></variableExpression>
+	</variable>
+	<variable name="AGE_TO_d4" class="java.lang.Integer" calculation="Highest">
+		<variableExpression><![CDATA["d4".equals($F{AGE_GROUP_CODE}) ? $F{AGE_TO} : null]]></variableExpression>
+	</variable>
+	<variable name="AGE_FROM_d5" class="java.lang.Integer" calculation="Highest">
+		<variableExpression><![CDATA["d5".equals($F{AGE_GROUP_CODE}) ? $F{AGE_FROM} : null]]></variableExpression>
+	</variable>
+	<variable name="AGE_TO_d5" class="java.lang.Integer" calculation="Highest">
+		<variableExpression><![CDATA["d5".equals($F{AGE_GROUP_CODE}) ? $F{AGE_TO} : null]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="165" splitType="Stretch">
+			<rectangle radius="0">
+				<reportElement mode="Opaque" x="0" y="1" width="1073" height="48" forecolor="#00CCCC" backcolor="#000099" uuid="c34bf20f-3486-4512-90c0-04e6dc607a88"/>
+			</rectangle>
+			<textField>
+				<reportElement x="5" y="5" width="997" height="40" forecolor="#FFFFFF" uuid="74b859e6-88e6-4695-b8c1-1476059e93e0"/>
+				<textElement textAlignment="Justified" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="24"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{J_TITLE}]]></textFieldExpression>
+			</textField>
+			<image hAlign="Right" vAlign="Middle" onErrorType="Icon">
+				<reportElement x="1012" y="5" width="56" height="40" uuid="e783b574-9ce3-42df-a86e-656dc173807e"/>
+				<imageExpression><![CDATA[$P{LOGO_PATH} + "logo_report.png"]]></imageExpression>
+			</image>
+			<textField textAdjust="StretchHeight">
+				<reportElement x="0" y="49" width="1073" height="22" uuid="0c3674f2-3a49-42e4-9e73-90c464e86fa8"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{Hospital}]]></textFieldExpression>
+			</textField>
+			<textField textAdjust="StretchHeight">
+				<reportElement x="0" y="71" width="1073" height="17" uuid="3fb038fb-9652-43b3-9e37-4744f367fdc4"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{Address} + " - " + $P{City}]]></textFieldExpression>
+			</textField>
+			<textField textAdjust="StretchHeight">
+				<reportElement x="0" y="88" width="1073" height="17" uuid="c78f6e49-bb9c-4b38-a8ab-15ac153c37ae"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{Email}]]></textFieldExpression>
+			</textField>
+			<textField textAdjust="StretchHeight">
+				<reportElement x="0" y="105" width="1073" height="17" uuid="6b3e909e-f80a-4a97-ab28-f3596639300e"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{Telephone}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="122" width="50" height="17" uuid="f785d816-b0f6-40db-ba6e-42e51d6e8e5d"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0" lineColor="#FFFFFF"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{FROM}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="51" y="122" width="100" height="17" uuid="3111f019-3772-40b2-9ab1-a34401ef2026">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{fromdate}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="151" y="122" width="30" height="17" uuid="ccf24d2a-ad8c-4aeb-9b9e-5c2bdcdcbe6a"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{TO}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="182" y="122" width="100" height="17" uuid="2d257f2e-179b-4cbf-8724-60ab40d52d06">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0" lineColor="#FFFFFF"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{todate}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="40" splitType="Stretch">
+			<textField>
+				<reportElement mode="Opaque" x="0" y="0" width="240" height="20" forecolor="#FFFFFF" backcolor="#FF3333" uuid="e49ac2de-2249-4a04-a3ca-4d12f30ba90d"/>
+				<box>
+					<pen lineWidth="0.5" lineColor="#FFFFFF"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{PATHOLOGY}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="240" y="0" width="145" height="20" forecolor="#FFFFFF" backcolor="#FF3333" uuid="c8318325-cc9a-465e-b68b-c5e54c29ac39"/>
+				<box>
+					<pen lineWidth="0.5" lineColor="#FFFFFF"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{AGE_GROUP}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="385" y="0" width="98" height="20" forecolor="#FFFFFF" backcolor="#FF3333" uuid="c64ff15a-6c7a-4ec2-a772-c3083c7b01a3"/>
+				<box>
+					<pen lineWidth="0.5" lineColor="#FFFFFF"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{CONSULTATIONS}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="483" y="0" width="98" height="20" forecolor="#FFFFFF" backcolor="#FF3333" uuid="948ad397-58a1-49a4-a146-21fee4b0c764"/>
+				<box>
+					<pen lineWidth="0.5" lineColor="#FFFFFF"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{ADMISSIONS}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="581" y="0" width="98" height="40" forecolor="#FFFFFF" backcolor="#FF3333" uuid="ee43c962-e5b8-4dda-875f-08bc39351471"/>
+				<box>
+					<pen lineWidth="0.5" lineColor="#FFFFFF"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{HOSPITALIZED}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="679" y="0" width="392" height="20" forecolor="#FFFFFF" backcolor="#FF3333" uuid="a97f5743-c7d6-469e-996d-e1fdf0106888"/>
+				<box>
+					<pen lineWidth="0.5" lineColor="#FFFFFF"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{DISCHARGES}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="679" y="20" width="98" height="20" forecolor="#FFFFFF" backcolor="#FF6666" uuid="62440037-5492-4146-bb22-18a9f3077a4d"/>
+				<box>
+					<pen lineWidth="0.5" lineColor="#FFFFFF"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{NORMAL_DISCHARGE}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="777" y="20" width="98" height="20" forecolor="#FFFFFF" backcolor="#FF6666" uuid="042f6a8c-e68a-479a-b2e6-c4eccd8f3aa9"/>
+				<box>
+					<pen lineWidth="0.5" lineColor="#FFFFFF"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{ESCAPE}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="875" y="20" width="98" height="20" forecolor="#FFFFFF" backcolor="#FF6666" uuid="353a99af-dac0-48c0-b15e-72ba4157124b"/>
+				<box>
+					<pen lineWidth="0.5" lineColor="#FFFFFF"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{REFERRED}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="973" y="20" width="98" height="20" forecolor="#FFFFFF" backcolor="#FF6666" uuid="043de0c8-a98c-4987-a1f4-c5d7cd5224e2"/>
+				<box>
+					<pen lineWidth="0.5" lineColor="#FFFFFF"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{DEAD}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="240" height="20" uuid="af6372c7-6d27-4311-839e-fdd34d985649">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<box leftPadding="5">
+					<topPen lineWidth="1.0" lineColor="#CCCCCC"/>
+					<leftPen lineWidth="1.0" lineColor="#CCCCCC"/>
+					<bottomPen lineWidth="1.0" lineColor="#CCCCCC"/>
+					<rightPen lineWidth="1.0" lineColor="#CCCCCC"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{PATHOLOGY_DESC} == null ? "---" : $F{PATHOLOGY_DESC}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="240" y="0" width="145" height="20" uuid="1f9b4795-4ece-44b1-8d2d-d98ebfcfaab0">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<box leftPadding="5">
+					<topPen lineWidth="1.0" lineColor="#CCCCCC"/>
+					<leftPen lineWidth="1.0" lineColor="#CCCCCC"/>
+					<bottomPen lineWidth="1.0" lineColor="#CCCCCC"/>
+					<rightPen lineWidth="1.0" lineColor="#CCCCCC"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA["d0".equals($F{AGE_GROUP_CODE}) ? $R{AGETYPE_NEWBORN} :
+                    "d1".equals($F{AGE_GROUP_CODE}) ? $R{AGETYPE_EARLYCHILDHOOD} :
+                    "d2".equals($F{AGE_GROUP_CODE}) ? $R{AGETYPE_LATECHILDHOOD} :
+                    "d3".equals($F{AGE_GROUP_CODE}) ? $R{AGETYPE_ADOLESCENTS} :
+                    "d4".equals($F{AGE_GROUP_CODE}) ? $R{AGETYPE_ADULT} :
+                    "d5".equals($F{AGE_GROUP_CODE}) ? $R{AGETYPE_ELDERLY} :
+                    $R{AGEGROUP_UNDEFINED}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0" isBlankWhenNull="true">
+				<reportElement x="385" y="0" width="98" height="20" uuid="4bc95c09-04a7-45d5-97c4-d730c04a332d">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0" lineColor="#CCCCCC"/>
+					<leftPen lineWidth="1.0" lineColor="#CCCCCC"/>
+					<bottomPen lineWidth="1.0" lineColor="#CCCCCC"/>
+					<rightPen lineWidth="1.0" lineColor="#CCCCCC"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CONSULTATIONS} == null ? 0L : $F{CONSULTATIONS}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0" isBlankWhenNull="true">
+				<reportElement x="483" y="0" width="98" height="20" uuid="6ec8466c-6331-4371-9df1-2cada99108a4">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0" lineColor="#CCCCCC"/>
+					<leftPen lineWidth="1.0" lineColor="#CCCCCC"/>
+					<bottomPen lineWidth="1.0" lineColor="#CCCCCC"/>
+					<rightPen lineWidth="1.0" lineColor="#CCCCCC"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ADMISSIONS} == null ? 0L : $F{ADMISSIONS}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0" isBlankWhenNull="true">
+				<reportElement x="581" y="0" width="98" height="20" uuid="99dd1b8e-2f08-4fa0-be81-968b14c126f6">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0" lineColor="#CCCCCC"/>
+					<leftPen lineWidth="1.0" lineColor="#CCCCCC"/>
+					<bottomPen lineWidth="1.0" lineColor="#CCCCCC"/>
+					<rightPen lineWidth="1.0" lineColor="#CCCCCC"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{HOSPITALIZED} == null ? 0L : $F{HOSPITALIZED}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0" isBlankWhenNull="true">
+				<reportElement x="679" y="0" width="98" height="20" uuid="36d79261-8d99-451f-b572-67b23e550fcc">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0" lineColor="#CCCCCC"/>
+					<leftPen lineWidth="1.0" lineColor="#CCCCCC"/>
+					<bottomPen lineWidth="1.0" lineColor="#CCCCCC"/>
+					<rightPen lineWidth="1.0" lineColor="#CCCCCC"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{NORMALE_DISCHARGE} == null ? 0L : $F{NORMALE_DISCHARGE}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0" isBlankWhenNull="true">
+				<reportElement x="777" y="0" width="98" height="20" uuid="af07d600-86f6-4d52-bc6d-590b4e96f8d3">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0" lineColor="#CCCCCC"/>
+					<leftPen lineWidth="1.0" lineColor="#CCCCCC"/>
+					<bottomPen lineWidth="1.0" lineColor="#CCCCCC"/>
+					<rightPen lineWidth="1.0" lineColor="#CCCCCC"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ESCAPE_DISCHARGE} == null ? 0L : $F{ESCAPE_DISCHARGE}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0" isBlankWhenNull="true">
+				<reportElement x="875" y="0" width="98" height="20" uuid="61c314f4-54c6-4d35-b2ba-cdcb84b18528">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0" lineColor="#CCCCCC"/>
+					<leftPen lineWidth="1.0" lineColor="#CCCCCC"/>
+					<bottomPen lineWidth="1.0" lineColor="#CCCCCC"/>
+					<rightPen lineWidth="1.0" lineColor="#CCCCCC"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{REFERRED_DISCHARGE} == null ? 0L : $F{REFERRED_DISCHARGE}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0" isBlankWhenNull="true">
+				<reportElement x="973" y="0" width="98" height="20" uuid="cb47411f-d809-4de1-a31a-d025bb092023">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0" lineColor="#CCCCCC"/>
+					<leftPen lineWidth="1.0" lineColor="#CCCCCC"/>
+					<bottomPen lineWidth="1.0" lineColor="#CCCCCC"/>
+					<rightPen lineWidth="1.0" lineColor="#CCCCCC"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{DEATHS} == null ? 0L : $F{DEATHS}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="30" splitType="Stretch">
+			<line>
+				<reportElement x="0" y="1" width="1073" height="1" uuid="46a40aab-e560-4740-aad7-02f45fa678e5"/>
+			</line>
+			<rectangle radius="0">
+				<reportElement mode="Opaque" x="0" y="5" width="1073" height="20" forecolor="#000099" backcolor="#000099" uuid="83c11acf-2af2-4647-846b-965f80a5e137"/>
+			</rectangle>
+			<textField>
+				<reportElement x="1" y="6" width="300" height="19" forecolor="#FFFFFF" uuid="8d723184-3ef1-498a-8bc5-bd0e9e80959e"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new Date()]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Transparent" x="863" y="6" width="174" height="19" forecolor="#FFFFFF" uuid="707d113a-e8dc-44d8-b3d7-b189ca3846df"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{PAGE} + " " + $V{PAGE_NUMBER} + " " + $R{OF} + " "]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement mode="Transparent" x="1037" y="6" width="36" height="19" forecolor="#FFFFFF" uuid="44f0cae9-dcfd-43b5-a65f-d9615afb8d95"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="100" splitType="Stretch">
+			<line>
+				<reportElement x="0" y="0" width="1073" height="1" uuid="04792ddd-e5c4-42c1-a5bc-73c07f20c859"/>
+				<graphicElement>
+					<pen lineWidth="1.0" lineColor="#000099"/>
+				</graphicElement>
+			</line>
+			<textField>
+				<reportElement mode="Opaque" x="0" y="3" width="240" height="20" forecolor="#FFFFFF" backcolor="#000099" uuid="7dc0736e-c8ad-42d5-aea3-30e4baf3a624">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<box leftPadding="5">
+					<pen lineWidth="0.5" lineColor="#CCCCCC"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{GRAND_TOTAL}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="240" y="3" width="145" height="20" forecolor="#FFFFFF" backcolor="#000099" uuid="6763ec98-9644-4126-ac00-2cfe9d65d9f2">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="0.5" lineColor="#CCCCCC"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["--"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report" pattern="#,##0">
+				<reportElement mode="Opaque" x="385" y="3" width="98" height="20" forecolor="#FFFFFF" backcolor="#000099" uuid="1cbf076f-d7a7-44e9-96b4-89b2813e82b8">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="0.5" lineColor="#CCCCCC"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{TOTAL_CONSULTATIONS}]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report" pattern="#,##0">
+				<reportElement mode="Opaque" x="483" y="3" width="98" height="20" forecolor="#FFFFFF" backcolor="#000099" uuid="1fb4ee4e-9906-4773-992f-4dd5bc6a35d9">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="0.5" lineColor="#CCCCCC"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{TOTAL_ADMISSIONS}]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report" pattern="#,##0">
+				<reportElement mode="Opaque" x="581" y="3" width="98" height="20" forecolor="#FFFFFF" backcolor="#000099" uuid="896bcfca-116d-4d8d-9d6c-d8c74b2f71ce">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="0.5" lineColor="#CCCCCC"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{TOTAL_HOSPITALIZED}]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report" pattern="#,##0">
+				<reportElement mode="Opaque" x="679" y="3" width="98" height="20" forecolor="#FFFFFF" backcolor="#000099" uuid="01025011-5d95-469c-b6f1-9ebaa7719c3e">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="0.5" lineColor="#CCCCCC"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{TOTAL_NORMALE_DISCHARGE}]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report" pattern="#,##0">
+				<reportElement mode="Opaque" x="777" y="3" width="98" height="20" forecolor="#FFFFFF" backcolor="#000099" uuid="12fced89-128c-49f7-8f85-05b9e0572cd6">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="0.5" lineColor="#CCCCCC"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{TOTAL_ESCAPE_DISCHARGE}]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report" pattern="#,##0">
+				<reportElement mode="Opaque" x="875" y="3" width="98" height="20" forecolor="#FFFFFF" backcolor="#000099" uuid="d616ffec-d86c-4799-8dab-440b52af18d5">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="0.5" lineColor="#CCCCCC"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{TOTAL_REFERRED_DISCHARGE}]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report" pattern="#,##0">
+				<reportElement mode="Opaque" x="973" y="3" width="98" height="20" forecolor="#FFFFFF" backcolor="#000099" uuid="7461be3d-2eb0-4613-bca7-85bca605d4c1">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="0.5" lineColor="#CCCCCC"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{TOTAL_DEATHS}]]></textFieldExpression>
+			</textField>
+			<rectangle radius="0">
+				<reportElement mode="Opaque" x="0" y="35" width="1073" height="50" backcolor="#F0F0F0" uuid="1215c4ba-6a30-4c53-8c6a-4be368b24efe">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+			</rectangle>
+			<textField>
+				<reportElement x="10" y="40" width="100" height="20" uuid="90d58615-6f96-47d2-85fe-8299487d5326"/>
+				<textElement verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{LEGEND}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="110" y="40" width="950" height="40" uuid="7774d8ea-39f2-42b5-9074-112cc1ef5953"/>
+				<textElement>
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{AGETYPE_NEWBORN}       + " (" + ($V{AGE_FROM_d0} != null ? $V{AGE_FROM_d0} : "?") + "-" + ($V{AGE_TO_d0} != null ? $V{AGE_TO_d0} : "?") + ") | " +
+                    $R{AGETYPE_EARLYCHILDHOOD} + " (" + ($V{AGE_FROM_d1} != null ? $V{AGE_FROM_d1} : "?") + "-" + ($V{AGE_TO_d1} != null ? $V{AGE_TO_d1} : "?") + ") | " +
+                    $R{AGETYPE_LATECHILDHOOD}  + " (" + ($V{AGE_FROM_d2} != null ? $V{AGE_FROM_d2} : "?") + "-" + ($V{AGE_TO_d2} != null ? $V{AGE_TO_d2} : "?") + ") | " +
+                    $R{AGETYPE_ADOLESCENTS}    + " (" + ($V{AGE_FROM_d3} != null ? $V{AGE_FROM_d3} : "?") + "-" + ($V{AGE_TO_d3} != null ? $V{AGE_TO_d3} : "?") + ") | " +
+                    $R{AGETYPE_ADULT}          + " (" + ($V{AGE_FROM_d4} != null ? $V{AGE_FROM_d4} : "?") + "-" + ($V{AGE_TO_d4} != null ? $V{AGE_TO_d4} : "?") + ") | " +
+                    $R{AGETYPE_ELDERLY}        + " (" + ($V{AGE_FROM_d5} != null ? $V{AGE_FROM_d5} : "?") + "-" + ($V{AGE_TO_d5} != null ? $V{AGE_TO_d5} : "?") + ")"]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>
