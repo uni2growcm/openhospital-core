@@ -31,7 +31,7 @@ import org.isf.opd.model.Opd;
 import org.isf.utils.db.TranslateOHServiceException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.pagination.PageInfo;
-import org.isf.utils.pagination.PagedResponse;
+import org.isf.utils.pagination.Paged;
 import org.isf.ward.model.Ward;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -40,7 +40,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
-import java.util.List;
 
 @Service
 @Transactional(rollbackFor = OHServiceException.class)
@@ -245,10 +244,10 @@ public class OpdIoOperations {
 	 * @param user
 	 * @param page
 	 * @param size
-	 * @return a {@link PagedResponse} object that contains the {@link Opd}s.
+	 * @return a {@link Paged} object that contains the {@link Opd}s.
 	 * @throws OHServiceException 
 	 */
-	public PagedResponse<Opd> getOpdListPageable(
+	public Paged<Opd> getOpdListPageable(
 					Ward ward,
 					String diseaseTypeCode,
 					String diseaseCode,
@@ -269,18 +268,17 @@ public class OpdIoOperations {
 		return setPaginationData(new PageImpl<>(pageContent, pageRequest, ops.size()));
 	}
 
-	PagedResponse<Opd> setPaginationData(Page<Opd> pages) {
-		PagedResponse<Opd> data = new PagedResponse<>();
+	private Paged<Opd> setPaginationData(Page<Opd> pages) {
+		Paged<Opd> data = new Paged<>();
 		data.setData(pages.getContent());
 		data.setPageInfo(PageInfo.from(pages));
 		return data;
 	}
-
 	/**
 	 * Retrieves a page of {@link Opd}s within specified dates and parameters.
 	 * DATABASE-LEVEL PAGINATION using existing repository methods
 	 */
-	public PagedResponse<Opd> getOpdListPageableDatabase(
+	public Paged<Opd> getOpdListPageableDatabase(
 		Ward ward,
 		String diseaseTypeCode,
 		String diseaseCode,
@@ -291,20 +289,16 @@ public class OpdIoOperations {
 		char sex,
 		char newPatient,
 		String user,
-		int page,
-		int size) throws OHServiceException {
+		Pageable pageable) throws OHServiceException {
 
-		Pageable pageRequest = PageRequest.of(page, size);
-
-		// Convert LocalDate to LocalDateTime for repository methods
 		LocalDateTime dateFromTime = dateFrom.atStartOfDay();
 		LocalDateTime dateToTime = dateTo.plusDays(1).atStartOfDay();
 
 		Page<Opd> opdPage = repository.findOpdListPageable(
-			ward, null, diseaseCode,
+			ward, diseaseTypeCode, diseaseCode,
 			dateFromTime, dateToTime,
 			ageFrom, ageTo,
-			sex, newPatient, user, pageRequest);
+			sex, newPatient, user, pageable);
 
 		return setPaginationData(opdPage);
 	}
@@ -312,7 +306,7 @@ public class OpdIoOperations {
 	/**
 	 * Returns paged list of OPDs associated to specified patient ID (database pagination)
 	 */
-	public PagedResponse<Opd> getOpdListPageableDatabase(int patientcode, int page, int size)
+	public Paged<Opd> getOpdListPageableDatabase(int patientcode, int page, int size)
 		throws OHServiceException {
 		Pageable pageRequest = PageRequest.of(page, size);
 		Page<Opd> opdPage = repository.findAllByPatient_CodeOrderByProgYearDescPageable(patientcode, pageRequest);
@@ -322,19 +316,17 @@ public class OpdIoOperations {
 	/**
 	 * Returns paged list of OPDs with specified Progressive in Year number (database pagination)
 	 */
-	public PagedResponse<Opd> getOpdByProgYearPageableDatabase(int progYear, int page, int size)
+	public Paged<Opd> getOpdByProgYearPageableDatabase(int progYear, int page, int size)
 		throws OHServiceException {
 		Pageable pageRequest = PageRequest.of(page, size);
-		// Use existing method - we need to add a pageable version of findByProgYear
-		// For now, we'll use pagination in memory (better to add a repository method)
 		List<Opd> allOpds = repository.findByProgYear(progYear);
-		return createPagedResponse(allOpds, page, size);
+		return createPaged(allOpds, page, size);
 	}
 
 	/**
-	 * Utility method for creating a PagedResponse from a list (temporary solution)
+	 * Utility method for creating a Paged from a list (temporary solution)
 	 */
-	private PagedResponse<Opd> createPagedResponse(List<Opd> allItems, int page, int size) {
+	private Paged<Opd> createPaged(List<Opd> allItems, int page, int size) {
 		int totalRows = allItems.size();
 		int totalPages = (int) Math.ceil((double) totalRows / size);
 		int fromIndex = page * size;
@@ -354,7 +346,7 @@ public class OpdIoOperations {
 		pageInfo.setHasPreviousPage(page > 0);
 		pageInfo.setHasNextPage(page < totalPages - 1);
 
-		PagedResponse<Opd> response = new PagedResponse<>();
+		Paged<Opd> response = new Paged<>();
 		response.setData(pagedContent);
 		response.setPageInfo(pageInfo);
 
