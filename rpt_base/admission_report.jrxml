@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.21.5.final using JasperReports Library version 6.21.5-74d586df47b25dbd05bd0957999819196e59934a  -->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="admission_report" language="java" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" resourceBundle="admission_report" uuid="a7bcded8-8061-4336-8e7f-bef8584be5e4">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="admission_report" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" resourceBundle="admission_report" uuid="a7bcded8-8061-4336-8e7f-bef8584be5e4">
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter2.jrdax"/>
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<parameter name="patID" class="java.lang.Integer"/>
@@ -48,7 +48,6 @@
 	ADM_PRE_ASSESSMENT,
 	ADM_ENTRY_REASON,
 	ADM_NEXT_APPOINTMENT,
-	ADM_DIAGNOSIS,
 	ADM_TREATMENT_RECEIVED,
 	ADM_OUTCOME,
 	ADM_IMPROVEMENT_FEEDBACK,
@@ -66,7 +65,7 @@
 	PAT_AGE,
 	PAT_TELE,
 	PAT_CITY
-FROM oh_admission a JOIN oh_patient p ON a.ADM_PAT_ID = p.PAT_ID
+	 FROM oh_admission a JOIN oh_patient p ON a.ADM_PAT_ID = p.PAT_ID
 WHERE a.ADM_PAT_ID = $P{patID}]]>
 	</queryString>
 	<field name="ADM_ID" class="java.lang.Integer">
@@ -274,11 +273,6 @@ WHERE a.ADM_PAT_ID = $P{patID}]]>
 		<property name="com.jaspersoft.studio.field.label" value="ADM_NEXT_APPOINTMENT"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="oh_admission"/>
 	</field>
-	<field name="ADM_DIAGNOSIS" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="ADM_DIAGNOSIS"/>
-		<property name="com.jaspersoft.studio.field.label" value="ADM_DIAGNOSIS"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="oh_admission"/>
-	</field>
 	<field name="ADM_TREATMENT_RECEIVED" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="ADM_TREATMENT_RECEIVED"/>
 		<property name="com.jaspersoft.studio.field.label" value="ADM_TREATMENT_RECEIVED"/>
@@ -292,6 +286,31 @@ WHERE a.ADM_PAT_ID = $P{patID}]]>
 	<field name="ADM_IMPROVEMENT_FEEDBACK" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="ADM_IMPROVEMENT_FEEDBACK"/>
 		<property name="com.jaspersoft.studio.field.label" value="ADM_IMPROVEMENT_FEEDBACK"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_admission"/>
+	</field>
+	<field name="ADM_REFERRAL_ALERT" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ADM_REFERRAL_ALERT"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADM_REFERRAL_ALERT"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_admission"/>
+	</field>
+	<field name="ADM_REFERRAL_REASON" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ADM_REFERRAL_REASON"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADM_REFERRAL_REASON"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_admission"/>
+	</field>
+	<field name="ADM_REFERENCE_SHEET" class="java.lang.Boolean">
+		<property name="com.jaspersoft.studio.field.name" value="ADM_REFERENCE_SHEET"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADM_REFERENCE_SHEET"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_admission"/>
+	</field>
+	<field name="ADM_TRANS" class="java.lang.Float">
+		<property name="com.jaspersoft.studio.field.name" value="ADM_TRANS"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADM_TRANS"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="oh_admission"/>
+	</field>
+	<field name="ADM_TRANSPORTATION" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ADM_TRANSPORTATION"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADM_TRANSPORTATION"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="oh_admission"/>
 	</field>
 	<field name="PAT_ID" class="java.lang.Integer">

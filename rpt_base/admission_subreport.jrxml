@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.21.5.final using JasperReports Library version 6.21.5-74d586df47b25dbd05bd0957999819196e59934a  -->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="admission_subreport" language="java" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" resourceBundle="admission_subreport" uuid="337f01ed-959c-448d-9799-03596bf5bd68">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="admission_subreport" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" resourceBundle="admission_subreport" uuid="337f01ed-959c-448d-9799-03596bf5bd68">
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter2.jrdax"/>
 	<parameter name="patID" class="java.lang.Integer"/>
@@ -46,7 +46,6 @@
 	ADM_PRE_ASSESSMENT,
 	ADM_ENTRY_REASON,
 	ADM_NEXT_APPOINTMENT,
-	ADM_DIAGNOSIS,
 	ADM_TREATMENT_RECEIVED,
 	ADM_OUTCOME,
 	ADM_IMPROVEMENT_FEEDBACK,
@@ -272,11 +271,6 @@ WHERE a.ADM_PAT_ID = $P{patID}]]>
 		<property name="com.jaspersoft.studio.field.label" value="ADM_NEXT_APPOINTMENT"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="oh_admission"/>
 	</field>
-	<field name="ADM_DIAGNOSIS" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="ADM_DIAGNOSIS"/>
-		<property name="com.jaspersoft.studio.field.label" value="ADM_DIAGNOSIS"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="oh_admission"/>
-	</field>
 	<field name="ADM_TREATMENT_RECEIVED" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="ADM_TREATMENT_RECEIVED"/>
 		<property name="com.jaspersoft.studio.field.label" value="ADM_TREATMENT_RECEIVED"/>
@@ -398,16 +392,6 @@ WHERE a.ADM_PAT_ID = $P{patID}]]>
 				<textFieldExpression><![CDATA[$R{PreAssessment}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="40" y="280" width="180" height="30" uuid="ecd4e316-cfcb-4cba-9eba-1efd3e728667"/>
-				<box padding="1">
-					<pen lineWidth="1.0" lineStyle="Solid"/>
-				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$R{Diagnosis}]]></textFieldExpression>
-			</textField>
-			<textField>
 				<reportElement x="40" y="494" width="180" height="30" uuid="41d5be88-da8e-4cda-9573-d4e75c9758c4"/>
 				<box padding="1">
 					<pen lineWidth="1.0" lineStyle="Solid"/>
@@ -438,7 +422,7 @@ WHERE a.ADM_PAT_ID = $P{patID}]]>
 				<textFieldExpression><![CDATA[$R{AbortionDate}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="40" y="370" width="180" height="30" uuid="457b028c-e3e8-41a3-9a70-af4f76235ac4"/>
+				<reportElement x="40" y="340" width="180" height="30" uuid="457b028c-e3e8-41a3-9a70-af4f76235ac4"/>
 				<box padding="1">
 					<pen lineWidth="1.0" lineStyle="Solid"/>
 				</box>
@@ -468,7 +452,7 @@ WHERE a.ADM_PAT_ID = $P{patID}]]>
 				<textFieldExpression><![CDATA[$R{CourseOfAction}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="220" y="370" width="250" height="30" uuid="ec632f6c-3419-4b21-b58f-7ee622731078"/>
+				<reportElement x="220" y="340" width="250" height="30" uuid="ec632f6c-3419-4b21-b58f-7ee622731078"/>
 				<box padding="1">
 					<pen lineWidth="1.0" lineStyle="Solid"/>
 				</box>
@@ -499,7 +483,7 @@ WHERE a.ADM_PAT_ID = $P{patID}]]>
 				<textFieldExpression><![CDATA[$R{ReferralData}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="220" y="310" width="250" height="30" uuid="7c62339b-a8c1-4c7a-a57b-e9539c37802d"/>
+				<reportElement x="220" y="280" width="250" height="30" uuid="7c62339b-a8c1-4c7a-a57b-e9539c37802d"/>
 				<box padding="1">
 					<pen lineWidth="1.0" lineStyle="Solid"/>
 				</box>
@@ -558,7 +542,7 @@ WHERE a.ADM_PAT_ID = $P{patID}]]>
 				<textFieldExpression><![CDATA[$F{ADM_QUALIFIED_AGENT}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="220" y="340" width="250" height="30" uuid="fc5b7848-63de-4615-a5cd-ba05047f71f3"/>
+				<reportElement x="220" y="310" width="250" height="30" uuid="fc5b7848-63de-4615-a5cd-ba05047f71f3"/>
 				<box padding="1">
 					<pen lineWidth="1.0" lineStyle="Solid"/>
 				</box>
@@ -618,7 +602,7 @@ WHERE a.ADM_PAT_ID = $P{patID}]]>
 				<textFieldExpression><![CDATA[$F{ADM_PRE_ASSESSMENT}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="40" y="310" width="180" height="30" uuid="21c9902c-d670-4e8f-8db6-50ae85a12b5c"/>
+				<reportElement x="40" y="280" width="180" height="30" uuid="21c9902c-d670-4e8f-8db6-50ae85a12b5c"/>
 				<box padding="1">
 					<pen lineWidth="1.0" lineStyle="Solid"/>
 				</box>
@@ -698,7 +682,7 @@ WHERE a.ADM_PAT_ID = $P{patID}]]>
 				<textFieldExpression><![CDATA[$F{ADM_PRE_TREATMENT}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="40" y="340" width="180" height="30" uuid="ed8236f6-cb51-4508-91e9-0c784422d032"/>
+				<reportElement x="40" y="310" width="180" height="30" uuid="ed8236f6-cb51-4508-91e9-0c784422d032"/>
 				<box padding="1">
 					<pen lineWidth="1.0" lineStyle="Solid"/>
 				</box>
@@ -714,14 +698,6 @@ WHERE a.ADM_PAT_ID = $P{patID}]]>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{ADM_ALERT_RECEIVED}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="220" y="280" width="250" height="30" uuid="52ed8ef9-fccc-4683-923c-b19fa3be26ae"/>
-				<box padding="1">
-					<pen lineWidth="1.0" lineStyle="Solid"/>
-				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$F{ADM_DIAGNOSIS}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
