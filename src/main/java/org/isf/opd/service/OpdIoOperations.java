@@ -31,7 +31,6 @@ import org.isf.opd.model.Opd;
 import org.isf.utils.db.TranslateOHServiceException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.pagination.PageInfo;
-import org.isf.utils.pagination.Paged;
 import org.isf.ward.model.Ward;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -39,6 +38,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.ArrayList;
 
 @Service
@@ -54,10 +54,10 @@ public class OpdIoOperations {
 
 	/**
 	 * Return all {@link Opd}s for today or one week ago.
-	 * 
+	 *
 	 * @param oneWeek - if {@code true} return the last week, only today otherwise.
 	 * @return the list of Opds. It could be {@code empty}.
-	 * @throws OHServiceException 
+	 * @throws OHServiceException
 	 */
 	public List<Opd> getOpdList(boolean oneWeek) throws OHServiceException {
 		LocalDate dateTo = LocalDate.now();
@@ -66,11 +66,12 @@ public class OpdIoOperations {
 			dateFrom = LocalDate.now().minusWeeks(1);
 		}
 		return getOpdList(null, MessageBundle.getMessage("angal.common.alltypes.txt"), MessageBundle.getMessage("angal.opd.alldiseases.txt"), dateFrom, dateTo,
-						0, 0, 'A', 'A', null);
+			0, 0, 'A', 'A', null);
 	}
 
 	/**
 	 * Retrieves creation date of the last Opd
+	 *
 	 * @return creation date of the last Opd
 	 */
 	public LocalDateTime lastOpdCreationDate() {
@@ -79,7 +80,7 @@ public class OpdIoOperations {
 
 	/**
 	 * Count not deleted {@link Opd}s
-	 * 
+	 *
 	 * @return the number of recorded {@link Opd}s
 	 * @throws OHServiceException
 	 */
@@ -89,8 +90,8 @@ public class OpdIoOperations {
 
 	/**
 	 * Return all {@link Opd}s within specified dates and parameters.
-	 * 
-	 * @param ward 
+	 *
+	 * @param ward
 	 * @param diseaseTypeCode
 	 * @param diseaseCode
 	 * @param dateFrom
@@ -101,29 +102,29 @@ public class OpdIoOperations {
 	 * @param newPatient
 	 * @param user
 	 * @return the list of Opds. It could be {@code empty}.
-	 * @throws OHServiceException 
+	 * @throws OHServiceException
 	 */
 	public List<Opd> getOpdList(
-					Ward ward,
-					String diseaseTypeCode,
-					String diseaseCode,
-					LocalDate dateFrom,
-					LocalDate dateTo,
-					int ageFrom,
-					int ageTo,
-					char sex,
-					char newPatient,
-					String user) throws OHServiceException {
+		Ward ward,
+		String diseaseTypeCode,
+		String diseaseCode,
+		LocalDate dateFrom,
+		LocalDate dateTo,
+		int ageFrom,
+		int ageTo,
+		char sex,
+		char newPatient,
+		String user) throws OHServiceException {
 		return repository.findAllOpdWhereParams(ward, diseaseTypeCode, diseaseCode, dateFrom, dateTo, ageFrom, ageTo, sex, newPatient, user);
 	}
 
 	/**
 	 * Return all {@link Opd}s associated to specified patient ID.
-	 * 
+	 *
 	 * @param patID - the patient ID
 	 * @return the list of {@link Opd}s associated to specified patient ID.
-	 * 		   the whole list of {@link Opd}s if {@code 0} is passed.
-	 * @throws OHServiceException 
+	 * the whole list of {@link Opd}s if {@code 0} is passed.
+	 * @throws OHServiceException
 	 */
 	public List<Opd> getOpdList(int patID) throws OHServiceException {
 		return patID == 0 ? repository.findAllOrderByProgYearDesc() : repository.findAllByPatient_CodeOrderByProgYearDesc(patID);
@@ -131,10 +132,10 @@ public class OpdIoOperations {
 
 	/**
 	 * Insert a new {@link Opd} into the db.
-	 * 
+	 *
 	 * @param opd - an {@link Opd}
 	 * @return the newly inserted {@link Opd} object.
-	 * @throws OHServiceException 
+	 * @throws OHServiceException
 	 */
 	public Opd newOpd(Opd opd) throws OHServiceException {
 		return repository.save(opd);
@@ -142,10 +143,10 @@ public class OpdIoOperations {
 
 	/**
 	 * Modify an {@link Opd} in the db.
-	 * 
+	 *
 	 * @param opd - an {@link Opd}
 	 * @return the updated {@link Opd} object.
-	 * @throws OHServiceException 
+	 * @throws OHServiceException
 	 */
 	public Opd updateOpd(Opd opd) throws OHServiceException {
 		return repository.save(opd);
@@ -153,7 +154,7 @@ public class OpdIoOperations {
 
 	/**
 	 * Delete an {@link Opd} from the db.
-	 * 
+	 *
 	 * @param opd - the {@link Opd} to delete
 	 * @throws OHServiceException
 	 */
@@ -163,23 +164,23 @@ public class OpdIoOperations {
 
 	/**
 	 * Returns the max progressive number within specified year or within current year if {@code 0}.
-	 * 
+	 *
 	 * @param year
 	 * @return {@code int} - the progressive number in the year
-	 * @throws OHServiceException 
+	 * @throws OHServiceException
 	 */
 	public int getProgYear(int year) throws OHServiceException {
 		Integer progYear = year == 0 ? repository.findMaxProgYear()
-						: repository.findMaxProgYearWhereDateBetween(LocalDateTime.of(year, 1, 1, 0, 0), LocalDateTime.of(year + 1, 1, 1, 0, 0));
+			: repository.findMaxProgYearWhereDateBetween(LocalDateTime.of(year, 1, 1, 0, 0), LocalDateTime.of(year + 1, 1, 1, 0, 0));
 		return progYear == null ? 0 : progYear;
 	}
 
 	/**
 	 * Return the last {@link Opd} in time associated with specified patient ID.
-	 * 
+	 *
 	 * @param patID - the patient ID
 	 * @return last Opd associated with specified patient ID or {@code null}
-	 * @throws OHServiceException 
+	 * @throws OHServiceException
 	 */
 	public Opd getLastOpd(int patID) throws OHServiceException {
 		List<Opd> opdList = repository.findTop1ByPatient_CodeOrderByDateDesc(patID);
@@ -191,7 +192,7 @@ public class OpdIoOperations {
 	 *
 	 * @param code - the opd code
 	 * @return {@code true} if the code is already in use, {@code false} otherwise
-	 * @throws OHServiceException 
+	 * @throws OHServiceException
 	 */
 	public boolean isCodePresent(Integer code) throws OHServiceException {
 		return repository.existsById(code);
@@ -199,15 +200,15 @@ public class OpdIoOperations {
 
 	/**
 	 * Check if the given {@code opdNum} does already exist for the given {@code year}.
-	 * 
+	 *
 	 * @param opdNum - the OPD progressive in year
-	 * @param year - the year
+	 * @param year   - the year
 	 * @return {@code true} if the given number exists in year, {@code false} otherwise
 	 * @throws OHServiceException
 	 */
 	public boolean isExistOpdNum(int opdNum, int year) throws OHServiceException {
 		List<Opd> opds = year == 0 ? repository.findByProgYear(opdNum)
-						: repository.findByProgYearAndDateBetween(opdNum, LocalDateTime.of(year, 1, 1, 0, 0), LocalDateTime.of(year + 1, 1, 1, 0, 0));
+			: repository.findByProgYearAndDateBetween(opdNum, LocalDateTime.of(year, 1, 1, 0, 0), LocalDateTime.of(year + 1, 1, 1, 0, 0));
 		return !opds.isEmpty();
 	}
 
@@ -229,127 +230,30 @@ public class OpdIoOperations {
 		return repository.findByProgYear(code);
 	}
 
-	/**
-	 * Retrieves a page of {@link Opd}s within specified dates and parameters.
-	 * 
-	 * @param ward
-	 * @param diseaseTypeCode
-	 * @param diseaseCode
-	 * @param dateFrom
-	 * @param dateTo
-	 * @param ageFrom
-	 * @param ageTo
-	 * @param sex
-	 * @param newPatient
-	 * @param user
-	 * @param page
-	 * @param size
-	 * @return a {@link Paged} object that contains the {@link Opd}s.
-	 * @throws OHServiceException 
-	 */
-	public Paged<Opd> getOpdListPageable(
-					Ward ward,
-					String diseaseTypeCode,
-					String diseaseCode,
-					LocalDate dateFrom,
-					LocalDate dateTo,
-					int ageFrom,
-					int ageTo,
-					char sex,
-					char newPatient,
-					String user,
-					int page,
-					int size) throws OHServiceException {
-		Pageable pageRequest = PageRequest.of(page, size);
-		List<Opd> ops = this.getOpdList(ward, diseaseTypeCode, diseaseCode, dateFrom, dateTo, ageFrom, ageTo, sex, newPatient, null);
-		int start = (int) pageRequest.getOffset();
-		int end = Math.min(start + pageRequest.getPageSize(), ops.size());
-		List<Opd> pageContent = ops.subList(start, end);
-		return setPaginationData(new PageImpl<>(pageContent, pageRequest, ops.size()));
-	}
 
-	private Paged<Opd> setPaginationData(Page<Opd> pages) {
-		Paged<Opd> data = new Paged<>();
-		data.setData(pages.getContent());
-		data.setPageInfo(PageInfo.from(pages));
-		return data;
-	}
 	/**
 	 * Retrieves a page of {@link Opd}s within specified dates and parameters.
 	 * DATABASE-LEVEL PAGINATION using existing repository methods
 	 */
-	public Paged<Opd> getOpdListPageableDatabase(
-		Ward ward,
-		String diseaseTypeCode,
-		String diseaseCode,
-		LocalDate dateFrom,
-		LocalDate dateTo,
-		int ageFrom,
-		int ageTo,
-		char sex,
-		char newPatient,
-		String user,
-		Pageable pageable) throws OHServiceException {
+	public Page<Opd> getOpdListPageableDatabase(Ward ward, String diseaseTypeCode, String diseaseCode, LocalDate dateFrom, LocalDate dateTo, int ageFrom,
+		int ageTo, char sex, char newPatient, Pageable pageable) throws OHServiceException {
 
 		LocalDateTime dateFromTime = dateFrom.atStartOfDay();
 		LocalDateTime dateToTime = dateTo.plusDays(1).atStartOfDay();
 
-		Page<Opd> opdPage = repository.findOpdListPageable(
-			ward, diseaseTypeCode, diseaseCode,
-			dateFromTime, dateToTime,
-			ageFrom, ageTo,
-			sex, newPatient, user, pageable);
-
-		return setPaginationData(opdPage);
+		return repository.findOpdListPageable(ward, diseaseTypeCode, diseaseCode, dateFromTime, dateToTime, ageFrom, ageTo,
+			sex, newPatient, null, pageable);
 	}
 
-	/**
-	 * Returns paged list of OPDs associated to specified patient ID (database pagination)
-	 */
-	public Paged<Opd> getOpdListPageableDatabase(int patientcode, int page, int size)
+	public Page<Opd> getOpdListPageableDatabase(int patientcode, int page, int size)
 		throws OHServiceException {
 		Pageable pageRequest = PageRequest.of(page, size);
-		Page<Opd> opdPage = repository.findAllByPatient_CodeOrderByProgYearDescPageable(patientcode, pageRequest);
-		return setPaginationData(opdPage);
+		return repository.findAllByPatient_CodeOrderByProgYearDescPageable(patientcode, pageRequest);
 	}
 
-	/**
-	 * Returns paged list of OPDs with specified Progressive in Year number (database pagination)
-	 */
-	public Paged<Opd> getOpdByProgYearPageableDatabase(int progYear, int page, int size)
+	public Page<Opd> getOpdByProgYearPageableDatabase(int progYear, int page, int size)
 		throws OHServiceException {
 		Pageable pageRequest = PageRequest.of(page, size);
-		List<Opd> allOpds = repository.findByProgYear(progYear);
-		return createPaged(allOpds, page, size);
-	}
-
-	/**
-	 * Utility method for creating a Paged from a list (temporary solution)
-	 */
-	private Paged<Opd> createPaged(List<Opd> allItems, int page, int size) {
-		int totalRows = allItems.size();
-		int totalPages = (int) Math.ceil((double) totalRows / size);
-		int fromIndex = page * size;
-		int toIndex = Math.min(fromIndex + size, totalRows);
-
-		List<Opd> pagedContent = new ArrayList<>();
-		if (fromIndex < totalRows) {
-			pagedContent = allItems.subList(fromIndex, toIndex);
-		}
-
-		PageInfo pageInfo = new PageInfo();
-		pageInfo.setSize(size);
-		pageInfo.setPage(page);
-		pageInfo.setNbOfElements(pagedContent.size());
-		pageInfo.setTotalNbOfElements(totalRows);
-		pageInfo.setTotalPages(totalPages);
-		pageInfo.setHasPreviousPage(page > 0);
-		pageInfo.setHasNextPage(page < totalPages - 1);
-
-		Paged<Opd> response = new Paged<>();
-		response.setData(pagedContent);
-		response.setPageInfo(pageInfo);
-
-		return response;
+		return repository.findByProgYear(progYear, pageRequest);
 	}
 }

@@ -36,14 +36,14 @@ import org.isf.opd.service.OpdIoOperations;
 import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.model.OHExceptionMessage;
-import org.isf.utils.pagination.PagedResponse;
 import org.isf.ward.model.Ward;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.isf.utils.pagination.Paged;
+
 
 /**
  * @author Vero
@@ -286,79 +286,29 @@ public class OpdBrowserManager {
 		return ioOperations.getOpdByProgYear(code);
 	}
 
-	/**
-	 * Returns {@link List} of {@link Opd}s associated to specified patient ID with page info.
-	 *
-	 * @param ward the ward of opd
-	 * @param diseaseTypeCode the disease type
-	 * @param diseaseCode the Code of disease
-	 * @param dateFrom
-	 * @param dateTo
-	 * @param ageFrom
-	 * @param ageTo
-	 * @param sex
-	 * @param newPatient
-	 * @param page
-	 * @param size
-	 * @return the list of {@link Opd}s associated to specified patient ID. the whole list of {@link Opd}s if {@code 0} is passed.
-	 * @throws OHServiceException
-	 */
-	public Paged<Opd> getOpdPageable(Ward ward, String diseaseTypeCode, String diseaseCode,
-	                                 LocalDate dateFrom, LocalDate dateTo, int ageFrom, int ageTo,
-	                                 char sex, char newPatient, int page, int size) throws OHServiceException {
+	public Page<Opd> getOpdPageable(Ward ward, String diseaseTypeCode, String diseaseCode,
+	                                LocalDate dateFrom, LocalDate dateTo, int ageFrom, int ageTo,
+	                                char sex, char newPatient, int page, int size) throws OHServiceException {
 		Pageable pageable = PageRequest.of(page, size);
 		return ioOperations.getOpdListPageableDatabase(ward, diseaseTypeCode, diseaseCode,
-			dateFrom, dateTo, ageFrom, ageTo, sex, newPatient, null, pageable);
+			dateFrom, dateTo, ageFrom, ageTo, sex, newPatient, pageable);
 	}
-	/**
-	 * Returns paged list of Opds with database-level pagination
-	 *
-	 * @param ward the ward filter
-	 * @param diseaseTypeCode the disease type code filter
-	 * @param diseaseCode the disease code filter
-	 * @param dateFrom start date
-	 * @param dateTo end date
-	 * @param ageFrom minimum age
-	 * @param ageTo maximum age
-	 * @param sex gender filter ('A' = all, 'M' = male, 'F' = female)
-	 * @param newPatient patient type filter ('A' = all, 'N' = new, 'R' = returning)
-	 * @param page page number (0-indexed)
-	 * @param size page size (number of rows per page)
-	 * @return PagedResponse containing the Opd list and pagination info
-	 *@throws OHServiceException when fails to fetch list of opd
-	 */
-	public Paged<Opd> getOpdPageableDatabase(Ward ward, String diseaseTypeCode, String diseaseCode,
-	                                         LocalDate dateFrom, LocalDate dateTo, int ageFrom, int ageTo,
-	                                         char sex, char newPatient, int page, int size) throws OHServiceException {
+
+	public Page<Opd> getOpdPageableDatabase(Ward ward, String diseaseTypeCode, String diseaseCode,
+	                                        LocalDate dateFrom, LocalDate dateTo, int ageFrom, int ageTo,
+	                                        char sex, char newPatient, int page, int size) throws OHServiceException {
 		Pageable pageable = PageRequest.of(page, size);
 		return ioOperations.getOpdListPageableDatabase(ward, diseaseTypeCode, diseaseCode,
-			dateFrom, dateTo, ageFrom, ageTo, sex, newPatient, null, pageable);
+			dateFrom, dateTo, ageFrom, ageTo, sex, newPatient, pageable);
 	}
-	/**
-	 * Returns paged list of OPDs by patient ID with database pagination
-	 *
-	 * @param patientcode the patient ID
-	 * @param page page number (0-indexed)
-	 * @param size page size
-	 * @return PagedResponse containing the Opd list and pagination info
-	 * @throws OHServiceException
-	 */
-	public Paged<Opd> getOpdByPatientIdPageableDatabase(int patientcode, int page, int size)
+
+
+	public Page<Opd> getOpdByPatientIdPageableDatabase(int patientcode, int page, int size)
 		throws OHServiceException {
 		return ioOperations.getOpdListPageableDatabase(patientcode, page, size);
 	}
 
-
-	/**
-	 * Returns paged list of OPDs by progressive year with database pagination
-	 *
-	 * @param progYear the progressive year number
-	 * @param page page number (0-indexed)
-	 * @param size page size
-	 * @return PagedResponse containing the Opd list and pagination info
-	 * @throws OHServiceException
-	 */
-	public Paged<Opd> getOpdByProgYearPageableDatabase(int progYear, int page, int size)
+	public Page<Opd> getOpdByProgYearPageableDatabase(int progYear, int page, int size)
 		throws OHServiceException {
 		return ioOperations.getOpdByProgYearPageableDatabase(progYear, page, size);
 	}
