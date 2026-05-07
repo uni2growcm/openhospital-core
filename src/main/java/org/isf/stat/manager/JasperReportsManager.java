@@ -94,9 +94,7 @@ public class JasperReportsManager {
 	private static final String STAT_REPORTERROR_MSG = "angal.stat.reporterror.msg";
 
 	private static final String RPT_BASE = "rpt_base";
-
-	private static final String RPT_STAT = "rpt_stat";
-
+	
 	private static final String LOGO = "./rsc/images/logo_report.png";
 
 	private static final String LOGO_BENIN_PATH = "./rsc/images/logo-benin.png";
@@ -827,6 +825,47 @@ public class JasperReportsManager {
 		}
 	}
 
+	public JasperReportResultDto getGenericReportDischargeAgainstAdvicePdf(
+		Integer patID,
+		String localisation,
+		String reference,
+		String district,
+		String commune,
+		String phoneNumber,
+		LocalDateTime hospitalisationDate,
+		String patientRelationshipOccupation,
+		String patientRelationshipType,
+		String patientRelationshipName,
+		LocalDateTime madeOnDate,
+		Locale locale
+	) throws OHServiceException {
+
+		try {
+			HashMap<String, Object> parameters = new HashMap();
+			parameters.put("REPORT_LOCALE", locale);
+			parameters.put("patID", patID);
+			parameters.put("localisation", localisation);
+			parameters.put("reference", reference);
+			parameters.put("district", district);
+			parameters.put("commune", commune);
+			parameters.put("phoneNumber", phoneNumber);
+			parameters.put("hospitalisationDate", Timestamp.valueOf(hospitalisationDate));
+			parameters.put("patientRelationShipOccupation", patientRelationshipOccupation);
+			parameters.put("patientRelationShipType", patientRelationshipType);
+			parameters.put("patientRelationShipName", patientRelationshipName);
+			parameters.put("madeOnDate", Timestamp.valueOf(madeOnDate));
+			parameters.put("LOGO-PATH", "./rsc/images/labbraccio-logopng.png");
+			String jasperFileName = "discharge_againt_medical_advice_report";
+			String pdfFilename = this.compilePDFFilename("rpt_base", jasperFileName, Arrays.asList(String.valueOf(patID)), "pdf");
+			JasperReportResultDto result = this.generateJasperReport(this.compileJasperFilename("rpt_base", jasperFileName), pdfFilename, parameters);
+			JasperExportManager.exportReportToPdfFile(result.getJasperPrint(), pdfFilename);
+			return result;
+		} catch (Exception e) {
+			LOGGER.error("", e);
+			throw new OHReportException(e, new OHExceptionMessage(MessageBundle.getMessage("angal.stat.reporterror.msg")));
+		}
+	}
+
 	public void getGenericReportFromDateToDateExcel(LocalDate fromDate, LocalDate toDate, String jasperFileFolder, String jasperFileName, String exportFilename)
 					throws OHServiceException {
 
@@ -1193,18 +1232,65 @@ public class JasperReportsManager {
 		}
 	}
 
-	public JasperReportResultDto getAdmittedPatientReportFromDateToDatePdf(LocalDate fromDate, LocalDate toDate, String jasperFileName, Locale locale)
-		throws OHServiceException {
+	public JasperReportResultDto getGenericReportForCrossReferencePdf(Integer admID, Integer patID, Locale locale) throws OHServiceException {
 
 		try {
-			HashMap<String, Object> parameters = compileGenericReportFromDateToDateParameters(fromDate, toDate);
-			addBundleParameter(RPT_STAT, jasperFileName, parameters);
+			HashMap<String, Object> parameters = new HashMap<>();
+
+			parameters.put("patID", patID);
+			parameters.put("admID", admID);
+			parameters.put("LOGO-BENIN-PATH", LOGO_BENIN_PATH);
+			parameters.put("LOGO-PATH", LOGO_ABBRACCIO_PATH);
+			parameters.put(JRParameter.REPORT_LOCALE, locale);
+			String jasperFileName = "cross_reference_report";
+			String pdfFilename = compilePDFFilename(RPT_BASE, jasperFileName, Arrays.asList(String.valueOf(String.valueOf(patID))), "pdf");
+
+			JasperReportResultDto result = generateJasperReport(compileJasperFilename(RPT_BASE, jasperFileName), pdfFilename, parameters);
+			JasperExportManager.exportReportToPdfFile(result.getJasperPrint(), pdfFilename);
+			return result;
+		} catch (Exception e) {
+			LOGGER.error("", e);
+			throw new OHReportException(e, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
+		}
+	}
+
+	public JasperReportResultDto getGenericReportForDischargePdf(Integer admID, Integer patID, Locale locale) throws OHServiceException {
+
+		try {
+			HashMap<String, Object> parameters = new HashMap<>();
+
+			parameters.put("patID", patID);
+			parameters.put("admID", admID);
+			parameters.put("LOGO-BENIN-PATH", LOGO_BENIN_PATH);
+			parameters.put("LOGO-PATH", LOGO_ABBRACCIO_PATH);
+			parameters.put(JRParameter.REPORT_LOCALE, locale);
+			String jasperFileName = "discharge_report";
+			String pdfFilename = compilePDFFilename(RPT_BASE, jasperFileName, Arrays.asList(String.valueOf(String.valueOf(patID))), "pdf");
+
+			JasperReportResultDto result = generateJasperReport(compileJasperFilename(RPT_BASE, jasperFileName), pdfFilename, parameters);
+			JasperExportManager.exportReportToPdfFile(result.getJasperPrint(), pdfFilename);
+			return result;
+		} catch (Exception e) {
+			LOGGER.error("", e);
+			throw new OHReportException(e, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
+		}
+	}
+
+	public JasperReportResultDto getAdmissionReportPdf(Integer patientID, Locale locale) throws OHServiceException {
+
+		try {
+			HashMap<String, Object> parameters = getHospitalParameters();
+			addBundleParameter(RPT_BASE, "admission_report", parameters);
+
+			parameters.put("patID", patientID);
+			parameters.put("LOGO-BENIN-PATH", LOGO_BENIN_PATH);
+			parameters.put("LOGO-PATH", LOGO_ABBRACCIO_PATH);
 			parameters.put(JRParameter.REPORT_LOCALE, locale);
 
-			String pdfFilename = compilePDFFilename(RPT_STAT, jasperFileName, null, "pdf");
-			String filename = compileJasperFilename(RPT_STAT, jasperFileName);
+			String jasperFileName = "admission_report";
+			String pdfFilename = compilePDFFilename(RPT_BASE, jasperFileName, Arrays.asList(String.valueOf(patientID)), "pdf");
 
-			JasperReportResultDto result = generateJasperReport(filename, pdfFilename, parameters);
+			JasperReportResultDto result = generateJasperReport(compileJasperFilename(RPT_BASE, jasperFileName), pdfFilename, parameters);
 			JasperExportManager.exportReportToPdfFile(result.getJasperPrint(), pdfFilename);
 			return result;
 		} catch (Exception e) {
