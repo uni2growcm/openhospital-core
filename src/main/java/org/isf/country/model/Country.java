@@ -4,20 +4,21 @@ import jakarta.persistence.*;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "country")
+@Table(name = "OH_COUNTRY")
 public class Country implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name="CNT_ID")
 	private Long id;
 
-	@Column(name = "iso_code", length = 2, nullable = false, unique = true)
+	@Column(name = "CNT_ISO_CODE", length = 2, nullable = false, unique = true)
 	private String isoCode;
 
-	@Column(name = "phone_code", nullable = false)
+	@Column(name = "CNT_PHONE_CODE", nullable = false)
 	private String phoneCode;
 
-	@Column(length = 100, nullable = false, unique = true)
+	@Column(name = "CNT_NAME" ,length = 100, nullable = false, unique = true)
 	private String name;
 
 	public Country() {}

@@ -1,10 +1,10 @@
-CREATE TABLE IF NOT EXISTS `COUNTRY` (
-    `id` BIGINT NOT NULL AUTO_INCREMENT,
-    `iso_code` VARCHAR(2) NOT NULL,
-    `phone_code` VARCHAR(10) NOT NULL,
-    `name` VARCHAR(100) NOT NULL,
-    PRIMARY KEY (`id`),
-    UNIQUE KEY `uk_country_iso_code` (`iso_code`),
-    UNIQUE KEY `uk_country_phone_code` (`phone_code`),
-    UNIQUE KEY `uk_country_name` (`name`)
+CREATE TABLE IF NOT EXISTS `OH_COUNTRY` (
+    `CNT_ID` BIGINT NOT NULL AUTO_INCREMENT,
+    `CNT_ISO_CODE` VARCHAR(2) NOT NULL,
+    `CNT_PHONE_CODE` VARCHAR(10) NOT NULL,
+    `CNT_NAME` VARCHAR(100) NOT NULL,
+    PRIMARY KEY (`CNT_ID`),
+    UNIQUE KEY `uk_country_iso_code` (`CNT_ISO_CODE`),
+    UNIQUE KEY `uk_country_phone_code` (`CNT_PHONE_CODE`),
+    UNIQUE KEY `uk_country_name` (`CNT_NAME`)
     ) ENGINE=InnoDB;
