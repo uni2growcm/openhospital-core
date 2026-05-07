@@ -392,6 +392,4 @@ public class AdmissionIoOperations {
 		return this.repository.countAllActiveNotDeletedAdmissions();
 	}
 
-
-
 }

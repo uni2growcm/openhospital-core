@@ -41,5 +41,4 @@ public interface TherapyIoOperationRepository extends JpaRepository<TherapyRow, 
 
 	@Query("select count(t) from TherapyRow t where active=1")
 	long countAllActiveTherapies();
-
 }

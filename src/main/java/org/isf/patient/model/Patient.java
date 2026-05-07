@@ -139,9 +139,8 @@ public class Patient extends Auditable<String> {
 	@JoinColumn(name = "PAT_AFFILIATED_PATIENT_ID")
 	private Patient affiliatedPatient;
 
-	// Pour stocker l'ID simple (optionnel, pratique pour les formulaires)
 	@Column(name="PAT_COUNTRY_ID", insertable = false, updatable = false)
-	private Long countryId;
+	private Integer countryId;
 
 	@Column(name="PAT_AFFILIATED_PATIENT_ID", insertable = false, updatable = false)
 	private Integer affiliatedPatientId;
@@ -774,7 +773,7 @@ public class Patient extends Auditable<String> {
 		}
 	}
 
-	public Long getCountryId() {
+	public int getCountryId() {
 		return countryId;
 	}
 

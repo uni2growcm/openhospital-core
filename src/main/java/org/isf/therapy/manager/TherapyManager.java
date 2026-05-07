@@ -339,10 +339,6 @@ public class TherapyManager {
 	}
 
 	/**
-	 * Returns the list of {@link TherapyRow}s for a specific therapyID
-	 */
-
-	/**
 	 * Clones a {@link TherapyRow} with a new start date, preserving duration
 	 */
 	public TherapyRow cloneWithNewStartDate(TherapyRow oldTherapy, LocalDateTime newStartDate) throws OHServiceException {
@@ -373,5 +369,4 @@ public class TherapyManager {
 		);
 		return newTherapy;
 	}
-
 }
