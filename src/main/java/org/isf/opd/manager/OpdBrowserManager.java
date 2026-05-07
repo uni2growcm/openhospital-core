@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2024 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -286,17 +286,35 @@ public class OpdBrowserManager {
 		return ioOperations.getOpdByProgYear(code);
 	}
 
-	public Page<Opd> getOpdPageable(Ward ward, String diseaseTypeCode, String diseaseCode,
-	                                LocalDate dateFrom, LocalDate dateTo, int ageFrom, int ageTo,
-	                                char sex, char newPatient, int page, int size) throws OHServiceException {
+	/**
+	 * Returns a page of {@link Opd}s associated to the specified filters with pagination.
+	 *
+	 * @param ward the ward of opd
+	 * @param diseaseTypeCode the disease type
+	 * @param diseaseCode the Code of disease
+	 * @param dateFrom the start date
+	 * @param dateTo the end date
+	 * @param ageFrom the minimum age
+	 * @param ageTo the maximum age
+	 * @param sex the gender filter ('A' = all, 'M' = male, 'F' = female)
+	 * @param newPatient the patient type filter ('A' = all, 'N' = new, 'R' = returning)
+	 * @param page the page number (0-indexed)
+	 * @param size the page size
+	 * @return a {@link Page} of {@link Opd}s
+	 * @throws OHServiceException if an error occurs
+	 */
+
+	public Page<Opd> getOpdPageable(
+		Ward ward, String diseaseTypeCode, String diseaseCode, LocalDate dateFrom, LocalDate dateTo, int ageFrom, int ageTo,
+		char sex, char newPatient, int page, int size) throws OHServiceException {
 		Pageable pageable = PageRequest.of(page, size);
 		return ioOperations.getOpdListPageableDatabase(ward, diseaseTypeCode, diseaseCode,
 			dateFrom, dateTo, ageFrom, ageTo, sex, newPatient, pageable);
 	}
 
-	public Page<Opd> getOpdPageableDatabase(Ward ward, String diseaseTypeCode, String diseaseCode,
-	                                        LocalDate dateFrom, LocalDate dateTo, int ageFrom, int ageTo,
-	                                        char sex, char newPatient, int page, int size) throws OHServiceException {
+	public Page<Opd> getOpdPageableDatabase(
+		Ward ward, String diseaseTypeCode, String diseaseCode, LocalDate dateFrom, LocalDate dateTo, int ageFrom, int ageTo,
+		char sex, char newPatient, int page, int size) throws OHServiceException {
 		Pageable pageable = PageRequest.of(page, size);
 		return ioOperations.getOpdListPageableDatabase(ward, diseaseTypeCode, diseaseCode,
 			dateFrom, dateTo, ageFrom, ageTo, sex, newPatient, pageable);

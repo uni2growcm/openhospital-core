@@ -80,7 +80,6 @@ public class OpdIoOperations {
 
 	/**
 	 * Count not deleted {@link Opd}s
-	 *
 	 * @return the number of recorded {@link Opd}s
 	 * @throws OHServiceException
 	 */
@@ -90,7 +89,6 @@ public class OpdIoOperations {
 
 	/**
 	 * Return all {@link Opd}s within specified dates and parameters.
-	 *
 	 * @param ward
 	 * @param diseaseTypeCode
 	 * @param diseaseCode
@@ -120,7 +118,6 @@ public class OpdIoOperations {
 
 	/**
 	 * Return all {@link Opd}s associated to specified patient ID.
-	 *
 	 * @param patID - the patient ID
 	 * @return the list of {@link Opd}s associated to specified patient ID.
 	 * the whole list of {@link Opd}s if {@code 0} is passed.
@@ -132,7 +129,6 @@ public class OpdIoOperations {
 
 	/**
 	 * Insert a new {@link Opd} into the db.
-	 *
 	 * @param opd - an {@link Opd}
 	 * @return the newly inserted {@link Opd} object.
 	 * @throws OHServiceException
@@ -143,7 +139,6 @@ public class OpdIoOperations {
 
 	/**
 	 * Modify an {@link Opd} in the db.
-	 *
 	 * @param opd - an {@link Opd}
 	 * @return the updated {@link Opd} object.
 	 * @throws OHServiceException
@@ -154,7 +149,6 @@ public class OpdIoOperations {
 
 	/**
 	 * Delete an {@link Opd} from the db.
-	 *
 	 * @param opd - the {@link Opd} to delete
 	 * @throws OHServiceException
 	 */
@@ -164,7 +158,6 @@ public class OpdIoOperations {
 
 	/**
 	 * Returns the max progressive number within specified year or within current year if {@code 0}.
-	 *
 	 * @param year
 	 * @return {@code int} - the progressive number in the year
 	 * @throws OHServiceException
@@ -177,7 +170,6 @@ public class OpdIoOperations {
 
 	/**
 	 * Return the last {@link Opd} in time associated with specified patient ID.
-	 *
 	 * @param patID - the patient ID
 	 * @return last Opd associated with specified patient ID or {@code null}
 	 * @throws OHServiceException
@@ -189,7 +181,6 @@ public class OpdIoOperations {
 
 	/**
 	 * Checks if the code is already in use.
-	 *
 	 * @param code - the opd code
 	 * @return {@code true} if the code is already in use, {@code false} otherwise
 	 * @throws OHServiceException
@@ -200,7 +191,6 @@ public class OpdIoOperations {
 
 	/**
 	 * Check if the given {@code opdNum} does already exist for the given {@code year}.
-	 *
 	 * @param opdNum - the OPD progressive in year
 	 * @param year   - the year
 	 * @return {@code true} if the given number exists in year, {@code false} otherwise
@@ -229,7 +219,6 @@ public class OpdIoOperations {
 	public List<Opd> getOpdByProgYear(Integer code) {
 		return repository.findByProgYear(code);
 	}
-
 
 	/**
 	 * Retrieves a page of {@link Opd}s within specified dates and parameters.

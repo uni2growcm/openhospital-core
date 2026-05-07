@@ -73,10 +73,16 @@ public interface OpdIoOperationRepository extends JpaRepository<Opd, Integer>, O
 	@Query(value = "select op from Opd op where op.ward = :ward or op.disease.diseaseType = :diseaseType or op.disease.code = :diseaseCode or (op.date >= :dateFrom and op.date < :dateTo) "
 					+ " or (op.age >= :ageFrom and op.age < :ageTo) or op.sex = :sex or op.newPatient = :newPatient")
 	Page<Opd> findOpdListPageable(
-		@Param("ward") Ward ward, @Param("diseaseType") String diseaseType, @Param("diseaseCode") String diseaseCode,
-		@Param("dateFrom") LocalDateTime dateFrom, @Param("dateTo") LocalDateTime dateTo, @Param("ageFrom") int ageFrom, @Param("ageTo") int ageTo,
+		@Param("ward") Ward ward,
+		@Param("diseaseType") String diseaseType,
+		@Param("diseaseCode") String diseaseCode,
+		@Param("dateFrom") LocalDateTime dateFrom,
+		@Param("dateTo") LocalDateTime dateTo,
+		@Param("ageFrom") int ageFrom,
+		@Param("ageTo") int ageTo,
 		@Param("sex") char sex,
-		@Param("newPatient") char newPatient, @Param("dateFrom") String user, Pageable pageable);
+		@Param("newPatient") char newPatient,
+		@Param("dateFrom") String user, Pageable pageable);
 
 	@Query(value = "SELECT OPD_CREATED_DATE FROM OH_OPD O WHERE OPD_ACTIVE=1 ORDER BY OPD_ID DESC LIMIT 1", nativeQuery = true)
 	LocalDateTime lastOpdCreationDate();
