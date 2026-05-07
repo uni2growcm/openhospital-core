@@ -38,6 +38,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.isf.utils.pagination.PagedResponse;
 
 import java.util.ArrayList;
 
@@ -220,16 +221,56 @@ public class OpdIoOperations {
 		return repository.findByProgYear(code);
 	}
 
+
+	/**
+	 * Retrieves a page of {@link Opd}s within specified dates and parameters.
+	 *
+	 * @param ward
+	 * @param diseaseTypeCode
+	 * @param diseaseCode
+	 * @param dateFrom
+	 * @param dateTo
+	 * @param ageFrom
+	 * @param ageTo
+	 * @param sex
+	 * @param newPatient
+	 * @param user
+	 * @param page
+	 * @param size
+	 * @return a {@link PagedResponse} object that contains the {@link Opd}s.
+	 * @throws OHServiceException
+	 * DATABASE-LEVEL PAGINATION using existing repository methods
+	 */
+	public PagedResponse<Opd> getOpdListPageable(
+		Ward ward,
+		String diseaseTypeCode,
+		String diseaseCode,
+		LocalDate dateFrom,
+		LocalDate dateTo,
+		int ageFrom,
+		int ageTo,
+		char sex,
+		char newPatient,
+		String user,
+		int page,
+		int size) throws OHServiceException {
+		Pageable pageRequest = PageRequest.of(page, size);
+		List<Opd> ops = this.getOpdList(ward, diseaseTypeCode, diseaseCode, dateFrom, dateTo, ageFrom, ageTo, sex, newPatient, user);
+		int start = (int) pageRequest.getOffset();
+		int end = Math.min(start + pageRequest.getPageSize(), ops.size());
+		List<Opd> pageContent = ops.subList(start, end);
+		return setPaginationData(new PageImpl<>(pageContent, pageRequest, ops.size()));
+	}
 	/**
 	 * Retrieves a page of {@link Opd}s within specified dates and parameters.
 	 * DATABASE-LEVEL PAGINATION using existing repository methods
 	 */
-	public Page<Opd> getOpdListPageableDatabase(Ward ward, String diseaseTypeCode, String diseaseCode, LocalDate dateFrom, LocalDate dateTo, int ageFrom,
+	public Page<Opd> getOpdListPageable(Ward ward, String diseaseTypeCode, String diseaseCode, LocalDate dateFrom, LocalDate dateTo, int ageFrom,
 		int ageTo, char sex, char newPatient, Pageable pageable) throws OHServiceException {
-		return getOpdListPageableDatabase(ward, diseaseTypeCode, diseaseCode, dateFrom, dateTo, ageFrom, ageTo, sex, newPatient, null, pageable);
+		return getOpdListPageable(ward, diseaseTypeCode, diseaseCode, dateFrom, dateTo, ageFrom, ageTo, sex, newPatient, null, pageable);
 	}
 
-	public Page<Opd> getOpdListPageableDatabase(Ward ward, String diseaseTypeCode, String diseaseCode, LocalDate dateFrom, LocalDate dateTo, int ageFrom,
+	public Page<Opd> getOpdListPageable(Ward ward, String diseaseTypeCode, String diseaseCode, LocalDate dateFrom, LocalDate dateTo, int ageFrom,
 		int ageTo, char sex, char newPatient, String user, Pageable pageable) throws OHServiceException {
 
 		LocalDateTime dateFromTime = dateFrom.atStartOfDay();
@@ -247,15 +288,20 @@ public class OpdIoOperations {
 		return filter == null || filter.isBlank() ? null : filter;
 	}
 
-	public Page<Opd> getOpdListPageableDatabase(int patientcode, int page, int size)
-		throws OHServiceException {
-		Pageable pageRequest = PageRequest.of(page, size);
-		return repository.findAllByPatient_CodeOrderByProgYearDescPageable(patientcode, pageRequest);
+	PagedResponse<Opd> setPaginationData(Page<Opd> pages) {
+		PagedResponse<Opd> data = new PagedResponse<>();
+		data.setData(pages.getContent());
+		data.setPageInfo(PageInfo.from(pages));
+		return data;
 	}
 
-	public Page<Opd> getOpdByProgYearPageableDatabase(int progYear, int page, int size)
+	public Page<Opd> getOpdListPageable(int patientcode, Pageable pageable)
 		throws OHServiceException {
-		Pageable pageRequest = PageRequest.of(page, size);
-		return repository.findByProgYearPageable(progYear, pageRequest);
+		return repository.findAllByPatient_CodeOrderByProgYearDescPageable(patientcode, pageable);
+	}
+
+	public Page<Opd> getOpdByProgYearPageable(int progYear, Pageable pageable)
+		throws OHServiceException {
+		return repository.findByProgYearPageable(progYear, pageable);
 	}
 }

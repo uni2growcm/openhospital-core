@@ -26,6 +26,7 @@ import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -50,6 +51,7 @@ import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.time.TimeTools;
+import org.isf.utils.pagination.PagedResponse;
 import org.isf.visits.TestVisit;
 import org.isf.visits.model.Visit;
 import org.isf.visits.service.VisitsIoOperationRepository;
@@ -147,6 +149,65 @@ class Tests extends OHCoreTestCase {
 				foundOpd.getNewPatient(),
 				foundOpd.getUserID());
 		assertThat(opds.get(opds.size() - 1).getCode()).isEqualTo(foundOpd.getCode());
+	}
+
+	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
+	@MethodSource("opdExtended")
+	void testIoGetOpdListPageable(boolean opdExtended) throws Exception {
+		GeneralData.OPDEXTENDED = opdExtended;
+		List<Opd> savedOpds = setupTestOpdsForPagination("PaginationUser", 3);
+		Opd firstOpd = savedOpds.get(0);
+
+		PagedResponse<Opd> opds = opdIoOperation.getOpdListPageable(
+			firstOpd.getWard(),
+			firstOpd.getDisease().getType().getCode(),
+			firstOpd.getDisease().getCode(),
+			firstOpd.getDate().toLocalDate(),
+			firstOpd.getDate().toLocalDate(),
+			firstOpd.getAge() - 1,
+			firstOpd.getAge() + 1,
+			firstOpd.getSex(),
+			firstOpd.getNewPatient(),
+			firstOpd.getUserID(),
+			0,
+			2);
+
+		assertThat(opds.getData()).hasSize(2);
+		assertThat(opds.getData()).extracting(Opd::getCode).isSubsetOf(savedOpds.stream().map(Opd::getCode).toList());
+		assertThat(opds.getPageInfo().getPage()).isZero();
+		assertThat(opds.getPageInfo().getSize()).isEqualTo(2);
+		assertThat(opds.getPageInfo().getNbOfElements()).isEqualTo(2);
+		assertThat(opds.getPageInfo().getTotalNbOfElements()).isEqualTo(3);
+		assertThat(opds.getPageInfo().getTotalPages()).isEqualTo(2);
+		assertThat(opds.getPageInfo().isHasNextPage()).isTrue();
+		assertThat(opds.getPageInfo().isHasPreviousPage()).isFalse();
+	}
+
+	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
+	@MethodSource("opdExtended")
+	void testIoGetOpdListPageableFiltersByUser(boolean opdExtended) throws Exception {
+		GeneralData.OPDEXTENDED = opdExtended;
+		List<Opd> expectedOpds = setupTestOpdsForPagination("ExpectedUser", 1);
+		setupTestOpdsForPagination("OtherUser", 1);
+		Opd expectedOpd = expectedOpds.get(0);
+
+		PagedResponse<Opd> opds = opdIoOperation.getOpdListPageable(
+			expectedOpd.getWard(),
+			expectedOpd.getDisease().getType().getCode(),
+			expectedOpd.getDisease().getCode(),
+			expectedOpd.getDate().toLocalDate(),
+			expectedOpd.getDate().toLocalDate(),
+			expectedOpd.getAge() - 1,
+			expectedOpd.getAge() + 1,
+			expectedOpd.getSex(),
+			expectedOpd.getNewPatient(),
+			expectedOpd.getUserID(),
+			0,
+			10);
+
+		assertThat(opds.getData()).hasSize(1);
+		assertThat(opds.getData().get(0).getUserID()).isEqualTo(expectedOpd.getUserID());
+		assertThat(opds.getPageInfo().getTotalNbOfElements()).isEqualTo(1);
 	}
 
 	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
@@ -475,6 +536,37 @@ class Tests extends OHCoreTestCase {
 				foundOpd.getNewPatient(),
 				foundOpd.getUserID());
 		assertThat(opds.get(opds.size() - 1).getCode()).isEqualTo(foundOpd.getCode());
+	}
+
+	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
+	@MethodSource("opdExtended")
+	void testMgrGetOpdPageable(boolean opdExtended) throws Exception {
+		GeneralData.OPDEXTENDED = opdExtended;
+		List<Opd> savedOpds = setupTestOpdsForPagination("ManagerPaginationUser", 3);
+		Opd firstOpd = savedOpds.get(0);
+
+		PagedResponse<Opd> opds = opdBrowserManager.getOpdPageable(
+			firstOpd.getWard(),
+			firstOpd.getDisease().getType().getCode(),
+			firstOpd.getDisease().getCode(),
+			firstOpd.getDate().toLocalDate(),
+			firstOpd.getDate().toLocalDate(),
+			firstOpd.getAge() - 1,
+			firstOpd.getAge() + 1,
+			firstOpd.getSex(),
+			firstOpd.getNewPatient(),
+			1,
+			2);
+
+		assertThat(opds.getData()).hasSize(1);
+		assertThat(opds.getData()).extracting(Opd::getCode).isSubsetOf(savedOpds.stream().map(Opd::getCode).toList());
+		assertThat(opds.getPageInfo().getPage()).isEqualTo(1);
+		assertThat(opds.getPageInfo().getSize()).isEqualTo(2);
+		assertThat(opds.getPageInfo().getNbOfElements()).isEqualTo(1);
+		assertThat(opds.getPageInfo().getTotalNbOfElements()).isEqualTo(3);
+		assertThat(opds.getPageInfo().getTotalPages()).isEqualTo(2);
+		assertThat(opds.getPageInfo().isHasNextPage()).isFalse();
+		assertThat(opds.getPageInfo().isHasPreviousPage()).isTrue();
 	}
 
 	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
@@ -1269,6 +1361,33 @@ class Tests extends OHCoreTestCase {
 		
 		opdIoOperationRepository.saveAndFlush(opd);
 		return opd.getCode();
+	}
+
+	private List<Opd> setupTestOpdsForPagination(String user, int count) throws Exception {
+		List<Opd> opds = new ArrayList<>();
+		Ward ward = wardIoOperationRepository.findById("Z").orElseGet(() -> {
+			try {
+				return testWard.setup(false);
+			} catch (OHException exception) {
+				throw new IllegalStateException(exception);
+			}
+		});
+		Disease disease = diseaseIoOperationRepository.findOneByCode("1");
+		wardIoOperationRepository.saveAndFlush(ward);
+
+		for (int index = 0; index < count; index++) {
+			Patient patient = testPatient.setup(false);
+			Visit nextVisit = testVisit.setup(patient, true, ward);
+			Opd opd = testOpd.setup(patient, disease, ward, nextVisit, true);
+			opd.setUserID(user);
+			opd.setProgYear(3000 + index);
+
+			patientIoOperationRepository.saveAndFlush(patient);
+			visitsIoOperationRepository.saveAndFlush(nextVisit);
+			opds.add(opdIoOperationRepository.saveAndFlush(opd));
+		}
+
+		return opds;
 	}
 
 	private void checkOpdIntoDb(int code) throws OHException {
