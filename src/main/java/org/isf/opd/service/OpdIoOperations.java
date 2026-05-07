@@ -226,12 +226,25 @@ public class OpdIoOperations {
 	 */
 	public Page<Opd> getOpdListPageableDatabase(Ward ward, String diseaseTypeCode, String diseaseCode, LocalDate dateFrom, LocalDate dateTo, int ageFrom,
 		int ageTo, char sex, char newPatient, Pageable pageable) throws OHServiceException {
+		return getOpdListPageableDatabase(ward, diseaseTypeCode, diseaseCode, dateFrom, dateTo, ageFrom, ageTo, sex, newPatient, null, pageable);
+	}
+
+	public Page<Opd> getOpdListPageableDatabase(Ward ward, String diseaseTypeCode, String diseaseCode, LocalDate dateFrom, LocalDate dateTo, int ageFrom,
+		int ageTo, char sex, char newPatient, String user, Pageable pageable) throws OHServiceException {
 
 		LocalDateTime dateFromTime = dateFrom.atStartOfDay();
 		LocalDateTime dateToTime = dateTo.plusDays(1).atStartOfDay();
 
-		return repository.findOpdListPageable(ward, diseaseTypeCode, diseaseCode, dateFromTime, dateToTime, ageFrom, ageTo,
-			sex, newPatient, null, pageable);
+		String sexStr = String.valueOf(sex);
+		String newPatientStr = String.valueOf(newPatient);
+		String wardCode = ward != null ? ward.getCode() : null;
+
+		return repository.findOpdListPageable(wardCode, normalizeFilter(diseaseTypeCode), normalizeFilter(diseaseCode), dateFromTime, dateToTime, ageFrom, ageTo,
+			sexStr, newPatientStr, normalizeFilter(user), pageable);
+	}
+
+	private String normalizeFilter(String filter) {
+		return filter == null || filter.isBlank() ? null : filter;
 	}
 
 	public Page<Opd> getOpdListPageableDatabase(int patientcode, int page, int size)
@@ -243,6 +256,6 @@ public class OpdIoOperations {
 	public Page<Opd> getOpdByProgYearPageableDatabase(int progYear, int page, int size)
 		throws OHServiceException {
 		Pageable pageRequest = PageRequest.of(page, size);
-		return repository.findByProgYear(progYear, pageRequest);
+		return repository.findByProgYearPageable(progYear, pageRequest);
 	}
 }

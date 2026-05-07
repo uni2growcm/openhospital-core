@@ -307,17 +307,29 @@ public class OpdBrowserManager {
 	public Page<Opd> getOpdPageable(
 		Ward ward, String diseaseTypeCode, String diseaseCode, LocalDate dateFrom, LocalDate dateTo, int ageFrom, int ageTo,
 		char sex, char newPatient, int page, int size) throws OHServiceException {
+		return getOpdPageable(ward, diseaseTypeCode, diseaseCode, dateFrom, dateTo, ageFrom, ageTo, sex, newPatient, null, page, size);
+	}
+
+	public Page<Opd> getOpdPageable(
+		Ward ward, String diseaseTypeCode, String diseaseCode, LocalDate dateFrom, LocalDate dateTo, int ageFrom, int ageTo,
+		char sex, char newPatient, String user, int page, int size) throws OHServiceException {
 		Pageable pageable = PageRequest.of(page, size);
 		return ioOperations.getOpdListPageableDatabase(ward, diseaseTypeCode, diseaseCode,
-			dateFrom, dateTo, ageFrom, ageTo, sex, newPatient, pageable);
+			dateFrom, dateTo, ageFrom, ageTo, sex, newPatient, user, pageable);
 	}
 
 	public Page<Opd> getOpdPageableDatabase(
 		Ward ward, String diseaseTypeCode, String diseaseCode, LocalDate dateFrom, LocalDate dateTo, int ageFrom, int ageTo,
 		char sex, char newPatient, int page, int size) throws OHServiceException {
+		return getOpdPageableDatabase(ward, diseaseTypeCode, diseaseCode, dateFrom, dateTo, ageFrom, ageTo, sex, newPatient, null, page, size);
+	}
+
+	public Page<Opd> getOpdPageableDatabase(
+		Ward ward, String diseaseTypeCode, String diseaseCode, LocalDate dateFrom, LocalDate dateTo, int ageFrom, int ageTo,
+		char sex, char newPatient, String user, int page, int size) throws OHServiceException {
 		Pageable pageable = PageRequest.of(page, size);
 		return ioOperations.getOpdListPageableDatabase(ward, diseaseTypeCode, diseaseCode,
-			dateFrom, dateTo, ageFrom, ageTo, sex, newPatient, pageable);
+			dateFrom, dateTo, ageFrom, ageTo, sex, newPatient, user, pageable);
 	}
 
 
