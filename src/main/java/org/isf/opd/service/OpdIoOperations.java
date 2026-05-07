@@ -31,6 +31,7 @@ import org.isf.opd.model.Opd;
 import org.isf.utils.db.TranslateOHServiceException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.pagination.PageInfo;
+import org.isf.utils.pagination.PagedResponse;
 import org.isf.ward.model.Ward;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -38,9 +39,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.isf.utils.pagination.PagedResponse;
-
-import java.util.ArrayList;
 
 @Service
 @Transactional(rollbackFor = OHServiceException.class)
@@ -81,6 +79,7 @@ public class OpdIoOperations {
 
 	/**
 	 * Count not deleted {@link Opd}s
+	 *
 	 * @return the number of recorded {@link Opd}s
 	 * @throws OHServiceException
 	 */
@@ -90,6 +89,7 @@ public class OpdIoOperations {
 
 	/**
 	 * Return all {@link Opd}s within specified dates and parameters.
+	 *
 	 * @param ward
 	 * @param diseaseTypeCode
 	 * @param diseaseCode
@@ -119,6 +119,7 @@ public class OpdIoOperations {
 
 	/**
 	 * Return all {@link Opd}s associated to specified patient ID.
+	 *
 	 * @param patID - the patient ID
 	 * @return the list of {@link Opd}s associated to specified patient ID.
 	 * the whole list of {@link Opd}s if {@code 0} is passed.
@@ -130,6 +131,7 @@ public class OpdIoOperations {
 
 	/**
 	 * Insert a new {@link Opd} into the db.
+	 *
 	 * @param opd - an {@link Opd}
 	 * @return the newly inserted {@link Opd} object.
 	 * @throws OHServiceException
@@ -140,6 +142,7 @@ public class OpdIoOperations {
 
 	/**
 	 * Modify an {@link Opd} in the db.
+	 *
 	 * @param opd - an {@link Opd}
 	 * @return the updated {@link Opd} object.
 	 * @throws OHServiceException
@@ -150,6 +153,7 @@ public class OpdIoOperations {
 
 	/**
 	 * Delete an {@link Opd} from the db.
+	 *
 	 * @param opd - the {@link Opd} to delete
 	 * @throws OHServiceException
 	 */
@@ -159,6 +163,7 @@ public class OpdIoOperations {
 
 	/**
 	 * Returns the max progressive number within specified year or within current year if {@code 0}.
+	 *
 	 * @param year
 	 * @return {@code int} - the progressive number in the year
 	 * @throws OHServiceException
@@ -171,6 +176,7 @@ public class OpdIoOperations {
 
 	/**
 	 * Return the last {@link Opd} in time associated with specified patient ID.
+	 *
 	 * @param patID - the patient ID
 	 * @return last Opd associated with specified patient ID or {@code null}
 	 * @throws OHServiceException
@@ -182,6 +188,7 @@ public class OpdIoOperations {
 
 	/**
 	 * Checks if the code is already in use.
+	 *
 	 * @param code - the opd code
 	 * @return {@code true} if the code is already in use, {@code false} otherwise
 	 * @throws OHServiceException
@@ -192,8 +199,9 @@ public class OpdIoOperations {
 
 	/**
 	 * Check if the given {@code opdNum} does already exist for the given {@code year}.
+	 *
 	 * @param opdNum - the OPD progressive in year
-	 * @param year   - the year
+	 * @param year - the year
 	 * @return {@code true} if the given number exists in year, {@code false} otherwise
 	 * @throws OHServiceException
 	 */
@@ -221,7 +229,6 @@ public class OpdIoOperations {
 		return repository.findByProgYear(code);
 	}
 
-
 	/**
 	 * Retrieves a page of {@link Opd}s within specified dates and parameters.
 	 *
@@ -239,53 +246,26 @@ public class OpdIoOperations {
 	 * @param size
 	 * @return a {@link PagedResponse} object that contains the {@link Opd}s.
 	 * @throws OHServiceException
-	 * DATABASE-LEVEL PAGINATION using existing repository methods
 	 */
 	public PagedResponse<Opd> getOpdListPageable(
-		Ward ward,
-		String diseaseTypeCode,
-		String diseaseCode,
-		LocalDate dateFrom,
-		LocalDate dateTo,
-		int ageFrom,
-		int ageTo,
-		char sex,
-		char newPatient,
-		String user,
-		int page,
-		int size) throws OHServiceException {
+					Ward ward,
+					String diseaseTypeCode,
+					String diseaseCode,
+					LocalDate dateFrom,
+					LocalDate dateTo,
+					int ageFrom,
+					int ageTo,
+					char sex,
+					char newPatient,
+					String user,
+					int page,
+					int size) throws OHServiceException {
 		Pageable pageRequest = PageRequest.of(page, size);
-		List<Opd> ops = this.getOpdList(ward, diseaseTypeCode, diseaseCode, dateFrom, dateTo, ageFrom, ageTo, sex, newPatient, user);
+		List<Opd> ops = this.getOpdList(ward, diseaseTypeCode, diseaseCode, dateFrom, dateTo, ageFrom, ageTo, sex, newPatient, null);
 		int start = (int) pageRequest.getOffset();
 		int end = Math.min(start + pageRequest.getPageSize(), ops.size());
 		List<Opd> pageContent = ops.subList(start, end);
 		return setPaginationData(new PageImpl<>(pageContent, pageRequest, ops.size()));
-	}
-	/**
-	 * Retrieves a page of {@link Opd}s within specified dates and parameters.
-	 * DATABASE-LEVEL PAGINATION using existing repository methods
-	 */
-	public Page<Opd> getOpdListPageable(Ward ward, String diseaseTypeCode, String diseaseCode, LocalDate dateFrom, LocalDate dateTo, int ageFrom,
-		int ageTo, char sex, char newPatient, Pageable pageable) throws OHServiceException {
-		return getOpdListPageable(ward, diseaseTypeCode, diseaseCode, dateFrom, dateTo, ageFrom, ageTo, sex, newPatient, null, pageable);
-	}
-
-	public Page<Opd> getOpdListPageable(Ward ward, String diseaseTypeCode, String diseaseCode, LocalDate dateFrom, LocalDate dateTo, int ageFrom,
-		int ageTo, char sex, char newPatient, String user, Pageable pageable) throws OHServiceException {
-
-		LocalDateTime dateFromTime = dateFrom.atStartOfDay();
-		LocalDateTime dateToTime = dateTo.plusDays(1).atStartOfDay();
-
-		String sexStr = String.valueOf(sex);
-		String newPatientStr = String.valueOf(newPatient);
-		String wardCode = ward != null ? ward.getCode() : null;
-
-		return repository.findOpdListPageable(wardCode, normalizeFilter(diseaseTypeCode), normalizeFilter(diseaseCode), dateFromTime, dateToTime, ageFrom, ageTo,
-			sexStr, newPatientStr, normalizeFilter(user), pageable);
-	}
-
-	private String normalizeFilter(String filter) {
-		return filter == null || filter.isBlank() ? null : filter;
 	}
 
 	PagedResponse<Opd> setPaginationData(Page<Opd> pages) {
@@ -295,13 +275,64 @@ public class OpdIoOperations {
 		return data;
 	}
 
-	public Page<Opd> getOpdListPageable(int patientcode, Pageable pageable)
-		throws OHServiceException {
-		return repository.findAllByPatient_CodeOrderByProgYearDescPageable(patientcode, pageable);
+	/**
+	 * Retrieves a page of {@link Opd}s within specified dates and parameters.
+	 *
+	 * @param ward - the ward
+	 * @param diseaseTypeCode the diesease type
+	 * @param diseaseCode the code of the diesease
+	 * @param dateTo the begininng date
+	 * @param dateFrom the ending date
+	 * @param ageFrom the starting age
+	 * @param ageTo the ending age
+	 * @param sex the patients gender to consider
+	 * @param newPatient if list should contain only new patients
+	 * @param user the user
+	 * @param pageable the page infos
+	 * @return a list of OPD or an empty list
+	 * @throws  OHServiceException when fails to fetch
+	 */
+	public Page<Opd> getOpdList(
+		Ward ward, String diseaseTypeCode, String diseaseCode, LocalDate dateFrom, LocalDate dateTo,
+		int ageFrom, int ageTo, char sex, char newPatient, String user, Pageable pageable) throws OHServiceException {
+
+		LocalDateTime dateFromTime = dateFrom.atStartOfDay();
+		LocalDateTime dateToTime = dateTo.plusDays(1).atStartOfDay();
+
+		String sexStr = String.valueOf(sex);
+		String newPatientStr = String.valueOf(newPatient);
+		String wardCode = ward != null ? ward.getCode() : null;
+
+		return repository.findOpdListPageable(
+			wardCode, normalizeFilteringTerm(diseaseTypeCode), normalizeFilteringTerm(diseaseCode), dateFromTime,
+			dateToTime, ageFrom, ageTo, sexStr, newPatientStr, normalizeFilteringTerm(user), pageable);
 	}
 
-	public Page<Opd> getOpdByProgYearPageable(int progYear, Pageable pageable)
-		throws OHServiceException {
+	private String normalizeFilteringTerm(String filter) {
+		return filter == null || filter.isBlank() ? null : filter;
+	}
+
+	/**
+	 * Retrieves a page of {@link Opd}s within specified dates and parameters.
+	 *
+	 * @param patientCode the patient's code
+	 * @param pageable the page infos
+	 * @return a list of OPD or an empty list
+	 * @throws  OHServiceException when fails to fetch
+	 */
+	public Page<Opd> getOpdListByPatientId(int patientCode, Pageable pageable) throws OHServiceException {
+		return repository.findAllByPatient_CodeOrderByProgYearDescPageable(patientCode, pageable);
+	}
+
+	/**
+	 * Retrieves a page of {@link Opd}s within specified dates and parameters.
+	 *
+	 * @param progYear
+	 * @param pageable the page infos
+	 * @return a list of OPD or an empty list
+	 * @throws  OHServiceException when fails to fetch
+	 */
+	public Page<Opd> getOpdListByProgYear(int progYear, Pageable pageable) throws OHServiceException {
 		return repository.findByProgYearPageable(progYear, pageable);
 	}
 }
