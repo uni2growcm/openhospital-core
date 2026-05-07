@@ -1591,6 +1591,35 @@ class Tests extends OHCoreTestCase {
 		assertThat(count).isEqualTo(1);
 	}
 
+	@ParameterizedTest(name = "Test with MATERNITYRESTARTINJUNE={0}")
+	@MethodSource("maternityRestartInJune")
+	void testMgrGetAdmittedPatientsPaginatedWithPageable(boolean maternityRestartInJune) throws Exception {
+		GeneralData.MATERNITYRESTARTINJUNE = maternityRestartInJune;
+
+		int id = setupTestAdmission(false);
+		Admission admission = admissionBrowserManager.getAdmission(id);
+
+		Page<AdmittedPatient> firstPage = admissionBrowserManager.getAdmittedPatientsPaginated(
+			null, null, null, null, null, null, null, null, 0, 2
+		);
+
+		assertThat(firstPage).isNotNull();
+		assertThat(firstPage.getContent()).hasSize(1);
+		assertThat(firstPage.getTotalElements()).isEqualTo(1);
+		assertThat(firstPage.getTotalPages()).isEqualTo(1);
+		assertThat(firstPage.getNumber()).isZero();
+		assertThat(firstPage.getSize()).isEqualTo(2);
+
+		Page<AdmittedPatient> secondPage = admissionBrowserManager.getAdmittedPatientsPaginated(
+			null, null, null, null, null, null, null, null, 1, 2
+		);
+
+		assertThat(secondPage).isNotNull();
+		assertThat(secondPage.getNumber()).isEqualTo(1);
+		assertThat(secondPage.getContent()).isEmpty();
+		assertThat(secondPage.getTotalElements()).isEqualTo(1);
+	}
+
 	class MyAdmissionIoOperationRepositoryCustom implements AdmissionIoOperationRepositoryCustom {
 
 		@Override
@@ -1704,5 +1733,4 @@ class Tests extends OHCoreTestCase {
 			diseaseOut2, diseaseOut3, operation, dischargeType, pregTreatmentType,
 			deliveryType, deliveryResult, true);
 	}
-
 }
