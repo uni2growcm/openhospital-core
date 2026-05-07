@@ -19,13 +19,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-
 package org.isf.country.manager;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.isf.country.model.Country;
 import org.isf.country.service.CountryIoOperations;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.isf.utils.exception.OHServiceException;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -33,31 +32,81 @@ import java.util.List;
 @Component
 public class CountryBrowserManager {
 
-	@Autowired
 	private CountryIoOperations ioOperations;
 
-	public List<Country> getCountries() {
+	public CountryBrowserManager(CountryIoOperations ioOperations) {
+		this.ioOperations = ioOperations;
+	}
+
+	/**
+	 * Returns all the list of {@link Country}s.
+	 *
+	 * @return the list of {@link Country}s.
+	 * @throws OHServiceException when fails to fetch the countries.
+	 */
+	public List<Country> getCountries() throws OHServiceException {
 		return ioOperations.getAllCountries();
 	}
 
-	public Country getCountry(int id) {
+	/**
+	 * Returns the {@link Country} with the given id.
+	 *
+	 * @param id the id of the country to retrieve.
+	 * @return the {@link Country} with the given id.
+	 * @throws EntityNotFoundException if no active country is found with the given id.
+	 * @throws OHServiceException when fails to fetch the country.
+	 */
+	public Country getCountry(int id) throws OHServiceException {
 		return ioOperations.getCountryById(id)
 			.orElseThrow(() -> new EntityNotFoundException("Country not found with id: " + id));
 	}
 
-	public Country saveCountry(Country country) {
+	/**
+	 * Saves a {@link Country}. Creates it if new, updates it if already existing.
+	 *
+	 * @param country the country to save.
+	 * @return the saved {@link Country}.
+	 * @throws OHServiceException when fails to save the country.
+	 */
+	public Country saveCountry(Country country) throws OHServiceException {
 		return ioOperations.saveCountry(country);
 	}
 
-	public void deleteCountry(int id) {
+	/**
+	 * Soft-deletes the {@link Country} with the given id by setting its active flag to {@code 0}.
+	 * The record is not physically removed from the database.
+	 *
+	 * @param id the id of the country to delete.
+	 * @throws OHServiceException when fails to delete the country.
+	 */
+	public void deleteCountry(int id) throws OHServiceException {
 		ioOperations.deleteCountry(id);
 	}
 
-	public List<Country> searchCountries(String keyword) {
+	/**
+	 * Searches for active {@link Country}s whose name, ISO code or phone code
+	 * contains the given keyword (case-insensitive).
+	 * Returns all active countries if the keyword is {@code null} or blank.
+	 *
+	 * @param keyword the search keyword; may be {@code null} or empty.
+	 * @return the list of matching {@link Country}s.
+	 * @throws OHServiceException when fails to execute the search.
+	 */
+	public List<Country> searchCountries(String keyword) throws OHServiceException {
 		return ioOperations.searchCountries(keyword);
 	}
 
-	public boolean isCodeUnique(String isoCode, Integer excludeId) {
+	/**
+	 * Checks whether the given ISO code is unique among active {@link Country}s.
+	 * When {@code excludeId} is provided, the country with that id is excluded
+	 * from the uniqueness check (useful when updating an existing country).
+	 *
+	 * @param isoCode   the ISO code to check.
+	 * @param excludeId the id of the country to exclude from the check, or {@code null} for a creation check.
+	 * @return {@code true} if the ISO code is not used by any other active country, {@code false} otherwise.
+	 * @throws OHServiceException when fails to execute the uniqueness check.
+	 */
+	public boolean isCodeUnique(String isoCode, Integer excludeId) throws OHServiceException {
 		return ioOperations.isCodeUnique(isoCode, excludeId);
 	}
 }

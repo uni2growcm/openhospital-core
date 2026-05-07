@@ -333,15 +333,9 @@ public class PatientIoOperations {
 		return patients;
 	}
 
-	public List<Patient> findBySearchStringPaginated(String search, int limit, int offset) {
-		Pageable pageable = PageRequest.of(offset / limit, limit);
-		return repository.findBySearchStringPaginated(search, pageable);
-	}
-
 	public long countPatientsByOneOfFieldsLike(String search) {
 		return repository.countBySearchString(search);
 	}
-
 
 	public Page<Patient> getPatientsByOneOfFieldsLikePaginated(String keyword, int page, int size) throws OHServiceException {
 		Pageable pageable = PageRequest.of(page, size);

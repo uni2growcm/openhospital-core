@@ -32,5 +32,4 @@ public interface PatientIoOperationRepositoryCustom {
 	List<Patient> findByFieldsContainingWordsFromLiteral(String regex);
 
 	Page<Patient> findByFieldsContainingWordsFromLiteralPaginated(String regex, Pageable pageable);
-
 }

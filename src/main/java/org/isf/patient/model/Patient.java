@@ -118,32 +118,25 @@ public class Patient extends Auditable<String> {
 	@Column(name="PAT_BIRTH_PLACE")
 	private String birthPlace;
 
-	@Column(name="PAT_NUMBER_OF_CHILDREN")
-	private Integer numberOfChildren = 0;
+	@Column(name="PAT_NBR_CHILDREN")
+	private Integer numberOfChildren;
 
-	@Column(name="PAT_GEOGRAPHIC_POSITION")
+	@Column(name="PAT_GEO_POS")
 	private String geographicPosition;
 
-	@Column(name="PAT_PARENTS_RESIDENCE")
+	@Column(name="PAT_PARENTS_RES")
 	private String parentsResidence;
 
-	@Column(name="PAT_TRANSPORT_MEANS")
+	@Column(name="PAT_TRANSPORT")
 	private String transportMeans;
-
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "PAT_COUNTRY_ID")
 	private Country country;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "PAT_AFFILIATED_PATIENT_ID")
+	@JoinColumn(name = "PAT_AFFILIATED_ID")
 	private Patient affiliatedPatient;
-
-	@Column(name="PAT_COUNTRY_ID", insertable = false, updatable = false)
-	private Integer countryId;
-
-	@Column(name="PAT_AFFILIATED_PATIENT_ID", insertable = false, updatable = false)
-	private Integer affiliatedPatientId;
 
 	@NotNull
 	@Column(name="PAT_FATH_NAME")
@@ -312,13 +305,16 @@ public class Patient extends Auditable<String> {
 		this.profession = profession;
 	}
 
-	public Patient(Integer code, String firstName, String secondName, String name, LocalDate birthDate, int age, String agetype, char sex,
+	public Patient(Integer code, String firstName, String secondName, String name,
+				   LocalDate birthDate,
+				   int age, String agetype, char sex,
 	               String address, String city, String nextKin, String telephone, String note,
 	               String motherName, char mother, String fatherName, char father,
 	               String bloodType, char hasInsurance, char parentTogether, String taxCode,
 	               String maritalStatus, String profession, char deleted, int lock,
 	               String birthPlace, Integer numberOfChildren, String geographicPosition,
-	               String parentsResidence, String transportMeans, Country country, Patient affiliatedPatient) {
+	               String parentsResidence, String transportMeans, Country country,
+				   Patient affiliatedPatient) {
 		this.code = code;
 		this.firstName = firstName;
 		this.secondName = secondName;
@@ -344,7 +340,6 @@ public class Patient extends Auditable<String> {
 		this.profession = profession;
 		this.deleted = deleted;
 		this.lock = lock;
-
 		this.birthPlace = birthPlace;
 		this.numberOfChildren = numberOfChildren;
 		this.geographicPosition = geographicPosition;
@@ -357,7 +352,6 @@ public class Patient extends Auditable<String> {
 	public PatientConsensus getPatientConsensus() {
 		return patientConsensus;
 	}
-
 
 	public void setPatientConsensus(PatientConsensus patientConsensus) {
 		this.patientConsensus = patientConsensus;
@@ -710,7 +704,6 @@ public class Patient extends Auditable<String> {
 		return infoBfr.toString();
 	}
 
-
 	public String getBirthPlace() {
 		return birthPlace;
 	}
@@ -757,27 +750,10 @@ public class Patient extends Auditable<String> {
 
 	public void setCountry(Country country) {
 		this.country = country;
-		if (country != null) {
-			this.countryId = country.getId();
-		}
 	}
 
 	public Patient getAffiliatedPatient() {
 		return affiliatedPatient;
 	}
 
-	public void setAffiliatedPatient(Patient affiliatedPatient) {
-		this.affiliatedPatient = affiliatedPatient;
-		if (affiliatedPatient != null) {
-			this.affiliatedPatientId = affiliatedPatient.getCode();
-		}
-	}
-
-	public int getCountryId() {
-		return countryId;
-	}
-
-	public Integer getAffiliatedPatientId() {
-		return affiliatedPatientId;
-	}
 }
