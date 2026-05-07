@@ -1254,6 +1254,28 @@ public class JasperReportsManager {
 		}
 	}
 
+	public JasperReportResultDto getGenericReportForDischargePdf(Integer admID, Integer patID, Locale locale) throws OHServiceException {
+
+		try {
+			HashMap<String, Object> parameters = new HashMap<>();
+
+			parameters.put("patID", patID);
+			parameters.put("admID", admID);
+			parameters.put("LOGO-BENIN-PATH", LOGO_BENIN_PATH);
+			parameters.put("LOGO-PATH", LOGO_ABBRACCIO_PATH);
+			parameters.put(JRParameter.REPORT_LOCALE, locale);
+			String jasperFileName = "discharge_report";
+			String pdfFilename = compilePDFFilename(RPT_BASE, jasperFileName, Arrays.asList(String.valueOf(String.valueOf(patID))), "pdf");
+
+			JasperReportResultDto result = generateJasperReport(compileJasperFilename(RPT_BASE, jasperFileName), pdfFilename, parameters);
+			JasperExportManager.exportReportToPdfFile(result.getJasperPrint(), pdfFilename);
+			return result;
+		} catch (Exception e) {
+			LOGGER.error("", e);
+			throw new OHReportException(e, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
+		}
+	}
+
 	public JasperReportResultDto getDeathReportPdf(Locale locale, String firstDateTime, String secondDateTime) throws OHServiceException {
 
 		try {
@@ -1262,12 +1284,12 @@ public class JasperReportsManager {
 			parameters.put("LOGO-BENIN-PATH", LOGO_BENIN_PATH);
 			parameters.put("LOGO-PATH", LOGO_ABBRACCIO_PATH);
 			parameters.put(JRParameter.REPORT_LOCALE, locale);
-			
+
 			LocalDateTime firstDateQuery = TimeTools.parseDate(firstDateTime, null, false);
 			LocalDateTime secondDateQuery = TimeTools.parseDate(secondDateTime, null, false);
 			parameters.put("firstDate", Timestamp.valueOf(firstDateQuery));
 			parameters.put("secondDate", Timestamp.valueOf(secondDateQuery));
-			
+
 			String jasperFileName = "death_report";
 			String pdfFilename = compilePDFFilename(RPT_BASE, jasperFileName, Arrays.asList(firstDateTime, secondDateTime), "pdf");
 
