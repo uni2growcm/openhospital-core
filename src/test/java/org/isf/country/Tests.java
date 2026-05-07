@@ -185,13 +185,6 @@ class Tests extends OHCoreTestCase {
 	}
 
 	@Test
-	void testIoGetCountryByIsoCode_shouldReturnEmptyForUnknown() throws Exception {
-		java.util.Optional<Country> result = countryIoOperations.getCountryByIsoCode("XX");
-
-		assertThat(result).isEmpty();
-	}
-
-	@Test
 	void testIoSaveNewCountry() throws Exception {
 		Country country = testCountry.setup(true);
 		Country saved = countryIoOperations.saveCountry(country);
@@ -424,5 +417,150 @@ class Tests extends OHCoreTestCase {
 		Country foundCountry = countryIoOperationRepository.findById(id).orElse(null);
 		assertThat(foundCountry).isNotNull();
 		testCountry.check(foundCountry);
+	}
+
+
+	@Test
+	void testIoGetCountryByIsoCode_shouldReturnCountry() throws Exception {
+		setupTestCountry(false);
+
+		Optional<Country> result = countryIoOperations.getCountryByIsoCode("CM");
+
+		assertThat(result).isPresent();
+		assertThat(result.get().getName()).isEqualTo("Cameroon");
+	}
+
+	@Test
+	void testIoGetCountryByIsoCode_shouldReturnEmptyForUnknown() throws Exception {
+		Optional<Country> result = countryIoOperations.getCountryByIsoCode("XX");
+
+		assertThat(result).isEmpty();
+	}
+
+	@Test
+	void testIoGetCountryByIsoCode_shouldReturnEmptyForSoftDeleted() throws Exception {
+		Country deleted = testCountry.setup(false);
+		deleted.setActive(0);
+		countryIoOperationRepository.saveAndFlush(deleted);
+
+		Optional<Country> result = countryIoOperations.getCountryByIsoCode("CM");
+
+		assertThat(result).isEmpty();
+	}
+
+	@Test
+	void testIoGetCountryByName_shouldReturnCountry() throws Exception {
+		setupTestCountry(false);
+
+		Optional<Country> result = countryIoOperations.getCountryByName("Cameroon");
+
+		assertThat(result).isPresent();
+		assertThat(result.get().getIsoCode()).isEqualTo("CM");
+	}
+
+	@Test
+	void testIoGetCountryByName_shouldReturnEmptyForUnknown() throws Exception {
+		Optional<Country> result = countryIoOperations.getCountryByName("Unknown");
+
+		assertThat(result).isEmpty();
+	}
+
+	@Test
+	void testIoGetCountryByName_shouldReturnEmptyForSoftDeleted() throws Exception {
+		Country deleted = testCountry.setup(false);
+		deleted.setActive(0);
+		countryIoOperationRepository.saveAndFlush(deleted);
+
+		Optional<Country> result = countryIoOperations.getCountryByName("Cameroon");
+
+		assertThat(result).isEmpty();
+	}
+
+	@Test
+	void testIoUpdateCountry_shouldUpdateName() throws Exception {
+		int id = setupTestCountry(false);
+		Country foundCountry = countryIoOperationRepository.findById(id).orElse(null);
+		assertThat(foundCountry).isNotNull();
+
+		foundCountry.setName("Cameroun");
+		Country updated = countryIoOperations.updateCountry(foundCountry);
+
+		assertThat(updated.getName()).isEqualTo("Cameroun");
+		assertThat(updated.getId()).isEqualTo(id);
+	}
+
+	@Test
+	void testIoUpdateCountry_shouldPreserveOtherFields() throws Exception {
+		int id = setupTestCountry(false);
+		Country foundCountry = countryIoOperationRepository.findById(id).orElse(null);
+		assertThat(foundCountry).isNotNull();
+
+		foundCountry.setPhoneCode("+1");
+		countryIoOperations.updateCountry(foundCountry);
+
+		Country result = countryIoOperationRepository.findById(id).orElse(null);
+		assertThat(result).isNotNull();
+		assertThat(result.getPhoneCode()).isEqualTo("+1");
+		assertThat(result.getIsoCode()).isEqualTo("CM");
+		assertThat(result.getName()).isEqualTo("Cameroon");
+	}
+
+	@Test
+	void testMgrGetCountryByIsoCode_shouldReturnCountry() throws Exception {
+		setupTestCountry(false);
+
+		Optional<Country> result = countryBrowserManager.getCountryByIsoCode("CM");
+
+		assertThat(result).isPresent();
+		assertThat(result.get().getName()).isEqualTo("Cameroon");
+	}
+
+	@Test
+	void testMgrGetCountryByIsoCode_shouldReturnEmptyForUnknown() throws Exception {
+		Optional<Country> result = countryBrowserManager.getCountryByIsoCode("XX");
+
+		assertThat(result).isEmpty();
+	}
+
+	@Test
+	void testMgrGetCountryByName_shouldReturnCountry() throws Exception {
+		setupTestCountry(false);
+
+		Optional<Country> result = countryBrowserManager.getCountryByName("Cameroon");
+
+		assertThat(result).isPresent();
+		assertThat(result.get().getIsoCode()).isEqualTo("CM");
+	}
+
+	@Test
+	void testMgrGetCountryByName_shouldReturnEmptyForUnknown() throws Exception {
+		Optional<Country> result = countryBrowserManager.getCountryByName("Unknown");
+
+		assertThat(result).isEmpty();
+	}
+
+	@Test
+	void testMgrUpdateCountry_shouldUpdateName() throws Exception {
+		int id = setupTestCountry(false);
+		Country foundCountry = countryIoOperationRepository.findById(id).orElse(null);
+		assertThat(foundCountry).isNotNull();
+
+		foundCountry.setName("Cameroun");
+		Country updated = countryBrowserManager.updateCountry(foundCountry);
+
+		assertThat(updated.getName()).isEqualTo("Cameroun");
+		assertThat(updated.getId()).isEqualTo(id);
+	}
+
+	@Test
+	void testMgrUpdateCountry_shouldPreserveActiveFlag() throws Exception {
+		int id = setupTestCountry(false);
+		Country foundCountry = countryIoOperationRepository.findById(id).orElse(null);
+		assertThat(foundCountry).isNotNull();
+
+		foundCountry.setName("Updated Name");
+		Country updated = countryBrowserManager.updateCountry(foundCountry);
+
+		assertThat(updated.getActive()).isEqualTo(1);
 	}
 }

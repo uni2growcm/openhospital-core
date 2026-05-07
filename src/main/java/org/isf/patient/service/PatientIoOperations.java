@@ -333,7 +333,7 @@ public class PatientIoOperations {
 		return patients;
 	}
 
-	public long countPatientsByOneOfFieldsLike(String search) {
+	public int countPatientsByOneOfFieldsLike(String search) {
 		return repository.countBySearchString(search);
 	}
 

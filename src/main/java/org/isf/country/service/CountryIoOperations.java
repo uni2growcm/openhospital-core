@@ -50,6 +50,28 @@ public class CountryIoOperations {
 	}
 
 	/**
+	 * Returns the active {@link Country} with the given name, if it exists.
+	 *
+	 * @param name the name of the country to retrieve.
+	 * @return an {@link Optional} containing the {@link Country} if found and active, or empty otherwise.
+	 * @throws OHServiceException when fails to fetch the country.
+	 */
+	public Optional<Country> getCountryByName(String name) throws OHServiceException {
+		return repository.findByNameAndActive(name, 1);
+	}
+
+	/**
+	 * Updates an existing {@link Country}.
+	 *
+	 * @param country the country with updated fields.
+	 * @return the updated {@link Country}.
+	 * @throws OHServiceException when fails to update the country.
+	 */
+	public Country updateCountry(Country country) throws OHServiceException {
+		return repository.save(country);
+	}
+
+	/**
 	 * Returns the active {@link Country} with the given id, if it exists.
 	 *
 	 * @param id the id of the country to retrieve.

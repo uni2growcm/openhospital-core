@@ -24,10 +24,12 @@ package org.isf.country.manager;
 import jakarta.persistence.EntityNotFoundException;
 import org.isf.country.model.Country;
 import org.isf.country.service.CountryIoOperations;
+import org.isf.generaldata.MessageBundle;
 import org.isf.utils.exception.OHServiceException;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class CountryBrowserManager {
@@ -58,7 +60,42 @@ public class CountryBrowserManager {
 	 */
 	public Country getCountry(int id) throws OHServiceException {
 		return ioOperations.getCountryById(id)
-			.orElseThrow(() -> new EntityNotFoundException("Country not found with id: " + id));
+			.orElseThrow(() -> new EntityNotFoundException(
+				MessageBundle.formatMessage("angal.country.notfound.msg", String.valueOf(id))
+			));
+	}
+
+	/**
+	 * Returns the active {@link Country} with the given ISO code, if it exists.
+	 *
+	 * @param isoCode the ISO code (2 characters) of the country to retrieve.
+	 * @return an {@link Optional} containing the {@link Country} if found and active, or empty otherwise.
+	 * @throws OHServiceException when fails to fetch the country.
+	 */
+	public Optional<Country> getCountryByIsoCode(String isoCode) throws OHServiceException {
+		return ioOperations.getCountryByIsoCode(isoCode);
+	}
+
+	/**
+	 * Returns the active {@link Country} with the given name, if it exists.
+	 *
+	 * @param name the name of the country to retrieve.
+	 * @return an {@link Optional} containing the {@link Country} if found and active, or empty otherwise.
+	 * @throws OHServiceException when fails to fetch the country.
+	 */
+	public Optional<Country> getCountryByName(String name) throws OHServiceException {
+		return ioOperations.getCountryByName(name);
+	}
+
+	/**
+	 * Updates an existing {@link Country}.
+	 *
+	 * @param country the country with updated fields.
+	 * @return the updated {@link Country}.
+	 * @throws OHServiceException when fails to update the country.
+	 */
+	public Country updateCountry(Country country) throws OHServiceException {
+		return ioOperations.updateCountry(country);
 	}
 
 	/**

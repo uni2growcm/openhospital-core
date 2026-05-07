@@ -42,13 +42,15 @@ public interface CountryIoOperationRepository extends JpaRepository<Country, Int
 	void softDelete(@Param("id") int id);
 
 	@Query("""
-    SELECT c FROM Country c
-    WHERE c.active = 1 AND (
-        LOWER(c.name)    LIKE LOWER(CONCAT('%', :keyword, '%')) OR
-        LOWER(c.isoCode) LIKE LOWER(CONCAT('%', :keyword, '%')) OR
-        c.phoneCode      LIKE CONCAT('%', :keyword, '%')
-    )
-    ORDER BY c.name ASC
-""")
+		SELECT c FROM Country c
+			WHERE c.active = 1 AND (
+				LOWER(c.name)    LIKE LOWER(CONCAT('%', :keyword, '%')) OR
+				LOWER(c.isoCode) LIKE LOWER(CONCAT('%', :keyword, '%')) OR
+				c.phoneCode      LIKE CONCAT('%', :keyword, '%')
+			)
+		ORDER BY c.name ASC
+	""")
 	List<Country> searchCountries(@Param("keyword") String keyword);
+
+	Optional<Country> findByNameAndActive(String name, int active);
 }

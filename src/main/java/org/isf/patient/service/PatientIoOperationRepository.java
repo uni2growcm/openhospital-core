@@ -70,5 +70,5 @@ public interface PatientIoOperationRepository extends JpaRepository<Patient, Int
 		"LOWER(p.secondName) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
 		"LOWER(p.name) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
 		"CAST(p.code AS string) LIKE CONCAT('%', :search, '%')")
-	long countBySearchString(@Param("search") String search);
+	int countBySearchString(@Param("search") String search);
 }

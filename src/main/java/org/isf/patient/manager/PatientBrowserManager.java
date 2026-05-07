@@ -435,7 +435,7 @@ public class PatientBrowserManager {
 		return ioOperations.getPatientByCodes(codes);
 	}
 
-	public long countPatientsByOneOfFieldsLike(String search) throws OHServiceException {
+	public int countPatientsByOneOfFieldsLike(String search) throws OHServiceException {
 		return ioOperations.countPatientsByOneOfFieldsLike(search);
 	}
 
