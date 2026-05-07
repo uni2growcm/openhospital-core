@@ -24,7 +24,6 @@ package org.isf.maternity;
 import org.isf.OHCoreTestCase;
 import org.isf.maternity.manager.*;
 import org.isf.maternity.model.*;
-import org.isf.maternity.service.*;
 import org.isf.patient.TestPatient;
 import org.isf.patient.model.Patient;
 import org.isf.patient.service.PatientIoOperationRepository;
