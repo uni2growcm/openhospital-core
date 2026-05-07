@@ -1315,7 +1315,7 @@ public class JasperReportsManager {
 			parameters.put("secondDate", Timestamp.valueOf(secondDateQuery));
 
 			String jasperFileName = "death_report";
-			String pdfFilename = compilePDFFilename(RPT_BASE, jasperFileName, Arrays.asList(firstDateTime, secondDateTime), "pdf");
+			String pdfFilename = compilePDFFilename(RPT_BASE, jasperFileName, Arrays.asList(), "pdf");
 
 			JasperReportResultDto result = generateJasperReport(compileJasperFilename(RPT_BASE, jasperFileName), pdfFilename, parameters);
 			JasperExportManager.exportReportToPdfFile(result.getJasperPrint(), pdfFilename);
