@@ -1300,7 +1300,7 @@ public class JasperReportsManager {
 		}
 	}
 
-	public JasperReportResultDto getDeathReportPdf(Locale locale, String firstDateTime, String secondDateTime) throws OHServiceException {
+	public JasperReportResultDto getDeathReportPdf(Locale locale, LocalDateTime fromDate, LocalDateTime toDate) throws OHServiceException {
 
 		try {
 			HashMap<String, Object> parameters = new HashMap<>();
@@ -1309,10 +1309,8 @@ public class JasperReportsManager {
 			parameters.put("LOGO-PATH", LOGO_ABBRACCIO_PATH);
 			parameters.put(JRParameter.REPORT_LOCALE, locale);
 
-			LocalDateTime firstDateQuery = TimeTools.parseDate(firstDateTime, null, false);
-			LocalDateTime secondDateQuery = TimeTools.parseDate(secondDateTime, null, false);
-			parameters.put("firstDate", Timestamp.valueOf(firstDateQuery));
-			parameters.put("secondDate", Timestamp.valueOf(secondDateQuery));
+			parameters.put("firstDate", Timestamp.valueOf(fromDate));
+			parameters.put("secondDate", Timestamp.valueOf(toDate));
 
 			String jasperFileName = "death_report";
 			String pdfFilename = compilePDFFilename(RPT_BASE, jasperFileName, Arrays.asList(), "pdf");
