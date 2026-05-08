@@ -339,14 +339,25 @@ public class TherapyManager {
 	}
 
 	/**
-	 * Returns the list of {@link TherapyRow}s for a specific therapyID
+	 * Returns the list of {@link TherapyRow}s (therapies) for the specified therapy ID.
+	 *
+	 * @param therapyID - the therapy ID
+	 * @return the list of {@link TherapyRow}s (therapies) matching the given therapy ID.
+	 * @throws OHServiceException
 	 */
 	public List<TherapyRow> getTherapyRowsByTherapyId(int therapyID) throws OHServiceException {
 		return ioOperations.getTherapyRowsByTherapyId(therapyID);
 	}
 
 	/**
-	 * Clones a {@link TherapyRow} with a new start date, preserving duration
+	 * Clones an existing {@link TherapyRow} with a new start date, preserving the original duration.
+	 * The end date is automatically calculated by applying the same number of days
+	 * as the original therapy duration to the new start date.
+	 *
+	 * @param oldTherapy   - the original {@link TherapyRow} to clone.
+	 * @param newStartDate - the new start date for the cloned therapy.
+	 * @return a new {@link TherapyRow} with the updated start and end dates, and all other fields preserved.
+	 * @throws OHServiceException when fails to retrieve the patient or the medical.
 	 */
 	public TherapyRow cloneWithNewStartDate(TherapyRow oldTherapy, LocalDateTime newStartDate) throws OHServiceException {
 		Patient patient = patientManager.getPatientById(oldTherapy.getPatient().getCode());
