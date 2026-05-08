@@ -39,9 +39,7 @@ import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.model.OHExceptionMessage;
 import org.isf.utils.pagination.PagedResponse;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -437,28 +435,19 @@ public class PatientBrowserManager {
 	}
 
 	/**
-	 * Returns the count of {@link Patient}s whose fields match the given search string.
+	 * Method that returns a limited list of {@link Patient}s not logically deleted, having the passed String in:<br>
+	 * - code<br>
+	 * - firstName<br>
+	 * - secondName<br>
+	 * - taxCode<br>
+	 * - note<br>
 	 *
-	 * @param search - the search string to match against patient fields.
-	 * @return the number of {@link Patient}s matching the given search string.
-	 * @throws OHServiceException when fails to count the patients.
+	 * @param keyword - String to search, {@code null} for full list
+	 * @param limit - maximum number of patients to return
+	 * @return the list of {@link Patient}s limited to 'limit' records (could be empty)
+	 * @throws OHServiceException
 	 */
-	public int countPatientsByOneOfFieldsLike(String search) throws OHServiceException {
-		return ioOperations.countPatientsByOneOfFieldsLike(search);
-	}
-
-	/**
-	 * Returns a paginated list of {@link Patient}s whose fields contain
-	 * one or more words from the given keyword (case-insensitive).
-	 *
-	 * @param keyword - the keyword to search for in patient fields; may be {@code null} or empty.
-	 * @param page    - the zero-based page index to retrieve.
-	 * @param size    - the number of records per page.
-	 * @return a {@link Page} of {@link Patient}s matching the given keyword.
-	 * @throws OHServiceException when fails to fetch the patients.
-	 */
-	public Page<Patient> getPatientsByOneOfFieldsLikePaginated(String keyword, int page, int size) throws OHServiceException {
-		Pageable pageable = PageRequest.of(page, size);
-		return ioOperations.getPatientsByOneOfFieldsLikePaginated(keyword, pageable);
+	public List<Patient> getPatientsByOneOfFieldsLikeWithLimit(String keyword, int limit) throws OHServiceException {
+		return ioOperations.getPatientsByOneOfFieldsLikeWithLimit(keyword, limit);
 	}
 }
