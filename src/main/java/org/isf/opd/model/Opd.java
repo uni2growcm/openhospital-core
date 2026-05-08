@@ -125,10 +125,10 @@ public class Opd extends Auditable<String> {
 	@Column(name="OPD_LOCK")
 	private int lock;
 
-	@Column(name="OPD_REFERRAL_FROM")
+	@Column(name="OPD_REFERING_HOSP")
 	private String patientReferralFrom;
 
-	@Column(name="OPD_REFERRAL_TO")
+	@Column(name="OPD_RECEIVING_HOSP")
 	private String patientReferralTo;
 
 	/*@Column(name="OPD_REASON")
