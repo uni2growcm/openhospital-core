@@ -27,6 +27,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import jakarta.persistence.*;
+import org.isf.generaldata.MessageBundle;
 import org.isf.patient.model.Patient;
 import org.isf.utils.db.Auditable;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -126,14 +127,19 @@ public class Pregnancy extends Auditable<String> {
 	 */
 	@Transient
 	public String getCurrentGestationalAge() {
-		if (lmp == null) {
+		if (this.lmp == null) {
 			return null;
 		}
 
-		long daysDifference = ChronoUnit.DAYS.between(lmp, LocalDate.now());
+		LocalDate lmpDate = this.lmp.toLocalDate();
+
+		long daysDifference = ChronoUnit.DAYS.between(lmpDate, LocalDate.now());
+
 		long weeks = daysDifference / 7;
 		long days = daysDifference % 7;
-		return weeks + "+" + days;
+
+		return weeks + " " + MessageBundle.getMessage("angal.maternity.gestationalage.weeks") + " " + days +
+			" " + MessageBundle.getMessage("angal.maternity.gestationalage.days");
 	}
 
 	public Integer getId() {
