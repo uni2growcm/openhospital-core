@@ -756,4 +756,7 @@ public class Patient extends Auditable<String> {
 		return affiliatedPatient;
 	}
 
+	public void setAffiliatedPatient(Patient affiliatedPatient) {
+		this.affiliatedPatient = affiliatedPatient;
+	}
 }
