@@ -392,6 +392,24 @@ public class AdmissionIoOperations {
 		return this.repository.countAllActiveNotDeletedAdmissions();
 	}
 
+	/**
+	 * Returns a paginated list of {@link AdmittedPatient}s filtered by the given criteria.
+	 * All filter parameters are optional; passing {@code null} disables the corresponding filter.
+	 *
+	 * @param searchTerms     - keywords to search in patient name, tax code, or note fields; may be {@code null}.
+	 * @param admissionStatus - the admission status to filter by (e.g. "I" for admitted, "O" for discharged); may be {@code null}.
+	 * @param wardCodes       - the list of ward codes to filter by; may be {@code null} or empty.
+	 * @param admissionRange  - an array of two {@link LocalDateTime}s representing the admission date range
+	 *                          ({@code admissionRange[0]} = from, {@code admissionRange[1]} = to); may be {@code null}.
+	 * @param dischargeRange  - an array of two {@link LocalDateTime}s representing the discharge date range
+	 *                          ({@code dischargeRange[0]} = from, {@code dischargeRange[1]} = to); may be {@code null}.
+	 * @param ageFrom         - the minimum patient age to filter by (inclusive); may be {@code null}.
+	 * @param ageTo           - the maximum patient age to filter by (inclusive); may be {@code null}.
+	 * @param sex             - the patient sex to filter by ({@code 'M'} or {@code 'F'}); may be {@code null}.
+	 * @param pageable        - the pagination and sorting information.
+	 * @return a {@link Page} of {@link AdmittedPatient}s matching the given filters.
+	 * @throws OHServiceException when fails to fetch the admitted patients.
+	 */
 	public Page<AdmittedPatient> getAdmittedPatientsByFilters(
 		String searchTerms,
 		String admissionStatus,
@@ -402,7 +420,6 @@ public class AdmissionIoOperations {
 		Integer ageTo,
 		Character sex,
 		Pageable pageable) throws OHServiceException {
-
 		return repository.findPatientAdmissionsByFiltersPaginated(
 			searchTerms, admissionStatus, wardCodes,
 			admissionRange, dischargeRange,
