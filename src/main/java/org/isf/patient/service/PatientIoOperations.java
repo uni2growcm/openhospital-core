@@ -333,12 +333,27 @@ public class PatientIoOperations {
 		return patients;
 	}
 
-	public int countPatientsByOneOfFieldsLike(String search) {
+	/**
+	 * Returns the count of {@link Patient}s whose fields match the given search string.
+	 *
+	 * @param search - the search string to match against patient fields.
+	 * @return the number of {@link Patient}s matching the given search string.
+	 * @throws OHServiceException when fails to count the patients.
+	 */
+	public int countPatientsByOneOfFieldsLike(String search) throws  OHServiceException {
 		return repository.countBySearchString(search);
 	}
 
-	public Page<Patient> getPatientsByOneOfFieldsLikePaginated(String keyword, int page, int size) throws OHServiceException {
-		Pageable pageable = PageRequest.of(page, size);
+	/**
+	 * Returns a paginated list of {@link Patient}s whose fields contain
+	 * one or more words from the given keyword (case-insensitive).
+	 *
+	 * @param keyword  - the keyword to search for in patient fields; may be {@code null} or empty.
+	 * @param pageable - the pagination and sorting information.
+	 * @return a {@link Page} of {@link Patient}s matching the given keyword.
+	 * @throws OHServiceException when fails to fetch the patients.
+	 */
+	public Page<Patient> getPatientsByOneOfFieldsLikePaginated(String keyword, Pageable pageable) throws OHServiceException {
 		return repository.findByFieldsContainingWordsFromLiteralPaginated(keyword, pageable);
 	}
 }

@@ -41,6 +41,7 @@ import org.isf.utils.exception.model.OHExceptionMessage;
 import org.isf.utils.pagination.PagedResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -435,11 +436,29 @@ public class PatientBrowserManager {
 		return ioOperations.getPatientByCodes(codes);
 	}
 
+	/**
+	 * Returns the count of {@link Patient}s whose fields match the given search string.
+	 *
+	 * @param search - the search string to match against patient fields.
+	 * @return the number of {@link Patient}s matching the given search string.
+	 * @throws OHServiceException when fails to count the patients.
+	 */
 	public int countPatientsByOneOfFieldsLike(String search) throws OHServiceException {
 		return ioOperations.countPatientsByOneOfFieldsLike(search);
 	}
 
+	/**
+	 * Returns a paginated list of {@link Patient}s whose fields contain
+	 * one or more words from the given keyword (case-insensitive).
+	 *
+	 * @param keyword - the keyword to search for in patient fields; may be {@code null} or empty.
+	 * @param page    - the zero-based page index to retrieve.
+	 * @param size    - the number of records per page.
+	 * @return a {@link Page} of {@link Patient}s matching the given keyword.
+	 * @throws OHServiceException when fails to fetch the patients.
+	 */
 	public Page<Patient> getPatientsByOneOfFieldsLikePaginated(String keyword, int page, int size) throws OHServiceException {
-		return ioOperations.getPatientsByOneOfFieldsLikePaginated(keyword, page, size);
+		Pageable pageable = PageRequest.of(page, size);
+		return ioOperations.getPatientsByOneOfFieldsLikePaginated(keyword, pageable);
 	}
 }

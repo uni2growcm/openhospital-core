@@ -169,7 +169,7 @@ class Tests extends OHCoreTestCase {
 		deleted.setActive(0);
 		countryIoOperationRepository.saveAndFlush(deleted);
 
-		java.util.Optional<Country> result = countryIoOperations.getCountryById(deleted.getId());
+		Optional<Country> result = countryIoOperations.getCountryById(deleted.getId());
 
 		assertThat(result).isEmpty();
 	}
@@ -178,7 +178,7 @@ class Tests extends OHCoreTestCase {
 	void testIoGetCountryByIsoCode() throws Exception {
 		setupTestCountry(false);
 
-		java.util.Optional<Country> result = countryIoOperations.getCountryByIsoCode("CM");
+		Optional<Country> result = countryIoOperations.getCountryByIsoCode("CM");
 
 		assertThat(result).isPresent();
 		assertThat(result.get().getName()).isEqualTo("Cameroon");
@@ -213,7 +213,7 @@ class Tests extends OHCoreTestCase {
 
 		assertThat(countryIoOperations.getCountryById(id)).isEmpty();
 
-		java.util.Optional<Country> raw = countryIoOperationRepository.findById(id);
+		Optional<Country> raw = countryIoOperationRepository.findById(id);
 		assertThat(raw).isPresent();
 		assertThat(raw.get().getActive()).isEqualTo(0);
 	}
@@ -339,7 +339,7 @@ class Tests extends OHCoreTestCase {
 	void testMgrGetCountry_shouldThrowWhenNotFound() throws Exception {
 		assertThatThrownBy(() -> countryBrowserManager.getCountry(9999))
 			.isInstanceOf(EntityNotFoundException.class)
-			.hasMessageContaining("9999");
+			.hasMessageContaining("angal.country.notfound.msg");
 	}
 
 	@Test
@@ -373,7 +373,7 @@ class Tests extends OHCoreTestCase {
 		assertThatThrownBy(() -> countryBrowserManager.getCountry(id))
 			.isInstanceOf(EntityNotFoundException.class);
 
-		java.util.Optional<Country> raw = countryIoOperationRepository.findById(id);
+		Optional<Country> raw = countryIoOperationRepository.findById(id);
 		assertThat(raw).isPresent();
 		assertThat(raw.get().getActive()).isEqualTo(0);
 	}
