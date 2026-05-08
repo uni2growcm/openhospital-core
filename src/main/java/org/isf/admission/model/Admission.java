@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -239,6 +239,9 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 	@Column(name = "ADM_IMPROVEMENT_FEEDBACK", columnDefinition = "TEXT")
 	private String improvementFeedback;
 
+	@Column(name = "ADM_DEATH_PERIOD")
+	private String deathPeriod;
+
 	public Admission() {
 		super();
 	}
@@ -360,7 +363,7 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 					 Boolean alertReceived, Boolean referenceSheet, Boolean qualifiedAgent, String transportation,
 					 String courseOfAction, LocalDateTime nextAppointment, String referralAlert,
 					 String referralReason, String treatmentReceived,
-					 String outcome, String improvementFeedback ) {
+					 String outcome, String improvementFeedback, String deathPeriod ) {
 
 		this(id, admitted, type, ward, prog, patient, admDate, admType, fhu,
 			diseaseIn, diseaseOut1, diseaseOut2, diseaseOut3,
@@ -382,6 +385,7 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 		this.treatmentReceived = treatmentReceived;
 		this.outcome = outcome;
 		this.improvementFeedback = improvementFeedback;
+		this.deathPeriod = deathPeriod;
 	}
 
 	public Float getTransUnit() {
@@ -734,6 +738,14 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 
 	public void setImprovementFeedback(String improvementFeedback) {
 		this.improvementFeedback = improvementFeedback;
+	}
+
+	public String getDeathPeriod() {
+		return deathPeriod;
+	}
+
+	public void setDeathPeriod(String deathPeriod) {
+		this.deathPeriod = deathPeriod;
 	}
 
 	@Override
