@@ -34,7 +34,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface MedicalsIoOperationRepository extends JpaRepository<Medical, Integer> {
 
-	@Query(value = "SELECT m FROM Medical m where m.description LIKE CONCAT('%', :description, '%') ORDER BY m.description")
+	@Query(value = "SELECT m FROM Medical m where m.description like :description order BY m.description")
 	List<Medical> findAllWhereDescriptionOrderByDescription(@Param("description") String description);
 
 	@Query(value = "SELECT m FROM Medical m order BY m.description")
