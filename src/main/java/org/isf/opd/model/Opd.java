@@ -330,7 +330,6 @@ public class Opd extends Auditable<String> {
 		this.userID = userID;
 	}
 
-
 	public String getPatientReferralFrom() { return patientReferralFrom; }
 
 	public void setPatientReferralFrom(String patientReferralFrom) { this.patientReferralFrom = patientReferralFrom; }
@@ -338,6 +337,7 @@ public class Opd extends Auditable<String> {
 	public String getPatientReferralTo() { return patientReferralTo; }
 
 	public void setPatientReferralTo(String patientReferralTo) { this.patientReferralTo = patientReferralTo; }
+
 	/*public String getReason() {
 		return reason;
 	}
