@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2024 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -97,4 +97,14 @@ public class TherapyIoOperations {
 		return this.repository.countAllActiveTherapies();
 	}
 
+	/**
+	 * Return the list of {@link TherapyRow}s (therapies) for the specified therapy ID.
+	 *
+	 * @param therapyID - the therapy ID
+	 * @return the list of {@link TherapyRow}s (therapies) matching the given therapy ID.
+	 * @throws OHServiceException
+	 */
+	public List<TherapyRow> getTherapyRowsByTherapyId(int therapyID) throws OHServiceException {
+		return repository.findByTherapyID(therapyID);
+	}
 }
