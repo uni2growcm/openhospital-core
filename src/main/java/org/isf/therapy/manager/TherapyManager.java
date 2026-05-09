@@ -1,6 +1,6 @@
 /*
 	 * Open Hospital (www.open-hospital.org)
-	 * Copyright � 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+	 * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
 	 *
 	 * Open Hospital is a free and open source software for healthcare data management.
 	 *
@@ -22,6 +22,7 @@
 	package org.isf.therapy.manager;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -362,7 +363,7 @@ public class TherapyManager {
 	public TherapyRow cloneWithNewStartDate(TherapyRow oldTherapy, LocalDateTime newStartDate) throws OHServiceException {
 		Patient patient = patientManager.getPatientById(oldTherapy.getPatient().getCode());
 
-		long durationDays = java.time.temporal.ChronoUnit.DAYS.between(
+		long durationDays = ChronoUnit.DAYS.between(
 			oldTherapy.getStartDate().toLocalDate(),
 			oldTherapy.getEndDate().toLocalDate()
 		);
@@ -387,5 +388,4 @@ public class TherapyManager {
 		);
 		return newTherapy;
 	}
-
 }

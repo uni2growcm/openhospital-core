@@ -107,5 +107,4 @@ public class TherapyIoOperations {
 	public List<TherapyRow> getTherapyRowsByTherapyId(int therapyID) throws OHServiceException {
 		return repository.findByTherapyID(therapyID);
 	}
-
 }
