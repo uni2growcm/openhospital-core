@@ -64,5 +64,4 @@ public interface PatientIoOperationRepository extends JpaRepository<Patient, Int
 	long countAllActiveNotDeletedPatients();
 	
 	List<Patient> findAllByCodeIn(List<Integer> codes);
-
 }
