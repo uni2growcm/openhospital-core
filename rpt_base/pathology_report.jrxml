@@ -102,7 +102,7 @@
 	<title>
 		<band height="180" splitType="Stretch">
 			<rectangle>
-				<reportElement x="0" y="-1" width="1071" height="121" forecolor="#000000" uuid="7d56692c-169a-41a5-959a-f30681975fb7"/>
+				<reportElement x="0" y="-2" width="1071" height="121" forecolor="#000000" uuid="7d56692c-169a-41a5-959a-f30681975fb7"/>
 			</rectangle>
 			<frame>
 				<reportElement x="0" y="0" width="121" height="110" uuid="39b10048-b431-4f75-a0ec-b4a515052789"/>
@@ -166,7 +166,7 @@
 				<text><![CDATA[69374707 / 69374700 / 69374703]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="336" y="120" width="401" height="31" uuid="23028eb7-a09e-4b5b-bffe-edb24de0a758"/>
+				<reportElement x="153" y="122" width="767" height="31" uuid="23028eb7-a09e-4b5b-bffe-edb24de0a758"/>
 				<textElement textAlignment="Center">
 					<font fontName="Serif" size="18" isBold="true" isUnderline="true"/>
 				</textElement>
@@ -224,6 +224,16 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$P{todate}]]></textFieldExpression>
 			</textField>
+			<staticText>
+				<reportElement x="512" y="21" width="57" height="14" uuid="83d514ab-76da-4fd5-8664-c241eb5203ac">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="11"/>
+				</textElement>
+				<text><![CDATA[-----***-----]]></text>
+			</staticText>
 		</band>
 	</title>
 	<pageHeader>
@@ -355,7 +365,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="9" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$R{NORMALQX}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$R{NORMAL}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement mode="Opaque" x="863" y="20" width="70" height="20" forecolor="#FFFFFF" backcolor="#744119" uuid="c57ae67e-099b-4b80-ae5a-bb1de104479d"/>
