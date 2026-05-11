@@ -95,8 +95,6 @@ public class JasperReportsManager {
 
 	private static final String RPT_BASE = "rpt_base";
 
-	private static final String RPT_STAT = "rpt_stat";
-
 	private static final String LOGO = "./rsc/images/logo_report.png";
 
 	private static final String LOGO_BENIN_PATH = "./rsc/images/logo-benin.png";
@@ -1331,11 +1329,13 @@ public class JasperReportsManager {
 
 		try {
 			HashMap<String, Object> parameters = compileGenericReportFromDateToDateParameters(fromDate, toDate);
-			addBundleParameter(RPT_STAT, jasperFileName, parameters);
+			addBundleParameter(RPT_BASE, jasperFileName, parameters);
 			parameters.put(JRParameter.REPORT_LOCALE, locale);
+			parameters.put("LOGO-BENIN-PATH", LOGO_BENIN_PATH);
+			parameters.put("LOGO-PATH", LOGO_ABBRACCIO_PATH);
 
-			String pdfFilename = compilePDFFilename(RPT_STAT, jasperFileName, null, "pdf");
-			String filename = compileJasperFilename(RPT_STAT, jasperFileName);
+			String pdfFilename = compilePDFFilename(RPT_BASE, jasperFileName, null, "pdf");
+			String filename = compileJasperFilename(RPT_BASE, jasperFileName);
 
 			JasperReportResultDto result = generateJasperReport(filename, pdfFilename, parameters);
 			JasperExportManager.exportReportToPdfFile(result.getJasperPrint(), pdfFilename);
