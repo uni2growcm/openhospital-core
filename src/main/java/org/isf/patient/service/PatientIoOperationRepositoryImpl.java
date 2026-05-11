@@ -51,6 +51,15 @@ public class PatientIoOperationRepositoryImpl implements PatientIoOperationRepos
 				getResultList();
 	}
 
+	@Override
+	public List<Patient> findByFieldsContainingWordsFromLiteral(String literal, int limit) {
+		CriteriaQuery<Patient> query = buildSearchQuery(literal);
+
+		return entityManager.createQuery(query)
+			.setMaxResults(limit)
+			.getResultList();
+	}
+
 	private CriteriaQuery<Patient> buildSearchQuery(String regex) {
 		String[] words = getWordsToSearchForInPatientsRepository(regex);
 		return createQuerySearchingForPatientContainingGivenWordsInHisProperties(words);
