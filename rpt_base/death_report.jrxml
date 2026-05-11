@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.21.5.final using JasperReports Library version 6.21.5-74d586df47b25dbd05bd0957999819196e59934a  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="death_report" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" resourceBundle="death_report" uuid="9888f2b9-c540-4fa8-a768-c1ca4e6aaf84">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter2.jrdax"/>
+	<parameter name="LOGO-PATH" class="java.lang.String"/>
+	<parameter name="LOGO-BENIN-PATH" class="java.lang.String"/>
+	<parameter name="firstDate" class="java.sql.Timestamp"/>
+	<parameter name="secondDate" class="java.sql.Timestamp"/>
+	<queryString language="SQL">
+		<![CDATA[SELECT 
+    COUNT(CASE WHEN ADM_DEATH_PERIOD = 'BEFORE_ADMISSION' THEN 1 END) AS DEATH_BEFORE_ADMISSION,
+
+    COUNT(CASE WHEN ADM_DEATH_PERIOD = 'AFTER_ADMISSION' 
+               AND TIMESTAMPDIFF(HOUR, ADM_DATE_ADM, ADM_DATE_DIS) < 24 THEN 1 END) AS DEATH_LESS_24h,
+
+    COUNT(CASE WHEN ADM_DEATH_PERIOD = 'AFTER_ADMISSION' 
+               AND TIMESTAMPDIFF(HOUR, ADM_DATE_ADM, ADM_DATE_DIS) >= 24 THEN 1 END) AS DEATH_MORE_24h,
+
+    COUNT(CASE WHEN ADM_DEATH_PERIOD IN ('BEFORE_ADMISSION', 'AFTER_ADMISSION') THEN 1 END) AS TOTAL_GENERAL_DEATH
+FROM oh_admission
+WHERE ADM_DELETED = 'N'
+  AND ADM_ACTIVE = 1
+  AND ADM_CREATED_DATE BETWEEN $P{firstDate} AND $P{secondDate};]]>
+	</queryString>
+	<field name="DEATH_BEFORE_ADMISSION" class="java.lang.Long">
+		<property name="com.jaspersoft.studio.field.name" value="DEATH_BEFORE_ADMISSION"/>
+		<property name="com.jaspersoft.studio.field.label" value="DEATH_BEFORE_ADMISSION"/>
+	</field>
+	<field name="DEATH_LESS_24h" class="java.lang.Long">
+		<property name="com.jaspersoft.studio.field.name" value="DEATH_LESS_24h"/>
+		<property name="com.jaspersoft.studio.field.label" value="DEATH_LESS_24h"/>
+	</field>
+	<field name="DEATH_MORE_24h" class="java.lang.Long">
+		<property name="com.jaspersoft.studio.field.name" value="DEATH_MORE_24h"/>
+		<property name="com.jaspersoft.studio.field.label" value="DEATH_MORE_24h"/>
+	</field>
+	<field name="TOTAL_GENERAL_DEATH" class="java.lang.Long">
+		<property name="com.jaspersoft.studio.field.name" value="TOTAL_GENERAL_DEATH"/>
+		<property name="com.jaspersoft.studio.field.label" value="TOTAL_GENERAL_DEATH"/>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<detail>
+		<band height="524" splitType="Stretch">
+			<rectangle>
+				<reportElement x="0" y="-1" width="550" height="121" forecolor="#000000" uuid="c5d8f711-77ec-43cd-86e3-b977749e4d30"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="249" y="21" width="57" height="14" uuid="3daaa6a4-a2e8-4307-8d16-3a7fe1388d64"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="11"/>
+				</textElement>
+				<text><![CDATA[-----***-----]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="80" y="135" width="401" height="31" backcolor="#633008" uuid="4649d8c2-cd41-4097-92fd-6d756c1ccd5d"/>
+			</rectangle>
+			<textField>
+				<reportElement x="81" y="140" width="396" height="28" forecolor="#FFFFFF" uuid="d82f70ff-f7a0-4540-848e-e4714bd27ae4"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="18"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{GeneralPediatricsDepartment}]]></textFieldExpression>
+			</textField>
+			<frame>
+				<reportElement x="0" y="0" width="121" height="110" uuid="12be0a26-82d5-41d0-a8f9-2708d13c6d30"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<image>
+					<reportElement x="1" y="0" width="120" height="120" uuid="41c15705-f768-4a8f-8741-cf70144a09bb"/>
+					<imageExpression><![CDATA[$P{LOGO-BENIN-PATH}]]></imageExpression>
+				</image>
+			</frame>
+			<frame>
+				<reportElement x="430" y="0" width="120" height="120" uuid="a6947686-0d5a-48a2-af2f-b81ae9e2439c"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<image>
+					<reportElement x="0" y="38" width="120" height="50" uuid="899330e9-af39-43ea-8ef4-849f57cda2cd"/>
+					<imageExpression><![CDATA[$P{LOGO-PATH}]]></imageExpression>
+				</image>
+			</frame>
+			<textField>
+				<reportElement x="160" y="0" width="231" height="21" uuid="a209d97f-2c2c-4265-ab12-550ca59c39c3"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="14" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{BeninRepublic}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="121" y="35" width="309" height="21" uuid="05bc8288-3b71-4d2b-9ba7-8c2d8a35a50e"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{Department}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="247" y="56" width="57" height="14" uuid="05fdb92b-f6fb-4eac-a7d3-4fca1a3dcfe0"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="11"/>
+				</textElement>
+				<text><![CDATA[-----***-----]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="121" y="70" width="309" height="20" uuid="60f9a805-0e1f-465c-9720-4378ec1e9f65"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{Hospital}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="130" y="90" width="290" height="20" uuid="df7ad305-d4ee-4436-aac5-d35da35b7417"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<text><![CDATA[69374707 / 69374700 / 69374703]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="280" y="255" width="200" height="30" uuid="0e96dae8-843b-4e17-b10c-415f682cf412"/>
+				<box padding="1">
+					<pen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{DEATH_BEFORE_ADMISSION}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="80" y="255" width="200" height="30" uuid="699066f6-fa21-4fdb-bee2-72e7bde02419"/>
+				<box padding="1">
+					<pen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{DeathBeforeAdmission}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="280" y="285" width="200" height="30" uuid="34747196-a948-46cf-bef7-2f24cc90ae47"/>
+				<box padding="1">
+					<pen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{DEATH_LESS_24h}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="80" y="285" width="200" height="30" uuid="4ee3ed13-924f-4260-aa45-9716df41f9d6"/>
+				<box padding="1">
+					<pen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{DeathLess24hAfterAdmission}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="280" y="315" width="200" height="30" uuid="52531423-141d-4257-af4e-cca0077a5853"/>
+				<box padding="1">
+					<pen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{DEATH_MORE_24h}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="80" y="315" width="200" height="30" uuid="3c6fa0ac-1004-4930-9d2e-101458b41144"/>
+				<box padding="1">
+					<pen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{DeathMore24hAfterAdmission}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="280" y="345" width="200" height="30" uuid="83449ad7-7f73-4a7a-b6ba-4320a6100acc"/>
+				<box padding="1">
+					<pen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{TOTAL_GENERAL_DEATH}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="80" y="345" width="200" height="30" uuid="60354830-cbc7-4b6e-9048-f744a0551c49"/>
+				<box padding="1">
+					<pen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{TotalGeneralDeath}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="80" y="197" width="400" height="30" uuid="e5a72834-ece0-4268-b81e-05fd4208994a"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font size="14" isBold="true" isUnderline="true"/>
+					<paragraph lineSpacing="Single" lineSpacingSize="1.0"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{DeathStatistics}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>
