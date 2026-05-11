@@ -155,7 +155,7 @@ public class AdmissionBrowserManager {
 
 	/**
 	 * Method that returns the list of completed Admissions (Discharges) not logically deleted within the specified date range, divided by pages
-	 * 
+	 *
 	 * @param dateFrom
 	 * @param dateTo
 	 * @param page

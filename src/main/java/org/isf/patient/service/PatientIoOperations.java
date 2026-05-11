@@ -331,4 +331,22 @@ public class PatientIoOperations {
 		}
 		return patients;
 	}
+
+	/**
+	 * Method that returns a limited list of {@link Patient}s not logically deleted, having
+	 * the passed String in:<br>
+	 * - code<br>
+	 * - firstName<br>
+	 * - secondName<br>
+	 * - taxCode<br>
+	 * - note<br>
+	 *
+	 * @param keyword - String to search, use {@code null} for full list
+	 * @param limit - maximum number of patients to return
+	 * @return the list of {@link Patient}s limited to 'limit' records (could be empty)
+	 * @throws OHServiceException
+	 */
+	public List<Patient> getPatientsByOneOfFieldsLikeWithLimit(String keyword, int limit) throws OHServiceException {
+		return repository.findByFieldsContainingWordsFromLiteral(keyword, limit);
+	}
 }
