@@ -1600,7 +1600,7 @@ class Tests extends OHCoreTestCase {
 		Admission admission = admissionBrowserManager.getAdmission(id);
 
 		Page<AdmittedPatient> firstPage = admissionBrowserManager.getAdmittedPatientsPaginated(
-			null, null, null, null, null, null, null, null, 0, 2
+			null, null, null, null, null, null, null, null,null,null,null, 0, 2
 		);
 
 		assertThat(firstPage).isNotNull();
@@ -1611,7 +1611,7 @@ class Tests extends OHCoreTestCase {
 		assertThat(firstPage.getSize()).isEqualTo(2);
 
 		Page<AdmittedPatient> secondPage = admissionBrowserManager.getAdmittedPatientsPaginated(
-			null, null, null, null, null, null, null, null, 1, 2
+			null, null, null, null, null, null, null, null,null,null,null, 1, 2
 		);
 
 		assertThat(secondPage).isNotNull();
@@ -1631,8 +1631,9 @@ class Tests extends OHCoreTestCase {
 		@Override
 		public Page<AdmittedPatient> findPatientAdmissionsByFiltersPaginated(
 			String searchTerms, String admissionStatus, List<String> wardCodes,
-			LocalDateTime[] dateTo, LocalDateTime[] dateFrom,
-			Integer ageFrom, Integer ageTo, Character sex,
+			LocalDateTime admissionDateFrom, LocalDateTime admissionDateTo,
+			LocalDateTime dischargeDateFrom, LocalDateTime dischargeDateTo,
+			Integer ageFrom, Integer ageTo, Character sex, Integer country,
 			Pageable pageable) throws OHServiceException {
 			return Page.empty(pageable);
 		}

@@ -38,11 +38,14 @@ public interface AdmissionIoOperationRepositoryCustom {
 		String searchTerms,
 		String admissionStatus,
 		List<String> wardCodes,
-		LocalDateTime[] dateTo,
-		LocalDateTime[] dateFrom,
+		LocalDateTime admissionDateFrom,
+		LocalDateTime admissionDateTo,
+		LocalDateTime dischargeDateFrom,
+		LocalDateTime dischargeDateTo,
 		Integer ageFrom,
 		Integer ageTo,
 		Character sex,
+		Integer country,
 		Pageable pageable
 	) throws OHServiceException;
 
