@@ -116,3 +116,4 @@ source step_a119_alter_table_examrow_and_laboratoryrow.sql;
 source step_a120_settings.sql;
 source step_a121_create_table_country.sql
 source step_a122_alter_patient_add_new_fields.sql
+source step_a123_menuitem_add_country_menu.sql
