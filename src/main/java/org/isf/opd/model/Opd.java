@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -44,6 +44,8 @@ import org.isf.utils.time.TimeTools;
 import org.isf.visits.model.Visit;
 import org.isf.ward.model.Ward;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.drew.lang.annotations.Nullable;
 
@@ -124,6 +126,13 @@ public class Opd extends Auditable<String> {
 	@Version
 	@Column(name="OPD_LOCK")
 	private int lock;
+
+	@Nullable
+	@Column(name = "OPD_EXTRA_DIAGNOSES")
+	private String extraDiagnoses;
+
+	@Transient
+	private List<Disease> extraDiagnosesList = new ArrayList<>();
 	
 	/*@Column(name="OPD_REASON")
    	private String reason; // ADDED: Arnaud
@@ -323,6 +332,12 @@ public class Opd extends Auditable<String> {
 	public void setUserID(String userID) {
 		this.userID = userID;
 	}
+
+	public String getExtraDiagnoses() { return extraDiagnoses; }
+
+	public void setExtraDiagnoses(String extraDiagnoses) { this.extraDiagnoses = extraDiagnoses; }
+
+	public List<Disease> getExtraDiagnosesList() { return extraDiagnosesList; }
         
 	/*public String getReason() {
 		return reason;
@@ -385,5 +400,66 @@ public class Opd extends Auditable<String> {
 		}
 
 		return (code == opd.getCode());
+	}
+	public void setExtraDiagnosesList(List<Disease> extraDiagnosesList) {
+		this.extraDiagnosesList = extraDiagnosesList;
+		if (extraDiagnosesList == null || extraDiagnosesList.isEmpty()) {
+			this.extraDiagnoses = null;
+		} else {
+			StringBuilder sb = new StringBuilder();
+			for (Disease d : extraDiagnosesList) {
+				if (d != null) {
+					if (sb.length() > 0) sb.append(",");
+					sb.append(d.getCode());
+				}
+			}
+			this.extraDiagnoses = sb.toString();
+		}
+	}
+
+	public void loadExtraDiagnosesFromString(List<Disease> allDiseases) {
+		extraDiagnosesList.clear();
+		if (extraDiagnoses != null && !extraDiagnoses.isEmpty()) {
+			String[] ids = extraDiagnoses.split(",");
+			for (String id : ids) {
+				for (Disease d : allDiseases) {
+					if (d.getCode().equals(id.trim())) {
+						extraDiagnosesList.add(d);
+						break;
+					}
+				}
+			}
+		}
+	}
+
+	public List<Disease> getAllDiagnoses() {
+		List<Disease> all = new ArrayList<>();
+		if (disease != null) all.add(disease);
+		if (disease2 != null) all.add(disease2);
+		if (disease3 != null) all.add(disease3);
+		all.addAll(extraDiagnosesList);
+		return all;
+	}
+
+	public void addExtraDiagnosis(Disease disease) {
+		if (disease != null && !extraDiagnosesList.contains(disease)) {
+			extraDiagnosesList.add(disease);
+			setExtraDiagnosesList(extraDiagnosesList);
+		}
+	}
+
+	public void removeExtraDiagnosis(Disease disease) {
+		if (extraDiagnosesList.removeIf(d -> d.getCode().equals(disease.getCode()))) {
+			setExtraDiagnosesList(extraDiagnosesList);
+		}
+	}
+
+	public void clearExtraDiagnoses() {
+		extraDiagnosesList.clear();
+		setExtraDiagnosesList(null);
+	}
+
+	public int getExtraDiagnosesCount() {
+		return extraDiagnosesList.size();
 	}
 }
