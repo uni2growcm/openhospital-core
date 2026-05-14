@@ -30,6 +30,7 @@ import org.isf.accounting.model.BillItems;
 import org.isf.accounting.model.BillPayments;
 import org.isf.accounting.service.AccountingIoOperations;
 import org.isf.generaldata.MessageBundle;
+import org.isf.menu.model.User;
 import org.isf.patient.model.Patient;
 import org.isf.utils.db.TranslateOHServiceException;
 import org.isf.utils.exception.OHDataValidationException;
@@ -359,5 +360,49 @@ public class BillBrowserManager {
 	 */
 	public List<Bill> getBills(LocalDateTime dateFrom, LocalDateTime dateTo, BillItems billItem) throws OHServiceException {
 		return ioOperations.getBillsBetweenDatesWhereBillItem(dateFrom, dateTo, billItem);
+	}
+
+	/**
+	 * Get the bills filtered by date, patient and guarantor
+	 *
+	 * @param dateFrom Start date
+	 * @param dateTo End date
+	 * @param patient Target patient
+	 * @param guarantor The user acting as the guarantor for the bills.
+	 * @return {@link  List} of {@link Bill}s matching the filter,
+	 * or empty list if no match found
+	 * @throws OHServiceException when the calls to internal methods fail.
+	 */
+	public List<Bill> getBillsByDatePatientAndGuarantor(LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient, User guarantor) throws OHServiceException {
+		return patient == null ? ioOperations.getBillsByDatesAndGuarantor(dateFrom, dateTo, guarantor) : ioOperations.getBillsByDatesPatientAndGuarantor(dateFrom, dateTo, patient, guarantor);
+	}
+
+	/**
+	 * Get the bills payments filtered by date patient  and guarantor
+	 *
+	 * @param dateFrom Start date
+	 * @param dateTo End date
+	 * @param patient Target patient
+	 * @param guarantor The user acting as the guarantor for the bills.
+	 * @return {@link  List} of {@link Bill}s matching the filter,
+	 * or empty list if no match found
+	 * @throws OHServiceException when the calls to internal methods fail.
+	 */
+	public List<BillPayments> getPaymentsByDatePatientAndGuarantor(LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient, User guarantor) throws OHServiceException {
+		if (dateFrom == null || dateTo == null) {
+			throw new IllegalArgumentException("Date cannot be null");
+		}
+		return patient == null ? ioOperations.getPaymentsByDatesAndGuarantor(dateFrom, dateTo, guarantor) : ioOperations.getPaymentsByDatesPatientAndGuarantor(dateFrom, dateTo, patient, guarantor);
+	}
+
+	/**
+	 * Get the bills payments filtered by guarantor
+	 *
+	 * @param guarantor the user acting as the guarantor for the bills.
+	 * @return The {@link List} of{@link BillPayments} matching the filters, or an empty list if no match
+	 * @throws OHServiceException when failed to execute the query.
+	 */
+	public List<Bill> getBillsByGuarantor(List<BillPayments> billPayments, User guarantor) throws OHServiceException {
+		return billPayments.isEmpty() ? new ArrayList<>() : ioOperations.getBillsByGuarantor(billPayments, guarantor);
 	}
 }
