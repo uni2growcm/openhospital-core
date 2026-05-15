@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2024 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -76,7 +76,7 @@ public class HospitalizationConsultationIoOperations {
 	 * @throws OHServiceException
 	 */
 	public List<HospitalizationConsultation> getHospitalizationConsultationsByDateRange(LocalDateTime dateFrom, LocalDateTime dateTo) throws OHServiceException {
-		return repository.findByDateTimeBetween(dateFrom, dateTo);
+		return repository.findByConsultationDateBetween(dateFrom, dateTo);
 	}
 
 	/**
@@ -157,7 +157,7 @@ public class HospitalizationConsultationIoOperations {
 	 * @throws OHServiceException
 	 */
 	public PagedResponse<HospitalizationConsultation> getHospitalizationConsultationsByDateRangePageable(LocalDateTime dateFrom, LocalDateTime dateTo, PageRequest pageRequest) throws OHServiceException {
-		Page<HospitalizationConsultation> page = repository.findByDateTimeBetween(dateFrom, dateTo, pageRequest);
+		Page<HospitalizationConsultation> page = repository.findByConsultationDateBetween(dateFrom, dateTo, pageRequest);
 		return setPaginationData(page);
 	}
 

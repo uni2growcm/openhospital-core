@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -66,8 +66,8 @@ public class HospitalizationConsultation extends Auditable<String> implements Co
 	private String teams;
 
 	@NotNull
-	@Column(name = "HPC_DATE_TIME")
-	private LocalDateTime dateTime;
+	@Column(name = "HPC_CONSULTATION_DATE")
+	private LocalDateTime consultationDate;
 
 	@Column(name = "HPC_PARENT_COMPLAINTS", columnDefinition = "TEXT")
 	private String parentComplaints;
@@ -78,7 +78,7 @@ public class HospitalizationConsultation extends Auditable<String> implements Co
 	@Column(name = "HPC_DIAGNOSIS", columnDefinition = "TEXT")
 	private String diagnosis;
 
-	@Column(name = "HPC_MANAGEMENT_PLAN", columnDefinition = "TEXT")
+	@Column(name = "HPC_INSTRUCTIONS", columnDefinition = "TEXT")
 	private String managementPlan;
 
 	@Version
@@ -98,7 +98,7 @@ public class HospitalizationConsultation extends Auditable<String> implements Co
 		this.id = id;
 		this.encounter = encounter;
 		this.teams = teams;
-		this.dateTime = TimeTools.truncateToSeconds(dateTime);
+		this.consultationDate = TimeTools.truncateToSeconds(dateTime);
 		this.parentComplaints = parentComplaints;
 		this.physicalExamination = physicalExamination;
 		this.diagnosis = diagnosis;
@@ -129,12 +129,12 @@ public class HospitalizationConsultation extends Auditable<String> implements Co
 		this.teams = teams;
 	}
 
-	public LocalDateTime getDateTime() {
-		return dateTime;
+	public LocalDateTime getConsultationDate() {
+		return consultationDate;
 	}
 
-	public void setDateTime(LocalDateTime dateTime) {
-		this.dateTime = TimeTools.truncateToSeconds(dateTime);
+	public void setConsultationDate(LocalDateTime dateTime) {
+		this.consultationDate = TimeTools.truncateToSeconds(dateTime);
 	}
 
 	public String getParentComplaints() {

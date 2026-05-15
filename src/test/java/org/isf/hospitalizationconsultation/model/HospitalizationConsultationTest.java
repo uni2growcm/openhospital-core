@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -46,7 +46,7 @@ class HospitalizationConsultationTest {
 		consultation = new HospitalizationConsultation();
 		consultation.setId(1);
 		consultation.setEncounter(encounter);
-		consultation.setDateTime(testDateTime);
+		consultation.setConsultationDate(testDateTime);
 		consultation.setTeams("Cardiology, Neurology");
 		consultation.setParentComplaints("Patient complains of chest pain and headache");
 		consultation.setPhysicalExamination("Normal heart sounds, no neurological deficits");
@@ -65,7 +65,7 @@ class HospitalizationConsultationTest {
 		assertThat(newConsultation.getId()).isEqualTo(2);
 		assertThat(newConsultation.getEncounter()).isEqualTo(encounter);
 		assertThat(newConsultation.getTeams()).isEqualTo("Emergency Team");
-		assertThat(newConsultation.getDateTime()).isEqualTo(testDateTime.plusDays(1));
+		assertThat(newConsultation.getConsultationDate()).isEqualTo(testDateTime.plusDays(1));
 		assertThat(newConsultation.getParentComplaints()).isEqualTo("Acute pain");
 		assertThat(newConsultation.getPhysicalExamination()).isEqualTo("Abnormal findings");
 		assertThat(newConsultation.getDiagnosis()).isEqualTo("Acute condition");
@@ -78,7 +78,7 @@ class HospitalizationConsultationTest {
 		assertThat(consultation.getId()).isEqualTo(1);
 		assertThat(consultation.getEncounter()).isEqualTo(encounter);
 		assertThat(consultation.getTeams()).isEqualTo("Cardiology, Neurology");
-		assertThat(consultation.getDateTime()).isEqualTo(testDateTime);
+		assertThat(consultation.getConsultationDate()).isEqualTo(testDateTime);
 		assertThat(consultation.getParentComplaints()).isEqualTo("Patient complains of chest pain and headache");
 		assertThat(consultation.getPhysicalExamination()).isEqualTo("Normal heart sounds, no neurological deficits");
 		assertThat(consultation.getDiagnosis()).isEqualTo("Hypertension, Tension headache");
@@ -142,7 +142,7 @@ class HospitalizationConsultationTest {
 		assertThat(nullConsultation.getId()).isEqualTo(0);
 		assertThat(nullConsultation.getEncounter()).isNull();
 		assertThat(nullConsultation.getTeams()).isNull();
-		assertThat(nullConsultation.getDateTime()).isNull();
+		assertThat(nullConsultation.getConsultationDate()).isNull();
 		assertThat(nullConsultation.getParentComplaints()).isNull();
 		assertThat(nullConsultation.getPhysicalExamination()).isNull();
 		assertThat(nullConsultation.getDiagnosis()).isNull();

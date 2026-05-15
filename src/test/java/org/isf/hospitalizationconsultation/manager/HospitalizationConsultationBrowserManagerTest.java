@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -71,7 +71,7 @@ class HospitalizationConsultationBrowserManagerTest extends OHCoreTestCase {
 		testConsultation = new HospitalizationConsultation();
 		testConsultation.setId(1);
 		testConsultation.setEncounter(testEncounter);
-		testConsultation.setDateTime(testDateTime);
+		testConsultation.setConsultationDate(testDateTime);
 		testConsultation.setTeams("Cardiology");
 		testConsultation.setParentComplaints("Chest pain");
 		testConsultation.setPhysicalExamination("Normal exam");
@@ -171,7 +171,7 @@ class HospitalizationConsultationBrowserManagerTest extends OHCoreTestCase {
 	@Test
 	@DisplayName("Test new hospitalization consultation - validation error - null date")
 	void testNewHospitalizationConsultationValidationErrorNullDate() {
-		testConsultation.setDateTime(null);
+		testConsultation.setConsultationDate(null);
 		
 		assertThatThrownBy(() -> manager.newHospitalizationConsultation(testConsultation))
 			.isInstanceOf(OHDataValidationException.class);

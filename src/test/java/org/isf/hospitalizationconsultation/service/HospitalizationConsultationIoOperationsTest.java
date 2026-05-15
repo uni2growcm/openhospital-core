@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -67,7 +67,7 @@ class HospitalizationConsultationIoOperationsTest extends OHCoreTestCase {
 		testConsultation = new HospitalizationConsultation();
 		testConsultation.setId(1);
 		testConsultation.setEncounter(testEncounter);
-		testConsultation.setDateTime(testDateTime);
+		testConsultation.setConsultationDate(testDateTime);
 		testConsultation.setTeams("Cardiology");
 		testConsultation.setParentComplaints("Chest pain");
 		testConsultation.setPhysicalExamination("Normal exam");
@@ -116,14 +116,14 @@ class HospitalizationConsultationIoOperationsTest extends OHCoreTestCase {
 		List<HospitalizationConsultation> expectedList = new ArrayList<>();
 		expectedList.add(testConsultation);
 		
-		when(repository.findByDateTimeBetween(dateFrom, dateTo)).thenReturn(expectedList);
+		when(repository.findByConsultationDateBetween(dateFrom, dateTo)).thenReturn(expectedList);
 		
 		List<HospitalizationConsultation> result = service.getHospitalizationConsultationsByDateRange(dateFrom, dateTo);
 		
 		assertThat(result).isNotNull();
 		assertThat(result).hasSize(1);
 		assertThat(result.get(0)).isEqualTo(testConsultation);
-		verify(repository).findByDateTimeBetween(dateFrom, dateTo);
+		verify(repository).findByConsultationDateBetween(dateFrom, dateTo);
 	}
 
 	@Test
@@ -226,7 +226,7 @@ class HospitalizationConsultationIoOperationsTest extends OHCoreTestCase {
 		List<HospitalizationConsultation> content = List.of(testConsultation);
 		Page<HospitalizationConsultation> page = new PageImpl<>(content, pageRequest, 1);
 		
-		when(repository.findByDateTimeBetween(dateFrom, dateTo, pageRequest)).thenReturn(page);
+		when(repository.findByConsultationDateBetween(dateFrom, dateTo, pageRequest)).thenReturn(page);
 		
 		PagedResponse<HospitalizationConsultation> result = service.getHospitalizationConsultationsByDateRangePageable(dateFrom, dateTo, pageRequest);
 		
@@ -234,7 +234,7 @@ class HospitalizationConsultationIoOperationsTest extends OHCoreTestCase {
 		assertThat(result.getData()).hasSize(1);
 		assertThat(result.getData().get(0)).isEqualTo(testConsultation);
 		assertThat(result.getPageInfo()).isNotNull();
-		verify(repository).findByDateTimeBetween(dateFrom, dateTo, pageRequest);
+		verify(repository).findByConsultationDateBetween(dateFrom, dateTo, pageRequest);
 	}
 
 	@Test

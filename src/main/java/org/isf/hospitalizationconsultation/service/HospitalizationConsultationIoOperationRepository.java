@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2024 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -38,28 +38,28 @@ public interface HospitalizationConsultationIoOperationRepository extends JpaRep
 
 	Page<HospitalizationConsultation> findByEncounter(Encounter encounter, Pageable pageable);
 
-	List<HospitalizationConsultation> findByDateTimeBetween(LocalDateTime dateFrom, LocalDateTime dateTo);
+	List<HospitalizationConsultation> findByConsultationDateBetween(LocalDateTime dateFrom, LocalDateTime dateTo);
 
-	Page<HospitalizationConsultation> findByDateTimeBetween(LocalDateTime dateFrom, LocalDateTime dateTo, Pageable pageable);
+	Page<HospitalizationConsultation> findByConsultationDateBetween(LocalDateTime dateFrom, LocalDateTime dateTo, Pageable pageable);
 
 	@Query("select count(hc) from HospitalizationConsultation hc where hc.encounter = :encounter")
 	long countByEncounter(@Param("encounter") Encounter encounter);
 
-	@Query("select hc from HospitalizationConsultation hc where hc.encounter = :encounter order by hc.dateTime desc")
-	List<HospitalizationConsultation> findByEncounterOrderByDateTimeDesc(@Param("encounter") Encounter encounter);
+	@Query("select hc from HospitalizationConsultation hc where hc.encounter = :encounter order by hc.consultationDate desc")
+	List<HospitalizationConsultation> findByEncounterOrderByConsultationDateDesc(@Param("encounter") Encounter encounter);
 
-	@Query("select hc from HospitalizationConsultation hc where hc.encounter = :encounter order by hc.dateTime desc")
+	@Query("select hc from HospitalizationConsultation hc where hc.encounter = :encounter order by hc.consultationDate desc")
 	Page<HospitalizationConsultation> findByEncounterOrderByDateTimeDesc(@Param("encounter") Encounter encounter, Pageable pageable);
 
-	@Query("select hc from HospitalizationConsultation hc order by hc.dateTime desc")
-	List<HospitalizationConsultation> findAllOrderByDateTimeDesc();
+	@Query("select hc from HospitalizationConsultation hc order by hc.consultationDate desc")
+	List<HospitalizationConsultation> findAllOrderByConsultationDateDesc();
 
-	@Query("select hc from HospitalizationConsultation hc order by hc.dateTime desc")
-	Page<HospitalizationConsultation> findAllOrderByDateTimeDesc(Pageable pageable);
+	@Query("select hc from HospitalizationConsultation hc order by hc.consultationDate desc")
+	Page<HospitalizationConsultation> findAllOrderByConsultationDateDesc(Pageable pageable);
 
-	@Query("select hc from HospitalizationConsultation hc where hc.dateTime >= :dateFrom and hc.dateTime <= :dateTo order by hc.dateTime desc")
+	@Query("select hc from HospitalizationConsultation hc where hc.consultationDate >= :consultationDate and hc.consultationDate <= :dateTo order by hc.consultationDate desc")
 	List<HospitalizationConsultation> findByDateTimeBetweenOrderByDateTimeDesc(@Param("dateFrom") LocalDateTime dateFrom, @Param("dateTo") LocalDateTime dateTo);
 
-	@Query("select hc from HospitalizationConsultation hc where hc.dateTime >= :dateFrom and hc.dateTime <= :dateTo order by hc.dateTime desc")
-	Page<HospitalizationConsultation> findByDateTimeBetweenOrderByDateTimeDesc(@Param("dateFrom") LocalDateTime dateFrom, @Param("dateTo") LocalDateTime dateTo, Pageable pageable);
+	@Query("select hc from HospitalizationConsultation hc where hc.consultationDate >= :consultationDate and hc.consultationDate <= :dateTo order by hc.consultationDate desc")
+	Page<HospitalizationConsultation> findByDateTimeBetweenOrderByDateTimeDesc(@Param("consultationDate") LocalDateTime dateFrom, @Param("dateTo") LocalDateTime dateTo, Pageable pageable);
 }
