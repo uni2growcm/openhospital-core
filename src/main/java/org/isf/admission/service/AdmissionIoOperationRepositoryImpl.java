@@ -155,7 +155,7 @@ public class AdmissionIoOperationRepositoryImpl implements AdmissionIoOperationR
 	}
 
 	@Override
-	public Page<AdmittedPatient> findPatientAdmissionsByFiltersPaginated(
+	public Page<AdmittedPatient> findPatientAdmissionsByFilters(
 		String searchTerms,
 		String admissionStatus,
 		List<String> wardCodes,
@@ -213,6 +213,7 @@ public class AdmissionIoOperationRepositoryImpl implements AdmissionIoOperationR
 			where.append(" AND DATE(a.ADM_DATE_ADM) >= '")
 				.append(TimeTools.formatDateTime(admissionDateFrom, "yyyy-MM-dd")).append("'");
 		}
+
 		if (admissionDateTo != null) {
 			where.append(" AND DATE(a.ADM_DATE_ADM) <= '")
 				.append(TimeTools.formatDateTime(admissionDateTo, "yyyy-MM-dd")).append("'");

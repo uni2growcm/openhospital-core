@@ -34,7 +34,7 @@ public interface AdmissionIoOperationRepositoryCustom {
 	List<AdmittedPatient> findPatientAdmissionsBySearchAndDateRanges(String searchTerms, LocalDateTime[] admissionRange, LocalDateTime[] dischargeRange)
 			throws OHServiceException;
 
-	Page<AdmittedPatient> findPatientAdmissionsByFiltersPaginated(
+	Page<AdmittedPatient> findPatientAdmissionsByFilters(
 		String searchTerms,
 		String admissionStatus,
 		List<String> wardCodes,

@@ -424,7 +424,7 @@ public class AdmissionIoOperations {
 		Character sex,
 		Integer country,
 		Pageable pageable) throws OHServiceException {
-		return repository.findPatientAdmissionsByFiltersPaginated(
+		return repository.findPatientAdmissionsByFilters(
 			searchTerms, admissionStatus, wardCodes,
 			admissionDateFrom, admissionDateTo,
 			dischargeDateFrom, dischargeDateTo,

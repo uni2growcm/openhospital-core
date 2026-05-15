@@ -1629,7 +1629,7 @@ class Tests extends OHCoreTestCase {
 		}
 
 		@Override
-		public Page<AdmittedPatient> findPatientAdmissionsByFiltersPaginated(
+		public Page<AdmittedPatient> findPatientAdmissionsByFilters(
 			String searchTerms, String admissionStatus, List<String> wardCodes,
 			LocalDateTime admissionDateFrom, LocalDateTime admissionDateTo,
 			LocalDateTime dischargeDateFrom, LocalDateTime dischargeDateTo,
