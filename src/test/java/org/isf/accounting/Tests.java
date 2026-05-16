@@ -985,30 +985,41 @@ class Tests extends OHCoreTestCase {
 	}
 
 	@Test
-	@DisplayName("Should get payments filtered by a guarantor and patient") void testGetPaymentsByDatePatientAndGuarantor() throws Exception {
-		LocalDateTime dateFrom = LocalDateTime.now().minusMinutes(10); LocalDateTime dateTo = LocalDateTime.now().plusHours(1);
+	@DisplayName("Should get payments filtered by a guarantor and patient")
+	void testGetPaymentsByDatePatientAndGuarantor() throws Exception {
+		LocalDateTime dateFrom = LocalDateTime.now().minusHours(24);
+		LocalDateTime dateTo = LocalDateTime.now().plusHours(1);
 
 		int code = setupTestBill(true);
 		Bill bill = billBrowserManager.getBill(code);
 		checkBillIntoDb(code);
+
 		BillItems insertBillItem = testBillItems.setup(bill, false);
 		BillPayments insertBillPayment = testBillPayments.setup(bill, false);
-		insertBillPayment.setDate(TimeTools.getNow());
+
+		LocalDateTime now = LocalDateTime.now();
+		bill.setDate(now.minusDays(1));
+		insertBillPayment.setDate(now);
+
 		List<BillItems> billItems = new ArrayList<>();
 		billItems.add(insertBillItem);
 		List<BillPayments> billPayments = new ArrayList<>();
 		billPayments.add(insertBillPayment);
+
 		UserGroup userGroup = testUserGroup.setup(true);
-		userGroupIoOperationRepository.saveAndFlush(userGroup);
+		userGroup = userGroupIoOperationRepository.saveAndFlush(userGroup);
 		User guarantor = testUser.setup(userGroup, true);
 		guarantor.setUserName("guarantor");
-		userIoOperationRepository.saveAndFlush(guarantor);
+		guarantor = userIoOperationRepository.saveAndFlush(guarantor);
 		bill.setGuarantor(guarantor);
-		bill.setDate(LocalDateTime.now());
+
 		bill = billBrowserManager.newBill(bill, billItems, billPayments);
 		assertThat(bill).isNotNull();
+
 		Patient patient = bill.getBillPatient();
-		List<BillPayments> billPaymentsList = billBrowserManager.getPaymentsByDatePatientAndGuarantor(dateFrom, dateTo, patient, guarantor);
+		List<BillPayments> billPaymentsList = billBrowserManager.getPaymentsByDatePatientAndGuarantor(
+			dateFrom, dateTo, patient, guarantor);
+
 		assertThat(billPaymentsList).isNotEmpty();
 		assertThat(billPaymentsList.size()).isEqualTo(1);
 	}
