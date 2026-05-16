@@ -83,7 +83,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 class Tests extends OHCoreTestCase {
@@ -1589,12 +1591,51 @@ class Tests extends OHCoreTestCase {
 		assertThat(count).isEqualTo(1);
 	}
 
+	@ParameterizedTest(name = "Test with MATERNITYRESTARTINJUNE={0}")
+	@MethodSource("maternityRestartInJune")
+	void testMgrGetAdmittedPatientsPaginatedWithPageable(boolean maternityRestartInJune) throws Exception {
+		GeneralData.MATERNITYRESTARTINJUNE = maternityRestartInJune;
+
+		int id = setupTestAdmission(false);
+		Admission admission = admissionBrowserManager.getAdmission(id);
+
+		Page<AdmittedPatient> firstPage = admissionBrowserManager.getAdmittedPatientsPaginated(
+			null, null, null, null, null, null, null, null,null,null,null, 0, 2
+		);
+
+		assertThat(firstPage).isNotNull();
+		assertThat(firstPage.getContent()).hasSize(1);
+		assertThat(firstPage.getTotalElements()).isEqualTo(1);
+		assertThat(firstPage.getTotalPages()).isEqualTo(1);
+		assertThat(firstPage.getNumber()).isZero();
+		assertThat(firstPage.getSize()).isEqualTo(2);
+
+		Page<AdmittedPatient> secondPage = admissionBrowserManager.getAdmittedPatientsPaginated(
+			null, null, null, null, null, null, null, null,null,null,null, 1, 2
+		);
+
+		assertThat(secondPage).isNotNull();
+		assertThat(secondPage.getNumber()).isEqualTo(1);
+		assertThat(secondPage.getContent()).isEmpty();
+		assertThat(secondPage.getTotalElements()).isEqualTo(1);
+	}
+
 	class MyAdmissionIoOperationRepositoryCustom implements AdmissionIoOperationRepositoryCustom {
 
 		@Override
 		public List<AdmittedPatient> findPatientAdmissionsBySearchAndDateRanges(String searchTerms, LocalDateTime[] admissionRange,
 			LocalDateTime[] dischargeRange) throws OHServiceException {
 			return null;
+		}
+
+		@Override
+		public Page<AdmittedPatient> findPatientAdmissionsByFilters(
+			String searchTerms, String admissionStatus, List<String> wardCodes,
+			LocalDateTime admissionDateFrom, LocalDateTime admissionDateTo,
+			LocalDateTime dischargeDateFrom, LocalDateTime dischargeDateTo,
+			Integer ageFrom, Integer ageTo, Character sex, Integer country,
+			Pageable pageable) throws OHServiceException {
+			return Page.empty(pageable);
 		}
 	}
 
@@ -1693,5 +1734,4 @@ class Tests extends OHCoreTestCase {
 			diseaseOut2, diseaseOut3, operation, dischargeType, pregTreatmentType,
 			deliveryType, deliveryResult, true);
 	}
-
 }
