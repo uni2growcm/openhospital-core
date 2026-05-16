@@ -90,14 +90,17 @@ public class OpdBrowserManager {
 			opd.setUserID(UserBrowsingManager.getCurrentUser());
 		}
 		List<OHExceptionMessage> errors = new ArrayList<>();
+
 		// Check Visit Date
 		if (opd.getDate() == null) {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.opd.pleaseinsertattendancedate.msg")));
 		}
+
 		// Check Patient
 		if (GeneralData.OPDEXTENDED && opd.getPatient() == null) {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.common.pleaseselectapatient.msg")));
 		}
+
 		// Check Ward
 		if (ward == null) {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.common.pleaseselectaward.msg")));
@@ -106,6 +109,7 @@ public class OpdBrowserManager {
 				errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.opd.specifiedwardisnotenabledforopdservice.msg")));
 			}
 		}
+
 		// Check Sex and Age
 		if (opd.getAge() < 0) {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.opd.pleaseinsertthepatientsage.msg")));
@@ -113,13 +117,14 @@ public class OpdBrowserManager {
 		if (opd.getSex() == ' ') {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.opd.pleaseselectpatientssex.msg")));
 		}
-		// Check Disease n.1
+
+		// Check Disease n.1 - CORRIGÉ
 		if (disease == null) {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.opd.pleaseselectadisease.msg")));
 		} else {
 			try {
 				Disease opdDisease = this.diseaseBrowserManager.getDiseaseByCode(disease.getCode());
-				if (opdDisease == null || !opdDisease.getOpdInclude()) {
+				if (opdDisease == null) {
 					errors.add(new OHExceptionMessage(MessageBundle.formatMessage("angal.opd.specifieddiseaseisnoenabledforopdservice.fmt.msg", new Object[]{"1"})));
 				}
 			} catch (OHServiceException e) {
@@ -127,10 +132,11 @@ public class OpdBrowserManager {
 			}
 		}
 
+		// Check Disease n.2 - CORRIGÉ
 		if (disease2 != null) {
 			try {
 				Disease opdDisease = this.diseaseBrowserManager.getDiseaseByCode(disease2.getCode());
-				if (opdDisease == null || !opdDisease.getOpdInclude()) {
+				if (opdDisease == null) {
 					errors.add(new OHExceptionMessage(MessageBundle.formatMessage("angal.opd.specifieddiseaseisnoenabledforopdservice.fmt.msg", new Object[]{"2"})));
 				}
 			} catch (OHServiceException e) {
@@ -138,10 +144,11 @@ public class OpdBrowserManager {
 			}
 		}
 
+		// Check Disease n.3 - CORRIGÉ
 		if (disease3 != null) {
 			try {
 				Disease opdDisease = this.diseaseBrowserManager.getDiseaseByCode(disease3.getCode());
-				if (opdDisease == null || !opdDisease.getOpdInclude()) {
+				if (opdDisease == null) {
 					errors.add(new OHExceptionMessage(MessageBundle.formatMessage("angal.opd.specifieddiseaseisnoenabledforopdservice.fmt.msg", new Object[]{"3"})));
 				}
 			} catch (OHServiceException e) {
@@ -149,14 +156,18 @@ public class OpdBrowserManager {
 			}
 		}
 
+		// Check extra diagnoses - CORRIGÉ pour utiliser getDiseaseByCodeAll
 		if (extraDiagnoses != null && !extraDiagnoses.isEmpty()) {
 			for (int i = 0; i < extraDiagnoses.size(); i++) {
 				Disease diag = extraDiagnoses.get(i);
 				if (diag != null && diag.getCode() != null) {
 					try {
-						Disease opdDisease = this.diseaseBrowserManager.getDiseaseByCode(diag.getCode());
-						if (opdDisease == null || !opdDisease.getOpdInclude()) {
-							errors.add(new OHExceptionMessage(MessageBundle.formatMessage("angal.opd.specifieddiseaseisnoenabledforopdservice.fmt.msg",
+						// Utiliser getDiseaseByCodeAll au lieu de getDiseaseByCode
+						// Cela permet d'accepter TOUTES les maladies, même celles non activées pour l'OPD
+						Disease opdDisease = this.diseaseBrowserManager.getDiseaseByCodeAll(diag.getCode());
+						if (opdDisease == null) {
+							errors.add(new OHExceptionMessage(MessageBundle.formatMessage(
+								"angal.opd.specifieddiseaseisnoenabledforopdservice.fmt.msg",
 								new Object[]{MessageBundle.getMessage("angal.common.extra") + " " + (i + 1)})));
 						}
 					} catch (OHServiceException e) {
@@ -166,6 +177,7 @@ public class OpdBrowserManager {
 			}
 		}
 
+		// Check duplicate diseases
 		if (disease != null && disease2 != null && disease.getCode().equals(disease2.getCode())) {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.opd.specifyingduplicatediseasesisnotallowed.msg")));
 		}

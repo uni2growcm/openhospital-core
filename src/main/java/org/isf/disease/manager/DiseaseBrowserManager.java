@@ -285,4 +285,18 @@ public class DiseaseBrowserManager {
 			throw new OHDataValidationException(errors);
 		}
 	}
+	// Dans org/isf/disease/manager/DiseaseBrowserManager.java
+
+	/**
+	 * Get a disease by its code WITHOUT ANY FILTERING
+	 * Returns the disease regardless of OPD/IPD flags
+	 * Use this method when you need the disease object even if not enabled for OPD
+	 *
+	 * @param code the disease code
+	 * @return the Disease object or null if not found
+	 * @throws OHServiceException
+	 */
+	public Disease getDiseaseByCodeAll(String code) throws OHServiceException {
+		return ioOperations.getDiseaseByCode(code);
+	}
 }
