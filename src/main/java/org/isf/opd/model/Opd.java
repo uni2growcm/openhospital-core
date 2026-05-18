@@ -127,13 +127,12 @@ public class Opd extends Auditable<String> {
 	@Column(name="OPD_LOCK")
 	private int lock;
 
-	@Nullable
-	@Column(name = "OPD_EXTRA_DIAGNOSES")
-	private String extraDiagnoses;
+	@Column(name="OPD_REFERING_HOSP")
+	private String referingHospital;
 
-	@Transient
-	private List<Disease> extraDiagnosesList = new ArrayList<>();
-	
+	@Column(name="OPD_RECEIVING_HOSP")
+	private String receivingHospital;
+
 	/*@Column(name="OPD_REASON")
    	private String reason; // ADDED: Arnaud
 
@@ -333,12 +332,14 @@ public class Opd extends Auditable<String> {
 		this.userID = userID;
 	}
 
-	public String getExtraDiagnoses() { return extraDiagnoses; }
+	public String getReferingHospital() { return referingHospital; }
 
-	public void setExtraDiagnoses(String extraDiagnoses) { this.extraDiagnoses = extraDiagnoses; }
+	public void setReferingHospital(String referingHospital) { this.referingHospital = referingHospital; }
 
-	public List<Disease> getExtraDiagnosesList() { return extraDiagnosesList; }
-        
+	public String getReceivingHospital() { return receivingHospital; }
+
+	public void setReceivingHospital(String receivingHospital) { this.receivingHospital = receivingHospital; }
+
 	/*public String getReason() {
 		return reason;
 	}
