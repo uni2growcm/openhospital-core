@@ -67,4 +67,33 @@ public class OperationRowBrowserManager {
 		return ioOperations.getOperationRowByPatient(patient);
 	}
 
+	/**
+	 * Check if a patient has pending operations that haven't been billed yet.
+	 *
+	 * @param patientCode the patient's code as String
+	 * @return true if the patient has pending operations, false otherwise
+	 * @throws OHServiceException
+	 */
+	public boolean hasOperationWithoutBill(String patientCode) throws OHServiceException {
+		if (patientCode == null || patientCode.isEmpty()) {
+			return false;
+		}
+		Patient patient = new Patient();
+		patient.setCode(Integer.parseInt(patientCode));
+		return ioOperations.hasOperationWithoutBill(patient);
+	}
+
+	/**
+	 * Check if a patient has pending operations that haven't been billed yet.
+	 *
+	 * @param patient the patient
+	 * @return true if the patient has pending operations, false otherwise
+	 * @throws OHServiceException
+	 */
+	public boolean hasOperationWithoutBill(Patient patient) throws OHServiceException {
+		if (patient == null || patient.getCode() == 0) {
+			return false;
+		}
+		return ioOperations.hasOperationWithoutBill(patient);
+	}
 }

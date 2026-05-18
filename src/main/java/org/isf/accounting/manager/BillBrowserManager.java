@@ -360,4 +360,16 @@ public class BillBrowserManager {
 	public List<Bill> getBills(LocalDateTime dateFrom, LocalDateTime dateTo, BillItems billItem) throws OHServiceException {
 		return ioOperations.getBillsBetweenDatesWhereBillItem(dateFrom, dateTo, billItem);
 	}
+
+	/**
+	 * Check if a patient has pending prescriptions (therapies, exams, operations)
+	 * that haven't been billed yet.
+	 *
+	 * @param patientCode the patient's code
+	 * @return true if the patient has pending prescriptions, false otherwise
+	 * @throws OHServiceException
+	 */
+	public boolean hasPrescription(Integer patientCode) throws OHServiceException {
+		return ioOperations.hasPrescription(patientCode);
+	}
 }

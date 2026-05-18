@@ -23,6 +23,7 @@ package org.isf.operation.service;
 
 import java.util.List;
 
+import feign.Param;
 import org.isf.admission.model.Admission;
 import org.isf.opd.model.Opd;
 import org.isf.operation.model.OperationRow;
@@ -49,4 +50,7 @@ public interface OperationRowIoOperationRepository extends JpaRepository<Operati
 
 	@Query("select count(o) from OperationRow o where active=1")
 	long countAllActiveOperations();
+
+	@Query("SELECT o FROM OperationRow o WHERE (o.admission.patient = :patient OR o.opd.patient = :patient) AND (o.bill IS NULL OR o.bill.id = 0)")
+	List<OperationRow> findByPatientAndBillIsNull(@Param("patient") Patient patient);
 }

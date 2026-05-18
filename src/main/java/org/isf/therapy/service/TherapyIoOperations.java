@@ -97,4 +97,15 @@ public class TherapyIoOperations {
 		return this.repository.countAllActiveTherapies();
 	}
 
+	/**
+	 * Check if a patient has pending therapies that haven't been fully bought yet.
+	 *
+	 * @param patientCode the patient's code
+	 * @return true if the patient has pending therapies, false otherwise
+	 * @throws OHServiceException
+	 */
+	public boolean hasTherapiesRowsNotYetBought(int patientCode) throws OHServiceException {
+		long count = repository.countByPatientCodeAndQtyBougthLessThanQty(patientCode);
+		return count > 0;
+	}
 }

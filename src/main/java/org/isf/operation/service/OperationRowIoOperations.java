@@ -107,4 +107,15 @@ public class OperationRowIoOperations {
 		return this.repository.countAllActiveOperations();
 	}
 
+	/**
+	 * Check if a patient has pending operations that haven't been billed yet.
+	 *
+	 * @param patient the patient
+	 * @return true if the patient has pending operations, false otherwise
+	 * @throws OHServiceException
+	 */
+	public boolean hasOperationWithoutBill(Patient patient) throws OHServiceException {
+		List<OperationRow> operations = repository.findByPatientAndBillIsNull(patient);
+		return operations != null && !operations.isEmpty();
+	}
 }

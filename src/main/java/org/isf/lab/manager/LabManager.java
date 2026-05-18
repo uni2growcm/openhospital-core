@@ -484,4 +484,17 @@ public class LabManager {
 		return ioOperations.getLaboratoryPageable(exam, dateFrom, dateTo, patient, page, size);
 	}
 
+	/**
+	 * Check if a patient has pending laboratory exams that haven't been billed yet.
+	 *
+	 * @param patientCode the patient's code as String
+	 * @return true if the patient has pending exams, false otherwise
+	 * @throws OHServiceException
+	 */
+	public boolean hasLabWithoutBill(String patientCode) throws OHServiceException {
+		if (patientCode == null || patientCode.isEmpty()) {
+			return false;
+		}
+		return ioOperations.hasLabWithoutBill(Integer.parseInt(patientCode));
+	}
 }

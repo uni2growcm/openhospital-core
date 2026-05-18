@@ -338,4 +338,14 @@ public class TherapyManager {
 		return new TherapyRow(therapyID, patient, startDate, endDate, medical, qty, unitID, freqInDay, freqInPeriod, note, notify, sms);
 	}
 
+	/**
+	 * Check if the patient has therapies rows not yet bought.
+	 *
+	 * @param patientCode the patient's code
+	 * @return true if the patient has pending therapies, false otherwise
+	 * @throws OHServiceException
+	 */
+	public boolean hasTherapiesRowsNotYetBought(int patientCode) throws OHServiceException {
+		return ioOperations.hasTherapiesRowsNotYetBought(patientCode);
+	}
 }

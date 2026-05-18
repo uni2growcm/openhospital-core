@@ -421,4 +421,15 @@ public class LabIoOperations {
 		return this.repository.countAllActiveLabs();
 	}
 
+	/**
+	 * Check if a patient has pending laboratory exams that haven't been billed yet.
+	 *
+	 * @param patientCode the patient's code
+	 * @return true if the patient has pending exams, false otherwise
+	 * @throws OHServiceException
+	 */
+	public boolean hasLabWithoutBill(int patientCode) throws OHServiceException {
+		List<Laboratory> labs = repository.findByPatientCodeAndBillIsNull(patientCode);
+		return labs != null && !labs.isEmpty();
+	}
 }

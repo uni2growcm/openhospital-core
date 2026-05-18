@@ -30,7 +30,10 @@ import java.util.TreeSet;
 import org.isf.accounting.model.Bill;
 import org.isf.accounting.model.BillItems;
 import org.isf.accounting.model.BillPayments;
+import org.isf.lab.manager.LabManager;
+import org.isf.operation.manager.OperationRowBrowserManager;
 import org.isf.patient.model.Patient;
+import org.isf.therapy.manager.TherapyManager;
 import org.isf.utils.db.TranslateOHServiceException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.time.TimeTools;
@@ -49,12 +52,23 @@ public class AccountingIoOperations {
 	private AccountingBillPaymentIoOperationRepository billPaymentRepository;
 	private AccountingBillItemsIoOperationRepository billItemsRepository;
 
-	public AccountingIoOperations(AccountingBillIoOperationRepository accountingBillIoOperationRepository,
+	private TherapyManager therapyManager;
+	private LabManager labManager;
+	private OperationRowBrowserManager operationRowBrowserManager;
+
+	public AccountingIoOperations(
+		AccountingBillIoOperationRepository accountingBillIoOperationRepository,
 		AccountingBillPaymentIoOperationRepository accountingBillPaymentIoOperationRepository,
-		AccountingBillItemsIoOperationRepository accountingBillItemsIoOperationRepository) {
+		AccountingBillItemsIoOperationRepository accountingBillItemsIoOperationRepository,
+		TherapyManager therapyManager,
+		LabManager labManager,
+		OperationRowBrowserManager operationRowBrowserManager) {
 		this.billRepository = accountingBillIoOperationRepository;
 		this.billPaymentRepository = accountingBillPaymentIoOperationRepository;
 		this.billItemsRepository = accountingBillItemsIoOperationRepository;
+		this.therapyManager = therapyManager;
+		this.labManager = labManager;
+		this.operationRowBrowserManager = operationRowBrowserManager;
 	}
 
 	/**
@@ -331,4 +345,50 @@ public class AccountingIoOperations {
 		return this.billRepository.countAllActiveBills();
 	}
 
+	/**
+	 * Check if a patient has pending therapies that haven't been billed yet.
+	 *
+	 * @param patientCode the patient's code
+	 * @return true if the patient has pending therapies, false otherwise
+	 * @throws OHServiceException
+	 */
+	public boolean hasTherapyPrescription(Integer patientCode) throws OHServiceException {
+		return therapyManager.hasTherapiesRowsNotYetBought(patientCode);
+	}
+
+	/**
+	 * Check if a patient has pending exams that haven't been billed yet.
+	 *
+	 * @param patientCode the patient's code
+	 * @return true if the patient has pending exams, false otherwise
+	 * @throws OHServiceException
+	 */
+	public boolean hasExamPrescription(Integer patientCode) throws OHServiceException {
+		return labManager.hasLabWithoutBill(String.valueOf(patientCode));
+	}
+
+	/**
+	 * Check if a patient has pending operations that haven't been billed yet.
+	 *
+	 * @param patientCode the patient's code
+	 * @return true if the patient has pending operations, false otherwise
+	 * @throws OHServiceException
+	 */
+	public boolean hasOperationPrescription(Integer patientCode) throws OHServiceException {
+		return operationRowBrowserManager.hasOperationWithoutBill(String.valueOf(patientCode));
+	}
+
+	/**
+	 * Check if a patient has any pending prescription (therapy, exam, or operation)
+	 * that hasn't been billed yet.
+	 *
+	 * @param patientCode the patient's code
+	 * @return true if the patient has any pending prescription, false otherwise
+	 * @throws OHServiceException
+	 */
+	public boolean hasPrescription(Integer patientCode) throws OHServiceException {
+		return hasTherapyPrescription(patientCode)
+			|| hasExamPrescription(patientCode)
+			|| hasOperationPrescription(patientCode);
+	}
 }
