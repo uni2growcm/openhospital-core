@@ -1169,4 +1169,27 @@ public class JasperReportsManager {
 			throw new OHReportException(e, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
 		}
 	}
+
+	public JasperReportResultDto getPregnancyReportPdf(Long pregId) throws OHServiceException {
+
+		try {
+			HashMap<String, Object> parameters = new HashMap<>(getHospitalParameters());
+			String jasperFileName = "PregnancyReport";
+			addBundleParameter(RPT_BASE, jasperFileName, parameters);
+			parameters.put("PregId", pregId);
+			parameters.put("Telephone", hospitalManager.getHospital().getTelephone());
+			parameters.put("Address", hospitalManager.getHospital().getAddress());
+			parameters.put("Email", hospitalManager.getHospital().getEmail());
+			parameters.put("City", hospitalManager.getHospital().getCity());
+			parameters.put("Hospital", hospitalManager.getHospital().getDescription());
+			parameters.put("PathLogoImage", LOGO);
+			String pdfFilename = compilePDFFilename(RPT_BASE, jasperFileName, Arrays.asList(String.valueOf(pregId)), "pdf");
+			JasperReportResultDto result = generateJasperReport(compileJasperFilename(RPT_BASE, jasperFileName), pdfFilename, parameters);
+			JasperExportManager.exportReportToPdfFile(result.getJasperPrint(), pdfFilename);
+			return result;
+		} catch (Exception e) {
+			LOGGER.error("", e);
+			throw new OHReportException(e, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
+		}
+	}
 }
