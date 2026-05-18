@@ -56,6 +56,10 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import java.util.ArrayList;
+import java.util.List;
+import org.isf.utils.pagination.PagedResponse;
+import org.springframework.data.domain.Page;
 
 class Tests extends OHCoreTestCase {
 
@@ -668,5 +672,41 @@ class Tests extends OHCoreTestCase {
 		lotIoOperationRepository.saveAndFlush(lot);
 		movementIoOperationRepository.saveAndFlush(movement);
 		return movement.getCode();
+	}
+
+	@Test
+	void testIoGetMedicalListPageable() throws Exception {
+		List<Medical> savedMedicals = setupTestMedicalsForPagination(3);
+
+		Page<Medical> medicals = medicalBrowsingManager.getMedicalsPageable(0, 2);
+
+		assertThat(medicals.getContent().size()).isEqualTo(2);
+		assertThat(medicals.getContent()).extracting(Medical::getCode).isSubsetOf(savedMedicals.stream().map(Medical::getCode).toList());
+		assertThat(medicals.getTotalPages()).isEqualTo(2);
+	}
+
+	@Test
+	void testIoGetMedicalListPageableSecondPage() throws Exception {
+		setupTestMedicalsForPagination(5);
+
+		Page<Medical> medicals = medicalBrowsingManager.getMedicalsPageable(1, 2);
+
+		assertThat(medicals.getContent()).hasSize(2);
+		assertThat(medicals.getNumber()).isEqualTo(1);
+	}
+
+	private List<Medical> setupTestMedicalsForPagination(int count) throws Exception {
+		List<Medical> medicals = new ArrayList<>();
+		MedicalType medicalType = testMedicalType.setup(false);
+		medicalTypeIoOperationRepository.saveAndFlush(medicalType);
+
+		for (int index = 0; index < count; index++) {
+			Medical medical = testMedical.setup(medicalType, false);
+			medical.setDescription("Medical_" + index);
+			medical.setProdCode("PROD_" + index);
+			medicals.add(medicalsIoOperationRepository.saveAndFlush(medical));
+		}
+
+		return medicals;
 	}
 }

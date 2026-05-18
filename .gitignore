@@ -9,5 +9,3 @@ logs
 .vscode/
 *.iml
 /.env
-*.properties
-LOG_DEST
