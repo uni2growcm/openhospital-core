@@ -47,7 +47,7 @@ public class DiseaseIoOperations {
 	 * @throws OHServiceException if an error occurred getting the disease.
 	 */
 	public Disease getDiseaseByCode(String code) throws OHServiceException {
-		return repository.findOneByCode(code);
+		return repository.findById(code).orElse(null);
 	}
 
 	/**

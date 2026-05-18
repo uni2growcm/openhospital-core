@@ -22,6 +22,8 @@
 package org.isf.opd.model;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
@@ -32,6 +34,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PostLoad;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import jakarta.persistence.Version;
@@ -44,8 +49,6 @@ import org.isf.utils.time.TimeTools;
 import org.isf.visits.model.Visit;
 import org.isf.ward.model.Ward;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import java.util.ArrayList;
-import java.util.List;
 
 import com.drew.lang.annotations.Nullable;
 
@@ -133,6 +136,13 @@ public class Opd extends Auditable<String> {
 	@Column(name="OPD_RECEIVING_HOSP")
 	private String receivingHospital;
 
+	@Nullable
+	@Column(name = "OPD_EXTRA_DIAGNOSES")
+	private String extraDiagnoses;
+
+	@Transient
+	private List<Disease> extraDiagnosesList = new ArrayList<>();
+
 	/*@Column(name="OPD_REASON")
    	private String reason; // ADDED: Arnaud
 
@@ -151,6 +161,29 @@ public class Opd extends Auditable<String> {
 
 
 	public Opd() {
+	}
+
+	@PostLoad
+	private void loadExtraDiagnosesAfterLoad() {
+		extraDiagnosesList = new ArrayList<>();
+		if (extraDiagnoses == null || extraDiagnoses.isBlank()) {
+			return;
+		}
+
+		for (String id : extraDiagnoses.split(",")) {
+			String code = id.trim();
+			if (!code.isEmpty()) {
+				Disease disease = new Disease();
+				disease.setCode(code);
+				extraDiagnosesList.add(disease);
+			}
+		}
+	}
+
+	@PrePersist
+	@PreUpdate
+	private void syncExtraDiagnosesBeforeSave() {
+		setExtraDiagnosesList(extraDiagnosesList);
 	}
 	
 	/**
@@ -332,6 +365,10 @@ public class Opd extends Auditable<String> {
 		this.userID = userID;
 	}
 
+	public void setExtraDiagnoses(String extraDiagnoses) {
+		this.extraDiagnoses = extraDiagnoses;
+	}
+
 	public String getReferingHospital() { return referingHospital; }
 
 	public void setReferingHospital(String referingHospital) { this.referingHospital = referingHospital; }
@@ -402,33 +439,39 @@ public class Opd extends Auditable<String> {
 
 		return (code == opd.getCode());
 	}
-	public void setExtraDiagnosesList(List<Disease> extraDiagnosesList) {
-		this.extraDiagnosesList = extraDiagnosesList;
-		if (extraDiagnosesList == null || extraDiagnosesList.isEmpty()) {
-			this.extraDiagnoses = null;
-		} else {
-			StringBuilder sb = new StringBuilder();
-			for (Disease d : extraDiagnosesList) {
-				if (d != null) {
-					if (sb.length() > 0) sb.append(",");
-					sb.append(d.getCode());
-				}
-			}
-			this.extraDiagnoses = sb.toString();
-		}
-	}
 
+	/**
+	 * Load extra diagnoses from the stored string using a list of all diseases
+	 * @param allDiseases list of all diseases to map codes to full disease objects
+	 */
 	public void loadExtraDiagnosesFromString(List<Disease> allDiseases) {
 		extraDiagnosesList.clear();
-		if (extraDiagnoses != null && !extraDiagnoses.isEmpty()) {
-			String[] ids = extraDiagnoses.split(",");
-			for (String id : ids) {
+		if (extraDiagnoses == null || extraDiagnoses.isEmpty()) {
+			return;
+		}
+		String[] codes = extraDiagnoses.split(",");
+		for (String code : codes) {
+			String trimmedCode = code.trim();
+			if (trimmedCode.isEmpty()) {
+				continue;
+			}
+			// Try to find the full disease object
+			Disease foundDisease = null;
+			if (allDiseases != null) {
 				for (Disease d : allDiseases) {
-					if (d.getCode().equals(id.trim())) {
-						extraDiagnosesList.add(d);
+					if (d.getCode().equals(trimmedCode)) {
+						foundDisease = d;
 						break;
 					}
 				}
+			}
+			if (foundDisease != null) {
+				extraDiagnosesList.add(foundDisease);
+			} else {
+				// Fallback: create a minimal disease object
+				Disease minimalDisease = new Disease();
+				minimalDisease.setCode(trimmedCode);
+				extraDiagnosesList.add(minimalDisease);
 			}
 		}
 	}
@@ -463,4 +506,24 @@ public class Opd extends Auditable<String> {
 	public int getExtraDiagnosesCount() {
 		return extraDiagnosesList.size();
 	}
+	public List<Disease> getExtraDiagnosesList() {
+		return extraDiagnosesList;
+	}
+
+	public void setExtraDiagnosesList(List<Disease> extraDiagnosesList) {
+		this.extraDiagnosesList = extraDiagnosesList;
+		if (extraDiagnosesList == null || extraDiagnosesList.isEmpty()) {
+			this.extraDiagnoses = null;
+		} else {
+			StringBuilder sb = new StringBuilder();
+			for (Disease d : extraDiagnosesList) {
+				if (d != null) {
+					if (sb.length() > 0) sb.append(",");
+					sb.append(d.getCode());
+				}
+			}
+			this.extraDiagnoses = sb.toString();
+		}
+	}
+
 }

@@ -70,7 +70,7 @@ public interface OpdIoOperationRepository extends JpaRepository<Opd, Integer>, O
 	@Query("select o from Opd o where o.patient.code = :code and o.ward = :ward order by o.prog_year")
 	Page<Opd> findAllByPatient_CodeAndWardOrderByProgYearDescPageable(@Param("code") int code, @Param("ward") Ward ward, Pageable pageable);
 
-	@Query(value = "SELECT op FROM Opd op WHERE "
+	@Query(value = "SELECT op FROM Opd op LEFT JOIN op.disease disease LEFT JOIN disease.diseaseType diseaseType WHERE "
 		+ "(:wardCode IS NULL OR op.ward.code = :wardCode) "
 		+ "AND (:diseaseType IS NULL OR op.disease.diseaseType.code = :diseaseType) "
 		+ "AND (:diseaseCode IS NULL OR op.disease.code = :diseaseCode) "
