@@ -53,10 +53,10 @@ public class OpdIoOperations {
 
 	/**
 	 * Return all {@link Opd}s for today or one week ago.
-	 * 
+	 *
 	 * @param oneWeek - if {@code true} return the last week, only today otherwise.
 	 * @return the list of Opds. It could be {@code empty}.
-	 * @throws OHServiceException 
+	 * @throws OHServiceException
 	 */
 	public List<Opd> getOpdList(boolean oneWeek) throws OHServiceException {
 		LocalDate dateTo = LocalDate.now();
@@ -65,11 +65,12 @@ public class OpdIoOperations {
 			dateFrom = LocalDate.now().minusWeeks(1);
 		}
 		return getOpdList(null, MessageBundle.getMessage("angal.common.alltypes.txt"), MessageBundle.getMessage("angal.opd.alldiseases.txt"), dateFrom, dateTo,
-						0, 0, 'A', 'A', null);
+			0, 0, 'A', 'A', null);
 	}
 
 	/**
 	 * Retrieves creation date of the last Opd
+	 *
 	 * @return creation date of the last Opd
 	 */
 	public LocalDateTime lastOpdCreationDate() {
@@ -78,7 +79,7 @@ public class OpdIoOperations {
 
 	/**
 	 * Count not deleted {@link Opd}s
-	 * 
+	 *
 	 * @return the number of recorded {@link Opd}s
 	 * @throws OHServiceException
 	 */
@@ -88,8 +89,8 @@ public class OpdIoOperations {
 
 	/**
 	 * Return all {@link Opd}s within specified dates and parameters.
-	 * 
-	 * @param ward 
+	 *
+	 * @param ward
 	 * @param diseaseTypeCode
 	 * @param diseaseCode
 	 * @param dateFrom
@@ -100,29 +101,29 @@ public class OpdIoOperations {
 	 * @param newPatient
 	 * @param user
 	 * @return the list of Opds. It could be {@code empty}.
-	 * @throws OHServiceException 
+	 * @throws OHServiceException
 	 */
 	public List<Opd> getOpdList(
-					Ward ward,
-					String diseaseTypeCode,
-					String diseaseCode,
-					LocalDate dateFrom,
-					LocalDate dateTo,
-					int ageFrom,
-					int ageTo,
-					char sex,
-					char newPatient,
-					String user) throws OHServiceException {
+		Ward ward,
+		String diseaseTypeCode,
+		String diseaseCode,
+		LocalDate dateFrom,
+		LocalDate dateTo,
+		int ageFrom,
+		int ageTo,
+		char sex,
+		char newPatient,
+		String user) throws OHServiceException {
 		return repository.findAllOpdWhereParams(ward, diseaseTypeCode, diseaseCode, dateFrom, dateTo, ageFrom, ageTo, sex, newPatient, user);
 	}
 
 	/**
 	 * Return all {@link Opd}s associated to specified patient ID.
-	 * 
+	 *
 	 * @param patID - the patient ID
 	 * @return the list of {@link Opd}s associated to specified patient ID.
-	 * 		   the whole list of {@link Opd}s if {@code 0} is passed.
-	 * @throws OHServiceException 
+	 * the whole list of {@link Opd}s if {@code 0} is passed.
+	 * @throws OHServiceException
 	 */
 	public List<Opd> getOpdList(int patID) throws OHServiceException {
 		return patID == 0 ? repository.findAllOrderByProgYearDesc() : repository.findAllByPatient_CodeOrderByProgYearDesc(patID);
@@ -130,10 +131,10 @@ public class OpdIoOperations {
 
 	/**
 	 * Insert a new {@link Opd} into the db.
-	 * 
+	 *
 	 * @param opd - an {@link Opd}
 	 * @return the newly inserted {@link Opd} object.
-	 * @throws OHServiceException 
+	 * @throws OHServiceException
 	 */
 	public Opd newOpd(Opd opd) throws OHServiceException {
 		return repository.save(opd);
@@ -141,10 +142,10 @@ public class OpdIoOperations {
 
 	/**
 	 * Modify an {@link Opd} in the db.
-	 * 
+	 *
 	 * @param opd - an {@link Opd}
 	 * @return the updated {@link Opd} object.
-	 * @throws OHServiceException 
+	 * @throws OHServiceException
 	 */
 	public Opd updateOpd(Opd opd) throws OHServiceException {
 		return repository.save(opd);
@@ -152,7 +153,7 @@ public class OpdIoOperations {
 
 	/**
 	 * Delete an {@link Opd} from the db.
-	 * 
+	 *
 	 * @param opd - the {@link Opd} to delete
 	 * @throws OHServiceException
 	 */
@@ -162,23 +163,23 @@ public class OpdIoOperations {
 
 	/**
 	 * Returns the max progressive number within specified year or within current year if {@code 0}.
-	 * 
+	 *
 	 * @param year
 	 * @return {@code int} - the progressive number in the year
-	 * @throws OHServiceException 
+	 * @throws OHServiceException
 	 */
 	public int getProgYear(int year) throws OHServiceException {
 		Integer progYear = year == 0 ? repository.findMaxProgYear()
-						: repository.findMaxProgYearWhereDateBetween(LocalDateTime.of(year, 1, 1, 0, 0), LocalDateTime.of(year + 1, 1, 1, 0, 0));
+			: repository.findMaxProgYearWhereDateBetween(LocalDateTime.of(year, 1, 1, 0, 0), LocalDateTime.of(year + 1, 1, 1, 0, 0));
 		return progYear == null ? 0 : progYear;
 	}
 
 	/**
 	 * Return the last {@link Opd} in time associated with specified patient ID.
-	 * 
+	 *
 	 * @param patID - the patient ID
 	 * @return last Opd associated with specified patient ID or {@code null}
-	 * @throws OHServiceException 
+	 * @throws OHServiceException
 	 */
 	public Opd getLastOpd(int patID) throws OHServiceException {
 		List<Opd> opdList = repository.findTop1ByPatient_CodeOrderByDateDesc(patID);
@@ -190,7 +191,7 @@ public class OpdIoOperations {
 	 *
 	 * @param code - the opd code
 	 * @return {@code true} if the code is already in use, {@code false} otherwise
-	 * @throws OHServiceException 
+	 * @throws OHServiceException
 	 */
 	public boolean isCodePresent(Integer code) throws OHServiceException {
 		return repository.existsById(code);
@@ -198,7 +199,7 @@ public class OpdIoOperations {
 
 	/**
 	 * Check if the given {@code opdNum} does already exist for the given {@code year}.
-	 * 
+	 *
 	 * @param opdNum - the OPD progressive in year
 	 * @param year - the year
 	 * @return {@code true} if the given number exists in year, {@code false} otherwise
@@ -206,7 +207,7 @@ public class OpdIoOperations {
 	 */
 	public boolean isExistOpdNum(int opdNum, int year) throws OHServiceException {
 		List<Opd> opds = year == 0 ? repository.findByProgYear(opdNum)
-						: repository.findByProgYearAndDateBetween(opdNum, LocalDateTime.of(year, 1, 1, 0, 0), LocalDateTime.of(year + 1, 1, 1, 0, 0));
+			: repository.findByProgYearAndDateBetween(opdNum, LocalDateTime.of(year, 1, 1, 0, 0), LocalDateTime.of(year + 1, 1, 1, 0, 0));
 		return !opds.isEmpty();
 	}
 
@@ -230,7 +231,7 @@ public class OpdIoOperations {
 
 	/**
 	 * Retrieves a page of {@link Opd}s within specified dates and parameters.
-	 * 
+	 *
 	 * @param ward
 	 * @param diseaseTypeCode
 	 * @param diseaseCode
@@ -244,7 +245,7 @@ public class OpdIoOperations {
 	 * @param page
 	 * @param size
 	 * @return a {@link PagedResponse} object that contains the {@link Opd}s.
-	 * @throws OHServiceException 
+	 * @throws OHServiceException
 	 */
 	public PagedResponse<Opd> getOpdListPageable(
 					Ward ward,
@@ -272,5 +273,66 @@ public class OpdIoOperations {
 		data.setData(pages.getContent());
 		data.setPageInfo(PageInfo.from(pages));
 		return data;
+	}
+
+	/**
+	 * Retrieves a page of {@link Opd}s within specified dates and parameters.
+	 *
+	 * @param ward - the ward
+	 * @param diseaseTypeCode the diesease type
+	 * @param diseaseCode the code of the diesease
+	 * @param dateTo the begininng date
+	 * @param dateFrom the ending date
+	 * @param ageFrom the starting age
+	 * @param ageTo the ending age
+	 * @param sex the patients gender to consider
+	 * @param newPatient if list should contain only new patients
+	 * @param user the user
+	 * @param pageable the page infos
+	 * @return a list of OPD or an empty list
+	 * @throws  OHServiceException when fails to fetch
+	 */
+	public Page<Opd> getOpdList(
+		Ward ward, String diseaseTypeCode, String diseaseCode, LocalDate dateFrom, LocalDate dateTo,
+		int ageFrom, int ageTo, char sex, char newPatient, String user, Pageable pageable) throws OHServiceException {
+
+		LocalDateTime dateFromTime = dateFrom.atStartOfDay();
+		LocalDateTime dateToTime = dateTo.plusDays(1).atStartOfDay();
+
+		String sexStr = String.valueOf(sex);
+		String newPatientStr = String.valueOf(newPatient);
+		String wardCode = ward != null ? ward.getCode() : null;
+
+		return repository.findOpdListPageable(
+			wardCode, normalizeFilteringTerm(diseaseTypeCode), normalizeFilteringTerm(diseaseCode), dateFromTime,
+			dateToTime, ageFrom, ageTo, sexStr, newPatientStr, normalizeFilteringTerm(user), pageable);
+	}
+
+	private String normalizeFilteringTerm(String filter) {
+		return filter == null || filter.isBlank() ? null : filter;
+	}
+
+	/**
+	 * Retrieves a page of {@link Opd}s within specified dates and parameters.
+	 *
+	 * @param patientCode the patient's code
+	 * @param pageable the page infos
+	 * @return a list of OPD or an empty list
+	 * @throws  OHServiceException when fails to fetch
+	 */
+	public Page<Opd> getOpdListByPatientId(int patientCode, Pageable pageable) throws OHServiceException {
+		return repository.findAllByPatient_CodeOrderByProgYearDescPageable(patientCode, pageable);
+	}
+
+	/**
+	 * Retrieves a page of {@link Opd}s within specified dates and parameters.
+	 *
+	 * @param progYear
+	 * @param pageable the page infos
+	 * @return a list of OPD or an empty list
+	 * @throws  OHServiceException when fails to fetch
+	 */
+	public Page<Opd> getOpdListByProgYear(int progYear, Pageable pageable) throws OHServiceException {
+		return repository.findByProgYearPageable(progYear, pageable);
 	}
 }
