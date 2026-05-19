@@ -323,4 +323,5 @@ public class MedicalBrowsingManager {
 		Pageable pageable = PageRequest.of(page, size);
 		return ioOperations.getMedicalsPageable(pageable, activeFilter, medicalTypeCode);
 	}
+
 }
