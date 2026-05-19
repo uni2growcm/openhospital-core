@@ -131,3 +131,4 @@ source step_a134_update_medical_history_table.sql;
 source step_a135_update_conditioning_table.sql;
 source step_a136_add_referral_fields.sql;
 source step_a137_add_cares_table_and_add_care_permission.sql;
+source step_a138_create_table_oh_hospitalizationconsultation.sql;
