@@ -331,4 +331,11 @@ public class PatientIoOperations {
 		}
 		return patients;
 	}
+
+	public List<Patient> getPatientByCodeOrName(Integer code, String name) throws OHServiceException {
+		return repository.findByCodeOrNameContainingAndNotDeleted(
+			code != null ? code : -1,
+			name != null ? name : "",
+			NOT_DELETED_STATUS);
+	}
 }

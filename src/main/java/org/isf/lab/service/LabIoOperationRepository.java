@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2024 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -68,4 +68,6 @@ public interface LabIoOperationRepository extends JpaRepository<Laboratory, Inte
 	@Query("select count(l) from Laboratory l where active=1")
 	long countAllActiveLabs();
 
+	@Query("select distinct l.prescriber from Laboratory l where l.prescriber is not null and l.prescriber <> ''")
+	List<String> findDistinctPrescribers();
 }
