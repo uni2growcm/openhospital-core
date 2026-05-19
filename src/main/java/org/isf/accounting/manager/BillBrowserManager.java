@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -22,20 +22,33 @@
 package org.isf.accounting.manager;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import org.isf.accounting.model.Bill;
 import org.isf.accounting.model.BillItems;
 import org.isf.accounting.model.BillPayments;
 import org.isf.accounting.service.AccountingIoOperations;
+import org.isf.generaldata.GeneralData;
 import org.isf.generaldata.MessageBundle;
+import org.isf.medicals.manager.MedicalBrowsingManager;
+import org.isf.medicals.model.Medical;
+import org.isf.medicalstock.manager.MovStockInsertingManager;
+import org.isf.medicalstock.model.Lot;
+import org.isf.medicalstockward.manager.MovWardBrowserManager;
+import org.isf.medicalstockward.model.MedicalWard;
+import org.isf.medicalstockward.model.MovementWard;
+import org.isf.menu.manager.Context;
+import org.isf.patient.manager.PatientBrowserManager;
 import org.isf.patient.model.Patient;
+import org.isf.priceslist.manager.PriceListManager;
+import org.isf.priceslist.model.Price;
 import org.isf.utils.db.TranslateOHServiceException;
 import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.model.OHExceptionMessage;
 import org.isf.utils.time.TimeTools;
+import org.isf.ward.model.Ward;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,9 +56,82 @@ import org.springframework.transaction.annotation.Transactional;
 public class BillBrowserManager {
 
 	private final AccountingIoOperations ioOperations;
+	private final MovWardBrowserManager mvtManager;
+	private final PriceListManager priceListManager;
+	private final MedicalBrowsingManager medicalBrowsingManager;
+	private final MovStockInsertingManager movStockInsertingManager;
 
-	public BillBrowserManager(AccountingIoOperations accountingIoOperations) {
-		this.ioOperations = accountingIoOperations;
+	public BillBrowserManager(AccountingIoOperations ioOperations, MovWardBrowserManager mvtManager, PriceListManager priceListManager, MedicalBrowsingManager medicalBrowsingManager, MovStockInsertingManager movStockInsertingManager) {
+		this.ioOperations = ioOperations;
+		this.mvtManager = mvtManager;
+		this.priceListManager = priceListManager;
+		this.medicalBrowsingManager = medicalBrowsingManager;
+		this.movStockInsertingManager = movStockInsertingManager;
+	}
+
+	/**
+	 * Returns a list of items that were removed or reduced in quantity.
+	 * For reduced items, the quantity will be the difference.
+	 */
+	private List<BillItems> getDeletedItems(int billID, List<BillItems> updatedItems) throws OHServiceException {
+		List<BillItems> oldItems = this.ioOperations.getItems(billID);
+		if (oldItems == null || oldItems.isEmpty()) return new ArrayList<>();
+
+		if (updatedItems == null) updatedItems = new ArrayList<>();
+
+		Map<Integer, BillItems> newItemsMap = updatedItems.stream()
+			.filter(item -> item.getId() > 0)
+			.collect(Collectors.toMap(BillItems::getId, item -> item));
+
+		List<BillItems> removedOrReduced = new ArrayList<>();
+
+		for (BillItems oldItem : oldItems) {
+			BillItems newItem = newItemsMap.get(oldItem.getId());
+			if (newItem == null) {
+				removedOrReduced.add(oldItem);
+			} else if (oldItem.getItemQuantity() > newItem.getItemQuantity()) {
+				int diff = oldItem.getItemQuantity() - newItem.getItemQuantity();
+				BillItems reducedItem = new BillItems(oldItem.getId(), oldItem.getBill(), oldItem.isPrice(),
+					oldItem.getPriceID(), oldItem.getItemDescription(), oldItem.getItemAmount(), diff);
+				reducedItem.setItemId(oldItem.getItemId());
+				reducedItem.setItemDisplayCode(oldItem.getItemDisplayCode());
+				removedOrReduced.add(reducedItem);
+			}
+		}
+
+		return removedOrReduced;
+	}
+
+	/**
+	 * Returns a list of items that are newly added or have increased quantity.
+	 */
+	private List<BillItems> getNewItems(int billID, List<BillItems> updatedItems) throws OHServiceException {
+		List<BillItems> oldItems = this.ioOperations.getItems(billID);
+		if (updatedItems == null || updatedItems.isEmpty()) return new ArrayList<>();
+
+		Map<Integer, BillItems> oldItemsMap = oldItems != null ? oldItems.stream()
+			.filter(item -> item.getId() > 0)
+			.collect(Collectors.toMap(BillItems::getId, item -> item)) : new HashMap<>();
+
+		List<BillItems> addedOrIncreased = new ArrayList<>();
+
+		for (BillItems updatedItem : updatedItems) {
+			if (updatedItem.getId() == 0) {
+				addedOrIncreased.add(updatedItem);
+			} else {
+				BillItems oldItem = oldItemsMap.get(updatedItem.getId());
+				if (oldItem != null && updatedItem.getItemQuantity() > oldItem.getItemQuantity()) {
+					int diff = updatedItem.getItemQuantity() - oldItem.getItemQuantity();
+					BillItems increasedItem = new BillItems(updatedItem.getId(), updatedItem.getBill(), updatedItem.isPrice(),
+						updatedItem.getPriceID(), updatedItem.getItemDescription(), updatedItem.getItemAmount(), diff);
+					increasedItem.setItemId(updatedItem.getItemId());
+					increasedItem.setItemDisplayCode(updatedItem.getItemDisplayCode());
+					addedOrIncreased.add(increasedItem);
+				}
+			}
+		}
+
+		return addedOrIncreased;
 	}
 
 	/**
@@ -159,15 +245,24 @@ public class BillBrowserManager {
 		Bill bill,
 		List<BillItems> billItems,
 		List<BillPayments> billPayments) throws OHServiceException {
+
 		validateBill(bill, billPayments);
 		Bill newBill = newBill(bill);
 		int billId = newBill.getId();
-		if (!billItems.isEmpty()) {
-			newBillItems(billId, billItems);
+
+		if (billItems != null && !billItems.isEmpty()) {
+
+			ioOperations.newBillItems(newBill, billItems);
+
+			if (GeneralData.STOCKMVTONBILLSAVE) {
+				updateMedicalStock(billItems, billId, false);
+			}
 		}
-		if (!billPayments.isEmpty()) {
-			newBillPayments(billId, billPayments);
+
+		if (billPayments != null && !billPayments.isEmpty()) {
+			newBillPayments(newBill.getId(), billPayments);
 		}
+
 		return newBill;
 	}
 
@@ -215,13 +310,27 @@ public class BillBrowserManager {
 	 */
 	@Transactional(rollbackFor = OHServiceException.class)
 	@TranslateOHServiceException
-	public Bill updateBill(Bill updateBill,
+	public Bill updateBill(
+		Bill updateBill,
 		List<BillItems> billItems,
-		List<BillPayments> billPayments) throws OHServiceException {
+		List<BillPayments> billPayments
+	) throws OHServiceException {
+
 		validateBill(updateBill, billPayments);
+
+		if (GeneralData.STOCKMVTONBILLSAVE) {
+
+			List<BillItems> newItems = getNewItems(updateBill.getId(), billItems);
+			List<BillItems> deletedItems = getDeletedItems(updateBill.getId(), billItems);
+
+			updateMedicalStock(deletedItems, updateBill.getId(), true);
+			updateMedicalStock(newItems, updateBill.getId(), false);
+		}
+
 		Bill updatedBill = updateBill(updateBill);
 		newBillItems(updateBill.getId(), billItems);
-		newBillPayments(updateBill.getId(), billPayments);
+		newBillPayments(updatedBill.getId(), billPayments);
+
 		return updatedBill;
 	}
 
@@ -359,5 +468,102 @@ public class BillBrowserManager {
 	 */
 	public List<Bill> getBills(LocalDateTime dateFrom, LocalDateTime dateTo, BillItems billItem) throws OHServiceException {
 		return ioOperations.getBillsBetweenDatesWhereBillItem(dateFrom, dateTo, billItem);
+	}
+
+	private void updateMedicalStock(List<BillItems> medicalItems, int billID, boolean isCharge) throws OHServiceException {
+		if (medicalItems == null || medicalItems.isEmpty()) return;
+
+		PatientBrowserManager patientManager = Context.getApplicationContext().getBean(PatientBrowserManager.class);
+		Bill bill = getBill(billID);
+		Ward ward = bill.getWard();
+		if (ward == null) return;
+
+		Patient patient = patientManager.getPatientById(bill.getBillPatient().getCode());
+		List<Price> prices = patient.getPriceList() != null ?
+			priceListManager.getByListId(patient.getPriceList().getId()) :
+			priceListManager.getPrices();
+
+		List<OHExceptionMessage> validationErrors = new ArrayList<>();
+
+		for (BillItems item : medicalItems) {
+			Price price = prices.stream()
+				.filter(p -> p != null && "MED".equals(p.getGroup())
+					&& item.getItemDescription().equals(p.getDesc()))
+				.findFirst()
+				.orElse(null);
+
+			if (price != null) {
+				try {
+					addStockMvt(ward, patient, item, isCharge);
+				} catch (OHDataValidationException e) {
+					validationErrors.addAll(e.getMessages());
+				}
+			}
+		}
+
+		if (!validationErrors.isEmpty()) {
+			throw new OHDataValidationException(validationErrors);
+		}
+	}
+
+	private void addStockMvt(Ward ward, Patient patient, BillItems billItem, boolean isCharge) throws OHServiceException {
+		List<OHExceptionMessage> errors = new ArrayList<>();
+		double qty = billItem.getItemQuantity();
+
+		if (isCharge) {
+			qty = -qty;
+		}
+
+		List<MedicalWard> medWards = mvtManager.getMedicalsWard(ward.getCode(), true);
+
+		if (!isCharge && (medWards == null || medWards.isEmpty())) {
+			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.newbill.stocknotavailableforitem")
+				+ " : " + billItem.getItemDescription()));
+			throw new OHDataValidationException(errors);  // Stop execution immediately
+		}
+
+		MedicalWard medicalWard = medWards.stream()
+			.filter(med -> med.getId().getMedical().getDescription()
+				.equals(billItem.getItemDescription()))
+			.findFirst()
+			.orElse(null);
+
+		if (!isCharge && medicalWard == null) {
+			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.newbill.stocknotavailableforitem")
+				+ " : " + billItem.getItemDescription()));
+			throw new OHDataValidationException(errors);  // Stop execution immediately
+		}
+
+		if (!isCharge && medicalWard.getQty() < qty) {
+			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.newbill.qtynotinstock")
+				+ " : " + billItem.getItemDescription()));
+			throw new OHDataValidationException(errors);
+		}
+
+		// Now safe to proceed — medicalWard is guaranteed non-null
+		MovementWard mvt = new MovementWard();
+		mvt.setWard(ward);
+		mvt.setPatient(patient);
+		mvt.setDate(TimeTools.getServerDateTime());
+		mvt.setPatient(true);
+		mvt.setQuantity(qty);
+		mvt.setDescription(patient.getName());
+		if (isCharge) {
+			Medical medical =  medicalBrowsingManager.getMedicals(billItem.getItemDescription())
+				.stream()
+				.filter(med -> Objects.equals(med.getDescription(), billItem.getItemDescription()))
+				.findFirst()
+				.orElse(null);
+
+			Lot lot = movStockInsertingManager.getLotByMedical(medical, false).stream().findFirst().orElse(null);
+			mvt.setMedical(medical);
+			mvt.setlot(lot);
+		} else {
+			mvt.setMedical(medicalWard.getId().getMedical());
+			mvt.setlot(medicalWard.getLot());
+		}
+		mvt.setUnits("pieces");
+
+		mvtManager.newMovementWard(mvt);
 	}
 }

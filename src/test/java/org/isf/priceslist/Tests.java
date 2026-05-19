@@ -306,6 +306,14 @@ class Tests extends OHCoreTestCase {
 	}
 
 	@Test
+	void testMgrGetByListId() throws Exception {
+		int id = setupTestPrice(true);
+		List<Price> prices = priceListManager.getByListId(id);
+		assertThat(prices).isNotEmpty();
+		assertThat(prices.get(0).getList().getId()).isEqualTo(id);
+	}
+
+	@Test
 	void testMgrCopyListSteps3() throws Exception {
 		int id = setupTestPrice(true);
 		Price price = priceIoOperationRepository.findById(id).orElse(null);
