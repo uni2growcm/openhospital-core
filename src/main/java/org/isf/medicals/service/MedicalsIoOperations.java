@@ -307,7 +307,18 @@ public class MedicalsIoOperations {
 		int start = (int) pageRequest.getOffset();
 		int end = Math.min(start + pageRequest.getPageSize(), medicals.size());
 		List<Medical> pageContent = medicals.subList(start, end);
-		return this.setPaginationData(new PageImpl<>(pageContent, pageRequest, medicals.size()));
+		return setPaginationData(new PageImpl<>(pageContent, pageRequest, medicals.size()));
+	}
+
+	/**
+	 * Returns Spring Page of Medicals (database-level pagination like OPD)
+	 *
+	 * @param pageable the page information
+	 * @return a page of {@link Medical}s
+	 * @throws OHServiceException when fails to fetch
+	 */
+	public Page<Medical> getMedicalsPageable(Pageable pageable) throws OHServiceException {
+		return repository.findAllPageable(pageable);
 	}
 
 	/**
@@ -322,16 +333,16 @@ public class MedicalsIoOperations {
 		data.setPageInfo(PageInfo.from(pages));
 		return data;
 	}
-
 	/**
-	 * Returns Spring Page of Medicals (database-level pagination like OPD)
+	 * Returns Spring Page of Medicals with filters (database-level pagination)
 	 *
 	 * @param pageable the page information
+	 * @param activeFilter filter for active status (null = all, true = active only, false = disabled only)
+	 * @param medicalTypeCode filter by medical type code (null = all)
 	 * @return a page of {@link Medical}s
 	 * @throws OHServiceException when fails to fetch
 	 */
-	public Page<Medical> getMedicalList(Pageable pageable) throws OHServiceException {
-		return repository.findAllPageable(pageable);
+	public Page<Medical> getMedicalsPageable(Pageable pageable, String activeFilter, String medicalTypeCode) throws OHServiceException {
+		return repository.findAllPageable(pageable, activeFilter, medicalTypeCode);
 	}
-
 }
