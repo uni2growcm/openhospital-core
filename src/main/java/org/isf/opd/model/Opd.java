@@ -137,7 +137,7 @@ public class Opd extends Auditable<String> {
 	private String receivingHospital;
 
 	@Nullable
-	@Column(name = "OPD_EXTRA_DIAGNOSES")
+	@Column(name = "OPD_DIAGNOSTICS_ID")
 	private String extraDiagnoses;
 
 	@Transient
