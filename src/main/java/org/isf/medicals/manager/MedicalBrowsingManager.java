@@ -298,4 +298,28 @@ public class MedicalBrowsingManager {
 			throw new OHDataValidationException(errors);
 		}
 	}
+	/**
+	 * Returns {@link PagedResponse} of {@link Medical}s with page info.
+	 *
+	 * @param page the page number (0-indexed)
+	 * @param size the size of the page
+	 * @return PagedResponse of {@link Medical}s
+	 * @throws OHServiceException when fails to fetch
+	 */
+	public PagedResponse<Medical> getMedicalPageable(int page, int size) throws OHServiceException {
+		return ioOperations.getMedicalListPageable(page, size);
+	}
+
+	/**
+	 * Retrieves a page of {@link Medical}s (returns Spring Page).
+	 *
+	 * @param page the page number (0-indexed)
+	 * @param size the size of the page
+	 * @return a page of {@link Medical}s
+	 * @throws OHServiceException when fails to fetch
+	 */
+	public Page<Medical> getMedicals(int page, int size) throws OHServiceException {
+		Pageable pageable = PageRequest.of(page, size);
+		return ioOperations.getMedicalList(pageable);
+	}
 }
