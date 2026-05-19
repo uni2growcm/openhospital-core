@@ -34,6 +34,10 @@ import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.model.OHExceptionMessage;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
+import org.isf.utils.pagination.PagedResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 /**
  * Class that provides gui separation from database operations and gives some useful logic manipulations of the dynamic data (memory)
