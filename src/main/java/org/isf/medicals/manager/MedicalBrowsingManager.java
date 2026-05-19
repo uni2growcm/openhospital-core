@@ -314,25 +314,13 @@ public class MedicalBrowsingManager {
 	 *
 	 * @param page the page number (0-indexed)
 	 * @param size the size of the page
-	 * @param activeFilter filter for active status (null = all, "ACTIVE" = active only, "DISABLED" = disabled only)
-	 * @param medicalTypeCode filter by medical type code (null = all)
+	 * @param activeFilter filter for active status
+	 * @param medicalTypeCode filter by medical type code
 	 * @return a page of {@link Medical}s
 	 * @throws OHServiceException when fails to fetch
 	 */
 	public Page<Medical> getMedicals(int page, int size, String activeFilter, String medicalTypeCode) throws OHServiceException {
 		Pageable pageable = PageRequest.of(page, size);
 		return ioOperations.getMedicalsPageable(pageable, activeFilter, medicalTypeCode);
-	}
-	/**
-	 * Retrieves a page of {@link Medical}s (returns Spring Page).
-	 *
-	 * @param page the page number (0-indexed)
-	 * @param size the size of the page
-	 * @return a page of {@link Medical}s
-	 * @throws OHServiceException when fails to fetch
-	 */
-	public Page<Medical> getMedicals(int page, int size) throws OHServiceException {
-		Pageable pageable = PageRequest.of(page, size);
-		return ioOperations.getMedicalsPageable(pageable);
 	}
 }
