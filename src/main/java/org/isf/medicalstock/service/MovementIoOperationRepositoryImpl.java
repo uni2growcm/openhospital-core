@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2024 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -41,6 +41,9 @@ import org.isf.medstockmovtype.model.MovementType;
 import org.isf.medtype.model.MedicalType;
 import org.isf.utils.time.TimeTools;
 import org.isf.ward.model.Ward;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
@@ -226,4 +229,104 @@ public class MovementIoOperationRepositoryImpl implements MovementIoOperationRep
 		return entityManager.createQuery(query).getResultList();
 	}
 
+	@Override
+	public Page<Integer> findMovementWhereDataPageable(
+		Integer medicalCode,
+		String medicalType,
+		String wardId,
+		String movType,
+		LocalDateTime movFrom,
+		LocalDateTime movTo,
+		LocalDateTime lotPrepFrom,
+		LocalDateTime lotPrepTo,
+		LocalDateTime lotDueFrom,
+		LocalDateTime lotDueTo,
+		Pageable pageable) {
+
+		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+
+		CriteriaQuery<Integer> query = builder.createQuery(Integer.class);
+		Root<Movement> root = query.from(Movement.class);
+		query.select(root.<Integer>get(CODE));
+
+		List<Predicate> predicates = buildPredicates(builder, root,
+			medicalCode, medicalType, wardId, movType,
+			movFrom, movTo, lotPrepFrom, lotPrepTo, lotDueFrom, lotDueTo);
+
+		List<Order> orderList = new ArrayList<>();
+		orderList.add(builder.desc(root.get(CODE)));
+		orderList.add(builder.desc(root.get(REF_NO)));
+		query.where(predicates.toArray(new Predicate[]{})).orderBy(orderList);
+
+		List<Integer> ids = entityManager.createQuery(query)
+			.setFirstResult((int) pageable.getOffset())
+			.setMaxResults(pageable.getPageSize())
+			.getResultList();
+
+		CriteriaQuery<Long> countQuery = builder.createQuery(Long.class);
+		Root<Movement> countRoot = countQuery.from(Movement.class);
+		countQuery.select(builder.count(countRoot));
+
+		List<Predicate> countPredicates = buildPredicates(builder, countRoot,
+			medicalCode, medicalType, wardId, movType,
+			movFrom, movTo, lotPrepFrom, lotPrepTo, lotDueFrom, lotDueTo);
+		countQuery.where(countPredicates.toArray(new Predicate[]{}));
+
+		Long total = entityManager.createQuery(countQuery).getSingleResult();
+
+		return new PageImpl<>(ids, pageable, total);
+	}
+
+	private List<Predicate> buildPredicates(
+		CriteriaBuilder builder,
+		Root<Movement> root,
+		Integer medicalCode,
+		String medicalType,
+		String wardId,
+		String movType,
+		LocalDateTime movFrom,
+		LocalDateTime movTo,
+		LocalDateTime lotPrepFrom,
+		LocalDateTime lotPrepTo,
+		LocalDateTime lotDueFrom,
+		LocalDateTime lotDueTo) {
+
+		List<Predicate> predicates = new ArrayList<>();
+
+		if (medicalCode != null) {
+			predicates.add(builder.equal(root.<Medical>get(MEDICAL).<Integer>get(CODE), medicalCode));
+		}
+
+		if (medicalType != null) {
+			predicates.add(builder.equal(root.<Medical>get(MEDICAL).<MedicalType>get(TYPE).<String>get(CODE), medicalType));
+		}
+
+		if (movFrom != null && movTo != null) {
+			predicates.add(builder.between(root.<LocalDateTime>get(DATE), movFrom, movTo));
+		}
+
+		if (lotPrepFrom != null && lotPrepTo != null) {
+			predicates.add(builder.between(root.<Lot>get(LOT).<LocalDateTime>get("preparationDate"), lotPrepFrom, lotPrepTo));
+		}
+
+		if (lotDueFrom != null && lotDueTo != null) {
+			predicates.add(builder.between(root.<Lot>get(LOT).<LocalDateTime>get("dueDate"), lotDueFrom, lotDueTo));
+		}
+
+		if ("+".equals(movType)) {
+			predicates.add(builder.equal(root.<MovementType> get(TYPE).<String> get(TYPE), movType));
+
+		} else if ("-".equals(movType)) {
+			predicates.add(builder.equal(root.<MovementType> get(TYPE).<String> get(TYPE), movType));
+
+		} else if (movType != null) {
+			predicates.add(builder.equal(root.<MovementType> get(TYPE).<String> get(CODE), movType));
+		}
+
+		if (wardId != null) {
+			predicates.add(builder.equal(root.<Ward>get(WARD).<String>get(CODE), wardId));
+		}
+
+		return predicates;
+	}
 }
