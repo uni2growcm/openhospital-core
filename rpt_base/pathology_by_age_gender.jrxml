@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.21.2.final using JasperReports Library version 6.21.2-8434a0bd7c3bbc37cbf916f2968d35e4b165821a  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="pathology_by_age_gender" pageWidth="1133" pageHeight="793" orientation="Landscape" columnWidth="1073" leftMargin="30" rightMargin="30" topMargin="20" bottomMargin="20" resourceBundle="pathology_by_age_gender" whenResourceMissingType="Key" uuid="4b130d5b-2220-460d-8b4b-de69fdbb4e1e">
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="oh_data_adapter"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="OH DB"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<import value="net.sf.jasperreports.engine.*"/>
 	<import value="java.util.*"/>
 	<parameter name="fromdate" class="java.util.Date"/>
@@ -25,19 +26,7 @@
             SUM(CASE WHEN COALESCE(p.PAT_SEX, '') = 'F' AND ag.AT_CODE = 'd5' THEN 1 ELSE 0 END) AS ELDERLY_F,
             SUM(CASE WHEN COALESCE(p.PAT_SEX, '') = 'M' THEN 1 ELSE 0 END) AS TOTAL_MALE,
             SUM(CASE WHEN COALESCE(p.PAT_SEX, '') = 'F' THEN 1 ELSE 0 END) AS TOTAL_FEMALE,
-            COUNT(*) AS TOTAL_CASES,
-            MAX(CASE WHEN ag.AT_CODE = 'd0' THEN ag.AT_FROM END) AS AGE_FROM_D0,
-            MAX(CASE WHEN ag.AT_CODE = 'd0' THEN ag.AT_TO   END) AS AGE_TO_D0,
-            MAX(CASE WHEN ag.AT_CODE = 'd1' THEN ag.AT_FROM END) AS AGE_FROM_D1,
-            MAX(CASE WHEN ag.AT_CODE = 'd1' THEN ag.AT_TO   END) AS AGE_TO_D1,
-            MAX(CASE WHEN ag.AT_CODE = 'd2' THEN ag.AT_FROM END) AS AGE_FROM_D2,
-            MAX(CASE WHEN ag.AT_CODE = 'd2' THEN ag.AT_TO   END) AS AGE_TO_D2,
-            MAX(CASE WHEN ag.AT_CODE = 'd3' THEN ag.AT_FROM END) AS AGE_FROM_D3,
-            MAX(CASE WHEN ag.AT_CODE = 'd3' THEN ag.AT_TO   END) AS AGE_TO_D3,
-            MAX(CASE WHEN ag.AT_CODE = 'd4' THEN ag.AT_FROM END) AS AGE_FROM_D4,
-            MAX(CASE WHEN ag.AT_CODE = 'd4' THEN ag.AT_TO   END) AS AGE_TO_D4,
-            MAX(CASE WHEN ag.AT_CODE = 'd5' THEN ag.AT_FROM END) AS AGE_FROM_D5,
-            MAX(CASE WHEN ag.AT_CODE = 'd5' THEN ag.AT_TO   END) AS AGE_TO_D5
+            COUNT(*) AS TOTAL_CASES
         FROM oh_admission a
         INNER JOIN oh_patient p ON a.ADM_PAT_ID = p.PAT_ID
         LEFT JOIN oh_disease d ON a.ADM_IN_DIS_ID_A = d.DIS_ID_A
@@ -64,18 +53,6 @@
 	<field name="TOTAL_MALE" class="java.lang.Long"/>
 	<field name="TOTAL_FEMALE" class="java.lang.Long"/>
 	<field name="TOTAL_CASES" class="java.lang.Long"/>
-	<field name="AGE_FROM_D0" class="java.lang.Integer"/>
-	<field name="AGE_TO_D0" class="java.lang.Integer"/>
-	<field name="AGE_FROM_D1" class="java.lang.Integer"/>
-	<field name="AGE_TO_D1" class="java.lang.Integer"/>
-	<field name="AGE_FROM_D2" class="java.lang.Integer"/>
-	<field name="AGE_TO_D2" class="java.lang.Integer"/>
-	<field name="AGE_FROM_D3" class="java.lang.Integer"/>
-	<field name="AGE_TO_D3" class="java.lang.Integer"/>
-	<field name="AGE_FROM_D4" class="java.lang.Integer"/>
-	<field name="AGE_TO_D4" class="java.lang.Integer"/>
-	<field name="AGE_FROM_D5" class="java.lang.Integer"/>
-	<field name="AGE_TO_D5" class="java.lang.Integer"/>
 	<variable name="TOTAL_NEWBORN_M" class="java.lang.Long" calculation="Sum">
 		<variableExpression><![CDATA[$F{NEWBORN_M} == null ? 0L : $F{NEWBORN_M}]]></variableExpression>
 	</variable>
@@ -120,42 +97,6 @@
 	</variable>
 	<variable name="GRAND_TOTAL" class="java.lang.Long" calculation="Sum">
 		<variableExpression><![CDATA[$F{TOTAL_CASES} == null ? 0L : $F{TOTAL_CASES}]]></variableExpression>
-	</variable>
-	<variable name="LEG_FROM_D0" class="java.lang.Integer" calculation="Highest">
-		<variableExpression><![CDATA[$F{AGE_FROM_D0}]]></variableExpression>
-	</variable>
-	<variable name="LEG_TO_D0" class="java.lang.Integer" calculation="Highest">
-		<variableExpression><![CDATA[$F{AGE_TO_D0}]]></variableExpression>
-	</variable>
-	<variable name="LEG_FROM_D1" class="java.lang.Integer" calculation="Highest">
-		<variableExpression><![CDATA[$F{AGE_FROM_D1}]]></variableExpression>
-	</variable>
-	<variable name="LEG_TO_D1" class="java.lang.Integer" calculation="Highest">
-		<variableExpression><![CDATA[$F{AGE_TO_D1}]]></variableExpression>
-	</variable>
-	<variable name="LEG_FROM_D2" class="java.lang.Integer" calculation="Highest">
-		<variableExpression><![CDATA[$F{AGE_FROM_D2}]]></variableExpression>
-	</variable>
-	<variable name="LEG_TO_D2" class="java.lang.Integer" calculation="Highest">
-		<variableExpression><![CDATA[$F{AGE_TO_D2}]]></variableExpression>
-	</variable>
-	<variable name="LEG_FROM_D3" class="java.lang.Integer" calculation="Highest">
-		<variableExpression><![CDATA[$F{AGE_FROM_D3}]]></variableExpression>
-	</variable>
-	<variable name="LEG_TO_D3" class="java.lang.Integer" calculation="Highest">
-		<variableExpression><![CDATA[$F{AGE_TO_D3}]]></variableExpression>
-	</variable>
-	<variable name="LEG_FROM_D4" class="java.lang.Integer" calculation="Highest">
-		<variableExpression><![CDATA[$F{AGE_FROM_D4}]]></variableExpression>
-	</variable>
-	<variable name="LEG_TO_D4" class="java.lang.Integer" calculation="Highest">
-		<variableExpression><![CDATA[$F{AGE_TO_D4}]]></variableExpression>
-	</variable>
-	<variable name="LEG_FROM_D5" class="java.lang.Integer" calculation="Highest">
-		<variableExpression><![CDATA[$F{AGE_FROM_D5}]]></variableExpression>
-	</variable>
-	<variable name="LEG_TO_D5" class="java.lang.Integer" calculation="Highest">
-		<variableExpression><![CDATA[$F{AGE_TO_D5}]]></variableExpression>
 	</variable>
 	<title>
 		<band height="230" splitType="Stretch">
@@ -772,25 +713,11 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$V{GRAND_TOTAL}]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement x="0" y="28" width="100" height="20" uuid="47975507-a20a-4f3e-b08b-2d72d624dfb2"/>
-				<textElement>
-					<font size="10" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$R{LEGEND}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="100" y="28" width="973" height="20" uuid="012b0c12-bd5b-470b-a21f-8def247391c5"/>
-				<textElement>
-					<font size="9"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$R{AGETYPE_NEWBORN} + " (" + $V{LEG_FROM_D0} + "-" + $V{LEG_TO_D0} + ") | " +
-                    $R{AGETYPE_EARLYCHILDHOOD} + " (" + $V{LEG_FROM_D1} + "-" + $V{LEG_TO_D1} + ") | " +
-                    $R{AGETYPE_LATECHILDHOOD} + " (" + $V{LEG_FROM_D2} + "-" + $V{LEG_TO_D2} + ") | " +
-                    $R{AGETYPE_ADOLESCENTS} + " (" + $V{LEG_FROM_D3} + "-" + $V{LEG_TO_D3} + ") | " +
-                    $R{AGETYPE_ADULT} + " (" + $V{LEG_FROM_D4} + "-" + $V{LEG_TO_D4} + ") | " +
-                    $R{AGETYPE_ELDERLY} + " (" + $V{LEG_FROM_D5} + "-" + $V{LEG_TO_D5} + ")"]]></textFieldExpression>
-			</textField>
+			<subreport>
+				<reportElement x="0" y="30" width="1073" height="25" uuid="34c88a58-418e-4e7e-a76f-7abd19859383"/>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["legend_subreport.jasper"]]></subreportExpression>
+			</subreport>
 		</band>
 	</summary>
 </jasperReport>
