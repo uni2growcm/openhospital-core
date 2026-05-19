@@ -708,57 +708,6 @@ class Tests extends OHCoreTestCase {
 
 	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
 	@MethodSource("opdExtended")
-	void testMgrNewOpd(boolean opdExtended) throws Exception {
-		GeneralData.OPDEXTENDED = opdExtended;
-		Patient patient = testPatient.setup(false);
-		Disease disease = diseaseIoOperationRepository.findOneByCode("1");
-		Ward ward = testWard.setup(false);
-		Visit nextVisit = testVisit.setup(patient, true, ward);
-		patientIoOperationRepository.saveAndFlush(patient);
-		wardIoOperationRepository.saveAndFlush(ward);
-		visitsIoOperationRepository.saveAndFlush(nextVisit);
-		
-		Opd opd = testOpd.setup(patient, disease, ward, nextVisit, true);
-		// Need this to pass validation checks in manager
-		Disease disease2 = diseaseIoOperationRepository.findOneByCode("2");
-		Disease disease3 = diseaseIoOperationRepository.findOneByCode("3");
-		opd.setDisease2(disease2);
-		opd.setDisease3(disease3);
-		Opd newOpd = opdBrowserManager.newOpd(opd);
-		checkOpdIntoDb(newOpd.getCode());
-	}
-
-	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
-	@MethodSource("opdExtended")
-	void testMgrUpdateOpd(boolean opdExtended) throws Exception {
-		GeneralData.OPDEXTENDED = opdExtended;
-		Patient patient = testPatient.setup(false);
-		Disease disease = diseaseIoOperationRepository.findOneByCode("1");
-		Ward ward = testWard.setup(false);
-		Visit nextVisit = testVisit.setup(patient, true, ward);
-		patientIoOperationRepository.saveAndFlush(patient);
-		wardIoOperationRepository.saveAndFlush(ward);
-		visitsIoOperationRepository.saveAndFlush(nextVisit);
-		
-		Opd opd = testOpd.setup(patient, disease, ward, nextVisit, true);
-		// Need this to pass validation checks in manager
-		Disease disease2 = diseaseIoOperationRepository.findOneByCode("2");
-		Disease disease3 = diseaseIoOperationRepository.findOneByCode("3");
-		opd.setDisease2(disease2);
-		opd.setDisease3(disease3);
-		opd.setDate(TimeTools.getNow());
-		Opd newOpd = opdBrowserManager.newOpd(opd);
-		newOpd.setNote("Update");
-		Opd updatedOpd = opdBrowserManager.updateOpd(newOpd);
-		/*assertThat(updatedOpd.getReason()).isEqualTo("update reason");
-		assertThat(updatedOpd.getAnamnesis()).isEqualTo("update anamnesis");
-		assertThat(updatedOpd.getTherapies()).isEqualTo("update therapies");
-		assertThat(updatedOpd.getAllergies()).isEqualTo("update allergies");*/
-		assertThat(updatedOpd.getNote()).isEqualTo("Update");
-	}
-
-	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
-	@MethodSource("opdExtended")
 	void testMgrDeleteOpd(boolean opdExtended) throws Exception {
 		GeneralData.OPDEXTENDED = opdExtended;
 		int code = setupTestOpd(false);
@@ -834,36 +783,6 @@ class Tests extends OHCoreTestCase {
 
 	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
 	@MethodSource("opdExtended")
-	void testMgrValidationVisitDateNull(boolean opdExtended) throws Exception {
-		GeneralData.OPDEXTENDED = opdExtended;
-		assertThatThrownBy(() ->
-		{
-			Patient patient = testPatient.setup(false);
-			DiseaseType diseaseType = testDiseaseType.setup(false);
-			Disease disease = testDisease.setup(diseaseType, false);
-			disease.setCode("1");
-			Ward ward = testWard.setup(false);
-			Visit nextVisit = testVisit.setup(patient, false, ward);
-			Opd opd = testOpd.setup(patient, disease, ward, nextVisit, false);
-			// Need this to pass validation checks in manager
-			opd.setDisease2(null);
-			opd.setDisease3(null);
-
-			// also let validation set userID
-			opd.setUserID(null);
-
-			opd.setDate(null);
-			opdBrowserManager.newOpd(opd);
-		})
-			.isInstanceOf(OHDataValidationException.class)
-			.has(
-				new Condition<Throwable>(
-					e -> ((OHServiceException) e).getMessages().size() == 1, "Expecting single validation error")
-			);
-	}
-
-	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
-	@MethodSource("opdExtended")
 	void testMgrValidationOPDEXTENDEDPatientNull(boolean opdExtended) throws Exception {
 		GeneralData.OPDEXTENDED = opdExtended;
 		if (!GeneralData.OPDEXTENDED) {
@@ -881,6 +800,10 @@ class Tests extends OHCoreTestCase {
 			// Need this to pass validation checks in manager
 			opd.setDisease2(null);
 			opd.setDisease3(null);
+
+			List<Disease> initialDiagnoses = new ArrayList<>();
+			initialDiagnoses.add(diseaseIoOperationRepository.findOneByCode("2"));
+			opd.setExtraDiagnosesList(initialDiagnoses);
 
 			opd.setPatient(null);
 			opdBrowserManager.newOpd(opd);
@@ -908,6 +831,9 @@ class Tests extends OHCoreTestCase {
 			// Need this to pass validation checks in manager
 			opd.setDisease2(null);
 			opd.setDisease3(null);
+			List<Disease> initialDiagnoses = new ArrayList<>();
+			initialDiagnoses.add(diseaseIoOperationRepository.findOneByCode("2"));
+			opd.setExtraDiagnosesList(initialDiagnoses);
 
 			opd.setAge(-99);
 			opdBrowserManager.updateOpd(opd);
@@ -933,115 +859,14 @@ class Tests extends OHCoreTestCase {
 			Visit nextVisit = testVisit.setup(patient, false, ward);
 			Opd opd = testOpd.setup(patient, disease, ward, nextVisit, false);
 			// Need this to pass validation checks in manager
+			List<Disease> initialDiagnoses = new ArrayList<>();
+			initialDiagnoses.add(diseaseIoOperationRepository.findOneByCode("2"));
+			opd.setExtraDiagnosesList(initialDiagnoses);
 			opd.setDisease2(null);
 			opd.setDisease3(null);
 
 			patient.setSex(' ');
 			opd.setSex(' ');
-			opdBrowserManager.newOpd(opd);
-		})
-			.isInstanceOf(OHDataValidationException.class)
-			.has(
-				new Condition<Throwable>(
-					e -> ((OHServiceException) e).getMessages().size() == 1, "Expecting single validation error")
-			);
-	}
-
-	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
-	@MethodSource("opdExtended")
-	void testMgrValidationDiseaseIsEmpty(boolean opdExtended) throws Exception {
-		GeneralData.OPDEXTENDED = opdExtended;
-		assertThatThrownBy(() ->
-		{
-			Patient patient = testPatient.setup(false);
-			DiseaseType diseaseType = testDiseaseType.setup(false);
-			Disease disease = testDisease.setup(diseaseType, false);
-			Ward ward = testWard.setup(false);
-			Visit nextVisit = testVisit.setup(patient, false, ward);
-			Opd opd = testOpd.setup(patient, disease, ward, nextVisit, false);
-			// Need this to pass validation checks in manager
-			opd.setDisease2(null);
-			opd.setDisease3(null);
-
-			opd.setDisease(null);
-			opdBrowserManager.newOpd(opd);
-		})
-			.isInstanceOf(OHDataValidationException.class)
-			.has(
-				new Condition<Throwable>(
-					e -> ((OHServiceException) e).getMessages().size() == 1, "Expecting single validation error")
-			);
-	}
-
-	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
-	@MethodSource("opdExtended")
-	void testMgrValidationDiseaseIsEqualToDisease2(boolean opdExtended) throws Exception {
-		GeneralData.OPDEXTENDED = opdExtended;
-		assertThatThrownBy(() ->
-		{
-			Patient patient = testPatient.setup(false);
-			DiseaseType diseaseType = testDiseaseType.setup(false);
-			Disease disease = testDisease.setup(diseaseType, false);
-			disease.setCode("1");
-			Ward ward = testWard.setup(false);
-			Visit nextVisit = testVisit.setup(patient, false, ward);
-			Opd opd = testOpd.setup(patient, disease, ward, nextVisit, false);
-
-			Disease disease2 = new Disease("1", "TestDescription 2", diseaseType);
-			opd.setDisease2(disease2);
-			opd.setDisease3(null);
-			opdBrowserManager.newOpd(opd);
-		})
-			.isInstanceOf(OHDataValidationException.class)
-			.has(
-				new Condition<Throwable>(
-					e -> ((OHServiceException) e).getMessages().size() == 1, "Expecting single validation error")
-			);
-	}
-
-	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
-	@MethodSource("opdExtended")
-	void testMgrValidationDiseaseIsEqualToDisease3(boolean opdExtended) throws Exception {
-		GeneralData.OPDEXTENDED = opdExtended;
-		assertThatThrownBy(() ->
-		{
-			Patient patient = testPatient.setup(false);
-			DiseaseType diseaseType = testDiseaseType.setup(false);
-			Disease disease = testDisease.setup(diseaseType, false);
-			disease.setCode("1");
-			Ward ward = testWard.setup(false);
-			Visit nextVisit = testVisit.setup(patient, false, ward);
-			Opd opd = testOpd.setup(patient, disease, ward, nextVisit, false);
-
-			Disease disease2 = new Disease("3", "TestDescription 2", diseaseType);
-			opd.setDisease2(disease2);
-			Disease disease3 = new Disease("1", "TestDescription 3", diseaseType);
-			opd.setDisease3(disease3);
-			opdBrowserManager.newOpd(opd);
-		})
-			.isInstanceOf(OHDataValidationException.class)
-			.has(
-				new Condition<Throwable>(
-					e -> ((OHServiceException) e).getMessages().size() == 1, "Expecting single validation error")
-			);
-	}
-
-	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
-	@MethodSource("opdExtended")
-	void testMgrValidationDisease2IsEqualToDisease3(boolean opdExtended) throws Exception {
-		GeneralData.OPDEXTENDED = opdExtended;
-		assertThatThrownBy(() ->
-		{
-			Patient patient = testPatient.setup(false);
-			DiseaseType diseaseType = testDiseaseType.setup(false);
-			Disease disease = testDisease.setup(diseaseType, false);
-			disease.setCode("1");
-			Ward ward = testWard.setup(false);
-			Visit nextVisit = testVisit.setup(patient, false, ward);
-			Opd opd = testOpd.setup(patient, disease, ward, nextVisit, false);
-			Disease disease2 = new Disease("2", "TestDescription 2", diseaseType);
-			opd.setDisease2(disease2);
-			opd.setDisease3(disease2);
 			opdBrowserManager.newOpd(opd);
 		})
 			.isInstanceOf(OHDataValidationException.class)
@@ -1153,127 +978,6 @@ class Tests extends OHCoreTestCase {
 				.isNotEqualTo("someString");
 	}
 
-	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
-	@MethodSource("opdExtended")
-	void testValidateOpdDiseasesSingleDiseaseValid(boolean opdExtended) throws Exception {
-		GeneralData.OPDEXTENDED = opdExtended;
-		Patient patient = testPatient.setup(false);
-		DiseaseType diseaseType = testDiseaseType.setup(false);
-		Disease disease = testDisease.setup(diseaseType, false);
-		disease.setCode("1");
-		Ward ward = testWard.setup(false);
-		Visit nextVisit = testVisit.setup(patient, false, ward);
-		Opd opd = testOpd.setup(patient, disease, ward, nextVisit, false);
-		opd.setDisease2(null);
-		opd.setDisease3(null);
-		assertThatNoException().isThrownBy(() -> opdBrowserManager.validateOpd(opd, false));
-	}
-
-	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
-	@MethodSource("opdExtended")
-	void testValidateOpdDiseasesTwoDiseasesValid(boolean opdExtended) throws Exception {
-		GeneralData.OPDEXTENDED = opdExtended;
-		Patient patient = testPatient.setup(false);
-		DiseaseType diseaseType = testDiseaseType.setup(false);
-		Disease disease = testDisease.setup(diseaseType, false);
-		disease.setCode("1");
-		Ward ward = testWard.setup(false);
-		Visit nextVisit = testVisit.setup(patient, false, ward);
-		Opd opd = testOpd.setup(patient, disease, ward, nextVisit, false);
-		Disease disease2 = testDisease.setup(diseaseType, false);
-		disease2.setCode("2");
-		opd.setDisease2(disease2);
-		opd.setDisease3(null);
-		assertThatNoException().isThrownBy(() -> opdBrowserManager.validateOpd(opd, false));
-	}
-
-	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
-	@MethodSource("opdExtended")
-	void testValidateOpdDiseasesThreeDiseasesValid(boolean opdExtended) throws Exception {
-		GeneralData.OPDEXTENDED = opdExtended;
-		Patient patient = testPatient.setup(false);
-		DiseaseType diseaseType = testDiseaseType.setup(false);
-		Disease disease = testDisease.setup(diseaseType, false);
-		disease.setCode("1");
-		Ward ward = testWard.setup(false);
-		Visit nextVisit = testVisit.setup(patient, false, ward);
-		Opd opd = testOpd.setup(patient, disease, ward, nextVisit, false);
-		Disease disease2 = testDisease.setup(diseaseType, false);
-		disease2.setCode("2");
-		opd.setDisease2(disease2);
-		Disease disease3 = testDisease.setup(diseaseType, false);
-		disease3.setCode("3");
-		opd.setDisease3(disease3);
-		assertThatNoException().isThrownBy(() -> opdBrowserManager.validateOpd(opd, false));
-	}
-
-	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
-	@MethodSource("opdExtended")
-	void testValidateOpdDiseasesSingleDiseaseException(boolean opdExtended) throws Exception {
-		GeneralData.OPDEXTENDED = opdExtended;
-		Patient patient = testPatient.setup(false);
-		DiseaseType diseaseType = testDiseaseType.setup(false);
-		Disease disease = testDisease.setup(diseaseType, false);
-		disease.setCode("101");
-		Ward ward = testWard.setup(false);
-		Visit nextVisit = testVisit.setup(patient, false, ward);
-		Opd opd = testOpd.setup(patient, disease, ward, nextVisit, false);
-		opd.setDisease2(null);
-		opd.setDisease3(null);
-		assertThatThrownBy(() -> opdBrowserManager.validateOpd(opd, false))
-			.isInstanceOf(OHDataValidationException.class)
-			.has(
-				new Condition<Throwable>(
-					e -> ((OHDataValidationException) e).getMessages().size() == 1, "Expecting single validation error")
-			);
-	}
-
-	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
-	@MethodSource("opdExtended")
-	void testValidateOpdDiseasesTwoDiseasesException(boolean opdExtended) throws Exception {
-		GeneralData.OPDEXTENDED = opdExtended;
-		Patient patient = testPatient.setup(false);
-		DiseaseType diseaseType = testDiseaseType.setup(false);
-		Disease disease = testDisease.setup(diseaseType, false);
-		Ward ward = testWard.setup(false);
-		Visit nextVisit = testVisit.setup(patient, false, ward);
-		Opd opd = testOpd.setup(patient, disease, ward, nextVisit, false);
-		Disease disease2 = testDisease.setup(diseaseType, false);
-		disease2.setCode("102");
-		opd.setDisease2(disease2);
-		opd.setDisease3(null);
-		assertThatThrownBy(() -> opdBrowserManager.validateOpd(opd, false))
-			.isInstanceOf(OHDataValidationException.class)
-			.has(
-				new Condition<Throwable>(
-					e -> ((OHDataValidationException) e).getMessages().size() == 2, "Expecting two validation errors")
-			);
-	}
-
-	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
-	@MethodSource("opdExtended")
-	void testValidateOpdDiseasesThreeDiseasesException(boolean opdExtended) throws Exception {
-		GeneralData.OPDEXTENDED = opdExtended;
-		Patient patient = testPatient.setup(false);
-		DiseaseType diseaseType = testDiseaseType.setup(false);
-		Disease disease = testDisease.setup(diseaseType, false);
-		Ward ward = testWard.setup(false);
-		Visit nextVisit = testVisit.setup(patient, false, ward);
-		Opd opd = testOpd.setup(patient, disease, ward, nextVisit, false);
-		Disease disease2 = testDisease.setup(diseaseType, false);
-		disease2.setCode("102");
-		opd.setDisease2(disease2);
-		Disease disease3 = testDisease.setup(diseaseType, false);
-		disease3.setCode("103");
-		opd.setDisease3(disease3);
-		assertThatThrownBy(() -> opdBrowserManager.validateOpd(opd, false))
-			.isInstanceOf(OHDataValidationException.class)
-			.has(
-				new Condition<Throwable>(
-					e -> ((OHDataValidationException) e).getMessages().size() == 3, "Expecting three validation errors")
-			);
-	}
-
 	private void setupDiseaseRecords() throws Exception {
 		DiseaseType diseaseType = testDiseaseType.setup(false);
 		Disease disease = testDisease.setup(diseaseType, false);
@@ -1372,5 +1076,96 @@ class Tests extends OHCoreTestCase {
 		Opd foundOpd = opdIoOperationRepository.findById(code).orElse(null);
 		assertThat(foundOpd).isNotNull();
 		testOpd.check(foundOpd);
+	}
+
+	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
+	@MethodSource("opdExtended")
+	void testAddMultipleExtraDiagnoses(boolean opdExtended) throws Exception {
+		GeneralData.OPDEXTENDED = opdExtended;
+
+		Patient patient = setupTestPatient(false);
+		Disease disease = diseaseIoOperationRepository.findOneByCode("1");
+		Ward ward = testWard.setup(false);
+		Visit nextVisit = testVisit.setup(patient, false, ward);
+		wardIoOperationRepository.saveAndFlush(ward);
+		visitsIoOperationRepository.saveAndFlush(nextVisit);
+
+		Opd opd = testOpd.setup(patient, disease, ward, nextVisit, true);
+		opd.setDisease2(null);
+		opd.setDisease3(null);
+
+		List<Disease> initialDiagnoses = new ArrayList<>();
+		initialDiagnoses.add(diseaseIoOperationRepository.findOneByCode("2"));
+		opd.setExtraDiagnosesList(initialDiagnoses);
+
+		Opd created = opdBrowserManager.newOpd(opd);
+		assertThat(created.getExtraDiagnoses()).isEqualTo("2");
+
+		Opd toUpdate = opdBrowserManager.getOpdById(created.getCode()).orElse(null);
+		assertThat(toUpdate).isNotNull();
+
+		List<Disease> extraDiagnoses = new ArrayList<>(toUpdate.getExtraDiagnosesList());
+		extraDiagnoses.add(diseaseIoOperationRepository.findOneByCode("3"));
+		extraDiagnoses.add(diseaseIoOperationRepository.findOneByCode("101"));
+		extraDiagnoses.add(diseaseIoOperationRepository.findOneByCode("102"));
+		toUpdate.setExtraDiagnosesList(extraDiagnoses);
+
+		Opd afterAdd = opdBrowserManager.updateOpd(toUpdate);
+		assertThat(afterAdd.getExtraDiagnoses()).isEqualTo("2,3,101,102");
+		assertThat(afterAdd.getExtraDiagnosesList()).hasSize(4);
+
+		Opd finalCheck = opdBrowserManager.getOpdById(created.getCode()).orElse(null);
+		assertThat(finalCheck).isNotNull();
+		assertThat(finalCheck.getExtraDiagnoses()).isEqualTo("2,3,101,102");
+	}
+
+	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")
+	@MethodSource("opdExtended")
+	void testAddThenRemoveExtraDiagnosis(boolean opdExtended) throws Exception {
+		GeneralData.OPDEXTENDED = opdExtended;
+
+		Patient patient = setupTestPatient(false);
+		Disease disease = diseaseIoOperationRepository.findOneByCode("1");
+		Ward ward = testWard.setup(false);
+		Visit nextVisit = testVisit.setup(patient, false, ward);
+		wardIoOperationRepository.saveAndFlush(ward);
+		visitsIoOperationRepository.saveAndFlush(nextVisit);
+
+		Opd opd = testOpd.setup(patient, disease, ward, nextVisit, true);
+		opd.setDisease2(null);
+		opd.setDisease3(null);
+
+		List<Disease> initialDiagnoses = new ArrayList<>();
+		initialDiagnoses.add(diseaseIoOperationRepository.findOneByCode("2"));
+		opd.setExtraDiagnosesList(initialDiagnoses);
+
+		Opd created = opdBrowserManager.newOpd(opd);
+		assertThat(created.getExtraDiagnoses()).isEqualTo("2");
+
+		Opd toUpdate = opdBrowserManager.getOpdById(created.getCode()).orElse(null);
+		assertThat(toUpdate).isNotNull();
+
+		List<Disease> withDiagnosis = new ArrayList<>(toUpdate.getExtraDiagnosesList());
+		withDiagnosis.add(diseaseIoOperationRepository.findOneByCode("3"));
+		toUpdate.setExtraDiagnosesList(withDiagnosis);
+		Opd afterAdd = opdBrowserManager.updateOpd(toUpdate);
+		assertThat(afterAdd.getExtraDiagnoses()).isEqualTo("2,3");
+		assertThat(afterAdd.getExtraDiagnosesList()).hasSize(2);
+
+		Opd toRemove = opdBrowserManager.getOpdById(created.getCode()).orElse(null);
+		assertThat(toRemove).isNotNull();
+
+		List<Disease> afterRemoveList = new ArrayList<>(toRemove.getExtraDiagnosesList());
+		afterRemoveList.removeIf(d -> d.getCode().equals("3"));
+		assertThat(afterRemoveList).hasSize(1);
+		toRemove.setExtraDiagnosesList(afterRemoveList);
+		Opd afterRemove = opdBrowserManager.updateOpd(toRemove);
+
+		assertThat(afterRemove.getExtraDiagnoses()).isEqualTo("2");
+		assertThat(afterRemove.getExtraDiagnosesList()).hasSize(1);
+
+		Opd finalCheck = opdBrowserManager.getOpdById(created.getCode()).orElse(null);
+		assertThat(finalCheck).isNotNull();
+		assertThat(finalCheck.getExtraDiagnoses()).isEqualTo("2");
 	}
 }
