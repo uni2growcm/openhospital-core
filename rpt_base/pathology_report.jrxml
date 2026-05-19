@@ -11,18 +11,6 @@
 	<queryString>
 		<![CDATA[SELECT 
             d.DIS_DESC AS PATHOLOGY,
-            MAX(CASE WHEN ag.AT_CODE = 'd0' THEN ag.AT_FROM END) AS AGE_FROM_D0,
-            MAX(CASE WHEN ag.AT_CODE = 'd0' THEN ag.AT_TO END) AS AGE_TO_D0,
-            MAX(CASE WHEN ag.AT_CODE = 'd1' THEN ag.AT_FROM END) AS AGE_FROM_D1,
-            MAX(CASE WHEN ag.AT_CODE = 'd1' THEN ag.AT_TO END) AS AGE_TO_D1,
-            MAX(CASE WHEN ag.AT_CODE = 'd2' THEN ag.AT_FROM END) AS AGE_FROM_D2,
-            MAX(CASE WHEN ag.AT_CODE = 'd2' THEN ag.AT_TO END) AS AGE_TO_D2,
-            MAX(CASE WHEN ag.AT_CODE = 'd3' THEN ag.AT_FROM END) AS AGE_FROM_D3,
-            MAX(CASE WHEN ag.AT_CODE = 'd3' THEN ag.AT_TO END) AS AGE_TO_D3,
-            MAX(CASE WHEN ag.AT_CODE = 'd4' THEN ag.AT_FROM END) AS AGE_FROM_D4,
-            MAX(CASE WHEN ag.AT_CODE = 'd4' THEN ag.AT_TO END) AS AGE_TO_D4,
-            MAX(CASE WHEN ag.AT_CODE = 'd5' THEN ag.AT_FROM END) AS AGE_FROM_D5,
-            MAX(CASE WHEN ag.AT_CODE = 'd5' THEN ag.AT_TO END) AS AGE_TO_D5,
             SUM(CASE WHEN w.WRD_IS_OPD = 0 AND ag.AT_CODE = 'd0' THEN 1 ELSE 0 END) AS AGE_NEWBORN,
             SUM(CASE WHEN w.WRD_IS_OPD = 0 AND ag.AT_CODE = 'd1' THEN 1 ELSE 0 END) AS AGE_EARLYCHILD,
             SUM(CASE WHEN w.WRD_IS_OPD = 0 AND ag.AT_CODE = 'd2' THEN 1 ELSE 0 END) AS AGE_LATECHILD,
@@ -45,18 +33,6 @@
         ORDER BY PATHOLOGY]]>
 	</queryString>
 	<field name="PATHOLOGY" class="java.lang.String"/>
-	<field name="AGE_FROM_D0" class="java.lang.Integer"/>
-	<field name="AGE_TO_D0" class="java.lang.Integer"/>
-	<field name="AGE_FROM_D1" class="java.lang.Integer"/>
-	<field name="AGE_TO_D1" class="java.lang.Integer"/>
-	<field name="AGE_FROM_D2" class="java.lang.Integer"/>
-	<field name="AGE_TO_D2" class="java.lang.Integer"/>
-	<field name="AGE_FROM_D3" class="java.lang.Integer"/>
-	<field name="AGE_TO_D3" class="java.lang.Integer"/>
-	<field name="AGE_FROM_D4" class="java.lang.Integer"/>
-	<field name="AGE_TO_D4" class="java.lang.Integer"/>
-	<field name="AGE_FROM_D5" class="java.lang.Integer"/>
-	<field name="AGE_TO_D5" class="java.lang.Integer"/>
 	<field name="AGE_NEWBORN" class="java.lang.Long"/>
 	<field name="AGE_EARLYCHILD" class="java.lang.Long"/>
 	<field name="AGE_LATECHILD" class="java.lang.Long"/>
@@ -94,44 +70,8 @@
 	<variable name="TOTAL_HOSPITALIZED" class="java.lang.Long" calculation="Sum">
 		<variableExpression><![CDATA[$F{HOSPITALIZED} == null ? 0L : $F{HOSPITALIZED}]]></variableExpression>
 	</variable>
-	<variable name="TOTAL_DISCHARGES" class="java.lang.Long" calculation="Sum">
+	<variable name="SUM_TOTAL_DISCHARGES" class="java.lang.Long" calculation="Sum">
 		<variableExpression><![CDATA[$F{TOTAL_DISCHARGES} == null ? 0L : $F{TOTAL_DISCHARGES}]]></variableExpression>
-	</variable>
-	<variable name="LEG_FROM_D0" class="java.lang.Integer" calculation="Highest">
-		<variableExpression><![CDATA[$F{AGE_FROM_D0}]]></variableExpression>
-	</variable>
-	<variable name="LEG_TO_D0" class="java.lang.Integer" calculation="Highest">
-		<variableExpression><![CDATA[$F{AGE_TO_D0}]]></variableExpression>
-	</variable>
-	<variable name="LEG_FROM_D1" class="java.lang.Integer" calculation="Highest">
-		<variableExpression><![CDATA[$F{AGE_FROM_D1}]]></variableExpression>
-	</variable>
-	<variable name="LEG_TO_D1" class="java.lang.Integer" calculation="Highest">
-		<variableExpression><![CDATA[$F{AGE_TO_D1}]]></variableExpression>
-	</variable>
-	<variable name="LEG_FROM_D2" class="java.lang.Integer" calculation="Highest">
-		<variableExpression><![CDATA[$F{AGE_FROM_D2}]]></variableExpression>
-	</variable>
-	<variable name="LEG_TO_D2" class="java.lang.Integer" calculation="Highest">
-		<variableExpression><![CDATA[$F{AGE_TO_D2}]]></variableExpression>
-	</variable>
-	<variable name="LEG_FROM_D3" class="java.lang.Integer" calculation="Highest">
-		<variableExpression><![CDATA[$F{AGE_FROM_D3}]]></variableExpression>
-	</variable>
-	<variable name="LEG_TO_D3" class="java.lang.Integer" calculation="Highest">
-		<variableExpression><![CDATA[$F{AGE_TO_D3}]]></variableExpression>
-	</variable>
-	<variable name="LEG_FROM_D4" class="java.lang.Integer" calculation="Highest">
-		<variableExpression><![CDATA[$F{AGE_FROM_D4}]]></variableExpression>
-	</variable>
-	<variable name="LEG_TO_D4" class="java.lang.Integer" calculation="Highest">
-		<variableExpression><![CDATA[$F{AGE_TO_D4}]]></variableExpression>
-	</variable>
-	<variable name="LEG_FROM_D5" class="java.lang.Integer" calculation="Highest">
-		<variableExpression><![CDATA[$F{AGE_FROM_D5}]]></variableExpression>
-	</variable>
-	<variable name="LEG_TO_D5" class="java.lang.Integer" calculation="Highest">
-		<variableExpression><![CDATA[$F{AGE_TO_D5}]]></variableExpression>
 	</variable>
 	<title>
 		<band height="230" splitType="Stretch">
@@ -536,29 +476,29 @@
 		</band>
 	</detail>
 	<pageFooter>
-		<band height="45" splitType="Stretch">
+		<band height="30" splitType="Stretch">
 			<line>
 				<reportElement x="0" y="1" width="1073" height="1" uuid="dcef1cbb-7ef7-4912-a182-e06818705b7d"/>
 			</line>
 			<rectangle radius="0">
-				<reportElement mode="Opaque" x="0" y="2" width="1073" height="20" forecolor="#000099" backcolor="#000099" uuid="a4839662-1800-449b-b05b-5319ec7e4f9d"/>
+				<reportElement mode="Opaque" x="0" y="5" width="1073" height="20" forecolor="#000099" backcolor="#000099" uuid="a4839662-1800-449b-b05b-5319ec7e4f9d"/>
 			</rectangle>
 			<textField>
-				<reportElement x="1" y="2" width="300" height="19" forecolor="#FFFFFF" uuid="ac4a7615-6e13-4f1a-bf27-210434681af4"/>
+				<reportElement x="1" y="6" width="300" height="19" forecolor="#FFFFFF" uuid="ac4a7615-6e13-4f1a-bf27-210434681af4"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font size="10"/>
 				</textElement>
 				<textFieldExpression><![CDATA[new Date()]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement mode="Transparent" x="863" y="2" width="174" height="19" forecolor="#FFFFFF" uuid="74f246d8-38aa-406e-a702-c547483f9878"/>
+				<reportElement mode="Transparent" x="863" y="6" width="174" height="19" forecolor="#FFFFFF" uuid="74f246d8-38aa-406e-a702-c547483f9878"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="10"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$R{PAGE} + " " + $V{PAGE_NUMBER} + " " + $R{OF} + " "]]></textFieldExpression>
 			</textField>
 			<textField evaluationTime="Report">
-				<reportElement mode="Transparent" x="1037" y="2" width="36" height="19" forecolor="#FFFFFF" uuid="091e3415-fac4-429c-9783-1bafda575cae"/>
+				<reportElement mode="Transparent" x="1037" y="6" width="36" height="19" forecolor="#FFFFFF" uuid="091e3415-fac4-429c-9783-1bafda575cae"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font size="10"/>
 				</textElement>
@@ -567,7 +507,7 @@
 		</band>
 	</pageFooter>
 	<summary>
-		<band height="45" splitType="Stretch">
+		<band height="55" splitType="Stretch">
 			<line>
 				<reportElement x="0" y="0" width="1073" height="1" uuid="2b36f291-aba7-4f3c-b8cd-140561f06a39"/>
 			</line>
@@ -712,27 +652,13 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$V{TOTAL_DISCHARGES} == null ? 0 : $V{TOTAL_DISCHARGES}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$V{SUM_TOTAL_DISCHARGES} == null ? 0 : $V{SUM_TOTAL_DISCHARGES}]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement x="0" y="25" width="120" height="20" uuid="2949c762-ecdc-4f03-b311-6bb9110876f3"/>
-				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font size="10" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$R{LEGEND}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="120" y="25" width="953" height="20" uuid="8d85ea30-0012-4290-ac19-8174021ca7ec"/>
-				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font size="9"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$R{AGETYPE_NEWBORN} + " (" + ($V{LEG_FROM_D0} != null ? $V{LEG_FROM_D0} : "?") + "-" + ($V{LEG_TO_D0} != null ? $V{LEG_TO_D0} : "?") + ") | " +
-                    $R{AGETYPE_EARLYCHILDHOOD} + " (" + ($V{LEG_FROM_D1} != null ? $V{LEG_FROM_D1} : "?") + "-" + ($V{LEG_TO_D1} != null ? $V{LEG_TO_D1} : "?") + ") | " +
-                    $R{AGETYPE_LATECHILDHOOD} + " (" + ($V{LEG_FROM_D2} != null ? $V{LEG_FROM_D2} : "?") + "-" + ($V{LEG_TO_D2} != null ? $V{LEG_TO_D2} : "?") + ") | " +
-                    $R{AGETYPE_ADOLESCENTS} + " (" + ($V{LEG_FROM_D3} != null ? $V{LEG_FROM_D3} : "?") + "-" + ($V{LEG_TO_D3} != null ? $V{LEG_TO_D3} : "?") + ") | " +
-                    $R{AGETYPE_ADULT} + " (" + ($V{LEG_FROM_D4} != null ? $V{LEG_FROM_D4} : "?") + "-" + ($V{LEG_TO_D4} != null ? $V{LEG_TO_D4} : "?") + ") | " +
-                    $R{AGETYPE_ELDERLY} + " (" + ($V{LEG_FROM_D5} != null ? $V{LEG_FROM_D5} : "?") + "-" + ($V{LEG_TO_D5} != null ? $V{LEG_TO_D5} : "?") + ")"]]></textFieldExpression>
-			</textField>
+			<subreport>
+				<reportElement x="0" y="30" width="1073" height="25" uuid="34c88a58-418e-4e7e-a76f-7abd19859383"/>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["legend_subreport.jasper"]]></subreportExpression>
+			</subreport>
 		</band>
 	</summary>
 </jasperReport>
