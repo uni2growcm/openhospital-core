@@ -181,7 +181,6 @@ public class Opd extends Auditable<String> {
 	}
 
 	@PrePersist
-	@PreUpdate
 	private void syncExtraDiagnosesBeforeSave() {
 		setExtraDiagnosesList(extraDiagnosesList);
 	}
@@ -368,6 +367,8 @@ public class Opd extends Auditable<String> {
 	public void setExtraDiagnoses(String extraDiagnoses) {
 		this.extraDiagnoses = extraDiagnoses;
 	}
+
+	public String getExtraDiagnoses() { return extraDiagnoses; }
 
 	public String getReferingHospital() { return referingHospital; }
 

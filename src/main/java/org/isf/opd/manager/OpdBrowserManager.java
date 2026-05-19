@@ -209,10 +209,10 @@ public class OpdBrowserManager {
 	 * @return the updated {@link Opd}
 	 * @throws OHServiceException
 	 */
-	public Opd updateOpd(Opd opd) throws OHServiceException { validateOpd(opd, false);
-		if (opd.getExtraDiagnosesList() != null && !opd.getExtraDiagnosesList().isEmpty()) {
-			opd.setExtraDiagnosesList(opd.getExtraDiagnosesList());
-		} else {
+	public Opd updateOpd(Opd opd) throws OHServiceException {
+		validateOpd(opd, false);
+
+		if (opd.getExtraDiagnosesList() == null || opd.getExtraDiagnosesList().isEmpty()) {
 			opd.setExtraDiagnoses(null);
 		}
 		return ioOperations.updateOpd(opd);
