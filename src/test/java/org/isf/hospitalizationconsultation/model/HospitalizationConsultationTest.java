@@ -51,7 +51,7 @@ class HospitalizationConsultationTest {
 		consultation.setParentComplaints("Patient complains of chest pain and headache");
 		consultation.setPhysicalExamination("Normal heart sounds, no neurological deficits");
 		consultation.setDiagnosis("Hypertension, Tension headache");
-		consultation.setManagementPlan("Start antihypertensive medication, regular follow-up");
+		consultation.setInstructions("Start antihypertensive medication, regular follow-up");
 	}
 
 	@Test
@@ -69,7 +69,7 @@ class HospitalizationConsultationTest {
 		assertThat(newConsultation.getParentComplaints()).isEqualTo("Acute pain");
 		assertThat(newConsultation.getPhysicalExamination()).isEqualTo("Abnormal findings");
 		assertThat(newConsultation.getDiagnosis()).isEqualTo("Acute condition");
-		assertThat(newConsultation.getManagementPlan()).isEqualTo("Immediate treatment");
+		assertThat(newConsultation.getInstructions()).isEqualTo("Immediate treatment");
 	}
 
 	@Test
@@ -82,7 +82,7 @@ class HospitalizationConsultationTest {
 		assertThat(consultation.getParentComplaints()).isEqualTo("Patient complains of chest pain and headache");
 		assertThat(consultation.getPhysicalExamination()).isEqualTo("Normal heart sounds, no neurological deficits");
 		assertThat(consultation.getDiagnosis()).isEqualTo("Hypertension, Tension headache");
-		assertThat(consultation.getManagementPlan()).isEqualTo("Start antihypertensive medication, regular follow-up");
+		assertThat(consultation.getInstructions()).isEqualTo("Start antihypertensive medication, regular follow-up");
 		assertThat(consultation.getLock()).isEqualTo(0);
 	}
 
@@ -146,7 +146,7 @@ class HospitalizationConsultationTest {
 		assertThat(nullConsultation.getParentComplaints()).isNull();
 		assertThat(nullConsultation.getPhysicalExamination()).isNull();
 		assertThat(nullConsultation.getDiagnosis()).isNull();
-		assertThat(nullConsultation.getManagementPlan()).isNull();
+		assertThat(nullConsultation.getInstructions()).isNull();
 		assertThat(nullConsultation.getLock()).isEqualTo(0);
 	}
 }

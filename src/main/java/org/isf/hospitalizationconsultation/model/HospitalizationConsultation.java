@@ -79,7 +79,7 @@ public class HospitalizationConsultation extends Auditable<String> implements Co
 	private String diagnosis;
 
 	@Column(name = "HPC_INSTRUCTIONS", columnDefinition = "TEXT")
-	private String managementPlan;
+	private String instructions;
 
 	@Version
 	@Column(name = "HPC_LOCK")
@@ -93,7 +93,7 @@ public class HospitalizationConsultation extends Auditable<String> implements Co
 	}
 
 	public HospitalizationConsultation(int id, Encounter encounter, String teams, LocalDateTime dateTime, 
-			String parentComplaints, String physicalExamination, String diagnosis, String managementPlan) {
+			String parentComplaints, String physicalExamination, String diagnosis, String instructions) {
 		super();
 		this.id = id;
 		this.encounter = encounter;
@@ -102,7 +102,7 @@ public class HospitalizationConsultation extends Auditable<String> implements Co
 		this.parentComplaints = parentComplaints;
 		this.physicalExamination = physicalExamination;
 		this.diagnosis = diagnosis;
-		this.managementPlan = managementPlan;
+		this.instructions = instructions;
 	}
 
 	public int getId() {
@@ -161,12 +161,12 @@ public class HospitalizationConsultation extends Auditable<String> implements Co
 		this.diagnosis = diagnosis;
 	}
 
-	public String getManagementPlan() {
-		return managementPlan;
+	public String getInstructions() {
+		return instructions;
 	}
 
-	public void setManagementPlan(String managementPlan) {
-		this.managementPlan = managementPlan;
+	public void setInstructions(String instructions) {
+		this.instructions = instructions;
 	}
 
 	public int getLock() {

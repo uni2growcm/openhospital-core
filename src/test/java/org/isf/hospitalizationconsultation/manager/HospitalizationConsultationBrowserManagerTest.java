@@ -76,7 +76,7 @@ class HospitalizationConsultationBrowserManagerTest extends OHCoreTestCase {
 		testConsultation.setParentComplaints("Chest pain");
 		testConsultation.setPhysicalExamination("Normal exam");
 		testConsultation.setDiagnosis("Hypertension");
-		testConsultation.setManagementPlan("Medication");
+		testConsultation.setInstructions("Medication");
 	}
 
 	@Test

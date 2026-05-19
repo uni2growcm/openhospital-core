@@ -57,8 +57,7 @@ class HospitalizationConsultationIoOperationsTest extends OHCoreTestCase {
 	void setUp() {
 		repository = mock(HospitalizationConsultationIoOperationRepository.class);
 		service = new HospitalizationConsultationIoOperations(repository);
-		
-		// Setup test data
+
 		testEncounter = new Encounter();
 		testEncounter.setId(1);
 		
@@ -72,7 +71,7 @@ class HospitalizationConsultationIoOperationsTest extends OHCoreTestCase {
 		testConsultation.setParentComplaints("Chest pain");
 		testConsultation.setPhysicalExamination("Normal exam");
 		testConsultation.setDiagnosis("Hypertension");
-		testConsultation.setManagementPlan("Medication");
+		testConsultation.setInstructions("Medication");
 	}
 
 	@Test

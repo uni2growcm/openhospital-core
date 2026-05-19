@@ -56,19 +56,16 @@ public class HospitalizationConsultationBrowserManager {
 	protected void validateConsultation(HospitalizationConsultation consultation, boolean insert) throws OHServiceException {
 		List<OHExceptionMessage> errors = new ArrayList<>();
 
-		// Check Encounter
 		Encounter encounter = consultation.getEncounter();
 		if (encounter == null) {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.hospitalizationconsultation.encountercannotbeempty.msg")));
 		}
 
-		// Check Date/Time
 		LocalDateTime dateTime = consultation.getConsultationDate();
 		if (dateTime == null) {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.hospitalizationconsultation.datetimecannotbeempty.msg")));
 		}
 
-		// Set user ID if not provided
 		if (consultation.getCreatedBy() == null && insert) {
 			consultation.setCreatedBy(UserBrowsingManager.getCurrentUser());
 		}
