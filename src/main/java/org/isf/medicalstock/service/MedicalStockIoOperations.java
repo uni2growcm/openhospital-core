@@ -807,7 +807,7 @@ public class MedicalStockIoOperations {
 	 * @return a paginated list of retrieved {@link Movement}s.
 	 * @throws OHServiceException if an error occurs retrieving the movements.
 	 */
-	public Page<Movement> getMovementsPaginated(
+	public Page<Movement> getMovements(
 		Integer medicalCode,
 		String medicalType,
 		String wardId,
@@ -821,7 +821,7 @@ public class MedicalStockIoOperations {
 		Pageable pageable
 		) throws OHServiceException {
 
-		Page<Integer> pageOfIds = movRepository.findMovementWhereDataPageable(
+		Page<Integer> pageOfIds = movRepository.findMovementWhereData(
 			medicalCode, medicalType, wardId, movType,
 			TimeTools.truncateToSeconds(movFrom),
 			TimeTools.truncateToSeconds(movTo),

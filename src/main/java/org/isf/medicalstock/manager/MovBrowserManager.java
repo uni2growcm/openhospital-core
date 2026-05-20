@@ -246,7 +246,7 @@ public class MovBrowserManager {
 	 * @return a paginated list of retrieved {@link Movement}s.
 	 * @throws OHServiceException if an error occurs retrieving the movements.
 	 */
-	public Page<Movement> getMovementsPaginated(Integer medicalCode, String medicalType,
+	public Page<Movement> getMovements(Integer medicalCode, String medicalType,
 	                                            String wardId, String movType, LocalDateTime movFrom, LocalDateTime movTo,
 	                                            LocalDateTime lotPrepFrom, LocalDateTime lotPrepTo,
 	                                            LocalDateTime lotDueFrom, LocalDateTime lotDueTo,
@@ -258,7 +258,7 @@ public class MovBrowserManager {
 
 		Pageable pageable = PageRequest.of(page, pageSize);
 
-		return ioOperations.getMovementsPaginated(
+		return ioOperations.getMovements(
 			medicalCode, medicalType, wardId, movType,
 			movFrom, movTo, lotPrepFrom, lotPrepTo,
 			lotDueFrom, lotDueTo, pageable);

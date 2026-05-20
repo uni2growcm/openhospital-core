@@ -230,7 +230,7 @@ public class MovementIoOperationRepositoryImpl implements MovementIoOperationRep
 	}
 
 	@Override
-	public Page<Integer> findMovementWhereDataPageable(
+	public Page<Integer> findMovementWhereData(
 		Integer medicalCode,
 		String medicalType,
 		String wardId,

@@ -38,7 +38,7 @@ public interface MovementIoOperationRepositoryCustom {
 			LocalDateTime movFrom, LocalDateTime movTo, LocalDateTime lotPrepFrom,
 			LocalDateTime lotPrepTo, LocalDateTime lotDueFrom, LocalDateTime lotDueTo);
 
-	Page<Integer> findMovementWhereDataPageable(Integer medicalCode, String medicalType, String wardId, String movType,
+	Page<Integer> findMovementWhereData(Integer medicalCode, String medicalType, String wardId, String movType,
 												LocalDateTime movFrom, LocalDateTime movTo, LocalDateTime lotPrepFrom,
 	                                            LocalDateTime lotPrepTo, LocalDateTime lotDueFrom, LocalDateTime lotDueTo,
 												Pageable pageable);
