@@ -83,7 +83,7 @@ public class OperationRowBrowserManager {
 		return ioOperations.hasOperationWithoutBill(patient);
 	}
 
-	/**
+	/**getOperationWithoutBill
 	 * Check if a patient has pending operations that haven't been billed yet.
 	 *
 	 * @param patient the patient
@@ -95,5 +95,16 @@ public class OperationRowBrowserManager {
 			return false;
 		}
 		return ioOperations.hasOperationWithoutBill(patient);
+	}
+
+	/**
+	 * Gets all operation rows for a patient that haven't been billed yet.
+	 *
+	 * @param patient the patient
+	 * @return list of unbilled OperationRow objects
+	 * @throws OHServiceException if an error occurs
+	 */
+	public List<OperationRow> getOperationWithoutBill(Patient patient) throws OHServiceException {
+		return ioOperations.getOperationWithoutBill(patient);
 	}
 }

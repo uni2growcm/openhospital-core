@@ -432,4 +432,15 @@ public class LabIoOperations {
 		List<Laboratory> labs = repository.findByPatientCodeAndBillIsNull(patientCode);
 		return labs != null && !labs.isEmpty();
 	}
+
+	/**
+	 * Gets all laboratories for a patient that haven't been billed yet.
+	 *
+	 * @param patientCode the patient's code
+	 * @return list of unbilled Laboratory objects
+	 * @throws OHServiceException if an error occurs
+	 */
+	public List<Laboratory> getLabWithoutBill(int patientCode) throws OHServiceException {
+		return repository.findByPatientCodeAndBillIsNull(patientCode);
+	}
 }

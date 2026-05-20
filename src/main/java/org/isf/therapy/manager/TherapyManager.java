@@ -348,4 +348,15 @@ public class TherapyManager {
 	public boolean hasTherapiesRowsNotYetBought(int patientCode) throws OHServiceException {
 		return ioOperations.hasTherapiesRowsNotYetBought(patientCode);
 	}
+
+	/**
+	 * Gets a Medical object by its ID.
+	 *
+	 * @param medicalId the medical ID
+	 * @return the Medical object
+	 * @throws OHServiceException if an error occurs
+	 */
+	public Medical getMedical(Integer medicalId) throws OHServiceException {
+		return medManager.getMedical(medicalId);
+	}
 }

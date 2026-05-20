@@ -118,4 +118,15 @@ public class OperationRowIoOperations {
 		List<OperationRow> operations = repository.findByPatientAndBillIsNull(patient);
 		return operations != null && !operations.isEmpty();
 	}
+
+	/**
+	 * Gets all operation rows for a patient that haven't been billed yet.
+	 *
+	 * @param patient the patient
+	 * @return list of unbilled OperationRow objects
+	 * @throws OHServiceException if an error occurs
+	 */
+	public List<OperationRow> getOperationWithoutBill(Patient patient) throws OHServiceException {
+		return repository.findByPatientAndBillIsNull(patient);
+	}
 }

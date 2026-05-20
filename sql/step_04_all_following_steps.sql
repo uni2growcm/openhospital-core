@@ -114,3 +114,6 @@ source step_a117_fix_ward_pharmacy.sql;
 source step_a118_add_radiology_permissions.sql;
 source step_a119_alter_table_examrow_and_laboratoryrow.sql;
 source step_a120_settings.sql;
+source step_a122_add_prescription_columns.sql;
+source step_a123_add_therapies_prescription_date.sql;
+source step_a124_add_lab_bill_id_to_laboratory.sql;

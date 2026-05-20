@@ -98,14 +98,14 @@ public class TherapyIoOperations {
 	}
 
 	/**
-	 * Check if a patient has pending therapies that haven't been fully bought yet.
+	 * Check if a patient has pending therapies (qty > 0).
 	 *
 	 * @param patientCode the patient's code
 	 * @return true if the patient has pending therapies, false otherwise
 	 * @throws OHServiceException
 	 */
 	public boolean hasTherapiesRowsNotYetBought(int patientCode) throws OHServiceException {
-		long count = repository.countByPatientCodeAndQtyBougthLessThanQty(patientCode);
+		long count = repository.countByPatientCodeAndQtyGreaterThanZero(patientCode);
 		return count > 0;
 	}
 }

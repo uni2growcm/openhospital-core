@@ -76,6 +76,15 @@ public class BillItems extends Auditable<String> {
 	
 	@Transient
 	private volatile int hashCode;
+
+	@Column(name = "BLI_ITEM_ID")
+	private String itemId;
+
+	@Column(name = "BLI_ITEM_GROUP")
+	private String itemGroup;
+
+	@Column(name = "BLI_PRESC_ID")
+	private int prescriptionId;
 	
 	/**
 	 * Store  the code of the item that is used for search purpose.
@@ -87,13 +96,12 @@ public class BillItems extends Auditable<String> {
 	@Transient
 	private String itemDisplayCode;
 	
-	/**
-	 * Store the item Id that is involved in this bill item (medId, exaId, opeId...)
-	 */
-	@Transient
-	private String itemId;
-	
-	
+//	/**
+//	 * Store the item Id that is involved in this bill item (medId, exaId, opeId...)
+//	 */
+//	@Transient
+//	private String itemId;
+
 	public BillItems() {
 		super();
 	}
@@ -165,7 +173,31 @@ public class BillItems extends Auditable<String> {
 	public void setItemQuantity(int itemQuantity) {
 		this.itemQuantity = itemQuantity;
 	}
-	
+
+	public String getItemGroup() {
+		return itemGroup;
+	}
+
+	public void setItemGroup(String itemGroup) {
+		this.itemGroup = itemGroup;
+	}
+
+	public int getPrescriptionId() {
+		return prescriptionId;
+	}
+
+	public void setPrescriptionId(int prescriptionId) {
+		this.prescriptionId = prescriptionId;
+	}
+
+	public int getHashCode() {
+		return hashCode;
+	}
+
+	public void setHashCode(int hashCode) {
+		this.hashCode = hashCode;
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {

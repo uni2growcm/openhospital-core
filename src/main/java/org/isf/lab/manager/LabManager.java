@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.isf.accounting.model.Bill;
 import org.isf.generaldata.GeneralData;
 import org.isf.generaldata.MessageBundle;
 import org.isf.lab.model.Laboratory;
@@ -37,12 +38,15 @@ import org.isf.lab.service.LabIoOperations;
 import org.isf.patient.model.Patient;
 import org.isf.utils.db.TranslateOHServiceException;
 import org.isf.utils.exception.OHDataValidationException;
+import org.isf.utils.exception.OHException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.model.OHExceptionMessage;
 import org.isf.utils.pagination.PagedResponse;
 import org.isf.utils.validator.DefaultSorter;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.swing.*;
 
 @Component
 public class LabManager {
@@ -496,5 +500,27 @@ public class LabManager {
 			return false;
 		}
 		return ioOperations.hasLabWithoutBill(Integer.parseInt(patientCode));
+	}
+
+	/**
+	 * Check if a patient has pending laboratory exams that haven't been billed yet.
+	 *
+	 * @param patientCode the patient's code
+	 * @return true if the patient has pending exams, false otherwise
+	 * @throws OHServiceException
+	 */
+	public boolean hasLabWithoutBill(int patientCode) throws OHServiceException {
+		return ioOperations.hasLabWithoutBill(patientCode);
+	}
+
+	/**
+	 * Gets all laboratory exams for a patient that haven't been billed yet.
+	 *
+	 * @param patientCode the patient's code
+	 * @return list of unbilled Laboratory objects
+	 * @throws OHServiceException if an error occurs
+	 */
+	public List<Laboratory> getLabWithoutBill(int patientCode) throws OHServiceException {
+		return ioOperations.getLabWithoutBill(patientCode);
 	}
 }
