@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2024 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -118,6 +118,7 @@ public class SoftwareDataCollector extends AbstractDataCollector {
 			result.put(CollectorsConstants.APP_DICOMTHUMBNAILS, String.valueOf(GeneralData.DICOMTHUMBNAILS));
 			result.put(CollectorsConstants.APP_STRONGPASSWORD, String.valueOf(GeneralData.STRONGPASSWORD));
 			result.put(CollectorsConstants.APP_USERSLISTLOGIN, String.valueOf(GeneralData.getGeneralData().getUSERSLISTLOGIN()));
+			result.put(CollectorsConstants.APP_STOCKMVTONBILLSAVE, String.valueOf(GeneralData.STOCKMVTONBILLSAVE));
 
 		} catch (RuntimeException | SQLException e) {
 			LOGGER.error("Something went wrong with " + ID);
