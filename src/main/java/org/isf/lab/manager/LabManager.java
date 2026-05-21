@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -484,4 +484,13 @@ public class LabManager {
 		return ioOperations.getLaboratoryPageable(exam, dateFrom, dateTo, patient, page, size);
 	}
 
+	/**
+	 * Get a list of distinct prescribers from laboratory records
+	 *
+	 * @return a {@link List} of distinct prescriber names
+	 * @throws OHServiceException if an error occurs while accessing the data source
+	 */
+	public List<String> getDistinctPrescribers() throws OHServiceException {
+		return ioOperations.getDistinctPrescribers();
+	}
 }

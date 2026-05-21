@@ -433,4 +433,15 @@ public class PatientBrowserManager {
 	public List<Patient> getPatientByCodes(List<Integer> codes) throws OHServiceException {
 		return ioOperations.getPatientByCodes(codes);
 	}
+
+	public List<Patient> getPatientByCodeOrName(String input) throws OHServiceException {
+		Integer code = null;
+		String name = input != null ? input.trim() : "";
+		try {
+			code = Integer.parseInt(name);
+		} catch (NumberFormatException e) {
+
+		}
+		return ioOperations.getPatientByCodeOrName(code, name);
+	}
 }
