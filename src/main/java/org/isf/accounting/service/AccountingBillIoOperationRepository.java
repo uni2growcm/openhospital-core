@@ -67,4 +67,8 @@ public interface AccountingBillIoOperationRepository extends JpaRepository<Bill,
 
 	@Query("select count(b) from Bill b where active=1")
 	long countAllActiveBills();
+
+	List<Bill> findByDateBetweenAndGuarantorUserName(LocalDateTime dateFrom, LocalDateTime dateTo, String userName);
+
+	List<Bill> findByDateBetweenAndBillPatientCodeAndGuarantorUserName(LocalDateTime beginningOfDay, LocalDateTime beginningOfNextDay, Integer code, String userName);
 }

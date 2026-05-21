@@ -30,6 +30,7 @@ import java.util.TreeSet;
 import org.isf.accounting.model.Bill;
 import org.isf.accounting.model.BillItems;
 import org.isf.accounting.model.BillPayments;
+import org.isf.menu.model.User;
 import org.isf.patient.model.Patient;
 import org.isf.utils.db.TranslateOHServiceException;
 import org.isf.utils.exception.OHServiceException;
@@ -331,4 +332,83 @@ public class AccountingIoOperations {
 		return this.billRepository.countAllActiveBills();
 	}
 
+	/**
+	 * Get the bills list of invoices filtered by date, patient and guarantor
+	 *
+	 * @param dateFrom start date
+	 * @param dateTo end date
+	 * @param guarantor the user acting as the guarantor for the bills.
+	 * @return The {@link List} of invoices
+	 * @throws OHServiceException when failed to execute the query.
+	 */
+	public List<Bill> getBillsByDatesPatientAndGuarantor(LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient, User guarantor)
+		throws OHServiceException {
+		if (patient == null) {
+			throw new IllegalArgumentException("Patient cannot be null");
+		}
+
+		return billRepository.findByDateBetweenAndBillPatientCodeAndGuarantorUserName(
+			TimeTools.getBeginningOfDay(dateFrom), TimeTools.getBeginningOfNextDay(dateTo),
+			patient.getCode(), guarantor.getUserName());
+	}
+
+	/**
+	 * Get the bills list filter by date and guarantor
+	 *
+	 * @param dateFrom start date
+	 * @param dateTo end date
+	 * @param guarantor the user acting as the guarantor for the bills.
+	 * @return The {@link List} of invoices
+	 * @throws OHServiceException when failed to execute the query.
+	 */
+	public List<Bill> getBillsByDatesAndGuarantor(LocalDateTime dateFrom, LocalDateTime dateTo, User guarantor) throws OHServiceException {
+		return billRepository.findByDateBetweenAndGuarantorUserName(
+			TimeTools.getBeginningOfDay(dateFrom), TimeTools.getBeginningOfNextDay(dateTo),
+			guarantor.getUserName());
+	}
+
+	/**
+	 * Get the bills payments filtered by date, patient and guarantor
+	 *
+	 * @param dateFrom start date
+	 * @param dateTo end date
+	 * @param guarantor the user acting as the guarantor for the bills.
+	 * @return The {@link List} of{@link BillPayments} matching the filters, or an empty list if no match
+	 * @throws OHServiceException when failed to execute the query.
+	 */
+	public List<BillPayments> getPaymentsByDatesPatientAndGuarantor(LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient, User guarantor) throws OHServiceException {
+		return billPaymentRepository.findByDateBetweenAndBillBillPatientCodeAndBillGuarantorUserNameOrderByBillAscDateAsc(TimeTools.getBeginningOfDay(dateFrom), TimeTools.getBeginningOfNextDay(dateTo), patient.getCode(), guarantor.getUserName());
+	}
+
+	/**
+	 * Get the bills payments filtered by date and guarantor
+	 *
+	 * @param dateFrom start date
+	 * @param dateTo end date
+	 * @param guarantor the user acting as the guarantor for the bills.
+	 * @return The {@link List} of{@link BillPayments} matching the filters, or an empty list if no match
+	 * @throws OHServiceException when failed to execute the query.
+	 */
+	public List<BillPayments> getPaymentsByDatesAndGuarantor(LocalDateTime dateFrom, LocalDateTime dateTo, User guarantor) throws OHServiceException {
+		return billPaymentRepository.findByDateBetweenAndBillGuarantorUserNameOrderByBillAscDateAsc(TimeTools.getBeginningOfDay(dateFrom), TimeTools.getBeginningOfNextDay(dateTo), guarantor.getUserName());
+	}
+
+	/**
+	 * Get the bills payments filtered by guarantor
+	 *
+	 * @param guarantor the user acting as the guarantor for the bills.
+	 * @return The {@link List} of{@link BillPayments} matching the filters, or an empty list if no match
+	 * @throws OHServiceException when failed to execute the query.
+	 */
+	public List<Bill> getBillsByGuarantor(List<BillPayments> payments, User guarantor) throws OHServiceException {
+		Set<Bill> bills = new TreeSet<>((o1, o2) -> o1.getId() == o2.getId() ? 0 : -1);
+		for (BillPayments bp : payments) {
+			Bill bill = bp.getBill();
+
+			if (bill.getGuarantor().equals(guarantor)) {
+				bills.add(bill);
+			}
+		}
+		return new ArrayList<>(bills);
+	}
 }
