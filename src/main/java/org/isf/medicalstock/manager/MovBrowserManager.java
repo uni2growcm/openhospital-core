@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2024 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -38,10 +38,14 @@ import org.isf.medicalstockward.model.MedicalWard;
 import org.isf.medicalstockward.model.MovementWard;
 import org.isf.medstockmovtype.manager.MedicalDsrStockMovementTypeBrowserManager;
 import org.isf.medstockmovtype.model.MovementType;
+import org.isf.medtype.model.MedicalType;
 import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.model.OHExceptionMessage;
 import org.isf.ward.model.Ward;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -222,5 +226,41 @@ public class MovBrowserManager {
 
 			ioOperations.deleteMovement(lastMovement);
 		}
+	}
+
+	/**
+	 * Retrieves paginated {@link Movement}s with the specified filtering criteria.
+	 *
+	 * @param medicalCode the {@link Medical} code (optional).
+	 * @param medicalType the {@link MedicalType} code (optional).
+	 * @param wardId the {@link Ward} id (optional).
+	 * @param movType the {@link MovementType} code or {@code "+"}/{@code "-"} for all charge/discharge types (optional).
+	 * @param movFrom the lower bound for the movement date range (optional).
+	 * @param movTo the upper bound for the movement date range (optional).
+	 * @param lotPrepFrom the lower bound for the lot preparation date range (optional).
+	 * @param lotPrepTo the upper bound for the lot preparation date range (optional).
+	 * @param lotDueFrom the lower bound for the lot due date range (optional).
+	 * @param lotDueTo the upper bound for the lot due date range (optional).
+	 * @param page the page number (zero-based).
+	 * @param pageSize the number of elements per page.
+	 * @return a paginated list of retrieved {@link Movement}s.
+	 * @throws OHServiceException if an error occurs retrieving the movements.
+	 */
+	public Page<Movement> getMovements(Integer medicalCode, String medicalType,
+	                                            String wardId, String movType, LocalDateTime movFrom, LocalDateTime movTo,
+	                                            LocalDateTime lotPrepFrom, LocalDateTime lotPrepTo,
+	                                            LocalDateTime lotDueFrom, LocalDateTime lotDueTo,
+	                                            int page, int pageSize) throws OHServiceException {
+
+		check(movFrom, movTo, "angal.medicalstock.chooseavalidmovementdate.msg");
+		check(lotPrepFrom, lotPrepTo, "angal.medicalstock.chooseavalidmovementdate.msg");
+		check(lotDueFrom, lotDueTo, "angal.medicalstock.chooseavalidduedate.msg");
+
+		Pageable pageable = PageRequest.of(page, pageSize);
+
+		return ioOperations.getMovements(
+			medicalCode, medicalType, wardId, movType,
+			movFrom, movTo, lotPrepFrom, lotPrepTo,
+			lotDueFrom, lotDueTo, pageable);
 	}
 }
