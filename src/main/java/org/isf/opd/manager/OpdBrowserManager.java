@@ -31,6 +31,7 @@ import org.isf.disease.model.Disease;
 import org.isf.generaldata.GeneralData;
 import org.isf.generaldata.MessageBundle;
 import org.isf.menu.manager.UserBrowsingManager;
+import org.isf.opd.model.DiagnosisEntry;
 import org.isf.opd.model.Opd;
 import org.isf.opd.service.OpdIoOperations;
 import org.isf.utils.exception.OHDataValidationException;
@@ -168,7 +169,7 @@ public class OpdBrowserManager {
 
 	/**
 	 * Return all Opds within specified dates and parameters
-	 * 
+	 *
 	 * @param ward
 	 * @param diseaseTypeCode
 	 * @param diseaseCode
@@ -208,7 +209,8 @@ public class OpdBrowserManager {
 	public Opd newOpd(Opd opd) throws OHServiceException {
 		setPatientConsistency(opd);
 		validateOpd(opd, true);
-		return ioOperations.newOpd(opd);
+		Opd savedOpd = ioOperations.newOpd(opd);
+		return savedOpd;
 	}
 
 	/**
@@ -220,7 +222,8 @@ public class OpdBrowserManager {
 	 */
 	public Opd updateOpd(Opd opd) throws OHServiceException {
 		validateOpd(opd, false);
-		return ioOperations.updateOpd(opd);
+		Opd updatedOpd = ioOperations.updateOpd(opd);
+		return updatedOpd;
 	}
 
 	/**
@@ -230,6 +233,7 @@ public class OpdBrowserManager {
 	 * @throws OHServiceException
 	 */
 	public void deleteOpd(Opd opd) throws OHServiceException {
+		ioOperations.deleteDiagnoses(opd.getCode());
 		ioOperations.deleteOpd(opd);
 	}
 
@@ -268,7 +272,7 @@ public class OpdBrowserManager {
 
 	/**
 	 * Get an OPD by its code
-	 * 
+	 *
 	 * @param code the OPD code
 	 * @return an OPD or {@code null}
 	 */
@@ -278,7 +282,7 @@ public class OpdBrowserManager {
 
 	/**
 	 * Get a list of OPD with specified Progressive in Year number
-	 * 
+	 *
 	 * @param code the OPD code
 	 * @return a list of OPD or an empty list
 	 */
@@ -360,5 +364,82 @@ public class OpdBrowserManager {
 		throws OHServiceException {
 		Pageable pageable = PageRequest.of(page, size);
 		return ioOperations.getOpdListByProgYear(progYear, pageable);
+	}
+
+	/**
+	 * Retrieves all active diagnoses for an OPD
+	 *
+	 * @param opdId the OPD ID
+	 * @return list of active diagnoses
+	 * @throws OHServiceException
+	 */
+	public List<DiagnosisEntry> getDiagnosesByOpdId(int opdId) throws OHServiceException {
+		return ioOperations.getDiagnosesList(opdId);
+	}
+
+	/**
+	 * Retrieves all diagnoses (active and inactive) for an OPD
+	 *
+	 * @param opdId the OPD ID
+	 * @return list of all diagnoses
+	 * @throws OHServiceException
+	 */
+	public List<DiagnosisEntry> getAllDiagnosesByOpdId(int opdId) throws OHServiceException {
+		return ioOperations.getAllDiagnosesList(opdId);
+	}
+
+	/**
+	 * Retrieves the primary diagnosis for an OPD
+	 *
+	 * @param opdId the OPD ID
+	 * @return primary diagnosis or {@code null}
+	 * @throws OHServiceException
+	 */
+	public DiagnosisEntry getPrimaryDiagnosisByOpdId(int opdId) throws OHServiceException {
+		return ioOperations.getPrimaryDiagnosis(opdId);
+	}
+
+	/**
+	 * Creates a new diagnosis
+	 *
+	 * @param diagnosis the diagnosis to create
+	 * @return created diagnosis
+	 * @throws OHServiceException
+	 */
+	public DiagnosisEntry newDiagnosis(DiagnosisEntry diagnosis) throws OHServiceException {
+		return ioOperations.newDiagnosis(diagnosis);
+	}
+
+	/**
+	 * Updates all diagnoses for an OPD (replaces existing ones)
+	 *
+	 * @param opdId the OPD ID
+	 * @param diagnoses list of diagnoses
+	 * @return list of updated diagnoses
+	 * @throws OHServiceException
+	 */
+	public List<DiagnosisEntry> updateDiagnoses(int opdId, List<DiagnosisEntry> diagnoses) throws OHServiceException {
+		return ioOperations.updateDiagnoses(opdId, diagnoses);
+	}
+
+	/**
+	 * Checks if an OPD has any active diagnoses
+	 *
+	 * @param opdId the OPD ID
+	 * @return {@code true} if has active diagnoses
+	 * @throws OHServiceException
+	 */
+	public boolean hasDiagnoses(int opdId) throws OHServiceException {
+		return ioOperations.hasDiagnoses(opdId);
+	}
+
+	/**
+	 * Deletes all diagnoses for an OPD
+	 *
+	 * @param opdId the OPD ID
+	 * @throws OHServiceException
+	 */
+	public void deleteDiagnoses(int opdId) throws OHServiceException {
+		ioOperations.deleteDiagnoses(opdId);
 	}
 }

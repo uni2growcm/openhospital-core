@@ -44,6 +44,10 @@ import org.isf.utils.time.TimeTools;
 import org.isf.visits.model.Visit;
 import org.isf.ward.model.Ward;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import java.util.ArrayList;
+import java.util.List;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.CascadeType;
 
 import com.drew.lang.annotations.Nullable;
 
@@ -147,6 +151,11 @@ public class Opd extends Auditable<String> {
 	@Transient
 	private volatile int hashCode;
 
+	@OneToMany(mappedBy = "opd", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<DiagnosisEntry> diagnoses = new ArrayList<>();
+
+	public List<DiagnosisEntry> getDiagnoses() { return diagnoses; }
+	public void setDiagnoses(List<DiagnosisEntry> diagnoses) { this.diagnoses = diagnoses; }
 
 	public Opd() {
 	}

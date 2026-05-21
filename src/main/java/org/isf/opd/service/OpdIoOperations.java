@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2024 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -23,10 +23,14 @@ package org.isf.opd.service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.isf.generaldata.MessageBundle;
+import org.isf.opd.model.DiagnosisEntry;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.isf.opd.model.Opd;
 import org.isf.utils.db.TranslateOHServiceException;
 import org.isf.utils.exception.OHServiceException;
@@ -46,6 +50,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class OpdIoOperations {
 
 	private OpdIoOperationRepository repository;
+
+	@PersistenceContext
+	private EntityManager entityManager;
 
 	public OpdIoOperations(OpdIoOperationRepository opdIoOperationRepository) {
 		this.repository = opdIoOperationRepository;
@@ -201,7 +208,7 @@ public class OpdIoOperations {
 	 * Check if the given {@code opdNum} does already exist for the given {@code year}.
 	 *
 	 * @param opdNum - the OPD progressive in year
-	 * @param year - the year
+	 * @param year   - the year
 	 * @return {@code true} if the given number exists in year, {@code false} otherwise
 	 * @throws OHServiceException
 	 */
@@ -334,5 +341,66 @@ public class OpdIoOperations {
 	 */
 	public Page<Opd> getOpdListByProgYear(int progYear, Pageable pageable) throws OHServiceException {
 		return repository.findByProgYearPageable(progYear, pageable);
+	}
+
+	public List<DiagnosisEntry> getDiagnosesList(int opdId) throws OHServiceException {
+		return entityManager.createQuery(
+				"SELECT d FROM DiagnosisEntry d WHERE d.opd.code = :opdId AND d.active = true ORDER BY d.orderNumber ASC",
+				DiagnosisEntry.class)
+			.setParameter("opdId", opdId)
+			.getResultList();
+	}
+
+	public List<DiagnosisEntry> getAllDiagnosesList(int opdId) throws OHServiceException {
+		return entityManager.createQuery(
+				"SELECT d FROM DiagnosisEntry d WHERE d.opd.code = :opdId",
+				DiagnosisEntry.class)
+			.setParameter("opdId", opdId)
+			.getResultList();
+	}
+
+	public DiagnosisEntry getPrimaryDiagnosis(int opdId) throws OHServiceException {
+		List<DiagnosisEntry> results = entityManager.createQuery(
+				"SELECT d FROM DiagnosisEntry d WHERE d.opd.code = :opdId AND d.primaryDiagnosis = true AND d.active = true",
+				DiagnosisEntry.class)
+			.setParameter("opdId", opdId)
+			.getResultList();
+		return results.isEmpty() ? null : results.get(0);
+	}
+
+	public DiagnosisEntry newDiagnosis(DiagnosisEntry diagnosis) throws OHServiceException {
+		entityManager.persist(diagnosis);
+		return diagnosis;
+	}
+
+	public List<DiagnosisEntry> updateDiagnoses(int opdId, List<DiagnosisEntry> diagnoses) throws OHServiceException {
+		// Soft delete existing diagnoses
+		entityManager.createQuery("UPDATE DiagnosisEntry d SET d.active = false WHERE d.opd.code = :opdId")
+			.setParameter("opdId", opdId)
+			.executeUpdate();
+
+		// Save new diagnoses
+		if (diagnoses != null && !diagnoses.isEmpty()) {
+			for (DiagnosisEntry diagnosis : diagnoses) {
+				entityManager.persist(diagnosis);
+			}
+			return diagnoses;
+		}
+		return new ArrayList<>();
+	}
+
+	public boolean hasDiagnoses(int opdId) throws OHServiceException {
+		Long count = entityManager.createQuery(
+				"SELECT COUNT(d) FROM DiagnosisEntry d WHERE d.opd.code = :opdId AND d.active = true",
+				Long.class)
+			.setParameter("opdId", opdId)
+			.getSingleResult();
+		return count > 0;
+	}
+
+	public void deleteDiagnoses(int opdId) throws OHServiceException {
+		entityManager.createQuery("UPDATE DiagnosisEntry d SET d.active = false WHERE d.opd.code = :opdId")
+			.setParameter("opdId", opdId)
+			.executeUpdate();
 	}
 }
