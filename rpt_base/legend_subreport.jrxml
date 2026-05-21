@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.21.2.final using JasperReports Library version 6.21.2-8434a0bd7c3bbc37cbf916f2968d35e4b165821a  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="legend_subreport" pageWidth="1073" pageHeight="25" columnWidth="1073" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" resourceBundle="legend_subreport" uuid="c3011294-1387-40c6-bca6-f91a49f7f3e2">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="OH DB"/>
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.encoding" value="UTF-8"/>
+	<import value="net.sf.jasperreports.engine.*"/>
+	<import value="java.util.*"/>
+	<queryString>
+		<![CDATA[SELECT
+            AT_CODE,
+            AT_FROM,
+            AT_TO
+        FROM oh_agetype
+        WHERE AT_ACTIVE = 1
+        ORDER BY AT_FROM]]>
+	</queryString>
+	<field name="AT_CODE" class="java.lang.String"/>
+	<field name="AT_FROM" class="java.lang.Integer"/>
+	<field name="AT_TO" class="java.lang.Integer"/>
+	<variable name="AGE_FROM_d0" class="java.lang.Integer" calculation="Highest">
+		<variableExpression><![CDATA["d0".equals($F{AT_CODE}) ? $F{AT_FROM} : null]]></variableExpression>
+	</variable>
+	<variable name="AGE_TO_d0" class="java.lang.Integer" calculation="Highest">
+		<variableExpression><![CDATA["d0".equals($F{AT_CODE}) ? $F{AT_TO} : null]]></variableExpression>
+	</variable>
+	<variable name="AGE_FROM_d1" class="java.lang.Integer" calculation="Highest">
+		<variableExpression><![CDATA["d1".equals($F{AT_CODE}) ? $F{AT_FROM} : null]]></variableExpression>
+	</variable>
+	<variable name="AGE_TO_d1" class="java.lang.Integer" calculation="Highest">
+		<variableExpression><![CDATA["d1".equals($F{AT_CODE}) ? $F{AT_TO} : null]]></variableExpression>
+	</variable>
+	<variable name="AGE_FROM_d2" class="java.lang.Integer" calculation="Highest">
+		<variableExpression><![CDATA["d2".equals($F{AT_CODE}) ? $F{AT_FROM} : null]]></variableExpression>
+	</variable>
+	<variable name="AGE_TO_d2" class="java.lang.Integer" calculation="Highest">
+		<variableExpression><![CDATA["d2".equals($F{AT_CODE}) ? $F{AT_TO} : null]]></variableExpression>
+	</variable>
+	<variable name="AGE_FROM_d3" class="java.lang.Integer" calculation="Highest">
+		<variableExpression><![CDATA["d3".equals($F{AT_CODE}) ? $F{AT_FROM} : null]]></variableExpression>
+	</variable>
+	<variable name="AGE_TO_d3" class="java.lang.Integer" calculation="Highest">
+		<variableExpression><![CDATA["d3".equals($F{AT_CODE}) ? $F{AT_TO} : null]]></variableExpression>
+	</variable>
+	<variable name="AGE_FROM_d4" class="java.lang.Integer" calculation="Highest">
+		<variableExpression><![CDATA["d4".equals($F{AT_CODE}) ? $F{AT_FROM} : null]]></variableExpression>
+	</variable>
+	<variable name="AGE_TO_d4" class="java.lang.Integer" calculation="Highest">
+		<variableExpression><![CDATA["d4".equals($F{AT_CODE}) ? $F{AT_TO} : null]]></variableExpression>
+	</variable>
+	<variable name="AGE_FROM_d5" class="java.lang.Integer" calculation="Highest">
+		<variableExpression><![CDATA["d5".equals($F{AT_CODE}) ? $F{AT_FROM} : null]]></variableExpression>
+	</variable>
+	<variable name="AGE_TO_d5" class="java.lang.Integer" calculation="Highest">
+		<variableExpression><![CDATA["d5".equals($F{AT_CODE}) ? $F{AT_TO} : null]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<detail>
+		<band/>
+	</detail>
+	<summary>
+		<band height="25">
+			<textField>
+				<reportElement x="10" y="3" width="70" height="20" uuid="4b61c488-aa0f-4ee4-a26a-faf3da7adfab"/>
+				<textElement verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{LEGEND}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="80" y="3" width="973" height="20" uuid="e1bb1615-e5af-4076-a0a4-c6f7c165b275">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{AGETYPE_NEWBORN}        + " (" + ($V{AGE_FROM_d0} != null ? $V{AGE_FROM_d0} : "?") + "-" + ($V{AGE_TO_d0} != null ? $V{AGE_TO_d0} : "?") + ") | " +
+                    $R{AGETYPE_EARLYCHILDHOOD}  + " (" + ($V{AGE_FROM_d1} != null ? $V{AGE_FROM_d1} : "?") + "-" + ($V{AGE_TO_d1} != null ? $V{AGE_TO_d1} : "?") + ") | " +
+                    $R{AGETYPE_LATECHILDHOOD}   + " (" + ($V{AGE_FROM_d2} != null ? $V{AGE_FROM_d2} : "?") + "-" + ($V{AGE_TO_d2} != null ? $V{AGE_TO_d2} : "?") + ") | " +
+                    $R{AGETYPE_ADOLESCENTS}     + " (" + ($V{AGE_FROM_d3} != null ? $V{AGE_FROM_d3} : "?") + "-" + ($V{AGE_TO_d3} != null ? $V{AGE_TO_d3} : "?") + ") | " +
+                    $R{AGETYPE_ADULT}           + " (" + ($V{AGE_FROM_d4} != null ? $V{AGE_FROM_d4} : "?") + "-" + ($V{AGE_TO_d4} != null ? $V{AGE_TO_d4} : "?") + ") | " +
+                    $R{AGETYPE_ELDERLY}         + " (" + ($V{AGE_FROM_d5} != null ? $V{AGE_FROM_d5} : "?") + "-" + ($V{AGE_TO_d5} != null ? $V{AGE_TO_d5} : "?") + ")"]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>

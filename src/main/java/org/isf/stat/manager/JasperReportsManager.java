@@ -94,7 +94,7 @@ public class JasperReportsManager {
 	private static final String STAT_REPORTERROR_MSG = "angal.stat.reporterror.msg";
 
 	private static final String RPT_BASE = "rpt_base";
-	
+
 	private static final String LOGO = "./rsc/images/logo_report.png";
 
 	private static final String LOGO_BENIN_PATH = "./rsc/images/logo-benin.png";
@@ -1323,4 +1323,27 @@ public class JasperReportsManager {
 			throw new OHReportException(e, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
 		}
 	}
+
+	public JasperReportResultDto getStatisticsReportPdf(LocalDate fromDate, LocalDate toDate, String jasperFileName, Locale locale)
+		throws OHServiceException {
+
+		try {
+			HashMap<String, Object> parameters = compileGenericReportFromDateToDateParameters(fromDate, toDate);
+			addBundleParameter(RPT_BASE, jasperFileName, parameters);
+			parameters.put(JRParameter.REPORT_LOCALE, locale);
+			parameters.put("LOGO-BENIN-PATH", LOGO_BENIN_PATH);
+			parameters.put("LOGO-PATH", LOGO_ABBRACCIO_PATH);
+
+			String pdfFilename = compilePDFFilename(RPT_BASE, jasperFileName, null, "pdf");
+			String filename = compileJasperFilename(RPT_BASE, jasperFileName);
+
+			JasperReportResultDto result = generateJasperReport(filename, pdfFilename, parameters);
+			JasperExportManager.exportReportToPdfFile(result.getJasperPrint(), pdfFilename);
+			return result;
+		} catch (Exception e) {
+			LOGGER.error("", e);
+			throw new OHReportException(e, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
+		}
+	}
+
 }
