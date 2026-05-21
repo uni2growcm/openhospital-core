@@ -405,4 +405,24 @@ public class BillBrowserManager {
 	public List<Bill> getBillsByGuarantor(List<BillPayments> billPayments, User guarantor) throws OHServiceException {
 		return billPayments.isEmpty() ? new ArrayList<>() : ioOperations.getBillsByGuarantor(billPayments, guarantor);
 	}
+
+	/**
+	 * Récupère tous les articles d'une facture (y compris remboursements)
+	 * @param bill la facture
+	 * @return liste complète des articles
+	 * @throws OHServiceException
+	 */
+	public List<BillItems> getAllBillItems(Bill bill) throws OHServiceException {
+		return ioOperations.getAllBillItems(bill);
+	}
+
+	/**
+	 * Récupère tous les paiements d'une facture (y compris remboursements)
+	 * @param bill la facture
+	 * @return liste complète des paiements
+	 * @throws OHServiceException
+	 */
+	public List<BillPayments> getAllBillPayments(Bill bill) throws OHServiceException {
+		return ioOperations.getAllBillPayments(bill);
+	}
 }

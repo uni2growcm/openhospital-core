@@ -37,6 +37,8 @@ import jakarta.validation.constraints.NotNull;
 import org.isf.utils.db.Auditable;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name="OH_BILLITEMS")
 @EntityListeners(AuditingEntityListener.class)
@@ -73,7 +75,10 @@ public class BillItems extends Auditable<String> {
 	@NotNull
 	@Column(name="BLI_QTY")
 	private int itemQuantity;
-	
+
+	@Column(name="BLI_DATE")
+	private LocalDateTime itemDate;
+
 	@Transient
 	private volatile int hashCode;
 	
@@ -165,7 +170,15 @@ public class BillItems extends Auditable<String> {
 	public void setItemQuantity(int itemQuantity) {
 		this.itemQuantity = itemQuantity;
 	}
-	
+
+	public LocalDateTime getItemDate() {
+		return itemDate;
+	}
+
+	public void setItemDate(LocalDateTime itemDate) {
+		this.itemDate = itemDate;
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
