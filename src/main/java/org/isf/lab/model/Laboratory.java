@@ -81,6 +81,9 @@ public class Laboratory extends Auditable<String> {
 	@Column(name="LAB_NOTE")
 	private String note;
 
+	@Column(name="LAB_PRESCRIBER")
+	private String prescriber;
+
 	@ManyToOne
 	@JoinColumn(name="LAB_PAT_ID")
 	private Patient patient;
@@ -221,6 +224,14 @@ public class Laboratory extends Auditable<String> {
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	public String getPrescriber() {
+		return prescriber;
+	}
+
+	public void setPrescriber(String prescriber) {
+		this.prescriber = prescriber;
 	}
 
 	@Override

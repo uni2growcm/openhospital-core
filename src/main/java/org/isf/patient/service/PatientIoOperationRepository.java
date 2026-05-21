@@ -64,4 +64,10 @@ public interface PatientIoOperationRepository extends JpaRepository<Patient, Int
 	long countAllActiveNotDeletedPatients();
 	
 	List<Patient> findAllByCodeIn(List<Integer> codes);
+
+	@Query("select p from Patient p where (p.code = :code or lower(p.name) like lower(concat('%', :name, '%'))) and (p.deleted = :deletedStatus or p.deleted is null) order by p.name")
+	List<Patient> findByCodeOrNameContainingAndNotDeleted(
+		@Param("code") Integer code,
+		@Param("name") String name,
+		@Param("deletedStatus") char deletedStatus);
 }
