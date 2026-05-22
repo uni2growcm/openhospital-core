@@ -407,9 +407,9 @@ public class BillBrowserManager {
 	}
 
 	/**
-	 * Récupère tous les articles d'une facture (y compris remboursements)
-	 * @param bill la facture
-	 * @return liste complète des articles
+	 * Retrieves all items of a bill (including refunds)
+	 * @param bill the bill
+	 * @return complete list of items
 	 * @throws OHServiceException
 	 */
 	public List<BillItems> getAllBillItems(Bill bill) throws OHServiceException {
@@ -417,9 +417,9 @@ public class BillBrowserManager {
 	}
 
 	/**
-	 * Récupère tous les paiements d'une facture (y compris remboursements)
-	 * @param bill la facture
-	 * @return liste complète des paiements
+	 * Retrieves all payments of a bill (including refunds)
+	 * @param bill the bill
+	 * @return complete list of payments
 	 * @throws OHServiceException
 	 */
 	public List<BillPayments> getAllBillPayments(Bill bill) throws OHServiceException {

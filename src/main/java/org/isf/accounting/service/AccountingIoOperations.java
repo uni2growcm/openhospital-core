@@ -416,9 +416,9 @@ public class AccountingIoOperations {
 	}
 
 	/**
-	 * Récupère tous les articles d'une facture (y compris ceux des factures de remboursement)
-	 * @param bill la facture
-	 * @return liste complète des articles avec quantités inversées pour les remboursements
+	 * Retrieves all items of a bill (including those from refund bills)
+	 * @param bill the bill
+	 * @return complete list of items with quantities inverted for refunds
 	 * @throws OHServiceException
 	 */
 	public List<BillItems> getAllBillItems(Bill bill) throws OHServiceException {
@@ -447,9 +447,9 @@ public class AccountingIoOperations {
 	}
 
 	/**
-	 * Récupère tous les paiements d'une facture (y compris ceux des factures de remboursement)
-	 * @param bill la facture
-	 * @return liste complète des paiements
+	 * Retrieves all payments of a bill (including those from refund bills)
+	 * @param bill the bill
+	 * @return complete list of payments
 	 * @throws OHServiceException
 	 */
 	public List<BillPayments> getAllBillPayments(Bill bill) throws OHServiceException {
