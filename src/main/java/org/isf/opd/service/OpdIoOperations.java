@@ -359,15 +359,6 @@ public class OpdIoOperations {
 			.getResultList();
 	}
 
-	public DiagnosisEntry getPrimaryDiagnosis(int opdId) throws OHServiceException {
-		List<DiagnosisEntry> results = entityManager.createQuery(
-				"SELECT d FROM DiagnosisEntry d WHERE d.opd.code = :opdId AND d.primaryDiagnosis = true AND d.active = true",
-				DiagnosisEntry.class)
-			.setParameter("opdId", opdId)
-			.getResultList();
-		return results.isEmpty() ? null : results.get(0);
-	}
-
 	public DiagnosisEntry newDiagnosis(DiagnosisEntry diagnosis) throws OHServiceException {
 		entityManager.persist(diagnosis);
 		return diagnosis;
@@ -379,9 +370,10 @@ public class OpdIoOperations {
 			.setParameter("opdId", opdId)
 			.executeUpdate();
 
-		// Save new diagnoses
 		if (diagnoses != null && !diagnoses.isEmpty()) {
 			for (DiagnosisEntry diagnosis : diagnoses) {
+				diagnosis.setId(null);
+				diagnosis.setActive(true);
 				entityManager.persist(diagnosis);
 			}
 			return diagnoses;

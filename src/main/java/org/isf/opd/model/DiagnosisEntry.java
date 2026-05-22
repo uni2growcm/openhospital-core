@@ -1,11 +1,18 @@
 package org.isf.opd.model;
 
 import jakarta.persistence.*;
-
 import org.isf.disease.model.Disease;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "OH_OPD_DIAGNOSIS")
+@EntityListeners(AuditingEntityListener.class)
 public class DiagnosisEntry {
 
 	@Id
@@ -17,15 +24,12 @@ public class DiagnosisEntry {
 	@JoinColumn(name = "OPDD_OPD_ID", nullable = false)
 	private Opd opd;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "OPDD_DIS_ID_A", nullable = false)
 	private Disease disease;
 
 	@Column(name = "OPDD_ORDER")
 	private Integer orderNumber = 0;
-
-	@Column(name = "OPDD_IS_PRIMARY")
-	private boolean primaryDiagnosis = false;
 
 	@Version
 	@Column(name = "OPDD_LOCK")
@@ -42,6 +46,22 @@ public class DiagnosisEntry {
 		this.disease = disease;
 	}
 
+	@CreatedBy
+	@Column(name = "OPDD_CREATED_BY", updatable = false)
+	private String createdBy;
+
+	@CreatedDate
+	@Column(name = "OPDD_CREATED_DATE", updatable = false)
+	private LocalDateTime createdDate;
+
+	@LastModifiedBy
+	@Column(name = "OPDD_LAST_MODIFIED_BY")
+	private String lastModifiedBy;
+
+	@LastModifiedDate
+	@Column(name = "OPDD_LAST_MODIFIED_DATE")
+	private LocalDateTime lastModifiedDate;
+
 	public DiagnosisEntry(
 		Opd opd,
 		Disease disease,
@@ -51,7 +71,6 @@ public class DiagnosisEntry {
 		this.opd = opd;
 		this.disease = disease;
 		this.orderNumber = orderNumber;
-		this.primaryDiagnosis = primaryDiagnosis;
 	}
 
 	public Long getId() {
@@ -70,10 +89,6 @@ public class DiagnosisEntry {
 		return orderNumber;
 	}
 
-	public boolean isPrimaryDiagnosis() {
-		return primaryDiagnosis;
-	}
-
 	public int getLock() {
 		return lock;
 	}
@@ -81,6 +96,23 @@ public class DiagnosisEntry {
 	public boolean isActive() {
 		return active;
 	}
+
+	public String getCreatedBy()                 {
+		return createdBy;
+	}
+
+	public LocalDateTime getCreatedDate()        {
+		return createdDate;
+	}
+
+	public String getLastModifiedBy()            {
+		return lastModifiedBy;
+	}
+
+	public LocalDateTime getLastModifiedDate()   {
+		return lastModifiedDate;
+	}
+
 
 	public void setId(Long id) {
 		this.id = id;
@@ -96,10 +128,6 @@ public class DiagnosisEntry {
 
 	public void setOrderNumber(Integer orderNumber) {
 		this.orderNumber = orderNumber;
-	}
-
-	public void setPrimaryDiagnosis(boolean primaryDiagnosis) {
-		this.primaryDiagnosis = primaryDiagnosis;
 	}
 
 	public void setLock(int lock) {
@@ -132,7 +160,6 @@ public class DiagnosisEntry {
 			", disease=" +
 			(disease != null ? disease.getDescription() : null) +
 			", orderNumber=" + orderNumber +
-			", primaryDiagnosis=" + primaryDiagnosis +
 			", active=" + active +
 			'}';
 	}

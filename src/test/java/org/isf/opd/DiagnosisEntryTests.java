@@ -157,19 +157,16 @@ class DiagnosisEntryTests extends OHCoreTestCase {
 		DiagnosisEntry savedDiagnosisWithoutSet = opdIoOperation.newDiagnosis(diagnosisWithoutSet);
 		assertThat(savedDiagnosisWithoutSet.getId()).isPositive();
 		assertThat(savedDiagnosisWithoutSet.getOrderNumber()).isEqualTo(0);
-		assertThat(savedDiagnosisWithoutSet.isPrimaryDiagnosis()).isTrue();
 		assertThat(savedDiagnosisWithoutSet.isActive()).isTrue();
 
 		DiagnosisEntry diagnosisWithSet = new DiagnosisEntry();
 		diagnosisWithSet.setOpd(foundOpd);
 		diagnosisWithSet.setDisease(disease);
 		diagnosisWithSet.setOrderNumber(0);
-		diagnosisWithSet.setPrimaryDiagnosis(true);
 		diagnosisWithSet.setActive(true);
 		DiagnosisEntry savedDiagnosisWithSet = opdIoOperation.newDiagnosis(diagnosisWithSet);
 		assertThat(savedDiagnosisWithSet.getId()).isPositive();
 		assertThat(savedDiagnosisWithSet.getOrderNumber()).isEqualTo(0);
-		assertThat(savedDiagnosisWithSet.isPrimaryDiagnosis()).isTrue();
 		assertThat(savedDiagnosisWithSet.isActive()).isTrue();
 	}
 
@@ -194,7 +191,6 @@ class DiagnosisEntryTests extends OHCoreTestCase {
 		List<DiagnosisEntry> activeDiagnoses = opdIoOperation.getDiagnosesList(foundOpd.getCode());
 		assertThat(activeDiagnoses).hasSize(3);
 		assertThat(activeDiagnoses.get(0).getOrderNumber()).isEqualTo(0);
-		assertThat(activeDiagnoses.get(0).isPrimaryDiagnosis()).isTrue();
 	}
 
 	@Test
@@ -235,11 +231,6 @@ class DiagnosisEntryTests extends OHCoreTestCase {
 		opdIoOperation.newDiagnosis(primary);
 		opdIoOperation.newDiagnosis(secondary);
 
-		DiagnosisEntry foundPrimary = opdIoOperation.getPrimaryDiagnosis(foundOpd.getCode());
-
-		assertThat(foundPrimary).isNotNull();
-		assertThat(foundPrimary.isPrimaryDiagnosis()).isTrue();
-		assertThat(foundPrimary.getOrderNumber()).isEqualTo(0);
 	}
 
 	@Test

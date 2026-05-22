@@ -82,23 +82,23 @@ public class OpdBrowserManager {
 	 */
 	public void validateOpd(Opd opd, boolean insert) throws OHDataValidationException {
 
-		Disease disease = opd.getDisease();
-		Disease disease2 = opd.getDisease2();
-		Disease disease3 = opd.getDisease3();
+		List<DiagnosisEntry> diagnoses = opd.getDiagnoses();
 		Ward ward = opd.getWard();
+
 		if (opd.getUserID() == null) {
 			opd.setUserID(UserBrowsingManager.getCurrentUser());
 		}
+
 		List<OHExceptionMessage> errors = new ArrayList<>();
-		// Check Visit Date
+
 		if (opd.getDate() == null) {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.opd.pleaseinsertattendancedate.msg")));
 		}
-		// Check Patient
+	
 		if (GeneralData.OPDEXTENDED && opd.getPatient() == null) {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.common.pleaseselectapatient.msg")));
 		}
-		// Check Ward
+
 		if (ward == null) {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.common.pleaseselectaward.msg")));
 		} else {
@@ -106,51 +106,25 @@ public class OpdBrowserManager {
 				errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.opd.specifiedwardisnotenabledforopdservice.msg")));
 			}
 		}
-		// Check Sex and Age
 		if (opd.getAge() < 0) {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.opd.pleaseinsertthepatientsage.msg")));
 		}
 		if (opd.getSex() == ' ') {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.opd.pleaseselectpatientssex.msg")));
 		}
-		// Check Disease n.1
-		if (disease == null) {
+		boolean hasActiveDiagnosis = opd.getDisease() != null;
+		if (!hasActiveDiagnosis && diagnoses != null) {
+			for (DiagnosisEntry entry : diagnoses) {
+				if (entry.isActive() && entry.getDisease() != null) {
+					hasActiveDiagnosis = true;
+					break;
+				}
+			}
+		}
+		if (!hasActiveDiagnosis) {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.opd.pleaseselectadisease.msg")));
-		} else {
-			// Check double diseases
-			if (disease2 != null && disease.getCode().equals(disease2.getCode())) {
-				errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.opd.specifyingduplicatediseasesisnotallowed.msg")));
-			}
-			if (disease3 != null && disease.getCode().equals(disease3.getCode())) {
-				errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.opd.specifyingduplicatediseasesisnotallowed.msg")));
-			}
-			if (disease2 != null && disease3 != null && disease2.getCode().equals(disease3.getCode())) {
-				errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.opd.specifyingduplicatediseasesisnotallowed.msg")));
-			}
 		}
-		try {
-			Disease opdDisease;
-			if (disease != null) {
-				opdDisease = diseaseBrowserManager.getOPDDiseaseByCode(disease.getCode());
-				if (opdDisease == null) {
-					errors.add(new OHExceptionMessage(MessageBundle.formatMessage("angal.opd.specifieddiseaseisnoenabledforopdservice.fmt.msg", "1")));
-				}
-			}
-			if (disease2 != null) {
-				opdDisease = diseaseBrowserManager.getOPDDiseaseByCode(disease2.getCode());
-				if (opdDisease == null) {
-					errors.add(new OHExceptionMessage(MessageBundle.formatMessage("angal.opd.specifieddiseaseisnoenabledforopdservice.fmt.msg", "2")));
-				}
-			}
-			if (disease3 != null) {
-				opdDisease = diseaseBrowserManager.getOPDDiseaseByCode(disease3.getCode());
-				if (opdDisease == null) {
-					errors.add(new OHExceptionMessage(MessageBundle.formatMessage("angal.opd.specifieddiseaseisnoenabledforopdservice.fmt.msg", "3")));
-				}
-			}
-		} catch (OHServiceException serviceException) {
-			LOGGER.error("Unable to validate diseases within OPD diseases.", serviceException);
-		}
+
 		if (!errors.isEmpty()) {
 			throw new OHDataValidationException(errors);
 		}
@@ -386,17 +360,6 @@ public class OpdBrowserManager {
 	 */
 	public List<DiagnosisEntry> getAllDiagnosesByOpdId(int opdId) throws OHServiceException {
 		return ioOperations.getAllDiagnosesList(opdId);
-	}
-
-	/**
-	 * Retrieves the primary diagnosis for an OPD
-	 *
-	 * @param opdId the OPD ID
-	 * @return primary diagnosis or {@code null}
-	 * @throws OHServiceException
-	 */
-	public DiagnosisEntry getPrimaryDiagnosisByOpdId(int opdId) throws OHServiceException {
-		return ioOperations.getPrimaryDiagnosis(opdId);
 	}
 
 	/**

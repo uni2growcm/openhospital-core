@@ -110,9 +110,6 @@ public interface OpdIoOperationRepository extends JpaRepository<Opd, Integer>, O
 	@Query("SELECT d FROM DiagnosisEntry d WHERE d.opd.code = :opdId")
 	List<DiagnosisEntry> findAllDiagnosesByOpdId(@Param("opdId") int opdId);
 
-	@Query("SELECT d FROM DiagnosisEntry d WHERE d.opd.code = :opdId AND d.primaryDiagnosis = true AND d.active = true")
-	Optional<DiagnosisEntry> findPrimaryDiagnosisByOpdId(@Param("opdId") int opdId);
-
 	@Query("SELECT COUNT(d) > 0 FROM DiagnosisEntry d WHERE d.opd.code = :opdId AND d.active = true")
 	boolean hasActiveDiagnoses(@Param("opdId") int opdId);
 
