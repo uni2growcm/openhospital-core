@@ -427,7 +427,7 @@ public class BillBrowserManager {
 	public List<BillPayments> getAllBillPayments(Bill bill) throws OHServiceException {
 		return ioOperations.getAllBillPayments(bill);
 	}
-}
+
 
 	/**
 	 * Check if a patient has pending prescriptions (therapies, exams, operations)
