@@ -443,4 +443,15 @@ public class LabIoOperations {
 	public List<Laboratory> getLabWithoutBill(int patientCode) throws OHServiceException {
 		return repository.findByPatientCodeAndBillIsNull(patientCode);
 	}
+
+	/**
+	 * Updates a Laboratory object (used to mark as billed after bill creation).
+	 *
+	 * @param laboratory the Laboratory to update
+	 * @return the updated Laboratory object
+	 * @throws OHServiceException if an error occurs
+	 */
+	public Laboratory update(Laboratory laboratory) throws OHServiceException {
+		return repository.save(laboratory);
+	}
 }

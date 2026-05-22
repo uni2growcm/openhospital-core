@@ -34,6 +34,10 @@ import org.isf.menu.model.User;
 import org.isf.lab.manager.LabManager;
 import org.isf.operation.manager.OperationRowBrowserManager;
 import org.isf.patient.model.Patient;
+import org.isf.priceslist.manager.PriceListManager;
+import org.isf.priceslist.model.ItemGroup;
+import org.isf.priceslist.model.Price;
+import org.isf.priceslist.model.PriceList;
 import org.isf.therapy.manager.TherapyManager;
 import org.isf.utils.db.TranslateOHServiceException;
 import org.isf.utils.exception.OHServiceException;
@@ -470,5 +474,75 @@ public class AccountingIoOperations {
 			}
 		}
 		return new ArrayList<>(bills);
+	}
+
+	/**
+	 * Gets the price of an item directly from the database.
+	 *
+	 * @param itemId the item code
+	 * @param group the item group (MED, EXA, OPE, OTH)
+	 * @param patient the patient
+	 * @return the Price with reductions applied, or null if not found
+	 * @throws OHServiceException
+	 */
+	public Price getPrice(String itemId, ItemGroup group, Patient patient) throws OHServiceException {
+		// Get the first available price list as default
+		List<PriceList> lists = billRepository.findDistinctPriceLists();
+		if (lists == null || lists.isEmpty()) {
+			return null;
+		}
+
+		Integer listId = lists.get(0).getId();
+
+		// Get the base price
+		Double basePrice = billRepository.findPriceByListIdAndGroupAndItem(listId, group.getCode(), itemId);
+		if (basePrice == null) {
+			return null;
+		}
+
+		double finalPrice = basePrice;
+
+		// TODO: add reduction plans logic here later
+		// For now, return the base price without reductions
+
+		// Create and return Price object
+		Price price = new Price();
+		price.setPrice(finalPrice);
+		price.setItem(itemId);
+		price.setGroup(group.getCode());
+
+		return price;
+	}
+
+	/**
+	 * Gets the gross price (without reductions) from the database.
+	 *
+	 * @param itemId the item code
+	 * @param group the item group
+	 * @param patient the patient
+	 * @return the Price with gross price, or null if not found
+	 * @throws OHServiceException
+	 */
+	public Price getPriceFromListWithoutReduction(String itemId, ItemGroup group, Patient patient) throws OHServiceException {
+		// Get the first available price list as default
+		List<PriceList> lists = billRepository.findDistinctPriceLists();
+		if (lists == null || lists.isEmpty()) {
+			return null;
+		}
+
+		Integer listId = lists.get(0).getId();
+
+		// Get the base price without reductions
+		Double basePrice = billRepository.findPriceByListIdAndGroupAndItem(listId, group.getCode(), itemId);
+		if (basePrice == null) {
+			return null;
+		}
+
+		Price price = new Price();
+		price.setPrice(basePrice);
+		price.setItem(itemId);
+		price.setGroup(group.getCode());
+
+		return price;
 	}
 }

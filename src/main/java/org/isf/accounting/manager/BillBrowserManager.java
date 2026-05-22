@@ -32,6 +32,8 @@ import org.isf.accounting.service.AccountingIoOperations;
 import org.isf.generaldata.MessageBundle;
 import org.isf.menu.model.User;
 import org.isf.patient.model.Patient;
+import org.isf.priceslist.model.ItemGroup;
+import org.isf.priceslist.model.Price;
 import org.isf.utils.db.TranslateOHServiceException;
 import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHServiceException;
@@ -51,7 +53,7 @@ public class BillBrowserManager {
 
 	/**
 	 * Verify if the object is valid for CRUD and return a list of errors, if any
-	 * 
+	 *
 	 * @param bill
 	 * @param billPayments
 	 * @throws OHDataValidationException
@@ -96,7 +98,7 @@ public class BillBrowserManager {
 
 	/**
 	 * Retrieves all the {@link BillItems} associated to the passed {@link Bill} id.
-	 * 
+	 *
 	 * @param billID the bill id.
 	 * @return a list of {@link BillItems} or {@code null} if an error occurred.
 	 * @throws OHServiceException
@@ -110,7 +112,7 @@ public class BillBrowserManager {
 
 	/**
 	 * Retrieves all the bills of a given patient between dateFrom and datTo
-	 * 
+	 *
 	 * @param dateFrom
 	 * @param dateTo
 	 * @param patient
@@ -123,7 +125,7 @@ public class BillBrowserManager {
 
 	/**
 	 * Retrieves all the billPayments for a given patient between dateFrom and dateTo
-	 * 
+	 *
 	 * @param dateFrom
 	 * @param dateTo
 	 * @param patient
@@ -136,7 +138,7 @@ public class BillBrowserManager {
 
 	/**
 	 * Gets all the {@link BillPayments} for the specified {@link Bill}.
-	 * 
+	 *
 	 * @param billID the bill id.
 	 * @return a list of {@link BillPayments}
 	 * @throws OHServiceException
@@ -147,7 +149,7 @@ public class BillBrowserManager {
 
 	/**
 	 * Stores a new {@link Bill} along with all its {@link BillItems} and {@link BillPayments}
-	 * 
+	 *
 	 * @param bill the bill to store.
 	 * @param billItems the list of bill's items
 	 * @param billPayments the list of bill's payments
@@ -174,7 +176,7 @@ public class BillBrowserManager {
 
 	/**
 	 * Stores a new {@link Bill}.
-	 * 
+	 *
 	 * @param newBill the bill to store.
 	 * @return the persisted Bill object
 	 * @throws OHServiceException
@@ -185,7 +187,7 @@ public class BillBrowserManager {
 
 	/**
 	 * Stores a list of {@link BillItems} associated to a {@link Bill}.
-	 * 
+	 *
 	 * @param billID the bill id.
 	 * @param billItems the bill items to store.
 	 * @throws OHServiceException
@@ -196,7 +198,7 @@ public class BillBrowserManager {
 
 	/**
 	 * Stores a list of {@link BillPayments} associated to a {@link Bill}.
-	 * 
+	 *
 	 * @param billID the bill id.
 	 * @param payItems the bill payments.
 	 * @throws OHServiceException
@@ -207,7 +209,7 @@ public class BillBrowserManager {
 
 	/**
 	 * Updates the specified {@link Bill} along with all its {@link BillItems} and {@link BillPayments}
-	 * 
+	 *
 	 * @param updateBill the bill to update.
 	 * @param billItems the list of bill's items
 	 * @param billPayments the list of bill's payments
@@ -228,7 +230,7 @@ public class BillBrowserManager {
 
 	/**
 	 * Updates the specified {@link Bill}.
-	 * 
+	 *
 	 * @param updateBill the bill to update.
 	 * @return the updated Bill object
 	 * @throws OHServiceException
@@ -239,7 +241,7 @@ public class BillBrowserManager {
 
 	/**
 	 * Returns all the pending {@link Bill}s for the specified patient.
-	 * 
+	 *
 	 * @param patID the patient id.
 	 * @return the list of pending bills or {@code null} if an error occurred.
 	 * @throws OHServiceException
@@ -250,7 +252,7 @@ public class BillBrowserManager {
 
 	/**
 	 * Get the {@link Bill} with specified billID
-	 * 
+	 *
 	 * @param billID
 	 * @return the {@link Bill} or {@code null} if an error occurred.
 	 * @throws OHServiceException
@@ -261,7 +263,7 @@ public class BillBrowserManager {
 
 	/**
 	 * Returns all user ids related to a {@link BillPayments}.
-	 * 
+	 *
 	 * @return a list of user id or {@code null} if an error occurred.
 	 * @throws OHServiceException
 	 */
@@ -271,7 +273,7 @@ public class BillBrowserManager {
 
 	/**
 	 * Deletes the specified {@link Bill}. If the argument is NULL then an error is thrown. If the Bill is not found it is silently ignored.
-	 * 
+	 *
 	 * @param deleteBill the bill to delete.
 	 * @throws OHServiceException
 	 */
@@ -281,7 +283,7 @@ public class BillBrowserManager {
 
 	/**
 	 * Retrieves all the {@link Bill}s for the specified date range.
-	 * 
+	 *
 	 * @param dateFrom the low date range endpoint, inclusive.
 	 * @param dateTo the high date range endpoint, inclusive.
 	 * @return a list of retrieved {@link Bill}s or {@code null} if an error occurred.
@@ -293,7 +295,7 @@ public class BillBrowserManager {
 
 	/**
 	 * Gets all the {@link Bill}s associated to the passed {@link BillPayments}.
-	 * 
+	 *
 	 * @param billPayments the {@link BillPayments} associated to the bill to retrieve.
 	 * @return a list of {@link Bill} associated to the passed {@link BillPayments} or {@code null} if an error occurred.
 	 * @throws OHServiceException
@@ -307,7 +309,7 @@ public class BillBrowserManager {
 
 	/**
 	 * Retrieves all the {@link BillPayments} for the specified date range.
-	 * 
+	 *
 	 * @param dateFrom low endpoint, inclusive, for the date range.
 	 * @param dateTo high endpoint, inclusive, for the date range.
 	 * @return a list of {@link BillPayments} for the specified date range or {@code null} if an error occurred.
@@ -319,7 +321,7 @@ public class BillBrowserManager {
 
 	/**
 	 * Retrieves all the {@link BillPayments} associated to the passed {@link Bill} list.
-	 * 
+	 *
 	 * @param billArray the bill array list of {@link Bill}s.
 	 * @return a list of {@link BillPayments} associated to the passed bill list or {@code null} if an error occurred.
 	 * @throws OHServiceException
@@ -330,7 +332,7 @@ public class BillBrowserManager {
 
 	/**
 	 * Retrieves all the {@link Bill}s associated to the specified {@link Patient}.
-	 * 
+	 *
 	 * @param patID the Patient's ID
 	 * @return the list of {@link Bill}s
 	 * @throws OHServiceException
@@ -341,7 +343,7 @@ public class BillBrowserManager {
 
 	/**
 	 * Returns all the distinct stored {@link BillItems}.
-	 * 
+	 *
 	 * @return a list of distinct {@link BillItems} or null if an error occurs.
 	 * @throws OHServiceException
 	 */
@@ -351,7 +353,7 @@ public class BillBrowserManager {
 
 	/**
 	 * Get the bills list with a given billItem
-	 * 
+	 *
 	 * @param dateFrom
 	 * @param dateTo
 	 * @param billItem
@@ -416,5 +418,32 @@ public class BillBrowserManager {
 	 */
 	public boolean hasPrescription(Integer patientCode) throws OHServiceException {
 		return ioOperations.hasPrescription(patientCode);
+	}
+
+	/**
+	 * Gets the price of an item with patient reductions applied.
+	 * This method queries the database directly like the legacy version.
+	 *
+	 * @param itemId the item code (medical code, exam code, operation code)
+	 * @param group the item group (MED, EXA, OPE, OTH)
+	 * @param patient the patient (for reduction plan)
+	 * @return the Price with reductions applied, or null if not found
+	 * @throws OHServiceException
+	 */
+	public Price getPrice(String itemId, ItemGroup group, Patient patient) throws OHServiceException {
+		return ioOperations.getPrice(itemId, group, patient);
+	}
+
+	/**
+	 * Gets the gross price (without reductions) of an item.
+	 *
+	 * @param itemId the item code
+	 * @param group the item group
+	 * @param patient the patient
+	 * @return the Price with gross price, or null if not found
+	 * @throws OHServiceException
+	 */
+	public Price getPriceFromListWithoutReduction(String itemId, ItemGroup group, Patient patient) throws OHServiceException {
+		return ioOperations.getPriceFromListWithoutReduction(itemId, group, patient);
 	}
 }

@@ -108,4 +108,16 @@ public class TherapyIoOperations {
 		long count = repository.countByPatientCodeAndQtyGreaterThanZero(patientCode);
 		return count > 0;
 	}
+
+	/**
+	 * Gets all therapies for a patient that haven't been completely billed yet.
+	 * A therapy is considered unbilled if qtyBougth < prescribed quantity.
+	 *
+	 * @param patientCode the patient's code
+	 * @return list of unbilled TherapyRow objects
+	 * @throws OHServiceException if an error occurs
+	 */
+	public List<TherapyRow> getTherapiesWithoutBill(int patientCode) throws OHServiceException {
+		return repository.findByPatientCodeOrderByPatientCodeAscTherapyIDAsc(patientCode);
+	}
 }

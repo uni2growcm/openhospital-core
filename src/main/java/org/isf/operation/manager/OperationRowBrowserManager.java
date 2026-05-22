@@ -107,4 +107,15 @@ public class OperationRowBrowserManager {
 	public List<OperationRow> getOperationWithoutBill(Patient patient) throws OHServiceException {
 		return ioOperations.getOperationWithoutBill(patient);
 	}
+
+	/**
+	 * Updates an operation row (used to mark as billed after bill creation).
+	 *
+	 * @param operationRow the OperationRow to update
+	 * @return the updated OperationRow
+	 * @throws OHServiceException if an error occurs
+	 */
+	public OperationRow updateOperation(OperationRow operationRow) throws OHServiceException {
+		return ioOperations.update(operationRow);
+	}
 }

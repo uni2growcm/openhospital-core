@@ -523,4 +523,15 @@ public class LabManager {
 	public List<Laboratory> getLabWithoutBill(int patientCode) throws OHServiceException {
 		return ioOperations.getLabWithoutBill(patientCode);
 	}
+
+	/**
+	 * Updates a laboratory exam (used to mark as billed after bill creation).
+	 *
+	 * @param laboratory the Laboratory to update
+	 * @return the updated Laboratory
+	 * @throws OHServiceException if an error occurs
+	 */
+	public Laboratory updateLaboratory(Laboratory laboratory) throws OHServiceException {
+		return ioOperations.update(laboratory);
+	}
 }

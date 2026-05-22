@@ -70,6 +70,9 @@ public class BillItems extends Auditable<String> {
 	@Column(name="BLI_ITEM_AMOUNT")
 	private double itemAmount;
 
+	@Column(name="BLI_ITEM_AMOUNT_BRUT")
+	private double itemAmountBrut;
+
 	@NotNull
 	@Column(name="BLI_QTY")
 	private int itemQuantity;
@@ -84,7 +87,7 @@ public class BillItems extends Auditable<String> {
 	private String itemGroup;
 
 	@Column(name = "BLI_PRESC_ID")
-	private int prescriptionId;
+	private Integer prescriptionId;
 	
 	/**
 	 * Store  the code of the item that is used for search purpose.
@@ -166,6 +169,14 @@ public class BillItems extends Auditable<String> {
 		this.itemAmount = itemAmount;
 	}
 
+	public double getItemAmountBrut() {
+		return itemAmountBrut;
+	}
+
+	public void setItemAmountBrut(double itemAmountBrut) {
+		this.itemAmountBrut = itemAmountBrut;
+	}
+
 	public int getItemQuantity() {
 		return itemQuantity;
 	}
@@ -182,11 +193,11 @@ public class BillItems extends Auditable<String> {
 		this.itemGroup = itemGroup;
 	}
 
-	public int getPrescriptionId() {
+	public Integer getPrescriptionId() {
 		return prescriptionId;
 	}
 
-	public void setPrescriptionId(int prescriptionId) {
+	public void setPrescriptionId(Integer prescriptionId) {
 		this.prescriptionId = prescriptionId;
 	}
 

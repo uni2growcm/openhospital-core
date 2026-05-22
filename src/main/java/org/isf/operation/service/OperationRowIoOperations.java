@@ -129,4 +129,15 @@ public class OperationRowIoOperations {
 	public List<OperationRow> getOperationWithoutBill(Patient patient) throws OHServiceException {
 		return repository.findByPatientAndBillIsNull(patient);
 	}
+
+	/**
+	 * Updates an OperationRow object (used to mark as billed after bill creation).
+	 *
+	 * @param operationRow the OperationRow to update
+	 * @return the updated OperationRow object
+	 * @throws OHServiceException if an error occurs
+	 */
+	public OperationRow update(OperationRow operationRow) throws OHServiceException {
+		return repository.save(operationRow);
+	}
 }

@@ -118,3 +118,4 @@ source step_a121_add_column_bll_guarantor_to_table_oh_bills.sql;
 source step_a122_add_prescription_columns.sql;
 source step_a123_add_therapies_prescription_date.sql;
 source step_a124_add_lab_bill_id_to_laboratory.sql;
+source step_a125_add_prescriptions_tracking_columns.sql;
