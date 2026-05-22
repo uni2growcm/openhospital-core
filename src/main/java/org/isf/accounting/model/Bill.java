@@ -115,6 +115,9 @@ public class Bill extends Auditable<String> implements Cloneable, Comparable<Bil
 	@JoinColumn(name = "BLL_GUARANTOR")
 	private User guarantor;
 
+	@Column(name = "BLL_PARENT_ID")
+	private Integer parentId;
+
 	@Transient
 	private volatile int hashCode;
 
@@ -257,6 +260,14 @@ public class Bill extends Auditable<String> implements Cloneable, Comparable<Bil
 
 	public void setGuarantor(User guarantor) {
 		this.guarantor = guarantor;
+	}
+
+	public Integer getParentId() {
+		return parentId;
+	}
+
+	public void setParentId(Integer parentId) {
+		this.parentId = parentId;
 	}
 
 	@Override
