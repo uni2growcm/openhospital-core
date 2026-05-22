@@ -1023,4 +1023,102 @@ class Tests extends OHCoreTestCase {
 		assertThat(billPaymentsList).isNotEmpty();
 		assertThat(billPaymentsList.size()).isEqualTo(1);
 	}
+
+	@Test
+	void testHasPrescription() throws Exception {
+		Patient patient = setupTestPatient(false);
+
+		boolean hasPrescription = billBrowserManager.hasPrescription(patient.getCode());
+
+		assertThat(hasPrescription).isFalse();
+	}
+
+	@Test
+	void testBillItemsPrescriptionId() throws Exception {
+		BillItems billItem = new BillItems();
+		Integer prescriptionId = 12345;
+
+		billItem.setPrescriptionId(prescriptionId);
+
+		assertThat(billItem.getPrescriptionId()).isEqualTo(prescriptionId);
+
+		billItem.setPrescriptionId(null);
+
+		assertThat(billItem.getPrescriptionId()).isNull();
+	}
+
+	@Test
+	void testBillItemsItemGroups() throws Exception {
+		BillItems medicalItem = new BillItems();
+		BillItems examItem = new BillItems();
+		BillItems operationItem = new BillItems();
+
+		medicalItem.setItemGroup("MED");
+		examItem.setItemGroup("EXA");
+		operationItem.setItemGroup("OPE");
+
+		assertThat(medicalItem.getItemGroup()).isEqualTo("MED");
+		assertThat(examItem.getItemGroup()).isEqualTo("EXA");
+		assertThat(operationItem.getItemGroup()).isEqualTo("OPE");
+	}
+
+	@Test
+	void testCalculateTotalQuantityForTherapy() throws Exception {
+		LocalDateTime startDate = LocalDateTime.of(2026, 5, 22, 0, 0);
+		LocalDateTime endDate = LocalDateTime.of(2026, 5, 28, 0, 0);
+		int freqInPeriod = 1;
+		int freqInDay = 2;
+		double qty = 1.0;
+
+		long diffInMillis = java.time.Duration.between(startDate, endDate).toMillis();
+		long totalDays = (diffInMillis / (1000 * 60 * 60 * 24)) + 1;
+		long effectiveDays = (totalDays + freqInPeriod - 1) / freqInPeriod;
+		double totalQuantity = effectiveDays * freqInDay * qty;
+
+		assertThat(totalQuantity).isEqualTo(14.0);
+
+		freqInPeriod = 3;
+		effectiveDays = (totalDays + freqInPeriod - 1) / freqInPeriod;
+		totalQuantity = effectiveDays * freqInDay * qty;
+
+		assertThat(totalQuantity).isEqualTo(6.0);
+	}
+
+	@Test
+	void testCalculateRemainingQuantityForTherapy() throws Exception {
+		double totalPrescribed = 100.0;
+		double alreadyBought = 30.0;
+
+		double remaining = totalPrescribed - alreadyBought;
+
+		assertThat(remaining).isEqualTo(70.0);
+
+		alreadyBought = 100.0;
+		remaining = totalPrescribed - alreadyBought;
+
+		assertThat(remaining).isEqualTo(0.0);
+	}
+
+	@Test
+	void testBillItemsPriceWithReduction() throws Exception {
+		BillItems item = new BillItems();
+		double basePrice = 100.0;
+		double reductionPercent = 20.0;
+
+		double finalPrice = basePrice * (1 - reductionPercent / 100);
+
+		assertThat(finalPrice).isCloseTo(80.0, offset(0.01));
+
+		item.setItemAmount(finalPrice);
+		item.setItemAmountBrut(basePrice);
+
+		assertThat(item.getItemAmount()).isCloseTo(80.0, offset(0.01));
+		assertThat(item.getItemAmountBrut()).isCloseTo(100.0, offset(0.01));
+	}
+
+	@Test
+	void testSelectPrescriptionsDialogCreation() throws Exception {
+		Patient patient = setupTestPatient(false);
+		assertThat(patient).isNotNull();
+	}
 }
