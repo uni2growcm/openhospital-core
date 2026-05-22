@@ -21,6 +21,11 @@
  */
 package org.isf.accounting.model;
 
+import java.time.LocalDateTime;
+
+import org.isf.utils.db.Auditable;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -33,9 +38,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotNull;
-
-import org.isf.utils.db.Auditable;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
 @Table(name="OH_BILLITEMS")
@@ -76,7 +78,10 @@ public class BillItems extends Auditable<String> {
 	@NotNull
 	@Column(name="BLI_QTY")
 	private int itemQuantity;
-	
+
+	@Column(name="BLI_DATE")
+	private LocalDateTime itemDate;
+
 	@Transient
 	private volatile int hashCode;
 
@@ -184,6 +189,15 @@ public class BillItems extends Auditable<String> {
 	public void setItemQuantity(int itemQuantity) {
 		this.itemQuantity = itemQuantity;
 	}
+
+	public LocalDateTime getItemDate() {
+		return itemDate;
+	}
+
+	public void setItemDate(LocalDateTime itemDate) {
+		this.itemDate = itemDate;
+	}
+
 
 	public String getItemGroup() {
 		return itemGroup;

@@ -30,11 +30,10 @@ import java.util.TreeSet;
 import org.isf.accounting.model.Bill;
 import org.isf.accounting.model.BillItems;
 import org.isf.accounting.model.BillPayments;
-import org.isf.menu.model.User;
 import org.isf.lab.manager.LabManager;
+import org.isf.menu.model.User;
 import org.isf.operation.manager.OperationRowBrowserManager;
 import org.isf.patient.model.Patient;
-import org.isf.priceslist.manager.PriceListManager;
 import org.isf.priceslist.model.ItemGroup;
 import org.isf.priceslist.model.Price;
 import org.isf.priceslist.model.PriceList;
@@ -177,7 +176,7 @@ public class AccountingIoOperations {
 
 	/**
 	 * Stores a list of {@link BillItems} associated to a {@link Bill}.
-	 * 
+	 *
 	 * @param bill the bill.
 	 * @param billItems the bill items to store.
 	 * @throws OHServiceException if an error occurs during the store operation.
@@ -187,6 +186,9 @@ public class AccountingIoOperations {
 		for (BillItems item : billItems) {
 			item.setBill(bill);
 			item.setId(0);
+			if (item.getItemDate() == null) {
+				item.setItemDate(LocalDateTime.now());
+			}
 			billItemsRepository.save(item);
 		}
 	}
@@ -474,6 +476,64 @@ public class AccountingIoOperations {
 			}
 		}
 		return new ArrayList<>(bills);
+	}
+
+	/**
+	 * Retrieves all items of a bill (including those from refund bills)
+	 * @param bill the bill
+	 * @return complete list of items with quantities inverted for refunds
+	 * @throws OHServiceException
+	 */
+	public List<BillItems> getAllBillItems(Bill bill) throws OHServiceException {
+		if (bill == null || bill.getId() == 0) {
+			return new ArrayList<>();
+		}
+
+		List<BillItems> allItems = new ArrayList<>();
+
+		List<BillItems> mainItems = billItemsRepository.findByBillIdOrderByItemDateAsc(bill.getId());
+		allItems.addAll(mainItems);
+
+		List<BillItems> refundItems = billItemsRepository.findByBillParentIdOrderByItemDateAsc(bill.getId());
+
+		for (BillItems refundItem : refundItems) {
+			refundItem.setItemQuantity(-refundItem.getItemQuantity());
+			allItems.add(refundItem);
+		}
+
+		allItems.sort((a, b) -> {
+			if (a.getItemDate() == null || b.getItemDate() == null) return 0;
+			return a.getItemDate().compareTo(b.getItemDate());
+		});
+
+		return allItems;
+	}
+
+	/**
+	 * Retrieves all payments of a bill (including those from refund bills)
+	 * @param bill the bill
+	 * @return complete list of payments
+	 * @throws OHServiceException
+	 */
+	public List<BillPayments> getAllBillPayments(Bill bill) throws OHServiceException {
+		if (bill == null || bill.getId() == 0) {
+			return new ArrayList<>();
+		}
+
+		List<BillPayments> allPayments = new ArrayList<>();
+
+		List<BillPayments> mainPayments = billPaymentRepository.findByBillIdOrderByDateAsc(bill.getId());
+		allPayments.addAll(mainPayments);
+
+		List<BillPayments> refundPayments = billPaymentRepository.findByBillParentIdOrderByDateAsc(bill.getId());
+		allPayments.addAll(refundPayments);
+
+		allPayments.sort((a, b) -> {
+			if (a.getDate() == null || b.getDate() == null) return 0;
+			return a.getDate().compareTo(b.getDate());
+		});
+
+		return allPayments;
 	}
 
 	/**

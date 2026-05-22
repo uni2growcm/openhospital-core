@@ -409,6 +409,27 @@ public class BillBrowserManager {
 	}
 
 	/**
+	 * Retrieves all items of a bill (including refunds)
+	 * @param bill the bill
+	 * @return complete list of items
+	 * @throws OHServiceException
+	 */
+	public List<BillItems> getAllBillItems(Bill bill) throws OHServiceException {
+		return ioOperations.getAllBillItems(bill);
+	}
+
+	/**
+	 * Retrieves all payments of a bill (including refunds)
+	 * @param bill the bill
+	 * @return complete list of payments
+	 * @throws OHServiceException
+	 */
+	public List<BillPayments> getAllBillPayments(Bill bill) throws OHServiceException {
+		return ioOperations.getAllBillPayments(bill);
+	}
+}
+
+	/**
 	 * Check if a patient has pending prescriptions (therapies, exams, operations)
 	 * that haven't been billed yet.
 	 *
