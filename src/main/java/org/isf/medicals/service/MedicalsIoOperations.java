@@ -35,8 +35,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.isf.utils.pagination.PageInfo;
 import org.isf.utils.pagination.PagedResponse;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 
 /**
  * This class offers the io operations for recovering and managing
@@ -293,6 +291,7 @@ public class MedicalsIoOperations {
 		}
 		return repository.findAllWhereTypeOrderBySmartCodeAndDescription(type);
 	}
+
 	/**
 	 * Returns PagedResponse of Medicals (manual pagination like OPD)
 	 *
@@ -301,13 +300,13 @@ public class MedicalsIoOperations {
 	 * @return PagedResponse of {@link Medical}s
 	 * @throws OHServiceException when fails to fetch
 	 */
-	public PagedResponse<Medical> getMedicalListPageable(int page, int size) throws OHServiceException {
+	public Page<Medical> getMedicalListPageable(int page, int size) throws OHServiceException {
 		Pageable pageRequest = PageRequest.of(page, size);
 		List<Medical> medicals = this.getMedicals();
 		int start = (int) pageRequest.getOffset();
 		int end = Math.min(start + pageRequest.getPageSize(), medicals.size());
 		List<Medical> pageContent = medicals.subList(start, end);
-		return setPaginationData(new PageImpl<>(pageContent, pageRequest, medicals.size()));
+		return new PageImpl<>(pageContent, pageRequest, medicals.size());
 	}
 
 	/**
@@ -333,6 +332,7 @@ public class MedicalsIoOperations {
 		data.setPageInfo(PageInfo.from(pages));
 		return data;
 	}
+
 	/**
 	 * Returns Spring Page of Medicals with filters (database-level pagination)
 	 *

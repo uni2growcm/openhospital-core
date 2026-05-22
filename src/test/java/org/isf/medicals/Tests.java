@@ -671,6 +671,7 @@ class Tests extends OHCoreTestCase {
 		movementIoOperationRepository.saveAndFlush(movement);
 		return movement.getCode();
 	}
+
 	@Test
 	void testIoGetMedicalsPageable() throws Exception {
 		List<Medical> savedMedicals = setupTestMedicalsForPagination(3);
@@ -680,6 +681,7 @@ class Tests extends OHCoreTestCase {
 		assertThat(medicals.getContent().size()).isEqualTo(2);
 		assertThat(medicals.getTotalPages()).isEqualTo(2);
 	}
+
 	private List<Medical> setupTestMedicalsForPagination(int count) throws Exception {
 		List<Medical> medicals = new ArrayList<>();
 		MedicalType medicalType = testMedicalType.setup(false);

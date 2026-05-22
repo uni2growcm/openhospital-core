@@ -298,6 +298,7 @@ public class MedicalBrowsingManager {
 			throw new OHDataValidationException(errors);
 		}
 	}
+
 	/**
 	 * Returns {@link PagedResponse} of {@link Medical}s with page info.
 	 *
@@ -306,20 +307,30 @@ public class MedicalBrowsingManager {
 	 * @return PagedResponse of {@link Medical}s
 	 * @throws OHServiceException when fails to fetch
 	 */
-	public PagedResponse<Medical> getMedicalPageable(int page, int size) throws OHServiceException {
+	public Page<Medical> getMedicals(int page, int size) throws OHServiceException {
 		return ioOperations.getMedicalListPageable(page, size);
 	}
+
 	/**
 	 * Retrieves a page of {@link Medical}s with filters.
 	 *
 	 * @param page the page number (0-indexed)
 	 * @param size the size of the page
-	 * @param activeFilter filter for active status
+	 * @param active the medical active
+	 * @param disable the medical disable
 	 * @param medicalTypeCode filter by medical type code
 	 * @return a page of {@link Medical}s
 	 * @throws OHServiceException when fails to fetch
 	 */
-	public Page<Medical> getMedicals(int page, int size, String activeFilter, String medicalTypeCode) throws OHServiceException {
+	public Page<Medical> getMedicals(int page, int size, boolean active, boolean disable, String medicalTypeCode) throws OHServiceException {
+
+		String activeFilter = null;
+		if (active && !disable) {
+			activeFilter = "ACTIVE";
+		} else if (!active && disable) {
+			activeFilter = "DISABLED";
+		}
+
 		Pageable pageable = PageRequest.of(page, size);
 		return ioOperations.getMedicalsPageable(pageable, activeFilter, medicalTypeCode);
 	}
