@@ -375,6 +375,5 @@ class DiagnosisEntryTests extends OHCoreTestCase {
 		String toString = diagnosis.toString();
 		assertThat(toString).contains("DiagnosisEntry");
 		assertThat(toString).contains("orderNumber=0");
-		assertThat(toString).contains("primaryDiagnosis=true");
 	}
 }

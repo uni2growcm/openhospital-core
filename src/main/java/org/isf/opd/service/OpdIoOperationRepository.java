@@ -25,6 +25,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import org.isf.distype.model.DiseaseType;
 import org.isf.opd.model.Opd;
 import org.isf.opd.model.DiagnosisEntry;;
 import org.isf.patient.model.Patient;

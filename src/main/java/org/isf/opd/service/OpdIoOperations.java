@@ -72,12 +72,11 @@ public class OpdIoOperations {
 			dateFrom = LocalDate.now().minusWeeks(1);
 		}
 		return getOpdList(null, MessageBundle.getMessage("angal.common.alltypes.txt"), MessageBundle.getMessage("angal.opd.alldiseases.txt"), dateFrom, dateTo,
-			0, 0, 'A', 'A', null);
+						0, 0, 'A', 'A', null);
 	}
 
 	/**
 	 * Retrieves creation date of the last Opd
-	 *
 	 * @return creation date of the last Opd
 	 */
 	public LocalDateTime lastOpdCreationDate() {
@@ -111,16 +110,16 @@ public class OpdIoOperations {
 	 * @throws OHServiceException
 	 */
 	public List<Opd> getOpdList(
-		Ward ward,
-		String diseaseTypeCode,
-		String diseaseCode,
-		LocalDate dateFrom,
-		LocalDate dateTo,
-		int ageFrom,
-		int ageTo,
-		char sex,
-		char newPatient,
-		String user) throws OHServiceException {
+					Ward ward,
+					String diseaseTypeCode,
+					String diseaseCode,
+					LocalDate dateFrom,
+					LocalDate dateTo,
+					int ageFrom,
+					int ageTo,
+					char sex,
+					char newPatient,
+					String user) throws OHServiceException {
 		return repository.findAllOpdWhereParams(ward, diseaseTypeCode, diseaseCode, dateFrom, dateTo, ageFrom, ageTo, sex, newPatient, user);
 	}
 
@@ -129,7 +128,7 @@ public class OpdIoOperations {
 	 *
 	 * @param patID - the patient ID
 	 * @return the list of {@link Opd}s associated to specified patient ID.
-	 * the whole list of {@link Opd}s if {@code 0} is passed.
+	 * 		   the whole list of {@link Opd}s if {@code 0} is passed.
 	 * @throws OHServiceException
 	 */
 	public List<Opd> getOpdList(int patID) throws OHServiceException {
@@ -177,7 +176,7 @@ public class OpdIoOperations {
 	 */
 	public int getProgYear(int year) throws OHServiceException {
 		Integer progYear = year == 0 ? repository.findMaxProgYear()
-			: repository.findMaxProgYearWhereDateBetween(LocalDateTime.of(year, 1, 1, 0, 0), LocalDateTime.of(year + 1, 1, 1, 0, 0));
+						: repository.findMaxProgYearWhereDateBetween(LocalDateTime.of(year, 1, 1, 0, 0), LocalDateTime.of(year + 1, 1, 1, 0, 0));
 		return progYear == null ? 0 : progYear;
 	}
 
@@ -208,13 +207,13 @@ public class OpdIoOperations {
 	 * Check if the given {@code opdNum} does already exist for the given {@code year}.
 	 *
 	 * @param opdNum - the OPD progressive in year
-	 * @param year   - the year
+	 * @param year - the year
 	 * @return {@code true} if the given number exists in year, {@code false} otherwise
 	 * @throws OHServiceException
 	 */
 	public boolean isExistOpdNum(int opdNum, int year) throws OHServiceException {
 		List<Opd> opds = year == 0 ? repository.findByProgYear(opdNum)
-			: repository.findByProgYearAndDateBetween(opdNum, LocalDateTime.of(year, 1, 1, 0, 0), LocalDateTime.of(year + 1, 1, 1, 0, 0));
+						: repository.findByProgYearAndDateBetween(opdNum, LocalDateTime.of(year, 1, 1, 0, 0), LocalDateTime.of(year + 1, 1, 1, 0, 0));
 		return !opds.isEmpty();
 	}
 
