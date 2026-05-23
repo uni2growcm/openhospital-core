@@ -33,9 +33,7 @@ import java.util.stream.Stream;
 import jakarta.transaction.Transactional;
 import org.isf.OHCoreTestCase;
 import org.isf.accounting.manager.BillBrowserManager;
-import org.isf.accounting.model.Bill;
-import org.isf.accounting.model.BillItems;
-import org.isf.accounting.model.BillPayments;
+import org.isf.accounting.model.*;
 import org.isf.accounting.service.AccountingBillIoOperationRepository;
 import org.isf.accounting.service.AccountingBillItemsIoOperationRepository;
 import org.isf.accounting.service.AccountingBillPaymentIoOperationRepository;
@@ -75,6 +73,8 @@ class Tests extends OHCoreTestCase {
 	private static TestPriceList testPriceList;
 	private static TestUser testUser;
 	private static TestUserGroup testUserGroup;
+	private static TestBillItemGroup testBillItemGroup;
+	private static TestBillItemGroupItem testBillItemGroupItem;
 
 	@Autowired
 	BillBrowserManager billBrowserManager;
@@ -104,6 +104,8 @@ class Tests extends OHCoreTestCase {
 		testPriceList = new TestPriceList();
 		testUserGroup = new TestUserGroup();
 		testUser = new TestUser();
+		testBillItemGroup = new TestBillItemGroup();
+		testBillItemGroupItem = new TestBillItemGroupItem();
 	}
 
 	@BeforeEach
@@ -883,6 +885,45 @@ class Tests extends OHCoreTestCase {
 		assertThat(foundBillPayment).isNotNull();
 		List<String> userIds = billBrowserManager.getUsers();
 		assertThat(userIds).contains(foundBillPayment.getUser());
+	}
+
+	@Test
+	void mgrTestBillItemGroup() throws Exception {
+
+		BillItemGroup group = testBillItemGroup.setup(false);
+		List<BillItemGroupItem> list = new ArrayList<>();
+		for (int i = 0; i < 4; i ++) {
+			BillItemGroupItem billItemGroupItem = testBillItemGroupItem.setup(group, false);
+			list.add(billItemGroupItem);
+		}
+
+		group.setItems(list);
+
+		BillItemGroup foundGroup = billBrowserManager.getBillItemGroupById(billBrowserManager.addBillItemGroup(group).getId());
+
+		assertThat(foundGroup).isNotNull();
+		assertThat(billBrowserManager.getItemsByGroupId(foundGroup.getId())).hasSize(4);
+
+		assertThat(billBrowserManager.getAllBillItemGroupItems()).hasSize(4);
+
+		assertThat(billBrowserManager.getAllBillItemGroups()).hasSize(1);
+
+		foundGroup.setTitle(group.getTitle() + "group");
+
+		list.remove(0);
+
+		foundGroup.setItems(list);
+
+		BillItemGroup updatedGroup = billBrowserManager.updateBillItemGroup(foundGroup);
+
+		BillItemGroup foundUpdatedGroup = billBrowserManager.getBillItemGroupById(updatedGroup.getId());
+
+		assertThat(foundUpdatedGroup).isNotNull();
+		assertThat(billBrowserManager.getItemsByGroupId(foundUpdatedGroup.getId())).hasSize(3);
+
+		billBrowserManager.deleteBillItemGroup(foundUpdatedGroup.getId());
+
+		assertThat(billBrowserManager.getBillItemGroupById(foundUpdatedGroup.getId())).isNull();
 	}
 
 	private int setupTestBill(boolean usingSet) throws OHException {
