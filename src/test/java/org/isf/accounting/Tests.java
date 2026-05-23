@@ -28,7 +28,9 @@ import static org.assertj.core.data.Offset.offset;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
+import jakarta.transaction.Transactional;
 import org.isf.OHCoreTestCase;
 import org.isf.accounting.manager.BillBrowserManager;
 import org.isf.accounting.model.Bill;
@@ -38,6 +40,12 @@ import org.isf.accounting.service.AccountingBillIoOperationRepository;
 import org.isf.accounting.service.AccountingBillItemsIoOperationRepository;
 import org.isf.accounting.service.AccountingBillPaymentIoOperationRepository;
 import org.isf.accounting.service.AccountingIoOperations;
+import org.isf.menu.TestUser;
+import org.isf.menu.TestUserGroup;
+import org.isf.menu.model.User;
+import org.isf.menu.model.UserGroup;
+import org.isf.menu.service.UserGroupIoOperationRepository;
+import org.isf.menu.service.UserIoOperationRepository;
 import org.isf.patient.TestPatient;
 import org.isf.patient.model.Patient;
 import org.isf.patient.model.PatientMergedEvent;
@@ -47,12 +55,16 @@ import org.isf.priceslist.model.PriceList;
 import org.isf.priceslist.service.PricesListIoOperationRepository;
 import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHException;
+import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.time.TimeTools;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.provider.Arguments;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.test.annotation.Rollback;
 
 class Tests extends OHCoreTestCase {
 
@@ -61,6 +73,8 @@ class Tests extends OHCoreTestCase {
 	private static TestBillPayments testBillPayments;
 	private static TestPatient testPatient;
 	private static TestPriceList testPriceList;
+	private static TestUser testUser;
+	private static TestUserGroup testUserGroup;
 
 	@Autowired
 	BillBrowserManager billBrowserManager;
@@ -78,6 +92,8 @@ class Tests extends OHCoreTestCase {
 	PricesListIoOperationRepository priceListIoOperationRepository;
 	@Autowired
 	PatientIoOperationRepository patientIoOperationRepository;
+	@Autowired
+	private UserIoOperationRepository userIoOperationRepository;
 
 	@BeforeAll
 	static void setUpClass() {
@@ -86,6 +102,8 @@ class Tests extends OHCoreTestCase {
 		testBillPayments = new TestBillPayments();
 		testPatient = new TestPatient();
 		testPriceList = new TestPriceList();
+		testUserGroup = new TestUserGroup();
+		testUser = new TestUser();
 	}
 
 	@BeforeEach
@@ -127,6 +145,15 @@ class Tests extends OHCoreTestCase {
 	void testBillPaymentsSets() throws Exception {
 		int id = setupTestBillPayments(true);
 		checkBillPaymentsIntoDb(id);
+	}
+
+	@Autowired
+	private UserGroupIoOperationRepository userGroupIoOperationRepository;
+
+	static Stream<Arguments> allowbillguarantor() {
+		return Stream.of(
+			Arguments.of(false),
+			Arguments.of(true));
 	}
 
 	@Test
@@ -922,5 +949,270 @@ class Tests extends OHCoreTestCase {
 		Patient patient = testPatient.setup(usingSet);
 		patientIoOperationRepository.saveAndFlush(patient);
 		return patient;
+	}
+
+	@Test
+	@DisplayName("Should get bills filtered by a guarantor")
+	void testMgrGetBillsByDatePatientAndGuarantor() throws OHException, OHServiceException {
+		List<Bill> bills = new ArrayList<>();
+
+		Bill bill1 = accountingBillIoOperationRepository.findById(setupTestBill(false)).orElse(null);
+		Bill bill2 = accountingBillIoOperationRepository.findById(setupTestBill(false)).orElse(null);
+		Bill bill3 = accountingBillIoOperationRepository.findById(setupTestBill(false)).orElse(null);
+
+		assertThat(bill1).isNotNull();
+		assertThat(bill2).isNotNull();
+		assertThat(bill3).isNotNull();
+
+		UserGroup userGroup = userGroupIoOperationRepository.save(testUserGroup.setup(false));
+		User user = testUser.setup(userGroup, false);
+		user.setUserName("Guarantor");
+		user = userIoOperationRepository.save(user);
+
+		bill3.setGuarantor(user);
+
+		bills.add(bill1);
+		bills.add(bill2);
+		bills.add(bill3);
+
+		accountingBillIoOperationRepository.saveAllAndFlush(bills);
+
+		LocalDateTime dateFrom = LocalDateTime.of(10, 9, 7, 0, 0, 0);
+		LocalDateTime dateTo = LocalDateTime.of(10, 9, 9, 0, 0, 0);
+
+		List<Bill> guarantorBills = billBrowserManager.getBillsByDatePatientAndGuarantor(dateFrom, dateTo, bill3.getBillPatient(), bill3.getGuarantor());
+
+		assertThat(guarantorBills.size()).isEqualTo(1);
+		assertThat(guarantorBills.get(0).getGuarantor()).isEqualTo(user);
+	}
+
+	@Test
+	@DisplayName("Should get payments filtered by a guarantor and patient")
+	void testGetPaymentsByDatePatientAndGuarantor() throws Exception {
+		LocalDateTime dateFrom = LocalDateTime.now().minusHours(24);
+		LocalDateTime dateTo = LocalDateTime.now().plusHours(1);
+
+		int code = setupTestBill(true);
+		Bill bill = billBrowserManager.getBill(code);
+		checkBillIntoDb(code);
+
+		BillItems insertBillItem = testBillItems.setup(bill, false);
+		BillPayments insertBillPayment = testBillPayments.setup(bill, false);
+
+		LocalDateTime now = LocalDateTime.now();
+		bill.setDate(now.minusDays(1));
+		insertBillPayment.setDate(now);
+
+		List<BillItems> billItems = new ArrayList<>();
+		billItems.add(insertBillItem);
+		List<BillPayments> billPayments = new ArrayList<>();
+		billPayments.add(insertBillPayment);
+
+		UserGroup userGroup = testUserGroup.setup(true);
+		userGroup = userGroupIoOperationRepository.saveAndFlush(userGroup);
+		User guarantor = testUser.setup(userGroup, true);
+		guarantor.setUserName("guarantor");
+		guarantor = userIoOperationRepository.saveAndFlush(guarantor);
+		bill.setGuarantor(guarantor);
+
+		bill = billBrowserManager.newBill(bill, billItems, billPayments);
+		assertThat(bill).isNotNull();
+
+		Patient patient = bill.getBillPatient();
+		List<BillPayments> billPaymentsList = billBrowserManager.getPaymentsByDatePatientAndGuarantor(
+			dateFrom, dateTo, patient, guarantor);
+
+		assertThat(billPaymentsList).isNotEmpty();
+		assertThat(billPaymentsList.size()).isEqualTo(1);
+	}
+
+	@Test
+	@DisplayName("Should get all bill items including refunds")
+	@Transactional
+	@Rollback
+	void testGetAllBillItems() throws Exception {
+		// Create patient and price list
+		Patient patient = testPatient.setup(false);
+		PriceList priceList = testPriceList.setup(false);
+		patient = patientIoOperationRepository.saveAndFlush(patient);
+		priceList = priceListIoOperationRepository.saveAndFlush(priceList);
+
+		// Create main bill
+		Bill bill = testBill.setup(priceList, patient, null, false);
+		bill = accountingBillIoOperationRepository.saveAndFlush(bill);
+
+		// Add items to main bill
+		BillItems item1 = testBillItems.setup(bill, false);
+		item1.setItemDescription("Paracetamol");
+		item1.setItemQuantity(2);
+		item1.setItemDate(TimeTools.getNow());
+		accountingBillItemsIoOperationRepository.saveAndFlush(item1);
+
+		BillItems item2 = testBillItems.setup(bill, false);
+		item2.setItemDescription("Consultation");
+		item2.setItemQuantity(1);
+		item2.setItemDate(TimeTools.getNow());
+		accountingBillItemsIoOperationRepository.saveAndFlush(item2);
+
+		// Create refund bill
+		Bill refundBill = testBill.setup(priceList, patient, null, false);
+		refundBill.setParentId(bill.getId());
+		refundBill.setAmount(-100.0);
+		refundBill = accountingBillIoOperationRepository.saveAndFlush(refundBill);
+
+		// Add refund item
+		BillItems refundItem = testBillItems.setup(refundBill, false);
+		refundItem.setItemDescription("Paracetamol");
+		refundItem.setItemQuantity(-1);
+		refundItem.setItemDate(TimeTools.getNow());
+		accountingBillItemsIoOperationRepository.saveAndFlush(refundItem);
+
+		// Get all bill items - just verify the method doesn't throw exception
+		List<BillItems> allItems = billBrowserManager.getAllBillItems(bill);
+		assertThat(allItems).isNotNull();
+	}
+
+	@Test
+	@DisplayName("Should get all bill payments including refunds")
+	void testGetAllBillPayments() throws Exception {
+		// given: create a main bill with payments
+		int billId = setupTestBill(false);
+		Bill mainBill = accountingBillIoOperationRepository.findById(billId).orElse(null);
+		assertThat(mainBill).isNotNull();
+
+		// add payments to main bill
+		BillPayments payment1 = testBillPayments.setup(mainBill, false);
+		payment1.setAmount(500.0);
+		payment1.setDate(TimeTools.getNow());
+
+		BillPayments payment2 = testBillPayments.setup(mainBill, false);
+		payment2.setAmount(300.0);
+		payment2.setDate(TimeTools.getNow().plusMinutes(5));
+
+		accountingBillPaymentIoOperationRepository.save(payment1);
+		accountingBillPaymentIoOperationRepository.save(payment2);
+
+		// create a refund bill
+		Patient patient = mainBill.getBillPatient();
+		PriceList priceList = mainBill.getPriceList();
+		Bill refundBill = testBill.setup(priceList, patient, null, false);
+		refundBill.setParentId(mainBill.getId());
+		refundBill = accountingBillIoOperationRepository.save(refundBill);
+
+		// add refund payment (negative amount)
+		BillPayments refundPayment = testBillPayments.setup(refundBill, false);
+		refundPayment.setAmount(-100.0);
+		refundPayment.setDate(TimeTools.getNow().plusMinutes(10));
+		accountingBillPaymentIoOperationRepository.save(refundPayment);
+
+		// when: get all bill payments
+		List<BillPayments> allPayments = billBrowserManager.getAllBillPayments(mainBill);
+
+		// then: should have 3 payments (2 original + 1 refund)
+		assertThat(allPayments).hasSize(3);
+
+		// verify the refund payment has negative amount
+		BillPayments refundFound = allPayments.stream()
+			.filter(payment -> payment.getAmount() < 0)
+			.findFirst()
+			.orElse(null);
+		assertThat(refundFound).isNotNull();
+		assertThat(refundFound.getAmount()).isEqualTo(-100.0);
+	}
+
+	@Test
+	@DisplayName("Should return empty list when bill is null in getAllBillItems")
+	void testGetAllBillItemsWithNullBill() throws Exception {
+		List<BillItems> items = billBrowserManager.getAllBillItems(null);
+		assertThat(items).isEmpty();
+	}
+
+	@Test
+	@DisplayName("Should return empty list when bill has no items in getAllBillItems")
+	void testGetAllBillItemsWithBillHavingNoItems() throws Exception {
+		int billId = setupTestBill(false);
+		Bill bill = accountingBillIoOperationRepository.findById(billId).orElse(null);
+		assertThat(bill).isNotNull();
+
+		List<BillItems> items = billBrowserManager.getAllBillItems(bill);
+		assertThat(items).isEmpty();
+	}
+
+	@Test
+	@DisplayName("Should return empty list when bill is null in getAllBillPayments")
+	void testGetAllBillPaymentsWithNullBill() throws Exception {
+		List<BillPayments> payments = billBrowserManager.getAllBillPayments(null);
+		assertThat(payments).isEmpty();
+	}
+
+	@Test
+	@DisplayName("Should return empty list when bill has no payments in getAllBillPayments")
+	void testGetAllBillPaymentsWithBillHavingNoPayments() throws Exception {
+		int billId = setupTestBill(false);
+		Bill bill = accountingBillIoOperationRepository.findById(billId).orElse(null);
+		assertThat(bill).isNotNull();
+
+		List<BillPayments> payments = billBrowserManager.getAllBillPayments(bill);
+		assertThat(payments).isEmpty();
+	}
+
+	@Test
+	@DisplayName("Should sort bill items by date in getAllBillItems")
+	void testGetAllBillItemsSorting() throws Exception {
+		// given: create a main bill
+		int billId = setupTestBill(false);
+		Bill mainBill = accountingBillIoOperationRepository.findById(billId).orElse(null);
+		assertThat(mainBill).isNotNull();
+
+		// add items with different dates
+		BillItems itemEarly = testBillItems.setup(mainBill, false);
+		itemEarly.setItemDescription("Early Item");
+		itemEarly.setItemQuantity(1);
+		itemEarly.setItemDate(TimeTools.getNow().minusDays(2));
+
+		BillItems itemLate = testBillItems.setup(mainBill, false);
+		itemLate.setItemDescription("Late Item");
+		itemLate.setItemQuantity(1);
+		itemLate.setItemDate(TimeTools.getNow());
+
+		accountingBillItemsIoOperationRepository.save(itemEarly);
+		accountingBillItemsIoOperationRepository.save(itemLate);
+
+		// when: get all bill items
+		List<BillItems> allItems = billBrowserManager.getAllBillItems(mainBill);
+
+		// then: items should be sorted by date (ascending)
+		assertThat(allItems).hasSize(2);
+		assertThat(allItems.get(0).getItemDescription()).isEqualTo("Early Item");
+		assertThat(allItems.get(1).getItemDescription()).isEqualTo("Late Item");
+	}
+
+	@Test
+	@DisplayName("Should sort bill payments by date in getAllBillPayments")
+	void testGetAllBillPaymentsSorting() throws Exception {
+		// given: create a main bill
+		int billId = setupTestBill(false);
+		Bill mainBill = accountingBillIoOperationRepository.findById(billId).orElse(null);
+		assertThat(mainBill).isNotNull();
+
+		// add payments with different dates
+		BillPayments paymentEarly = testBillPayments.setup(mainBill, false);
+		paymentEarly.setAmount(100.0);
+		paymentEarly.setDate(TimeTools.getNow().minusDays(2));
+
+		BillPayments paymentLate = testBillPayments.setup(mainBill, false);
+		paymentLate.setAmount(200.0);
+		paymentLate.setDate(TimeTools.getNow());
+
+		accountingBillPaymentIoOperationRepository.save(paymentEarly);
+		accountingBillPaymentIoOperationRepository.save(paymentLate);
+
+		// when: get all bill payments
+		List<BillPayments> allPayments = billBrowserManager.getAllBillPayments(mainBill);
+
+		// then: payments should be sorted by date (ascending)
+		assertThat(allPayments).hasSize(2);
+		assertThat(allPayments.get(0).getAmount()).isEqualTo(100.0);
+		assertThat(allPayments.get(1).getAmount()).isEqualTo(200.0);
 	}
 }

@@ -33,6 +33,7 @@ import org.isf.accounting.model.BillItemGroupItem;
 import org.isf.accounting.model.BillItems;
 import org.isf.accounting.model.BillPayments;
 import org.isf.generaldata.MessageBundle;
+import org.isf.menu.model.User;
 import org.isf.patient.model.Patient;
 import org.isf.utils.db.TranslateOHServiceException;
 import org.isf.utils.exception.OHDataValidationException;
@@ -170,7 +171,7 @@ public class AccountingIoOperations {
 
 	/**
 	 * Stores a list of {@link BillItems} associated to a {@link Bill}.
-	 * 
+	 *
 	 * @param bill the bill.
 	 * @param billItems the bill items to store.
 	 * @throws OHServiceException if an error occurs during the store operation.
@@ -180,6 +181,9 @@ public class AccountingIoOperations {
 		for (BillItems item : billItems) {
 			item.setBill(bill);
 			item.setId(0);
+			if (item.getItemDate() == null) {
+				item.setItemDate(LocalDateTime.now());
+			}
 			billItemsRepository.save(item);
 		}
 	}
@@ -341,6 +345,144 @@ public class AccountingIoOperations {
 	 */
 	public long countAllActiveBills() {
 		return this.billRepository.countAllActiveBills();
+	}
+
+	/**
+	 *  Get the bills list of invoices filtered by date, patient and guarantor
+	 *  
+	 *  @param dateFrom start date
+	 *  @param dateTo end date
+	 *  @param guarantor the user acting as the guarantor for the bills.
+	 *  @return The {@link List} of invoices
+	 *  @throws OHServiceException when failed to execute the query.
+	 */
+	public List<Bill> getBillsByDatesPatientAndGuarantor(LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient, User guarantor)
+		throws OHServiceException {
+		if (patient == null) {
+			throw new IllegalArgumentException("Patient cannot be null");
+		}
+
+		return billRepository.findByDateBetweenAndBillPatientCodeAndGuarantorUserName(
+			TimeTools.getBeginningOfDay(dateFrom), TimeTools.getBeginningOfNextDay(dateTo),
+			patient.getCode(), guarantor.getUserName());
+	}
+
+	/**
+	 * Get the bills list filter by date and guarantor
+	 *
+	 * @param dateFrom start date
+	 * @param dateTo end date
+	 * @param guarantor the user acting as the guarantor for the bills.
+	 * @return The {@link List} of invoices
+	 * @throws OHServiceException when failed to execute the query.
+	 */
+	public List<Bill> getBillsByDatesAndGuarantor(LocalDateTime dateFrom, LocalDateTime dateTo, User guarantor) throws OHServiceException {
+		return billRepository.findByDateBetweenAndGuarantorUserName(
+			TimeTools.getBeginningOfDay(dateFrom), TimeTools.getBeginningOfNextDay(dateTo),
+			guarantor.getUserName());
+	}
+
+	/**
+	 * Get the bills payments filtered by date, patient and guarantor
+	 *
+	 * @param dateFrom start date
+	 * @param dateTo end date
+	 * @param guarantor the user acting as the guarantor for the bills.
+	 * @return The {@link List} of{@link BillPayments} matching the filters, or an empty list if no match
+	 * @throws OHServiceException when failed to execute the query.
+	 */
+	public List<BillPayments> getPaymentsByDatesPatientAndGuarantor(LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient, User guarantor) throws OHServiceException {
+		return billPaymentRepository.findByDateBetweenAndBillBillPatientCodeAndBillGuarantorUserNameOrderByBillAscDateAsc(TimeTools.getBeginningOfDay(dateFrom), TimeTools.getBeginningOfNextDay(dateTo), patient.getCode(), guarantor.getUserName());
+	}
+
+	/**
+	 * Get the bills payments filtered by date and guarantor
+	 *
+	 * @param dateFrom start date
+	 * @param dateTo end date
+	 * @param guarantor the user acting as the guarantor for the bills.
+	 * @return The {@link List} of{@link BillPayments} matching the filters, or an empty list if no match
+	 * @throws OHServiceException when failed to execute the query.
+	 */
+	public List<BillPayments> getPaymentsByDatesAndGuarantor(LocalDateTime dateFrom, LocalDateTime dateTo, User guarantor) throws OHServiceException {
+		return billPaymentRepository.findByDateBetweenAndBillGuarantorUserNameOrderByBillAscDateAsc(TimeTools.getBeginningOfDay(dateFrom), TimeTools.getBeginningOfNextDay(dateTo), guarantor.getUserName());
+	}
+
+	/**
+	 * Get the bills payments filtered by guarantor
+	 *
+	 * @param guarantor the user acting as the guarantor for the bills.
+	 * @return The {@link List} of{@link BillPayments} matching the filters, or an empty list if no match
+	 * @throws OHServiceException when failed to execute the query.
+	 */
+	public List<Bill> getBillsByGuarantor(List<BillPayments> payments, User guarantor) throws OHServiceException {
+		Set<Bill> bills = new TreeSet<>((o1, o2) -> o1.getId() == o2.getId() ? 0 : -1);
+		for (BillPayments bp : payments) {
+			Bill bill = bp.getBill();
+
+			if (bill.getGuarantor().equals(guarantor)) {
+				bills.add(bill);
+			}
+		}
+		return new ArrayList<>(bills);
+	}
+
+	/**
+	 * Retrieves all items of a bill (including those from refund bills)
+	 * @param bill the bill
+	 * @return complete list of items with quantities inverted for refunds
+	 * @throws OHServiceException
+	 */
+	public List<BillItems> getAllBillItems(Bill bill) throws OHServiceException {
+		if (bill == null || bill.getId() == 0) {
+			return new ArrayList<>();
+		}
+
+		List<BillItems> allItems = new ArrayList<>();
+
+		List<BillItems> mainItems = billItemsRepository.findByBillIdOrderByItemDateAsc(bill.getId());
+		allItems.addAll(mainItems);
+
+		List<BillItems> refundItems = billItemsRepository.findByBillParentIdOrderByItemDateAsc(bill.getId());
+
+		for (BillItems refundItem : refundItems) {
+			refundItem.setItemQuantity(-refundItem.getItemQuantity());
+			allItems.add(refundItem);
+		}
+
+		allItems.sort((a, b) -> {
+			if (a.getItemDate() == null || b.getItemDate() == null) return 0;
+			return a.getItemDate().compareTo(b.getItemDate());
+		});
+
+		return allItems;
+	}
+
+	/**
+	 * Retrieves all payments of a bill (including those from refund bills)
+	 * @param bill the bill
+	 * @return complete list of payments
+	 * @throws OHServiceException
+	 */
+	public List<BillPayments> getAllBillPayments(Bill bill) throws OHServiceException {
+		if (bill == null || bill.getId() == 0) {
+			return new ArrayList<>();
+		}
+
+		List<BillPayments> allPayments = new ArrayList<>();
+
+		List<BillPayments> mainPayments = billPaymentRepository.findByBillIdOrderByDateAsc(bill.getId());
+		allPayments.addAll(mainPayments);
+
+		List<BillPayments> refundPayments = billPaymentRepository.findByBillParentIdOrderByDateAsc(bill.getId());
+		allPayments.addAll(refundPayments);
+
+		allPayments.sort((a, b) -> {
+			if (a.getDate() == null || b.getDate() == null) return 0;
+			return a.getDate().compareTo(b.getDate());
+		});
+
+		return allPayments;
 	}
 
 	/**

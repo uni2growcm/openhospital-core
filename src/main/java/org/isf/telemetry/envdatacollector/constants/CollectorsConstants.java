@@ -55,6 +55,7 @@ public interface CollectorsConstants {
 
 	// TEL_OH
 	String APP_STOCKMVTONBILLSAVE = "stockmvtonbillsave";
+	String APP_ALLOWBILLGUARANTOR = "allowbillguarantor";
 	String APP_VERSION = "app_version";
 	String APP_MODE = "app_mode";
 	String APP_DEMODATA = "app_demodata";

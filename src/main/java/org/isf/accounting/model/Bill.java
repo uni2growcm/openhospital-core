@@ -38,6 +38,7 @@ import jakarta.persistence.Version;
 import jakarta.validation.constraints.NotNull;
 
 import org.isf.admission.model.Admission;
+import org.isf.menu.model.User;
 import org.isf.patient.model.Patient;
 import org.isf.priceslist.model.PriceList;
 import org.isf.reductionplan.model.ReductionPlan;
@@ -120,6 +121,12 @@ public class Bill extends Auditable<String> implements Cloneable, Comparable<Bil
 	@ManyToOne
 	@JoinColumn(name = "BLL_WARD_ID")
 	private Ward ward;
+	
+	@JoinColumn(name = "BLL_GUARANTOR")
+	private User guarantor;
+
+	@Column(name = "BLL_PARENT_ID")
+	private Integer parentId;
 
 	@Transient
 	private volatile int hashCode;
@@ -142,7 +149,8 @@ public class Bill extends Auditable<String> implements Cloneable, Comparable<Bil
 	public Bill(int id, LocalDateTime date, LocalDateTime update,
 				boolean isList, PriceList list, String listName, boolean isPatient,
 				Patient billPatient, String patName, String status, Double amount,
-				Double balance, int lock, String user, Admission admission, ReductionPlan reductionPlan, Ward ward) {
+				Double balance, int lock, String user, Admission admission,
+				ReductionPlan reductionPlan, Ward ward, User guarantor) {
 		super();
 		this.id = id;
 		this.date = TimeTools.truncateToSeconds(date);
@@ -161,6 +169,7 @@ public class Bill extends Auditable<String> implements Cloneable, Comparable<Bil
 		this.admission = admission;
 		this.reductionPlan = reductionPlan;
 		this.ward = ward;
+		this.guarantor = guarantor;
 	}
 
 	public Bill(int id, LocalDateTime date, LocalDateTime update,
@@ -295,6 +304,22 @@ public class Bill extends Auditable<String> implements Cloneable, Comparable<Bil
 
 	public void setWard(Ward ward) {
 		this.ward = ward;
+	}
+
+	public User getGuarantor() {
+		return guarantor;
+	}
+
+	public void setGuarantor(User guarantor) {
+		this.guarantor = guarantor;
+	}
+
+	public Integer getParentId() {
+		return parentId;
+	}
+
+	public void setParentId(Integer parentId) {
+		this.parentId = parentId;
 	}
 
 	@Override
