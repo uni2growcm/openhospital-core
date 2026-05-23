@@ -442,7 +442,6 @@ public class BillBrowserManager {
 		return ioOperations.getAllBillPayments(bill);
 	}
 
-
 	/**
 	 * Check if a patient has pending prescriptions (therapies, exams, operations)
 	 * that haven't been billed yet.

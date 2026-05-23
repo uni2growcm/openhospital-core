@@ -398,6 +398,7 @@ public class AccountingIoOperations {
 			|| hasExamPrescription(patientCode)
 			|| hasOperationPrescription(patientCode);
 	}
+
 	/**
 	 * Get the bills list of invoices filtered by date, patient and guarantor
 	 *
