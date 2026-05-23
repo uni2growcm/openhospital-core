@@ -1223,27 +1223,26 @@ class Tests extends OHCoreTestCase {
 	}
 
 	@Test
-	void testGetBillsPageable() throws Exception {
-
+	@DisplayName("Should get paginated bills with no filters")
+	void testGetBillsWithFiltersNoFilters() throws Exception {
 		int id = setupTestBill(false);
 		Bill foundBill = accountingBillIoOperationRepository.findById(id).orElse(null);
 		assertThat(foundBill).isNotNull();
 
 		int page = 0;
 		int size = 10;
-		PagedResponse<Bill> response = billBrowserManager.getBillsPageable(null, null, null, null, page, size);
+		Page<Bill> billPage = billBrowserManager.getBillsWithFilters(null, null, null, null, null, page, size);
 
-		assertThat(response).isNotNull();
-		assertThat(response.getData()).isNotEmpty();
-		assertThat(response.getPageInfo()).isNotNull();
-		assertThat(response.getData().size()).isLessThanOrEqualTo(size);
-		assertThat(response.getPageInfo().getPage()).isEqualTo(page);
-		assertThat(response.getPageInfo().getSize()).isEqualTo(size);
+		assertThat(billPage).isNotNull();
+		assertThat(billPage.getContent()).isNotEmpty();
+		assertThat(billPage.getContent().size()).isLessThanOrEqualTo(size);
+		assertThat(billPage.getNumber()).isEqualTo(page);
+		assertThat(billPage.getSize()).isEqualTo(size);
 	}
 
 	@Test
-	void testGetBillsPageableWithStatus() throws Exception {
-
+	@DisplayName("Should get paginated bills filtered by status")
+	void testGetBillsWithFiltersByStatus() throws Exception {
 		int id = setupTestBill(false);
 		Bill foundBill = accountingBillIoOperationRepository.findById(id).orElse(null);
 		assertThat(foundBill).isNotNull();
@@ -1252,18 +1251,18 @@ class Tests extends OHCoreTestCase {
 
 		int page = 0;
 		int size = 10;
-		PagedResponse<Bill> response = billBrowserManager.getBillsPageable("O", null, null, null, page, size);
+		Page<Bill> billPage = billBrowserManager.getBillsWithFilters("O", null, null, null, null, page, size);
 
-		assertThat(response).isNotNull();
-		assertThat(response.getData()).isNotEmpty();
-		for (Bill bill : response.getData()) {
+		assertThat(billPage).isNotNull();
+		assertThat(billPage.getContent()).isNotEmpty();
+		for (Bill bill : billPage.getContent()) {
 			assertThat(bill.getStatus()).isEqualTo("O");
 		}
 	}
 
 	@Test
-	void testGetBillsPageableWithDateRange() throws Exception {
-
+	@DisplayName("Should get paginated bills filtered by date range")
+	void testGetBillsWithFiltersByDateRange() throws Exception {
 		int id = setupTestBill(false);
 		Bill foundBill = accountingBillIoOperationRepository.findById(id).orElse(null);
 		assertThat(foundBill).isNotNull();
@@ -1272,34 +1271,16 @@ class Tests extends OHCoreTestCase {
 
 		int page = 0;
 		int size = 10;
-		PagedResponse<Bill> response = billBrowserManager.getBillsPageable(null, dateFrom, dateTo, null, page, size);
+		Page<Bill> billPage = billBrowserManager.getBillsWithFilters(null, dateFrom, dateTo, null, null, page, size);
 
-		assertThat(response).isNotNull();
-		assertThat(response.getData()).isNotEmpty();
-		assertThat(response.getData()).contains(foundBill);
+		assertThat(billPage).isNotNull();
+		assertThat(billPage.getContent()).isNotEmpty();
+		assertThat(billPage.getContent()).contains(foundBill);
 	}
 
 	@Test
-	void testGetBillsPageableWithPatient() throws Exception {
-
-		int id = setupTestBill(false);
-		Bill foundBill = accountingBillIoOperationRepository.findById(id).orElse(null);
-		assertThat(foundBill).isNotNull();
-		Patient patient = foundBill.getBillPatient();
-
-		int page = 0;
-		int size = 10;
-		PagedResponse<Bill> response = billBrowserManager.getBillsPageable(null, null, null, patient, page, size);
-
-		assertThat(response).isNotNull();
-		assertThat(response.getData()).isNotEmpty();
-		for (Bill bill : response.getData()) {
-			assertThat(bill.getBillPatient().getCode()).isEqualTo(patient.getCode());
-		}
-	}
-
-	@Test
-	void testGetBillsPageableWithAllFilters() throws Exception {
+	@DisplayName("Should get paginated bills with all filters")
+	void testGetBillsWithFiltersAllFilters() throws Exception {
 		int id = setupTestBill(false);
 		Bill foundBill = accountingBillIoOperationRepository.findById(id).orElse(null);
 		assertThat(foundBill).isNotNull();
@@ -1311,52 +1292,26 @@ class Tests extends OHCoreTestCase {
 
 		int page = 0;
 		int size = 10;
-		PagedResponse<Bill> response = billBrowserManager.getBillsPageable("O", dateFrom, dateTo, patient, page, size);
+		Page<Bill> billPage = billBrowserManager.getBillsWithFilters("O", dateFrom, dateTo, patient, null, page, size);
 
-		assertThat(response).isNotNull();
-		assertThat(response.getData()).isNotEmpty();
-		assertThat(response.getData()).contains(foundBill);
+		assertThat(billPage).isNotNull();
+		assertThat(billPage.getContent()).isNotEmpty();
+		assertThat(billPage.getContent()).contains(foundBill);
 	}
 
 	@Test
-	void testGetBillsPageablePaginationNavigation() throws Exception {
-		for (int i = 0; i < 15; i++) {
-			Patient patient = testPatient.setup(false);
-			PriceList priceList = testPriceList.setup(false);
-			Bill bill = testBill.setup(priceList, patient, null, false);
-			priceListIoOperationRepository.saveAndFlush(priceList);
-			patientIoOperationRepository.saveAndFlush(patient);
-			accountingBillIoOperationRepository.saveAndFlush(bill);
-		}
-		int size = 10;
-		PagedResponse<Bill> page0 = billBrowserManager.getBillsPageable(null, null, null, null, 0, size);
-		long totalElements = page0.getPageInfo().getTotalNbOfElements();
-		int totalPages = page0.getPageInfo().getTotalPages();
-
-		assertThat(page0.getData().size()).isLessThanOrEqualTo(size);
-		assertThat(totalPages).isGreaterThan(0);
-
-		if (totalPages > 1) {
-			PagedResponse<Bill> page1 = billBrowserManager.getBillsPageable(null, null, null, null, 1, size);
-			assertThat(page1).isNotNull();
-			assertThat(page1.getData().size()).isLessThanOrEqualTo(size);
-		}
-	}
-
-	@Test
-	void testCountBillsWithFilters() throws Exception {
-
+	@DisplayName("Should count bills with no filters")
+	void testCountBillsWithFiltersNoFilters() throws Exception {
 		int id = setupTestBill(false);
 		Bill foundBill = accountingBillIoOperationRepository.findById(id).orElse(null);
 		assertThat(foundBill).isNotNull();
 
-
-		long count = billBrowserManager.countBills(null, null, null, null);
-
+		long count = billBrowserManager.countBillsWithFilters(null, null, null, null, null);
 		assertThat(count).isGreaterThan(0);
 	}
 
 	@Test
+	@DisplayName("Should count bills filtered by status")
 	void testCountBillsWithFiltersByStatus() throws Exception {
 		int id = setupTestBill(false);
 		Bill foundBill = accountingBillIoOperationRepository.findById(id).orElse(null);
@@ -1364,27 +1319,52 @@ class Tests extends OHCoreTestCase {
 		foundBill.setStatus("O");
 		accountingBillIoOperationRepository.saveAndFlush(foundBill);
 
-		long count = billBrowserManager.countBills("O", null, null, null);
-
+		long count = billBrowserManager.countBillsWithFilters("O", null, null, null, null);
 		assertThat(count).isGreaterThan(0);
 	}
 
 	@Test
-	void testEmptyPageResponse() throws Exception {
-		LocalDateTime dateFrom = LocalDateTime.of(1970, 1, 1, 0, 0);
-		LocalDateTime dateTo = LocalDateTime.of(1970, 1, 2, 0, 0);
+	@DisplayName("Should get paginated bills with guarantor filter")
+	void testGetBillsWithFiltersByGuarantor() throws Exception {
+		UserGroup userGroup = testUserGroup.setup(false);
+		userGroup = userGroupIoOperationRepository.saveAndFlush(userGroup);
+		User guarantor = testUser.setup(userGroup, false);
+		guarantor.setUserName("TestGuarantor");
+		guarantor = userIoOperationRepository.saveAndFlush(guarantor);
+
+		for (int i = 0; i < 5; i++) {
+			Patient patient = testPatient.setup(false);
+			PriceList priceList = testPriceList.setup(false);
+			Bill bill = testBill.setup(priceList, patient, null, false);
+			bill.setGuarantor(guarantor);
+			priceListIoOperationRepository.saveAndFlush(priceList);
+			patientIoOperationRepository.saveAndFlush(patient);
+			accountingBillIoOperationRepository.saveAndFlush(bill);
+		}
+
+		for (int i = 0; i < 5; i++) {
+			Patient patient = testPatient.setup(false);
+			PriceList priceList = testPriceList.setup(false);
+			Bill bill = testBill.setup(priceList, patient, null, false);
+			priceListIoOperationRepository.saveAndFlush(priceList);
+			patientIoOperationRepository.saveAndFlush(patient);
+			accountingBillIoOperationRepository.saveAndFlush(bill);
+		}
 
 		int page = 0;
 		int size = 10;
-		PagedResponse<Bill> response = billBrowserManager.getBillsPageable(null, dateFrom, dateTo, null, page, size);
+		Page<Bill> billPage = billBrowserManager.getBillsWithFilters(null, null, null, null, guarantor, page, size);
 
-		assertThat(response).isNotNull();
-		assertThat(response.getData()).isEmpty();
-		assertThat(response.getPageInfo().getTotalNbOfElements()).isEqualTo(0);
-		assertThat(response.getPageInfo().getTotalPages()).isEqualTo(0);
+		assertThat(billPage).isNotNull();
+		assertThat(billPage.getContent()).isNotEmpty();
+		assertThat(billPage.getContent().size()).isEqualTo(5);
+		for (Bill bill : billPage.getContent()) {
+			assertThat(bill.getGuarantor()).isEqualTo(guarantor);
+		}
 	}
 
 	@Test
+	@DisplayName("Should verify PageInfo from Spring Page")
 	void testPageInfoFromSpringPage() throws Exception {
 		int id = setupTestBill(false);
 		Bill foundBill = accountingBillIoOperationRepository.findById(id).orElse(null);
@@ -1393,7 +1373,7 @@ class Tests extends OHCoreTestCase {
 		int page = 0;
 		int size = 10;
 		Pageable pageable = PageRequest.of(page, size);
-		Page<Bill> springPage = accountingBillIoOperationRepository.findBillsWithFilters(null, null, null, null, pageable);
+		Page<Bill> springPage = accountingBillIoOperationRepository.findBillsWithFilters(null, null, null, null, null, pageable);
 
 		PageInfo pageInfo = PageInfo.from(springPage);
 		assertThat(pageInfo).isNotNull();

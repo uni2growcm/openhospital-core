@@ -39,8 +39,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
-import org.isf.utils.pagination.PagedResponse;
-import org.isf.utils.pagination.PageInfo;
 import org.springframework.data.domain.Page;
 
 /**
@@ -338,39 +336,36 @@ public class AccountingIoOperations {
 	}
 
 	/**
-	 * Count bills with filters
+	 * Get paginated bills with filters returning Page (pour le nouveau GUI)
 	 */
-	public long countBills(String status, LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient) throws OHServiceException {
-		LocalDateTime from = dateFrom != null ? TimeTools.getBeginningOfDay(dateFrom) : null;
-		LocalDateTime to = dateTo != null ? TimeTools.getBeginningOfNextDay(dateTo) : null;
-		return billRepository.countBillsWithFilters(status, from, to, patient);
-	}
-
-
-	/**
-	 * Get paginated bills with filters returning PagedResponse (pour le nouveau GUI)
-	 */
-	public PagedResponse<Bill> getBillsPageable(String status, LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient, int page, int size) throws OHServiceException {
+	public Page<Bill> getBillsWithFilters(String status, LocalDateTime dateFrom, LocalDateTime dateTo,
+	                                      Patient patient, User guarantor, int page, int size) throws OHServiceException {
 		LocalDateTime from = dateFrom != null ? TimeTools.getBeginningOfDay(dateFrom) : null;
 		LocalDateTime to = dateTo != null ? TimeTools.getBeginningOfNextDay(dateTo) : null;
 		Pageable pageable = PageRequest.of(page, size);
-		Page<Bill> billPage = billRepository.findBillsWithFilters(status, from, to, patient, pageable);
-
-		PagedResponse<Bill> response = new PagedResponse<>();
-		response.setData(billPage.getContent());
-		response.setPageInfo(PageInfo.from(billPage));
-		return response;
+		return billRepository.findBillsWithFilters(status, from, to, patient, guarantor, pageable);
 	}
 
 	/**
 	 * Get paginated bills with filters returning List (pour l'ancien GUI)
 	 */
-	public List<Bill> getBills(String status, LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient, int limit, int offset) throws OHServiceException {
+	public List<Bill> getBillsListWithFilters(String status, LocalDateTime dateFrom, LocalDateTime dateTo,
+	                                          Patient patient, User guarantor, int limit, int offset) throws OHServiceException {
 		LocalDateTime from = dateFrom != null ? TimeTools.getBeginningOfDay(dateFrom) : null;
 		LocalDateTime to = dateTo != null ? TimeTools.getBeginningOfNextDay(dateTo) : null;
 		Pageable pageable = PageRequest.of(offset / limit, limit);
-		Page<Bill> billPage = billRepository.findBillsWithFilters(status, from, to, patient, pageable);
+		Page<Bill> billPage = billRepository.findBillsWithFilters(status, from, to, patient, guarantor, pageable);
 		return billPage.getContent();
+	}
+
+	/**
+	 * Count bills with filters
+	 */
+	public long countBillsWithFilters(String status, LocalDateTime dateFrom, LocalDateTime dateTo,
+	                                  Patient patient, User guarantor) throws OHServiceException {
+		LocalDateTime from = dateFrom != null ? TimeTools.getBeginningOfDay(dateFrom) : null;
+		LocalDateTime to = dateTo != null ? TimeTools.getBeginningOfNextDay(dateTo) : null;
+		return billRepository.countBillsWithFilters(status, from, to, patient, guarantor);
 	}
 
 	/**

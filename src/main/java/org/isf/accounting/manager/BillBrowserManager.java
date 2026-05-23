@@ -37,9 +37,9 @@ import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.model.OHExceptionMessage;
 import org.isf.utils.time.TimeTools;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.isf.utils.pagination.PagedResponse;
 
 @Component
 public class BillBrowserManager {
@@ -364,36 +364,24 @@ public class BillBrowserManager {
 	}
 
 	/**
-	 * Get paginated bills with filters
-	 * @param status Status of bill (O=open, C=closed, null=all)
-	 * @param dateFrom Start date
-	 * @param dateTo End date
-	 * @param patient Patient filter (can be null)
-	 * @param limit Number of items per page
-	 * @param offset Starting index (page number * limit)
-	 * @return List of bills
+	 * Get paginated bills with filters returning Page (nouveau GUI)
 	 */
-	public List<Bill> getBills(String status, LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient, int limit, int offset) throws OHServiceException {
-		return ioOperations.getBills(status, dateFrom, dateTo, patient, limit, offset);
+	public Page<Bill> getBillsWithFilters(String status, LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient, User guarantor, int page, int size) throws OHServiceException {
+		return ioOperations.getBillsWithFilters(status, dateFrom, dateTo, patient, guarantor, page, size);
+	}
+
+	/**
+	 * Get paginated bills with filters returning List (ancien GUI)
+	 */
+	public List<Bill> getBillsListWithFilters(String status, LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient, User guarantor, int limit, int offset) throws OHServiceException {
+		return ioOperations.getBillsListWithFilters(status, dateFrom, dateTo, patient, guarantor, limit, offset);
 	}
 
 	/**
 	 * Count bills with filters
-	 * @param status Status of bill (O=open, C=closed, null=all)
-	 * @param dateFrom Start date
-	 * @param dateTo End date
-	 * @param patient Patient filter (can be null)
-	 * @return Total count of bills matching filters
 	 */
-	public long countBills(String status, LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient) throws OHServiceException {
-		return ioOperations.countBills(status, dateFrom, dateTo, patient);
-	}
-
-	/**
-	 * Returns paged list of bills with filters
-	 */
-	public PagedResponse<Bill> getBillsPageable(String status, LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient, int page, int size) throws OHServiceException {
-		return ioOperations.getBillsPageable(status, dateFrom, dateTo, patient, page, size);
+	public long countBillsWithFilters(String status, LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient, User guarantor) throws OHServiceException {
+		return ioOperations.countBillsWithFilters(status, dateFrom, dateTo, patient, guarantor);
 	}
 
 	/**

@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.isf.accounting.model.Bill;
+import org.isf.menu.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -72,30 +73,33 @@ public interface AccountingBillIoOperationRepository extends JpaRepository<Bill,
 	@Query("select count(b) from Bill b where active=1")
 	long countAllActiveBills();
 
-	@Query("SELECT COUNT(b) FROM Bill b WHERE " +
-		"(:status IS NULL OR b.status = :status) AND " +
-		"(:dateFrom IS NULL OR b.date >= :dateFrom) AND " +
-		"(:dateTo IS NULL OR b.date <= :dateTo) AND " +
-		"(:patient IS NULL OR b.billPatient = :patient)")
-	long countBillsWithFilters(@Param("status") String status,
-	                           @Param("dateFrom") LocalDateTime dateFrom,
-	                           @Param("dateTo") LocalDateTime dateTo,
-	                           @Param("patient") Patient patient);
+	@Query("SELECT b FROM Bill b WHERE "
+		+ "(:status IS NULL OR b.status = :status) AND "
+		+ "(:dateFrom IS NULL OR b.date >= :dateFrom) AND "
+		+ "(:dateTo IS NULL OR b.date < :dateTo) AND "
+		+ "(:patient IS NULL OR b.billPatient = :patient) AND "
+		+ "(:guarantor IS NULL OR b.guarantor = :guarantor) "
+		+ "ORDER BY b.date DESC")
+	Page<Bill> findBillsWithFilters(
+		@Param("status") String status,
+		@Param("dateFrom") LocalDateTime dateFrom,
+		@Param("dateTo") LocalDateTime dateTo,
+		@Param("patient") Patient patient,
+		@Param("guarantor") User guarantor,
+		Pageable pageable);
 
-	/**
-	 * Find bills with filters using native query with LIMIT and OFFSET
-	 */
-	@Query("SELECT b FROM Bill b WHERE " +
-		"(:status IS NULL OR b.status = :status) AND " +
-		"(:dateFrom IS NULL OR b.date >= :dateFrom) AND " +
-		"(:dateTo IS NULL OR b.date <= :dateTo) AND " +
-		"(:patient IS NULL OR b.billPatient = :patient) " +
-		"ORDER BY b.date DESC")
-	Page<Bill> findBillsWithFilters(@Param("status") String status,
-	                                @Param("dateFrom") LocalDateTime dateFrom,
-	                                @Param("dateTo") LocalDateTime dateTo,
-	                                @Param("patient") Patient patient,
-	                                Pageable pageable);
+	@Query("SELECT COUNT(b) FROM Bill b WHERE "
+		+ "(:status IS NULL OR b.status = :status) AND "
+		+ "(:dateFrom IS NULL OR b.date >= :dateFrom) AND "
+		+ "(:dateTo IS NULL OR b.date < :dateTo) AND "
+		+ "(:patient IS NULL OR b.billPatient = :patient) AND "
+		+ "(:guarantor IS NULL OR b.guarantor = :guarantor)")
+	long countBillsWithFilters(
+		@Param("status") String status,
+		@Param("dateFrom") LocalDateTime dateFrom,
+		@Param("dateTo") LocalDateTime dateTo,
+		@Param("patient") Patient patient,
+		@Param("guarantor") User guarantor);
 
 	List<Bill> findByDateBetweenAndGuarantorUserName(LocalDateTime dateFrom, LocalDateTime dateTo, String userName);
 
