@@ -54,8 +54,8 @@ public class AccountingIoOperations {
 	private AccountingBillItemsIoOperationRepository billItemsRepository;
 
 	public AccountingIoOperations(AccountingBillIoOperationRepository accountingBillIoOperationRepository,
-	                              AccountingBillPaymentIoOperationRepository accountingBillPaymentIoOperationRepository,
-	                              AccountingBillItemsIoOperationRepository accountingBillItemsIoOperationRepository) {
+		AccountingBillPaymentIoOperationRepository accountingBillPaymentIoOperationRepository,
+		AccountingBillItemsIoOperationRepository accountingBillItemsIoOperationRepository) {
 		this.billRepository = accountingBillIoOperationRepository;
 		this.billPaymentRepository = accountingBillPaymentIoOperationRepository;
 		this.billItemsRepository = accountingBillItemsIoOperationRepository;

@@ -218,8 +218,8 @@ public class BillBrowserManager {
 	@Transactional(rollbackFor = OHServiceException.class)
 	@TranslateOHServiceException
 	public Bill updateBill(Bill updateBill,
-	                       List<BillItems> billItems,
-	                       List<BillPayments> billPayments) throws OHServiceException {
+		List<BillItems> billItems,
+		List<BillPayments> billPayments) throws OHServiceException {
 		validateBill(updateBill, billPayments);
 		Bill updatedBill = updateBill(updateBill);
 		newBillItems(updateBill.getId(), billItems);
