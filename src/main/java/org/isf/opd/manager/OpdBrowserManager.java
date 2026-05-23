@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2024 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -43,6 +43,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 /**
  * @author Vero
@@ -206,7 +209,8 @@ public class OpdBrowserManager {
 	 */
 	public List<Opd> getOpd(Ward ward, String diseaseTypeCode, String diseaseCode, LocalDate dateFrom, LocalDate dateTo, int ageFrom, int ageTo, char sex, char newPatient, String user, int page, int size) throws OHServiceException {
 		Pageable pageable = PageRequest.of(page, size);
-		return ioOperations.getOpdList(ward, diseaseTypeCode, diseaseCode, dateFrom, dateTo, ageFrom, ageTo, sex,newPatient, user, pageable);
+		Page<Opd> opdPage = ioOperations.getOpdList(ward, diseaseTypeCode, diseaseCode, dateFrom, dateTo, ageFrom, ageTo, sex, newPatient, user, pageable);
+		return opdPage.getContent();
 	}
 
 	/**
@@ -403,5 +407,59 @@ public class OpdBrowserManager {
 	 */
 	public long countByPatientId(int patientcode) throws OHServiceException {
 		return ioOperations.countByPatientId(patientcode);
+	}
+
+	/**
+	 * Retrieves a page of {@link Opd}s within specified dates and parameters.
+	 *
+	 * @param ward - the ward
+	 * @param diseaseTypeCode the diesease type
+	 * @param diseaseCode the code of the diesease
+	 * @param dateTo the begininng date
+	 * @param dateFrom the ending date
+	 * @param ageFrom the starting age
+	 * @param ageTo the ending age
+	 * @param sex the patients gender to consider
+	 * @param newPatient if list should contain only new patients
+	 * @param page the page
+	 * @param size the size of the page
+	 * @return a list of OPD or an empty list
+	 * @throws  OHServiceException when fails to fetch
+	 */
+	public Page<Opd> getOpds(
+		Ward ward, String diseaseTypeCode, String diseaseCode, LocalDate dateFrom, LocalDate dateTo, int ageFrom, int ageTo,
+		char sex, char newPatient, int page, int size) throws OHServiceException {
+		Pageable pageable = PageRequest.of(page, size);
+		return ioOperations.getOpdList(ward, diseaseTypeCode, diseaseCode, dateFrom, dateTo, ageFrom, ageTo, sex, newPatient, null, pageable);
+	}
+
+	/**
+	 * Retrieves a page of {@link Opd}s within specified dates and parameters.
+	 *
+	 * @param patientCode the patient's code
+	 * @param page the page
+	 * @param size the size of the page
+	 * @return a list of OPD or an empty list
+	 * @throws  OHServiceException when fails to fetch
+	 */
+	public Page<Opd> getOpdListByPatientId(int patientCode, int page, int size)
+		throws OHServiceException {
+		Pageable pageable = PageRequest.of(page, size);
+		return ioOperations.getOpdListByPatientId(patientCode, pageable);
+	}
+
+	/**
+	 * Retrieves a page of {@link Opd}s within specified dates and parameters.
+	 *
+	 * @param progYear
+	 * @param page the page
+	 * @param size the size of the page
+	 * @return a list of OPD or an empty list
+	 * @throws  OHServiceException when fails to fetch
+	 */
+	public Page<Opd> getOpdListByProgYear(int progYear, int page, int size)
+		throws OHServiceException {
+		Pageable pageable = PageRequest.of(page, size);
+		return ioOperations.getOpdListByProgYear(progYear, pageable);
 	}
 }

@@ -117,6 +117,7 @@ source step_a120_settings.sql;
 source step_a121_create_table_country.sql;
 source step_a122_alter_patient_add_new_fields.sql;
 source step_a123_menuitem_add_country_menu.sql;
+source step_a124_add_refering_and_receiving_hospitals_in_table_opd.sql;
 source u2g_update/step_01_add_column_medicaldsr.sql;
 source u2g_update/step_02_add_collumn_exa_target_to_table_oh_exam.sql;
 source u2g_update/step_03_mortuarystays_table.sql;
