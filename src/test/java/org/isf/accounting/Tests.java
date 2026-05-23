@@ -64,7 +64,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.provider.Arguments;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
-import org.isf.utils.pagination.PagedResponse;
 import org.isf.utils.pagination.PageInfo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -80,7 +79,6 @@ class Tests extends OHCoreTestCase {
 	private static TestPriceList testPriceList;
 	private static TestUser testUser;
 	private static TestUserGroup testUserGroup;
-
 
 	@Autowired
 	BillBrowserManager billBrowserManager;
