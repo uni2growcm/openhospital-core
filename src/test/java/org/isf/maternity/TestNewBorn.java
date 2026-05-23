@@ -19,16 +19,43 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.isf.patient.service;
+package org.isf.maternity;
 
-import java.util.List;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import org.isf.maternity.model.HivStatus;
+import org.isf.maternity.model.PregnancyDelivery;
+import org.isf.maternity.model.Newborn;
 import org.isf.patient.model.Patient;
 
-public interface PatientIoOperationRepositoryCustom {
+import java.time.LocalDateTime;
 
-	List<Patient> findByFieldsContainingWordsFromLiteral(String regex);
+public class TestNewBorn {
+	private final double weight = 3200;
+	private final LocalDateTime date = LocalDateTime.of(2025, 10, 19, 15, 15);
 
-	List<Patient> findByFieldsContainingWordsFromLiteral(String literal, int limit);
-	List<Patient> findFemaleByFieldsContainingWordsFromLiteral(String literal);
+	public Newborn setup(Patient babyPatient, PregnancyDelivery d, boolean usingSet) {
+		Newborn n;
+
+		if (usingSet) {
+			n = new Newborn();
+			set(n, d);
+		} else {
+			n = new Newborn(babyPatient, d, date, HivStatus.UNKNOWN);
+			set(n, d);
+		}
+
+		return n;
+	}
+
+	private void set(Newborn n, PregnancyDelivery d) {
+		n.setDelivery(d);
+		n.setBirthWeight(weight);
+		n.setHivStatus(HivStatus.UNKNOWN);
+	}
+
+	public void check(Newborn n) {
+		assertThat(n.getBirthWeight()).isEqualTo(weight);
+		assertThat(n.getHivStatus()).isEqualTo(HivStatus.UNKNOWN);
+	}
 }

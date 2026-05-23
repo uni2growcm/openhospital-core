@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -34,7 +34,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -83,6 +82,9 @@ public class Patient extends Auditable<String> {
 	@Column(name="PAT_BDATE")	// SQL type: date
 	private LocalDate birthDate;
 
+	@Column(name="PAT_BIRTH_PLACE")
+	private String birthPlace;
+
 	@NotNull
 	@Column(name="PAT_AGE")
 	private int age;
@@ -116,9 +118,6 @@ public class Patient extends Auditable<String> {
 
 	@Column(name="PAT_MOTH")
 	private char mother = ' '; // D=dead, A=alive
-
-	@Column(name="PAT_BIRTH_PLACE")
-	private String birthPlace;
 
 	@Column(name="PAT_NBR_CHILDREN")
 	private Integer numberOfChildren;
@@ -355,6 +354,37 @@ public class Patient extends Auditable<String> {
 		this.affiliatedPatient = affiliatedPatient;
 	}
 
+	public Patient(int code, String firstName, String secondName, String name, LocalDate birthDate, int age, String agetype, char sex,
+	               String address, String city, String nextKin, String telephone, String note,
+	               String motherName, char mother, String fatherName, char father,
+	               String bloodType, char economicStatus, char parentTogether, String taxCode,
+	               String maritalStatus, String profession, String birthPlace) {
+		this.code = code;
+		this.firstName = firstName;
+		this.secondName = secondName;
+		this.name = name;
+		this.birthDate = birthDate;
+		this.age = age;
+		this.agetype = agetype;
+		this.sex = sex;
+		this.address = address;
+		this.city = city;
+		this.nextKin = nextKin;
+		this.telephone = telephone;
+		this.note = note;
+		this.motherName = motherName;
+		this.mother = mother;
+		this.fatherName = fatherName;
+		this.father = father;
+		this.hasInsurance = economicStatus;
+		this.bloodType = bloodType;
+		this.parentTogether = parentTogether;
+		this.taxCode = taxCode;
+		this.maritalStatus = maritalStatus;
+		this.profession = profession;
+		this.birthPlace = birthPlace;
+	}
+
 	public PatientConsensus getPatientConsensus() {
 		return patientConsensus;
 	}
@@ -375,8 +405,16 @@ public class Patient extends Auditable<String> {
 		return birthDate;
 	}
 
+	public String getBirthPlace(){
+		return birthPlace;
+	}
+
 	public void setBirthDate(LocalDate birthDate) {
 		this.birthDate = birthDate;
+	}
+
+	public void setBirthPlace(String birthPlace) {
+		this.birthPlace = birthPlace;
 	}
 
 	public int getAge() {
@@ -716,14 +754,6 @@ public class Patient extends Auditable<String> {
 			infoBfr.append(taxCode);
 		}
 		return infoBfr.toString();
-	}
-
-	public String getBirthPlace() {
-		return birthPlace;
-	}
-
-	public void setBirthPlace(String birthPlace) {
-		this.birthPlace = birthPlace;
 	}
 
 	public Integer getNumberOfChildren() {

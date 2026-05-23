@@ -19,16 +19,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.isf.patient.service;
+package org.isf.maternity.model;
 
-import java.util.List;
+public enum HivStatus {
+	POSITIVE("angal.maternity.hiv.positive"),
+	NEGATIVE("angal.maternity.hiv.negative"),
+	UNKNOWN("angal.maternity.hiv.unknown");
 
-import org.isf.patient.model.Patient;
+	private final String key;
 
-public interface PatientIoOperationRepositoryCustom {
+	HivStatus(String key) {
+		this.key = key;
+	}
 
-	List<Patient> findByFieldsContainingWordsFromLiteral(String regex);
-
-	List<Patient> findByFieldsContainingWordsFromLiteral(String literal, int limit);
-	List<Patient> findFemaleByFieldsContainingWordsFromLiteral(String literal);
+	public String getKey() {
+		return key;
+	}
 }

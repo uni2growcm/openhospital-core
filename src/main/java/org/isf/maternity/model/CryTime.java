@@ -19,16 +19,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.isf.patient.service;
+package org.isf.maternity.model;
 
-import java.util.List;
+public enum CryTime {
+	IMMEDIATE("angal.maternity.cry.immediate"),
+	DELAYED("angal.maternity.cry.delayed"),
+	NO_CRY("angal.maternity.cry.none"),
+	UNKNOWN("angal.maternity.cry.unknown");
 
-import org.isf.patient.model.Patient;
+	private final String key;
 
-public interface PatientIoOperationRepositoryCustom {
+	CryTime(String key) {
+		this.key = key;
+	}
 
-	List<Patient> findByFieldsContainingWordsFromLiteral(String regex);
-
-	List<Patient> findByFieldsContainingWordsFromLiteral(String literal, int limit);
-	List<Patient> findFemaleByFieldsContainingWordsFromLiteral(String literal);
+	public String getKey() {
+		return key;
+	}
 }

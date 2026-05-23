@@ -294,6 +294,23 @@ public class PatientBrowserManager {
 		return ioOperations.getPatientsByOneOfFieldsLike(keyword);
 	}
 
+	/**
+	 * Method that returns the list of the first 50 female {@link Patient}s not logically deleted, having the passed String in:<br>
+	 * - code<br>
+	 * - firstName<br>
+	 * - secondName<br>
+	 * - taxCode<br>
+	 * - note<br>
+	 *
+	 * @param keyword
+	 *            - String to search, {@code null} for full list
+	 * @return the list of {@link Patient}s (could be empty)
+	 * @throws OHServiceException
+	 */
+	public List<Patient> getFemalePatientsByOneOfFieldsLike(String keyword) throws OHServiceException {
+		return ioOperations.getFemalePatientsByOneOfFieldsLike(keyword);
+	}
+
 	public PatientProfilePhoto retrievePatientProfilePhoto(Patient patient) throws OHServiceException {
 		return ioOperations.retrievePatientProfilePhoto(patient);
 	}

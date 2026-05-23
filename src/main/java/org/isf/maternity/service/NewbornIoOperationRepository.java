@@ -19,16 +19,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.isf.patient.service;
+package org.isf.maternity.service;
+
+import org.isf.maternity.model.Newborn;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
-import org.isf.patient.model.Patient;
+@Repository
+public interface NewbornIoOperationRepository extends JpaRepository<Newborn, Integer> {
 
-public interface PatientIoOperationRepositoryCustom {
+	List<Newborn> findByDeliveryId(Integer deliveryId);
 
-	List<Patient> findByFieldsContainingWordsFromLiteral(String regex);
+	long countByDeliveryId(Integer deliveryId);
 
-	List<Patient> findByFieldsContainingWordsFromLiteral(String literal, int limit);
-	List<Patient> findFemaleByFieldsContainingWordsFromLiteral(String literal);
+	Optional<Newborn> findTopByDeliveryIdOrderByBirthDateAsc(Integer deliveryId);
+
+	Optional<Newborn> findByBabyPatient_Code(Integer patientCode);
+
+	List<Newborn> findByBirthWeightBetween(Double min, Double max);
+
+	boolean existsByDeliveryIdAndBirthWeightLessThan(Integer deliveryId, Double weight);
 }

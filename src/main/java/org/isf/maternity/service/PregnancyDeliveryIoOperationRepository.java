@@ -19,16 +19,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.isf.patient.service;
+package org.isf.maternity.service;
 
+import org.isf.maternity.model.PregnancyDelivery;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
-import org.isf.patient.model.Patient;
+@Repository
+public interface PregnancyDeliveryIoOperationRepository extends JpaRepository<PregnancyDelivery, Integer> {
+	Optional<PregnancyDelivery> findByPregnancyId(Integer pregnancyId);
 
-public interface PatientIoOperationRepositoryCustom {
+	boolean existsByPregnancyId(Integer pregnancyId);
 
-	List<Patient> findByFieldsContainingWordsFromLiteral(String regex);
-
-	List<Patient> findByFieldsContainingWordsFromLiteral(String literal, int limit);
-	List<Patient> findFemaleByFieldsContainingWordsFromLiteral(String literal);
+	List<PregnancyDelivery> findByDeliveryDateBetween(
+		LocalDateTime from,
+		LocalDateTime to
+	);
 }

@@ -19,16 +19,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.isf.patient.service;
+package org.isf.maternity.model;
 
-import java.util.List;
+public enum PerinealIntegrity {
+	INTACT("angal.maternity.perineal.intact"),
+	FIRST_DEGREE("angal.maternity.perineal.first"),
+	SECOND_DEGREE("angal.maternity.perineal.second"),
+	THIRD_DEGREE("angal.maternity.perineal.third"),
+	FOURTH_DEGREE("angal.maternity.perineal.fourth"),
+	EPISIOTOMY("angal.maternity.perineal.episiotomy");
 
-import org.isf.patient.model.Patient;
+	private final String key;
 
-public interface PatientIoOperationRepositoryCustom {
+	PerinealIntegrity(String key) {
+		this.key = key;
+	}
 
-	List<Patient> findByFieldsContainingWordsFromLiteral(String regex);
-
-	List<Patient> findByFieldsContainingWordsFromLiteral(String literal, int limit);
-	List<Patient> findFemaleByFieldsContainingWordsFromLiteral(String literal);
+	public String getKey() {
+		return key;
+	}
 }
