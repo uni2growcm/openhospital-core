@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -93,5 +93,10 @@ public interface MedicalsIoOperationRepository extends JpaRepository<Medical, In
 
 	@Query(value = "SELECT m FROM Medical m")
 	Page<Medical> findAllPageable(Pageable pageable);
+
+	@Query("SELECT m FROM Medical m WHERE "  + "(:activeFilter IS NULL OR " + "    (:activeFilter = 'ACTIVE' AND m.deleted = 'N') OR "
+		+ "(:activeFilter = 'DISABLED' AND m.deleted = 'Y')) "
+		+ "AND (:medicalTypeCode IS NULL OR m.type.code = :medicalTypeCode)")
+	Page<Medical> findAllPageable(Pageable pageable, @Param("activeFilter") String activeFilter, @Param("medicalTypeCode") String medicalTypeCode);
 	
 }

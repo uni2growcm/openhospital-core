@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2024 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -32,6 +32,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.isf.utils.pagination.PageInfo;
+import org.isf.utils.pagination.PagedResponse;
+import org.springframework.data.domain.PageImpl;
 
 /**
  * This class offers the io operations for recovering and managing
@@ -289,4 +292,57 @@ public class MedicalsIoOperations {
 		return repository.findAllWhereTypeOrderBySmartCodeAndDescription(type);
 	}
 
+	/**
+	 * Returns PagedResponse of Medicals (manual pagination like OPD)
+	 *
+	 * @param page the page number (0-indexed)
+	 * @param size the size of the page
+	 * @return PagedResponse of {@link Medical}s
+	 * @throws OHServiceException when fails to fetch
+	 */
+	public Page<Medical> getMedicalListPageable(int page, int size) throws OHServiceException {
+		Pageable pageRequest = PageRequest.of(page, size);
+		List<Medical> medicals = this.getMedicals();
+		int start = (int) pageRequest.getOffset();
+		int end = Math.min(start + pageRequest.getPageSize(), medicals.size());
+		List<Medical> pageContent = medicals.subList(start, end);
+		return new PageImpl<>(pageContent, pageRequest, medicals.size());
+	}
+
+	/**
+	 * Returns Spring Page of Medicals (database-level pagination like OPD)
+	 *
+	 * @param pageable the page information
+	 * @return a page of {@link Medical}s
+	 * @throws OHServiceException when fails to fetch
+	 */
+	public Page<Medical> getMedicalsPageable(Pageable pageable) throws OHServiceException {
+		return repository.findAllPageable(pageable);
+	}
+
+	/**
+	 * Converts Spring Page to PagedResponse
+	 *
+	 * @param pages the Spring Page
+	 * @return PagedResponse of {@link Medical}s
+	 */
+	private PagedResponse<Medical> setPaginationData(Page<Medical> pages) {
+		PagedResponse<Medical> data = new PagedResponse<>();
+		data.setData(pages.getContent());
+		data.setPageInfo(PageInfo.from(pages));
+		return data;
+	}
+
+	/**
+	 * Returns Spring Page of Medicals with filters (database-level pagination)
+	 *
+	 * @param pageable the page information
+	 * @param activeFilter filter for active status (null = all, true = active only, false = disabled only)
+	 * @param medicalTypeCode filter by medical type code (null = all)
+	 * @return a page of {@link Medical}s
+	 * @throws OHServiceException when fails to fetch
+	 */
+	public Page<Medical> getMedicalsPageable(Pageable pageable, String activeFilter, String medicalTypeCode) throws OHServiceException {
+		return repository.findAllPageable(pageable, activeFilter, medicalTypeCode);
+	}
 }

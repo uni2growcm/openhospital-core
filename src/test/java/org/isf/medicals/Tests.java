@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2024 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -56,6 +56,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import java.util.ArrayList;
 
 class Tests extends OHCoreTestCase {
 
@@ -668,5 +670,29 @@ class Tests extends OHCoreTestCase {
 		lotIoOperationRepository.saveAndFlush(lot);
 		movementIoOperationRepository.saveAndFlush(movement);
 		return movement.getCode();
+	}
+
+	@Test
+	void testIoGetMedicalsPageable() throws Exception {
+		List<Medical> savedMedicals = setupTestMedicalsForPagination(3);
+
+		Page<Medical> medicals = medicalBrowsingManager.getMedicalsPageable(0, 2);
+
+		assertThat(medicals.getContent().size()).isEqualTo(2);
+		assertThat(medicals.getTotalPages()).isEqualTo(2);
+	}
+
+	private List<Medical> setupTestMedicalsForPagination(int count) throws Exception {
+		List<Medical> medicals = new ArrayList<>();
+		MedicalType medicalType = testMedicalType.setup(false);
+		medicalTypeIoOperationRepository.saveAndFlush(medicalType);
+
+		for (int index = 0; index < count; index++) {
+			Medical medical = testMedical.setup(medicalType, false);
+			medical.setDescription("Medical_" + index);
+			medical.setProdCode("PROD_" + index);
+			medicals.add(medicalsIoOperationRepository.saveAndFlush(medical));
+		}
+		return medicals;
 	}
 }

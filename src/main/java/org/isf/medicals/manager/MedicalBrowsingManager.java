@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2024 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -34,6 +34,10 @@ import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.model.OHExceptionMessage;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
+import org.isf.utils.pagination.PagedResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 /**
  * Class that provides gui separation from database operations and gives some useful logic manipulations of the dynamic data (memory)
@@ -294,4 +298,41 @@ public class MedicalBrowsingManager {
 			throw new OHDataValidationException(errors);
 		}
 	}
+
+	/**
+	 * Returns {@link PagedResponse} of {@link Medical}s with page info.
+	 *
+	 * @param page the page number (0-indexed)
+	 * @param size the size of the page
+	 * @return PagedResponse of {@link Medical}s
+	 * @throws OHServiceException when fails to fetch
+	 */
+	public Page<Medical> getMedicals(int page, int size) throws OHServiceException {
+		return ioOperations.getMedicalListPageable(page, size);
+	}
+
+	/**
+	 * Retrieves a page of {@link Medical}s with filters.
+	 *
+	 * @param page the page number (0-indexed)
+	 * @param size the size of the page
+	 * @param active the medical active
+	 * @param disable the medical disable
+	 * @param medicalTypeCode filter by medical type code
+	 * @return a page of {@link Medical}s
+	 * @throws OHServiceException when fails to fetch
+	 */
+	public Page<Medical> getMedicals(int page, int size, boolean active, boolean disable, String medicalTypeCode) throws OHServiceException {
+
+		String activeFilter = null;
+		if (active && !disable) {
+			activeFilter = "ACTIVE";
+		} else if (!active && disable) {
+			activeFilter = "DISABLED";
+		}
+
+		Pageable pageable = PageRequest.of(page, size);
+		return ioOperations.getMedicalsPageable(pageable, activeFilter, medicalTypeCode);
+	}
+
 }
