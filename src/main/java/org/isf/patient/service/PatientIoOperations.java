@@ -366,4 +366,11 @@ public class PatientIoOperations {
 	public List<Patient> getPatientsByOneOfFieldsLikeWithLimit(String keyword, int limit) throws OHServiceException {
 		return repository.findByFieldsContainingWordsFromLiteral(keyword, limit);
 	}
+
+	public List<Patient> getPatientByCodeOrName(Integer code, String name) throws OHServiceException {
+		return repository.findByCodeOrNameContainingAndNotDeleted(
+			code != null ? code : -1,
+			name != null ? name : "",
+			NOT_DELETED_STATUS);
+	}
 }

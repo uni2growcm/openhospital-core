@@ -467,4 +467,15 @@ public class PatientBrowserManager {
 	public List<Patient> getPatientsByOneOfFieldsLikeWithLimit(String keyword, int limit) throws OHServiceException {
 		return ioOperations.getPatientsByOneOfFieldsLikeWithLimit(keyword, limit);
 	}
+
+	public List<Patient> getPatientByCodeOrName(String input) throws OHServiceException {
+		Integer code = null;
+		String name = input != null ? input.trim() : "";
+		try {
+			code = Integer.parseInt(name);
+		} catch (NumberFormatException e) {
+
+		}
+		return ioOperations.getPatientByCodeOrName(code, name);
+	}
 }

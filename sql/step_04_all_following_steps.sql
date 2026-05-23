@@ -125,6 +125,7 @@ source step_a128_maternity_delivery.sql;
 source step_a129_maternity_newborn.sql;
 source step_a130_add_maternity_menuitem_and_privilege_for_groupmenu.sql;
 source step_a131_add_typology_menu_in_typology_menu.sql;
+source step_a132_alter_table_laboratory.sql;
 source u2g_update/step_01_add_column_medicaldsr.sql;
 source u2g_update/step_02_add_collumn_exa_target_to_table_oh_exam.sql;
 source u2g_update/step_03_mortuarystays_table.sql;
