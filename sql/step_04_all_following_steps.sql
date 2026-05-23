@@ -114,3 +114,5 @@ source step_a117_fix_ward_pharmacy.sql;
 source step_a118_add_radiology_permissions.sql;
 source step_a119_alter_table_examrow_and_laboratoryrow.sql;
 source step_a120_settings.sql;
+source step_a121_add_column_bll_guarantor_to_table_oh_bills.sql;
+source step_a122_alter_table_bills_for_bill_history.sql;
