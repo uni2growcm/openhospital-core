@@ -144,7 +144,6 @@ public class MedicalsIoOperations {
 	 */
 	public List<Medical> getMedicals(String description, String type, boolean critical) throws OHServiceException {
 		List<Medical> medicals;
-
 		if (description != null) {
 			if (type != null) {
 				if (critical) {
