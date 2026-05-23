@@ -418,6 +418,7 @@ public class AccountingIoOperations {
 	}
 
 	/** Check if a patient has pending therapies that haven't been billed yet.
+	 * Check if a patient has pending therapies that haven't been billed yet.
 	 *
 	 * @param patientCode the patient's code
 	 * @return true if the patient has pending therapies, false otherwise
