@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2024 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -41,4 +41,11 @@ public interface TherapyIoOperationRepository extends JpaRepository<TherapyRow, 
 
 	@Query("select count(t) from TherapyRow t where active=1")
 	long countAllActiveTherapies();
+
+	@Query("SELECT COUNT(t) FROM TherapyRow t WHERE t.patient.code = :patientCode AND (t.qtyBougth IS NULL OR t.qtyBougth < t.qty)")
+	long countUnbilledTherapies(@Param("patientCode") int patientCode);
+
+	@Modifying
+	@Query("UPDATE TherapyRow t SET t.qtyBougth = COALESCE(t.qtyBougth, 0) + :quantity WHERE t.therapyID = :therapyId")
+	void updateBougthQuantity(@Param("therapyId") int therapyId, @Param("quantity") double quantity);
 }

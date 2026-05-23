@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.isf.accounting.model.Bill;
+import org.isf.priceslist.model.PriceList;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -72,4 +73,10 @@ public interface AccountingBillIoOperationRepository extends JpaRepository<Bill,
 	List<Bill> findByDateBetweenAndGuarantorUserName(LocalDateTime dateFrom, LocalDateTime dateTo, String userName);
 
 	List<Bill> findByDateBetweenAndBillPatientCodeAndGuarantorUserName(LocalDateTime beginningOfDay, LocalDateTime beginningOfNextDay, Integer code, String userName);
+
+	@Query("SELECT DISTINCT p.list FROM Price p")
+	List<PriceList> findDistinctPriceLists();
+
+	@Query("SELECT p.price FROM Price p WHERE p.list.id = :listId AND p.group = :group AND p.item = :itemId")
+	Double findPriceByListIdAndGroupAndItem(@Param("listId") Integer listId, @Param("group") String group, @Param("itemId") String itemId);
 }

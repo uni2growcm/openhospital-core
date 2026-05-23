@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -23,6 +23,7 @@ package org.isf.operation.manager;
 
 import java.util.List;
 
+import org.isf.accounting.model.Bill;
 import org.isf.admission.model.Admission;
 import org.isf.opd.model.Opd;
 import org.isf.operation.model.OperationRow;
@@ -30,6 +31,7 @@ import org.isf.operation.service.OperationRowIoOperations;
 import org.isf.patient.model.Patient;
 import org.isf.utils.exception.OHServiceException;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author xavier
@@ -67,4 +69,67 @@ public class OperationRowBrowserManager {
 		return ioOperations.getOperationRowByPatient(patient);
 	}
 
+	/**
+	 * Check if a patient has pending operations that haven't been billed yet.
+	 *
+	 * @param patientCode the patient's code as String
+	 * @return true if the patient has pending operations, false otherwise
+	 * @throws OHServiceException
+	 */
+	public boolean hasOperationWithoutBill(String patientCode) throws OHServiceException {
+		if (patientCode == null || patientCode.isEmpty()) {
+			return false;
+		}
+		Patient patient = new Patient();
+		patient.setCode(Integer.parseInt(patientCode));
+		return ioOperations.hasOperationWithoutBill(patient);
+	}
+
+	/**getOperationWithoutBill
+	 * Check if a patient has pending operations that haven't been billed yet.
+	 *
+	 * @param patient the patient
+	 * @return true if the patient has pending operations, false otherwise
+	 * @throws OHServiceException
+	 */
+	public boolean hasOperationWithoutBill(Patient patient) throws OHServiceException {
+		if (patient == null || patient.getCode() == 0) {
+			return false;
+		}
+		return ioOperations.hasOperationWithoutBill(patient);
+	}
+
+	/**
+	 * Gets all operation rows for a patient that haven't been billed yet.
+	 *
+	 * @param patient the patient
+	 * @return list of unbilled OperationRow objects
+	 * @throws OHServiceException if an error occurs
+	 */
+	public List<OperationRow> getOperationWithoutBill(Patient patient) throws OHServiceException {
+		return ioOperations.getOperationWithoutBill(patient);
+	}
+
+	/**
+	 * Updates an operation row (used to mark as billed after bill creation).
+	 *
+	 * @param operationRow the OperationRow to update
+	 * @return the updated OperationRow
+	 * @throws OHServiceException if an error occurs
+	 */
+	public OperationRow updateOperation(OperationRow operationRow) throws OHServiceException {
+		return ioOperations.update(operationRow);
+	}
+
+	/**
+	 * Updates the bill for a specific operation row.
+	 *
+	 * @param operationId the operation row ID
+	 * @param bill the Bill object to associate
+	 * @throws OHServiceException if an error occurs during the update
+	 */
+	@Transactional
+	public void updateBillForOperationRow(int operationId, Bill bill) throws OHServiceException {
+		ioOperations.updateBillForOperationRow(operationId, bill);
+	}
 }

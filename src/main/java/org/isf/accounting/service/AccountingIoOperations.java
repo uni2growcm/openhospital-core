@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2024 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -30,8 +30,14 @@ import java.util.TreeSet;
 import org.isf.accounting.model.Bill;
 import org.isf.accounting.model.BillItems;
 import org.isf.accounting.model.BillPayments;
+import org.isf.lab.manager.LabManager;
 import org.isf.menu.model.User;
+import org.isf.operation.manager.OperationRowBrowserManager;
 import org.isf.patient.model.Patient;
+import org.isf.priceslist.model.ItemGroup;
+import org.isf.priceslist.model.Price;
+import org.isf.priceslist.model.PriceList;
+import org.isf.therapy.manager.TherapyManager;
 import org.isf.utils.db.TranslateOHServiceException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.time.TimeTools;
@@ -50,12 +56,23 @@ public class AccountingIoOperations {
 	private AccountingBillPaymentIoOperationRepository billPaymentRepository;
 	private AccountingBillItemsIoOperationRepository billItemsRepository;
 
-	public AccountingIoOperations(AccountingBillIoOperationRepository accountingBillIoOperationRepository,
+	private TherapyManager therapyManager;
+	private LabManager labManager;
+	private OperationRowBrowserManager operationRowBrowserManager;
+
+	public AccountingIoOperations(
+		AccountingBillIoOperationRepository accountingBillIoOperationRepository,
 		AccountingBillPaymentIoOperationRepository accountingBillPaymentIoOperationRepository,
-		AccountingBillItemsIoOperationRepository accountingBillItemsIoOperationRepository) {
+		AccountingBillItemsIoOperationRepository accountingBillItemsIoOperationRepository,
+		TherapyManager therapyManager,
+		LabManager labManager,
+		OperationRowBrowserManager operationRowBrowserManager) {
 		this.billRepository = accountingBillIoOperationRepository;
 		this.billPaymentRepository = accountingBillPaymentIoOperationRepository;
 		this.billItemsRepository = accountingBillItemsIoOperationRepository;
+		this.therapyManager = therapyManager;
+		this.labManager = labManager;
+		this.operationRowBrowserManager = operationRowBrowserManager;
 	}
 
 	/**
@@ -336,6 +353,53 @@ public class AccountingIoOperations {
 	}
 
 	/**
+	 * Check if a patient has pending therapies that haven't been billed yet.
+	 *
+	 * @param patientCode the patient's code
+	 * @return true if the patient has pending therapies, false otherwise
+	 * @throws OHServiceException
+	 */
+	public boolean hasTherapyPrescription(Integer patientCode) throws OHServiceException {
+		return therapyManager.hasTherapiesRowsNotYetBought(patientCode);
+	}
+
+	/**
+	 * Check if a patient has pending exams that haven't been billed yet.
+	 *
+	 * @param patientCode the patient's code
+	 * @return true if the patient has pending exams, false otherwise
+	 * @throws OHServiceException
+	 */
+	public boolean hasExamPrescription(Integer patientCode) throws OHServiceException {
+		return labManager.hasLabWithoutBill(String.valueOf(patientCode));
+	}
+
+	/**
+	 * Check if a patient has pending operations that haven't been billed yet.
+	 *
+	 * @param patientCode the patient's code
+	 * @return true if the patient has pending operations, false otherwise
+	 * @throws OHServiceException
+	 */
+	public boolean hasOperationPrescription(Integer patientCode) throws OHServiceException {
+		return operationRowBrowserManager.hasOperationWithoutBill(String.valueOf(patientCode));
+	}
+
+	/**
+	 * Check if a patient has any pending prescription (therapy, exam, or operation)
+	 * that hasn't been billed yet.
+	 *
+	 * @param patientCode the patient's code
+	 * @return true if the patient has any pending prescription, false otherwise
+	 * @throws OHServiceException
+	 */
+	public boolean hasPrescription(Integer patientCode) throws OHServiceException {
+		return hasTherapyPrescription(patientCode)
+			|| hasExamPrescription(patientCode)
+			|| hasOperationPrescription(patientCode);
+	}
+
+	/**
 	 * Get the bills list of invoices filtered by date, patient and guarantor
 	 *
 	 * @param dateFrom start date
@@ -471,5 +535,94 @@ public class AccountingIoOperations {
 		});
 
 		return allPayments;
+	}
+
+	/**
+	 * Gets the price of an item directly from the database.
+	 *
+	 * @param itemId the item code
+	 * @param group the item group (MED, EXA, OPE, OTH)
+	 * @param patient the patient
+	 * @return the Price with reductions applied, or null if not found
+	 * @throws OHServiceException
+	 */
+	public Price getPrice(String itemId, ItemGroup group, Patient patient) throws OHServiceException {
+		// Get the first available price list as default
+		List<PriceList> lists = billRepository.findDistinctPriceLists();
+		if (lists == null || lists.isEmpty()) {
+			return null;
+		}
+
+		Integer listId = lists.get(0).getId();
+
+		// Get the base price
+		Double basePrice = billRepository.findPriceByListIdAndGroupAndItem(listId, group.getCode(), itemId);
+		if (basePrice == null) {
+			return null;
+		}
+
+		double finalPrice = basePrice;
+
+		// TODO: add reduction plans logic here later
+		// For now, return the base price without reductions
+
+		// Create and return Price object
+		Price price = new Price();
+		price.setPrice(finalPrice);
+		price.setItem(itemId);
+		price.setGroup(group.getCode());
+
+		return price;
+	}
+
+	/**
+	 * Gets the gross price (without reductions) from the database.
+	 *
+	 * @param itemId the item code
+	 * @param group the item group
+	 * @param patient the patient
+	 * @return the Price with gross price, or null if not found
+	 * @throws OHServiceException
+	 */
+	public Price getPriceFromListWithoutReduction(String itemId, ItemGroup group, Patient patient) throws OHServiceException {
+		// Get the first available price list as default
+		List<PriceList> lists = billRepository.findDistinctPriceLists();
+		if (lists == null || lists.isEmpty()) {
+			return null;
+		}
+
+		Integer listId = lists.get(0).getId();
+
+		// Get the base price without reductions
+		Double basePrice = billRepository.findPriceByListIdAndGroupAndItem(listId, group.getCode(), itemId);
+		if (basePrice == null) {
+			return null;
+		}
+
+		Price price = new Price();
+		price.setPrice(basePrice);
+		price.setItem(itemId);
+		price.setGroup(group.getCode());
+
+		return price;
+	}
+
+	/**
+	 * Checks if a specific prescription item is already in a closed (paid) bill for this patient.
+	 *
+	 * @param patientCode    the patient's code
+	 * @param prescriptionId the prescription ID (therapyID, lab.code, op.id)
+	 * @param itemGroup      the item group ("MED", "EXA", "OPE")
+	 * @return true if already billed and paid
+	 */
+	public boolean isPrescriptionAlreadyBilledAndPaid(
+		Integer patientCode,
+		Integer prescriptionId,
+		String itemGroup) throws OHServiceException {
+		if (prescriptionId == null) {
+			return false;
+		}
+		return billItemsRepository.existsByPatientAndPrescriptionInClosedBill(
+			patientCode, prescriptionId, itemGroup);
 	}
 }
