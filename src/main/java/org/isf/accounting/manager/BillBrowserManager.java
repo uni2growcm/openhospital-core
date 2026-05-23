@@ -81,7 +81,10 @@ public class BillBrowserManager {
 		this.mvtManager = mvtManager;
 		this.priceListManager = priceListManager;
 		this.medicalBrowsingManager = medicalBrowsingManager;
-		this.movStockInsertingManager = movStockInsertingManager;	
+		this.movStockInsertingManager = movStockInsertingManager;
+		this.therapyManager = therapyManager;
+		this.labManager = labManager;
+		this.operationRowManager = operationRowManager;
 	}
 
 	/**
