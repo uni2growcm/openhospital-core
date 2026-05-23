@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -47,6 +47,7 @@ import org.isf.utils.pagination.PageInfo;
 import org.isf.utils.pagination.PagedResponse;
 import org.isf.utils.time.TimeTools;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -65,9 +66,9 @@ public class AdmissionIoOperations {
 	private PatientIoOperationRepository patientRepository;
 
 	public AdmissionIoOperations(AdmissionIoOperationRepository admissionIoOperationRepository,
-		AdmissionTypeIoOperationRepository admissionTypeIoOperationRepository,
-		DischargeTypeIoOperationRepository dischargeTypeIoOperationRepository,
-		PatientIoOperationRepository patientIoOperationRepository) {
+	                             AdmissionTypeIoOperationRepository admissionTypeIoOperationRepository,
+	                             DischargeTypeIoOperationRepository dischargeTypeIoOperationRepository,
+	                             PatientIoOperationRepository patientIoOperationRepository) {
 		this.repository = admissionIoOperationRepository;
 		this.typeRepository = admissionTypeIoOperationRepository;
 		this.dischargeRepository = dischargeTypeIoOperationRepository;
@@ -104,7 +105,7 @@ public class AdmissionIoOperations {
 	 * @throws OHServiceException if an error occurs during database request.
 	 */
 	public List<AdmittedPatient> getAdmittedPatients(String searchTerms, LocalDateTime[] admissionRange, LocalDateTime[] dischargeRange)
-		throws OHServiceException {
+					throws OHServiceException {
 		return repository.findPatientAdmissionsBySearchAndDateRanges(searchTerms, admissionRange, dischargeRange);
 	}
 
@@ -380,5 +381,44 @@ public class AdmissionIoOperations {
 	 */
 	public Page<Admission> getAdmittedPatientsBySexAndNamePaged(char sex, String name, Pageable pageable) throws OHServiceException {
 		return repository.findAllByPatientSexAndPatientNameContainsAndDeleted(sex, name, 'N', pageable);
+	}
+	/**
+	 * Returns a paginated list of {@link AdmittedPatient}s filtered by the given criteria.
+	 * All filter parameters are optional; passing {@code null} disables the corresponding filter.
+	 *
+	 * @param searchTerms       - keywords to search in patient name, tax code, or note fields; may be {@code null}.
+	 * @param admissionStatus   - the admission status to filter by ("admitted" or "notAdmitted"); may be {@code null}.
+	 * @param wardCodes         - the list of ward codes to filter by; may be {@code null} or empty.
+	 * @param admissionDateFrom - the start of the admission date range (inclusive); may be {@code null}.
+	 * @param admissionDateTo   - the end of the admission date range (inclusive); may be {@code null}.
+	 * @param dischargeDateFrom - the start of the discharge date range (inclusive); may be {@code null}.
+	 * @param dischargeDateTo   - the end of the discharge date range (inclusive); may be {@code null}.
+	 * @param ageFrom           - the minimum patient age to filter by (inclusive); may be {@code null}.
+	 * @param ageTo             - the maximum patient age to filter by (inclusive); may be {@code null}.
+	 * @param sex               - the patient sex to filter by ({@code 'M'} or {@code 'F'}); may be {@code null}.
+	 * @param country           - the country to filter patients by; may be {@code null} to disable this filter.
+	 * @param pageable          - the pagination and sorting information.
+	 * @return a {@link Page} of {@link AdmittedPatient}s matching the given filters.
+	 * @throws OHServiceException when fails to fetch the admitted patients.
+	 */
+	public Page<AdmittedPatient> getAdmittedPatientsByFilters(
+		String searchTerms,
+		String admissionStatus,
+		List<String> wardCodes,
+		LocalDateTime admissionDateFrom,
+		LocalDateTime admissionDateTo,
+		LocalDateTime dischargeDateFrom,
+		LocalDateTime dischargeDateTo,
+		Integer ageFrom,
+		Integer ageTo,
+		Character sex,
+		Integer country,
+		Pageable pageable) throws OHServiceException {
+		return repository.findPatientAdmissionsByFilters(
+			searchTerms, admissionStatus, wardCodes,
+			admissionDateFrom, admissionDateTo,
+			dischargeDateFrom, dischargeDateTo,
+			ageFrom, ageTo, sex,country, pageable
+		);
 	}
 }

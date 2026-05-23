@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2024 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -89,6 +89,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 class Tests extends OHCoreTestCase {
@@ -1086,10 +1087,10 @@ class Tests extends OHCoreTestCase {
 		// inserted patient already admitted
 		// invalid admission period
 		assertThatThrownBy(() -> admissionBrowserManager.newAdmission(record2))
-			.isInstanceOf(OHDataValidationException.class)
-			.has(
-				new Condition<Throwable>(
-					e -> ((OHServiceException) e).getMessages().size() == 2, "Expecting two validation errors"));
+				.isInstanceOf(OHDataValidationException.class)
+				.has(
+						new Condition<Throwable>(
+								e -> ((OHServiceException) e).getMessages().size() == 2, "Expecting two validation errors"));
 	}
 
 	@ParameterizedTest(name = "Test with MATERNITYRESTARTINJUNE={0}")
@@ -1163,10 +1164,10 @@ class Tests extends OHCoreTestCase {
 		// Ward cannot be null
 		admission.setWard(null);
 		assertThatThrownBy(() -> admissionBrowserManager.newAdmission(admission))
-			.isInstanceOf(OHDataValidationException.class)
-			.has(
-				new Condition<Throwable>(
-					e -> ((OHServiceException) e).getMessages().size() == 1, "Expecting single validation error"));
+				.isInstanceOf(OHDataValidationException.class)
+				.has(
+						new Condition<Throwable>(
+								e -> ((OHServiceException) e).getMessages().size() == 1, "Expecting single validation error"));
 	}
 
 	@ParameterizedTest(name = "Test with MATERNITYRESTARTINJUNE={0}")
@@ -1180,10 +1181,10 @@ class Tests extends OHCoreTestCase {
 		// Admission date cannot be null
 		admission.setAdmDate(null);
 		assertThatThrownBy(() -> admissionBrowserManager.newAdmission(admission))
-			.isInstanceOf(OHDataValidationException.class)
-			.has(
-				new Condition<Throwable>(
-					e -> ((OHServiceException) e).getMessages().size() == 1, "Expecting single validation error"));
+				.isInstanceOf(OHDataValidationException.class)
+				.has(
+						new Condition<Throwable>(
+								e -> ((OHServiceException) e).getMessages().size() == 1, "Expecting single validation error"));
 	}
 
 	@ParameterizedTest(name = "Test with MATERNITYRESTARTINJUNE={0}")
@@ -1197,10 +1198,10 @@ class Tests extends OHCoreTestCase {
 		// DiseaseIn cannot be null
 		admission.setDiseaseIn(null);
 		assertThatThrownBy(() -> admissionBrowserManager.updateAdmission(admission))
-			.isInstanceOf(OHDataValidationException.class)
-			.has(
-				new Condition<Throwable>(
-					e -> ((OHServiceException) e).getMessages().size() == 1, "Expecting single validation error"));
+				.isInstanceOf(OHDataValidationException.class)
+				.has(
+						new Condition<Throwable>(
+								e -> ((OHServiceException) e).getMessages().size() == 1, "Expecting single validation error"));
 	}
 
 	@ParameterizedTest(name = "Test with MATERNITYRESTARTINJUNE={0}")
@@ -1214,10 +1215,10 @@ class Tests extends OHCoreTestCase {
 		// Weight cannot be negative
 		admission.setWeight(-99.0f);
 		assertThatThrownBy(() -> admissionBrowserManager.updateAdmission(admission))
-			.isInstanceOf(OHDataValidationException.class)
-			.has(
-				new Condition<Throwable>(
-					e -> ((OHServiceException) e).getMessages().size() == 1, "Expecting single validation error"));
+				.isInstanceOf(OHDataValidationException.class)
+				.has(
+						new Condition<Throwable>(
+								e -> ((OHServiceException) e).getMessages().size() == 1, "Expecting single validation error"));
 	}
 
 	@ParameterizedTest(name = "Test with MATERNITYRESTARTINJUNE={0}")
@@ -1230,10 +1231,10 @@ class Tests extends OHCoreTestCase {
 
 		admission.setVisitDate(admission.getAdmDate().minusDays(30));
 		assertThatThrownBy(() -> admissionBrowserManager.updateAdmission(admission))
-			.isInstanceOf(OHDataValidationException.class)
-			.has(
-				new Condition<Throwable>(
-					e -> ((OHServiceException) e).getMessages().size() == 1, "Expecting single validation error"));
+				.isInstanceOf(OHDataValidationException.class)
+				.has(
+						new Condition<Throwable>(
+								e -> ((OHServiceException) e).getMessages().size() == 1, "Expecting single validation error"));
 	}
 
 	@ParameterizedTest(name = "Test with MATERNITYRESTARTINJUNE={0}")
@@ -1247,10 +1248,10 @@ class Tests extends OHCoreTestCase {
 		admission.setVisitDate(null); // here just to increase code tests coverage
 		admission.setDeliveryDate(admission.getAdmDate().minusDays(30));
 		assertThatThrownBy(() -> admissionBrowserManager.updateAdmission(admission))
-			.isInstanceOf(OHDataValidationException.class)
-			.has(
-				new Condition<Throwable>(
-					e -> ((OHServiceException) e).getMessages().size() == 1, "Expecting single validation error"));
+				.isInstanceOf(OHDataValidationException.class)
+				.has(
+						new Condition<Throwable>(
+								e -> ((OHServiceException) e).getMessages().size() == 1, "Expecting single validation error"));
 	}
 
 	@ParameterizedTest(name = "Test with MATERNITYRESTARTINJUNE={0}")
@@ -1263,10 +1264,10 @@ class Tests extends OHCoreTestCase {
 
 		admission.setDeliveryDate(null);
 		assertThatThrownBy(() -> admissionBrowserManager.updateAdmission(admission))
-			.isInstanceOf(OHDataValidationException.class)
-			.has(
-				new Condition<Throwable>(
-					e -> ((OHServiceException) e).getMessages().size() == 1, "Expecting single validation error"));
+				.isInstanceOf(OHDataValidationException.class)
+				.has(
+						new Condition<Throwable>(
+								e -> ((OHServiceException) e).getMessages().size() == 1, "Expecting single validation error"));
 	}
 
 	@ParameterizedTest(name = "Test with MATERNITYRESTARTINJUNE={0}")
@@ -1280,10 +1281,10 @@ class Tests extends OHCoreTestCase {
 		admission.setDisDate(null);
 		admission.setAbortDate(admission.getVisitDate().minusDays(30));
 		assertThatThrownBy(() -> admissionBrowserManager.updateAdmission(admission))
-			.isInstanceOf(OHDataValidationException.class)
-			.has(
-				new Condition<Throwable>(
-					e -> ((OHServiceException) e).getMessages().size() == 2, "Expecting two validation errors"));
+				.isInstanceOf(OHDataValidationException.class)
+				.has(
+						new Condition<Throwable>(
+								e -> ((OHServiceException) e).getMessages().size() == 2, "Expecting two validation errors"));
 	}
 
 	@ParameterizedTest(name = "Test with MATERNITYRESTARTINJUNE={0}")
@@ -1298,10 +1299,10 @@ class Tests extends OHCoreTestCase {
 		admission.setCtrlDate2(null);
 		admission.setAbortDate(admission.getVisitDate().minusDays(30));
 		assertThatThrownBy(() -> admissionBrowserManager.updateAdmission(admission))
-			.isInstanceOf(OHDataValidationException.class)
-			.has(
-				new Condition<Throwable>(
-					e -> ((OHServiceException) e).getMessages().size() == 1, "Expecting one validation error"));
+				.isInstanceOf(OHDataValidationException.class)
+				.has(
+						new Condition<Throwable>(
+								e -> ((OHServiceException) e).getMessages().size() == 1, "Expecting one validation error"));
 	}
 
 	@ParameterizedTest(name = "Test with MATERNITYRESTARTINJUNE={0}")
@@ -1316,10 +1317,10 @@ class Tests extends OHCoreTestCase {
 		admission.setCtrlDate2(null);
 		admission.setAbortDate(admission.getDisDate().plusDays(30));
 		assertThatThrownBy(() -> admissionBrowserManager.updateAdmission(admission))
-			.isInstanceOf(OHDataValidationException.class)
-			.has(
-				new Condition<Throwable>(
-					e -> ((OHServiceException) e).getMessages().size() == 1, "Expecting one validation error"));
+				.isInstanceOf(OHDataValidationException.class)
+				.has(
+						new Condition<Throwable>(
+								e -> ((OHServiceException) e).getMessages().size() == 1, "Expecting one validation error"));
 	}
 
 	@ParameterizedTest(name = "Test with MATERNITYRESTARTINJUNE={0}")
@@ -1333,10 +1334,10 @@ class Tests extends OHCoreTestCase {
 		// Can't duplicate diseases
 		admission.setDiseaseOut1(admission.getDiseaseOut2());
 		assertThatThrownBy(() -> admissionBrowserManager.updateAdmission(admission))
-			.isInstanceOf(OHDataValidationException.class)
-			.has(
-				new Condition<Throwable>(
-					e -> ((OHServiceException) e).getMessages().size() == 1, "Expecting single validation error"));
+				.isInstanceOf(OHDataValidationException.class)
+				.has(
+						new Condition<Throwable>(
+								e -> ((OHServiceException) e).getMessages().size() == 1, "Expecting single validation error"));
 	}
 
 	@ParameterizedTest(name = "Test with MATERNITYRESTARTINJUNE={0}")
@@ -1571,9 +1572,9 @@ class Tests extends OHCoreTestCase {
 		Admission admission2 = buildNewAdmission();
 		admission2.setId(id); // no really legal but needed for these tests
 		assertThat(admission)
-			.isEqualTo(admission)
-			.isEqualTo(admission2)
-			.isNotEqualTo("xyzzy");
+				.isEqualTo(admission)
+				.isEqualTo(admission2)
+				.isNotEqualTo("xyzzy");
 
 		assertThat(admission.compareTo(admission2)).isZero();
 		admission2.setId(9999);
@@ -1621,12 +1622,51 @@ class Tests extends OHCoreTestCase {
 		assertThat(savedAdmissions.get(0)).isEqualTo(admissions.get(0));
 	}
 
+	@ParameterizedTest(name = "Test with MATERNITYRESTARTINJUNE={0}")
+	@MethodSource("maternityRestartInJune")
+	void testMgrGetAdmittedPatientsPaginatedWithPageable(boolean maternityRestartInJune) throws Exception {
+		GeneralData.MATERNITYRESTARTINJUNE = maternityRestartInJune;
+
+		int id = setupTestAdmission(false);
+		Admission admission = admissionBrowserManager.getAdmission(id);
+
+		Page<AdmittedPatient> firstPage = admissionBrowserManager.getAdmittedPatientsPaginated(
+			null, null, null, null, null, null, null, null,null,null,null, 0, 2
+		);
+
+		assertThat(firstPage).isNotNull();
+		assertThat(firstPage.getContent()).hasSize(1);
+		assertThat(firstPage.getTotalElements()).isEqualTo(1);
+		assertThat(firstPage.getTotalPages()).isEqualTo(1);
+		assertThat(firstPage.getNumber()).isZero();
+		assertThat(firstPage.getSize()).isEqualTo(2);
+
+		Page<AdmittedPatient> secondPage = admissionBrowserManager.getAdmittedPatientsPaginated(
+			null, null, null, null, null, null, null, null,null,null,null, 1, 2
+		);
+
+		assertThat(secondPage).isNotNull();
+		assertThat(secondPage.getNumber()).isEqualTo(1);
+		assertThat(secondPage.getContent()).isEmpty();
+		assertThat(secondPage.getTotalElements()).isEqualTo(1);
+	}
+
 	class MyAdmissionIoOperationRepositoryCustom implements AdmissionIoOperationRepositoryCustom {
 
 		@Override
 		public List<AdmittedPatient> findPatientAdmissionsBySearchAndDateRanges(String searchTerms, LocalDateTime[] admissionRange,
 			LocalDateTime[] dischargeRange) throws OHServiceException {
 			return null;
+		}
+
+		@Override
+		public Page<AdmittedPatient> findPatientAdmissionsByFilters(
+			String searchTerms, String admissionStatus, List<String> wardCodes,
+			LocalDateTime admissionDateFrom, LocalDateTime admissionDateTo,
+			LocalDateTime dischargeDateFrom, LocalDateTime dischargeDateTo,
+			Integer ageFrom, Integer ageTo, Character sex, Integer country,
+			Pageable pageable) throws OHServiceException {
+			return Page.empty(pageable);
 		}
 	}
 
@@ -1820,5 +1860,4 @@ class Tests extends OHCoreTestCase {
 			diseaseOut2, diseaseOut3, operation, dischargeType, pregTreatmentType,
 			deliveryType, deliveryResult, true);
 	}
-
 }

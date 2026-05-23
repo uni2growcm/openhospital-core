@@ -19,29 +19,38 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.isf.therapy.service;
 
-import java.util.List;
+package org.isf.country.service;
 
-import org.isf.patient.model.Patient;
-import org.isf.therapy.model.TherapyRow;
+import org.isf.country.model.Country;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface TherapyIoOperationRepository extends JpaRepository<TherapyRow, Integer> {
+import java.util.List;
+import java.util.Optional;
 
-	List<TherapyRow> findAllByOrderByPatientAscTherapyIDAsc();
+public interface CountryIoOperationRepository extends JpaRepository<Country, Integer> {
 
-	List<TherapyRow> findByPatientCodeOrderByPatientCodeAscTherapyIDAsc(Integer patient);
+	Optional<Country> findByIsoCodeAndActive(String isoCode, int active);
+	List<Country> findAllByActiveOrderByNameAsc(int active);
+	Optional<Country> findByIdAndActive(int id, int active);
 
-	@Modifying
-	void deleteByPatient(@Param("patient") Patient patient);
+	@Modifying(clearAutomatically = true)
+	@Query("UPDATE Country c SET c.active = 0 WHERE c.id = :id")
+	void softDelete(@Param("id") int id);
 
-	@Query("select count(t) from TherapyRow t where active=1")
-	long countAllActiveTherapies();
+	@Query("""
+		SELECT c FROM Country c
+			WHERE c.active = 1 AND (
+				LOWER(c.name)    LIKE LOWER(CONCAT('%', :keyword, '%')) OR
+				LOWER(c.isoCode) LIKE LOWER(CONCAT('%', :keyword, '%')) OR
+				c.phoneCode      LIKE CONCAT('%', :keyword, '%')
+			)
+		ORDER BY c.name ASC
+	""")
+	List<Country> searchCountries(@Param("keyword") String keyword);
 
-	@Query("SELECT t FROM TherapyRow t WHERE t.therapyID = :therapyID")
-	List<TherapyRow> findByTherapyID(@Param("therapyID") int therapyID);
+	Optional<Country> findByNameAndActive(String name, int active);
 }

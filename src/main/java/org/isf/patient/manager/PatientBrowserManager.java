@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -432,5 +432,22 @@ public class PatientBrowserManager {
 	 */
 	public List<Patient> getPatientByCodes(List<Integer> codes) throws OHServiceException {
 		return ioOperations.getPatientByCodes(codes);
+	}
+
+	/**
+	 * Method that returns a limited list of {@link Patient}s not logically deleted, having the passed String in:<br>
+	 * - code<br>
+	 * - firstName<br>
+	 * - secondName<br>
+	 * - taxCode<br>
+	 * - note<br>
+	 *
+	 * @param keyword - String to search, {@code null} for full list
+	 * @param limit - maximum number of patients to return
+	 * @return the list of {@link Patient}s limited to 'limit' records (could be empty)
+	 * @throws OHServiceException
+	 */
+	public List<Patient> getPatientsByOneOfFieldsLikeWithLimit(String keyword, int limit) throws OHServiceException {
+		return ioOperations.getPatientsByOneOfFieldsLikeWithLimit(keyword, limit);
 	}
 }
