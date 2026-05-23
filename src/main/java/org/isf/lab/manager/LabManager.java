@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -38,7 +38,6 @@ import org.isf.lab.service.LabIoOperations;
 import org.isf.patient.model.Patient;
 import org.isf.utils.db.TranslateOHServiceException;
 import org.isf.utils.exception.OHDataValidationException;
-import org.isf.utils.exception.OHException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.model.OHExceptionMessage;
 import org.isf.utils.pagination.PagedResponse;
@@ -533,5 +532,17 @@ public class LabManager {
 	 */
 	public Laboratory updateLaboratory(Laboratory laboratory) throws OHServiceException {
 		return ioOperations.update(laboratory);
+	}
+
+	/**
+	 * Updates the bill for a specific laboratory exam.
+	 *
+	 * @param labId the laboratory ID
+	 * @param bill the Bill object to associate
+	 * @throws OHServiceException if an error occurs during the update
+	 */
+	@Transactional
+	public void updateBillForLaboratory(int labId, Bill bill) throws OHServiceException {
+		ioOperations.updateBillForLaboratory(labId, bill);
 	}
 }

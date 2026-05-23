@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -433,5 +433,17 @@ public class TherapyManager {
 	 */
 	public TherapyRow updateTherapy(TherapyRow therapy) throws OHServiceException {
 		return ioOperations.newTherapy(therapy);
+	}
+
+	/**
+	 * Updates the bought quantity for a specific therapy.
+	 *
+	 * @param therapyId the therapy ID
+	 * @param quantity the quantity to add (positive for billing, negative for refunds)
+	 * @throws OHServiceException if an error occurs during the update
+	 */
+	@Transactional
+	public void updateBougthQuantity(int therapyId, double quantity) throws OHServiceException {
+		ioOperations.updateBougthQuantity(therapyId, quantity);
 	}
 }

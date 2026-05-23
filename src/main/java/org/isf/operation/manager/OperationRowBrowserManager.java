@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -23,6 +23,7 @@ package org.isf.operation.manager;
 
 import java.util.List;
 
+import org.isf.accounting.model.Bill;
 import org.isf.admission.model.Admission;
 import org.isf.opd.model.Opd;
 import org.isf.operation.model.OperationRow;
@@ -30,6 +31,7 @@ import org.isf.operation.service.OperationRowIoOperations;
 import org.isf.patient.model.Patient;
 import org.isf.utils.exception.OHServiceException;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author xavier
@@ -117,5 +119,17 @@ public class OperationRowBrowserManager {
 	 */
 	public OperationRow updateOperation(OperationRow operationRow) throws OHServiceException {
 		return ioOperations.update(operationRow);
+	}
+
+	/**
+	 * Updates the bill for a specific operation row.
+	 *
+	 * @param operationId the operation row ID
+	 * @param bill the Bill object to associate
+	 * @throws OHServiceException if an error occurs during the update
+	 */
+	@Transactional
+	public void updateBillForOperationRow(int operationId, Bill bill) throws OHServiceException {
+		ioOperations.updateBillForOperationRow(operationId, bill);
 	}
 }

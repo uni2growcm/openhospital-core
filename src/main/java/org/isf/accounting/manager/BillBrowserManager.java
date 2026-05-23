@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -25,6 +25,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.isf.therapy.manager.TherapyManager;
+import org.isf.lab.manager.LabManager;
+import org.isf.operation.manager.OperationRowBrowserManager;
 import org.isf.accounting.model.Bill;
 import org.isf.accounting.model.BillItems;
 import org.isf.accounting.model.BillPayments;
@@ -46,9 +49,18 @@ import org.springframework.transaction.annotation.Transactional;
 public class BillBrowserManager {
 
 	private final AccountingIoOperations ioOperations;
+	private final TherapyManager therapyManager;
+	private final LabManager labManager;
+	private final OperationRowBrowserManager operationRowManager;
 
-	public BillBrowserManager(AccountingIoOperations accountingIoOperations) {
+	public BillBrowserManager(AccountingIoOperations accountingIoOperations,
+							  TherapyManager therapyManager,
+	                          LabManager labManager,
+	                          OperationRowBrowserManager operationRowManager) {
 		this.ioOperations = accountingIoOperations;
+		this.therapyManager = therapyManager;
+		this.labManager = labManager;
+		this.operationRowManager = operationRowManager;
 	}
 
 	/**
@@ -167,6 +179,7 @@ public class BillBrowserManager {
 		int billId = newBill.getId();
 		if (!billItems.isEmpty()) {
 			newBillItems(billId, billItems);
+			markPrescriptionsAsBilled(billItems, newBill);
 		}
 		if (!billPayments.isEmpty()) {
 			newBillPayments(billId, billPayments);
@@ -224,6 +237,7 @@ public class BillBrowserManager {
 		validateBill(updateBill, billPayments);
 		Bill updatedBill = updateBill(updateBill);
 		newBillItems(updateBill.getId(), billItems);
+		markPrescriptionsAsBilled(billItems, updatedBill);
 		newBillPayments(updateBill.getId(), billPayments);
 		return updatedBill;
 	}
@@ -466,5 +480,47 @@ public class BillBrowserManager {
 	 */
 	public Price getPriceFromListWithoutReduction(String itemId, ItemGroup group, Patient patient) throws OHServiceException {
 		return ioOperations.getPriceFromListWithoutReduction(itemId, group, patient);
+	}
+
+	/**
+	 * Vérifie si une prescription spécifique est déjà dans une facture payée.
+	 *
+	 * @param patientCode    le code du patient
+	 * @param prescriptionId l'identifiant de la prescription
+	 * @param itemGroup      le groupe de l'item ("MED", "EXA", "OPE")
+	 * @return true si déjà facturée et payée
+	 * @throws OHServiceException
+	 */
+	public boolean isPrescriptionAlreadyBilledAndPaid(
+		Integer patientCode,
+		Integer prescriptionId,
+		String itemGroup) throws OHServiceException {
+		return ioOperations.isPrescriptionAlreadyBilledAndPaid(
+			patientCode, prescriptionId, itemGroup);
+	}
+
+	/**
+	 * Marks prescriptions as billed by updating the corresponding tables.
+	 *
+	 * @param billItems the list of bill items containing prescription information
+	 * @param bill the Bill object to associate
+	 * @throws OHServiceException if an error occurs during the update
+	 */
+	private void markPrescriptionsAsBilled(List<BillItems> billItems, Bill bill) throws OHServiceException {
+		for (BillItems item : billItems) {
+			if (item.getPrescriptionId() == null || item.getPrescriptionId() == 0) {
+				continue;
+			}
+
+			if (ItemGroup.MEDICAL.getCode().equals(item.getItemGroup())) {
+				therapyManager.updateBougthQuantity(item.getPrescriptionId(), item.getItemQuantity());
+
+			} else if (ItemGroup.EXAM.getCode().equals(item.getItemGroup())) {
+				labManager.updateBillForLaboratory(item.getPrescriptionId(), bill);
+
+			} else if (ItemGroup.OPERATION.getCode().equals(item.getItemGroup())) {
+				operationRowManager.updateBillForOperationRow(item.getPrescriptionId(), bill);
+			}
+		}
 	}
 }

@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2024 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -604,5 +604,24 @@ public class AccountingIoOperations {
 		price.setGroup(group.getCode());
 
 		return price;
+	}
+
+	/**
+	 * Checks if a specific prescription item is already in a closed (paid) bill for this patient.
+	 *
+	 * @param patientCode    the patient's code
+	 * @param prescriptionId the prescription ID (therapyID, lab.code, op.id)
+	 * @param itemGroup      the item group ("MED", "EXA", "OPE")
+	 * @return true if already billed and paid
+	 */
+	public boolean isPrescriptionAlreadyBilledAndPaid(
+		Integer patientCode,
+		Integer prescriptionId,
+		String itemGroup) throws OHServiceException {
+		if (prescriptionId == null) {
+			return false;
+		}
+		return billItemsRepository.existsByPatientAndPrescriptionInClosedBill(
+			patientCode, prescriptionId, itemGroup);
 	}
 }
