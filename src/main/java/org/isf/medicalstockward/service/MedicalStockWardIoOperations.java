@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -36,6 +36,10 @@ import org.isf.utils.db.TranslateOHServiceException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.time.TimeTools;
 import org.isf.ward.model.Ward;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -392,5 +396,55 @@ public class MedicalStockWardIoOperations {
 	 */
 	public List<MovementWard> getMovementWardByWardMedicalAndLotAfterOrSameDate(String wardCode, int medicalCode, String lotCode, LocalDateTime date) {
 		return movementRepository.findByWardMedicalAndLotAfterOrSameDate(wardCode, medicalCode, lotCode, date);
+	}
+
+	/**
+	 * Gets the paginated {@link MovementWard}s associated to the specified ward,
+	 * filtered by movement date and optional patient/medical criteria.
+	 *
+	 * @param wardId the ward id.
+	 * @param dateFrom the lower bound for the movement date range.
+	 * @param dateTo the upper bound for the movement date range.
+	 * @param medicalTypeCode the medical type code to filter by.
+	 * @param medicalCode the medical code to filter by.
+	 * @param sex the patient sex to filter by.
+	 * @param ageFrom the lower bound for the patient age range.
+	 * @param ageTo the upper bound for the patient age range.
+	 * @param weightFrom the lower bound for the patient weight range.
+	 * @param weightTo the upper bound for the patient weight range.
+	 * @param page the page number (zero-based).
+	 * @param pageSize the number of elements per page.
+	 * @return the paginated list of retrieved movements.
+	 * @throws OHServiceException if an error occurs retrieving the movements.
+	 */
+	public Page<MovementWard> getWardMovementsWithFilter(
+		String wardId,
+		LocalDateTime dateFrom,
+		LocalDateTime dateTo,
+		String medicalTypeCode,
+		Integer medicalCode,
+		String sex,
+		Integer ageFrom,
+		Integer ageTo,
+		Float weightFrom,
+		Float weightTo,
+		int page,
+		int pageSize) throws OHServiceException {
+
+		Pageable pageable = PageRequest.of(page, pageSize);
+
+		Page<Integer> pageOfIds = repository.findWardMovementsWithFilter(
+			wardId,
+			TimeTools.truncateToSeconds(dateFrom),
+			TimeTools.truncateToSeconds(dateTo),
+			medicalTypeCode, medicalCode,
+			sex, ageFrom, ageTo, weightFrom, weightTo,
+			pageable);
+
+		List<MovementWard> movements = new ArrayList<>();
+		for (Integer code : pageOfIds.getContent()) {
+			movementRepository.findById(code).ifPresent(movements::add);
+		}
+		return new PageImpl<>(movements, pageable, pageOfIds.getTotalElements());
 	}
 }
