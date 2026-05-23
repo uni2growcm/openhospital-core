@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -78,6 +78,9 @@ public class Patient extends Auditable<String> {
 	@NotNull
 	@Column(name="PAT_BDATE")	// SQL type: date
 	private LocalDate birthDate;
+
+	@Column(name="PAT_BIRTH_PLACE")
+	private String birthPlace;
 
 	@NotNull
 	@Column(name="PAT_AGE")
@@ -280,6 +283,37 @@ public class Patient extends Auditable<String> {
 		this.profession = profession;
 	}
 
+	public Patient(int code, String firstName, String secondName, String name, LocalDate birthDate, int age, String agetype, char sex,
+	               String address, String city, String nextKin, String telephone, String note,
+	               String motherName, char mother, String fatherName, char father,
+	               String bloodType, char economicStatus, char parentTogether, String taxCode,
+	               String maritalStatus, String profession, String birthPlace) {
+		this.code = code;
+		this.firstName = firstName;
+		this.secondName = secondName;
+		this.name = name;
+		this.birthDate = birthDate;
+		this.age = age;
+		this.agetype = agetype;
+		this.sex = sex;
+		this.address = address;
+		this.city = city;
+		this.nextKin = nextKin;
+		this.telephone = telephone;
+		this.note = note;
+		this.motherName = motherName;
+		this.mother = mother;
+		this.fatherName = fatherName;
+		this.father = father;
+		this.hasInsurance = economicStatus;
+		this.bloodType = bloodType;
+		this.parentTogether = parentTogether;
+		this.taxCode = taxCode;
+		this.maritalStatus = maritalStatus;
+		this.profession = profession;
+		this.birthPlace = birthPlace;
+	}
+
 	public PatientConsensus getPatientConsensus() {
 		return patientConsensus;
 	}
@@ -301,8 +335,16 @@ public class Patient extends Auditable<String> {
 		return birthDate;
 	}
 
+	public String getBirthPlace(){
+		return birthPlace;
+	}
+
 	public void setBirthDate(LocalDate birthDate) {
 		this.birthDate = birthDate;
+	}
+
+	public void setBirthPlace(String birthPlace) {
+		this.birthPlace = birthPlace;
 	}
 
 	public int getAge() {

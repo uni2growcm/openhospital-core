@@ -355,6 +355,26 @@ class Tests extends OHCoreTestCase {
 	}
 
 	@Test
+	void testMgrGetFemalePatientsByOneOfFieldsLikeFirstName() throws Exception {
+		Integer code = setupTestPatient(false);
+		Patient foundPatient = patientIoOperation.getPatient(code);
+		foundPatient.setSex('F');
+		patientIoOperationRepository.saveAndFlush(foundPatient);
+
+		assertThat(patientBrowserManager.getFemalePatientsByOneOfFieldsLike(foundPatient.getFirstName()).get(0).getSex()).isEqualTo('F');
+	}
+
+	@Test
+	void testMgrGetFemalePatientsByOneOfFieldsLikeFirstNameForMalePatient() throws Exception {
+		Integer code = setupTestPatient(false);
+		Patient foundPatient = patientIoOperation.getPatient(code);
+		foundPatient.setSex('M');
+		patientIoOperationRepository.saveAndFlush(foundPatient);
+
+		assertThat(patientBrowserManager.getFemalePatientsByOneOfFieldsLike(foundPatient.getFirstName())).isEmpty();
+	}
+
+	@Test
 	void testMgrGetPatientsByOneOfFieldsLikeMiddleOfFirstName() throws Exception {
 		Integer code = setupTestPatient(false);
 		Patient foundPatient = patientIoOperation.getPatient(code);

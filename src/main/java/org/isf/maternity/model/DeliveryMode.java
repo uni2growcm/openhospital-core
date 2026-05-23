@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2023 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -19,15 +19,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.isf.patient.service;
+package org.isf.maternity.model;
 
-import java.util.List;
+public enum DeliveryMode {
+	SVD("angal.maternity.delivery.mode.svd"),
+	VACUUM("angal.maternity.delivery.mode.vacuum"),
+	FORCEPS("angal.maternity.delivery.mode.forceps"),
+	C_SECTION_ELECTIVE("angal.maternity.delivery.mode.csection.elective"),
+	C_SECTION_EMERGENCY("angal.maternity.delivery.mode.csection.emergency");
 
-import org.isf.patient.model.Patient;
+	private final String key;
 
-public interface PatientIoOperationRepositoryCustom {
+	DeliveryMode(String key) {
+		this.key = key;
+	}
 
-	List<Patient> findByFieldsContainingWordsFromLiteral(String regex);
-
-	List<Patient> findFemaleByFieldsContainingWordsFromLiteral(String literal);
+	public String getKey() {
+		return key;
+	}
 }

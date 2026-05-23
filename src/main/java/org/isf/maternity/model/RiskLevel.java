@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2023 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -19,15 +19,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.isf.patient.service;
+package org.isf.maternity.model;
 
-import java.util.List;
+import org.isf.generaldata.MessageBundle;
 
-import org.isf.patient.model.Patient;
+public enum RiskLevel {
+	LOW,
+	MEDIUM,
+	HIGH;
 
-public interface PatientIoOperationRepositoryCustom {
+	private static final String PREFIX = "angal.maternity.risklevel.";
 
-	List<Patient> findByFieldsContainingWordsFromLiteral(String regex);
+	public String getMessageKey() {
+		return PREFIX + name().toLowerCase();
+	}
 
-	List<Patient> findFemaleByFieldsContainingWordsFromLiteral(String literal);
+	public String getDescription() {
+		return MessageBundle.getMessage(getMessageKey());
+	}
+
+	@Override
+	public String toString() {
+		return getDescription();
+	}
+
+	public static RiskLevel from(String value) {
+		return RiskLevel.valueOf(value.toUpperCase());
+	}
 }
