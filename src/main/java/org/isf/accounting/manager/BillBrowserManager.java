@@ -26,6 +26,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import org.isf.accounting.model.*;
+import org.isf.therapy.manager.TherapyManager;
+import org.isf.lab.manager.LabManager;
+import org.isf.operation.manager.OperationRowBrowserManager;
 import org.isf.accounting.service.AccountingIoOperations;
 import org.isf.generaldata.GeneralData;
 import org.isf.generaldata.MessageBundle;
@@ -41,6 +44,7 @@ import org.isf.patient.manager.PatientBrowserManager;
 import org.isf.menu.model.User;
 import org.isf.patient.model.Patient;
 import org.isf.priceslist.manager.PriceListManager;
+import org.isf.priceslist.model.ItemGroup;
 import org.isf.priceslist.model.Price;
 import org.isf.utils.db.TranslateOHServiceException;
 import org.isf.utils.exception.OHDataValidationException;
@@ -49,6 +53,9 @@ import org.isf.utils.exception.model.OHExceptionMessage;
 import org.isf.utils.exception.model.OHSeverityLevel;
 import org.isf.utils.time.TimeTools;
 import org.isf.ward.model.Ward;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,13 +67,21 @@ public class BillBrowserManager {
 	private final PriceListManager priceListManager;
 	private final MedicalBrowsingManager medicalBrowsingManager;
 	private final MovStockInsertingManager movStockInsertingManager;
+	private final TherapyManager therapyManager;
+	private final LabManager labManager;
+	private final OperationRowBrowserManager operationRowManager;
 
-	public BillBrowserManager(AccountingIoOperations ioOperations, MovWardBrowserManager mvtManager, PriceListManager priceListManager, MedicalBrowsingManager medicalBrowsingManager, MovStockInsertingManager movStockInsertingManager) {
+	public BillBrowserManager(
+		AccountingIoOperations ioOperations, MovWardBrowserManager mvtManager,
+		PriceListManager priceListManager, MedicalBrowsingManager medicalBrowsingManager,
+	    MovStockInsertingManager movStockInsertingManager,  TherapyManager therapyManager,
+	    LabManager labManager, OperationRowBrowserManager operationRowManager
+	) {
 		this.ioOperations = ioOperations;
 		this.mvtManager = mvtManager;
 		this.priceListManager = priceListManager;
 		this.medicalBrowsingManager = medicalBrowsingManager;
-		this.movStockInsertingManager = movStockInsertingManager;
+		this.movStockInsertingManager = movStockInsertingManager;	
 	}
 
 	/**
@@ -136,7 +151,7 @@ public class BillBrowserManager {
 
 	/**
 	 * Verify if the object is valid for CRUD and return a list of errors, if any
-	 * 
+	 *
 	 * @param bill
 	 * @param billPayments
 	 * @throws OHDataValidationException
@@ -181,7 +196,7 @@ public class BillBrowserManager {
 
 	/**
 	 * Retrieves all the {@link BillItems} associated to the passed {@link Bill} id.
-	 * 
+	 *
 	 * @param billID the bill id.
 	 * @return a list of {@link BillItems} or {@code null} if an error occurred.
 	 * @throws OHServiceException
@@ -195,7 +210,7 @@ public class BillBrowserManager {
 
 	/**
 	 * Retrieves all the bills of a given patient between dateFrom and datTo
-	 * 
+	 *
 	 * @param dateFrom
 	 * @param dateTo
 	 * @param patient
@@ -208,7 +223,7 @@ public class BillBrowserManager {
 
 	/**
 	 * Retrieves all the billPayments for a given patient between dateFrom and dateTo
-	 * 
+	 *
 	 * @param dateFrom
 	 * @param dateTo
 	 * @param patient
@@ -221,7 +236,7 @@ public class BillBrowserManager {
 
 	/**
 	 * Gets all the {@link BillPayments} for the specified {@link Bill}.
-	 * 
+	 *
 	 * @param billID the bill id.
 	 * @return a list of {@link BillPayments}
 	 * @throws OHServiceException
@@ -232,7 +247,7 @@ public class BillBrowserManager {
 
 	/**
 	 * Stores a new {@link Bill} along with all its {@link BillItems} and {@link BillPayments}
-	 * 
+	 *
 	 * @param bill the bill to store.
 	 * @param billItems the list of bill's items
 	 * @param billPayments the list of bill's payments
@@ -257,6 +272,7 @@ public class BillBrowserManager {
 			if (GeneralData.STOCKMVTONBILLSAVE) {
 				updateMedicalStock(billItems, billId, false);
 			}
+			markPrescriptionsAsBilled(billItems, newBill);
 		}
 
 		if (billPayments != null && !billPayments.isEmpty()) {
@@ -268,7 +284,7 @@ public class BillBrowserManager {
 
 	/**
 	 * Stores a new {@link Bill}.
-	 * 
+	 *
 	 * @param newBill the bill to store.
 	 * @return the persisted Bill object
 	 * @throws OHServiceException
@@ -279,7 +295,7 @@ public class BillBrowserManager {
 
 	/**
 	 * Stores a list of {@link BillItems} associated to a {@link Bill}.
-	 * 
+	 *
 	 * @param billID the bill id.
 	 * @param billItems the bill items to store.
 	 * @throws OHServiceException
@@ -290,7 +306,7 @@ public class BillBrowserManager {
 
 	/**
 	 * Stores a list of {@link BillPayments} associated to a {@link Bill}.
-	 * 
+	 *
 	 * @param billID the bill id.
 	 * @param payItems the bill payments.
 	 * @throws OHServiceException
@@ -301,7 +317,7 @@ public class BillBrowserManager {
 
 	/**
 	 * Updates the specified {@link Bill} along with all its {@link BillItems} and {@link BillPayments}
-	 * 
+	 *
 	 * @param updateBill the bill to update.
 	 * @param billItems the list of bill's items
 	 * @param billPayments the list of bill's payments
@@ -329,14 +345,14 @@ public class BillBrowserManager {
 
 		Bill updatedBill = updateBill(updateBill);
 		newBillItems(updateBill.getId(), billItems);
-		newBillPayments(updatedBill.getId(), billPayments);
-
+		markPrescriptionsAsBilled(billItems, updatedBill);
+		newBillPayments(updateBill.getId(), billPayments);
 		return updatedBill;
 	}
 
 	/**
 	 * Updates the specified {@link Bill}.
-	 * 
+	 *
 	 * @param updateBill the bill to update.
 	 * @return the updated Bill object
 	 * @throws OHServiceException
@@ -347,7 +363,7 @@ public class BillBrowserManager {
 
 	/**
 	 * Returns all the pending {@link Bill}s for the specified patient.
-	 * 
+	 *
 	 * @param patID the patient id.
 	 * @return the list of pending bills or {@code null} if an error occurred.
 	 * @throws OHServiceException
@@ -358,7 +374,7 @@ public class BillBrowserManager {
 
 	/**
 	 * Get the {@link Bill} with specified billID
-	 * 
+	 *
 	 * @param billID
 	 * @return the {@link Bill} or {@code null} if an error occurred.
 	 * @throws OHServiceException
@@ -369,7 +385,7 @@ public class BillBrowserManager {
 
 	/**
 	 * Returns all user ids related to a {@link BillPayments}.
-	 * 
+	 *
 	 * @return a list of user id or {@code null} if an error occurred.
 	 * @throws OHServiceException
 	 */
@@ -379,7 +395,7 @@ public class BillBrowserManager {
 
 	/**
 	 * Deletes the specified {@link Bill}. If the argument is NULL then an error is thrown. If the Bill is not found it is silently ignored.
-	 * 
+	 *
 	 * @param deleteBill the bill to delete.
 	 * @throws OHServiceException
 	 */
@@ -389,7 +405,7 @@ public class BillBrowserManager {
 
 	/**
 	 * Retrieves all the {@link Bill}s for the specified date range.
-	 * 
+	 *
 	 * @param dateFrom the low date range endpoint, inclusive.
 	 * @param dateTo the high date range endpoint, inclusive.
 	 * @return a list of retrieved {@link Bill}s or {@code null} if an error occurred.
@@ -401,7 +417,7 @@ public class BillBrowserManager {
 
 	/**
 	 * Gets all the {@link Bill}s associated to the passed {@link BillPayments}.
-	 * 
+	 *
 	 * @param billPayments the {@link BillPayments} associated to the bill to retrieve.
 	 * @return a list of {@link Bill} associated to the passed {@link BillPayments} or {@code null} if an error occurred.
 	 * @throws OHServiceException
@@ -415,7 +431,7 @@ public class BillBrowserManager {
 
 	/**
 	 * Retrieves all the {@link BillPayments} for the specified date range.
-	 * 
+	 *
 	 * @param dateFrom low endpoint, inclusive, for the date range.
 	 * @param dateTo high endpoint, inclusive, for the date range.
 	 * @return a list of {@link BillPayments} for the specified date range or {@code null} if an error occurred.
@@ -427,7 +443,7 @@ public class BillBrowserManager {
 
 	/**
 	 * Retrieves all the {@link BillPayments} associated to the passed {@link Bill} list.
-	 * 
+	 *
 	 * @param billArray the bill array list of {@link Bill}s.
 	 * @return a list of {@link BillPayments} associated to the passed bill list or {@code null} if an error occurred.
 	 * @throws OHServiceException
@@ -438,7 +454,7 @@ public class BillBrowserManager {
 
 	/**
 	 * Retrieves all the {@link Bill}s associated to the specified {@link Patient}.
-	 * 
+	 *
 	 * @param patID the Patient's ID
 	 * @return the list of {@link Bill}s
 	 * @throws OHServiceException
@@ -449,7 +465,7 @@ public class BillBrowserManager {
 
 	/**
 	 * Returns all the distinct stored {@link BillItems}.
-	 * 
+	 *
 	 * @return a list of distinct {@link BillItems} or null if an error occurs.
 	 * @throws OHServiceException
 	 */
@@ -459,7 +475,7 @@ public class BillBrowserManager {
 
 	/**
 	 * Get the bills list with a given billItem
-	 * 
+	 *
 	 * @param dateFrom
 	 * @param dateTo
 	 * @param billItem
@@ -568,7 +584,56 @@ public class BillBrowserManager {
 	}
 
 	/**
-	 * Get the bills filtered by date, patient and guarantor
+	 * Get paginated bills with filters returning Page (nouveau GUI)
+	 *
+	 * @param status the bill status to filter (O for open, C for closed, null for all)
+	 * @param dateFrom the start date to filter (inclusive, null for no lower bound)
+	 * @param dateTo the end date to filter (exclusive, null for no upper bound
+	 * @param patient the patient to filter (null for all)
+	 * @param guarantor the user acting as guarantor to filter (null for all)
+	 * @param page the page number to retrieve (0-based)
+	 * @param size the number of items per page
+	 * @return a Page of Bill matching the filters
+	 * @throws OHServiceException when the calls to internal methods fail.	
+	 */
+	public Page<Bill> getBillsWithFilters(String status, LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient, User guarantor, int page, int size) throws OHServiceException {
+		Pageable pageable = PageRequest.of(page, size);
+		return ioOperations.getBillsWithFilters(status, dateFrom, dateTo, patient, guarantor, pageable);
+	}
+
+		/**
+	 * Get paginated bills with filters returning Page (nouveau GUI)
+	 *
+	 * @param status the bill status to filter (O for open, C for closed, null for all)
+	 * @param dateFrom the start date to filter (inclusive, null for no lower bound)
+	 * @param dateTo the end date to filter (exclusive, null for no upper bound
+	 * @param patient the patient to filter (null for all)
+	 * @param guarantor the user acting as guarantor to filter (null for all)
+	 * @param limit the number of items per page
+	 * @param offset the page number to retrieve
+	 * @return a Page of Bill matching the filters
+	 * @throws OHServiceException when the calls to internal methods fail.	
+	 */
+	public List<Bill> getBillsListWithFilters(String status, LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient, User guarantor, int limit, int offset) throws OHServiceException {
+		return ioOperations.getBillsListWithFilters(status, dateFrom, dateTo, patient, guarantor, limit, offset);
+	}
+
+	/**
+	 * Count bills with filters
+	 * 
+	 * @param status the bill status to filter (O for open, C for closed, null for all)
+	 * @param dateFrom the start date to filter (inclusive, null for no lower bound	)
+	 * @param dateTo the end date to filter (exclusive, null for no upper bound)
+	 * @param patient the patient to filter (null for all)
+	 * @param guarantor the user acting as guarantor to filter (null for all)
+	 * @return the number of {@link Bill}s matching the filters
+	 * @throws OHServiceException when the calls to internal methods fail.
+	 */
+	public long countBillsWithFilters(String status, LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient, User guarantor) throws OHServiceException {
+		return ioOperations.countBillsWithFilters(status, dateFrom, dateTo, patient, guarantor);
+	}
+
+	 /** Get the bills filtered by date, patient and guarantor
 	 *
 	 * @param dateFrom Start date
 	 * @param dateTo End date
@@ -860,6 +925,87 @@ public class BillBrowserManager {
 
 		if (!errors.isEmpty()) {
 			throw new OHDataValidationException(errors);
+		}
+	}
+
+	/**
+	 * Check if a patient has pending prescriptions (therapies, exams, operations)
+	 * that haven't been billed yet.
+	 *
+	 * @param patientCode the patient's code
+	 * @return true if the patient has pending prescriptions, false otherwise
+	 * @throws OHServiceException
+	 */
+	public boolean hasPrescription(Integer patientCode) throws OHServiceException {
+		return ioOperations.hasPrescription(patientCode);
+	}
+
+	/**
+	 * Gets the price of an item with patient reductions applied.
+	 * This method queries the database directly like the legacy version.
+	 *
+	 * @param itemId the item code (medical code, exam code, operation code)
+	 * @param group the item group (MED, EXA, OPE, OTH)
+	 * @param patient the patient (for reduction plan)
+	 * @return the Price with reductions applied, or null if not found
+	 * @throws OHServiceException
+	 */
+	public Price getPrice(String itemId, ItemGroup group, Patient patient) throws OHServiceException {
+		return ioOperations.getPrice(itemId, group, patient);
+	}
+
+	/**
+	 * Gets the gross price (without reductions) of an item.
+	 *
+	 * @param itemId the item code
+	 * @param group the item group
+	 * @param patient the patient
+	 * @return the Price with gross price, or null if not found
+	 * @throws OHServiceException
+	 */
+	public Price getPriceFromListWithoutReduction(String itemId, ItemGroup group, Patient patient) throws OHServiceException {
+		return ioOperations.getPriceFromListWithoutReduction(itemId, group, patient);
+	}
+
+	/**
+	 * Vérifie si une prescription spécifique est déjà dans une facture payée.
+	 *
+	 * @param patientCode    le code du patient
+	 * @param prescriptionId l'identifiant de la prescription
+	 * @param itemGroup      le groupe de l'item ("MED", "EXA", "OPE")
+	 * @return true si déjà facturée et payée
+	 * @throws OHServiceException
+	 */
+	public boolean isPrescriptionAlreadyBilledAndPaid(
+		Integer patientCode,
+		Integer prescriptionId,
+		String itemGroup) throws OHServiceException {
+		return ioOperations.isPrescriptionAlreadyBilledAndPaid(
+			patientCode, prescriptionId, itemGroup);
+	}
+
+	/**
+	 * Marks prescriptions as billed by updating the corresponding tables.
+	 *
+	 * @param billItems the list of bill items containing prescription information
+	 * @param bill the Bill object to associate
+	 * @throws OHServiceException if an error occurs during the update
+	 */
+	private void markPrescriptionsAsBilled(List<BillItems> billItems, Bill bill) throws OHServiceException {
+		for (BillItems item : billItems) {
+			if (item.getPrescriptionId() == null || item.getPrescriptionId() == 0) {
+				continue;
+			}
+
+			if (ItemGroup.MEDICAL.getCode().equals(item.getItemGroup())) {
+				therapyManager.updateBougthQuantity(item.getPrescriptionId(), item.getItemQuantity());
+
+			} else if (ItemGroup.EXAM.getCode().equals(item.getItemGroup())) {
+				labManager.updateBillForLaboratory(item.getPrescriptionId(), bill);
+
+			} else if (ItemGroup.OPERATION.getCode().equals(item.getItemGroup())) {
+				operationRowManager.updateBillForOperationRow(item.getPrescriptionId(), bill);
+			}
 		}
 	}
 }

@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2024 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -97,4 +97,39 @@ public class TherapyIoOperations {
 		return this.repository.countAllActiveTherapies();
 	}
 
+	/**
+	 * Check if a patient has pending therapies (qty > 0).
+	 *
+	 * @param patientCode the patient's code
+	 * @return true if the patient has pending therapies, false otherwise
+	 * @throws OHServiceException
+	 */
+	public boolean hasTherapiesRowsNotYetBought(int patientCode) throws OHServiceException {
+		long count = repository.countUnbilledTherapies(patientCode);
+		System.out.println("DEBUG: hasTherapiesRowsNotYetBought for patient " + patientCode + " = " + (count > 0) + " (count=" + count + ")");
+		return count > 0;
+	}
+
+	/**
+	 * Gets all therapies for a patient that haven't been completely billed yet.
+	 * A therapy is considered unbilled if qtyBougth < prescribed quantity.
+	 *
+	 * @param patientCode the patient's code
+	 * @return list of unbilled TherapyRow objects
+	 * @throws OHServiceException if an error occurs
+	 */
+	public List<TherapyRow> getTherapiesWithoutBill(int patientCode) throws OHServiceException {
+		return repository.findByPatientCodeOrderByPatientCodeAscTherapyIDAsc(patientCode);
+	}
+
+	/**
+	 * Updates the bought quantity for a specific therapy.
+	 *
+	 * @param therapyId the therapy ID
+	 * @param quantity the quantity to add (positive for billing, negative for refunds)
+	 * @throws OHServiceException if an error occurs during the update
+	 */
+	public void updateBougthQuantity(int therapyId, double quantity) throws OHServiceException {
+		repository.updateBougthQuantity(therapyId, quantity);
+	}
 }
