@@ -172,6 +172,9 @@ public class AccountingIoOperations {
 		for (BillItems item : billItems) {
 			item.setBill(bill);
 			item.setId(0);
+			if (item.getItemDate() == null) {
+				item.setItemDate(LocalDateTime.now());
+			}
 			billItemsRepository.save(item);
 		}
 	}
@@ -336,7 +339,17 @@ public class AccountingIoOperations {
 	}
 
 	/**
-	 * Get paginated bills with filters returning Page (pour le nouveau GUI)
+	 * Get paginated bills with filters returning {@link Page} (pour le nouveau GUI).
+	 *
+	 * @param status    the bill status filter
+	 * @param dateFrom  the start date filter
+	 * @param dateTo    the end date filter
+	 * @param patient   the patient filter
+	 * @param guarantor the guarantor filter
+	 * @param page      the page number
+	 * @param size      the page size
+	 * @return a {@link Page} of {@link Bill}s matching the filters
+	 * @throws OHServiceException if an error occurs retrieving the bills
 	 */
 	public Page<Bill> getBillsWithFilters(String status, LocalDateTime dateFrom, LocalDateTime dateTo,
 	                                      Patient patient, User guarantor, int page, int size) throws OHServiceException {
@@ -347,7 +360,17 @@ public class AccountingIoOperations {
 	}
 
 	/**
-	 * Get paginated bills with filters returning List (pour l'ancien GUI)
+	 * Get paginated bills with filters returning {@link List} (pour l'ancien GUI).
+	 *
+	 * @param status    the bill status filter
+	 * @param dateFrom  the start date filter
+	 * @param dateTo    the end date filter
+	 * @param patient   the patient filter
+	 * @param guarantor the guarantor filter
+	 * @param limit     the maximum number of results to return
+	 * @param offset    the starting index
+	 * @return a {@link List} of {@link Bill}s matching the filters
+	 * @throws OHServiceException if an error occurs retrieving the bills
 	 */
 	public List<Bill> getBillsListWithFilters(String status, LocalDateTime dateFrom, LocalDateTime dateTo,
 	                                          Patient patient, User guarantor, int limit, int offset) throws OHServiceException {
@@ -359,7 +382,15 @@ public class AccountingIoOperations {
 	}
 
 	/**
-	 * Count bills with filters
+	 * Count bills matching the given filters.
+	 *
+	 * @param status    the bill status filter
+	 * @param dateFrom  the start date filter
+	 * @param dateTo    the end date filter
+	 * @param patient   the patient filter
+	 * @param guarantor the guarantor filter
+	 * @return the total number of {@link Bill}s matching the filters
+	 * @throws OHServiceException if an error occurs counting the bills
 	 */
 	public long countBillsWithFilters(String status, LocalDateTime dateFrom, LocalDateTime dateTo,
 	                                  Patient patient, User guarantor) throws OHServiceException {
