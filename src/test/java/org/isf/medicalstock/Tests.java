@@ -82,6 +82,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
@@ -763,10 +764,17 @@ class Tests extends OHCoreTestCase {
 		int code = setupTestMovement(false);
 		Movement foundMovement = movementIoOperationRepository.findById(code).orElse(null);
 		assertThat(foundMovement).isNotNull();
-		List<Movement> movements = movBrowserManager.getMovements(foundMovement.getMedical().getCode(), foundMovement.getMedical().getType().getCode(),
-			foundMovement.getWard().getCode(), foundMovement.getType().getCode(), fromDate, toDate, fromDate, toDate, fromDate, toDate,0,10);
-		assertThat(movements.size()).isGreaterThan(0);
-		assertThat(movements.get(0).getCode()).isEqualTo(foundMovement.getCode());
+
+		Page<Movement> movementsPage = movBrowserManager.getMovements(
+			foundMovement.getMedical().getCode(),
+			foundMovement.getMedical().getType().getCode(),
+			foundMovement.getWard().getCode(),
+			foundMovement.getType().getCode(),
+			fromDate, toDate, fromDate, toDate, fromDate, toDate,
+			0, 10);
+
+		assertThat(movementsPage.getContent().size()).isGreaterThan(0);
+		assertThat(movementsPage.getContent().get(0).getCode()).isEqualTo(foundMovement.getCode());
 	}
 
 	@ParameterizedTest(name = "Test with AUTOMATICLOT_IN={0}, AUTOMATICLOT_OUT={1}, AUTOMATICLOTWARD_TOWARD={2}")

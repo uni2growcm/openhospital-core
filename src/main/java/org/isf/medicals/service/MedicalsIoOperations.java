@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2024 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -32,6 +32,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.isf.utils.pagination.PageInfo;
+import org.isf.utils.pagination.PagedResponse;
+import org.springframework.data.domain.PageImpl;
 
 /**
  * This class offers the io operations for recovering and managing medical records from the database
@@ -54,7 +57,6 @@ public class MedicalsIoOperations {
 
 	/**
 	 * Retrieves the specified {@link Medical}.
-	 * 
 	 * @param code the medical code.
 	 * @return the stored medical.
 	 * @throws OHServiceException if an error occurs retrieving the stored medical.
@@ -62,10 +64,9 @@ public class MedicalsIoOperations {
 	public Medical getMedical(int code) throws OHServiceException {
 		return repository.findById(code).orElse(null);
 	}
-
+	
 	/**
 	 * Retrieves the specified {@link Medical}.
-	 * 
 	 * @param prod_code the medical prod_code.
 	 * @return the stored medical.
 	 * @throws OHServiceException if an error occurs retrieving the stored medical.
@@ -76,7 +77,6 @@ public class MedicalsIoOperations {
 
 	/**
 	 * Gets all stored {@link Medical}s.
-	 * 
 	 * @return all the stored medicals.
 	 * @throws OHServiceException if an error occurs retrieving the stored medicals.
 	 */
@@ -86,7 +86,7 @@ public class MedicalsIoOperations {
 
 	/**
 	 * Retrieves all stored {@link Medical}s. If a description value is provided, the medicals are filtered by the description.
-	 * 
+	 *
 	 * @param description the medical description.
 	 * @return the stored medicals.
 	 * @throws OHServiceException if an error occurs retrieving the stored medicals.
@@ -100,7 +100,7 @@ public class MedicalsIoOperations {
 
 	/**
 	 * Retrieves all stored {@link Medical}s. If a description value is provided the medicals are filtered.
-	 * 
+	 *
 	 * @param type the medical type description.
 	 * @param nameSorted if {@code true} return the list in alphabetical order, by code otherwise
 	 * @return the stored medicals.
@@ -115,7 +115,7 @@ public class MedicalsIoOperations {
 
 	/**
 	 * Retrieves all stored medicals by a given type, sorted by description or smart code.
-	 * 
+	 *
 	 * @param type the type the found medicals should have.
 	 * @param nameSorted if true the found medicals are sorted by description, otherwise sorted by prod_code and description.
 	 * @return sorted List of medicals or empty list if none found.
@@ -130,7 +130,7 @@ public class MedicalsIoOperations {
 
 	/**
 	 * Returns the medicals pageable.
-	 * 
+	 *
 	 * @param page - the page number.
 	 * @param size - the page size.
 	 * @return the list of {@link Medical}s pageable. It could be {@code empty}.
@@ -143,7 +143,6 @@ public class MedicalsIoOperations {
 
 	/**
 	 * Retrieves the stored {@link Medical}s based on the specified filter criteria.
-	 * 
 	 * @param description the medical description or {@code null}
 	 * @param type the medical type or {@code null}
 	 * @param critical {@code true} if include only medicals under critical level.
@@ -184,10 +183,9 @@ public class MedicalsIoOperations {
 		}
 		return medicals;
 	}
-
+	
 	/**
 	 * Checks if the specified {@link Medical} exists or not.
-	 * 
 	 * @param medical - the medical to check.
 	 * @param update - if {@code true} excludes the actual {@link Medical}
 	 * @return all {@link Medical} with similar description
@@ -199,10 +197,9 @@ public class MedicalsIoOperations {
 		}
 		return repository.findAllWhereDescriptionSoundsLike(medical.getDescription());
 	}
-
+	
 	/**
 	 * Checks if the specified {@link Medical} ProductCode exists or not.
-	 * 
 	 * @param medical - the medical to check.
 	 * @param update - if {@code true} excludes the actual {@link Medical}
 	 * @return {@code true} if exists, {@code false} otherwise.
@@ -217,10 +214,10 @@ public class MedicalsIoOperations {
 		}
 		return foundMedical != null;
 	}
+    
 
 	/**
 	 * Checks if the specified {@link Medical} exists or not.
-	 * 
 	 * @param medical the medical to check.
 	 * @param update - if {@code true} exclude the current medical itself from search
 	 * @return {@code true} if exists {@code false} otherwise.
@@ -235,10 +232,9 @@ public class MedicalsIoOperations {
 		}
 		return foundMedical != null;
 	}
-
+	
 	/**
 	 * Stores the specified {@link Medical}.
-	 * 
 	 * @param medical the medical to store.
 	 * @return the newly stored {@link Medical} object.
 	 * @throws OHServiceException if an error occurs storing the medical.
@@ -249,7 +245,6 @@ public class MedicalsIoOperations {
 
 	/**
 	 * Updates the specified {@link Medical}.
-	 * 
 	 * @param medical the medical to update.
 	 * @return the persisted {@link Medical} object.
 	 * @throws OHServiceException if an error occurs during the update.
@@ -260,7 +255,6 @@ public class MedicalsIoOperations {
 
 	/**
 	 * Checks if the specified {@link Medical} is referenced in stock movement.
-	 * 
 	 * @param code the medical code.
 	 * @return {@code true} if the medical is referenced, {@code false} otherwise.
 	 * @throws OHServiceException if an error occurs during the check.
@@ -271,7 +265,6 @@ public class MedicalsIoOperations {
 
 	/**
 	 * Deletes the specified {@link Medical}.
-	 * 
 	 * @param medical the medical to delete.
 	 * @throws OHServiceException if an error occurs during the medical deletion.
 	 */
@@ -281,10 +274,10 @@ public class MedicalsIoOperations {
 
 	/**
 	 * Retrieves all stored medicals, sorted by description or smart code.
-	 * 
-	 * @param nameSorted if true the found medicals are sorted by description, otherwise sorted by prod_code and description.
+	 * @param nameSorted if true the found medicals are sorted by description, otherwise sorted by
+	 *                      prod_code and description.
 	 * @return sorted List of medicals or empty list if none found.
-	 * @throws OHServiceException When failed to get medicals
+	 * @throws OHServiceException
 	 */
 	private List<Medical> getMedicals(boolean nameSorted) throws OHServiceException {
 		if (nameSorted) {
@@ -320,5 +313,58 @@ public class MedicalsIoOperations {
 			return repository.findAllByTypeDescriptionContainsAndDescriptionContainsAndDeleted(type, description, deleted, pageable);
 		}
 		return repository.findAllByTypeDescriptionContainsAndDescriptionContains(type, description, pageable);
+	}
+	/**
+	 * Returns PagedResponse of Medicals (manual pagination like OPD)
+	 *
+	 * @param page the page number (0-indexed)
+	 * @param size the size of the page
+	 * @return PagedResponse of {@link Medical}s
+	 * @throws OHServiceException when fails to fetch
+	 */
+	public Page<Medical> getMedicalListPageable(int page, int size) throws OHServiceException {
+		Pageable pageRequest = PageRequest.of(page, size);
+		List<Medical> medicals = this.getMedicals();
+		int start = (int) pageRequest.getOffset();
+		int end = Math.min(start + pageRequest.getPageSize(), medicals.size());
+		List<Medical> pageContent = medicals.subList(start, end);
+		return new PageImpl<>(pageContent, pageRequest, medicals.size());
+	}
+
+	/**
+	 * Returns Spring Page of Medicals (database-level pagination like OPD)
+	 *
+	 * @param pageable the page information
+	 * @return a page of {@link Medical}s
+	 * @throws OHServiceException when fails to fetch
+	 */
+	public Page<Medical> getMedicalsPageable(Pageable pageable) throws OHServiceException {
+		return repository.findAllPageable(pageable);
+	}
+
+	/**
+	 * Converts Spring Page to PagedResponse
+	 *
+	 * @param pages the Spring Page
+	 * @return PagedResponse of {@link Medical}s
+	 */
+	private PagedResponse<Medical> setPaginationData(Page<Medical> pages) {
+		PagedResponse<Medical> data = new PagedResponse<>();
+		data.setData(pages.getContent());
+		data.setPageInfo(PageInfo.from(pages));
+		return data;
+	}
+
+	/**
+	 * Returns Spring Page of Medicals with filters (database-level pagination)
+	 *
+	 * @param pageable the page information
+	 * @param activeFilter filter for active status (null = all, true = active only, false = disabled only)
+	 * @param medicalTypeCode filter by medical type code (null = all)
+	 * @return a page of {@link Medical}s
+	 * @throws OHServiceException when fails to fetch
+	 */
+	public Page<Medical> getMedicalsPageable(Pageable pageable, String activeFilter, String medicalTypeCode) throws OHServiceException {
+		return repository.findAllPageable(pageable, activeFilter, medicalTypeCode);
 	}
 }

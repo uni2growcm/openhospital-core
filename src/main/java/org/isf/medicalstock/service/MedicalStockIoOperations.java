@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2024 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -48,6 +48,10 @@ import org.isf.utils.time.TimeTools;
 import org.isf.ward.model.Ward;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -97,6 +101,7 @@ public class MedicalStockIoOperations {
 
 	/**
 	 * Retrieves all medicals referencing the specified code.
+	 * 
 	 * @param lotCode the lot code.
 	 * @return the ids of medicals referencing the specified lot.
 	 * @throws OHServiceException if an error occurs retrieving the referencing medicals.
@@ -107,6 +112,7 @@ public class MedicalStockIoOperations {
 
 	/**
 	 * Retrieves all movements referencing the specified lot.
+	 * 
 	 * @param lot - the lot.
 	 * @return the movements referencing the specified lot.
 	 * @throws OHServiceException if an error occurs retrieving the referencing movement.
@@ -576,48 +582,6 @@ public class MedicalStockIoOperations {
 	}
 
 	/**
-	 * Retrieves all the stored {@link Movement} with the specified criteria.
-	 * @param medicalCode the {@link Medical} code (optional).
-	 * @param medicalType the {@link MedicalType} code (optional).
-	 * @param wardId the {@link Ward} id (optional).
-	 * @param movType the {@link MovementType} code or {@code "+"}/{@code "-"} for all charge/discharge types (optional).
-	 * @param movFrom the lower bound for the movement date range (optional).
-	 * @param movTo the upper bound for the movement date range (optional).
-	 * @param lotPrepFrom the lower bound for the lot preparation date range (optional).
-	 * @param lotPrepTo the upper bound for the lot preparation date range (optional).
-	 * @param lotDueFrom the lower bound for the lot due date range (optional).
-	 * @param lotDueTo the lower bound for the lot due date range (optional).
-	 * @param pageable
-	 * @return all the retrieved movements.
-	 * @throws OHServiceException
-	 */
-	public List<Movement> getMovements(
-		Integer medicalCode,
-		String medicalType,
-		String wardId,
-		String movType,
-		LocalDateTime movFrom,
-		LocalDateTime movTo,
-		LocalDateTime lotPrepFrom,
-		LocalDateTime lotPrepTo,
-		LocalDateTime lotDueFrom,
-		LocalDateTime lotDueTo,
-		Pageable pageable
-	) throws OHServiceException {
-		movFrom = movFrom.withHour(0).withMinute(0);
-		movTo = movTo.withHour(23).withMinute(59);
-
-		return movRepository.findMovementWhereData(medicalCode, medicalType, wardId, movType,
-			TimeTools.truncateToSeconds(movFrom),
-			TimeTools.truncateToSeconds(movTo),
-			TimeTools.truncateToSeconds(lotPrepFrom),
-			TimeTools.truncateToSeconds(lotPrepTo),
-			TimeTools.truncateToSeconds(lotDueFrom),
-			TimeTools.truncateToSeconds(lotDueTo),
-			pageable);
-	}
-
-	/**
 	 * Count all the stored {@link Movement} with the specified criteria.
 	 *
 	 * @param medicalCode the {@link Medical} code (optional).
@@ -875,4 +839,56 @@ public class MedicalStockIoOperations {
 		lotRepository.delete(lot);
 	}
 
+	/**
+	 * Retrieves paginated {@link Movement}s with the specified filtering criteria.
+	 *
+	 * @param medicalCode the {@link Medical} code (optional).
+	 * @param medicalType the {@link MedicalType} code (optional).
+	 * @param wardId the {@link Ward} id (optional).
+	 * @param movType the {@link MovementType} code or {@code "+"}/{@code "-"} for all charge/discharge types (optional).
+	 * @param movFrom the lower bound for the movement date range (optional).
+	 * @param movTo the upper bound for the movement date range (optional).
+	 * @param lotPrepFrom the lower bound for the lot preparation date range (optional).
+	 * @param lotPrepTo the upper bound for the lot preparation date range (optional).
+	 * @param lotDueFrom the lower bound for the lot due date range (optional).
+	 * @param lotDueTo the upper bound for the lot due date range (optional).
+	 * @param pageable pagination information (page number, size, sorting).
+	 * @return a paginated list of retrieved {@link Movement}s.
+	 * @throws OHServiceException if an error occurs retrieving the movements.
+	 */
+	public Page<Movement> getMovements(
+		Integer medicalCode,
+		String medicalType,
+		String wardId,
+		String movType,
+		LocalDateTime movFrom,
+		LocalDateTime movTo,
+		LocalDateTime lotPrepFrom,
+		LocalDateTime lotPrepTo,
+		LocalDateTime lotDueFrom,
+		LocalDateTime lotDueTo,
+		Pageable pageable
+		) throws OHServiceException {
+
+		Page<Integer> pageOfIds = movRepository.findMovementWhereData(
+			medicalCode, medicalType, wardId, movType,
+			TimeTools.truncateToSeconds(movFrom),
+			TimeTools.truncateToSeconds(movTo),
+			TimeTools.truncateToSeconds(lotPrepFrom),
+			TimeTools.truncateToSeconds(lotPrepTo),
+			TimeTools.truncateToSeconds(lotDueFrom),
+			TimeTools.truncateToSeconds(lotDueTo),
+			pageable);
+
+		List<Movement> movements = new ArrayList<>();
+		for (Integer code : pageOfIds.getContent()) {
+			Movement movement = movRepository.findById(code).orElse(null);
+			if (movement == null) {
+				throw new OHServiceException(new OHExceptionMessage("Movement '" + code + "' not found."));
+			}
+			movements.add(movement);
+		}
+
+		return new PageImpl<>(movements, pageable, pageOfIds.getTotalElements());
+	}
 }

@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2024 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -61,6 +61,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Page;
+import java.util.ArrayList;
 
 class Tests extends OHCoreTestCase {
 
@@ -310,7 +312,7 @@ class Tests extends OHCoreTestCase {
 	    assertThat(result.getDosing()).isEqualTo("Dosing");
 	    assertThat(result.getShape()).isEqualTo("Shape");
 	}
-	
+
 	@Test
 	void testIoUpdateMedical() throws Exception {
 		int code = setupTestMedical(false);
@@ -430,7 +432,7 @@ class Tests extends OHCoreTestCase {
 		assertThat(medicalBrowsingManager.newMedical(medical, false)).isNotNull();
 		checkMedicalIntoDb(medical.getCode());
 	}
-	
+
 	@Test
 	void testMgrUpdateMedical() throws Exception {
 		int code = setupTestMedical(false);
@@ -758,7 +760,7 @@ class Tests extends OHCoreTestCase {
 		long notDeletedCount = medicals.getContent().stream().filter(m -> m.getDeleted() == 'N').count();
 
 		assertThat(deletedCount).isEqualTo(2);
-		assertThat(notDeletedCount).isEqualTo(6); 
+		assertThat(notDeletedCount).isEqualTo(6);
 	}
 
 	/**
@@ -811,5 +813,29 @@ class Tests extends OHCoreTestCase {
 		}).toList();
 
 		return medicalsIoOperationRepository.saveAllAndFlush(medicals);
+	}
+
+	@Test
+	void testIoGetMedicalsPageable() throws Exception {
+		List<Medical> savedMedicals = setupTestMedicalsForPagination(3);
+
+		Page<Medical> medicals = medicalBrowsingManager.getMedicalsPageable(0, 2);
+
+		assertThat(medicals.getContent().size()).isEqualTo(2);
+		assertThat(medicals.getTotalPages()).isEqualTo(2);
+	}
+
+	private List<Medical> setupTestMedicalsForPagination(int count) throws Exception {
+		List<Medical> medicals = new ArrayList<>();
+		MedicalType medicalType = testMedicalType.setup(false);
+		medicalTypeIoOperationRepository.saveAndFlush(medicalType);
+
+		for (int index = 0; index < count; index++) {
+			Medical medical = testMedical.setup(medicalType, false);
+			medical.setDescription("Medical_" + index);
+			medical.setProdCode("PROD_" + index);
+			medicals.add(medicalsIoOperationRepository.saveAndFlush(medical));
+		}
+		return medicals;
 	}
 }

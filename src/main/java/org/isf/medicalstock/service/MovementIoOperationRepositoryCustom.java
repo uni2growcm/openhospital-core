@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2024 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -27,6 +27,8 @@ import java.util.List;
 import org.isf.medicalstock.model.Movement;
 import org.isf.medicalstock.service.MedicalStockIoOperations.MovementOrder;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -38,15 +40,16 @@ public interface MovementIoOperationRepositoryCustom {
 			LocalDateTime movFrom, LocalDateTime movTo, LocalDateTime lotPrepFrom,
 			LocalDateTime lotPrepTo, LocalDateTime lotDueFrom, LocalDateTime lotDueTo);
 
-	List<Movement> findMovementWhereData(
-		Integer medicalCode, String medicalType, String wardId, String movType, LocalDateTime movFrom,
-		LocalDateTime movTo, LocalDateTime lotPrepFrom, LocalDateTime lotPrepTo, LocalDateTime lotDueFrom,
-		LocalDateTime lotDueTo, Pageable pageable);
-
 	long getCountTotalMovements(Integer medicalCode, String medicalType, String wardId, String movType,
 		LocalDateTime movFrom, LocalDateTime movTo, LocalDateTime lotPrepFrom,
 		LocalDateTime lotPrepTo, LocalDateTime lotDueFrom, LocalDateTime lotDueTo);
 
+	Page<Integer> findMovementWhereData(Integer medicalCode, String medicalType, String wardId, String movType,
+												LocalDateTime movFrom, LocalDateTime movTo, LocalDateTime lotPrepFrom,
+	                                            LocalDateTime lotPrepTo, LocalDateTime lotDueFrom, LocalDateTime lotDueTo,
+												Pageable pageable);
+
 	List<Integer> findMovementForPrint(String medicalDescription, String medicalTypeCode, String wardId,
 			String movType, LocalDateTime movFrom, LocalDateTime movTo, String lotCode, MovementOrder order);
+
 }
