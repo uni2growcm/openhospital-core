@@ -1,0 +1,15 @@
+ALTER TABLE `oh_billitems`
+    ADD COLUMN `BLI_ITEM_ID` VARCHAR(50) NULL DEFAULT NULL
+AFTER `BLI_QTY`;
+
+ALTER TABLE `oh_billitems`
+    ADD COLUMN `BLI_ITEM_GROUP` VARCHAR(3) NULL DEFAULT NULL
+AFTER `BLI_ITEM_ID`;
+
+ALTER TABLE `oh_billitems`
+    ADD COLUMN `BLI_PRESC_ID` INT(11) NULL DEFAULT NULL
+AFTER `BLI_ITEM_GROUP`;
+
+CREATE INDEX `idx_billitems_presc_id` ON `oh_billitems` (`BLI_PRESC_ID`);
+CREATE INDEX `idx_billitems_item_id` ON `oh_billitems` (`BLI_ITEM_ID`);
+SHOW COLUMNS FROM `oh_billitems`;

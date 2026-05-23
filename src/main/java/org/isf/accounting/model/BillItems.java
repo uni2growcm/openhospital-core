@@ -21,6 +21,11 @@
  */
 package org.isf.accounting.model;
 
+import java.time.LocalDateTime;
+
+import org.isf.utils.db.Auditable;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -33,9 +38,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotNull;
-
-import org.isf.utils.db.Auditable;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
 @Table(name="OH_BILLITEMS")
@@ -70,12 +72,27 @@ public class BillItems extends Auditable<String> {
 	@Column(name="BLI_ITEM_AMOUNT")
 	private double itemAmount;
 
+	@Column(name="BLI_ITEM_AMOUNT_BRUT")
+	private double itemAmountBrut;
+
 	@NotNull
 	@Column(name="BLI_QTY")
 	private int itemQuantity;
-	
+
+	@Column(name="BLI_DATE")
+	private LocalDateTime itemDate;
+
 	@Transient
 	private volatile int hashCode;
+
+	@Column(name = "BLI_ITEM_ID")
+	private String itemId;
+
+	@Column(name = "BLI_ITEM_GROUP")
+	private String itemGroup;
+
+	@Column(name = "BLI_PRESC_ID")
+	private Integer prescriptionId;
 	
 	/**
 	 * Store  the code of the item that is used for search purpose.
@@ -87,13 +104,12 @@ public class BillItems extends Auditable<String> {
 	@Transient
 	private String itemDisplayCode;
 	
-	/**
-	 * Store the item Id that is involved in this bill item (medId, exaId, opeId...)
-	 */
-	@Transient
-	private String itemId;
-	
-	
+//	/**
+//	 * Store the item Id that is involved in this bill item (medId, exaId, opeId...)
+//	 */
+//	@Transient
+//	private String itemId;
+
 	public BillItems() {
 		super();
 	}
@@ -158,6 +174,14 @@ public class BillItems extends Auditable<String> {
 		this.itemAmount = itemAmount;
 	}
 
+	public double getItemAmountBrut() {
+		return itemAmountBrut;
+	}
+
+	public void setItemAmountBrut(double itemAmountBrut) {
+		this.itemAmountBrut = itemAmountBrut;
+	}
+
 	public int getItemQuantity() {
 		return itemQuantity;
 	}
@@ -165,7 +189,40 @@ public class BillItems extends Auditable<String> {
 	public void setItemQuantity(int itemQuantity) {
 		this.itemQuantity = itemQuantity;
 	}
-	
+
+	public LocalDateTime getItemDate() {
+		return itemDate;
+	}
+
+	public void setItemDate(LocalDateTime itemDate) {
+		this.itemDate = itemDate;
+	}
+
+
+	public String getItemGroup() {
+		return itemGroup;
+	}
+
+	public void setItemGroup(String itemGroup) {
+		this.itemGroup = itemGroup;
+	}
+
+	public Integer getPrescriptionId() {
+		return prescriptionId;
+	}
+
+	public void setPrescriptionId(Integer prescriptionId) {
+		this.prescriptionId = prescriptionId;
+	}
+
+	public int getHashCode() {
+		return hashCode;
+	}
+
+	public void setHashCode(int hashCode) {
+		this.hashCode = hashCode;
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
