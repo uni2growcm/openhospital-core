@@ -34,6 +34,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
@@ -44,6 +45,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.isf.anamnesis.model.PatientHistory;
 import org.isf.opd.model.Opd;
 import org.isf.patconsensus.model.PatientConsensus;
+import org.isf.priceslist.model.PriceList;
+import org.isf.reductionplan.model.ReductionPlan;
 import org.isf.utils.db.Auditable;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -174,6 +177,14 @@ public class Patient extends Auditable<String> {
 
 	@OneToOne(mappedBy = "patient", cascade = CascadeType.ALL)
 	private PatientConsensus patientConsensus;
+
+	@ManyToOne
+	@JoinColumn(name = "PAT_RP_ID")
+	private ReductionPlan reductionPlan;
+
+	@ManyToOne
+	@JoinColumn(name = "PAT_PL_ID")
+	private PriceList priceList;
 
 	public Patient() {
 		this.firstName = "";
@@ -498,6 +509,22 @@ public class Patient extends Auditable<String> {
 
 	public PatientProfilePhoto getPatientProfilePhoto() {
 		return patientProfilePhoto;
+	}
+
+	public ReductionPlan getReductionPlan() {
+	    return reductionPlan;
+	}
+
+	public void setReductionPlan(ReductionPlan reductionPlan) {
+	    this.reductionPlan = reductionPlan;
+	}
+
+	public PriceList getPriceList() {
+		return priceList;
+	}
+
+	public void setPriceList(PriceList priceList) {
+		this.priceList = priceList;
 	}
 
 	/**

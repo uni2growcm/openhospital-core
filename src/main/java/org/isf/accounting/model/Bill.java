@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2024 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -41,8 +41,10 @@ import org.isf.admission.model.Admission;
 import org.isf.menu.model.User;
 import org.isf.patient.model.Patient;
 import org.isf.priceslist.model.PriceList;
+import org.isf.reductionplan.model.ReductionPlan;
 import org.isf.utils.db.Auditable;
 import org.isf.utils.time.TimeTools;
+import org.isf.ward.model.Ward;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
@@ -112,6 +114,15 @@ public class Bill extends Auditable<String> implements Cloneable, Comparable<Bil
 	private Admission admission;
 
 	@ManyToOne
+	@JoinColumn(name = "BLL_RP_ID")
+	@Transient
+	private ReductionPlan reductionPlan;
+
+	@ManyToOne
+	@JoinColumn(name = "BLL_WARD_ID")
+	private Ward ward;
+
+	@ManyToOne
 	@JoinColumn(name = "BLL_GUARANTOR")
 	private User guarantor;
 
@@ -134,6 +145,57 @@ public class Bill extends Auditable<String> implements Cloneable, Comparable<Bil
 		this.amount = 0.0;
 		this.balance = 0.0;
 		this.user = "admin";
+	}
+
+	public Bill(int id, LocalDateTime date, LocalDateTime update,
+				boolean isList, PriceList list, String listName, boolean isPatient,
+				Patient billPatient, String patName, String status, Double amount,
+				Double balance, int lock, String user, Admission admission,
+				ReductionPlan reductionPlan, Ward ward, User guarantor) {
+		super();
+		this.id = id;
+		this.date = TimeTools.truncateToSeconds(date);
+		this.update = TimeTools.truncateToSeconds(update);
+		this.isList = isList;
+		this.list = list;
+		this.listName = listName;
+		this.isPatient = isPatient;
+		this.billPatient = billPatient;
+		this.patName = patName;
+		this.status = status;
+		this.amount = amount;
+		this.balance = balance;
+		this.lock = lock;
+		this.user = user;
+		this.admission = admission;
+		this.reductionPlan = reductionPlan;
+		this.ward = ward;
+		this.guarantor = guarantor;
+	}
+
+	public Bill(int id, LocalDateTime date, LocalDateTime update,
+				boolean isList, PriceList list, String listName, boolean isPatient,
+				Patient billPatient, String patName, String status, Double amount,
+				Double balance, int lock, String user, Admission admission,
+				ReductionPlan reductionPlan, Ward ward) {
+		super();
+		this.id = id;
+		this.date = TimeTools.truncateToSeconds(date);
+		this.update = TimeTools.truncateToSeconds(update);
+		this.isList = isList;
+		this.list = list;
+		this.listName = listName;
+		this.isPatient = isPatient;
+		this.billPatient = billPatient;
+		this.patName = patName;
+		this.status = status;
+		this.amount = amount;
+		this.balance = balance;
+		this.lock = lock;
+		this.user = user;
+		this.admission = admission;
+		this.reductionPlan = reductionPlan;
+		this.ward = ward;
 	}
 
 	public Bill(int id, LocalDateTime date, LocalDateTime update,
@@ -253,6 +315,22 @@ public class Bill extends Auditable<String> implements Cloneable, Comparable<Bil
 	public int getLock() { return lock; }
 
 	public void setLock(int lock) { this.lock = lock; }
+
+	public ReductionPlan getReductionPlan() {
+		return reductionPlan;
+	}
+
+	public void setReductionPlan(ReductionPlan reductionPlan) {
+		this.reductionPlan = reductionPlan;
+	}
+
+	public Ward getWard() {
+		return ward;
+	}
+
+	public void setWard(Ward ward) {
+		this.ward = ward;
+	}
 
 	public User getGuarantor() {
 		return guarantor;

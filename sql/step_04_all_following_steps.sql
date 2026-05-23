@@ -120,3 +120,7 @@ source step_a123_add_prescription_columns.sql;
 source step_a124_add_therapies_prescription_date.sql;
 source step_a125_add_lab_bill_id_to_laboratory.sql;
 source step_a126_add_prescriptions_tracking_columns.sql;
+source step_a127_reduction_plan.sql;
+source step_a128_add_reduction_plan_and_price_list_to_patients.sql;
+source step_a129_add_column_reduction_plan_id_and_ward_id_to_table_oh_bills.sql;
+source step_a130_add_billitemgroup_tables.sql;

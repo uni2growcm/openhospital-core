@@ -28,8 +28,11 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.isf.accounting.model.Bill;
+import org.isf.accounting.model.BillItemGroup;
+import org.isf.accounting.model.BillItemGroupItem;
 import org.isf.accounting.model.BillItems;
 import org.isf.accounting.model.BillPayments;
+import org.isf.generaldata.MessageBundle;
 import org.isf.lab.manager.LabManager;
 import org.isf.menu.model.User;
 import org.isf.operation.manager.OperationRowBrowserManager;
@@ -39,7 +42,9 @@ import org.isf.priceslist.model.Price;
 import org.isf.priceslist.model.PriceList;
 import org.isf.therapy.manager.TherapyManager;
 import org.isf.utils.db.TranslateOHServiceException;
+import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHServiceException;
+import org.isf.utils.exception.model.OHExceptionMessage;
 import org.isf.utils.time.TimeTools;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,6 +63,8 @@ public class AccountingIoOperations {
 	private AccountingBillIoOperationRepository billRepository;
 	private AccountingBillPaymentIoOperationRepository billPaymentRepository;
 	private AccountingBillItemsIoOperationRepository billItemsRepository;
+	private BillItemGroupIoOperationRepository billItemGroupRepository;
+	private BillItemGroupItemIoOperationRepository billItemGroupItemRepository;
 
 	private TherapyManager therapyManager;
 	private LabManager labManager;
@@ -67,12 +74,17 @@ public class AccountingIoOperations {
 		AccountingBillIoOperationRepository accountingBillIoOperationRepository,
 		AccountingBillPaymentIoOperationRepository accountingBillPaymentIoOperationRepository,
 		AccountingBillItemsIoOperationRepository accountingBillItemsIoOperationRepository,
+		BillItemGroupIoOperationRepository billItemGroupRepository,
+		BillItemGroupItemIoOperationRepository billItemGroupItemRepository,
 		TherapyManager therapyManager,
 		LabManager labManager,
-		OperationRowBrowserManager operationRowBrowserManager) {
+		OperationRowBrowserManager operationRowBrowserManager
+	) {
 		this.billRepository = accountingBillIoOperationRepository;
 		this.billPaymentRepository = accountingBillPaymentIoOperationRepository;
 		this.billItemsRepository = accountingBillItemsIoOperationRepository;
+		this.billItemGroupRepository = billItemGroupRepository;
+		this.billItemGroupItemRepository = billItemGroupItemRepository;
 		this.therapyManager = therapyManager;
 		this.labManager = labManager;
 		this.operationRowBrowserManager = operationRowBrowserManager;
@@ -603,7 +615,231 @@ public class AccountingIoOperations {
 	}
 
 	/**
-	 * Gets the price of an item directly from the database.
+	 * Add a new billItemGroup, ensuring the title is unique.
+	 * If billItemGroup contains items, they will be automatically persisted due to cascade.
+	 *
+	 * @param billItemGroup the BillItemGroup to add
+	 * @return the added billItemGroup with generated id
+	 * @throws OHServiceException when fails to add or when title already exists
+	 */
+	public BillItemGroup addBillItemGroup(BillItemGroup billItemGroup) throws OHServiceException {
+		if (billItemGroupRepository.existsByTitle(billItemGroup.getTitle())) {
+			throw new OHDataValidationException(
+				new OHExceptionMessage(MessageBundle.getMessage("angal.newbill.billgroupduplicatetitle")));
+		}
+		// Ensure each item has reference to the group
+		if (billItemGroup.getItems() != null) {
+			for (BillItemGroupItem item : billItemGroup.getItems()) {
+				if (item.getBillItemGroup() == null) {
+					item.setBillItemGroup(billItemGroup);
+				}
+			}
+		}
+		return billItemGroupRepository.save(billItemGroup);
+	}
+
+	/**
+	 * Update a billItemGroup with its items.
+	 * This method syncs the items list with the database - removing items not in the new list
+	 * and adding/updating items that are present.
+	 *
+	 * @param billItemGroup the BillItemGroup to update (may include updated items list)
+	 * @return the updated billItemGroup
+	 * @throws OHServiceException when fails to update billItemGroup
+	 */
+	public BillItemGroup updateBillItemGroup(BillItemGroup billItemGroup) throws OHServiceException {
+		if (billItemGroupRepository.existsByTitleAndIdNot(billItemGroup.getTitle(), billItemGroup.getId())) {
+			throw new OHDataValidationException(
+				new OHExceptionMessage(MessageBundle.getMessage("angal.newbill.billitemgroupduplicatetitle")));
+		}
+		
+		// Sync items: get current items from DB and compare with provided items
+		List<BillItemGroupItem> currentItems = billItemGroupItemRepository.findByBillItemGroup_idOrderByIdAsc(billItemGroup.getId());
+		List<BillItemGroupItem> newItems = billItemGroup.getItems();
+		
+		if (newItems != null) {
+			// Remove items that are not in the new list
+			for (BillItemGroupItem currentItem : currentItems) {
+				boolean found = newItems.stream().anyMatch(item -> item.getId() == currentItem.getId());
+				if (!found) {
+					billItemGroupItemRepository.delete(currentItem);
+				}
+			}
+			
+			// Ensure each new item references the group
+			for (BillItemGroupItem item : newItems) {
+				if (item.getBillItemGroup() == null) {
+					item.setBillItemGroup(billItemGroup);
+				}
+			}
+		}
+		
+		return billItemGroupRepository.save(billItemGroup);
+	}
+
+	/**
+	 * Delete a billItemGroup and all its associated items (cascade delete)
+	 *
+	 * @param groupId the id of the BillItemGroup to delete
+	 * @throws OHServiceException when fails to delete billItemGroup
+	 */
+	public void deleteBillItemGroup(int groupId) throws OHServiceException {
+		// Items will be automatically deleted due to CascadeType.ALL and orphanRemoval=true
+		billItemGroupRepository.deleteById(groupId);
+	}
+
+	/**
+	 * Get a single BillItemGroup by ID
+	 *
+	 * @param id the ID of the bill item group
+	 * @return the matching BillItemGroup, or null if not found
+	 * @throws OHServiceException if a database error occurs
+	 */
+	public BillItemGroup getBillItemGroupById(int id) throws OHServiceException {
+		return billItemGroupRepository.findById(id).orElse(null);
+	}
+
+	/**
+	 * Get all billItemGroup
+	 *
+	 * @return the list of all billItemGroup stored in db
+	 * @throws OHServiceException when fails to fetch list
+	 */
+	public List<BillItemGroup> getAllBillItemGroups() throws OHServiceException {
+		return billItemGroupRepository.findAllByOrderByCreatedDateDesc();
+	}
+
+	/**
+	 * Get all active billItemGroups
+	 *
+	 * @return the list of all active billItemGroup stored in db
+	 * @throws OHServiceException when fails to fetch list
+	 */
+	public List<BillItemGroup> getAllActiveBillItemGroups() throws OHServiceException {
+		return billItemGroupRepository.findAllActive();
+	}
+
+	/**
+	 * Check if new billItemGroup has duplicate to prevent creation
+	 *
+	 * @param title the title of the billItemGroup to add
+	 * @return true if duplicate is found
+	 * @throws OHServiceException when fails to check if duplicate exist
+	 */
+	public boolean existsBillItemGroupWithTitle(String title) throws OHServiceException {
+		return billItemGroupRepository.existsByTitle(title);
+	}
+
+	/**
+	 * Add billItemGroupItems to a billItemGroup
+	 *
+	 * @param groupId the id of the billItemGroup
+	 * @param items the BillItemGroupItems to add
+	 * @throws OHServiceException when fails to add billItemGroupItems to billItemGroup
+	 */
+	public void addBillItemGroupItems(int groupId, List<BillItemGroupItem> items) throws OHServiceException {
+		if (items != null && !items.isEmpty()) {
+			for (BillItemGroupItem item : items) {
+				billItemGroupItemRepository.save(item);
+			}
+		}
+	}
+
+	/**
+	 * Delete all billItemGroupItems associated to a billItemGroup
+	 *
+	 * @param groupId the id of the BillItemGroup whose items are to be deleted
+	 * @throws OHServiceException when fails to delete billItemGroupItems
+	 */
+	public void deleteBillItemGroupItems(int groupId) throws OHServiceException {
+		billItemGroupItemRepository.deleteByGroupId(groupId);
+	}
+
+	/**
+	 * Get a billItemGroup items
+	 *
+	 * @param groupId the id of the BillItemGroup whose items are to be retrieved
+	 * @return the list of all billItemGroupItems for a given billItemGroup stored in db
+	 * @throws OHServiceException when fails to fetch list
+	 */
+	public List<BillItemGroupItem> getItemsByGroupId(int groupId) throws OHServiceException {
+		return billItemGroupItemRepository.findByBillItemGroup_idOrderByIdAsc(groupId);
+	}
+
+	/**
+	 * Get all billItemGroupItems
+	 *
+	 * @return the list of all billItemGroupItems stored in db
+	 * @throws OHServiceException when fails to fetch list
+	 */
+	public List<BillItemGroupItem> getAllBillItemGroupItems() throws OHServiceException {
+		return billItemGroupItemRepository.findAllByOrderByIdAsc();
+	}
+
+	/**
+	 * Get a single BillItemGroupItem by ID
+	 *
+	 * @param id the ID of the bill item group item
+	 * @return the matching BillItemGroupItem, or null if not found
+	 * @throws OHServiceException if a database error occurs
+	 */
+	public BillItemGroupItem getBillItemGroupItemById(int id) throws OHServiceException {
+		return billItemGroupItemRepository.findById(id).orElse(null);
+	}
+
+	/**
+	 * Update a billItemGroupItem
+	 *
+	 * @param item the BillItemGroupItem to update
+	 * @return the updated billItemGroupItem
+	 * @throws OHServiceException when fails to update billItemGroupItem
+	 */
+	public BillItemGroupItem updateBillItemGroupItem(BillItemGroupItem item) throws OHServiceException {
+		return billItemGroupItemRepository.save(item);
+	}
+
+	/**
+	 * Delete a billItemGroupItem
+	 *
+	 * @param itemId the id of the BillItemGroupItem to delete
+	 * @throws OHServiceException when fails to delete billItemGroupItem
+	 */
+	public void deleteBillItemGroupItem(int itemId) throws OHServiceException {
+		billItemGroupItemRepository.deleteById(itemId);
+	}
+
+	/**
+	 * Count all billItemGroups
+	 *
+	 * @return the count of all billItemGroups
+	 * @throws OHServiceException when fails
+	 */
+	public long countAllBillItemGroups() throws OHServiceException {
+		return billItemGroupRepository.count();
+	}
+
+	/**
+	 * Count active billItemGroups
+	 *
+	 * @return the count of active billItemGroups
+	 * @throws OHServiceException when fails
+	 */
+	public long countAllActiveBillItemGroups() throws OHServiceException {
+		return billItemGroupRepository.countAllActive();
+	}
+
+	/**
+	 * Count items for a specific billItemGroup
+	 *
+	 * @param groupId the billItemGroup id
+	 * @return the count of items
+	 * @throws OHServiceException when fails
+	 */
+	public long countItemsByGroupId(int groupId) throws OHServiceException {
+		return billItemGroupItemRepository.countByGroupId(groupId);
+	}
+
+	/** Gets the price of an item directly from the database.
 	 *
 	 * @param itemId the item code
 	 * @param group the item group (MED, EXA, OPE, OTH)
@@ -688,6 +924,6 @@ public class AccountingIoOperations {
 			return false;
 		}
 		return billItemsRepository.existsByPatientAndPrescriptionInClosedBill(
-			patientCode, prescriptionId, itemGroup);
+		patientCode, prescriptionId, itemGroup);
 	}
 }
