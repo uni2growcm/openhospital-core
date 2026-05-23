@@ -121,3 +121,4 @@ source step_a124_maternity_delivery.sql;
 source step_a125_maternity_newborn.sql;
 source step_a126_add_maternity_menuitem_and_privilege_for_groupmenu.sql;
 source step_a127_add_typology_menu_in_typology_menu.sql;
+source step_a128_alter_table_patient_to_add_field.sql;
