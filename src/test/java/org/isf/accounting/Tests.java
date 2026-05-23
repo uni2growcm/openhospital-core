@@ -63,6 +63,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.provider.Arguments;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.isf.utils.pagination.PagedResponse;
+import org.isf.utils.pagination.PageInfo;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.annotation.Rollback;
 
 import jakarta.transaction.Transactional;
@@ -76,6 +81,7 @@ class Tests extends OHCoreTestCase {
 	private static TestPriceList testPriceList;
 	private static TestUser testUser;
 	private static TestUserGroup testUserGroup;
+
 
 	@Autowired
 	BillBrowserManager billBrowserManager;
@@ -1025,6 +1031,167 @@ class Tests extends OHCoreTestCase {
 
 		assertThat(billPaymentsList).isNotEmpty();
 		assertThat(billPaymentsList.size()).isEqualTo(1);
+	}
+
+	@Test
+	@DisplayName("Should get paginated bills with no filters")
+	void testGetBillsWithFiltersNoFilters() throws Exception {
+		int id = setupTestBill(false);
+		Bill foundBill = accountingBillIoOperationRepository.findById(id).orElse(null);
+		assertThat(foundBill).isNotNull();
+
+		int page = 0;
+		int size = 10;
+		Page<Bill> billPage = billBrowserManager.getBillsWithFilters(null, null, null, null, null, page, size);
+
+		assertThat(billPage).isNotNull();
+		assertThat(billPage.getContent()).isNotEmpty();
+		assertThat(billPage.getContent().size()).isLessThanOrEqualTo(size);
+		assertThat(billPage.getNumber()).isEqualTo(page);
+		assertThat(billPage.getSize()).isEqualTo(size);
+	}
+
+	@Test
+	@DisplayName("Should get paginated bills filtered by status")
+	void testGetBillsWithFiltersByStatus() throws Exception {
+		int id = setupTestBill(false);
+		Bill foundBill = accountingBillIoOperationRepository.findById(id).orElse(null);
+		assertThat(foundBill).isNotNull();
+		foundBill.setStatus("O");
+		accountingBillIoOperationRepository.saveAndFlush(foundBill);
+
+		int page = 0;
+		int size = 10;
+		Page<Bill> billPage = billBrowserManager.getBillsWithFilters("O", null, null, null, null, page, size);
+
+		assertThat(billPage).isNotNull();
+		assertThat(billPage.getContent()).isNotEmpty();
+		for (Bill bill : billPage.getContent()) {
+			assertThat(bill.getStatus()).isEqualTo("O");
+		}
+	}
+
+	@Test
+	@DisplayName("Should get paginated bills filtered by date range")
+	void testGetBillsWithFiltersByDateRange() throws Exception {
+		int id = setupTestBill(false);
+		Bill foundBill = accountingBillIoOperationRepository.findById(id).orElse(null);
+		assertThat(foundBill).isNotNull();
+		LocalDateTime dateFrom = foundBill.getDate().minusDays(1);
+		LocalDateTime dateTo = foundBill.getDate().plusDays(1);
+
+		int page = 0;
+		int size = 10;
+		Page<Bill> billPage = billBrowserManager.getBillsWithFilters(null, dateFrom, dateTo, null, null, page, size);
+
+		assertThat(billPage).isNotNull();
+		assertThat(billPage.getContent()).isNotEmpty();
+		assertThat(billPage.getContent()).contains(foundBill);
+	}
+
+	@Test
+	@DisplayName("Should get paginated bills with all filters")
+	void testGetBillsWithFiltersAllFilters() throws Exception {
+		int id = setupTestBill(false);
+		Bill foundBill = accountingBillIoOperationRepository.findById(id).orElse(null);
+		assertThat(foundBill).isNotNull();
+		foundBill.setStatus("O");
+		accountingBillIoOperationRepository.saveAndFlush(foundBill);
+		Patient patient = foundBill.getBillPatient();
+		LocalDateTime dateFrom = foundBill.getDate().minusDays(1);
+		LocalDateTime dateTo = foundBill.getDate().plusDays(1);
+
+		int page = 0;
+		int size = 10;
+		Page<Bill> billPage = billBrowserManager.getBillsWithFilters("O", dateFrom, dateTo, patient, null, page, size);
+
+		assertThat(billPage).isNotNull();
+		assertThat(billPage.getContent()).isNotEmpty();
+		assertThat(billPage.getContent()).contains(foundBill);
+	}
+
+	@Test
+	@DisplayName("Should count bills with no filters")
+	void testCountBillsWithFiltersNoFilters() throws Exception {
+		int id = setupTestBill(false);
+		Bill foundBill = accountingBillIoOperationRepository.findById(id).orElse(null);
+		assertThat(foundBill).isNotNull();
+
+		long count = billBrowserManager.countBillsWithFilters(null, null, null, null, null);
+		assertThat(count).isGreaterThan(0);
+	}
+
+	@Test
+	@DisplayName("Should count bills filtered by status")
+	void testCountBillsWithFiltersByStatus() throws Exception {
+		int id = setupTestBill(false);
+		Bill foundBill = accountingBillIoOperationRepository.findById(id).orElse(null);
+		assertThat(foundBill).isNotNull();
+		foundBill.setStatus("O");
+		accountingBillIoOperationRepository.saveAndFlush(foundBill);
+
+		long count = billBrowserManager.countBillsWithFilters("O", null, null, null, null);
+		assertThat(count).isGreaterThan(0);
+	}
+
+	@Test
+	@DisplayName("Should get paginated bills with guarantor filter")
+	void testGetBillsWithFiltersByGuarantor() throws Exception {
+		UserGroup userGroup = testUserGroup.setup(false);
+		userGroup = userGroupIoOperationRepository.saveAndFlush(userGroup);
+		User guarantor = testUser.setup(userGroup, false);
+		guarantor.setUserName("TestGuarantor");
+		guarantor = userIoOperationRepository.saveAndFlush(guarantor);
+
+		for (int i = 0; i < 5; i++) {
+			Patient patient = testPatient.setup(false);
+			PriceList priceList = testPriceList.setup(false);
+			Bill bill = testBill.setup(priceList, patient, null, false);
+			bill.setGuarantor(guarantor);
+			priceListIoOperationRepository.saveAndFlush(priceList);
+			patientIoOperationRepository.saveAndFlush(patient);
+			accountingBillIoOperationRepository.saveAndFlush(bill);
+		}
+
+		for (int i = 0; i < 5; i++) {
+			Patient patient = testPatient.setup(false);
+			PriceList priceList = testPriceList.setup(false);
+			Bill bill = testBill.setup(priceList, patient, null, false);
+			priceListIoOperationRepository.saveAndFlush(priceList);
+			patientIoOperationRepository.saveAndFlush(patient);
+			accountingBillIoOperationRepository.saveAndFlush(bill);
+		}
+
+		int page = 0;
+		int size = 10;
+		Page<Bill> billPage = billBrowserManager.getBillsWithFilters(null, null, null, null, guarantor, page, size);
+
+		assertThat(billPage).isNotNull();
+		assertThat(billPage.getContent()).isNotEmpty();
+		assertThat(billPage.getContent().size()).isEqualTo(5);
+		for (Bill bill : billPage.getContent()) {
+			assertThat(bill.getGuarantor()).isEqualTo(guarantor);
+		}
+	}
+
+	@Test
+	@DisplayName("Should verify PageInfo from Spring Page")
+	void testPageInfoFromSpringPage() throws Exception {
+		int id = setupTestBill(false);
+		Bill foundBill = accountingBillIoOperationRepository.findById(id).orElse(null);
+		assertThat(foundBill).isNotNull();
+
+		int page = 0;
+		int size = 10;
+		Pageable pageable = PageRequest.of(page, size);
+		Page<Bill> springPage = accountingBillIoOperationRepository.findBillsWithFilters(null, null, null, null, null, pageable);
+
+		PageInfo pageInfo = PageInfo.from(springPage);
+		assertThat(pageInfo).isNotNull();
+		assertThat(pageInfo.getSize()).isEqualTo(size);
+		assertThat(pageInfo.getPage()).isEqualTo(page);
+		assertThat(pageInfo.getTotalPages()).isEqualTo(springPage.getTotalPages());
+		assertThat(pageInfo.getTotalNbOfElements()).isEqualTo(springPage.getTotalElements());
 	}
 
 	@Test

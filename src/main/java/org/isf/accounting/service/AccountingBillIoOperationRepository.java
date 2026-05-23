@@ -23,14 +23,17 @@ package org.isf.accounting.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 import org.isf.accounting.model.Bill;
+import org.isf.menu.model.User;
 import org.isf.priceslist.model.PriceList;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.isf.patient.model.Patient;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
 
 @Repository
 public interface AccountingBillIoOperationRepository extends JpaRepository<Bill, Integer> {
@@ -79,4 +82,32 @@ public interface AccountingBillIoOperationRepository extends JpaRepository<Bill,
 
 	@Query("SELECT p.price FROM Price p WHERE p.list.id = :listId AND p.group = :group AND p.item = :itemId")
 	Double findPriceByListIdAndGroupAndItem(@Param("listId") Integer listId, @Param("group") String group, @Param("itemId") String itemId);
+
+	@Query("SELECT b FROM Bill b WHERE "
+		+ "(:status IS NULL OR b.status = :status) AND "
+		+ "(:dateFrom IS NULL OR b.date >= :dateFrom) AND "
+		+ "(:dateTo IS NULL OR b.date < :dateTo) AND "
+		+ "(:patient IS NULL OR b.billPatient = :patient) AND "
+		+ "(:guarantor IS NULL OR b.guarantor = :guarantor) "
+		+ "ORDER BY b.date DESC")
+	Page<Bill> findBillsWithFilters(
+		@Param("status") String status,
+		@Param("dateFrom") LocalDateTime dateFrom,
+		@Param("dateTo") LocalDateTime dateTo,
+		@Param("patient") Patient patient,
+		@Param("guarantor") User guarantor,
+		Pageable pageable);
+
+	@Query("SELECT COUNT(b) FROM Bill b WHERE "
+		+ "(:status IS NULL OR b.status = :status) AND "
+		+ "(:dateFrom IS NULL OR b.date >= :dateFrom) AND "
+		+ "(:dateTo IS NULL OR b.date < :dateTo) AND "
+		+ "(:patient IS NULL OR b.billPatient = :patient) AND "
+		+ "(:guarantor IS NULL OR b.guarantor = :guarantor)")
+	long countBillsWithFilters(
+		@Param("status") String status,
+		@Param("dateFrom") LocalDateTime dateFrom,
+		@Param("dateTo") LocalDateTime dateTo,
+		@Param("patient") Patient patient,
+		@Param("guarantor") User guarantor);
 }

@@ -42,6 +42,9 @@ import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.model.OHExceptionMessage;
 import org.isf.utils.time.TimeTools;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -379,7 +382,56 @@ public class BillBrowserManager {
 	}
 
 	/**
-	 * Get the bills filtered by date, patient and guarantor
+	 * Get paginated bills with filters returning Page (nouveau GUI)
+	 *
+	 * @param status the bill status to filter (O for open, C for closed, null for all)
+	 * @param dateFrom the start date to filter (inclusive, null for no lower bound)
+	 * @param dateTo the end date to filter (exclusive, null for no upper bound
+	 * @param patient the patient to filter (null for all)
+	 * @param guarantor the user acting as guarantor to filter (null for all)
+	 * @param page the page number to retrieve (0-based)
+	 * @param size the number of items per page
+	 * @return a Page of Bill matching the filters
+	 * @throws OHServiceException when the calls to internal methods fail.	
+	 */
+	public Page<Bill> getBillsWithFilters(String status, LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient, User guarantor, int page, int size) throws OHServiceException {
+		Pageable pageable = PageRequest.of(page, size);
+		return ioOperations.getBillsWithFilters(status, dateFrom, dateTo, patient, guarantor, pageable);
+	}
+
+		/**
+	 * Get paginated bills with filters returning Page (nouveau GUI)
+	 *
+	 * @param status the bill status to filter (O for open, C for closed, null for all)
+	 * @param dateFrom the start date to filter (inclusive, null for no lower bound)
+	 * @param dateTo the end date to filter (exclusive, null for no upper bound
+	 * @param patient the patient to filter (null for all)
+	 * @param guarantor the user acting as guarantor to filter (null for all)
+	 * @param limit the number of items per page
+	 * @param offset the page number to retrieve
+	 * @return a Page of Bill matching the filters
+	 * @throws OHServiceException when the calls to internal methods fail.	
+	 */
+	public List<Bill> getBillsListWithFilters(String status, LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient, User guarantor, int limit, int offset) throws OHServiceException {
+		return ioOperations.getBillsListWithFilters(status, dateFrom, dateTo, patient, guarantor, limit, offset);
+	}
+
+	/**
+	 * Count bills with filters
+	 * 
+	 * @param status the bill status to filter (O for open, C for closed, null for all)
+	 * @param dateFrom the start date to filter (inclusive, null for no lower bound	)
+	 * @param dateTo the end date to filter (exclusive, null for no upper bound)
+	 * @param patient the patient to filter (null for all)
+	 * @param guarantor the user acting as guarantor to filter (null for all)
+	 * @return the number of {@link Bill}s matching the filters
+	 * @throws OHServiceException when the calls to internal methods fail.
+	 */
+	public long countBillsWithFilters(String status, LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient, User guarantor) throws OHServiceException {
+		return ioOperations.countBillsWithFilters(status, dateFrom, dateTo, patient, guarantor);
+	}
+
+	 /** Get the bills filtered by date, patient and guarantor
 	 *
 	 * @param dateFrom Start date
 	 * @param dateTo End date

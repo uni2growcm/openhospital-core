@@ -43,6 +43,9 @@ import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.time.TimeTools;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Page;
 
 /**
  * Persistence class for Accounting module.
@@ -77,7 +80,7 @@ public class AccountingIoOperations {
 
 	/**
 	 * Returns all the pending {@link Bill}s for the specified patient.
-	 * 
+	 *
 	 * @param patID the patient id.
 	 * @return the list of pending bills.
 	 * @throws OHServiceException if an error occurs retrieving the pending bills.
@@ -91,7 +94,7 @@ public class AccountingIoOperations {
 
 	/**
 	 * Get all the {@link Bill}s.
-	 * 
+	 *
 	 * @return a list of bills.
 	 * @throws OHServiceException if an error occurs retrieving the bills.
 	 */
@@ -101,7 +104,7 @@ public class AccountingIoOperations {
 
 	/**
 	 * Get the {@link Bill} with specified billID.
-	 * 
+	 *
 	 * @param billID
 	 * @return the {@link Bill}.
 	 * @throws OHServiceException if an error occurs retrieving the bill.
@@ -112,7 +115,7 @@ public class AccountingIoOperations {
 
 	/**
 	 * Returns all user ids from {@link BillPayments}.
-	 * 
+	 *
 	 * @return a list of user id.
 	 * @throws OHServiceException if an error occurs retrieving the users list.
 	 */
@@ -125,7 +128,7 @@ public class AccountingIoOperations {
 
 	/**
 	 * Returns the {@link BillItems} associated to the specified {@link Bill} id or all the stored {@link BillItems} if no id is provided.
-	 * 
+	 *
 	 * @param billID the bill id or {@code 0}.
 	 * @return a list of {@link BillItems} associated to the bill id or all the stored bill items.
 	 * @throws OHServiceException if an error occurs retrieving the bill items.
@@ -139,7 +142,7 @@ public class AccountingIoOperations {
 
 	/**
 	 * Retrieves all the {@link BillPayments} for the specified date range.
-	 * 
+	 *
 	 * @param dateFrom low endpoint, inclusive, for the date range.
 	 * @param dateTo high endpoint, inclusive, for the date range.
 	 * @return a list of {@link BillPayments} for the specified date range.
@@ -151,7 +154,7 @@ public class AccountingIoOperations {
 
 	/**
 	 * Retrieves all the {@link BillPayments} for the specified {@link Bill} id, or all the stored {@link BillPayments} if no id is indicated.
-	 * 
+	 *
 	 * @param billID the bill id or {@code 0}.
 	 * @return the list of bill payments.
 	 * @throws OHServiceException if an error occurs retrieving the bill payments.
@@ -165,7 +168,7 @@ public class AccountingIoOperations {
 
 	/**
 	 * Stores a new {@link Bill}.
-	 * 
+	 *
 	 * @param newBill the bill to store.
 	 * @return the persisted Bill object
 	 * @throws OHServiceException if an error occurs storing the bill.
@@ -195,7 +198,7 @@ public class AccountingIoOperations {
 
 	/**
 	 * Stores a list of {@link BillPayments} associated to a {@link Bill}.
-	 * 
+	 *
 	 * @param bill the bill.
 	 * @param payItems the bill payments.
 	 * @throws OHServiceException if an error occurs during the store procedure.
@@ -211,7 +214,7 @@ public class AccountingIoOperations {
 
 	/**
 	 * Updates the specified {@link Bill}.
-	 * 
+	 *
 	 * @param updateBill the bill to update.
 	 * @return the updated Bill object
 	 * @throws OHServiceException if an error occurs during the update.
@@ -222,7 +225,7 @@ public class AccountingIoOperations {
 
 	/**
 	 * Deletes the specified {@link Bill}. If the argument is NULL then an error is thrown. If the Bill is not found it is silently ignored.
-	 * 
+	 *
 	 * @param deleteBill the bill to delete.
 	 * @throws OHServiceException if an error occurs deleting the bill.
 	 */
@@ -232,7 +235,7 @@ public class AccountingIoOperations {
 
 	/**
 	 * Retrieves all the {@link Bill}s for the specified date range.
-	 * 
+	 *
 	 * @param dateFrom the low date range endpoint, inclusive.
 	 * @param dateTo the high date range endpoint, inclusive.
 	 * @return a list of retrieved {@link Bill}s.
@@ -244,7 +247,7 @@ public class AccountingIoOperations {
 
 	/**
 	 * Gets all the {@link Bill}s associated to the passed {@link BillPayments}.
-	 * 
+	 *
 	 * @param payments the {@link BillPayments} associated to the bill to retrieve.
 	 * @return a list of {@link Bill} associated to the passed {@link BillPayments}.
 	 * @throws OHServiceException if an error occurs retrieving the bill list.
@@ -259,7 +262,7 @@ public class AccountingIoOperations {
 
 	/**
 	 * Retrieves all the {@link BillPayments} associated to the passed {@link Bill} list.
-	 * 
+	 *
 	 * @param bills the bill list.
 	 * @return a list of {@link BillPayments} associated to the passed bill list.
 	 * @throws OHServiceException if an error occurs retrieving the payments.
@@ -270,7 +273,7 @@ public class AccountingIoOperations {
 
 	/**
 	 * Retrieves all billPayments for a given patient in the period dateFrom -> dateTo
-	 * 
+	 *
 	 * @param dateFrom
 	 * @param dateTo
 	 * @param patient
@@ -284,7 +287,7 @@ public class AccountingIoOperations {
 
 	/**
 	 * Retrieves all the bills for a given patient in the period dateFrom -> dateTo
-	 * 
+	 *
 	 * @param dateFrom
 	 * @param dateTo
 	 * @param patient
@@ -296,7 +299,7 @@ public class AccountingIoOperations {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param patID
 	 * @return
 	 * @throws OHServiceException
@@ -317,7 +320,7 @@ public class AccountingIoOperations {
 
 	/**
 	 * Return distinct BillItems
-	 * 
+	 *
 	 * @return BillItems list
 	 * @throws OHServiceException
 	 */
@@ -344,7 +347,7 @@ public class AccountingIoOperations {
 
 	/**
 	 * Count active {@link Bill}s
-	 * 
+	 *
 	 * @return the number of recorded {@link Bill}s
 	 * @throws OHServiceException
 	 */
@@ -353,6 +356,68 @@ public class AccountingIoOperations {
 	}
 
 	/**
+	 * Get paginated bills with filters returning {@link Page} (pour le nouveau GUI).
+	 *
+	 * @param status    the bill status filter
+	 * @param dateFrom  the start date filter
+	 * @param dateTo    the end date filter
+	 * @param patient   the patient filter
+	 * @param guarantor the guarantor filter
+	 * @param pageable the pagination parameters
+	 * @return a {@link Page} of {@link Bill}s matching the filters
+	 * @throws OHServiceException if an error occurs retrieving the bills
+	 */
+	public Page<Bill> getBillsWithFilters(
+		String status, LocalDateTime dateFrom, LocalDateTime dateTo,
+		Patient patient, User guarantor, Pageable pageable
+	) throws OHServiceException {
+		LocalDateTime from = dateFrom != null ? TimeTools.getBeginningOfDay(dateFrom) : null;
+		LocalDateTime to = dateTo != null ? TimeTools.getBeginningOfNextDay(dateTo) : null;
+
+		return billRepository.findBillsWithFilters(status, from, to, patient, guarantor, pageable);
+	}
+
+	/**
+	 * Get paginated bills with filters returning {@link List} (pour l'ancien GUI).
+	 *
+	 * @param status    the bill status filter
+	 * @param dateFrom  the start date filter
+	 * @param dateTo    the end date filter
+	 * @param patient   the patient filter
+	 * @param guarantor the guarantor filter
+	 * @param limit     the maximum number of results to return
+	 * @param offset    the starting index
+	 * @return a {@link List} of {@link Bill}s matching the filters
+	 * @throws OHServiceException if an error occurs retrieving the bills
+	 */
+	public List<Bill> getBillsListWithFilters(String status, LocalDateTime dateFrom, LocalDateTime dateTo,
+											  Patient patient, User guarantor, int limit, int offset) throws OHServiceException {
+		LocalDateTime from = dateFrom != null ? TimeTools.getBeginningOfDay(dateFrom) : null;
+		LocalDateTime to = dateTo != null ? TimeTools.getBeginningOfNextDay(dateTo) : null;
+		Pageable pageable = PageRequest.of(offset / limit, limit);
+		Page<Bill> billPage = billRepository.findBillsWithFilters(status, from, to, patient, guarantor, pageable);
+		return billPage.getContent();
+	}
+
+	/**
+	 * Count bills matching the given filters.
+	 *
+	 * @param status    the bill status filter
+	 * @param dateFrom  the start date filter
+	 * @param dateTo    the end date filter
+	 * @param patient   the patient filter
+	 * @param guarantor the guarantor filter
+	 * @return the total number of {@link Bill}s matching the filters
+	 * @throws OHServiceException if an error occurs counting the bills
+	 */
+	public long countBillsWithFilters(String status, LocalDateTime dateFrom, LocalDateTime dateTo,
+									  Patient patient, User guarantor) throws OHServiceException {
+		LocalDateTime from = dateFrom != null ? TimeTools.getBeginningOfDay(dateFrom) : null;
+		LocalDateTime to = dateTo != null ? TimeTools.getBeginningOfNextDay(dateTo) : null;
+		return billRepository.countBillsWithFilters(status, from, to, patient, guarantor);
+	}
+
+	/** Check if a patient has pending therapies that haven't been billed yet.
 	 * Check if a patient has pending therapies that haven't been billed yet.
 	 *
 	 * @param patientCode the patient's code
