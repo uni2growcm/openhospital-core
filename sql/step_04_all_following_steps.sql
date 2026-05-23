@@ -117,3 +117,4 @@ source step_a120_settings.sql;
 source step_a121_reduction_plan.sql;
 source step_a122_add_reduction_plan_and_price_list_to_patients.sql;
 source step_a123_add_column_reduction_plan_id_and_ward_id_to_table_oh_bills.sql;
+source step_a124_add_billitemgroup_tables.sql;

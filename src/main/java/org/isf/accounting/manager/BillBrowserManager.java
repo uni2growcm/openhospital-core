@@ -25,9 +25,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import org.isf.accounting.model.Bill;
-import org.isf.accounting.model.BillItems;
-import org.isf.accounting.model.BillPayments;
+import org.isf.accounting.model.*;
 import org.isf.accounting.service.AccountingIoOperations;
 import org.isf.generaldata.GeneralData;
 import org.isf.generaldata.MessageBundle;
@@ -47,6 +45,7 @@ import org.isf.utils.db.TranslateOHServiceException;
 import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.model.OHExceptionMessage;
+import org.isf.utils.exception.model.OHSeverityLevel;
 import org.isf.utils.time.TimeTools;
 import org.isf.ward.model.Ward;
 import org.springframework.stereotype.Component;
@@ -565,5 +564,237 @@ public class BillBrowserManager {
 		mvt.setUnits("pieces");
 
 		mvtManager.newMovementWard(mvt);
+	}
+
+	/**
+	 * Add a new billItemGroup with validation
+	 *
+	 * @param billItemGroup the BillItemGroup to add
+	 * @return the added billItemGroup
+	 * @throws OHServiceException when fails to add
+	 */
+	public BillItemGroup addBillItemGroup(BillItemGroup billItemGroup) throws OHServiceException {
+		validateBillItemGroup(billItemGroup);
+		return ioOperations.addBillItemGroup(billItemGroup);
+	}
+
+	/**
+	 * Update a billItemGroup with validation
+	 *
+	 * @param billItemGroup the BillItemGroup to update
+	 * @return the updated billItemGroup
+	 * @throws OHServiceException when fails to update
+	 */
+	public BillItemGroup updateBillItemGroup(BillItemGroup billItemGroup) throws OHServiceException {
+		validateBillItemGroup(billItemGroup);
+		return ioOperations.updateBillItemGroup(billItemGroup);
+	}
+
+	/**
+	 * Delete a billItemGroup
+	 *
+	 * @param groupId the id of the BillItemGroup to delete
+	 * @throws OHServiceException when fails to delete
+	 */
+	public void deleteBillItemGroup(int groupId) throws OHServiceException {
+		ioOperations.deleteBillItemGroup(groupId);
+	}
+
+	/**
+	 * Get a single BillItemGroup by ID
+	 *
+	 * @param id the ID of the bill item group
+	 * @return the matching BillItemGroup, or null if not found
+	 * @throws OHServiceException if a database error occurs
+	 */
+	public BillItemGroup getBillItemGroupById(int id) throws OHServiceException {
+		return ioOperations.getBillItemGroupById(id);
+	}
+
+	/**
+	 * Get all billItemGroups
+	 *
+	 * @return the list of all billItemGroup
+	 * @throws OHServiceException when fails to fetch list
+	 */
+	public List<BillItemGroup> getAllBillItemGroups() throws OHServiceException {
+		return ioOperations.getAllBillItemGroups();
+	}
+
+	/**
+	 * Get all active billItemGroups
+	 *
+	 * @return the list of all active billItemGroup
+	 * @throws OHServiceException when fails to fetch list
+	 */
+	public List<BillItemGroup> getAllActiveBillItemGroups() throws OHServiceException {
+		return ioOperations.getAllActiveBillItemGroups();
+	}
+
+	/**
+	 * Add billItemGroupItems to a billItemGroup
+	 *
+	 * @param groupId the id of the billItemGroup
+	 * @param items the BillItemGroupItems to add
+	 * @throws OHServiceException when fails to add items
+	 */
+	public void addBillItemGroupItems(int groupId, List<BillItemGroupItem> items) throws OHServiceException {
+		if (items != null) {
+			for (BillItemGroupItem item : items) {
+				validateBillItemGroupItem(item);
+			}
+		}
+		ioOperations.addBillItemGroupItems(groupId, items);
+	}
+
+	/**
+	 * Update a billItemGroupItem
+	 *
+	 * @param item the BillItemGroupItem to update
+	 * @return the updated billItemGroupItem
+	 * @throws OHServiceException when fails to update
+	 */
+	public BillItemGroupItem updateBillItemGroupItem(BillItemGroupItem item) throws OHServiceException {
+		validateBillItemGroupItem(item);
+		return ioOperations.updateBillItemGroupItem(item);
+	}
+
+	/**
+	 * Delete billItemGroupItems from a billItemGroup
+	 *
+	 * @param groupId the id of the BillItemGroup
+	 * @throws OHServiceException when fails to delete items
+	 */
+	public void deleteBillItemGroupItems(int groupId) throws OHServiceException {
+		ioOperations.deleteBillItemGroupItems(groupId);
+	}
+
+	/**
+	 * Delete a single billItemGroupItem
+	 *
+	 * @param itemId the id of the BillItemGroupItem to delete
+	 * @throws OHServiceException when fails to delete
+	 */
+	public void deleteBillItemGroupItem(int itemId) throws OHServiceException {
+		ioOperations.deleteBillItemGroupItem(itemId);
+	}
+
+	/**
+	 * Get billItemGroupItems for a specific group
+	 *
+	 * @param groupId the id of the BillItemGroup
+	 * @return the list of items
+	 * @throws OHServiceException when fails to fetch list
+	 */
+	public List<BillItemGroupItem> getItemsByGroupId(int groupId) throws OHServiceException {
+		return ioOperations.getItemsByGroupId(groupId);
+	}
+
+	/**
+	 * Get all billItemGroupItems
+	 *
+	 * @return the list of all items
+	 * @throws OHServiceException when fails to fetch list
+	 */
+	public List<BillItemGroupItem> getAllBillItemGroupItems() throws OHServiceException {
+		return ioOperations.getAllBillItemGroupItems();
+	}
+
+	/**
+	 * Get a single BillItemGroupItem by ID
+	 *
+	 * @param id the ID of the bill item group item
+	 * @return the matching BillItemGroupItem, or null if not found
+	 * @throws OHServiceException if a database error occurs
+	 */
+	public BillItemGroupItem getBillItemGroupItemById(int id) throws OHServiceException {
+		return ioOperations.getBillItemGroupItemById(id);
+	}
+
+	/**
+	 * Count all billItemGroups
+	 *
+	 * @return the count of all billItemGroups
+	 * @throws OHServiceException when fails
+	 */
+	public long countAllBillItemGroups() throws OHServiceException {
+		return ioOperations.countAllBillItemGroups();
+	}
+
+	/**
+	 * Count active billItemGroups
+	 *
+	 * @return the count of active billItemGroups
+	 * @throws OHServiceException when fails
+	 */
+	public long countAllActiveBillItemGroups() throws OHServiceException {
+		return ioOperations.countAllActiveBillItemGroups();
+	}
+
+	/**
+	 * Count items for a specific billItemGroup
+	 *
+	 * @param groupId the billItemGroup id
+	 * @return the count of items
+	 * @throws OHServiceException when fails
+	 */
+	public long countItemsByGroupId(int groupId) throws OHServiceException {
+		return ioOperations.countItemsByGroupId(groupId);
+	}
+
+	/**
+	 * Validate billItemGroup
+	 *
+	 * @param billItemGroup the billItemGroup to validate
+	 * @throws OHDataValidationException when validation fails
+	 */
+	protected void validateBillItemGroup(BillItemGroup billItemGroup) throws OHDataValidationException {
+		List<OHExceptionMessage> errors = new ArrayList<>();
+
+		if (billItemGroup == null) {
+			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.common.error"),
+				MessageBundle.getMessage("angal.common.pleasefillallfields"), OHSeverityLevel.ERROR));
+		} else {
+			if (billItemGroup.getTitle() == null || billItemGroup.getTitle().isEmpty()) {
+				errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.common.error"),
+					MessageBundle.getMessage("angal.billitemgroup.title.required"), OHSeverityLevel.ERROR));
+			}
+			if (billItemGroup.getTotal() == null || billItemGroup.getTotal() < 0) {
+				errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.common.error"),
+					MessageBundle.getMessage("angal.billitemgroup.total.invalid"), OHSeverityLevel.ERROR));
+			}
+		}
+
+		if (!errors.isEmpty()) {
+			throw new OHDataValidationException(errors);
+		}
+	}
+
+	/**
+	 * Validate billItemGroupItem
+	 *
+	 * @param item the item to validate
+	 * @throws OHDataValidationException when validation fails
+	 */
+	protected void validateBillItemGroupItem(BillItemGroupItem item) throws OHDataValidationException {
+		List<OHExceptionMessage> errors = new ArrayList<>();
+
+		if (item == null) {
+			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.common.error"),
+				MessageBundle.getMessage("angal.common.pleasefillallfields"), OHSeverityLevel.ERROR));
+		} else {
+			if (item.getAmount() == null || item.getAmount() < 0) {
+				errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.common.error"),
+					MessageBundle.getMessage("angal.billitemgroup.amount.invalid"), OHSeverityLevel.ERROR));
+			}
+			if (item.getQuantity() == null || item.getQuantity() < 1) {
+				errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.common.error"),
+					MessageBundle.getMessage("angal.billitemgroup.quantity.invalid"), OHSeverityLevel.ERROR));
+			}
+		}
+
+		if (!errors.isEmpty()) {
+			throw new OHDataValidationException(errors);
+		}
 	}
 }
