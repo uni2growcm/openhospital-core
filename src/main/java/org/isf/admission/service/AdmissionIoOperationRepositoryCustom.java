@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -26,18 +26,33 @@ import java.util.List;
 
 import org.isf.admission.model.AdmittedPatient;
 import org.isf.utils.exception.OHServiceException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface AdmissionIoOperationRepositoryCustom {
 
 	List<AdmittedPatient> findPatientAdmissionsBySearchAndDateRanges(String searchTerms, LocalDateTime[] admissionRange, LocalDateTime[] dischargeRange)
 			throws OHServiceException;
 
+	Page<AdmittedPatient> findPatientAdmissionsByFilters(
+		String searchTerms,
+		String admissionStatus,
+		List<String> wardCodes,
+		LocalDateTime admissionDateFrom,
+		LocalDateTime admissionDateTo,
+		LocalDateTime dischargeDateFrom,
+		LocalDateTime dischargeDateTo,
+		Integer ageFrom,
+		Integer ageTo,
+		Character sex,
+		Integer country,
+		Pageable pageable
+	) throws OHServiceException;
+
 	/**
 	 * @param patientId
 	 * @param admissionId
 	 */
 	record PatientAdmission(Integer patientId, Integer admissionId) {
-
 	}
-
 }

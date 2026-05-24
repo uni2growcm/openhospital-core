@@ -70,6 +70,8 @@ public interface LabIoOperationRepository extends JpaRepository<Laboratory, Inte
 	@Query("select count(l) from Laboratory l where active=1")
 	long countAllActiveLabs();
 
+	@Query("select distinct l.prescriber from Laboratory l where l.prescriber is not null and l.prescriber <> ''")
+	List<String> findDistinctPrescribers();
 	@Query("SELECT l FROM Laboratory l WHERE l.patient.code = :patientCode AND (l.bill IS NULL OR l.bill.id = 0)")
 	List<Laboratory> findByPatientCodeAndBillIsNull(@Param("patientCode") int patientCode);
 

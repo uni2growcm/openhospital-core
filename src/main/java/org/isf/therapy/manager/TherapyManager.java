@@ -22,6 +22,7 @@
 package org.isf.therapy.manager;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,7 +59,7 @@ public class TherapyManager {
 	private final MovWardBrowserManager wardManager;
 
 	public TherapyManager(TherapyIoOperations therapyIoOperations, SmsOperations smsOperations, PatientBrowserManager patientBrowserManager,
-		MedicalBrowsingManager medicalBrowsingManager, MovWardBrowserManager movWardBrowserManager) {
+	                      MedicalBrowsingManager medicalBrowsingManager, MovWardBrowserManager movWardBrowserManager) {
 		this.ioOperations = therapyIoOperations;
 		this.smsOp = smsOperations;
 		this.patientManager = patientBrowserManager;
@@ -95,8 +96,8 @@ public class TherapyManager {
 	 * @return the {@link Therapy}
 	 */
 	private Therapy createTherapy(int therapyID, int patID, Integer medId, Double qty,
-		LocalDateTime startDate, LocalDateTime endDate, int freqInPeriod,
-		int freqInDay, String note, boolean notify, boolean sms) throws OHServiceException {
+	                              LocalDateTime startDate, LocalDateTime endDate, int freqInPeriod,
+	                              int freqInDay, String note, boolean notify, boolean sms) throws OHServiceException {
 
 		List<LocalDateTime> datesArray = new ArrayList<>();
 
@@ -308,7 +309,7 @@ public class TherapyManager {
 	 * @throws OHServiceException
 	 */
 	public TherapyRow newTherapy(int therapyID, int patID, LocalDateTime startDate, LocalDateTime endDate, Medical medical, Double qty, int unitID,
-		int freqInDay, int freqInPeriod, String note, boolean notify, boolean sms) throws OHServiceException {
+	                             int freqInDay, int freqInPeriod, String note, boolean notify, boolean sms) throws OHServiceException {
 		Patient patient = patientManager.getPatientById(patID);
 		TherapyRow thRow = new TherapyRow(therapyID, patient, startDate, endDate, medical, qty, unitID, freqInDay, freqInPeriod, note, notify, sms);
 		return newTherapy(thRow);
@@ -333,11 +334,21 @@ public class TherapyManager {
 	 * @throws OHServiceException
 	 */
 	public TherapyRow getTherapyRow(int therapyID, int patID, LocalDateTime startDate, LocalDateTime endDate, Medical medical, Double qty, int unitID,
-		int freqInDay, int freqInPeriod, String note, boolean notify, boolean sms) throws OHServiceException {
+	                                int freqInDay, int freqInPeriod, String note, boolean notify, boolean sms) throws OHServiceException {
 		Patient patient = patientManager.getPatientById(patID);
 		return new TherapyRow(therapyID, patient, startDate, endDate, medical, qty, unitID, freqInDay, freqInPeriod, note, notify, sms);
 	}
 
+	/**
+	 * Returns the list of {@link TherapyRow}s (therapies) for the specified therapy ID.
+	 *
+	 * @param therapyID - the therapy ID
+	 * @return the list of {@link TherapyRow}s (therapies) matching the given therapy ID.
+	 * @throws OHServiceException
+	 */
+	public List<TherapyRow> getTherapyRowsByTherapyId(int therapyID) throws OHServiceException {
+		return ioOperations.getTherapyRowsByTherapyId(therapyID);
+	}
 	/**
 	 * Check if the patient has therapies rows not yet bought.
 	 *
@@ -383,7 +394,7 @@ public class TherapyManager {
 	 * @param qty the quantity per dose
 	 * @return the total prescribed quantity
 	 */
-	public double calculateTotalPrescribedQuantity(LocalDateTime startDate, LocalDateTime endDate, 
+	public double calculateTotalPrescribedQuantity(LocalDateTime startDate, LocalDateTime endDate,
 			int freqInPeriod, int freqInDay, double qty) {
 		long totalDays = calculateEffectiveDays(startDate, endDate, freqInPeriod);
 		return totalDays * freqInDay * qty;
@@ -399,7 +410,7 @@ public class TherapyManager {
 	 * @return the number of effective days
 	 */
 	private long calculateEffectiveDays(LocalDateTime startDate, LocalDateTime endDate, int freqInPeriod) {
-		long diffInMillis = endDate.atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli() 
+		long diffInMillis = endDate.atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli()
 				- startDate.atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli();
 		long totalDays = (diffInMillis / (1000 * 60 * 60 * 24)) + 1;
 		return (totalDays + freqInPeriod - 1) / freqInPeriod;
@@ -445,5 +456,44 @@ public class TherapyManager {
 	@Transactional
 	public void updateBougthQuantity(int therapyId, double quantity) throws OHServiceException {
 		ioOperations.updateBougthQuantity(therapyId, quantity);
+	}
+
+	/**
+	 * Clones an existing {@link TherapyRow} with a new start date, preserving the original duration.
+	 * The end date is automatically calculated by applying the same number of days
+	 * as the original therapy duration to the new start date.
+	 *
+	 * @param oldTherapy   - the original {@link TherapyRow} to clone.
+	 * @param newStartDate - the new start date for the cloned therapy.
+	 * @return a new {@link TherapyRow} with the updated start and end dates, and all other fields preserved.
+	 * @throws OHServiceException when fails to retrieve the patient or the medical.
+	 */
+	public TherapyRow cloneWithNewStartDate(TherapyRow oldTherapy, LocalDateTime newStartDate) throws OHServiceException {
+		Patient patient = patientManager.getPatientById(oldTherapy.getPatient().getCode());
+
+		long durationDays = ChronoUnit.DAYS.between(
+			oldTherapy.getStartDate().toLocalDate(),
+			oldTherapy.getEndDate().toLocalDate()
+		);
+
+		LocalDateTime newEndDate = newStartDate.plusDays(durationDays);
+
+		Medical medical = medManager.getMedical(oldTherapy.getMedical());
+
+		TherapyRow newTherapy = new TherapyRow(
+			0,
+			patient,
+			newStartDate,
+			newEndDate,
+			medical,
+			oldTherapy.getQty(),
+			oldTherapy.getUnitID(),
+			oldTherapy.getFreqInDay(),
+			oldTherapy.getFreqInPeriod(),
+			oldTherapy.getNote(),
+			oldTherapy.isNotify(),
+			oldTherapy.isSms()
+		);
+		return newTherapy;
 	}
 }

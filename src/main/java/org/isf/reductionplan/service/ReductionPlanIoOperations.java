@@ -48,7 +48,6 @@ import org.springframework.transaction.annotation.Transactional;
 @TranslateOHServiceException
 public class ReductionPlanIoOperations {
 
-
 	private final ReductionPlanIoOperationRepository reductionPlanRepository;
 	private final ExamReductionIoOperationRepository examReductionRepository;
 	private final MedicalReductionIoOperationRepository medicalReductionRepository;

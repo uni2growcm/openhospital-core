@@ -38,7 +38,10 @@ public final class GeneralData extends ConfigurationProperties {
 
 	public static boolean STOCKMVTONBILLSAVE;
 	public static boolean ALLOWBILLGUARANTOR;
+	public static boolean STOCKMVTONBILLSAVE;
 	public static String LANGUAGE;
+	public static boolean HIGHLIGHTEXPIRINGMEDICAL;
+	public static Integer HIGHLIGHTEXPIRINGMEDICALDAYS;
 	public static boolean AUTOMATICLOT_IN;
 	public static boolean AUTOMATICLOT_OUT;
 	public static boolean AUTOMATICLOTWARD_TOWARD;
@@ -55,6 +58,7 @@ public final class GeneralData extends ConfigurationProperties {
 	public static String BILLSREPORTMONTHLY;
 	public static String PHARMACEUTICALORDER;
 	public static String PHARMACEUTICALSTOCK;
+	public static String PHARMACEUTICALSTOCKNOZERO;
 	public static String PHARMACEUTICALSTOCKLOT;
 	public static String PHARMACEUTICALAMC;
 	public static boolean PATIENTEXTENDED;
@@ -74,6 +78,7 @@ public final class GeneralData extends ConfigurationProperties {
 	public static boolean VIDEOMODULEENABLED;
 	public static boolean PATIENTVACCINEEXTENDED;
 	public static boolean ENHANCEDSEARCH;
+	public static boolean ENABLEMORTUARYMODULE;
 	public static boolean XMPPMODULEENABLED;
 	public static boolean DICOMMODULEENABLED;
 	public static boolean DICOMTHUMBNAILS;
@@ -94,12 +99,15 @@ public final class GeneralData extends ConfigurationProperties {
 
 	public static final boolean DEFAULT_STOCKMVTONBILLSAVE = false;
 	private static final boolean DEFAULT_ALLOWBILLGUARANTOR  = false;
+	public static final boolean DEFAULT_STOCKMVTONBILLSAVE = false;
 	private static final String DEFAULT_LANGUAGE = "en";
 	private static final boolean DEFAULT_SINGLEUSER = false;
 	private static final boolean DEFAULT_USERSLISTLOGIN = false;
 	private static final String DEFAULT_MODE = "";
 	private static final boolean DEFAULT_DEMODATA = false;
 	private static final boolean DEFAULT_APISERVER = false;
+	private static final boolean DEFAULT_HIGHLIGHTEXPIRINGMEDICAL = false;
+	private static final Integer DEFAULT_HIGHLIGHTEXPIRINGMEDICALDAYS = 30;
 	private static final boolean DEFAULT_AUTOMATICLOT_IN = true;
 	private static final boolean DEFAULT_AUTOMATICLOT_OUT = true;
 	private static final boolean DEFAULT_AUTOMATICLOTWARD_TOWARD = true;
@@ -116,6 +124,7 @@ public final class GeneralData extends ConfigurationProperties {
 	private static final String DEFAULT_BILLSREPORTMONTHLY = "BillsReportMonthly";
 	private static final String DEFAULT_PHARMACEUTICALORDER = "PharmaceuticalOrder";
 	private static final String DEFAULT_PHARMACEUTICALSTOCK = "PharmaceuticalStock_ver4";
+	private static final String DEFAULT_PHARMACEUTICALSTOCKNOZERO = "PharmaceuticalStock_ver4_1";
 	private static final String DEFAULT_PHARMACEUTICALSTOCKLOT = "PharmaceuticalStock_ver5"; // TODO: verify if really used
 	private static final String DEFAULT_PHARMACEUTICALAMC = "PharmaceuticalAMC";
 	private static final boolean DEFAULT_PATIENTEXTENDED = false;
@@ -134,6 +143,7 @@ public final class GeneralData extends ConfigurationProperties {
 	private static final boolean DEFAULT_VIDEOMODULEENABLED = false;
 	private static final boolean DEFAULT_PATIENTVACCINEEXTENDED = false;
 	private static final boolean DEFAULT_ENHANCEDSEARCH = false;
+	private static final boolean DEFAULT_ENABLEMORTUARYMODULE = false;
 	private static final boolean DEFAULT_XMPPMODULEENABLED = false;
 	private static final boolean DEFAULT_DICOMMODULEENABLED = false;
 	private static final boolean DEFAULT_DICOMTHUMBNAILS = true;
@@ -163,6 +173,7 @@ public final class GeneralData extends ConfigurationProperties {
 		super(fileProperties, EXIT_ON_FAIL);
 		STOCKMVTONBILLSAVE = myGetProperty("STOCKMVTONBILLSAVE", DEFAULT_STOCKMVTONBILLSAVE);
 		ALLOWBILLGUARANTOR = myGetProperty("ALLOWBILLGUARANTOR", DEFAULT_ALLOWBILLGUARANTOR);
+		STOCKMVTONBILLSAVE = myGetProperty("STOCKMVTONBILLSAVE", DEFAULT_STOCKMVTONBILLSAVE);
 		SINGLEUSER = myGetProperty("SINGLEUSER", DEFAULT_SINGLEUSER);
 		USERSLISTLOGIN = myGetProperty("USERSLISTLOGIN", DEFAULT_USERSLISTLOGIN);
 		MODE = myGetProperty("MODE", DEFAULT_MODE);
@@ -170,6 +181,8 @@ public final class GeneralData extends ConfigurationProperties {
 		APISERVER = myGetProperty("APISERVER", DEFAULT_APISERVER);
 		LANGUAGE = myGetProperty("LANGUAGE", DEFAULT_LANGUAGE);
 		AUTOMATICLOT_IN = myGetProperty("AUTOMATICLOT_IN", DEFAULT_AUTOMATICLOT_IN);
+		HIGHLIGHTEXPIRINGMEDICAL = myGetProperty("HIGHLIGHTEXPIRINGMEDICAL", DEFAULT_HIGHLIGHTEXPIRINGMEDICAL);
+		HIGHLIGHTEXPIRINGMEDICALDAYS = myGetProperty("HIGHLIGHTEXPIRINGMEDICALDAYS", DEFAULT_HIGHLIGHTEXPIRINGMEDICALDAYS);
 		AUTOMATICLOT_OUT = myGetProperty("AUTOMATICLOT_OUT", DEFAULT_AUTOMATICLOT_OUT);
 		AUTOMATICLOTWARD_TOWARD = myGetProperty("AUTOMATICLOTWARD_TOWARD", DEFAULT_AUTOMATICLOTWARD_TOWARD);
 		LOTWITHCOST = myGetProperty("LOTWITHCOST", DEFAULT_LOTWITHCOST);
@@ -185,6 +198,7 @@ public final class GeneralData extends ConfigurationProperties {
 		BILLSREPORTMONTHLY = myGetProperty("BILLSREPORTMONTHLY", DEFAULT_BILLSREPORTMONTHLY);
 		PHARMACEUTICALORDER = myGetProperty("PHARMACEUTICALORDER", DEFAULT_PHARMACEUTICALORDER);
 		PHARMACEUTICALSTOCK = myGetProperty("PHARMACEUTICALSTOCK", DEFAULT_PHARMACEUTICALSTOCK);
+		PHARMACEUTICALSTOCKNOZERO = myGetProperty("PHARMACEUTICALSTOCKNOZERO", DEFAULT_PHARMACEUTICALSTOCKNOZERO);
 		PHARMACEUTICALSTOCKLOT = myGetProperty("PHARMACEUTICALSTOCKLOT", DEFAULT_PHARMACEUTICALSTOCKLOT);
 		PHARMACEUTICALAMC = myGetProperty("PHARMACEUTICALAMC", DEFAULT_PHARMACEUTICALAMC);
 		PATIENTEXTENDED = myGetProperty("PATIENTEXTENDED", DEFAULT_PATIENTEXTENDED);
@@ -206,6 +220,7 @@ public final class GeneralData extends ConfigurationProperties {
 		VIDEOMODULEENABLED = myGetProperty("VIDEOMODULEENABLED", DEFAULT_VIDEOMODULEENABLED);
 		PATIENTVACCINEEXTENDED = myGetProperty("PATIENTVACCINEEXTENDED", DEFAULT_PATIENTVACCINEEXTENDED);
 		ENHANCEDSEARCH = myGetProperty("ENHANCEDSEARCH", DEFAULT_ENHANCEDSEARCH);
+		ENABLEMORTUARYMODULE = myGetProperty("ENABLEMORTUARYMODULE", DEFAULT_ENABLEMORTUARYMODULE);
 		XMPPMODULEENABLED = myGetProperty("XMPPMODULEENABLED", DEFAULT_XMPPMODULEENABLED);
 		DICOMMODULEENABLED = myGetProperty("DICOMMODULEENABLED", DEFAULT_DICOMMODULEENABLED);
 		DICOMTHUMBNAILS = myGetProperty("DICOMTHUMBNAILS", DEFAULT_DICOMTHUMBNAILS);

@@ -118,10 +118,27 @@ public class PatientIoOperations {
 	 *
 	 * @param keyword - String to search, use {@code null} for full list
 	 * @return the list of {@link Patient}s (could be empty),
-	 * @throws OHServiceException
+	 * @throws  if fails to retrive
 	 */
 	public List<Patient> getPatientsByOneOfFieldsLike(String keyword) throws OHServiceException {
 		return repository.findByFieldsContainingWordsFromLiteral(keyword);
+	}
+
+	/**
+	 * Method that returns the list of the first 50 female {@link Patient}s not logically deleted, having
+	 * the passed String in:<br>
+	 * - code<br>
+	 * - firstName<br>
+	 * - secondName<br>
+	 * - taxCode<br>
+	 * - note<br>
+	 *
+	 * @param keyword - String to search, use {@code null} for full list
+	 * @return the list of {@link Patient}s (could be empty),
+	 * @throws  if fails to retrive
+	 */
+	public List<Patient> getFemalePatientsByOneOfFieldsLike(String keyword) throws  OHServiceException {
+		return repository.findFemaleByFieldsContainingWordsFromLiteral(keyword);
 	}
 
 	/**
@@ -330,5 +347,30 @@ public class PatientIoOperations {
 			retrievePatientProfilePhoto(patient);
 		}
 		return patients;
+	}
+
+	/**
+	 * Method that returns a limited list of {@link Patient}s not logically deleted, having
+	 * the passed String in:<br>
+	 * - code<br>
+	 * - firstName<br>
+	 * - secondName<br>
+	 * - taxCode<br>
+	 * - note<br>
+	 *
+	 * @param keyword - String to search, use {@code null} for full list
+	 * @param limit - maximum number of patients to return
+	 * @return the list of {@link Patient}s limited to 'limit' records (could be empty)
+	 * @throws OHServiceException
+	 */
+	public List<Patient> getPatientsByOneOfFieldsLikeWithLimit(String keyword, int limit) throws OHServiceException {
+		return repository.findByFieldsContainingWordsFromLiteral(keyword, limit);
+	}
+
+	public List<Patient> getPatientByCodeOrName(Integer code, String name) throws OHServiceException {
+		return repository.findByCodeOrNameContainingAndNotDeleted(
+			code != null ? code : -1,
+			name != null ? name : "",
+			NOT_DELETED_STATUS);
 	}
 }

@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -81,6 +81,9 @@ public class Laboratory extends Auditable<String> {
 
 	@Column(name="LAB_NOTE")
 	private String note;
+
+	@Column(name="LAB_PRESCRIBER")
+	private String prescriber;
 
 	@ManyToOne
 	@JoinColumn(name="LAB_PAT_ID")
@@ -226,6 +229,14 @@ public class Laboratory extends Auditable<String> {
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	public String getPrescriber() {
+		return prescriber;
+	}
+
+	public void setPrescriber(String prescriber) {
+		this.prescriber = prescriber;
 	}
 
 	public Bill getBill() {

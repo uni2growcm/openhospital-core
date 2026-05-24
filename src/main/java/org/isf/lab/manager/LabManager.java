@@ -488,6 +488,16 @@ public class LabManager {
 	}
 
 	/**
+	 * Get a list of distinct prescribers from laboratory records
+	 *
+	 * @return a {@link List} of distinct prescriber names
+	 * @throws OHServiceException if an error occurs while accessing the data source
+	 */
+	public List<String> getDistinctPrescribers() throws OHServiceException {
+		return ioOperations.getDistinctPrescribers();
+	}
+
+	/**
 	 * Check if a patient has pending laboratory exams that haven't been billed yet.
 	 *
 	 * @param patientCode the patient's code as String

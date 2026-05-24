@@ -423,6 +423,15 @@ public class LabIoOperations {
 	}
 
 	/**
+	 * Get a list of distinct prescribers from laboratory records
+	 *
+	 * @return a {@link List} of distinct prescriber names
+	 * @throws OHServiceException if an error occurs while accessing the repository
+	 */
+	public List<String> getDistinctPrescribers() throws OHServiceException {
+		return repository.findDistinctPrescribers();
+	}
+	/**
 	 * Check if a patient has pending laboratory exams that haven't been billed yet.
 	 *
 	 * @param patientCode the patient's code

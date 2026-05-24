@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -295,6 +295,23 @@ public class PatientBrowserManager {
 		return ioOperations.getPatientsByOneOfFieldsLike(keyword);
 	}
 
+	/**
+	 * Method that returns the list of the first 50 female {@link Patient}s not logically deleted, having the passed String in:<br>
+	 * - code<br>
+	 * - firstName<br>
+	 * - secondName<br>
+	 * - taxCode<br>
+	 * - note<br>
+	 *
+	 * @param keyword
+	 *            - String to search, {@code null} for full list
+	 * @return the list of {@link Patient}s (could be empty)
+	 * @throws OHServiceException
+	 */
+	public List<Patient> getFemalePatientsByOneOfFieldsLike(String keyword) throws OHServiceException {
+		return ioOperations.getFemalePatientsByOneOfFieldsLike(keyword);
+	}
+
 	public PatientProfilePhoto retrievePatientProfilePhoto(Patient patient) throws OHServiceException {
 		return ioOperations.retrievePatientProfilePhoto(patient);
 	}
@@ -433,5 +450,33 @@ public class PatientBrowserManager {
 	 */
 	public List<Patient> getPatientByCodes(List<Integer> codes) throws OHServiceException {
 		return ioOperations.getPatientByCodes(codes);
+	}
+
+	/**
+	 * Method that returns a limited list of {@link Patient}s not logically deleted, having the passed String in:<br>
+	 * - code<br>
+	 * - firstName<br>
+	 * - secondName<br>
+	 * - taxCode<br>
+	 * - note<br>
+	 *
+	 * @param keyword - String to search, {@code null} for full list
+	 * @param limit - maximum number of patients to return
+	 * @return the list of {@link Patient}s limited to 'limit' records (could be empty)
+	 * @throws OHServiceException
+	 */
+	public List<Patient> getPatientsByOneOfFieldsLikeWithLimit(String keyword, int limit) throws OHServiceException {
+		return ioOperations.getPatientsByOneOfFieldsLikeWithLimit(keyword, limit);
+	}
+
+	public List<Patient> getPatientByCodeOrName(String input) throws OHServiceException {
+		Integer code = null;
+		String name = input != null ? input.trim() : "";
+		try {
+			code = Integer.parseInt(name);
+		} catch (NumberFormatException e) {
+
+		}
+		return ioOperations.getPatientByCodeOrName(code, name);
 	}
 }

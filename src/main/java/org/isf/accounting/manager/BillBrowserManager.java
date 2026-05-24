@@ -23,6 +23,10 @@ package org.isf.accounting.manager;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.isf.accounting.model.*;
@@ -42,10 +46,20 @@ import org.isf.medicalstockward.model.MovementWard;
 import org.isf.menu.manager.Context;
 import org.isf.patient.manager.PatientBrowserManager;
 import org.isf.menu.model.User;
+import org.isf.medicals.manager.MedicalBrowsingManager;
+import org.isf.medicals.model.Medical;
+import org.isf.medicalstock.manager.MovStockInsertingManager;
+import org.isf.medicalstock.model.Lot;
+import org.isf.medicalstockward.manager.MovWardBrowserManager;
+import org.isf.medicalstockward.model.MedicalWard;
+import org.isf.medicalstockward.model.MovementWard;
+import org.isf.menu.manager.Context;
+import org.isf.patient.manager.PatientBrowserManager;
 import org.isf.patient.model.Patient;
 import org.isf.priceslist.manager.PriceListManager;
 import org.isf.priceslist.model.ItemGroup;
 import org.isf.priceslist.model.Price;
+import org.isf.priceslist.manager.PriceListManager;
 import org.isf.utils.db.TranslateOHServiceException;
 import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHServiceException;
@@ -166,11 +180,11 @@ public class BillBrowserManager {
 		LocalDateTime upDate;
 		LocalDateTime firstPay = today;
 		LocalDateTime lastPay = today;
-
 		LocalDateTime billDate = bill.getDate();
+
 		if (!billPayments.isEmpty()) {
 			firstPay = billPayments.get(0).getDate();
-			lastPay = billPayments.get(billPayments.size() - 1).getDate(); // most recent payment
+			lastPay = billPayments.get(billPayments.size() - 1).getDate();
 			upDate = lastPay;
 		} else {
 			upDate = billDate;
@@ -197,13 +211,6 @@ public class BillBrowserManager {
 		}
 	}
 
-	/**
-	 * Retrieves all the {@link BillItems} associated to the passed {@link Bill} id.
-	 *
-	 * @param billID the bill id.
-	 * @return a list of {@link BillItems} or {@code null} if an error occurred.
-	 * @throws OHServiceException
-	 */
 	public List<BillItems> getItems(int billID) throws OHServiceException {
 		if (billID == 0) {
 			return new ArrayList<>();
@@ -211,52 +218,18 @@ public class BillBrowserManager {
 		return ioOperations.getItems(billID);
 	}
 
-	/**
-	 * Retrieves all the bills of a given patient between dateFrom and datTo
-	 *
-	 * @param dateFrom
-	 * @param dateTo
-	 * @param patient
-	 * @return the bills list
-	 * @throws OHServiceException
-	 */
 	public List<Bill> getBills(LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient) throws OHServiceException {
 		return ioOperations.getBillsBetweenDatesWherePatient(dateFrom, dateTo, patient);
 	}
 
-	/**
-	 * Retrieves all the billPayments for a given patient between dateFrom and dateTo
-	 *
-	 * @param dateFrom
-	 * @param dateTo
-	 * @param patient
-	 * @return the list of payments
-	 * @throws OHServiceException
-	 */
 	public List<BillPayments> getPayments(LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient) throws OHServiceException {
 		return ioOperations.getPaymentsBetweenDatesWherePatient(dateFrom, dateTo, patient);
 	}
 
-	/**
-	 * Gets all the {@link BillPayments} for the specified {@link Bill}.
-	 *
-	 * @param billID the bill id.
-	 * @return a list of {@link BillPayments}
-	 * @throws OHServiceException
-	 */
 	public List<BillPayments> getPayments(int billID) throws OHServiceException {
 		return ioOperations.getPayments(billID);
 	}
 
-	/**
-	 * Stores a new {@link Bill} along with all its {@link BillItems} and {@link BillPayments}
-	 *
-	 * @param bill the bill to store.
-	 * @param billItems the list of bill's items
-	 * @param billPayments the list of bill's payments
-	 * @returns the persisted Bill object
-	 * @throws OHServiceException
-	 */
 	@Transactional(rollbackFor = OHServiceException.class)
 	@TranslateOHServiceException
 	public Bill newBill(
@@ -265,7 +238,7 @@ public class BillBrowserManager {
 		List<BillPayments> billPayments) throws OHServiceException {
 
 		validateBill(bill, billPayments);
-		Bill newBill = newBill(bill);
+		Bill newBill = ioOperations.newBill(bill);
 		int billId = newBill.getId();
 
 		if (billItems != null && !billItems.isEmpty()) {
@@ -276,155 +249,56 @@ public class BillBrowserManager {
 				updateMedicalStock(billItems, billId, false);
 			}
 			markPrescriptionsAsBilled(billItems, newBill);
+			if (GeneralData.STOCKMVTONBILLSAVE) {
+				updateMedicalStock(billItems, newBill.getId(), false);
+			}
 		}
 
 		if (billPayments != null && !billPayments.isEmpty()) {
-			newBillPayments(newBill.getId(), billPayments);
+			ioOperations.newBillPayments(newBill, billPayments);
 		}
 
 		return newBill;
 	}
 
-	/**
-	 * Stores a new {@link Bill}.
-	 *
-	 * @param newBill the bill to store.
-	 * @return the persisted Bill object
-	 * @throws OHServiceException
-	 */
-	private Bill newBill(Bill newBill) throws OHServiceException {
-		return ioOperations.newBill(newBill);
-	}
-
-	/**
-	 * Stores a list of {@link BillItems} associated to a {@link Bill}.
-	 *
-	 * @param billID the bill id.
-	 * @param billItems the bill items to store.
-	 * @throws OHServiceException
-	 */
-	private void newBillItems(int billID, List<BillItems> billItems) throws OHServiceException {
-		ioOperations.newBillItems(ioOperations.getBill(billID), billItems);
-	}
-
-	/**
-	 * Stores a list of {@link BillPayments} associated to a {@link Bill}.
-	 *
-	 * @param billID the bill id.
-	 * @param payItems the bill payments.
-	 * @throws OHServiceException
-	 */
-	private void newBillPayments(int billID, List<BillPayments> payItems) throws OHServiceException {
-		ioOperations.newBillPayments(ioOperations.getBill(billID), payItems);
-	}
-
-	/**
-	 * Updates the specified {@link Bill} along with all its {@link BillItems} and {@link BillPayments}
-	 *
-	 * @param updateBill the bill to update.
-	 * @param billItems the list of bill's items
-	 * @param billPayments the list of bill's payments
-	 * @return the updated Bill object
-	 * @throws OHServiceException
-	 */
 	@Transactional(rollbackFor = OHServiceException.class)
 	@TranslateOHServiceException
-	public Bill updateBill(
-		Bill updateBill,
-		List<BillItems> billItems,
-		List<BillPayments> billPayments
-	) throws OHServiceException {
-
+	public Bill updateBill(Bill updateBill, List<BillItems> billItems, List<BillPayments> billPayments) throws OHServiceException {
 		validateBill(updateBill, billPayments);
 
 		if (GeneralData.STOCKMVTONBILLSAVE) {
-
 			List<BillItems> newItems = getNewItems(updateBill.getId(), billItems);
 			List<BillItems> deletedItems = getDeletedItems(updateBill.getId(), billItems);
-
 			updateMedicalStock(deletedItems, updateBill.getId(), true);
 			updateMedicalStock(newItems, updateBill.getId(), false);
 		}
 
-		Bill updatedBill = updateBill(updateBill);
-		newBillItems(updateBill.getId(), billItems);
+		Bill updatedBill = ioOperations.updateBill(updateBill);
+		ioOperations.newBillItems(updateBill, billItems);
 		markPrescriptionsAsBilled(billItems, updatedBill);
-		newBillPayments(updateBill.getId(), billPayments);
 		return updatedBill;
 	}
 
-	/**
-	 * Updates the specified {@link Bill}.
-	 *
-	 * @param updateBill the bill to update.
-	 * @return the updated Bill object
-	 * @throws OHServiceException
-	 */
-	private Bill updateBill(Bill updateBill) throws OHServiceException {
-		return ioOperations.updateBill(updateBill);
-	}
-
-	/**
-	 * Returns all the pending {@link Bill}s for the specified patient.
-	 *
-	 * @param patID the patient id.
-	 * @return the list of pending bills or {@code null} if an error occurred.
-	 * @throws OHServiceException
-	 */
 	public List<Bill> getPendingBills(int patID) throws OHServiceException {
 		return ioOperations.getPendingBills(patID);
 	}
 
-	/**
-	 * Get the {@link Bill} with specified billID
-	 *
-	 * @param billID
-	 * @return the {@link Bill} or {@code null} if an error occurred.
-	 * @throws OHServiceException
-	 */
 	public Bill getBill(int billID) throws OHServiceException {
 		return ioOperations.getBill(billID);
 	}
 
-	/**
-	 * Returns all user ids related to a {@link BillPayments}.
-	 *
-	 * @return a list of user id or {@code null} if an error occurred.
-	 * @throws OHServiceException
-	 */
 	public List<String> getUsers() throws OHServiceException {
 		return ioOperations.getUsers();
 	}
 
-	/**
-	 * Deletes the specified {@link Bill}. If the argument is NULL then an error is thrown. If the Bill is not found it is silently ignored.
-	 *
-	 * @param deleteBill the bill to delete.
-	 * @throws OHServiceException
-	 */
 	public void deleteBill(Bill deleteBill) throws OHServiceException {
 		ioOperations.deleteBill(deleteBill);
 	}
 
-	/**
-	 * Retrieves all the {@link Bill}s for the specified date range.
-	 *
-	 * @param dateFrom the low date range endpoint, inclusive.
-	 * @param dateTo the high date range endpoint, inclusive.
-	 * @return a list of retrieved {@link Bill}s or {@code null} if an error occurred.
-	 * @throws OHServiceException
-	 */
 	public List<Bill> getBills(LocalDateTime dateFrom, LocalDateTime dateTo) throws OHServiceException {
 		return ioOperations.getBillsBetweenDates(dateFrom, dateTo);
 	}
 
-	/**
-	 * Gets all the {@link Bill}s associated to the passed {@link BillPayments}.
-	 *
-	 * @param billPayments the {@link BillPayments} associated to the bill to retrieve.
-	 * @return a list of {@link Bill} associated to the passed {@link BillPayments} or {@code null} if an error occurred.
-	 * @throws OHServiceException
-	 */
 	public List<Bill> getBills(List<BillPayments> billPayments) throws OHServiceException {
 		if (billPayments.isEmpty()) {
 			return new ArrayList<>();
@@ -432,158 +306,24 @@ public class BillBrowserManager {
 		return ioOperations.getBills(billPayments);
 	}
 
-	/**
-	 * Retrieves all the {@link BillPayments} for the specified date range.
-	 *
-	 * @param dateFrom low endpoint, inclusive, for the date range.
-	 * @param dateTo high endpoint, inclusive, for the date range.
-	 * @return a list of {@link BillPayments} for the specified date range or {@code null} if an error occurred.
-	 * @throws OHServiceException
-	 */
 	public List<BillPayments> getPayments(LocalDateTime dateFrom, LocalDateTime dateTo) throws OHServiceException {
 		return ioOperations.getPayments(dateFrom, dateTo);
 	}
 
-	/**
-	 * Retrieves all the {@link BillPayments} associated to the passed {@link Bill} list.
-	 *
-	 * @param billArray the bill array list of {@link Bill}s.
-	 * @return a list of {@link BillPayments} associated to the passed bill list or {@code null} if an error occurred.
-	 * @throws OHServiceException
-	 */
 	public List<BillPayments> getPayments(List<Bill> billArray) throws OHServiceException {
 		return ioOperations.getPayments(billArray);
 	}
 
-	/**
-	 * Retrieves all the {@link Bill}s associated to the specified {@link Patient}.
-	 *
-	 * @param patID the Patient's ID
-	 * @return the list of {@link Bill}s
-	 * @throws OHServiceException
-	 */
 	public List<Bill> getPendingBillsAffiliate(int patID) throws OHServiceException {
 		return ioOperations.getPendingBillsAffiliate(patID);
 	}
 
-	/**
-	 * Returns all the distinct stored {@link BillItems}.
-	 *
-	 * @return a list of distinct {@link BillItems} or null if an error occurs.
-	 * @throws OHServiceException
-	 */
 	public List<BillItems> getDistinctItems() throws OHServiceException {
 		return ioOperations.getDistictsBillItems();
 	}
 
-	/**
-	 * Get the bills list with a given billItem
-	 *
-	 * @param dateFrom
-	 * @param dateTo
-	 * @param billItem
-	 * @return
-	 * @throws OHServiceException
-	 */
 	public List<Bill> getBills(LocalDateTime dateFrom, LocalDateTime dateTo, BillItems billItem) throws OHServiceException {
 		return ioOperations.getBillsBetweenDatesWhereBillItem(dateFrom, dateTo, billItem);
-	}
-
-	private void updateMedicalStock(List<BillItems> medicalItems, int billID, boolean isCharge) throws OHServiceException {
-		if (medicalItems == null || medicalItems.isEmpty()) return;
-
-		PatientBrowserManager patientManager = Context.getApplicationContext().getBean(PatientBrowserManager.class);
-		Bill bill = getBill(billID);
-		Ward ward = bill.getWard();
-		if (ward == null) return;
-
-		Patient patient = patientManager.getPatientById(bill.getBillPatient().getCode());
-		List<Price> prices = patient.getPriceList() != null ?
-			priceListManager.getByListId(patient.getPriceList().getId()) :
-			priceListManager.getPrices();
-
-		List<OHExceptionMessage> validationErrors = new ArrayList<>();
-
-		for (BillItems item : medicalItems) {
-			Price price = prices.stream()
-				.filter(p -> p != null && "MED".equals(p.getGroup())
-					&& item.getItemDescription().equals(p.getDesc()))
-				.findFirst()
-				.orElse(null);
-
-			if (price != null) {
-				try {
-					addStockMvt(ward, patient, item, isCharge);
-				} catch (OHDataValidationException e) {
-					validationErrors.addAll(e.getMessages());
-				}
-			}
-		}
-
-		if (!validationErrors.isEmpty()) {
-			throw new OHDataValidationException(validationErrors);
-		}
-	}
-
-	private void addStockMvt(Ward ward, Patient patient, BillItems billItem, boolean isCharge) throws OHServiceException {
-		List<OHExceptionMessage> errors = new ArrayList<>();
-		double qty = billItem.getItemQuantity();
-
-		if (isCharge) {
-			qty = -qty;
-		}
-
-		List<MedicalWard> medWards = mvtManager.getMedicalsWard(ward.getCode(), true);
-
-		if (!isCharge && (medWards == null || medWards.isEmpty())) {
-			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.newbill.stocknotavailableforitem")
-				+ " : " + billItem.getItemDescription()));
-			throw new OHDataValidationException(errors);  // Stop execution immediately
-		}
-
-		MedicalWard medicalWard = medWards.stream()
-			.filter(med -> med.getId().getMedical().getDescription()
-				.equals(billItem.getItemDescription()))
-			.findFirst()
-			.orElse(null);
-
-		if (!isCharge && medicalWard == null) {
-			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.newbill.stocknotavailableforitem")
-				+ " : " + billItem.getItemDescription()));
-			throw new OHDataValidationException(errors);  // Stop execution immediately
-		}
-
-		if (!isCharge && medicalWard.getQty() < qty) {
-			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.newbill.qtynotinstock")
-				+ " : " + billItem.getItemDescription()));
-			throw new OHDataValidationException(errors);
-		}
-
-		// Now safe to proceed — medicalWard is guaranteed non-null
-		MovementWard mvt = new MovementWard();
-		mvt.setWard(ward);
-		mvt.setPatient(patient);
-		mvt.setDate(TimeTools.getServerDateTime());
-		mvt.setPatient(true);
-		mvt.setQuantity(qty);
-		mvt.setDescription(patient.getName());
-		if (isCharge) {
-			Medical medical =  medicalBrowsingManager.getMedicals(billItem.getItemDescription())
-				.stream()
-				.filter(med -> Objects.equals(med.getDescription(), billItem.getItemDescription()))
-				.findFirst()
-				.orElse(null);
-
-			Lot lot = movStockInsertingManager.getLotByMedical(medical, false).stream().findFirst().orElse(null);
-			mvt.setMedical(medical);
-			mvt.setlot(lot);
-		} else {
-			mvt.setMedical(medicalWard.getId().getMedical());
-			mvt.setlot(medicalWard.getLot());
-		}
-		mvt.setUnits("pieces");
-
-		mvtManager.newMovementWard(mvt);
 	}
 
 	/**
@@ -650,17 +390,6 @@ public class BillBrowserManager {
 		return patient == null ? ioOperations.getBillsByDatesAndGuarantor(dateFrom, dateTo, guarantor) : ioOperations.getBillsByDatesPatientAndGuarantor(dateFrom, dateTo, patient, guarantor);
 	}
 
-	/**
-	 * Get the bills payments filtered by date patient  and guarantor
-	 *
-	 * @param dateFrom Start date
-	 * @param dateTo End date
-	 * @param patient Target patient
-	 * @param guarantor The user acting as the guarantor for the bills.
-	 * @return {@link  List} of {@link Bill}s matching the filter,
-	 * or empty list if no match found
-	 * @throws OHServiceException when the calls to internal methods fail.
-	 */
 	public List<BillPayments> getPaymentsByDatePatientAndGuarantor(LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient, User guarantor) throws OHServiceException {
 		if (dateFrom == null || dateTo == null) {
 			throw new IllegalArgumentException("Date cannot be null");
@@ -668,33 +397,103 @@ public class BillBrowserManager {
 		return patient == null ? ioOperations.getPaymentsByDatesAndGuarantor(dateFrom, dateTo, guarantor) : ioOperations.getPaymentsByDatesPatientAndGuarantor(dateFrom, dateTo, patient, guarantor);
 	}
 
-	/**
-	 * Get the bills payments filtered by guarantor
-	 *
-	 * @param guarantor the user acting as the guarantor for the bills.
-	 * @return The {@link List} of{@link BillPayments} matching the filters, or an empty list if no match
-	 * @throws OHServiceException when failed to execute the query.
-	 */
 	public List<Bill> getBillsByGuarantor(List<BillPayments> billPayments, User guarantor) throws OHServiceException {
 		return billPayments.isEmpty() ? new ArrayList<>() : ioOperations.getBillsByGuarantor(billPayments, guarantor);
 	}
 
-	/**
-	 * Retrieves all items of a bill (including refunds)
-	 * @param bill the bill
-	 * @return complete list of items
-	 * @throws OHServiceException
-	 */
+	private void updateMedicalStock(List<BillItems> medicalItems, int billID, boolean isCharge) throws OHServiceException {
+		if (medicalItems == null || medicalItems.isEmpty()) return;
+
+		PatientBrowserManager patientManager = Context.getApplicationContext().getBean(PatientBrowserManager.class);
+		Bill bill = getBill(billID);
+		Ward ward = bill.getWard();
+		if (ward == null) return;
+
+		Patient patient = patientManager.getPatientById(bill.getBillPatient().getCode());
+		List<Price> prices = priceListManager.getPrices();
+
+		List<OHExceptionMessage> validationErrors = new ArrayList<>();
+
+		for (BillItems item : medicalItems) {
+			Price price = prices.stream()
+				.filter(p -> p != null && "MED".equals(p.getGroup()) && item.getItemDescription().equals(p.getDesc()))
+				.findFirst()
+				.orElse(null);
+
+			if (price != null) {
+				try {
+					addStockMvt(ward, patient, item, isCharge);
+				} catch (OHDataValidationException e) {
+					validationErrors.addAll(e.getMessages());
+				}
+			}
+		}
+
+		if (!validationErrors.isEmpty()) {
+			throw new OHDataValidationException(validationErrors);
+		}
+	}
+
+	private void addStockMvt(Ward ward, Patient patient, BillItems billItem, boolean isCharge) throws OHServiceException {
+		List<OHExceptionMessage> errors = new ArrayList<>();
+		double qty = billItem.getItemQuantity();
+
+		if (isCharge) {
+			qty = -qty;
+		}
+
+		List<MedicalWard> medWards = mvtManager.getMedicalsWard(ward.getCode(), true);
+
+		if (!isCharge && (medWards == null || medWards.isEmpty())) {
+			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.newbill.stocknotavailableforitem") + " : " + billItem.getItemDescription()));
+			throw new OHDataValidationException(errors);
+		}
+
+		MedicalWard medicalWard = medWards.stream()
+			.filter(med -> med.getId().getMedical().getDescription().equals(billItem.getItemDescription()))
+			.findFirst()
+			.orElse(null);
+
+		if (!isCharge && medicalWard == null) {
+			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.newbill.stocknotavailableforitem") + " : " + billItem.getItemDescription()));
+			throw new OHDataValidationException(errors);
+		}
+
+		if (!isCharge && medicalWard.getQty() < qty) {
+			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.newbill.qtynotinstock") + " : " + billItem.getItemDescription()));
+			throw new OHDataValidationException(errors);
+		}
+
+		MovementWard mvt = new MovementWard();
+		mvt.setWard(ward);
+		mvt.setPatient(patient);
+		mvt.setDate(TimeTools.getServerDateTime());
+		mvt.setPatient(true);
+		mvt.setQuantity(qty);
+		mvt.setDescription(patient.getName());
+
+		if (isCharge) {
+			Medical medical = medicalBrowsingManager.getMedicals(billItem.getItemDescription())
+				.stream()
+				.filter(med -> Objects.equals(med.getDescription(), billItem.getItemDescription()))
+				.findFirst()
+				.orElse(null);
+			Lot lot = movStockInsertingManager.getLotByMedical(medical, false).stream().findFirst().orElse(null);
+			mvt.setMedical(medical);
+			mvt.setlot(lot);
+		} else {
+			mvt.setMedical(medicalWard.getId().getMedical());
+			mvt.setlot(medicalWard.getLot());
+		}
+		mvt.setUnits("pieces");
+
+		mvtManager.newMovementWard(mvt);
+	}
+
 	public List<BillItems> getAllBillItems(Bill bill) throws OHServiceException {
 		return ioOperations.getAllBillItems(bill);
 	}
 
-	/**
-	 * Retrieves all payments of a bill (including refunds)
-	 * @param bill the bill
-	 * @return complete list of payments
-	 * @throws OHServiceException
-	 */
 	public List<BillPayments> getAllBillPayments(Bill bill) throws OHServiceException {
 		return ioOperations.getAllBillPayments(bill);
 	}
@@ -943,69 +742,29 @@ public class BillBrowserManager {
 		return ioOperations.hasPrescription(patientCode);
 	}
 
-	/**
-	 * Gets the price of an item with patient reductions applied.
-	 * This method queries the database directly like the legacy version.
-	 *
-	 * @param itemId the item code (medical code, exam code, operation code)
-	 * @param group the item group (MED, EXA, OPE, OTH)
-	 * @param patient the patient (for reduction plan)
-	 * @return the Price with reductions applied, or null if not found
-	 * @throws OHServiceException
-	 */
 	public Price getPrice(String itemId, ItemGroup group, Patient patient) throws OHServiceException {
 		return ioOperations.getPrice(itemId, group, patient);
 	}
 
-	/**
-	 * Gets the gross price (without reductions) of an item.
-	 *
-	 * @param itemId the item code
-	 * @param group the item group
-	 * @param patient the patient
-	 * @return the Price with gross price, or null if not found
-	 * @throws OHServiceException
-	 */
 	public Price getPriceFromListWithoutReduction(String itemId, ItemGroup group, Patient patient) throws OHServiceException {
 		return ioOperations.getPriceFromListWithoutReduction(itemId, group, patient);
 	}
 
-	/**
-	 * Vérifie si une prescription spécifique est déjà dans une facture payée.
-	 *
-	 * @param patientCode    le code du patient
-	 * @param prescriptionId l'identifiant de la prescription
-	 * @param itemGroup      le groupe de l'item ("MED", "EXA", "OPE")
-	 * @return true si déjà facturée et payée
-	 * @throws OHServiceException
-	 */
-	public boolean isPrescriptionAlreadyBilledAndPaid(
-		Integer patientCode,
-		Integer prescriptionId,
-		String itemGroup) throws OHServiceException {
-		return ioOperations.isPrescriptionAlreadyBilledAndPaid(
-			patientCode, prescriptionId, itemGroup);
+	public boolean isPrescriptionAlreadyBilledAndPaid(Integer patientCode, Integer prescriptionId, String itemGroup) throws OHServiceException {
+		return ioOperations.isPrescriptionAlreadyBilledAndPaid(patientCode, prescriptionId, itemGroup);
 	}
 
-	/**
-	 * Marks prescriptions as billed by updating the corresponding tables.
-	 *
-	 * @param billItems the list of bill items containing prescription information
-	 * @param bill the Bill object to associate
-	 * @throws OHServiceException if an error occurs during the update
-	 */
 	private void markPrescriptionsAsBilled(List<BillItems> billItems, Bill bill) throws OHServiceException {
+		if (billItems == null) return;
+
 		for (BillItems item : billItems) {
 			if (item.getPrescriptionId() == null || item.getPrescriptionId() == 0) {
 				continue;
 			}
-
 			if (ItemGroup.MEDICAL.getCode().equals(item.getItemGroup())) {
 				therapyManager.updateBougthQuantity(item.getPrescriptionId(), item.getItemQuantity());
-
 			} else if (ItemGroup.EXAM.getCode().equals(item.getItemGroup())) {
 				labManager.updateBillForLaboratory(item.getPrescriptionId(), bill);
-
 			} else if (ItemGroup.OPERATION.getCode().equals(item.getItemGroup())) {
 				operationRowManager.updateBillForOperationRow(item.getPrescriptionId(), bill);
 			}

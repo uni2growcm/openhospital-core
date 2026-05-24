@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2024 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -51,19 +51,11 @@ public interface AccountingBillIoOperationRepository extends JpaRepository<Bill,
 
 	@Query(value = "select b from Bill b where b.billPatient.id = :patientCode and b.date >= :dateFrom and b.date < :dateTo")
 	List<Bill> findByDateAndPatient(@Param("dateFrom") LocalDateTime dateFrom, @Param("dateTo") LocalDateTime dateTo,
-					@Param("patientCode") Integer patientCode);
+	                                @Param("patientCode") Integer patientCode);
 
 	@Query(value = "select b from Bill b where b.status='O' and b.billPatient.id = :patID")
 	List<Bill> findAllPendindBillsByBillPatient(@Param("patID") int patID);
 
-	/**
-	 * Return the bills for date between dateFrom and dateFrom to dateTo and containing items with description desc
-	 *
-	 * @param dateFrom
-	 * @param dateTo
-	 * @param desc
-	 * @return the bill list
-	 */
 	@Query(value = "select bi.bill from BillItems bi where bi.itemDescription = :desc and bi.bill.date >= :dateFrom and bi.bill.date < :dateTo")
 	List<Bill> findAllWhereDatesAndBillItem(@Param("dateFrom") LocalDateTime dateFrom, @Param("dateTo") LocalDateTime dateTo, @Param("desc") String desc);
 

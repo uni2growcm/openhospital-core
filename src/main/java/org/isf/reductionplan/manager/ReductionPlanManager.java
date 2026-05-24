@@ -21,6 +21,8 @@
  */
 package org.isf.reductionplan.manager;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 import org.isf.priceslist.model.Price;

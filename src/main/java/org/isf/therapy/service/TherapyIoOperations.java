@@ -98,6 +98,17 @@ public class TherapyIoOperations {
 	}
 
 	/**
+	 * Return the list of {@link TherapyRow}s (therapies) for the specified therapy ID.
+	 *
+	 * @param therapyID - the therapy ID
+	 * @return the list of {@link TherapyRow}s (therapies) matching the given therapy ID.
+	 * @throws OHServiceException
+	 */
+	public List<TherapyRow> getTherapyRowsByTherapyId(int therapyID) throws OHServiceException {
+		return repository.findByTherapyID(therapyID);
+	}
+
+	/**
 	 * Check if a patient has pending therapies (qty > 0).
 	 *
 	 * @param patientCode the patient's code

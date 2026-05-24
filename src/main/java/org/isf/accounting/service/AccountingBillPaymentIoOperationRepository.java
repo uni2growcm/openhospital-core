@@ -66,7 +66,7 @@ public interface AccountingBillPaymentIoOperationRepository extends JpaRepositor
 	List<BillPayments> findByDateBetweenAndBillGuarantorUserNameOrderByBillAscDateAsc(LocalDateTime dateFrom, LocalDateTime dateTo, String guarantor);
 
 	@Query("SELECT bp FROM BillPayments bp WHERE bp.bill.id = :billId ORDER BY bp.date ASC")
-	List<BillPayments> findByBillIdOrderByDateAsc(@Param("billId") int billId);
+	List<BillPayments> findByBillIdOrderByDateAsc(@Param("billId") Integer billId);
 
 	@Query("SELECT bp FROM BillPayments bp WHERE bp.bill.parentId = :parentId ORDER BY bp.date ASC")
 	List<BillPayments> findByBillParentIdOrderByDateAsc(@Param("parentId") Integer parentId);

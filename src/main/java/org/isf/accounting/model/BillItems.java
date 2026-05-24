@@ -126,6 +126,18 @@ public class BillItems extends Auditable<String> {
 		this.itemQuantity = itemQuantity;
 	}
 
+	public BillItems(BillItems other) {
+		this.id = other.id;
+		this.bill = other.bill;
+		this.isPrice = other.isPrice;
+		this.priceID = other.priceID;
+		this.itemDescription = other.itemDescription;
+		this.itemAmount = other.itemAmount;
+		this.itemQuantity = other.itemQuantity;
+		this.itemDisplayCode = other.itemDisplayCode;
+		this.itemId = other.itemId;
+	}
+
 	public int getId() {
 		return id;
 	}
@@ -271,5 +283,5 @@ public class BillItems extends Auditable<String> {
 	    }
 	  
 	    return this.hashCode;
-	}	
+	}
 }

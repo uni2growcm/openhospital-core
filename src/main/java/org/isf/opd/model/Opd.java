@@ -124,7 +124,13 @@ public class Opd extends Auditable<String> {
 	@Version
 	@Column(name="OPD_LOCK")
 	private int lock;
-	
+
+	@Column(name="OPD_REFERING_HOSP")
+	private String referingHospital;
+
+	@Column(name="OPD_RECEIVING_HOSP")
+	private String receivingHospital;
+
 	/*@Column(name="OPD_REASON")
    	private String reason; // ADDED: Arnaud
 
@@ -323,7 +329,15 @@ public class Opd extends Auditable<String> {
 	public void setUserID(String userID) {
 		this.userID = userID;
 	}
-        
+
+	public String getReferingHospital() { return referingHospital; }
+
+	public void setReferingHospital(String referingHospital) { this.referingHospital = referingHospital; }
+
+	public String getReceivingHospital() { return receivingHospital; }
+
+	public void setReceivingHospital(String receivingHospital) { this.receivingHospital = receivingHospital; }
+
 	/*public String getReason() {
 		return reason;
 	}
