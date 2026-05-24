@@ -26,6 +26,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.isf.disease.model.Disease;
+import org.springframework.data.domain.Pageable;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -44,7 +47,7 @@ public class OpdIoOperationRepositoryImpl implements OpdIoOperationRepositoryCus
 	@PersistenceContext
 	private EntityManager entityManager;
 
-	@SuppressWarnings("unchecked")	
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<Opd> findAllOpdWhereParams(
 			Ward ward,
@@ -120,4 +123,106 @@ public class OpdIoOperationRepositoryImpl implements OpdIoOperationRepositoryCus
 		return entityManager.createQuery(query);
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Opd> findAllOpdWhereParams(
+		Ward ward,
+		String diseaseTypeCode,
+		String diseaseCode,
+		LocalDateTime dateFrom,
+		LocalDateTime dateTo,
+		int ageFrom,
+		int ageTo,
+		char sex,
+		char newPatient,
+		String user,
+		Pageable pageable) {
+
+		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+		CriteriaQuery<Opd> query = cb.createQuery(Opd.class);
+		Root<Opd> opd = query.from(Opd.class);
+		List<Predicate> predicates = new ArrayList<>();
+
+		query.select(opd);
+
+		if (ward != null) {
+			predicates.add(cb.equal(opd.join("ward").get("code"), ward.getCode()));
+		}
+		if (diseaseTypeCode != null && !diseaseTypeCode.equals("")) {
+			predicates.add(cb.equal(opd.join("disease").join("diseaseType").get("code"), diseaseTypeCode));
+		}
+		if (diseaseCode != null && !diseaseCode.equals("")) {
+			predicates.add(cb.equal(opd.join("disease").get("code"), diseaseCode));
+		}
+		if (ageFrom != 0 || ageTo != 0) {
+			predicates.add(cb.between(opd.<Integer>get("age"), ageFrom, ageTo));
+		}
+		if (sex != 'A') {
+			predicates.add(cb.equal(opd.get("sex"), sex));
+		}
+		if (newPatient != 'A') {
+			predicates.add(cb.equal(opd.get("newPatient"), newPatient));
+		}
+		if (user != null) {
+			predicates.add(cb.equal(opd.get("userID"), user));
+		}
+		predicates.add(cb.between(opd.<LocalDateTime>get("date"), dateFrom, dateTo.plusDays(1)));
+
+		query.where(cb.and(predicates.toArray(new Predicate[0])));
+
+		query.orderBy(cb.desc(opd.<LocalDateTime>get("date")));
+
+		TypedQuery<Opd> typedQuery = entityManager.createQuery(query);
+
+		int firstResult = pageable.getPageNumber() * pageable.getPageSize();
+		typedQuery.setFirstResult(firstResult);
+		typedQuery.setMaxResults(pageable.getPageSize());
+
+		return typedQuery.getResultList();
+	}
+
+	@Override
+	public long getCountTotalOpds(
+		Ward ward,
+		String diseaseTypeCode,
+		String diseaseCode,
+		LocalDateTime dateFrom,
+		LocalDateTime dateTo,
+		int ageFrom,
+		int ageTo,
+		char sex,
+		char newPatient,
+		String user) {
+
+		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+		CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
+		Root<Opd> opd = countQuery.from(Opd.class);
+		List<Predicate> predicates = new ArrayList<>();
+
+		if (ward != null) {
+			predicates.add(cb.equal(opd.join("ward").get("code"), ward.getCode()));
+		}
+		if (diseaseTypeCode != null && !diseaseTypeCode.equals("")) {
+			predicates.add(cb.equal(opd.join("disease").join("diseaseType").get("code"), diseaseTypeCode));
+		}
+		if (diseaseCode != null && !diseaseCode.equals("")) {
+			predicates.add(cb.equal(opd.join("disease").get("code"), diseaseCode));
+		}
+		if (ageFrom != 0 || ageTo != 0) {
+			predicates.add(cb.between(opd.<Integer>get("age"), ageFrom, ageTo));
+		}
+		if (sex != 'A') {
+			predicates.add(cb.equal(opd.get("sex"), sex));
+		}
+		if (newPatient != 'A') {
+			predicates.add(cb.equal(opd.get("newPatient"), newPatient));
+		}
+		if (user != null) {
+			predicates.add(cb.equal(opd.get("userID"), user));
+		}
+		predicates.add(cb.between(opd.<LocalDateTime>get("date"), dateFrom, dateTo.plusDays(1)));
+		countQuery.select(cb.count(opd)).where(predicates.toArray(new Predicate[0]));
+
+		return entityManager.createQuery(countQuery).getSingleResult();
+	}
 }

@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2023 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2024 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -22,14 +22,22 @@
 package org.isf.opd.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.isf.opd.model.Opd;
 import org.isf.ward.model.Ward;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Pageable;
 
 public interface OpdIoOperationRepositoryCustom {
 
 	List<Opd> findAllOpdWhereParams(Ward ward, String diseaseTypeCode, String diseaseCode, LocalDate dateFrom, LocalDate dateTo, int ageFrom, int ageTo, char sex,
 			char newPatient, String user);
 
+	List<Opd> findAllOpdWhereParams(Ward ward, String diseaseTypeCode, String diseaseCode, LocalDateTime dateFrom, LocalDateTime dateTo, int ageFrom, int ageTo, char sex,
+									char newPatient, String user, Pageable pageable);
+
+	long getCountTotalOpds(Ward ward, String diseaseTypeCode, String diseaseCode, LocalDateTime dateFrom, LocalDateTime dateTo, int ageFrom, int ageTo, char sex,
+			char newPatient, String user);
 }

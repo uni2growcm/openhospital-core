@@ -65,9 +65,9 @@ public class AdmissionIoOperations {
 	private PatientIoOperationRepository patientRepository;
 
 	public AdmissionIoOperations(AdmissionIoOperationRepository admissionIoOperationRepository,
-	                             AdmissionTypeIoOperationRepository admissionTypeIoOperationRepository,
-	                             DischargeTypeIoOperationRepository dischargeTypeIoOperationRepository,
-	                             PatientIoOperationRepository patientIoOperationRepository) {
+		AdmissionTypeIoOperationRepository admissionTypeIoOperationRepository,
+		DischargeTypeIoOperationRepository dischargeTypeIoOperationRepository,
+		PatientIoOperationRepository patientIoOperationRepository) {
 		this.repository = admissionIoOperationRepository;
 		this.typeRepository = admissionTypeIoOperationRepository;
 		this.dischargeRepository = dischargeTypeIoOperationRepository;
@@ -107,7 +107,7 @@ public class AdmissionIoOperations {
 	 * @throws OHServiceException if an error occurs during database request.
 	 */
 	public List<AdmittedPatient> getAdmittedPatients(String searchTerms, LocalDateTime[] admissionRange, LocalDateTime[] dischargeRange)
-					throws OHServiceException {
+		throws OHServiceException {
 		return repository.findPatientAdmissionsBySearchAndDateRanges(searchTerms, admissionRange, dischargeRange);
 	}
 
@@ -383,7 +383,7 @@ public class AdmissionIoOperations {
 
 	/**
 	 * Count not deleted {@link Admission}s
-	 * 
+	 *
 	 * @return the number of recorded {@link Admission}s
 	 * @throws OHServiceException
 	 */
@@ -391,4 +391,16 @@ public class AdmissionIoOperations {
 		return this.repository.countAllActiveNotDeletedAdmissions();
 	}
 
+	/**
+	 * Get admitted patients by sex and name
+	 *
+	 * @param sex Patient sex
+	 * @param name Patient name
+	 * @param pageable Page options
+	 * @return The paged list of {@link Admission} matching the filter
+	 * @throws OHServiceException When failed to get admissions
+	 */
+	public Page<Admission> getAdmittedPatientsBySexAndNamePaged(char sex, String name, Pageable pageable) throws OHServiceException {
+		return repository.findAllByPatientSexAndPatientNameContainsAndDeleted(sex, name, 'N', pageable);
+	}
 }

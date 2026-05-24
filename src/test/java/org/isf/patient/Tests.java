@@ -27,6 +27,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -45,6 +46,8 @@ import org.isf.patient.model.Patient;
 import org.isf.patient.model.PatientProfilePhoto;
 import org.isf.patient.service.PatientIoOperationRepository;
 import org.isf.patient.service.PatientIoOperations;
+import org.isf.reductionplan.model.ReductionPlan;
+import org.isf.reductionplan.service.ReductionPlanRepository;
 import org.isf.utils.exception.OHException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.pagination.PagedResponse;
@@ -67,6 +70,8 @@ class Tests extends OHCoreTestCase {
 	PatientIoOperationRepository patientIoOperationRepository;
 	@Autowired
 	PatientBrowserManager patientBrowserManager;
+	@Autowired
+	ReductionPlanRepository reductionPlanRepository;
 
 	@BeforeAll
 	static void setUpClass() {
@@ -243,12 +248,39 @@ class Tests extends OHCoreTestCase {
 	}
 
 	@Test
+	void testIoNewPatientWithReductionPlan() throws Exception {
+		Patient patient = testPatient.setup(true);
+		ReductionPlan reductionPlan = new ReductionPlan("Reduction plan", BigDecimal.valueOf(2),BigDecimal.valueOf(2),BigDecimal.valueOf(2),BigDecimal.valueOf(2));
+		reductionPlan = reductionPlanRepository.save(reductionPlan);
+		patient.setReductionPlan(reductionPlan);
+		patient = patientBrowserManager.savePatient(patient);
+		Patient savedPatient = patientBrowserManager.getPatientById(patient.getCode());
+		assertThat(savedPatient.getReductionPlan()).isEqualTo(reductionPlan);
+	}
+
+	@Test
 	void testIoUpdatePatient() throws Exception {
 		Integer code = setupTestPatient(false);
 		Patient patient = patientIoOperation.getPatient(code);
 		patient.setFirstName("someNewFirstName");
 		Patient updatedPatient = patientIoOperation.updatePatient(patient);
 		assertThat(updatedPatient.getFirstName()).isEqualTo(patient.getFirstName());
+	}
+
+	@Test
+	void testIoUpdatePatientWithReductionPlan() throws Exception {
+		Patient patient = testPatient.setup(true);
+		ReductionPlan reductionPlan = new ReductionPlan("Initial Plan", BigDecimal.valueOf(2), BigDecimal.valueOf(3), BigDecimal.valueOf(4), BigDecimal.valueOf(5));
+		reductionPlan = reductionPlanRepository.save(reductionPlan);
+		patient.setReductionPlan(reductionPlan);
+		ReductionPlan reductionPlanNew = new ReductionPlan("Updated Plan", BigDecimal.valueOf(20), BigDecimal.valueOf(0), BigDecimal.valueOf(0), BigDecimal.valueOf(50));
+		reductionPlanNew = reductionPlanRepository.save(reductionPlanNew);
+		patient.setReductionPlan(reductionPlanNew);
+		patient = patientBrowserManager.savePatient(patient);
+		Patient updatedPatient = patientBrowserManager.getPatientById(patient.getCode());
+		assertThat(updatedPatient.getReductionPlan()).isNotNull();
+		assertThat(updatedPatient.getReductionPlan()).isEqualTo(reductionPlanNew);
+		assertThat(updatedPatient.getReductionPlan().getId()).isEqualTo(reductionPlanNew.getId());
 	}
 
 	@Test

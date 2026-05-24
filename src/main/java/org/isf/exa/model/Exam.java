@@ -48,7 +48,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 public class Exam extends Auditable<String> {
 
 	@Id
-	@Column(name="EXA_ID_A")	
+	@Column(name="EXA_ID_A")
 	private String code;
 
 	@NotNull
@@ -73,8 +73,8 @@ public class Exam extends Auditable<String> {
 
 	@Transient
 	private volatile int hashCode;
-	
-	public Exam() 
+
+	public Exam()
     {
 		super();
     }
@@ -146,19 +146,19 @@ public class Exam extends Auditable<String> {
 	@Override
 	public String toString() {
 		return getDescription();
-	}	
+	}
 
 	@Override
 	public int hashCode() {
 	    if (this.hashCode == 0) {
 	        final int m = 23;
 	        int c = 133;
-	        c = m * c + code.hashCode();   
+	        c = m * c + code.hashCode();
 	        this.hashCode = c;
-	    }	  
+	    }
 	    return this.hashCode;
 	}
-	
+
 	public String getSearchString() {
 		StringBuilder sbNameCode = new StringBuilder();
 		sbNameCode.append(getCode().toLowerCase());

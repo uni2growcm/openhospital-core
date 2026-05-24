@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2024 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -38,10 +38,12 @@ import jakarta.persistence.Version;
 import jakarta.validation.constraints.NotNull;
 
 import org.isf.admission.model.Admission;
+import org.isf.menu.model.User;
 import org.isf.patient.model.Patient;
 import org.isf.priceslist.model.PriceList;
 import org.isf.utils.db.Auditable;
 import org.isf.utils.time.TimeTools;
+import org.isf.ward.model.Ward;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
@@ -97,6 +99,14 @@ public class Bill extends Auditable<String> implements Cloneable, Comparable<Bil
 
 	@Column(name = "BLL_BALANCE")
 	private Double balance;
+	
+	@ManyToOne
+	@JoinColumn(name = "BLL_GUARANTOR")
+	private User guarantor;
+
+	@ManyToOne
+	@JoinColumn(name = "BLL_WARD")
+	private Ward ward;
 
 	@Version
 	@Column(name = "BLL_LOCK")
@@ -109,6 +119,9 @@ public class Bill extends Auditable<String> implements Cloneable, Comparable<Bil
 	@ManyToOne
 	@JoinColumn(name = "BLL_ADM_ID")
 	private Admission admission;
+
+	@Transient
+	private int reductionPlanId;
 
 	@Transient
 	private volatile int hashCode;
@@ -126,6 +139,30 @@ public class Bill extends Auditable<String> implements Cloneable, Comparable<Bil
 		this.amount = 0.0;
 		this.balance = 0.0;
 		this.user = "admin";
+	}
+
+	public Bill(int id, LocalDateTime date, LocalDateTime update,
+				boolean isList, PriceList list, String listName, boolean isPatient,
+				Patient billPatient, String patName, String status, Double amount,
+				Double balance, int lock, String user, Admission admission, int reductionPlanId, Ward ward) {
+		super();
+		this.id = id;
+		this.date = TimeTools.truncateToSeconds(date);
+		this.update = TimeTools.truncateToSeconds(update);
+		this.isList = isList;
+		this.list = list;
+		this.listName = listName;
+		this.isPatient = isPatient;
+		this.billPatient = billPatient;
+		this.patName = patName;
+		this.status = status;
+		this.amount = amount;
+		this.balance = balance;
+		this.lock = lock;
+		this.user = user;
+		this.admission = admission;
+		this.reductionPlanId = reductionPlanId;
+		this.ward = ward;
 	}
 
 	public Bill(int id, LocalDateTime date, LocalDateTime update,
@@ -241,10 +278,34 @@ public class Bill extends Auditable<String> implements Cloneable, Comparable<Bil
 	public void setAdmission(Admission admission) {
 		this.admission = admission;
 	}
+	
+	public User getGuarantor() {
+		return guarantor;
+	}
+
+	public void setGuarantor(User guarantor) {
+		this.guarantor = guarantor;
+	}
+
+	public Ward getWard() {
+		return ward;
+	}
+
+	public void setWard(Ward ward) {
+		this.ward = ward;
+	}
 
 	public int getLock() { return lock; }
 
 	public void setLock(int lock) { this.lock = lock; }
+
+	public int getReductionPlanID() {
+		return reductionPlanId;
+	}
+
+	public void setReductionPlanID(int reductionPlanId) {
+		this.reductionPlanId = reductionPlanId;
+	}
 
 	@Override
 	public int compareTo(Bill obj) {
@@ -281,5 +342,9 @@ public class Bill extends Auditable<String> implements Cloneable, Comparable<Bil
 	@Override
 	public Object clone() throws CloneNotSupportedException {
 		return super.clone();
+	}
+
+	public void setGuarantor(String userName) {
+		this.user = userName;
 	}
 }

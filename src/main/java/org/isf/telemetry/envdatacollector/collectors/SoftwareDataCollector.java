@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2024 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -98,6 +98,7 @@ public class SoftwareDataCollector extends AbstractDataCollector {
 			result.put(CollectorsConstants.APP_VIDEOMODULEENABLED, String.valueOf(GeneralData.VIDEOMODULEENABLED));
 			result.put(CollectorsConstants.APP_XMPPMODULEENABLED, String.valueOf(GeneralData.XMPPMODULEENABLED));
 			result.put(CollectorsConstants.APP_ENHANCEDSEARCH, String.valueOf(GeneralData.ENHANCEDSEARCH));
+			result.put(CollectorsConstants.APP_ENABLEMORTUARYMODULE, String.valueOf(GeneralData.ENABLEMORTUARYMODULE));
 			result.put(CollectorsConstants.APP_INTERNALPHARMACIES, String.valueOf(GeneralData.INTERNALPHARMACIES));
 			result.put(CollectorsConstants.APP_LABEXTENDED, String.valueOf(GeneralData.LABEXTENDED));
 			result.put(CollectorsConstants.APP_LABMULTIPLEINSERT, String.valueOf(GeneralData.LABMULTIPLEINSERT));
@@ -118,6 +119,8 @@ public class SoftwareDataCollector extends AbstractDataCollector {
 			result.put(CollectorsConstants.APP_DICOMTHUMBNAILS, String.valueOf(GeneralData.DICOMTHUMBNAILS));
 			result.put(CollectorsConstants.APP_STRONGPASSWORD, String.valueOf(GeneralData.STRONGPASSWORD));
 			result.put(CollectorsConstants.APP_USERSLISTLOGIN, String.valueOf(GeneralData.getGeneralData().getUSERSLISTLOGIN()));
+			result.put(CollectorsConstants.APP_ALLOWBILLGUARANTOR, String.valueOf(GeneralData.ALLOWBILLGUARANTOR));
+			result.put(CollectorsConstants.APP_STOCKMVTONBILLSAVE, String.valueOf(GeneralData.STOCKMVTONBILLSAVE));
 
 		} catch (RuntimeException | SQLException e) {
 			LOGGER.error("Something went wrong with " + ID);

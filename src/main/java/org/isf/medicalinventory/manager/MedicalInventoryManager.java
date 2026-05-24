@@ -578,10 +578,7 @@ public class MedicalInventoryManager {
 		// TODO: to explore the possibility to allow charges and discharges with same referenceNumber
 		String chargeReferenceNumber = referenceNumber + "-charge";
 		String dischargeReferenceNumber = referenceNumber + "-discharge";
-		MovementType chargeType = medicalDsrStockMovementTypeBrowserManager.getMovementType(inventory.getChargeType());
 		MovementType dischargeType = medicalDsrStockMovementTypeBrowserManager.getMovementType(inventory.getDischargeType());
-		Supplier supplier = supplierManager.getByID(inventory.getSupplier());
-		Ward ward = wardManager.findWard(inventory.getDestination());
 		LocalDateTime inventoryDate = inventory.getInventoryDate();
 		// prepare movements
 		List<Movement> chargeMovements = new ArrayList<>();
@@ -593,20 +590,20 @@ public class MedicalInventoryManager {
 			Medical medical = medicalInventoryRow.getMedical();
 			Lot currentLot = medicalInventoryRow.getLot();
 			if (ajustQty > 0) { // charge movement when realQty > theoQty
-				Movement movement = new Movement(medical, chargeType, null, currentLot, inventoryDate, ajustQty.intValue(), supplier, chargeReferenceNumber);
+				Movement movement = new Movement(medical, dischargeType, null, currentLot, inventoryDate, -ajustQty.intValue(), null, chargeReferenceNumber);
 				chargeMovements.add(movement);
 			} else if (ajustQty < 0) { // discharge movement when realQty < theoQty
-				Movement movement = new Movement(medical, dischargeType, ward, currentLot, inventoryDate, -ajustQty.intValue(), null, dischargeReferenceNumber);
+				Movement movement = new Movement(medical, dischargeType, null, currentLot, inventoryDate, -ajustQty.intValue(), null, dischargeReferenceNumber);
 				dischargeMovements.add(movement);
 			} // else ajustQty = 0, continue
 		}
 		// create movements
 		List<Movement> insertedMovements = new ArrayList<>();
 		if (!chargeMovements.isEmpty()) {
-			insertedMovements.addAll(movStockInsertingManager.newMultipleChargingMovements(chargeMovements, chargeReferenceNumber));
+			insertedMovements.addAll(movStockInsertingManager.newMultipleDischargingMovements(chargeMovements, chargeReferenceNumber, true));
 		}
 		if (!dischargeMovements.isEmpty()) {
-			insertedMovements.addAll(movStockInsertingManager.newMultipleDischargingMovements(dischargeMovements, dischargeReferenceNumber));
+			insertedMovements.addAll(movStockInsertingManager.newMultipleDischargingMovements(dischargeMovements, dischargeReferenceNumber, true));
 		}
 		String status = InventoryStatus.done.toString();
 		inventory.setStatus(status);

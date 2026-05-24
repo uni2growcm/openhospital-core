@@ -419,10 +419,17 @@ public class JasperReportsManager {
 	}
 
 	public JasperReportResultDto getGenericReportPharmaceuticalOrderPdf(String jasperFileName) throws OHServiceException {
+		return getGenericReportPharmaceuticalOrderPdf(jasperFileName, new HashMap<>());
+	}
 
+	public JasperReportResultDto getGenericReportPharmaceuticalOrderPdf(String jasperFileName, Map<String, Object> additionalParams) throws OHServiceException {
 		try {
 			HashMap<String, Object> parameters = getHospitalParameters();
 			addBundleParameter(RPT_BASE, jasperFileName, parameters);
+
+			if (additionalParams != null) {
+				parameters.putAll(additionalParams);
+			}
 
 			LocalDateTime date = TimeTools.getNow();
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern(E_D_MMMM_YYYY);

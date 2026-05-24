@@ -48,6 +48,7 @@ import org.isf.utils.time.TimeTools;
 import org.isf.ward.model.Ward;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -88,7 +89,7 @@ public class MedicalStockIoOperations {
 
 	/**
 	 * Checks if we are in automatic lot mode.
-	 * 
+	 *
 	 * @return {@code true} if automatic lot mode, {@code false} otherwise.
 	 */
 	private boolean isAutomaticLotInMode() {
@@ -97,7 +98,7 @@ public class MedicalStockIoOperations {
 
 	/**
 	 * Retrieves all medicals referencing the specified code.
-	 * 
+	 *
 	 * @param lotCode the lot code.
 	 * @return the ids of medicals referencing the specified lot.
 	 * @throws OHServiceException if an error occurs retrieving the referencing medicals.
@@ -108,7 +109,7 @@ public class MedicalStockIoOperations {
 
 	/**
 	 * Retrieves all movements referencing the specified lot.
-	 * 
+	 *
 	 * @param lot - the lot.
 	 * @return the movements referencing the specified lot.
 	 * @throws OHServiceException if an error occurs retrieving the referencing movement.
@@ -145,11 +146,11 @@ public class MedicalStockIoOperations {
 		for (Lot lot : lots) {
 			String lotCode = lot.getCode();
 			Movement splitMovement = new Movement(medical, movement.getType(), movement.getWard(),
-							null, // lot to be set
-							movement.getDate(),
-							qty, // quantity can remain the same or changed if greater than lot quantity
-							null,
-							movement.getRefNo());
+				null, // lot to be set
+				movement.getDate(),
+				qty, // quantity can remain the same or changed if greater than lot quantity
+				null,
+				movement.getRefNo());
 			int qtLot = lot.getMainStoreQuantity();
 			if (qtLot < qty) {
 				splitMovement.setQuantity(qtLot);
@@ -543,25 +544,29 @@ public class MedicalStockIoOperations {
 	 * @throws OHServiceException
 	 */
 	public List<Movement> getMovements(
-					Integer medicalCode,
-					String medicalType,
-					String wardId,
-					String movType,
-					LocalDateTime movFrom,
-					LocalDateTime movTo,
-					LocalDateTime lotPrepFrom,
-					LocalDateTime lotPrepTo,
-					LocalDateTime lotDueFrom,
-					LocalDateTime lotDueTo) throws OHServiceException {
+		Integer medicalCode,
+		String medicalType,
+		String wardId,
+		String movType,
+		LocalDateTime movFrom,
+		LocalDateTime movTo,
+		LocalDateTime lotPrepFrom,
+		LocalDateTime lotPrepTo,
+		LocalDateTime lotDueFrom,
+		LocalDateTime lotDueTo
+	) throws OHServiceException {
 		List<Movement> pMovement = new ArrayList<>();
 
+		movFrom = movFrom.withHour(0).withMinute(0);
+		movTo = movTo.withHour(23).withMinute(59);
+
 		List<Integer> pMovementCode = movRepository.findMovementWhereData(medicalCode, medicalType, wardId, movType,
-						TimeTools.truncateToSeconds(movFrom),
-						TimeTools.truncateToSeconds(movTo),
-						TimeTools.truncateToSeconds(lotPrepFrom),
-						TimeTools.truncateToSeconds(lotPrepTo),
-						TimeTools.truncateToSeconds(lotDueFrom),
-						TimeTools.truncateToSeconds(lotDueTo));
+			TimeTools.truncateToSeconds(movFrom),
+			TimeTools.truncateToSeconds(movTo),
+			TimeTools.truncateToSeconds(lotPrepFrom),
+			TimeTools.truncateToSeconds(lotPrepTo),
+			TimeTools.truncateToSeconds(lotDueFrom),
+			TimeTools.truncateToSeconds(lotDueTo));
 		for (int i = 0; i < pMovementCode.size(); i++) {
 			Integer code = pMovementCode.get(i);
 			Movement movement = movRepository.findById(code).orElse(null);
@@ -571,6 +576,93 @@ public class MedicalStockIoOperations {
 			pMovement.add(i, movement);
 		}
 		return pMovement;
+	}
+
+	/**
+	 * Retrieves all the stored {@link Movement} with the specified criteria.
+	 * @param medicalCode the {@link Medical} code (optional).
+	 * @param medicalType the {@link MedicalType} code (optional).
+	 * @param wardId the {@link Ward} id (optional).
+	 * @param movType the {@link MovementType} code or {@code "+"}/{@code "-"} for all charge/discharge types (optional).
+	 * @param movFrom the lower bound for the movement date range (optional).
+	 * @param movTo the upper bound for the movement date range (optional).
+	 * @param lotPrepFrom the lower bound for the lot preparation date range (optional).
+	 * @param lotPrepTo the upper bound for the lot preparation date range (optional).
+	 * @param lotDueFrom the lower bound for the lot due date range (optional).
+	 * @param lotDueTo the lower bound for the lot due date range (optional).
+	 * @param pageable
+	 * @return all the retrieved movements.
+	 * @throws OHServiceException
+	 */
+	public List<Movement> getMovements(
+		Integer medicalCode,
+		String medicalType,
+		String wardId,
+		String movType,
+		LocalDateTime movFrom,
+		LocalDateTime movTo,
+		LocalDateTime lotPrepFrom,
+		LocalDateTime lotPrepTo,
+		LocalDateTime lotDueFrom,
+		LocalDateTime lotDueTo,
+		Pageable pageable
+	) throws OHServiceException {
+		movFrom = movFrom.withHour(0).withMinute(0);
+		movTo = movTo.withHour(23).withMinute(59);
+
+		return movRepository.findMovementWhereData(medicalCode, medicalType, wardId, movType,
+			TimeTools.truncateToSeconds(movFrom),
+			TimeTools.truncateToSeconds(movTo),
+			TimeTools.truncateToSeconds(lotPrepFrom),
+			TimeTools.truncateToSeconds(lotPrepTo),
+			TimeTools.truncateToSeconds(lotDueFrom),
+			TimeTools.truncateToSeconds(lotDueTo),
+			pageable);
+	}
+
+	/**
+	 * Count all the stored {@link Movement} with the specified criteria.
+	 *
+	 * @param medicalCode the {@link Medical} code (optional).
+	 * @param medicalType the {@link MedicalType} code (optional).
+	 * @param wardId the {@link Ward} id (optional).
+	 * @param movType the {@link MovementType} code or {@code "+"}/{@code "-"} for all charge/discharge types (optional).
+	 * @param movFrom the lower bound for the movement date range (optional).
+	 * @param movTo the upper bound for the movement date range (optional).
+	 * @param lotPrepFrom the lower bound for the lot preparation date range (optional).
+	 * @param lotPrepTo the upper bound for the lot preparation date range (optional).
+	 * @param lotDueFrom the lower bound for the lot due date range (optional).
+	 * @param lotDueTo the lower bound for the lot due date range (optional).
+	 * @return number of all movements.
+	 * @throws OHServiceException when filter conditions are not respected
+	 */
+	public long countTotalMovements(
+		Integer medicalCode,
+		String medicalType,
+		String wardId,
+		String movType,
+		LocalDateTime movFrom,
+		LocalDateTime movTo,
+		LocalDateTime lotPrepFrom,
+		LocalDateTime lotPrepTo,
+		LocalDateTime lotDueFrom,
+		LocalDateTime lotDueTo
+	) throws OHServiceException {
+		movFrom = movFrom.withHour(0).withMinute(0);
+		movTo = movTo.withHour(23).withMinute(59);
+
+		return movRepository.getCountTotalMovements(
+			medicalCode,
+			medicalType,
+			wardId,
+			movType,
+			TimeTools.truncateToSeconds(movFrom),
+			TimeTools.truncateToSeconds(movTo),
+			TimeTools.truncateToSeconds(lotPrepFrom),
+			TimeTools.truncateToSeconds(lotPrepTo),
+			TimeTools.truncateToSeconds(lotDueFrom),
+			TimeTools.truncateToSeconds(lotDueTo)
+		);
 	}
 
 	/**
