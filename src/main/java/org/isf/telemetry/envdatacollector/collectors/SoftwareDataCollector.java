@@ -121,8 +121,8 @@ public class SoftwareDataCollector extends AbstractDataCollector {
 			result.put(CollectorsConstants.APP_USERSLISTLOGIN, String.valueOf(GeneralData.getGeneralData().getUSERSLISTLOGIN()));
 			result.put(CollectorsConstants.APP_STOCKMVTONBILLSAVE, String.valueOf(GeneralData.STOCKMVTONBILLSAVE));
 			result.put(CollectorsConstants.APP_ALLOWBILLGUARANTOR, String.valueOf(GeneralData.ALLOWBILLGUARANTOR));
-			result.put(CollectorsConstants.APP_STOCKMVTONBILLSAVE, String.valueOf(GeneralData.STOCKMVTONBILLSAVE));
-			result.put(CollectorsConstants.APP_ALLOWBILLGUARANTOR, String.valueOf(GeneralData.ALLOWBILLGUARANTOR));
+			result.put(CollectorsConstants.APP_HIGHLIGHTEXPIRINGMEDICAL, String.valueOf(GeneralData.HIGHLIGHTEXPIRINGMEDICAL));
+			result.put(CollectorsConstants.APP_HIGHLIGHTEXPIRINGMEDICALDAYS, String.valueOf(GeneralData.HIGHLIGHTEXPIRINGMEDICALDAYS));
 
 		} catch (RuntimeException | SQLException e) {
 			LOGGER.error("Something went wrong with " + ID);

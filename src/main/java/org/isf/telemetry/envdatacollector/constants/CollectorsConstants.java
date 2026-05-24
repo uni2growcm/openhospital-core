@@ -54,9 +54,11 @@ public interface CollectorsConstants {
 	String OS_CODENAME = "os_codename";
 
 	// TEL_OH
-	String APP_STOCKMVTONBILLSAVE = "stockmvtonbillsave";
 	String APP_ALLOWBILLGUARANTOR = "allowbillguarantor";
     String APP_STOCKMVTONBILLSAVE = "stockmvtonbillsave";
+
+	String APP_HIGHLIGHTEXPIRINGMEDICAL = "highlightexpiringmedical";
+	String APP_HIGHLIGHTEXPIRINGMEDICALDAYS = "highlightexpiringmedicaldays";
 	String APP_VERSION = "app_version";
 	String APP_MODE = "app_mode";
 	String APP_DEMODATA = "app_demodata";

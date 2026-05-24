@@ -138,9 +138,9 @@ source step_a141_add_column_reduction_plan_id_and_ward_id_to_table_oh_bills.sql;
 source step_a142_add_billitemgroup_tables.sql;
 
 source u2g_update/step_01_add_column_medicaldsr.sql;
-source u2g_update/step_03_mortuarystays_table.sql;
-source u2g_update/step_04_add_mortuary_table_and_menu.sql;
-source u2g_update/step_08_add_bodycompartment_table.sql;
-source u2g_update/step_9_reorganize_mortuary_menu.sql;
-source u2g_update/step_10_add_deathreanson_on_mortuary_menu.sql;
-source u2g_update/step_11_add_foreign_key_on_death_table.sql;
+source u2g_update/step_02_mortuarystays_table.sql;
+source u2g_update/step_03_add_mortuary_table_and_menu.sql;
+source u2g_update/step_04_add_bodycompartment_table.sql;
+source u2g_update/step_05_reorganize_mortuary_menu.sql;
+source u2g_update/step_06_add_deathreanson_on_mortuary_menu.sql;
+source u2g_update/step_07_add_foreign_key_on_death_table.sql;

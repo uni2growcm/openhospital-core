@@ -76,11 +76,6 @@ public class Exam extends Auditable<String> {
 	@Transient
 	private volatile int hashCode;
 
-	@NotNull
-	@Column(name="EXA_TARGET")
-	@Enumerated(EnumType.STRING)
-	private ExamTarget target;
-
 	public Exam()
 	{
 		super();
@@ -94,12 +89,6 @@ public class Exam extends Auditable<String> {
 		this.examtype = examtype;
 		this.defaultResult = defaultResult;
 		this.procedure = procedure;
-	}
-
-	public Exam(String code, String description, ExamType examtype,
-			 Integer procedure, String defaultResult, ExamTarget target) {
-		this(code, description, examtype, procedure, defaultResult);
-		this.target = target;
 	}
 
 	public String getCode() {
@@ -150,19 +139,11 @@ public class Exam extends Auditable<String> {
 		this.procedure = procedure;
 	}
 
-	public ExamTarget getTarget() {
-		return target;
-	}
-
-	public void setTarget(ExamTarget target) {
-		this.target = target;
-	}
-
 	@Override
 	public boolean equals(Object anObject) {
 		return anObject instanceof Exam && (getCode().equals(((Exam) anObject).getCode())
 			   && getDescription().equalsIgnoreCase(((Exam) anObject).getDescription()) && getExamtype().equals(((Exam) anObject).getExamtype())
-			   && getTarget().toString().equalsIgnoreCase(((Exam) anObject).getTarget().toString()));
+			   && getProcedure().equals(((Exam) anObject).getProcedure()) && getDefaultResult().equals(((Exam) anObject).getDefaultResult()));
 	}
 
 	@Override

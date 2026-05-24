@@ -5042,8 +5042,6 @@ INSERT INTO `oh_operationtype` VALUES ('OS','OTHERS: SKIN AND SUBCUTANEOUS','MAJ
 /*!40000 ALTER TABLE `oh_operationtype` ENABLE KEYS */;
 UNLOCK TABLES;
 
-
-
 --
 -- Table structure for table `oh_patient`
 --

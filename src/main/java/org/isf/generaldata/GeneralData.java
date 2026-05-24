@@ -38,7 +38,6 @@ public final class GeneralData extends ConfigurationProperties {
 
 	public static boolean STOCKMVTONBILLSAVE;
 	public static boolean ALLOWBILLGUARANTOR;
-	public static boolean STOCKMVTONBILLSAVE;
 	public static String LANGUAGE;
 	public static boolean HIGHLIGHTEXPIRINGMEDICAL;
 	public static Integer HIGHLIGHTEXPIRINGMEDICALDAYS;
@@ -99,7 +98,6 @@ public final class GeneralData extends ConfigurationProperties {
 
 	public static final boolean DEFAULT_STOCKMVTONBILLSAVE = false;
 	private static final boolean DEFAULT_ALLOWBILLGUARANTOR  = false;
-	public static final boolean DEFAULT_STOCKMVTONBILLSAVE = false;
 	private static final String DEFAULT_LANGUAGE = "en";
 	private static final boolean DEFAULT_SINGLEUSER = false;
 	private static final boolean DEFAULT_USERSLISTLOGIN = false;
