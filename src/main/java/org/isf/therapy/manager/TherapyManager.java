@@ -292,7 +292,7 @@ public class TherapyManager {
 
 	/**
 	 * Insert a new {@link TherapyRow} (therapy) for related Patient
-	 *
+	 * 
 	 * @param therapyID
 	 * @param patID
 	 * @param startDate
@@ -348,6 +348,114 @@ public class TherapyManager {
 	 */
 	public List<TherapyRow> getTherapyRowsByTherapyId(int therapyID) throws OHServiceException {
 		return ioOperations.getTherapyRowsByTherapyId(therapyID);
+	}
+	/**
+	 * Check if the patient has therapies rows not yet bought.
+	 *
+	 * @param patientCode the patient's code
+	 * @return true if the patient has pending therapies, false otherwise
+	 * @throws OHServiceException
+	 */
+	public boolean hasTherapiesRowsNotYetBought(int patientCode) throws OHServiceException {
+		return ioOperations.hasTherapiesRowsNotYetBought(patientCode);
+	}
+
+	/**
+	 * Gets a Medical object by its ID.
+	 *
+	 * @param medicalId the medical ID
+	 * @return the Medical object
+	 * @throws OHServiceException if an error occurs
+	 */
+	public Medical getMedical(Integer medicalId) throws OHServiceException {
+		return medManager.getMedical(medicalId);
+	}
+
+	/**
+	 * Gets all therapies for a patient that have remaining quantities to be billed.
+	 *
+	 * @param patientCode the patient's code
+	 * @return list of unbilled TherapyRow objects
+	 * @throws OHServiceException if an error occurs
+	 */
+	public List<TherapyRow> getTherapiesWithoutBill(int patientCode) throws OHServiceException {
+		return ioOperations.getTherapiesWithoutBill(patientCode);
+	}
+
+	/**
+	 * Calculates the total prescribed quantity for a therapy.
+	 * Formula: effectiveDays * freqInDay * qty
+	 * where effectiveDays = (endDate - startDate + freqInPeriod - 1) / freqInPeriod
+	 *
+	 * @param startDate the therapy start date
+	 * @param endDate the therapy end date
+	 * @param freqInPeriod the frequency period in days
+	 * @param freqInDay the frequency per day
+	 * @param qty the quantity per dose
+	 * @return the total prescribed quantity
+	 */
+	public double calculateTotalPrescribedQuantity(LocalDateTime startDate, LocalDateTime endDate,
+			int freqInPeriod, int freqInDay, double qty) {
+		long totalDays = calculateEffectiveDays(startDate, endDate, freqInPeriod);
+		return totalDays * freqInDay * qty;
+	}
+
+	/**
+	 * Calculates the effective number of days for a therapy prescription.
+	 * Formula: (daysDifference + freqInPeriod - 1) / freqInPeriod
+	 *
+	 * @param startDate the therapy start date
+	 * @param endDate the therapy end date
+	 * @param freqInPeriod the frequency period in days
+	 * @return the number of effective days
+	 */
+	private long calculateEffectiveDays(LocalDateTime startDate, LocalDateTime endDate, int freqInPeriod) {
+		long diffInMillis = endDate.atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli()
+				- startDate.atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli();
+		long totalDays = (diffInMillis / (1000 * 60 * 60 * 24)) + 1;
+		return (totalDays + freqInPeriod - 1) / freqInPeriod;
+	}
+
+	/**
+	 * Calculates the remaining quantity to be billed for a therapy.
+	 *
+	 * @param therapy the TherapyRow
+	 * @return the remaining quantity (prescribed - already billed)
+	 */
+	public double calculateRemainingQuantity(TherapyRow therapy) {
+		double totalPrescribed = calculateTotalPrescribedQuantity(
+				therapy.getStartDate(),
+				therapy.getEndDate(),
+				therapy.getFreqInPeriod(),
+				therapy.getFreqInDay(),
+				therapy.getQty()
+		);
+		Double alreadyBilled = therapy.getQtyBougth() != null ? therapy.getQtyBougth() : 0.0;
+		return totalPrescribed - alreadyBilled;
+	}
+
+	/**
+	 * Updates a therapy's billed quantity.
+	 * Used after creating a bill to mark therapies as partially or completely billed.
+	 *
+	 * @param therapy the TherapyRow to update
+	 * @return the updated TherapyRow
+	 * @throws OHServiceException if an error occurs
+	 */
+	public TherapyRow updateTherapy(TherapyRow therapy) throws OHServiceException {
+		return ioOperations.newTherapy(therapy);
+	}
+
+	/**
+	 * Updates the bought quantity for a specific therapy.
+	 *
+	 * @param therapyId the therapy ID
+	 * @param quantity the quantity to add (positive for billing, negative for refunds)
+	 * @throws OHServiceException if an error occurs during the update
+	 */
+	@Transactional
+	public void updateBougthQuantity(int therapyId, double quantity) throws OHServiceException {
+		ioOperations.updateBougthQuantity(therapyId, quantity);
 	}
 
 	/**

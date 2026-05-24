@@ -44,4 +44,11 @@ public interface TherapyIoOperationRepository extends JpaRepository<TherapyRow, 
 
 	@Query("SELECT t FROM TherapyRow t WHERE t.therapyID = :therapyID")
 	List<TherapyRow> findByTherapyID(@Param("therapyID") int therapyID);
+
+	@Query("SELECT COUNT(t) FROM TherapyRow t WHERE t.patient.code = :patientCode AND (t.qtyBougth IS NULL OR t.qtyBougth < t.qty)")
+	long countUnbilledTherapies(@Param("patientCode") int patientCode);
+
+	@Modifying
+	@Query("UPDATE TherapyRow t SET t.qtyBougth = COALESCE(t.qtyBougth, 0) + :quantity WHERE t.therapyID = :therapyId")
+	void updateBougthQuantity(@Param("therapyId") int therapyId, @Param("quantity") double quantity);
 }

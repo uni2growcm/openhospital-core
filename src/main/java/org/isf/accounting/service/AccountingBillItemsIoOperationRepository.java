@@ -44,4 +44,20 @@ public interface AccountingBillItemsIoOperationRepository extends JpaRepository<
 	@Query(value = "delete from BillItems b where b.bill.id = :billId")
 	void deleteWhereId(@Param("billId") Integer billId);
 
+	@Query("SELECT bi FROM BillItems bi WHERE bi.bill.id = :billId ORDER BY bi.itemDate ASC")
+	List<BillItems> findByBillIdOrderByItemDateAsc(@Param("billId") int billId);
+
+	@Query("SELECT bi FROM BillItems bi WHERE bi.bill.parentId = :parentId ORDER BY bi.itemDate ASC")
+	List<BillItems> findByBillParentIdOrderByItemDateAsc(@Param("parentId") Integer parentId);
+
+	@Query("SELECT COUNT(bi) > 0 FROM BillItems bi " +
+		"WHERE bi.bill.billPatient.code = :patientCode " +
+		"AND bi.prescriptionId = :prescriptionId " +
+		"AND bi.itemGroup = :itemGroup " +
+		"AND bi.bill.status = 'C'")
+	boolean existsByPatientAndPrescriptionInClosedBill(
+		@Param("patientCode") Integer patientCode,
+		@Param("prescriptionId") Integer prescriptionId,
+		@Param("itemGroup") String itemGroup
+	);
 }

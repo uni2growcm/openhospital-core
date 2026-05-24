@@ -41,6 +41,7 @@ import org.isf.utils.exception.model.OHExceptionMessage;
 import org.isf.utils.pagination.PagedResponse;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Lazy;
 
 @Component
 public class PatientBrowserManager {
@@ -55,7 +56,7 @@ public class PatientBrowserManager {
 
 	protected LinkedHashMap<String, String> professionHashMap;
 
-	public PatientBrowserManager(PatientIoOperations ioOperations, AdmissionBrowserManager admissionManager, BillBrowserManager billManager) {
+	public PatientBrowserManager(PatientIoOperations ioOperations, AdmissionBrowserManager admissionManager, @Lazy BillBrowserManager billManager) {
 		this.ioOperations = ioOperations;
 		this.admissionManager = admissionManager;
 		this.billManager = billManager;
