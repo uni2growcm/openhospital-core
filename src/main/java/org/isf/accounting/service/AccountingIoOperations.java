@@ -623,4 +623,32 @@ public class AccountingIoOperations {
 		return billItemsRepository.existsByPatientAndPrescriptionInClosedBill(
 		patientCode, prescriptionId, itemGroup);
 	}
+
+	public double sumAmountByFilters(String status, LocalDateTime dateFrom, LocalDateTime dateTo,
+	                                 Patient patient, User guarantor) throws OHServiceException {
+		LocalDateTime from = dateFrom != null ? TimeTools.getBeginningOfDay(dateFrom) : null;
+		LocalDateTime to = dateTo != null ? TimeTools.getBeginningOfNextDay(dateTo) : null;
+		return billRepository.sumAmountByFilters(status, from, to, patient, guarantor);
+	}
+
+	public double sumBalanceByFilters(String status, LocalDateTime dateFrom, LocalDateTime dateTo,
+	                                  Patient patient, User guarantor) throws OHServiceException {
+		LocalDateTime from = dateFrom != null ? TimeTools.getBeginningOfDay(dateFrom) : null;
+		LocalDateTime to = dateTo != null ? TimeTools.getBeginningOfNextDay(dateTo) : null;
+		return billRepository.sumBalanceByFilters(status, from, to, patient, guarantor);
+	}
+
+	public double sumPaymentsByFilters(LocalDateTime dateFrom, LocalDateTime dateTo,
+	                                   Patient patient, User guarantor) throws OHServiceException {
+		LocalDateTime from = dateFrom != null ? TimeTools.getBeginningOfDay(dateFrom) : null;
+		LocalDateTime to = dateTo != null ? TimeTools.getBeginningOfNextDay(dateTo) : null;
+		return billPaymentRepository.sumPaymentsByFilters(from, to, patient, guarantor);
+	}
+
+	public double sumPaymentsByUserAndFilters(String username, LocalDateTime dateFrom, LocalDateTime dateTo,
+	                                          Patient patient, User guarantor) throws OHServiceException {
+		LocalDateTime from = dateFrom != null ? TimeTools.getBeginningOfDay(dateFrom) : null;
+		LocalDateTime to = dateTo != null ? TimeTools.getBeginningOfNextDay(dateTo) : null;
+		return billPaymentRepository.sumPaymentsByUserAndFilters(username, from, to, patient, guarantor);
+	}
 }

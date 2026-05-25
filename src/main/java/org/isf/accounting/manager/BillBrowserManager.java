@@ -770,4 +770,24 @@ public class BillBrowserManager {
 			}
 		}
 	}
+
+	public double sumAmountByFilters(String status, LocalDateTime dateFrom, LocalDateTime dateTo,
+	                                 Patient patient, User guarantor) throws OHServiceException {
+		return ioOperations.sumAmountByFilters(status, dateFrom, dateTo, patient, guarantor);
+	}
+
+	public double sumBalanceByFilters(String status, LocalDateTime dateFrom, LocalDateTime dateTo,
+	                                  Patient patient, User guarantor) throws OHServiceException {
+		return ioOperations.sumBalanceByFilters(status, dateFrom, dateTo, patient, guarantor);
+	}
+
+	public double sumPaymentsByFilters(LocalDateTime dateFrom, LocalDateTime dateTo,
+	                                   Patient patient, User guarantor) throws OHServiceException {
+		return ioOperations.sumPaymentsByFilters(dateFrom, dateTo, patient, guarantor);
+	}
+
+	public double sumPaymentsByUserAndFilters(String username, LocalDateTime dateFrom, LocalDateTime dateTo,
+	                                          Patient patient, User guarantor) throws OHServiceException {
+		return ioOperations.sumPaymentsByUserAndFilters(username, dateFrom, dateTo, patient, guarantor);
+	}
 }
