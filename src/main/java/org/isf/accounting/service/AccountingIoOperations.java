@@ -624,6 +624,17 @@ public class AccountingIoOperations {
 		patientCode, prescriptionId, itemGroup);
 	}
 
+	/**
+	 * Sum of bill amounts filtered by status, date range, patient and guarantor
+	 *
+	 * @param status the bill status to filter
+	 * @param dateFrom the start date to filter
+	 * @param dateTo the end date to filter
+	 * @param patient the patient to filter
+	 * @param guarantor the user acting as guarantor to filter
+	 * @return the sum of amounts matching the filters
+	 * @throws OHServiceException
+	 */
 	public double sumAmountByFilters(String status, LocalDateTime dateFrom, LocalDateTime dateTo,
 	                                 Patient patient, User guarantor) throws OHServiceException {
 		LocalDateTime from = dateFrom != null ? TimeTools.getBeginningOfDay(dateFrom) : null;
@@ -631,6 +642,17 @@ public class AccountingIoOperations {
 		return billRepository.sumAmountByFilters(status, from, to, patient, guarantor);
 	}
 
+	/**
+	 * Sum of bill balances filtered by status, date range, patient and guarantor
+	 *
+	 * @param status the bill status to filter
+	 * @param dateFrom the start date to filter
+	 * @param dateTo the end date to filter
+	 * @param patient the patient to filter
+	 * @param guarantor the user acting as guarantor to filter
+	 * @return the sum of balances matching the filters
+	 * @throws OHServiceException
+	 */
 	public double sumBalanceByFilters(String status, LocalDateTime dateFrom, LocalDateTime dateTo,
 	                                  Patient patient, User guarantor) throws OHServiceException {
 		LocalDateTime from = dateFrom != null ? TimeTools.getBeginningOfDay(dateFrom) : null;
@@ -638,6 +660,16 @@ public class AccountingIoOperations {
 		return billRepository.sumBalanceByFilters(status, from, to, patient, guarantor);
 	}
 
+	/**
+	 * Sum of payments filtered by date range, patient and guarantor
+	 *
+	 * @param dateFrom the start date to filter
+	 * @param dateTo the end date to filter
+	 * @param patient the patient to filter
+	 * @param guarantor the user acting as guarantor to filter
+	 * @return the sum of payments matching the filters
+	 * @throws OHServiceException
+	 */
 	public double sumPaymentsByFilters(LocalDateTime dateFrom, LocalDateTime dateTo,
 	                                   Patient patient, User guarantor) throws OHServiceException {
 		LocalDateTime from = dateFrom != null ? TimeTools.getBeginningOfDay(dateFrom) : null;
@@ -645,6 +677,17 @@ public class AccountingIoOperations {
 		return billPaymentRepository.sumPaymentsByFilters(from, to, patient, guarantor);
 	}
 
+	/**
+	 * Sum of payments filtered by user, date range, patient and guarantor
+	 *
+	 * @param username the user who created the payment
+	 * @param dateFrom the start date to filter
+	 * @param dateTo the end date to filter
+	 * @param patient the patient to filter
+	 * @param guarantor the user acting as guarantor to filter
+	 * @return the sum of payments matching the filters
+	 * @throws OHServiceException
+	 */
 	public double sumPaymentsByUserAndFilters(String username, LocalDateTime dateFrom, LocalDateTime dateTo,
 	                                          Patient patient, User guarantor) throws OHServiceException {
 		LocalDateTime from = dateFrom != null ? TimeTools.getBeginningOfDay(dateFrom) : null;
