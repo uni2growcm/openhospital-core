@@ -72,14 +72,6 @@ public class PregnancyVisit extends Auditable<String> {
 	private LocalDateTime visitDate;
 
 	@Nullable
-	@Column(name = "PRGV_GESTATIONAL_WEEKS")
-	private Integer gestationalWeeks;
-
-	@Nullable
-	@Column(name = "PRGV_GESTATIONAL_DAYS")
-	private Integer gestationalDays;
-
-	@Nullable
 	@Column(name = "PRGV_MATERNAL_WEIGHT")
 	private Double maternalWeight; // kg
 
@@ -158,6 +150,18 @@ public class PregnancyVisit extends Auditable<String> {
 	@Transient
 	private volatile int hashCode;
 
+	@Transient
+	public String getGestationalAge() {
+
+		if (pregnancy == null || visitDate == null) {
+			return null;
+		}
+
+		return pregnancy.getGestationalAge(
+			visitDate.toLocalDate()
+		);
+	}
+
 	public PregnancyVisit() {
 	}
 
@@ -189,22 +193,6 @@ public class PregnancyVisit extends Auditable<String> {
 
 	public void setVisitDate(LocalDateTime visitDate) {
 		this.visitDate = visitDate;
-	}
-
-	public Integer getGestationalWeeks() {
-		return gestationalWeeks;
-	}
-
-	public void setGestationalWeeks(Integer gestationalWeeks) {
-		this.gestationalWeeks = gestationalWeeks;
-	}
-
-	public Integer getGestationalDays() {
-		return gestationalDays;
-	}
-
-	public void setGestationalDays(Integer gestationalDays) {
-		this.gestationalDays = gestationalDays;
 	}
 
 	public Double getMaternalWeight() {
@@ -391,7 +379,7 @@ public class PregnancyVisit extends Auditable<String> {
 				"ID=" + id +
 			", pregnancyId=" + (pregnancy != null ? pregnancy.getId() : null) +
 				", visitDate=" + visitDate +
-				", gestationalWeeks=" + gestationalWeeks +
+				", gestationalWeeks=" + getGestationalAge() +
 				'}';
 	}
 }
