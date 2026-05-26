@@ -441,10 +441,60 @@ public class MedicalStockWardIoOperations {
 			sex, ageFrom, ageTo, weightFrom, weightTo,
 			pageable);
 
-		List<MovementWard> movements = new ArrayList<>();
-		for (Integer code : pageOfIds.getContent()) {
-			movementRepository.findById(code).ifPresent(movements::add);
+		if (pageOfIds.isEmpty()) {
+			return new PageImpl<>(new ArrayList<>(), pageable, 0);
 		}
+
+		List<MovementWard> movements = movementRepository.findAllByIds(pageOfIds.getContent());
 		return new PageImpl<>(movements, pageable, pageOfIds.getTotalElements());
+	}
+
+	/**
+	 * Gets the paginated incoming {@link Movement}s associated to the specified ward
+	 * and filtered by movement date range.
+	 *
+	 * @param wardId the ward id.
+	 * @param dateFrom the lower bound for the movement date range.
+	 * @param dateTo the upper bound for the movement date range.
+	 * @param page the page number (zero-based).
+	 * @param pageSize the number of elements per page.
+	 * @return the paginated list of retrieved incoming movements.
+	 * @throws OHServiceException if an error occurs retrieving the movements.
+	 */
+	public Page<Movement> getIncomingMovements(String wardId,
+	                                           LocalDateTime dateFrom, LocalDateTime dateTo,
+	                                           int page, int pageSize) throws OHServiceException {
+
+		Pageable pageable = PageRequest.of(page, pageSize);
+		return repository.findIncomingMovements(wardId, dateFrom, dateTo, pageable);
+	}
+
+	/**
+	 * Gets the paginated {@link MedicalWard}s associated to the specified ward,
+	 * summarized by total quantity (regardless the lot).
+	 *
+	 * @param wardId the ward id.
+	 * @param page the page number (zero-based).
+	 * @param pageSize the number of elements per page.
+	 * @return the paginated list of retrieved medicals.
+	 * @throws OHServiceException if an error occurs retrieving the medicals.
+	 */
+	public Page<MedicalWard> getMedicalsWardTotalQuantityPaginated(
+		String wardId, int page, int pageSize) throws OHServiceException {
+
+		Pageable pageable = PageRequest.of(page, pageSize);
+
+		Page<Object[]> rows = repository.findTotalQuantityByWard(wardId, pageable);
+
+		List<MedicalWard> result = new ArrayList<>();
+		for (Object[] row : rows.getContent()) {
+			Medical medical = (Medical) row[0];
+			Double qty = (Double) row[1];
+			MedicalWard mw = new MedicalWard();
+			mw.setMedical(medical);
+			mw.setQty(qty != null ? qty : 0.0);
+			result.add(mw);
+		}
+		return new PageImpl<>(result, pageable, rows.getTotalElements());
 	}
 }

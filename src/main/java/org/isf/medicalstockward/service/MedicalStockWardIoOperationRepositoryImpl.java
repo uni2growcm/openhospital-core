@@ -23,6 +23,7 @@ package org.isf.medicalstockward.service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -35,7 +36,10 @@ import jakarta.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
 import org.isf.medicals.model.Medical;
+import org.isf.medicalstock.model.Movement;
+import org.isf.medicalstock.service.MovementIoOperationRepository;
 import org.isf.medicalstockward.model.MovementWard;
+import org.isf.medstockmovtype.model.MovementType;
 import org.isf.medtype.model.MedicalType;
 import org.isf.orthanc.model.Patient;
 import org.isf.utils.time.TimeTools;
@@ -51,6 +55,16 @@ public class MedicalStockWardIoOperationRepositoryImpl implements MedicalStockWa
 	private static final String WARD = "ward";
 	private static final String DATE = "date";
 	private static final String CODE = "code";
+
+	private final MovementIoOperationRepository movementRepository;
+	private final MovementWardIoOperationRepository movementWardRepository;
+
+	public MedicalStockWardIoOperationRepositoryImpl(
+		MovementIoOperationRepository movementRepository,
+		MovementWardIoOperationRepository movementWardRepository) {
+		this.movementRepository = movementRepository;
+		this.movementWardRepository = movementWardRepository;
+	}
 
 	@PersistenceContext
 	private EntityManager entityManager;
@@ -75,7 +89,7 @@ public class MedicalStockWardIoOperationRepositoryImpl implements MedicalStockWa
 		List<Order> orderList = new ArrayList<>();
 		orderList.add(builder.asc(root.get(DATE)));
 
-		query.where(predicates.toArray(new Predicate[] {})).orderBy(orderList);
+		query.where(predicates.toArray(new Predicate[]{})).orderBy(orderList);
 		return entityManager.createQuery(query).getResultList();
 	}
 
@@ -185,5 +199,105 @@ public class MedicalStockWardIoOperationRepositoryImpl implements MedicalStockWa
 		Long total = entityManager.createQuery(countQuery).getSingleResult();
 
 		return new PageImpl<>(ids, pageable, total);
+	}
+
+	@Override
+	public Page<Movement> findIncomingMovements(String wardId,
+	                                            LocalDateTime dateFrom, LocalDateTime dateTo,
+	                                            Pageable pageable) {
+
+		String countSql =
+			"SELECT COUNT(*) FROM (" +
+				"  SELECT 1 FROM OH_MEDICALDSRSTOCKMOV " +
+				"  WHERE MMVN_WRD_ID_A = :wardId " +
+				"  AND MMVN_DATE BETWEEN :dateFrom AND :dateTo " +
+				"  UNION ALL " +
+				"  SELECT 1 FROM OH_MEDICALDSRSTOCKMOVWARD " +
+				"  WHERE MMVN_WRD_ID_A_TO = :wardId " +
+				"  AND MMVN_DATE BETWEEN :dateFrom AND :dateTo " +
+				") AS combined";
+
+		Long total = ((Number) entityManager.createNativeQuery(countSql)
+			.setParameter("wardId", wardId)
+			.setParameter("dateFrom", dateFrom)
+			.setParameter("dateTo", dateTo)
+			.getSingleResult()).longValue();
+
+		if (total == 0) {
+			return new PageImpl<>(new ArrayList<>(), pageable, 0);
+		}
+
+		String idsSql =
+			"SELECT id, type_source FROM (" +
+				"  SELECT MMV_ID as id, 'central' as type_source, MMV_DATE as mov_date " +
+				"  FROM OH_MEDICALDSRSTOCKMOV " +
+				"  WHERE MMV_WRD_ID_A = :wardId " +
+				"  AND MMV_DATE BETWEEN :dateFrom AND :dateTo " +
+				"  UNION ALL " +
+				"  SELECT MMVN_ID as id, 'ward' as type_source, MMVN_DATE as mov_date " +
+				"  FROM OH_MEDICALDSRSTOCKMOVWARD " +
+				"  WHERE MMVN_WRD_ID_A_TO = :wardId " +
+				"  AND MMVN_DATE BETWEEN :dateFrom AND :dateTo " +
+				") AS combined " +
+				"ORDER BY mov_date ASC " +
+				"LIMIT :limit OFFSET :offset";
+
+		List<Object[]> rows = entityManager.createNativeQuery(idsSql)
+			.setParameter("wardId", wardId)
+			.setParameter("dateFrom", dateFrom)
+			.setParameter("dateTo", dateTo)
+			.setParameter("limit", pageable.getPageSize())
+			.setParameter("offset", pageable.getOffset())
+			.getResultList();
+
+		List<Integer> centralIds = new ArrayList<>();
+		List<Integer> wardIds = new ArrayList<>();
+
+		for (Object[] row : rows) {
+			Integer id = (Integer) row[0];
+			String source = (String) row[1];
+			if ("central".equals(source)) {
+				centralIds.add(id);
+			} else {
+				wardIds.add(id);
+			}
+		}
+
+		List<Movement> result = new ArrayList<>();
+
+		if (!centralIds.isEmpty()) {
+			List<Movement> centralMovements = movementRepository.findAllByIdsWithFetch(centralIds);
+			result.addAll(centralMovements);
+		}
+
+		if (!wardIds.isEmpty()) {
+			List<MovementWard> wardMovements = movementWardRepository.findAllByIds(wardIds);
+			for (MovementWard mw : wardMovements) {
+				result.add(convertMovementWardToMovement(mw));
+			}
+		}
+
+		result.sort(Comparator.comparing(Movement::getDate));
+
+		return new PageImpl<>(result, pageable, total);
+	}
+
+	private Movement convertMovementWardToMovement(MovementWard mw) {
+		MovementType typeCharge = new MovementType(
+			"fromward",
+			mw.getWard().getDescription(),
+			"*",
+			"*"
+		);
+		return new Movement(
+			mw.getMedical(),
+			typeCharge,
+			mw.getWardTo(),
+			mw.getLot(),
+			mw.getDate(),
+			mw.getQuantity().intValue(),
+			null,
+			null
+		);
 	}
 }
