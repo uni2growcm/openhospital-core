@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2023 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -29,4 +29,6 @@ public interface PatientIoOperationRepositoryCustom {
 
 	List<Patient> findByFieldsContainingWordsFromLiteral(String regex);
 
+	List<Patient> findByFieldsContainingWordsFromLiteral(String literal, int limit);
+	List<Patient> findFemaleByFieldsContainingWordsFromLiteral(String literal);
 }

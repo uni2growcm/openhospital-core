@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -51,6 +51,23 @@ public class PatientIoOperationRepositoryImpl implements PatientIoOperationRepos
 				getResultList();
 	}
 
+	@Override
+	public List<Patient> findByFieldsContainingWordsFromLiteral(String literal, int limit) {
+		CriteriaQuery<Patient> query = buildSearchQuery(literal);
+
+		return entityManager.createQuery(query)
+			.setMaxResults(limit)
+			.getResultList();
+	}
+
+	@Override
+	public List<Patient> findFemaleByFieldsContainingWordsFromLiteral(String literal) {
+		return this.entityManager
+			.createQuery(buildSearchQueryForFemale(literal))
+			.setMaxResults(100)
+			.getResultList();
+	}
+
 	private CriteriaQuery<Patient> buildSearchQuery(String regex) {
 		String[] words = getWordsToSearchForInPatientsRepository(regex);
 		return createQuerySearchingForPatientContainingGivenWordsInHisProperties(words);
@@ -98,7 +115,8 @@ public class PatientIoOperationRepositoryImpl implements PatientIoOperationRepos
 				cb.like(cb.lower(root.get("address").as(String.class)), like(word)),
 				cb.like(cb.lower(root.get("telephone").as(String.class)), like(word)),
 				cb.like(cb.lower(root.get("note").as(String.class)), like(word)),
-				cb.like(cb.lower(root.get("taxCode").as(String.class)), like(word))
+				cb.like(cb.lower(root.get("taxCode").as(String.class)), like(word)),
+				cb.like(cb.lower(root.get("birthPlace").as(String.class)), like(word))
 		);
 	}
 
@@ -137,4 +155,36 @@ public class PatientIoOperationRepositoryImpl implements PatientIoOperationRepos
 		return entityManager.createQuery(query).getResultList();
 	}
 
+	private CriteriaQuery<Patient> buildSearchQueryForFemale(String regex) {
+		String[] words = getWordsToSearchForInPatientsRepository(regex);
+
+		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+		CriteriaQuery<Patient> query = cb.createQuery(Patient.class);
+		Root<Patient> patientRoot = query.from(Patient.class);
+
+		List<Predicate> where = new ArrayList<>();
+
+		for (String word : words) {
+			where.add(wordExistsInOneOfPatientFields(word, cb, patientRoot));
+		}
+
+		Predicate notDeleted = cb.or(
+			cb.equal(patientRoot.get("deleted"), 'N'),
+			cb.isNull(patientRoot.get("deleted"))
+		);
+
+		Predicate female = cb.equal(
+			cb.lower(patientRoot.get("sex")),
+			"f"
+		);
+
+		where.add(notDeleted);
+		where.add(female);
+
+		query.select(patientRoot)
+			.where(cb.and(where.toArray(new Predicate[0])))
+			.orderBy(cb.desc(patientRoot.get("code")));
+
+		return query;
+	}
 }

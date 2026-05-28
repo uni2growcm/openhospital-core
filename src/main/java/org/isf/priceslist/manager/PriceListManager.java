@@ -177,4 +177,14 @@ public class PriceListManager {
 		}
 	}
 
+	/**
+	 * Find the list of prices for a given {@link PriceList}
+	 *
+	 * @param listId - the id of the {@link PriceList}
+	 * @return the list of prices for the {@link PriceList}
+	 * @throws OHServiceException when fails to fetch
+	 */
+	public List<Price> getByListId(int listId) throws OHServiceException {
+		return ioOperations.getByListId(listId);
+	}
 }

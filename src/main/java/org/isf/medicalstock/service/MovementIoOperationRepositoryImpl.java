@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2024 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -27,6 +27,7 @@ import java.util.List;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Order;
@@ -41,6 +42,9 @@ import org.isf.medstockmovtype.model.MovementType;
 import org.isf.medtype.model.MedicalType;
 import org.isf.utils.time.TimeTools;
 import org.isf.ward.model.Ward;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
@@ -67,33 +71,60 @@ public class MovementIoOperationRepositoryImpl implements MovementIoOperationRep
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Integer> findMovementWhereData(
-					Integer medicalCode,
-					String medicalType,
-					String wardId,
-					String movType,
-					LocalDateTime movFrom,
-					LocalDateTime movTo,
-					LocalDateTime lotPrepFrom,
-					LocalDateTime lotPrepTo,
-					LocalDateTime lotDueFrom,
-					LocalDateTime lotDueTo) {
+		Integer medicalCode,
+		String medicalType,
+		String wardId,
+		String movType,
+		LocalDateTime movFrom,
+		LocalDateTime movTo,
+		LocalDateTime lotPrepFrom,
+		LocalDateTime lotPrepTo,
+		LocalDateTime lotDueFrom,
+		LocalDateTime lotDueTo) {
 		return getMovementWhereData(medicalCode, medicalType, wardId, movType, movFrom, movTo,
-						lotPrepFrom, lotPrepTo, lotDueFrom, lotDueTo);
+			lotPrepFrom, lotPrepTo, lotDueFrom, lotDueTo);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Integer> findMovementForPrint(
-					String medicalDescription,
-					String medicalTypeCode,
-					String wardId,
-					String movType,
-					LocalDateTime movFrom,
-					LocalDateTime movTo,
-					String lotCode,
-					MovementOrder order) {
+		String medicalDescription,
+		String medicalTypeCode,
+		String wardId,
+		String movType,
+		LocalDateTime movFrom,
+		LocalDateTime movTo,
+		String lotCode,
+		MovementOrder order) {
 		return getMovementForPrint(medicalDescription, medicalTypeCode, wardId, movType, movFrom, movTo,
-						lotCode, order);
+			lotCode, order);
+	}
+
+	@Override
+	public long getCountTotalMovements(
+		Integer medicalCode,
+		String medicalType,
+		String wardId,
+		String movType,
+		LocalDateTime movFrom,
+		LocalDateTime movTo,
+		LocalDateTime lotPrepFrom,
+		LocalDateTime lotPrepTo,
+		LocalDateTime lotDueFrom,
+		LocalDateTime lotDueTo) {
+
+		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+		CriteriaQuery<Long> query = builder.createQuery(Long.class);
+		Root<Movement> root = query.from(Movement.class);
+		query.select(builder.count(root));
+
+		List<Predicate> predicates = buildPredicates(builder, root,
+			medicalCode, medicalType, wardId, movType,
+			movFrom, movTo, lotPrepFrom, lotPrepTo, lotDueFrom, lotDueTo);
+
+		query.where(predicates.toArray(new Predicate[]{}));
+
+		return entityManager.createQuery(query).getSingleResult();
 	}
 
 	private List<Integer> getMovementWhereDatesAndId(String wardId, LocalDateTime dateFrom, LocalDateTime dateTo) {
@@ -118,16 +149,16 @@ public class MovementIoOperationRepositoryImpl implements MovementIoOperationRep
 	}
 
 	private List<Integer> getMovementWhereData(
-					Integer medicalCode,
-					String medicalType,
-					String wardId,
-					String movType,
-					LocalDateTime movFrom,
-					LocalDateTime movTo,
-					LocalDateTime lotPrepFrom,
-					LocalDateTime lotPrepTo,
-					LocalDateTime lotDueFrom,
-					LocalDateTime lotDueTo) {
+		Integer medicalCode,
+		String medicalType,
+		String wardId,
+		String movType,
+		LocalDateTime movFrom,
+		LocalDateTime movTo,
+		LocalDateTime lotPrepFrom,
+		LocalDateTime lotPrepTo,
+		LocalDateTime lotDueFrom,
+		LocalDateTime lotDueTo) {
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<Integer> query = builder.createQuery(Integer.class);
 		Root<Movement> root = query.from(Movement.class);
@@ -170,14 +201,14 @@ public class MovementIoOperationRepositoryImpl implements MovementIoOperationRep
 	}
 
 	private List<Integer> getMovementForPrint(
-					String medicalDescription,
-					String medicalTypeCode,
-					String wardId,
-					String movType,
-					LocalDateTime movFrom,
-					LocalDateTime movTo,
-					String lotCode,
-					MovementOrder order) {
+		String medicalDescription,
+		String medicalTypeCode,
+		String wardId,
+		String movType,
+		LocalDateTime movFrom,
+		LocalDateTime movTo,
+		String lotCode,
+		MovementOrder order) {
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<Integer> query = builder.createQuery(Integer.class);
 		Root<Movement> root = query.from(Movement.class);
@@ -204,26 +235,126 @@ public class MovementIoOperationRepositoryImpl implements MovementIoOperationRep
 		}
 		List<Order> orderList = new ArrayList<>();
 		switch (order) {
-		case DATE:
-			orderList.add(builder.desc(root.get(DATE)));
-			orderList.add(builder.desc(root.get(REF_NO)));
-			break;
-		case WARD:
-			orderList.add(builder.desc(root.get(REF_NO)));
-			orderList.add(builder.desc(root.<Ward> get(WARD).get(DESCRIPTION)));
-			break;
-		case PHARMACEUTICAL_TYPE:
-			orderList.add(builder.desc(root.get(REF_NO)));
-			orderList.add(builder.asc(root.<Medical> get(MEDICAL).<MedicalType> get(TYPE)));
-			orderList.add(builder.asc(root.<Medical> get(MEDICAL).<MedicalType> get(TYPE).get(DESCRIPTION)));
-			break;
-		case TYPE:
-			orderList.add(builder.desc(root.get(REF_NO)));
-			orderList.add(builder.asc(root.<MovementType> get(TYPE).<MedicalType> get(DESCRIPTION)));
-			break;
+			case DATE:
+				orderList.add(builder.desc(root.get(DATE)));
+				orderList.add(builder.desc(root.get(REF_NO)));
+				break;
+			case WARD:
+				orderList.add(builder.desc(root.get(REF_NO)));
+				orderList.add(builder.desc(root.<Ward> get(WARD).get(DESCRIPTION)));
+				break;
+			case PHARMACEUTICAL_TYPE:
+				orderList.add(builder.desc(root.get(REF_NO)));
+				orderList.add(builder.asc(root.<Medical> get(MEDICAL).<MedicalType> get(TYPE)));
+				orderList.add(builder.asc(root.<Medical> get(MEDICAL).<MedicalType> get(TYPE).get(DESCRIPTION)));
+				break;
+			case TYPE:
+				orderList.add(builder.desc(root.get(REF_NO)));
+				orderList.add(builder.asc(root.<MovementType> get(TYPE).<MedicalType> get(DESCRIPTION)));
+				break;
 		}
 		query.where(predicates.toArray(new Predicate[] {})).orderBy(orderList);
 		return entityManager.createQuery(query).getResultList();
 	}
 
+	@Override
+	public Page<Integer> findMovementWhereData(
+		Integer medicalCode,
+		String medicalType,
+		String wardId,
+		String movType,
+		LocalDateTime movFrom,
+		LocalDateTime movTo,
+		LocalDateTime lotPrepFrom,
+		LocalDateTime lotPrepTo,
+		LocalDateTime lotDueFrom,
+		LocalDateTime lotDueTo,
+		Pageable pageable) {
+
+		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+
+		CriteriaQuery<Integer> query = builder.createQuery(Integer.class);
+		Root<Movement> root = query.from(Movement.class);
+		query.select(root.<Integer>get(CODE));
+
+		List<Predicate> predicates = buildPredicates(builder, root,
+			medicalCode, medicalType, wardId, movType,
+			movFrom, movTo, lotPrepFrom, lotPrepTo, lotDueFrom, lotDueTo);
+
+		List<Order> orderList = new ArrayList<>();
+		orderList.add(builder.desc(root.get(CODE)));
+		orderList.add(builder.desc(root.get(REF_NO)));
+		query.where(predicates.toArray(new Predicate[]{})).orderBy(orderList);
+
+		List<Integer> ids = entityManager.createQuery(query)
+			.setFirstResult((int) pageable.getOffset())
+			.setMaxResults(pageable.getPageSize())
+			.getResultList();
+
+		CriteriaQuery<Long> countQuery = builder.createQuery(Long.class);
+		Root<Movement> countRoot = countQuery.from(Movement.class);
+		countQuery.select(builder.count(countRoot));
+
+		List<Predicate> countPredicates = buildPredicates(builder, countRoot,
+			medicalCode, medicalType, wardId, movType,
+			movFrom, movTo, lotPrepFrom, lotPrepTo, lotDueFrom, lotDueTo);
+		countQuery.where(countPredicates.toArray(new Predicate[]{}));
+
+		Long total = entityManager.createQuery(countQuery).getSingleResult();
+
+		return new PageImpl<>(ids, pageable, total);
+	}
+
+	private List<Predicate> buildPredicates(
+		CriteriaBuilder builder,
+		Root<Movement> root,
+		Integer medicalCode,
+		String medicalType,
+		String wardId,
+		String movType,
+		LocalDateTime movFrom,
+		LocalDateTime movTo,
+		LocalDateTime lotPrepFrom,
+		LocalDateTime lotPrepTo,
+		LocalDateTime lotDueFrom,
+		LocalDateTime lotDueTo) {
+
+		List<Predicate> predicates = new ArrayList<>();
+
+		if (medicalCode != null) {
+			predicates.add(builder.equal(root.<Medical>get(MEDICAL).<Integer>get(CODE), medicalCode));
+		}
+
+		if (medicalType != null) {
+			predicates.add(builder.equal(root.<Medical>get(MEDICAL).<MedicalType>get(TYPE).<String>get(CODE), medicalType));
+		}
+
+		if (movFrom != null && movTo != null) {
+			predicates.add(builder.between(root.<LocalDateTime>get(DATE), movFrom, movTo));
+		}
+
+		if (lotPrepFrom != null && lotPrepTo != null) {
+			predicates.add(builder.between(root.<Lot>get(LOT).<LocalDateTime>get("preparationDate"), lotPrepFrom, lotPrepTo));
+		}
+
+		if (lotDueFrom != null && lotDueTo != null) {
+			predicates.add(builder.between(root.<Lot>get(LOT).<LocalDateTime>get("dueDate"), lotDueFrom, lotDueTo));
+		}
+
+		if ("+".equals(movType)) {
+			predicates.add(builder.equal(root.<MovementType> get(TYPE).<String> get(TYPE), movType));
+
+		} else if ("-".equals(movType)) {
+			predicates.add(builder.equal(root.<MovementType> get(TYPE).<String> get(TYPE), movType));
+
+		} else if (movType != null) {
+			predicates.add(builder.equal(root.<MovementType> get(TYPE).<String> get(CODE), movType));
+		}
+
+		if (wardId != null) {
+			predicates.add(builder.equal(root.<Ward>get(WARD).<String>get(CODE), wardId));
+		}
+
+		return predicates;
+	}
 }

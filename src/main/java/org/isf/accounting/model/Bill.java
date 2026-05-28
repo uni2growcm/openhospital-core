@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2024 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -38,10 +38,13 @@ import jakarta.persistence.Version;
 import jakarta.validation.constraints.NotNull;
 
 import org.isf.admission.model.Admission;
+import org.isf.menu.model.User;
 import org.isf.patient.model.Patient;
 import org.isf.priceslist.model.PriceList;
+import org.isf.reductionplan.model.ReductionPlan;
 import org.isf.utils.db.Auditable;
 import org.isf.utils.time.TimeTools;
+import org.isf.ward.model.Ward;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
@@ -60,11 +63,11 @@ public class Bill extends Auditable<String> implements Cloneable, Comparable<Bil
 	private int id;
 
 	@NotNull
-	@Column(name = "BLL_DATE") // SQL type: datetime
+	@Column(name = "BLL_DATE")
 	private LocalDateTime date;
 
 	@NotNull
-	@Column(name = "BLL_UPDATE") // SQL type: datetime
+	@Column(name = "BLL_UPDATE")
 	private LocalDateTime update;
 
 	@NotNull
@@ -110,6 +113,25 @@ public class Bill extends Auditable<String> implements Cloneable, Comparable<Bil
 	@JoinColumn(name = "BLL_ADM_ID")
 	private Admission admission;
 
+	@ManyToOne
+	@JoinColumn(name = "BLL_RP_ID")
+	@Transient
+	private ReductionPlan reductionPlan;
+
+	@ManyToOne
+	@JoinColumn(name = "BLL_WARD_ID")
+	private Ward ward;
+
+	@ManyToOne
+	@JoinColumn(name = "BLL_GUARANTOR")
+	private User guarantor;
+
+	@Column(name = "BLL_PARENT_ID")
+	private Integer parentId;
+
+	@Transient
+	private int reductionPlanId;
+
 	@Transient
 	private volatile int hashCode;
 
@@ -126,6 +148,57 @@ public class Bill extends Auditable<String> implements Cloneable, Comparable<Bil
 		this.amount = 0.0;
 		this.balance = 0.0;
 		this.user = "admin";
+	}
+
+	public Bill(int id, LocalDateTime date, LocalDateTime update,
+				boolean isList, PriceList list, String listName, boolean isPatient,
+				Patient billPatient, String patName, String status, Double amount,
+				Double balance, int lock, String user, Admission admission,
+				ReductionPlan reductionPlan, Ward ward, User guarantor) {
+		super();
+		this.id = id;
+		this.date = TimeTools.truncateToSeconds(date);
+		this.update = TimeTools.truncateToSeconds(update);
+		this.isList = isList;
+		this.list = list;
+		this.listName = listName;
+		this.isPatient = isPatient;
+		this.billPatient = billPatient;
+		this.patName = patName;
+		this.status = status;
+		this.amount = amount;
+		this.balance = balance;
+		this.lock = lock;
+		this.user = user;
+		this.admission = admission;
+		this.reductionPlan = reductionPlan;
+		this.ward = ward;
+		this.guarantor = guarantor;
+	}
+
+	public Bill(int id, LocalDateTime date, LocalDateTime update,
+				boolean isList, PriceList list, String listName, boolean isPatient,
+				Patient billPatient, String patName, String status, Double amount,
+				Double balance, int lock, String user, Admission admission,
+				ReductionPlan reductionPlan, Ward ward) {
+		super();
+		this.id = id;
+		this.date = TimeTools.truncateToSeconds(date);
+		this.update = TimeTools.truncateToSeconds(update);
+		this.isList = isList;
+		this.list = list;
+		this.listName = listName;
+		this.isPatient = isPatient;
+		this.billPatient = billPatient;
+		this.patName = patName;
+		this.status = status;
+		this.amount = amount;
+		this.balance = balance;
+		this.lock = lock;
+		this.user = user;
+		this.admission = admission;
+		this.reductionPlan = reductionPlan;
+		this.ward = ward;
 	}
 
 	public Bill(int id, LocalDateTime date, LocalDateTime update,
@@ -155,57 +228,75 @@ public class Bill extends Auditable<String> implements Cloneable, Comparable<Bil
 	public void setId(int id) {
 		this.id = id;
 	}
+
 	public LocalDateTime getDate() {
 		return date;
 	}
+
 	public void setDate(LocalDateTime date) {
 		this.date = TimeTools.truncateToSeconds(date);
 	}
+
 	public LocalDateTime getUpdate() {
 		return update;
 	}
+
 	public void setUpdate(LocalDateTime update) {
 		this.update = TimeTools.truncateToSeconds(update);
 	}
+
 	public boolean isList() {
 		return isList;
 	}
+
 	public void setIsList(boolean isList) {
 		this.isList = isList;
 	}
+
 	public PriceList getPriceList() {
 		return list;
 	}
+
 	public void setPriceList(PriceList list) {
 		this.list = list;
 	}
+
 	public String getListName() {
 		return listName;
 	}
+
 	public void setListName(String listName) {
 		this.listName = listName;
 	}
+
 	public boolean isPatient() {
 		return isPatient;
 	}
+
 	public void setIsPatient(boolean isPatient) {
 		this.isPatient = isPatient;
 	}
+
 	public Patient getBillPatient() {
 		return billPatient;
 	}
+
 	public void setBillPatient(Patient billPatient) {
 		this.billPatient = billPatient;
 	}
+
 	public String getPatName() {
 		return patName;
 	}
+
 	public void setPatName(String patName) {
 		this.patName = patName;
 	}
+
 	public String getStatus() {
 		return status;
 	}
+
 	public void setStatus(String status) {
 		this.status = status;
 	}
@@ -246,6 +337,46 @@ public class Bill extends Auditable<String> implements Cloneable, Comparable<Bil
 
 	public void setLock(int lock) { this.lock = lock; }
 
+	public ReductionPlan getReductionPlan() {
+		return reductionPlan;
+	}
+
+	public void setReductionPlan(ReductionPlan reductionPlan) {
+		this.reductionPlan = reductionPlan;
+	}
+
+	public Ward getWard() {
+		return ward;
+	}
+
+	public void setWard(Ward ward) {
+		this.ward = ward;
+	}
+
+	public User getGuarantor() {
+		return guarantor;
+	}
+
+	public void setGuarantor(User guarantor) {
+		this.guarantor = guarantor;
+	}
+
+	public Integer getParentId() {
+		return parentId;
+	}
+
+	public void setParentId(Integer parentId) {
+		this.parentId = parentId;
+	}
+
+	public int getReductionPlanID() {
+		return reductionPlanId;
+	}
+
+	public void setReductionPlanID(int reductionPlanId) {
+		this.reductionPlanId = reductionPlanId;
+	}
+
 	@Override
 	public int compareTo(Bill obj) {
 		return this.id - obj.getId();
@@ -256,11 +387,9 @@ public class Bill extends Auditable<String> implements Cloneable, Comparable<Bil
 		if (this == obj) {
 			return true;
 		}
-
 		if (!(obj instanceof Bill bill)) {
 			return false;
 		}
-
 		return (id == bill.getId());
 	}
 
@@ -269,12 +398,9 @@ public class Bill extends Auditable<String> implements Cloneable, Comparable<Bil
 		if (this.hashCode == 0) {
 			final int m = 23;
 			int c = 133;
-
 			c = m * c + id;
-
 			this.hashCode = c;
 		}
-
 		return this.hashCode;
 	}
 

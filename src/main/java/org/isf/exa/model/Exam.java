@@ -25,6 +25,8 @@ import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -48,7 +50,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 public class Exam extends Auditable<String> {
 
 	@Id
-	@Column(name="EXA_ID_A")	
+	@Column(name="EXA_ID_A")
 	private String code;
 
 	@NotNull
@@ -73,11 +75,11 @@ public class Exam extends Auditable<String> {
 
 	@Transient
 	private volatile int hashCode;
-	
-	public Exam() 
-    {
+
+	public Exam()
+	{
 		super();
-    }
+	}
 	
 	public Exam(String code, String description, ExamType examtype,
 			Integer procedure, String defaultResult) {
@@ -140,25 +142,26 @@ public class Exam extends Auditable<String> {
 	@Override
 	public boolean equals(Object anObject) {
 		return anObject instanceof Exam && (getCode().equals(((Exam) anObject).getCode())
-				&& getDescription().equalsIgnoreCase(((Exam) anObject).getDescription()) && getExamtype().equals(((Exam) anObject).getExamtype()));
+			   && getDescription().equalsIgnoreCase(((Exam) anObject).getDescription()) && getExamtype().equals(((Exam) anObject).getExamtype())
+			   && getProcedure().equals(((Exam) anObject).getProcedure()) && getDefaultResult().equals(((Exam) anObject).getDefaultResult()));
 	}
 
 	@Override
 	public String toString() {
 		return getDescription();
-	}	
+	}
 
 	@Override
 	public int hashCode() {
 	    if (this.hashCode == 0) {
 	        final int m = 23;
 	        int c = 133;
-	        c = m * c + code.hashCode();   
+	        c = m * c + code.hashCode();
 	        this.hashCode = c;
-	    }	  
+	    }
 	    return this.hashCode;
 	}
-	
+
 	public String getSearchString() {
 		StringBuilder sbNameCode = new StringBuilder();
 		sbNameCode.append(getCode().toLowerCase());

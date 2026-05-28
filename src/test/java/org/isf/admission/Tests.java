@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2024 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -28,6 +28,8 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.IntStream;
 
 import org.assertj.core.api.Condition;
 import org.isf.OHCoreTestCase;
@@ -80,10 +82,14 @@ import org.isf.ward.model.Ward;
 import org.isf.ward.service.WardIoOperationRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 class Tests extends OHCoreTestCase {
@@ -588,10 +594,12 @@ class Tests extends OHCoreTestCase {
 		assertThat(result).isEqualTo(1);
 	}
 
+	/**
+	 * Requires active session because of lazy loading of patient photo
+	 */
 	@ParameterizedTest(name = "Test with MATERNITYRESTARTINJUNE={0}")
 	@MethodSource("maternityRestartInJune")
 	@Transactional
-		// requires active session because of lazy loading of patient photo
 	void testIoDeletePatientPhoto(boolean maternityRestartInJune) throws Exception {
 		GeneralData.MATERNITYRESTARTINJUNE = maternityRestartInJune;
 		int id = setupTestAdmission(false);
@@ -601,10 +609,14 @@ class Tests extends OHCoreTestCase {
 		assertThat(updatedPatient.getPatientProfilePhoto().getPhoto()).isNull();
 	}
 
+	/**
+	 * requires active session because of lazy loading of patient photo
+	 * @param maternityRestartInJune Param value
+	 * @throws Exception When failed to run test
+	 */
 	@ParameterizedTest(name = "Test with MATERNITYRESTARTINJUNE={0}")
 	@MethodSource("maternityRestartInJune")
 	@Transactional
-	// requires active session because of lazy loading of patient photo
 	void testIoDeletePatientPhotoNoPatient(boolean maternityRestartInJune) throws Exception {
 		GeneralData.MATERNITYRESTARTINJUNE = maternityRestartInJune;
 		Patient deletedPatient = admissionIoOperation.deletePatientPhoto(-99999);
@@ -1589,12 +1601,72 @@ class Tests extends OHCoreTestCase {
 		assertThat(count).isEqualTo(1);
 	}
 
+	@DisplayName("Should get pages admitted patients filtered by sex and name")
+	@Test
+	void testMgrGetAdmittedPatientsBySexAndNamePaged() throws Exception {
+		List<Admission> admissions = setupTestAdmissions(6, false);
+		Page<Admission> savedAdmissionsPaged = admissionBrowserManager.getAdmittedPatientsBySexAndNamePaged('F', admissions.get(0).getPatient().getName(), 2, 0);
+		List<Admission> savedAdmissions = savedAdmissionsPaged.get().toList();
+
+		assertThat(savedAdmissionsPaged.getTotalPages()).isEqualTo(1);
+		assertThat(savedAdmissionsPaged.getTotalElements()).isEqualTo(1);
+		assertThat(savedAdmissions.get(0)).isEqualTo(admissions.get(0));
+
+		String name = admissions.get(0).getPatient().getSecondName();
+		String keywords = name.substring(0, name.length() - 2);
+		savedAdmissionsPaged = admissionBrowserManager.getAdmittedPatientsBySexAndNamePaged('F', keywords, 1, 0);
+		savedAdmissions = savedAdmissionsPaged.get().toList();
+
+		assertThat(savedAdmissionsPaged.getTotalPages()).isEqualTo(3);
+		assertThat(savedAdmissionsPaged.getTotalElements()).isEqualTo(3);
+		assertThat(savedAdmissions.get(0)).isEqualTo(admissions.get(0));
+	}
+
+	@ParameterizedTest(name = "Test with MATERNITYRESTARTINJUNE={0}")
+	@MethodSource("maternityRestartInJune")
+	void testMgrGetAdmittedPatientsPaginatedWithPageable(boolean maternityRestartInJune) throws Exception {
+		GeneralData.MATERNITYRESTARTINJUNE = maternityRestartInJune;
+
+		int id = setupTestAdmission(false);
+		Admission admission = admissionBrowserManager.getAdmission(id);
+
+		Page<AdmittedPatient> firstPage = admissionBrowserManager.getAdmittedPatientsPaginated(
+			null, null, null, null, null, null, null, null,null,null,null, 0, 2
+		);
+
+		assertThat(firstPage).isNotNull();
+		assertThat(firstPage.getContent()).hasSize(1);
+		assertThat(firstPage.getTotalElements()).isEqualTo(1);
+		assertThat(firstPage.getTotalPages()).isEqualTo(1);
+		assertThat(firstPage.getNumber()).isZero();
+		assertThat(firstPage.getSize()).isEqualTo(2);
+
+		Page<AdmittedPatient> secondPage = admissionBrowserManager.getAdmittedPatientsPaginated(
+			null, null, null, null, null, null, null, null,null,null,null, 1, 2
+		);
+
+		assertThat(secondPage).isNotNull();
+		assertThat(secondPage.getNumber()).isEqualTo(1);
+		assertThat(secondPage.getContent()).isEmpty();
+		assertThat(secondPage.getTotalElements()).isEqualTo(1);
+	}
+
 	class MyAdmissionIoOperationRepositoryCustom implements AdmissionIoOperationRepositoryCustom {
 
 		@Override
 		public List<AdmittedPatient> findPatientAdmissionsBySearchAndDateRanges(String searchTerms, LocalDateTime[] admissionRange,
 			LocalDateTime[] dischargeRange) throws OHServiceException {
 			return null;
+		}
+
+		@Override
+		public Page<AdmittedPatient> findPatientAdmissionsByFilters(
+			String searchTerms, String admissionStatus, List<String> wardCodes,
+			LocalDateTime admissionDateFrom, LocalDateTime admissionDateTo,
+			LocalDateTime dischargeDateFrom, LocalDateTime dischargeDateTo,
+			Integer ageFrom, Integer ageTo, Character sex, Integer country,
+			Pageable pageable) throws OHServiceException {
+			return Page.empty(pageable);
 		}
 	}
 
@@ -1643,12 +1715,107 @@ class Tests extends OHCoreTestCase {
 		return savedAdmission.getId();
 	}
 
+	/**
+	 * Generate admissions
+	 *
+	 * @param number Number of admissions to generate
+	 * @param samePatient Whether to use the same patient for all the generated admissions or not
+	 * @return The list of generated and persisted {@link Admission}
+	 * @throws OHException When failed to generate admission
+	 */
+	private List<Admission> setupTestAdmissions(int number, boolean samePatient) throws OHException {
+		Ward ward = testWard.setup(false, true);
+		AdmissionType admissionType = testAdmissionType.setup(false);
+		DiseaseType diseaseType = testDiseaseType.setup(false);
+		Disease diseaseIn = testDisease.setup(diseaseType, true, false, false, false);
+		Disease diseaseOut1 = testDisease.setup(diseaseType, false, true, false, false);
+		diseaseOut1.setCode("888");
+		Disease diseaseOut2 = testDisease.setup(diseaseType, false, true, false, false);
+		diseaseOut2.setCode("777");
+		Disease diseaseOut3 = testDisease.setup(diseaseType, false, true, false, false);
+		diseaseOut3.setCode("666");
+		OperationType operationType = testOperationType.setup(false);
+		Operation operation = testOperation.setup(operationType, false);
+		DischargeType dischargeType = testDischargeType.setup(false);
+		PregnantTreatmentType pregnantTreatmentType = testPregnantTreatmentType.setup(false);
+		DeliveryType deliveryType = testDeliveryType.setup(false);
+		DeliveryResultType deliveryResult = testDeliveryResultType.setup(false);
+
+		wardIoOperationRepository.saveAndFlush(ward);
+		admissionTypeIoOperationRepository.saveAndFlush(admissionType);
+		diseaseTypeIoOperationRepository.saveAndFlush(diseaseType);
+		diseaseIoOperationRepository.saveAndFlush(diseaseIn);
+		diseaseIoOperationRepository.saveAndFlush(diseaseOut1);
+		diseaseIoOperationRepository.saveAndFlush(diseaseOut2);
+		diseaseIoOperationRepository.saveAndFlush(diseaseOut3);
+		operationTypeIoOperationRepository.saveAndFlush(operationType);
+		operationIoOperationRepository.saveAndFlush(operation);
+		dischargeTypeIoOperationRepository.saveAndFlush(dischargeType);
+		pregnantTreatmentTypeIoOperationRepository.saveAndFlush(pregnantTreatmentType);
+		deliveryTypeIoOperationRepository.saveAndFlush(deliveryType);
+		deliveryResultIoOperationRepository.saveAndFlush(deliveryResult);
+
+		String secondName = "Second Name";
+
+		Patient sharedPatient = null;
+
+		if (samePatient) {
+			try {
+				sharedPatient = testPatient.setup(false);
+			} catch (OHException e) {
+				throw new RuntimeException(e);
+			}
+
+			sharedPatient.setSex('F');
+			patientIoOperationRepository.saveAndFlush(sharedPatient);
+		}
+
+		Patient finalSharedPatient = sharedPatient;
+		return IntStream.range(0, number).mapToObj(i -> {
+
+			Patient patient;
+
+			if (samePatient) {
+				patient =  finalSharedPatient;   // reuse SAME entity
+			} else {
+				try {
+					patient = testPatient.setup(false);
+				} catch (OHException e) {
+					throw new RuntimeException(e);
+				}
+
+				patient.setSecondName("Second Name " + i);
+				patient.setSex(i % 2 == 0 ? 'F' : 'M');
+
+				patientIoOperationRepository.saveAndFlush(patient);
+			}
+
+			Admission admission;
+
+			try {
+				admission = testAdmission.setup(
+					ward, patient, admissionType, diseaseIn, diseaseOut1,
+					diseaseOut2, diseaseOut3, operation, dischargeType,
+					pregnantTreatmentType, deliveryType, deliveryResult, false
+				);
+			} catch (OHException e) {
+				throw new RuntimeException(e);
+			}
+
+			try {
+				return admissionIoOperation.newAdmission(admission);
+			} catch (OHServiceException e) {
+				throw new RuntimeException(e);
+			}
+
+		}).toList();
+	}
+
 	private void checkAdmissionIntoDb(int id) throws OHServiceException {
 		Admission foundAdmission = admissionIoOperation.getAdmission(id);
 		testAdmission.check(foundAdmission);
 	}
 
-	// Typically used to build a second admission record thus the need to set new codes because of database key values
 	private Admission buildNewAdmission() throws Exception {
 		Ward ward = testWard.setup(false);
 		Patient patient = testPatient.setup(true);
@@ -1693,5 +1860,4 @@ class Tests extends OHCoreTestCase {
 			diseaseOut2, diseaseOut3, operation, dischargeType, pregTreatmentType,
 			deliveryType, deliveryResult, true);
 	}
-
 }
