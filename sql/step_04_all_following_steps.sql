@@ -143,5 +143,4 @@ source step_a146_add_bodycompartment_table.sql;
 source step_a147_reorganize_mortuary_menu.sql;
 source step_a148_add_deathreanson_on_mortuary_menu.sql;
 source step_a149_add_foreign_key_on_death_table.sql;
-source step_a150_alter_table_laboratory.sql;
-source step_a151_add_LABR_RES_VALUE_in_laboratoryRow.sql;
+source step_a150_add_LABR_RES_VALUE_in_laboratoryRow.sql;
