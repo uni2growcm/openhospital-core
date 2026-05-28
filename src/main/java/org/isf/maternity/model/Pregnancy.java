@@ -140,7 +140,7 @@ public class Pregnancy extends Auditable<String> {
 		long weeks = totalDays / 7;
 		long days = totalDays % 7;
 
-		return weeks + "w " + days + "d";
+		return weeks + " " + MessageBundle.getMessage("angal.maternity.gestationalage.weeks") + " " + days + " " + MessageBundle.getMessage("angal.maternity.gestationalage.days");
 	}
 
 	@Transient
