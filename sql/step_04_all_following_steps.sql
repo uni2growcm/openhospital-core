@@ -136,7 +136,6 @@ source step_a139_reduction_plan.sql;
 source step_a140_add_reduction_plan_and_price_list_to_patients.sql;
 source step_a141_add_column_reduction_plan_id_and_ward_id_to_table_oh_bills.sql;
 source step_a142_add_billitemgroup_tables.sql;
-
 source step_a143_add_column_medicaldsr.sql;
 source step_a144_mortuarystays_table.sql;
 source step_a145_add_mortuary_table_and_menu.sql;
@@ -144,3 +143,4 @@ source step_a146_add_bodycompartment_table.sql;
 source step_a147_reorganize_mortuary_menu.sql;
 source step_a148_add_deathreanson_on_mortuary_menu.sql;
 source step_a149_add_foreign_key_on_death_table.sql;
+source step_a150_add_LABR_RES_VALUE_in_laboratoryRow.sql;

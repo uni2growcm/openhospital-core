@@ -61,6 +61,9 @@ public class LaboratoryRow extends Auditable<String> {
 	@Column(name="LABR_DESC")
 	private String description;
 
+	@Column(name="LABR_RES_VALUE")
+	private String resValue;
+
 	@Transient
 	private volatile int hashCode;
 
@@ -85,15 +88,27 @@ public class LaboratoryRow extends Auditable<String> {
 	public void setCode(Integer code) {
 		this.code = code;
 	}
+
 	public String getDescription() {
 		return description;
 	}
+
 	public void setDescription(String description) {
 		this.description = description;
 	}
+
+	public String getResValue() {
+		return resValue;
+	}
+
+	public void setResValue(String resValue) {
+		this.resValue = resValue;
+	}
+
 	public Laboratory getLabId() {
 		return laboratory;
 	}
+
 	public void setLabId(Laboratory laboratory) {
 		this.laboratory = laboratory;
 	}
