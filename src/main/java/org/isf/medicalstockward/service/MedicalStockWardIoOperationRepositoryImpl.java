@@ -239,7 +239,7 @@ public class MedicalStockWardIoOperationRepositoryImpl implements MedicalStockWa
 				"  WHERE MMVN_WRD_ID_A_TO = :wardId " +
 				"  AND MMVN_DATE BETWEEN :dateFrom AND :dateTo " +
 				") AS combined " +
-				"ORDER BY mov_date ASC " +
+				"ORDER BY mov_date DESC " +
 				"LIMIT :limit OFFSET :offset";
 
 		List<Object[]> rows = entityManager.createNativeQuery(idsSql)
