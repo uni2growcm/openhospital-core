@@ -72,6 +72,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import java.io.File;
+import java.io.IOException;
 
 @Component
 public class BillBrowserManager {
@@ -832,5 +834,68 @@ public class BillBrowserManager {
 	public double sumPaymentsByUserAndFilters(String username, LocalDateTime dateFrom, LocalDateTime dateTo,
 	                                          Patient patient, User guarantor) throws OHServiceException {
 		return ioOperations.sumPaymentsByUserAndFilters(username, dateFrom, dateTo, patient, guarantor);
+	}
+
+	/**
+	 * Export payments to Sage using streaming (no memory overload)
+	 *
+	 * @param dateFrom start date (inclusive)
+	 * @param dateTo end date (exclusive)
+	 * @throws IOException if an I/O error occurs
+	 */
+
+	public List<BillPayments> getPaymentsForSage(LocalDateTime dateFrom, LocalDateTime dateTo) throws OHServiceException {
+		return ioOperations.getPaymentsForSage(dateFrom, dateTo);
+	}
+
+	/**
+	 * Export payments to Sage using streaming (no memory overload)
+	 *
+	 * @param dateFrom start date (inclusive)
+	 * @param dateTo end date (exclusive)
+	 * @throws IOException if an I/O error occurs
+	 */
+
+	public List<Bill> getBillsForSage(LocalDateTime dateFrom, LocalDateTime dateTo) throws OHServiceException {
+		return ioOperations.getBillsForSage(dateFrom, dateTo);
+	}
+
+	/**
+	 * Export payments to Sage using streaming (no memory overload)
+	 *
+	 * @param file the output file
+	 * @param dateFrom start date (inclusive)
+	 * @param dateTo end date (exclusive)
+	 * @throws IOException if an I/O error occurs
+	 */
+
+	public boolean exportSagePayments(File file, LocalDateTime dateFrom, LocalDateTime dateTo) throws OHServiceException, IOException {
+		return ioOperations.exportSagePayments(file, dateFrom, dateTo);
+	}
+
+	/**
+	 * Export payments to Sage using streaming (no memory overload)
+	 *
+	 * @param file the output file
+	 * @param dateFrom start date (inclusive)
+	 * @param dateTo end date (exclusive)
+	 * @throws IOException if an I/O error occurs
+	 */
+
+	public boolean exportSageBills(File file, LocalDateTime dateFrom, LocalDateTime dateTo) throws OHServiceException, IOException {
+		return ioOperations.exportSageBills(file, dateFrom, dateTo);
+	}
+
+	/**
+	 * Export payments to Sage using streaming (no memory overload)
+	 *
+	 * @param file the output file
+	 * @param dateFrom start date (inclusive)
+	 * @param dateTo end date (exclusive)
+	 * @throws IOException if an I/O error occurs
+	 */
+
+	public void exportSagePaymentsStreaming(File file, LocalDateTime dateFrom, LocalDateTime dateTo) throws IOException, OHServiceException {
+		ioOperations.exportSagePaymentsStreaming(file, dateFrom, dateTo);
 	}
 }
