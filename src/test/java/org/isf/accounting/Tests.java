@@ -630,7 +630,7 @@ class Tests extends OHCoreTestCase {
 
 		Assertions.assertThat(formatted).isNotNull();
 		Assertions.assertThat(formatted).contains(String.valueOf(payment.getBill().getId()));
-		Assertions.assertThat(formatted).contains(String.valueOf(payment.getAmount()).replace('.', ','));  // ← Remplacer . par ,
+		Assertions.assertThat(formatted).contains(String.valueOf(payment.getAmount()).replace('.', ','));
 		Assertions.assertThat(formatted).contains(payment.getUser());
 	}
 
@@ -644,8 +644,8 @@ class Tests extends OHCoreTestCase {
 
 		Assertions.assertThat(formatted).isNotNull();
 		Assertions.assertThat(formatted).contains(String.valueOf(bill.getId()));
-		Assertions.assertThat(formatted).contains(String.valueOf(bill.getAmount()).replace('.', ','));  // ← Remplacer . par ,
-		Assertions.assertThat(formatted).contains(String.valueOf(bill.getBalance()).replace('.', ',')); // ← Remplacer . par ,
+		Assertions.assertThat(formatted).contains(String.valueOf(bill.getAmount()).replace('.', ','));
+		Assertions.assertThat(formatted).contains(String.valueOf(bill.getBalance()).replace('.', ','));
 		Assertions.assertThat(formatted).contains(bill.getStatus());
 	}
 }
