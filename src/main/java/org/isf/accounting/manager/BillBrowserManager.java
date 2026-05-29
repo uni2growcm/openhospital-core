@@ -837,7 +837,6 @@ public class BillBrowserManager {
 	}
 
 	/**
-<<<<<<< HEAD
 	 * Update a BillItemGroup with a new list of items.
 	 * Handles lazy initialization by working directly via repositories.
 	 *
@@ -848,7 +847,9 @@ public class BillBrowserManager {
 	 */
 	public BillItemGroup updateBillItemGroupWithItems(BillItemGroup group, List<BillItemGroupItem> newItems) throws OHServiceException {
 		return ioOperations.updateBillItemGroupWithItems(group, newItems);
-=======
+	}
+
+	/**
 	 * Export payments to Sage using streaming (no memory overload)
 	 *
 	 * @param dateFrom start date (inclusive)
@@ -904,6 +905,5 @@ public class BillBrowserManager {
 	 */
 	public void exportSagePaymentsStreaming(File file, LocalDateTime dateFrom, LocalDateTime dateTo) throws IOException, OHServiceException {
 		ioOperations.exportSagePaymentsStreaming(file, dateFrom, dateTo);
->>>>>>> feature/OH-397-foumban-release
 	}
 }
