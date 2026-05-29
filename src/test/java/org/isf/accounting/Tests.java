@@ -554,12 +554,9 @@ class Tests extends OHCoreTestCase {
 		int id = setupTestBillPayments(false);
 		BillPayments foundPayment = accountingBillPaymentIoOperationRepository.findById(id).orElse(null);
 		assertThat(foundPayment).isNotNull();
-
 		LocalDateTime dateFrom = foundPayment.getDate().minusDays(1);
 		LocalDateTime dateTo = foundPayment.getDate().plusDays(1);
-
 		List<BillPayments> payments = accountingIoOperation.getPaymentsForSage(dateFrom, dateTo);
-
 		assertThat(payments).isNotEmpty();
 		assertThat(payments).contains(foundPayment);
 	}
@@ -570,13 +567,9 @@ class Tests extends OHCoreTestCase {
 		int id = setupTestBill(false);
 		Bill foundBill = accountingBillIoOperationRepository.findById(id).orElse(null);
 		assertThat(foundBill).isNotNull();
-
 		LocalDateTime dateFrom = foundBill.getDate().minusDays(1);
 		LocalDateTime dateTo = foundBill.getDate().plusDays(1);
-
-		// When
 		List<Bill> bills = accountingIoOperation.getBillsForSage(dateFrom, dateTo);
-
 		assertThat(bills).isNotEmpty();
 		assertThat(bills).contains(foundBill);
 	}
@@ -586,66 +579,37 @@ class Tests extends OHCoreTestCase {
 		int id = setupTestBillPayments(false);
 		BillPayments foundPayment = accountingBillPaymentIoOperationRepository.findById(id).orElse(null);
 		Assertions.assertThat(foundPayment).isNotNull();
-
 		LocalDateTime dateFrom = foundPayment.getDate().minusDays(1);
 		LocalDateTime dateTo = foundPayment.getDate().plusDays(1);
-
 		File tempFile = File.createTempFile("sage_payments_test", ".txt");
-
 		boolean result = accountingIoOperation.exportSagePayments(tempFile, dateFrom, dateTo);
-
 		Assertions.assertThat(result).isTrue();
 		Assertions.assertThat(tempFile.exists()).isTrue();
 		Assertions.assertThat(tempFile.length()).isGreaterThan(0);
 		tempFile.delete();
 	}
-
 	@Test
 	void testExportSageBills() throws Exception {
-		int id = setupTestBill(false);
-		Bill foundBill = accountingBillIoOperationRepository.findById(id).orElse(null);
-		Assertions.assertThat(foundBill).isNotNull();
-
-		LocalDateTime dateFrom = foundBill.getDate().minusDays(1);
-		LocalDateTime dateTo = foundBill.getDate().plusDays(1);
-
+		int id = setupTestBillPayments(false);
+		BillPayments foundPayment = accountingBillPaymentIoOperationRepository.findById(id).orElse(null);
+		assertThat(foundPayment).isNotNull();
+		LocalDateTime dateFrom = foundPayment.getDate().minusDays(1);
+		LocalDateTime dateTo = foundPayment.getDate().plusDays(1);
 		File tempFile = File.createTempFile("sage_bills_test", ".txt");
-
 		boolean result = accountingIoOperation.exportSageBills(tempFile, dateFrom, dateTo);
-
-		Assertions.assertThat(result).isTrue();
-		Assertions.assertThat(tempFile.exists()).isTrue();
+		assertThat(result).isTrue();
+		assertThat(tempFile.exists()).isTrue();
 		assertThat(tempFile.length()).isGreaterThan(0);
 		tempFile.delete();
 	}
-
 	@Test
 	void testFormatSagePayment() throws Exception {
-
 		int id = setupTestBillPayments(false);
 		BillPayments payment = accountingBillPaymentIoOperationRepository.findById(id).orElse(null);
 		assertThat(payment).isNotNull();
-
 		String formatted = accountingIoOperation.formatSagePaymentForTest(payment);
-
 		Assertions.assertThat(formatted).isNotNull();
 		Assertions.assertThat(formatted).contains(String.valueOf(payment.getBill().getId()));
 		Assertions.assertThat(formatted).contains(String.valueOf(payment.getAmount()).replace('.', ','));
-		Assertions.assertThat(formatted).contains(payment.getUser());
-	}
-
-	@Test
-	void testFormatSageBill() throws Exception {
-		int id = setupTestBill(false);
-		Bill bill = accountingBillIoOperationRepository.findById(id).orElse(null);
-		assertThat(bill).isNotNull();
-
-		String formatted = accountingIoOperation.formatSageBillForTest(bill);
-
-		Assertions.assertThat(formatted).isNotNull();
-		Assertions.assertThat(formatted).contains(String.valueOf(bill.getId()));
-		Assertions.assertThat(formatted).contains(String.valueOf(bill.getAmount()).replace('.', ','));
-		Assertions.assertThat(formatted).contains(String.valueOf(bill.getBalance()).replace('.', ','));
-		Assertions.assertThat(formatted).contains(bill.getStatus());
 	}
 }

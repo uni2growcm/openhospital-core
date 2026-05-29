@@ -843,7 +843,6 @@ public class BillBrowserManager {
 	 * @param dateTo end date (exclusive)
 	 * @throws IOException if an I/O error occurs
 	 */
-
 	public List<BillPayments> getPaymentsForSage(LocalDateTime dateFrom, LocalDateTime dateTo) throws OHServiceException {
 		return ioOperations.getPaymentsForSage(dateFrom, dateTo);
 	}
@@ -855,7 +854,6 @@ public class BillBrowserManager {
 	 * @param dateTo end date (exclusive)
 	 * @throws IOException if an I/O error occurs
 	 */
-
 	public List<Bill> getBillsForSage(LocalDateTime dateFrom, LocalDateTime dateTo) throws OHServiceException {
 		return ioOperations.getBillsForSage(dateFrom, dateTo);
 	}
@@ -868,7 +866,6 @@ public class BillBrowserManager {
 	 * @param dateTo end date (exclusive)
 	 * @throws IOException if an I/O error occurs
 	 */
-
 	public boolean exportSagePayments(File file, LocalDateTime dateFrom, LocalDateTime dateTo) throws OHServiceException, IOException {
 		return ioOperations.exportSagePayments(file, dateFrom, dateTo);
 	}
@@ -881,7 +878,6 @@ public class BillBrowserManager {
 	 * @param dateTo end date (exclusive)
 	 * @throws IOException if an I/O error occurs
 	 */
-
 	public boolean exportSageBills(File file, LocalDateTime dateFrom, LocalDateTime dateTo) throws OHServiceException, IOException {
 		return ioOperations.exportSageBills(file, dateFrom, dateTo);
 	}
@@ -894,7 +890,6 @@ public class BillBrowserManager {
 	 * @param dateTo end date (exclusive)
 	 * @throws IOException if an I/O error occurs
 	 */
-
 	public void exportSagePaymentsStreaming(File file, LocalDateTime dateFrom, LocalDateTime dateTo) throws IOException, OHServiceException {
 		ioOperations.exportSagePaymentsStreaming(file, dateFrom, dateTo);
 	}
