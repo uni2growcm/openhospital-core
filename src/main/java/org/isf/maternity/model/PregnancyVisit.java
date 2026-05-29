@@ -150,7 +150,6 @@ public class PregnancyVisit extends Auditable<String> {
 	@Transient
 	private volatile int hashCode;
 
-	@Transient
 	public String getGestationalAge() {
 
 		if (pregnancy == null || visitDate == null) {

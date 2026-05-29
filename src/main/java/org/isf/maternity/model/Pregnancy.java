@@ -125,7 +125,6 @@ public class Pregnancy extends Auditable<String> {
 	 * 
 	 * @return String representing gestational age (e.g., "24+3")
 	 */
-	@Transient
 	public String getGestationalAge(LocalDate referenceDate) {
 
 		if (lmp == null || referenceDate == null) {
@@ -143,7 +142,6 @@ public class Pregnancy extends Auditable<String> {
 		return weeks + " " + MessageBundle.getMessage("angal.maternity.gestationalage.weeks") + " " + days + " " + MessageBundle.getMessage("angal.maternity.gestationalage.days");
 	}
 
-	@Transient
 	public String getCurrentGestationalAge() {
 		return getGestationalAge(LocalDate.now());
 	}
