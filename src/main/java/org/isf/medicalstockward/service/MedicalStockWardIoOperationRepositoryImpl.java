@@ -234,21 +234,25 @@ public class MedicalStockWardIoOperationRepositoryImpl implements MedicalStockWa
 			fq.params.put("sex", sex);
 		}
 
-		if (ageFrom != null && ageFrom >= 0) {
-			fq.whereClause.append(" AND m.MMVN_PAT_AGE >= :ageFrom");
-			fq.params.put("ageFrom", ageFrom);
-		}
-		if (ageTo != null && ageTo >= 0) {
-			fq.whereClause.append(" AND m.MMVN_PAT_AGE <= :ageTo");
-			fq.params.put("ageTo", ageTo);
-		}
-		if (weightFrom != null && weightFrom > 0) {
-			fq.whereClause.append(" AND m.MMVN_PAT_WEIGHT >= :weightFrom");
-			fq.params.put("weightFrom", weightFrom);
-		}
-		if (weightTo != null && weightTo > 0) {
-			fq.whereClause.append(" AND m.MMVN_PAT_WEIGHT <= :weightTo");
-			fq.params.put("weightTo", weightTo);
+		if ((ageFrom != null && ageFrom >= 0) || (ageTo != null && ageTo >= 0)){
+			fq.whereClause.append(" AND m.MMVN_IS_PATIENT = 1");
+
+			if (ageFrom != null && ageFrom >= 0) {
+				fq.whereClause.append(" AND m.MMVN_PAT_AGE >= :ageFrom");
+				fq.params.put("ageFrom", ageFrom);
+			}
+			if (ageTo != null && ageTo >= 0) {
+				fq.whereClause.append(" AND m.MMVN_PAT_AGE <= :ageTo");
+				fq.params.put("ageTo", ageTo);
+			}
+			if (weightFrom != null && weightFrom > 0) {
+				fq.whereClause.append(" AND m.MMVN_PAT_WEIGHT >= :weightFrom");
+				fq.params.put("weightFrom", weightFrom);
+			}
+			if (weightTo != null && weightTo > 0) {
+				fq.whereClause.append(" AND m.MMVN_PAT_WEIGHT <= :weightTo");
+				fq.params.put("weightTo", weightTo);
+			}
 		}
 
 		return fq;
