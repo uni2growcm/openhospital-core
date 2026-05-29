@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2023 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -21,6 +21,7 @@
  */
 package org.isf.accounting.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.isf.accounting.model.BillItems;
@@ -60,4 +61,30 @@ public interface AccountingBillItemsIoOperationRepository extends JpaRepository<
 		@Param("prescriptionId") Integer prescriptionId,
 		@Param("itemGroup") String itemGroup
 	);
+
+	@Query("SELECT COALESCE(SUM(b.amount), 0) FROM Bill b WHERE " +
+		"(:status IS NULL OR b.status = :status) AND " +
+		"(:dateFrom IS NULL OR b.date >= :dateFrom) AND " +
+		"(:dateTo IS NULL OR b.date < :dateTo) AND " +
+		"(:patient IS NULL OR b.billPatient = :patient) AND " +
+		"(:guarantor IS NULL OR b.guarantor = :guarantor)")
+	double sumAmountByFilters(
+		@Param("status") String status,
+		@Param("dateFrom") LocalDateTime dateFrom,
+		@Param("dateTo") LocalDateTime dateTo,
+		@Param("patient") org.isf.patient.model.Patient patient,
+		@Param("guarantor") org.isf.menu.model.User guarantor);
+
+	@Query("SELECT COALESCE(SUM(b.balance), 0) FROM Bill b WHERE " +
+		"(:status IS NULL OR b.status = :status) AND " +
+		"(:dateFrom IS NULL OR b.date >= :dateFrom) AND " +
+		"(:dateTo IS NULL OR b.date < :dateTo) AND " +
+		"(:patient IS NULL OR b.billPatient = :patient) AND " +
+		"(:guarantor IS NULL OR b.guarantor = :guarantor)")
+	double sumBalanceByFilters(
+		@Param("status") String status,
+		@Param("dateFrom") LocalDateTime dateFrom,
+		@Param("dateTo") LocalDateTime dateTo,
+		@Param("patient") org.isf.patient.model.Patient patient,
+		@Param("guarantor") org.isf.menu.model.User guarantor);
 }
