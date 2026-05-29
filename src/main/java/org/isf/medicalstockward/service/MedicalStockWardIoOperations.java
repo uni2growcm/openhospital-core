@@ -77,12 +77,19 @@ public class MedicalStockWardIoOperations {
 	 * @throws OHServiceException if an error occurs retrieving the movements.
 	 */
 	public List<MovementWard> getWardMovements(String wardId, LocalDateTime dateFrom, LocalDateTime dateTo) throws OHServiceException {
-		List<Integer> ids = repository.findAllWardMovement(wardId,
-			TimeTools.truncateToSeconds(dateFrom), TimeTools.truncateToSeconds(dateTo));
-		if (ids.isEmpty()) {
-			return new ArrayList<>();
+		List<MovementWard> pMovementWard = new ArrayList<>();
+
+		List<Integer> pMovementWardCode = new ArrayList<>(repository.findAllWardMovement(wardId,
+			TimeTools.truncateToSeconds(dateFrom),
+			TimeTools.truncateToSeconds(dateTo)));
+
+		for (Integer code : pMovementWardCode) {
+			MovementWard movementWard = movementRepository.findById(code).orElse(null);
+			if (movementWard != null) {
+				pMovementWard.add(movementWard);
+			}
 		}
-		return movementRepository.findAllByIds(ids);
+		return pMovementWard;
 	}
 
 	/**
