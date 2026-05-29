@@ -102,4 +102,30 @@ public interface AccountingBillIoOperationRepository extends JpaRepository<Bill,
 		@Param("dateTo") LocalDateTime dateTo,
 		@Param("patient") Patient patient,
 		@Param("guarantor") User guarantor);
+
+	@Query("SELECT COALESCE(SUM(b.amount), 0) FROM Bill b WHERE " +
+		"(:status IS NULL OR b.status = :status) AND " +
+		"(:dateFrom IS NULL OR b.date >= :dateFrom) AND " +
+		"(:dateTo IS NULL OR b.date < :dateTo) AND " +
+		"(:patient IS NULL OR b.billPatient = :patient) AND " +
+		"(:guarantor IS NULL OR b.guarantor = :guarantor)")
+	double sumAmountByFilters(
+		@Param("status") String status,
+		@Param("dateFrom") LocalDateTime dateFrom,
+		@Param("dateTo") LocalDateTime dateTo,
+		@Param("patient") Patient patient,
+		@Param("guarantor") User guarantor);
+
+	@Query("SELECT COALESCE(SUM(b.balance), 0) FROM Bill b WHERE " +
+		"(:status IS NULL OR b.status = :status) AND " +
+		"(:dateFrom IS NULL OR b.date >= :dateFrom) AND " +
+		"(:dateTo IS NULL OR b.date < :dateTo) AND " +
+		"(:patient IS NULL OR b.billPatient = :patient) AND " +
+		"(:guarantor IS NULL OR b.guarantor = :guarantor)")
+	double sumBalanceByFilters(
+		@Param("status") String status,
+		@Param("dateFrom") LocalDateTime dateFrom,
+		@Param("dateTo") LocalDateTime dateTo,
+		@Param("patient") Patient patient,
+		@Param("guarantor") User guarantor);
 }

@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2023 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -27,6 +27,8 @@ import java.util.List;
 
 import org.isf.accounting.model.Bill;
 import org.isf.accounting.model.BillPayments;
+import org.isf.menu.model.User;
+import org.isf.orthanc.model.Patient;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -70,4 +72,30 @@ public interface AccountingBillPaymentIoOperationRepository extends JpaRepositor
 
 	@Query("SELECT bp FROM BillPayments bp WHERE bp.bill.parentId = :parentId ORDER BY bp.date ASC")
 	List<BillPayments> findByBillParentIdOrderByDateAsc(@Param("parentId") Integer parentId);
+
+	@Query("SELECT COALESCE(SUM(bp.amount), 0) FROM BillPayments bp WHERE " +
+		"bp.bill.status != 'D' AND " +
+		"(:dateFrom IS NULL OR bp.date >= :dateFrom) AND " +
+		"(:dateTo IS NULL OR bp.date < :dateTo) AND " +
+		"(:patient IS NULL OR bp.bill.billPatient = :patient) AND " +
+		"(:guarantor IS NULL OR bp.bill.guarantor = :guarantor)")
+	double sumPaymentsByFilters(
+		LocalDateTime dateFrom,
+		LocalDateTime dateTo,
+		org.isf.patient.model.Patient patient,
+		org.isf.menu.model.User guarantor);
+
+	@Query("SELECT COALESCE(SUM(bp.amount), 0) FROM BillPayments bp WHERE " +
+		"bp.bill.status != 'D' AND " +
+		"bp.user = :username AND " +
+		"(:dateFrom IS NULL OR bp.date >= :dateFrom) AND " +
+		"(:dateTo IS NULL OR bp.date < :dateTo) AND " +
+		"(:patient IS NULL OR bp.bill.billPatient = :patient) AND " +
+		"(:guarantor IS NULL OR bp.bill.guarantor = :guarantor)")
+	double sumPaymentsByUserAndFilters(
+		String username,
+		LocalDateTime dateFrom,
+		LocalDateTime dateTo,
+		org.isf.patient.model.Patient patient,
+		org.isf.menu.model.User guarantor);
 }
