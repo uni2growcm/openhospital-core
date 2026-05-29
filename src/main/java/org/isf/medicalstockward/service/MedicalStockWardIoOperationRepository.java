@@ -86,7 +86,7 @@ public interface MedicalStockWardIoOperationRepository extends JpaRepository<Med
 		"where medWard.id.ward.code = :ward " +
 		"group by medWard.id.medical " +
 		"having sum(medWard.in_quantity - medWard.out_quantity) > 0 " +
-		"order by medWard.id.medical.description asc")
+		"order by medWard.id.medical.description desc")
 	Page<Object[]> findTotalQuantityByWard(
 		@Param("ward") String ward, Pageable pageable);
 }

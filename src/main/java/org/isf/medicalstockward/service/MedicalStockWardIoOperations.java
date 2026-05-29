@@ -23,6 +23,8 @@ package org.isf.medicalstockward.service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.isf.medicals.model.Medical;
@@ -75,15 +77,12 @@ public class MedicalStockWardIoOperations {
 	 * @throws OHServiceException if an error occurs retrieving the movements.
 	 */
 	public List<MovementWard> getWardMovements(String wardId, LocalDateTime dateFrom, LocalDateTime dateTo) throws OHServiceException {
-		List<MovementWard> pMovementWard = new ArrayList<>();
-
-		List<Integer> pMovementWardCode = new ArrayList<>(repository.findAllWardMovement(wardId, TimeTools.truncateToSeconds(dateFrom),
-			TimeTools.truncateToSeconds(dateTo)));
-		for (Integer code : pMovementWardCode) {
-			MovementWard movementWard = movementRepository.findById(code).orElse(null);
-			pMovementWard.add(movementWard);
+		List<Integer> ids = repository.findAllWardMovement(wardId,
+			TimeTools.truncateToSeconds(dateFrom), TimeTools.truncateToSeconds(dateTo));
+		if (ids.isEmpty()) {
+			return new ArrayList<>();
 		}
-		return pMovementWard;
+		return movementRepository.findAllByIds(ids);
 	}
 
 	/**
@@ -302,20 +301,18 @@ public class MedicalStockWardIoOperations {
 	 * @throws OHServiceException
 	 */
 	public List<MedicalWard> getMedicalsWardTotalQuantity(String wardId) throws OHServiceException {
-		String wardID = String.valueOf(wardId);
 		List<MedicalWard> medicalWards = getMedicalsWard(wardId, true);
-
-		List<MedicalWard> medicalWardsQty = new ArrayList<>();
-
-		for (MedicalWard medicalWard : medicalWards) {
-
-			if (!medicalWardsQty.contains(medicalWard)) {
-				Double qty = repository.findQuantityInWardWhereMedicalAndWard(medicalWard.getId().getMedical().getCode(), wardID);
-				medicalWard.setQty(qty);
-				medicalWardsQty.add(medicalWard);
+		Map<Integer, MedicalWard> deduped = new LinkedHashMap<>();
+		for (MedicalWard mw : medicalWards) {
+			int medCode = mw.getId().getMedical().getCode();
+			if (!deduped.containsKey(medCode)) {
+				deduped.put(medCode, mw);
+			} else {
+				MedicalWard existing = deduped.get(medCode);
+				existing.setQty(existing.getQty() + mw.getQty());
 			}
 		}
-		return medicalWardsQty;
+		return new ArrayList<>(deduped.values());
 	}
 
 	/**

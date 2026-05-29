@@ -60,13 +60,9 @@ public interface MovementWardIoOperationRepository extends JpaRepository<Movemen
 
 	@Query("select m from MovementWard m " +
 		"left join fetch m.medical med " +
-		"left join fetch med.type " +
-		"left join fetch m.patient " +
+		"left join fetch m.patient p " +
 		"left join fetch m.lot " +
-		"left join fetch m.ward " +
-		"left join fetch m.wardTo " +
-		"left join fetch m.wardFrom " +
 		"where m.code in :ids " +
-		"order by m.date asc")
+		"order by m.date desc")
 	List<MovementWard> findAllByIds(@Param("ids") List<Integer> ids);
 }
