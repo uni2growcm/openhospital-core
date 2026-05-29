@@ -447,7 +447,6 @@ public class AccountingIoOperations {
 		return billItemGroupRepository.save(managed);
 	}
 
-
 	/**
 	 * Delete a billItemGroup and all its associated items (cascade delete)
 	 *
