@@ -21,11 +21,17 @@
  */
 package org.isf.accounting.service;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Stream;
 
 import org.isf.accounting.model.Bill;
 import org.isf.accounting.model.BillItemGroup;
@@ -33,6 +39,7 @@ import org.isf.accounting.model.BillItemGroupItem;
 import org.isf.accounting.model.BillItems;
 import org.isf.accounting.model.BillPayments;
 import org.isf.generaldata.MessageBundle;
+import org.isf.generaldata.SageConfig;
 import org.isf.lab.manager.LabManager;
 import org.isf.menu.model.User;
 import org.isf.operation.manager.OperationRowBrowserManager;
@@ -693,5 +700,173 @@ public class AccountingIoOperations {
 		LocalDateTime from = dateFrom != null ? TimeTools.getBeginningOfDay(dateFrom) : null;
 		LocalDateTime to = dateTo != null ? TimeTools.getBeginningOfNextDay(dateTo) : null;
 		return billPaymentRepository.sumPaymentsByUserAndFilters(username, from, to, patient, guarantor);
+	}
+
+	/**
+	 * Retrieves all payments within the specified date range for Sage export.
+	 *
+	 * @param dateFrom the start date (inclusive)
+	 * @param dateTo the end date (exclusive)
+	 * @return a list of {@link BillPayments} within the specified date range
+	 * @throws OHServiceException if an error occurs during database access
+	 */
+	public List<BillPayments> getPaymentsForSage(LocalDateTime dateFrom, LocalDateTime dateTo) throws OHServiceException {
+		return billPaymentRepository.findPaymentsForSage(
+			TimeTools.getBeginningOfDay(dateFrom),
+			TimeTools.getBeginningOfNextDay(dateTo)
+		);
+	}
+
+	/**
+	 * Retrieves all bills within the specified date range for Sage export.
+	 *
+	 * @param dateFrom the start date (inclusive)
+	 * @param dateTo the end date (exclusive)
+	 * @return a list of {@link Bill} within the specified date range
+	 * @throws OHServiceException if an error occurs during database access
+	 */
+	public List<Bill> getBillsForSage(LocalDateTime dateFrom, LocalDateTime dateTo) throws OHServiceException {
+		return billRepository.findBillsForSage(
+			TimeTools.getBeginningOfDay(dateFrom),
+			TimeTools.getBeginningOfNextDay(dateTo)
+		);
+	}
+
+	/**
+	 * Exports payments to a text file in Sage-compatible format.
+	 *
+	 * @param file the destination file to write the export data
+	 * @param dateFrom the start date (inclusive)
+	 * @param dateTo the end date (exclusive)
+	 * @return {@code true} if the export completed successfully
+	 * @throws OHServiceException if an error occurs during database access
+	 * @throws IOException if an I/O error occurs while writing to the file
+	 */
+	public boolean exportSagePayments(File file, LocalDateTime dateFrom, LocalDateTime dateTo) throws OHServiceException, IOException {
+		List<BillPayments> payments = getPaymentsForSage(dateFrom, dateTo);
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+			for (BillPayments payment : payments) {
+				writer.write(formatSagePaymentLine(payment, true));
+				writer.newLine();
+				writer.write(formatSagePaymentLine(payment, false));
+				writer.newLine();
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Exports bills to a text file in Sage-compatible format.
+	 *
+	 * @param file the destination file to write the export data
+	 * @param dateFrom the start date (inclusive)
+	 * @param dateTo the end date (exclusive)
+	 * @return {@code true} if the export completed successfully
+	 * @throws OHServiceException if an error occurs during database access
+	 * @throws IOException if an I/O error occurs while writing to the file
+	 */
+	public boolean exportSageBills(File file, LocalDateTime dateFrom, LocalDateTime dateTo) throws OHServiceException, IOException {
+		return exportSagePayments(file, dateFrom, dateTo);
+	}
+
+	/**
+	 * Formats a single payment into a Sage-compatible line.
+	 *
+	 * @param payment the payment to format
+	 * @param isDebit {@code true} for debit line (cash account), {@code false} for credit line (customer account)
+	 * @return a formatted string ready for Sage import
+	 */
+	private String formatSagePaymentLine(BillPayments payment, boolean isDebit) {
+		DateTimeFormatter fmt = DateTimeFormatter.ofPattern("ddMMyy");
+		String journalCode = "CASH3";
+		String reference = fmt.format(payment.getDate()) + "C" + payment.getBill().getId();
+		String patientName = getPatientName(payment.getBill());
+		String libelle = journalCode + "-" + reference + "-" + patientName;
+		String amount = String.format("%.2f", payment.getAmount()).replace('.', ',');
+
+		if (isDebit) {
+			return String.format("%-5s %-13s %-10s %-40s %10s %10s",
+				journalCode, reference, SageConfig.CASH_ACCOUNT, libelle, amount, "0,00");
+		} else {
+			return String.format("%-5s %-13s %-10s %-40s %10s %10s",
+				journalCode, reference, SageConfig.CUSTOMER_GENERAL_ACCOUNT, libelle, "0,00", amount);
+		}
+	}
+
+	/**
+	 * Extracts and sanitizes the patient name from a bill for Sage export.
+	 *
+	 * @param bill the bill containing the patient information
+	 * @return the sanitized patient name in uppercase, or "PATIENT_INCONNU" if no patient is associated
+	 */
+	private String getPatientName(Bill bill) {
+		if (bill.getBillPatient() != null && bill.getBillPatient().getName() != null) {
+			String name = bill.getBillPatient().getName().toUpperCase();
+			name = name.replace(' ', '_');
+			name = name.replace("'", "");
+			name = name.replace("-", "_");
+			name = name.replace(".", "");
+			name = name.replace(",", "");
+			return name;
+		}
+		return "PATIENT_INCONNU";
+	}
+
+	/**
+	 * Formats a payment for testing purposes (debit line only).
+	 *
+	 * @param payment the payment to format
+	 * @return the formatted debit line string
+	 */
+	public String formatSagePaymentForTest(BillPayments payment) {
+		return formatSagePaymentLine(payment, true);
+	}
+
+	/**
+	 * Formats a bill for testing purposes in Sage-compatible format.
+	 *
+	 * @param bill the bill to format
+	 * @return a formatted test string with semicolon separators
+	 */
+	public String formatSageBillForTest(Bill bill) {
+		DateTimeFormatter fmt = DateTimeFormatter.ofPattern("ddMMyy");
+		String journalCode = "CASH3";
+		String reference = fmt.format(bill.getDate()) + "C" + bill.getId();
+		String patientName = getPatientName(bill);
+		String libelle = journalCode + "-" + reference + "-" + patientName;
+		String amount = String.format("%.2f", bill.getAmount()).replace('.', ',');
+
+		return journalCode + ";" + reference + ";" + SageConfig.CUSTOMER_GENERAL_ACCOUNT + ";" +
+			libelle + ";0,00;" + amount;
+	}
+
+	/**
+	 * Exports payments to a text file using streaming to minimize memory usage.
+	 *
+	 * @param file the destination file to write the export data
+	 * @param dateFrom the start date (inclusive)
+	 * @param dateTo the end date (exclusive)
+	 * @throws IOException if an I/O error occurs while writing to the file
+	 * @see #exportSagePayments(File, LocalDateTime, LocalDateTime) for non-streaming version
+	 */
+	@Transactional(readOnly = true)
+	public void exportSagePaymentsStreaming(File file, LocalDateTime dateFrom, LocalDateTime dateTo) throws IOException {
+		LocalDateTime from = TimeTools.getBeginningOfDay(dateFrom);
+		LocalDateTime to = TimeTools.getBeginningOfNextDay(dateTo);
+
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+		     Stream<BillPayments> stream = billPaymentRepository.streamPaymentsForSage(from, to)) {
+
+			stream.forEach(payment -> {
+				try {
+					writer.write(formatSagePaymentLine(payment, true));
+					writer.newLine();
+					writer.write(formatSagePaymentLine(payment, false));
+					writer.newLine();
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+				}
+			});
+		}
 	}
 }

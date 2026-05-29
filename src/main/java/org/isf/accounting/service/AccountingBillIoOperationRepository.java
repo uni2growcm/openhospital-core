@@ -128,4 +128,7 @@ public interface AccountingBillIoOperationRepository extends JpaRepository<Bill,
 		@Param("dateTo") LocalDateTime dateTo,
 		@Param("patient") Patient patient,
 		@Param("guarantor") User guarantor);
+
+	@Query("SELECT b FROM Bill b WHERE b.date >= :dateFrom AND b.date < :dateTo ORDER BY b.date")
+	List<Bill> findBillsForSage(@Param("dateFrom") LocalDateTime dateFrom, @Param("dateTo") LocalDateTime dateTo);
 }
