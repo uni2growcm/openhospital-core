@@ -72,6 +72,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import java.io.File;
+import java.io.IOException;
 
 @Component
 public class BillBrowserManager {
@@ -769,5 +771,139 @@ public class BillBrowserManager {
 				operationRowManager.updateBillForOperationRow(item.getPrescriptionId(), bill);
 			}
 		}
+	}
+
+	/**
+	 * Sum of bill amounts filtered by status, date range, patient and guarantor
+	 *
+	 * @param status the bill status to filter
+	 * @param dateFrom the start date to filter
+	 * @param dateTo the end date to filter
+	 * @param patient the patient to filter
+	 * @param guarantor the user acting as guarantor to filter
+	 * @return the sum of amounts matching the filters
+	 * @throws OHServiceException
+	 */
+	public double sumAmountByFilters(String status, LocalDateTime dateFrom, LocalDateTime dateTo,
+	                                 Patient patient, User guarantor) throws OHServiceException {
+		return ioOperations.sumAmountByFilters(status, dateFrom, dateTo, patient, guarantor);
+	}
+
+	/**
+	 * Sum of bill balances filtered by status, date range, patient and guarantor
+	 *
+	 * @param status the bill status to filter
+	 * @param dateFrom the start date to filter
+	 * @param dateTo the end date to filter
+	 * @param patient the patient to filter
+	 * @param guarantor the user acting as guarantor to filter
+	 * @return the sum of balances matching the filters
+	 * @throws OHServiceException
+	 */
+	public double sumBalanceByFilters(String status, LocalDateTime dateFrom, LocalDateTime dateTo,
+	                                  Patient patient, User guarantor) throws OHServiceException {
+		return ioOperations.sumBalanceByFilters(status, dateFrom, dateTo, patient, guarantor);
+	}
+
+	/**
+	 * Sum of payments filtered by date range, patient and guarantor
+	 *
+	 * @param dateFrom the start date to filter
+	 * @param dateTo the end date to filter
+	 * @param patient the patient to filter
+	 * @param guarantor the user acting as guarantor to filter
+	 * @return the sum of payments matching the filters
+	 * @throws OHServiceException
+	 */
+	public double sumPaymentsByFilters(LocalDateTime dateFrom, LocalDateTime dateTo,
+	                                   Patient patient, User guarantor) throws OHServiceException {
+		return ioOperations.sumPaymentsByFilters(dateFrom, dateTo, patient, guarantor);
+	}
+
+	/**
+	 * Sum of payments filtered by user, date range, patient and guarantor
+	 *
+	 * @param username the user who created the payment
+	 * @param dateFrom the start date to filter
+	 * @param dateTo the end date to filter
+	 * @param patient the patient to filter
+	 * @param guarantor the user acting as guarantor to filter
+	 * @return the sum of payments matching the filters
+	 * @throws OHServiceException
+	 */
+	public double sumPaymentsByUserAndFilters(String username, LocalDateTime dateFrom, LocalDateTime dateTo,
+	                                          Patient patient, User guarantor) throws OHServiceException {
+		return ioOperations.sumPaymentsByUserAndFilters(username, dateFrom, dateTo, patient, guarantor);
+	}
+
+	/**
+	 * Update a BillItemGroup with a new list of items.
+	 * Handles lazy initialization by working directly via repositories.
+	 *
+	 * @param group    the BillItemGroup to update
+	 * @param newItems the new list of items
+	 * @return the updated BillItemGroup
+	 * @throws OHServiceException when fails to update
+	 */
+	public BillItemGroup updateBillItemGroupWithItems(BillItemGroup group, List<BillItemGroupItem> newItems) throws OHServiceException {
+		return ioOperations.updateBillItemGroupWithItems(group, newItems);
+	}
+
+	/**
+	 * Export payments to Sage using streaming (no memory overload)
+	 *
+	 * @param dateFrom start date (inclusive)
+	 * @param dateTo end date (exclusive)
+	 * @throws IOException if an I/O error occurs
+	 */
+	public List<BillPayments> getPaymentsForSage(LocalDateTime dateFrom, LocalDateTime dateTo) throws OHServiceException {
+		return ioOperations.getPaymentsForSage(dateFrom, dateTo);
+	}
+
+	/**
+	 * Export payments to Sage using streaming (no memory overload)
+	 *
+	 * @param dateFrom start date (inclusive)
+	 * @param dateTo end date (exclusive)
+	 * @throws IOException if an I/O error occurs
+	 */
+	public List<Bill> getBillsForSage(LocalDateTime dateFrom, LocalDateTime dateTo) throws OHServiceException {
+		return ioOperations.getBillsForSage(dateFrom, dateTo);
+	}
+
+	/**
+	 * Export payments to Sage using streaming (no memory overload)
+	 *
+	 * @param file the output file
+	 * @param dateFrom start date (inclusive)
+	 * @param dateTo end date (exclusive)
+	 * @throws IOException if an I/O error occurs
+	 */
+	public boolean exportSagePayments(File file, LocalDateTime dateFrom, LocalDateTime dateTo) throws OHServiceException, IOException {
+		return ioOperations.exportSagePayments(file, dateFrom, dateTo);
+	}
+
+	/**
+	 * Export payments to Sage using streaming (no memory overload)
+	 *
+	 * @param file the output file
+	 * @param dateFrom start date (inclusive)
+	 * @param dateTo end date (exclusive)
+	 * @throws IOException if an I/O error occurs
+	 */
+	public boolean exportSageBills(File file, LocalDateTime dateFrom, LocalDateTime dateTo) throws OHServiceException, IOException {
+		return ioOperations.exportSageBills(file, dateFrom, dateTo);
+	}
+
+	/**
+	 * Export payments to Sage using streaming (no memory overload)
+	 *
+	 * @param file the output file
+	 * @param dateFrom start date (inclusive)
+	 * @param dateTo end date (exclusive)
+	 * @throws IOException if an I/O error occurs
+	 */
+	public void exportSagePaymentsStreaming(File file, LocalDateTime dateFrom, LocalDateTime dateTo) throws IOException, OHServiceException {
+		ioOperations.exportSagePaymentsStreaming(file, dateFrom, dateTo);
 	}
 }
