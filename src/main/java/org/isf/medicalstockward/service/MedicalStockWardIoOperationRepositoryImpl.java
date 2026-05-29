@@ -219,8 +219,8 @@ public class MedicalStockWardIoOperationRepositoryImpl implements MedicalStockWa
 		}
 		if (StringUtils.isNotEmpty(medicalTypeCode)) {
 			fq.joinClause.append(
-				" INNER JOIN OH_MEDICALS med ON m.MMVN_MDSR_ID = med.MDSR_ID"
-					+ " INNER JOIN OH_MEDICALTYPE mt ON med.MDSR_MDSRT_ID_A = mt.MDSRT_ID_A");
+				" INNER JOIN OH_MEDICALDSR med ON m.MMVN_MDSR_ID = med.MDSR_ID"
+					+ " INNER JOIN OH_MEDICALDSRTYPE mt ON med.MDSR_MDSRT_ID_A = mt.MDSRT_ID_A");
 			fq.whereClause.append(" AND mt.MDSRT_ID_A = :medicalTypeCode");
 			fq.params.put("medicalTypeCode", medicalTypeCode);
 		}
@@ -234,11 +234,11 @@ public class MedicalStockWardIoOperationRepositoryImpl implements MedicalStockWa
 			fq.params.put("sex", sex);
 		}
 
-		if (ageFrom != null && ageFrom > 0) {
+		if (ageFrom != null && ageFrom >= 0) {
 			fq.whereClause.append(" AND m.MMVN_PAT_AGE >= :ageFrom");
 			fq.params.put("ageFrom", ageFrom);
 		}
-		if (ageTo != null && ageTo > 0) {
+		if (ageTo != null && ageTo >= 0) {
 			fq.whereClause.append(" AND m.MMVN_PAT_AGE <= :ageTo");
 			fq.params.put("ageTo", ageTo);
 		}
