@@ -24,6 +24,7 @@ package org.isf.accounting.service;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.isf.accounting.model.Bill;
 import org.isf.accounting.model.BillPayments;
@@ -98,4 +99,10 @@ public interface AccountingBillPaymentIoOperationRepository extends JpaRepositor
 		LocalDateTime dateTo,
 		org.isf.patient.model.Patient patient,
 		org.isf.menu.model.User guarantor);
+
+	@Query("SELECT bp FROM BillPayments bp WHERE bp.date >= :dateFrom AND bp.date < :dateTo ORDER BY bp.date")
+	List<BillPayments> findPaymentsForSage(@Param("dateFrom") LocalDateTime dateFrom, @Param("dateTo") LocalDateTime dateTo);
+
+	@Query("SELECT bp FROM BillPayments bp WHERE bp.date >= :dateFrom AND bp.date < :dateTo ORDER BY bp.date")
+	Stream<BillPayments> streamPaymentsForSage(@Param("dateFrom") LocalDateTime dateFrom, @Param("dateTo") LocalDateTime dateTo);
 }
