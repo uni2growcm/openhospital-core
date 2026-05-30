@@ -85,6 +85,7 @@ public final class GeneralData extends ConfigurationProperties {
 	public static boolean ALLOWMULTIPLEOPENEDBILL;
 	public static String PATIENTBILLGROUPED;
 	public static String PATIENTBILLSTATEMENT;
+	public static String PATIENTARCHIVEBILLSTATEMENT;
 	public static boolean DEBUG;
 	public static String PATIENTPHOTOSTORAGE;
 	public static Integer SESSIONTIMEOUT;
@@ -149,6 +150,7 @@ public final class GeneralData extends ConfigurationProperties {
 	private static final boolean DEFAULT_ALLOWMULTIPLEOPENEDBILL = false;
 	private static final String DEFAULT_PATIENTBILLGROUPED = "PatientBillGrouped";
 	private static final String DEFAULT_PATIENTBILLSTATEMENT = "PatientBillStatement";
+	private static final String DEFAULT_PATIENTARCHIVEBILLSTATEMENT = "PatientArchiveBillStatement";
 	private static final boolean DEFAULT_DEBUG = false;
 	private static final int DEFAULT_STRONGLENGTH = 6;
 	private static final int DEFAULT_SESSIONTIMEOUT = 5;
@@ -226,6 +228,7 @@ public final class GeneralData extends ConfigurationProperties {
 		ALLOWMULTIPLEOPENEDBILL = myGetProperty("ALLOWMULTIPLEOPENEDBILL", DEFAULT_ALLOWMULTIPLEOPENEDBILL);
 		PATIENTBILLGROUPED = myGetProperty("PATIENTBILLGROUPED", DEFAULT_PATIENTBILLGROUPED);
 		PATIENTBILLSTATEMENT = myGetProperty("PATIENTBILLSTATEMENT", DEFAULT_PATIENTBILLSTATEMENT);
+		PATIENTARCHIVEBILLSTATEMENT = myGetProperty("PATIENTARCHIVEBILLSTATEMENT", DEFAULT_PATIENTARCHIVEBILLSTATEMENT);
 		DEBUG = myGetProperty("DEBUG", DEFAULT_DEBUG);
 
 		STRONGPASSWORD = myGetProperty("STRONGPASSWORD", DEFAULT_STRONGPASSWORD);
