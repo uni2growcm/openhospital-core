@@ -277,6 +277,22 @@ public class BillBrowserManager {
 
 		Bill updatedBill = ioOperations.updateBill(updateBill);
 		ioOperations.newBillItems(updateBill, billItems);
+
+		if (!billPayments.isEmpty()) {
+			List<BillPayments> paymentsToSave = new ArrayList<>();
+			for (BillPayments payment : billPayments) {
+				BillPayments newPayment = new BillPayments(
+					0,
+					updatedBill,
+					payment.getDate(),
+					payment.getAmount(),
+					payment.getUser()
+				);
+				paymentsToSave.add(newPayment);
+			}
+			ioOperations.newBillPayments(updatedBill, paymentsToSave);
+		}
+
 		markPrescriptionsAsBilled(billItems, updatedBill);
 		return updatedBill;
 	}
