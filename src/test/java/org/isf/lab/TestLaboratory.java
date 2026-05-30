@@ -54,7 +54,6 @@ public class TestLaboratory {
 			laboratory = new Laboratory();
 			setParameters(laboratory, exam, patient);
 		} else {
-			// Create Laboratory with all parameters 
 			laboratory = new Laboratory(exam, labDate, result, note, patient, patName);
 			laboratory.setAge(age);
 			laboratory.setLabDate(labDate);
@@ -65,6 +64,10 @@ public class TestLaboratory {
 		}
 
 		return laboratory;
+	}
+
+	public void setMaterial(String material) {
+		this.material = material;
 	}
 
 	public void setParameters(Laboratory laboratory, Exam exam, Patient patient) {
@@ -81,12 +84,6 @@ public class TestLaboratory {
 	}
 
 	public void check(Laboratory laboratory) {
-		// If GeneralData.LABEXTENDED is true then the age found in the patient record is
-		// copied into the Laboratory record and as the age in the patient record changes
-		// based on when (what day and year) the test is run then a comparison to a fixed
-		// value almost always fails (except for late in 2021 and early in 2022).
-		// Likewise the patient name is copied from the Patient record which does not
-		// match the default in the Laboratory record.
 		if (!GeneralData.LABEXTENDED) {
 			assertThat(laboratory.getAge()).isEqualTo(age);
 			assertThat(laboratory.getPatName()).isEqualTo(patName);
