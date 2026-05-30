@@ -24,6 +24,7 @@ package org.isf.medicalstockward.service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.isf.medicalstock.model.Movement;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -45,4 +46,8 @@ public interface MedicalStockWardIoOperationRepositoryCustom {
 		Float weightFrom,
 		Float weightTo,
 		Pageable pageable);
+
+	Page<Movement> findIncomingMovements(String wardId,
+	                                     LocalDateTime dateFrom, LocalDateTime dateTo,
+	                                     Pageable pageable);
 }

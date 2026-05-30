@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2024 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -24,6 +24,8 @@ package org.isf.medicalstockward.service;
 import java.util.List;
 
 import org.isf.medicalstockward.model.MedicalWard;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -78,4 +80,13 @@ public interface MedicalStockWardIoOperationRepository extends JpaRepository<Med
 	@Query(value = "select medWard from MedicalWard medWard where medWard.id.ward.code=:ward and medWard.id.medical.code = :medical")
 	List<MedicalWard> findAllWhereWardAndMedical(@Param("ward") String wardId, @Param("medical") int medId);
 
+	@Query("select medWard.id.medical, " +
+		"sum(medWard.in_quantity - medWard.out_quantity) as totalQty " +
+		"from MedicalWard medWard " +
+		"where medWard.id.ward.code = :ward " +
+		"group by medWard.id.medical " +
+		"having sum(medWard.in_quantity - medWard.out_quantity) > 0 " +
+		"order by medWard.id.medical.description desc")
+	Page<Object[]> findTotalQuantityByWard(
+		@Param("ward") String ward, Pageable pageable);
 }
