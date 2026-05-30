@@ -31,7 +31,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
+import org.isf.accounting.model.ArchivedBill;
+import org.isf.accounting.model.ArchivedBillItems;
+import org.isf.accounting.model.ArchivedBillPayments;
 import org.isf.utils.exception.OHServiceException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,6 +51,15 @@ class ArchiveIoOperationsTest {
 
 	@Mock
 	private ArchiveRepository archiveRepository;
+
+	@Mock
+	private ArchivedBillRepository archivedBillRepository;
+
+	@Mock
+	private ArchivedBillItemsRepository archivedBillItemsRepository;
+
+	@Mock
+	private ArchivedBillPaymentsRepository archivedBillPaymentsRepository;
 
 	@Captor
 	private ArgumentCaptor<LocalDateTime> currentTimeCaptor;
@@ -61,7 +76,7 @@ class ArchiveIoOperationsTest {
 	@BeforeEach
 	void setUp() {
 		closeable = MockitoAnnotations.openMocks(this);
-		archiveIoOperations = new ArchiveIoOperations(archiveRepository);
+		archiveIoOperations = new ArchiveIoOperations(archiveRepository, archivedBillRepository, archivedBillItemsRepository, archivedBillPaymentsRepository);
 	}
 
 	@AfterEach
@@ -210,5 +225,441 @@ class ArchiveIoOperationsTest {
 
 		assertThatThrownBy(() -> archiveIoOperations.archiveClosedBills())
 			.isInstanceOf(OHServiceException.class);
+	}
+
+	// ==================================================================================
+	// Archived Bills query tests
+	// ==================================================================================
+
+	@Test
+	void testGetArchivedBills_ReturnsAllBills() throws Exception {
+		List<ArchivedBill> expected = List.of(new ArchivedBill(), new ArchivedBill());
+		when(archivedBillRepository.findAllByOrderByDateDesc()).thenReturn(expected);
+
+		List<ArchivedBill> result = archiveIoOperations.getArchivedBills();
+
+		assertThat(result).hasSize(2);
+		verify(archivedBillRepository).findAllByOrderByDateDesc();
+	}
+
+	@Test
+	void testGetArchivedBill_WithValidId_ReturnsBill() throws Exception {
+		ArchivedBill expected = new ArchivedBill();
+		expected.setId(123);
+		when(archivedBillRepository.findById(123)).thenReturn(Optional.of(expected));
+
+		ArchivedBill result = archiveIoOperations.getArchivedBill(123);
+
+		assertThat(result).isNotNull();
+		assertThat(result.getId()).isEqualTo(123);
+	}
+
+	@Test
+	void testGetArchivedBill_WithInvalidId_ReturnsNull() throws Exception {
+		when(archivedBillRepository.findById(999)).thenReturn(Optional.empty());
+
+		ArchivedBill result = archiveIoOperations.getArchivedBill(999);
+
+		assertThat(result).isNull();
+	}
+
+	@Test
+	void testGetArchivedBillsByDateRange_DelegatesToRepository() throws Exception {
+		LocalDateTime dateFrom = LocalDateTime.of(2024, 1, 1, 0, 0);
+		LocalDateTime dateTo = LocalDateTime.of(2024, 12, 31, 23, 59);
+		when(archivedBillRepository.findByDateBetween(any(LocalDateTime.class), any(LocalDateTime.class)))
+			.thenReturn(List.of(new ArchivedBill()));
+
+		List<ArchivedBill> result = archiveIoOperations.getArchivedBills(dateFrom, dateTo);
+
+		assertThat(result).hasSize(1);
+		verify(archivedBillRepository).findByDateBetween(any(LocalDateTime.class), any(LocalDateTime.class));
+	}
+
+	@Test
+	void testGetArchivedBillsByDateRangeAndPatientId_WithPatientId_DelegatesCorrectly() throws Exception {
+		LocalDateTime dateFrom = LocalDateTime.of(2024, 1, 1, 0, 0);
+		LocalDateTime dateTo = LocalDateTime.of(2024, 12, 31, 23, 59);
+		when(archivedBillRepository.findByDateAndPatient(any(LocalDateTime.class), any(LocalDateTime.class), anyInt()))
+			.thenReturn(List.of(new ArchivedBill()));
+
+		List<ArchivedBill> result = archiveIoOperations.getArchivedBills(dateFrom, dateTo, 456);
+
+		assertThat(result).hasSize(1);
+		verify(archivedBillRepository).findByDateAndPatient(any(LocalDateTime.class), any(LocalDateTime.class), anyInt());
+	}
+
+	@Test
+	void testGetArchivedBillsByDateRangeAndPatientId_WithNullPatientId_DelegatesToDateRange() throws Exception {
+		LocalDateTime dateFrom = LocalDateTime.of(2024, 1, 1, 0, 0);
+		LocalDateTime dateTo = LocalDateTime.of(2024, 12, 31, 23, 59);
+		when(archivedBillRepository.findByDateBetween(any(LocalDateTime.class), any(LocalDateTime.class)))
+			.thenReturn(List.of());
+
+		List<ArchivedBill> result = archiveIoOperations.getArchivedBills(dateFrom, dateTo, null);
+
+		assertThat(result).isEmpty();
+		verify(archivedBillRepository).findByDateBetween(any(LocalDateTime.class), any(LocalDateTime.class));
+	}
+
+	@Test
+	void testGetArchivedPendingBills_WithPatientId_DelegatesCorrectly() throws Exception {
+		when(archivedBillRepository.findByStatusAndBillPatientIdOrderByDateDesc("O", 789))
+			.thenReturn(List.of(new ArchivedBill()));
+
+		List<ArchivedBill> result = archiveIoOperations.getArchivedPendingBills(789);
+
+		assertThat(result).hasSize(1);
+		verify(archivedBillRepository).findByStatusAndBillPatientIdOrderByDateDesc("O", 789);
+	}
+
+	@Test
+	void testGetArchivedPendingBills_WithNullPatientId_DelegatesToStatusOnly() throws Exception {
+		when(archivedBillRepository.findByStatusOrderByDateDesc("O"))
+			.thenReturn(List.of());
+
+		List<ArchivedBill> result = archiveIoOperations.getArchivedPendingBills(null);
+
+		assertThat(result).isEmpty();
+		verify(archivedBillRepository).findByStatusOrderByDateDesc("O");
+	}
+
+	@Test
+	void testGetArchivedBillsByDatePatientAndGuarantor_WithPatientId_DelegatesCorrectly() throws Exception {
+		LocalDateTime dateFrom = LocalDateTime.of(2024, 1, 1, 0, 0);
+		LocalDateTime dateTo = LocalDateTime.of(2024, 12, 31, 23, 59);
+		when(archivedBillRepository.findByDateBetweenAndBillPatientIdAndGuarantorId(
+			any(LocalDateTime.class), any(LocalDateTime.class), anyInt(), anyString()))
+			.thenReturn(List.of(new ArchivedBill()));
+
+		List<ArchivedBill> result = archiveIoOperations.getArchivedBillsByDatePatientAndGuarantor(dateFrom, dateTo, 456, "g1");
+
+		assertThat(result).hasSize(1);
+		verify(archivedBillRepository).findByDateBetweenAndBillPatientIdAndGuarantorId(
+			any(LocalDateTime.class), any(LocalDateTime.class), anyInt(), anyString());
+	}
+
+	@Test
+	void testGetArchivedBillsByDatePatientAndGuarantor_WithNullPatientId_DelegatesToGuarantorOnly() throws Exception {
+		LocalDateTime dateFrom = LocalDateTime.of(2024, 1, 1, 0, 0);
+		LocalDateTime dateTo = LocalDateTime.of(2024, 12, 31, 23, 59);
+		when(archivedBillRepository.findByDateBetweenAndGuarantorId(
+			any(LocalDateTime.class), any(LocalDateTime.class), anyString()))
+			.thenReturn(List.of());
+
+		List<ArchivedBill> result = archiveIoOperations.getArchivedBillsByDatePatientAndGuarantor(dateFrom, dateTo, null, "g1");
+
+		assertThat(result).isEmpty();
+		verify(archivedBillRepository).findByDateBetweenAndGuarantorId(
+			any(LocalDateTime.class), any(LocalDateTime.class), anyString());
+	}
+
+	@Test
+	void testGetArchivedBillsWithFilters_DelegatesToRepository() throws Exception {
+		LocalDateTime dateFrom = LocalDateTime.of(2024, 1, 1, 0, 0);
+		LocalDateTime dateTo = LocalDateTime.of(2024, 12, 31, 23, 59);
+		when(archivedBillRepository.findArchivedBillsWithFilters(any(), any(), any(), any(), any()))
+			.thenReturn(List.of(new ArchivedBill()));
+
+		List<ArchivedBill> result = archiveIoOperations.getArchivedBillsWithFilters("C", dateFrom, dateTo, 456, "g1");
+
+		assertThat(result).hasSize(1);
+		verify(archivedBillRepository).findArchivedBillsWithFilters(any(), any(), any(), any(), any());
+	}
+
+	@Test
+	void testGetArchivedBillsWithFilters_WithNullDates_PassesNullToRepository() throws Exception {
+		when(archivedBillRepository.findArchivedBillsWithFilters(any(), any(), any(), any(), any()))
+			.thenReturn(List.of());
+
+		List<ArchivedBill> result = archiveIoOperations.getArchivedBillsWithFilters("C", null, null, null, null);
+
+		assertThat(result).isEmpty();
+		verify(archivedBillRepository).findArchivedBillsWithFilters("C", null, null, null, null);
+	}
+
+	@Test
+	void testCountArchivedBillsWithFilters_DelegatesToRepository() throws Exception {
+		when(archivedBillRepository.countArchivedBillsWithFilters(any(), any(), any(), any(), any()))
+			.thenReturn(5L);
+
+		long result = archiveIoOperations.countArchivedBillsWithFilters(null, null, null, null, null);
+
+		assertThat(result).isEqualTo(5);
+		verify(archivedBillRepository).countArchivedBillsWithFilters(null, null, null, null, null);
+	}
+
+	@Test
+	void testSumArchivedAmountByFilters_DelegatesToRepository() throws Exception {
+		when(archivedBillRepository.sumAmountByFilters(any(), any(), any(), any(), any()))
+			.thenReturn(1000.50);
+
+		double result = archiveIoOperations.sumArchivedAmountByFilters("C", null, null, null, null);
+
+		assertThat(result).isCloseTo(1000.50, org.assertj.core.data.Offset.offset(0.01));
+	}
+
+	@Test
+	void testSumArchivedBalanceByFilters_DelegatesToRepository() throws Exception {
+		when(archivedBillRepository.sumBalanceByFilters(any(), any(), any(), any(), any()))
+			.thenReturn(500.25);
+
+		double result = archiveIoOperations.sumArchivedBalanceByFilters("O", null, null, null, null);
+
+		assertThat(result).isCloseTo(500.25, org.assertj.core.data.Offset.offset(0.01));
+	}
+
+	@Test
+	void testCountAllActiveArchivedBills_DelegatesToRepository() throws Exception {
+		when(archivedBillRepository.countAllActiveArchivedBills()).thenReturn(10L);
+
+		long result = archiveIoOperations.countAllActiveArchivedBills();
+
+		assertThat(result).isEqualTo(10);
+		verify(archivedBillRepository).countAllActiveArchivedBills();
+	}
+
+	@Test
+	void testGetArchivedUsers_ReturnsDistinctUsersFromBothRepositories() throws Exception {
+		when(archivedBillRepository.findUserDistinctByOrderByUserAsc()).thenReturn(List.of("user1", "user2"));
+		when(archivedBillPaymentsRepository.findUserDistinctByOrderByUserAsc()).thenReturn(List.of("user2", "user3"));
+
+		List<String> result = archiveIoOperations.getArchivedUsers();
+
+		assertThat(result).containsExactlyInAnyOrder("user1", "user2", "user3");
+		verify(archivedBillRepository).findUserDistinctByOrderByUserAsc();
+		verify(archivedBillPaymentsRepository).findUserDistinctByOrderByUserAsc();
+	}
+
+	// ==================================================================================
+	// Archived BillItems query tests
+	// ==================================================================================
+
+	@Test
+	void testGetArchivedItems_WithValidBillId_ReturnsItems() throws Exception {
+		when(archivedBillItemsRepository.findByBillIdOrderByIdAsc(123))
+			.thenReturn(List.of(new ArchivedBillItems()));
+
+		List<ArchivedBillItems> result = archiveIoOperations.getArchivedItems(123);
+
+		assertThat(result).hasSize(1);
+		verify(archivedBillItemsRepository).findByBillIdOrderByIdAsc(123);
+	}
+
+	@Test
+	void testGetArchivedItems_WithBillIdZero_ReturnsEmptyList() throws Exception {
+		List<ArchivedBillItems> result = archiveIoOperations.getArchivedItems(0);
+
+		assertThat(result).isEmpty();
+		verify(archivedBillItemsRepository, never()).findByBillIdOrderByIdAsc(anyInt());
+	}
+
+	@Test
+	void testGetArchivedDistinctItems_DelegatesToRepository() throws Exception {
+		when(archivedBillItemsRepository.findAllGroupByDescription())
+			.thenReturn(List.of(new ArchivedBillItems()));
+
+		List<ArchivedBillItems> result = archiveIoOperations.getArchivedDistinctItems();
+
+		assertThat(result).hasSize(1);
+		verify(archivedBillItemsRepository).findAllGroupByDescription();
+	}
+
+	@Test
+	void testGetAllArchivedBillItems_WithMainAndRefundItems_ReturnsCombinedList() throws Exception {
+		ArchivedBill bill = new ArchivedBill();
+		bill.setId(1);
+
+		ArchivedBillItems mainItem = new ArchivedBillItems();
+		mainItem.setItemQuantity(5);
+		mainItem.setItemDate(LocalDateTime.of(2024, 6, 1, 12, 0));
+
+		ArchivedBillItems refundItem = new ArchivedBillItems();
+		refundItem.setItemQuantity(2);
+		refundItem.setItemDate(LocalDateTime.of(2024, 6, 2, 12, 0));
+
+		when(archivedBillItemsRepository.findByBillIdOrderByItemDateAsc(1)).thenReturn(List.of(mainItem));
+		when(archivedBillItemsRepository.findByBillParentIdOrderByItemDateAsc(1)).thenReturn(List.of(refundItem));
+
+		List<ArchivedBillItems> result = archiveIoOperations.getAllArchivedBillItems(bill);
+
+		assertThat(result).hasSize(2);
+		assertThat(result.get(0).getItemQuantity()).isEqualTo(5);
+		assertThat(result.get(1).getItemQuantity()).isEqualTo(-2);
+	}
+
+	@Test
+	void testGetAllArchivedBillItems_WithNullBill_ReturnsEmptyList() throws Exception {
+		List<ArchivedBillItems> result = archiveIoOperations.getAllArchivedBillItems(null);
+
+		assertThat(result).isEmpty();
+	}
+
+	// ==================================================================================
+	// Archived BillPayments query tests
+	// ==================================================================================
+
+	@Test
+	void testGetArchivedPaymentsByBillId_WithValidId_ReturnsPayments() throws Exception {
+		when(archivedBillPaymentsRepository.findByBillIdOrderByIdAsc(123))
+			.thenReturn(List.of(new ArchivedBillPayments()));
+
+		List<ArchivedBillPayments> result = archiveIoOperations.getArchivedPayments(123);
+
+		assertThat(result).hasSize(1);
+		verify(archivedBillPaymentsRepository).findByBillIdOrderByIdAsc(123);
+	}
+
+	@Test
+	void testGetArchivedPaymentsByBillId_WithZeroId_ReturnsEmptyList() throws Exception {
+		List<ArchivedBillPayments> result = archiveIoOperations.getArchivedPayments(0);
+
+		assertThat(result).isEmpty();
+		verify(archivedBillPaymentsRepository, never()).findByBillIdOrderByIdAsc(anyInt());
+	}
+
+	@Test
+	void testGetArchivedPaymentsByDateRange_DelegatesToRepository() throws Exception {
+		LocalDateTime dateFrom = LocalDateTime.of(2024, 1, 1, 0, 0);
+		LocalDateTime dateTo = LocalDateTime.of(2024, 12, 31, 23, 59);
+		when(archivedBillPaymentsRepository.findByDateBetweenOrderByIdAscDateAsc(any(LocalDateTime.class), any(LocalDateTime.class)))
+			.thenReturn(List.of(new ArchivedBillPayments()));
+
+		List<ArchivedBillPayments> result = archiveIoOperations.getArchivedPayments(dateFrom, dateTo);
+
+		assertThat(result).hasSize(1);
+		verify(archivedBillPaymentsRepository).findByDateBetweenOrderByIdAscDateAsc(any(LocalDateTime.class), any(LocalDateTime.class));
+	}
+
+	@Test
+	void testGetArchivedPaymentsByDateRangeAndPatientId_WithPatientId_DelegatesCorrectly() throws Exception {
+		LocalDateTime dateFrom = LocalDateTime.of(2024, 1, 1, 0, 0);
+		LocalDateTime dateTo = LocalDateTime.of(2024, 12, 31, 23, 59);
+		when(archivedBillPaymentsRepository.findByDateAndPatient(any(LocalDateTime.class), any(LocalDateTime.class), anyInt()))
+			.thenReturn(List.of(new ArchivedBillPayments()));
+
+		List<ArchivedBillPayments> result = archiveIoOperations.getArchivedPayments(dateFrom, dateTo, 456);
+
+		assertThat(result).hasSize(1);
+		verify(archivedBillPaymentsRepository).findByDateAndPatient(any(LocalDateTime.class), any(LocalDateTime.class), anyInt());
+	}
+
+	@Test
+	void testGetArchivedPaymentsByDateRangeAndPatientId_WithNullPatientId_DelegatesToDateRange() throws Exception {
+		LocalDateTime dateFrom = LocalDateTime.of(2024, 1, 1, 0, 0);
+		LocalDateTime dateTo = LocalDateTime.of(2024, 12, 31, 23, 59);
+		when(archivedBillPaymentsRepository.findByDateBetweenOrderByIdAscDateAsc(any(LocalDateTime.class), any(LocalDateTime.class)))
+			.thenReturn(List.of());
+
+		List<ArchivedBillPayments> result = archiveIoOperations.getArchivedPayments(dateFrom, dateTo, null);
+
+		assertThat(result).isEmpty();
+		verify(archivedBillPaymentsRepository).findByDateBetweenOrderByIdAscDateAsc(any(LocalDateTime.class), any(LocalDateTime.class));
+	}
+
+	@Test
+	void testGetArchivedPaymentsByBills_ReturnsCombinedPayments() throws Exception {
+		ArchivedBill bill1 = new ArchivedBill();
+		bill1.setId(1);
+		ArchivedBill bill2 = new ArchivedBill();
+		bill2.setId(2);
+
+		when(archivedBillPaymentsRepository.findByBillIdOrderByIdAsc(1)).thenReturn(List.of(new ArchivedBillPayments()));
+		when(archivedBillPaymentsRepository.findByBillIdOrderByIdAsc(2)).thenReturn(List.of(new ArchivedBillPayments()));
+
+		List<ArchivedBillPayments> result = archiveIoOperations.getArchivedPayments(List.of(bill1, bill2));
+
+		assertThat(result).hasSize(2);
+	}
+
+	@Test
+	void testGetArchivedPaymentsByDatePatientAndGuarantor_WithNullPatientId_DelegatesToDateRange() throws Exception {
+		LocalDateTime dateFrom = LocalDateTime.of(2024, 1, 1, 0, 0);
+		LocalDateTime dateTo = LocalDateTime.of(2024, 12, 31, 23, 59);
+		when(archivedBillPaymentsRepository.findByDateBetweenOrderByIdAscDateAsc(any(LocalDateTime.class), any(LocalDateTime.class)))
+			.thenReturn(List.of());
+
+		List<ArchivedBillPayments> result = archiveIoOperations.getArchivedPaymentsByDatePatientAndGuarantor(dateFrom, dateTo, null, "g1");
+
+		assertThat(result).isEmpty();
+		verify(archivedBillPaymentsRepository).findByDateBetweenOrderByIdAscDateAsc(any(LocalDateTime.class), any(LocalDateTime.class));
+	}
+
+	@Test
+	void testGetArchivedPaymentsByDatePatientAndGuarantor_WithNullDate_ThrowsException() {
+		LocalDateTime dateFrom = LocalDateTime.of(2024, 1, 1, 0, 0);
+
+		assertThatThrownBy(() -> archiveIoOperations.getArchivedPaymentsByDatePatientAndGuarantor(dateFrom, null, null, "g1"))
+			.isInstanceOf(IllegalArgumentException.class);
+	}
+
+	@Test
+	void testGetArchivedBillsFromPayments_ReturnsUniqueBills() throws Exception {
+		ArchivedBillPayments payment1 = new ArchivedBillPayments();
+		payment1.setBillId(1);
+		ArchivedBillPayments payment2 = new ArchivedBillPayments();
+		payment2.setBillId(1); // same bill as payment1
+		ArchivedBillPayments payment3 = new ArchivedBillPayments();
+		payment3.setBillId(2);
+
+		ArchivedBill bill1 = new ArchivedBill();
+		bill1.setId(1);
+		ArchivedBill bill2 = new ArchivedBill();
+		bill2.setId(2);
+
+		when(archivedBillRepository.findById(1)).thenReturn(Optional.of(bill1));
+		when(archivedBillRepository.findById(2)).thenReturn(Optional.of(bill2));
+
+		List<ArchivedBill> result = archiveIoOperations.getArchivedBillsFromPayments(List.of(payment1, payment2, payment3));
+
+		assertThat(result).hasSize(2);
+		verify(archivedBillRepository).findById(1);
+		verify(archivedBillRepository).findById(2);
+	}
+
+	@Test
+	void testGetAllArchivedBillPayments_WithMainAndRefundPayments_ReturnsCombinedList() throws Exception {
+		ArchivedBill bill = new ArchivedBill();
+		bill.setId(1);
+
+		ArchivedBillPayments mainPayment = new ArchivedBillPayments();
+		mainPayment.setDate(LocalDateTime.of(2024, 6, 1, 12, 0));
+
+		ArchivedBillPayments refundPayment = new ArchivedBillPayments();
+		refundPayment.setDate(LocalDateTime.of(2024, 6, 2, 12, 0));
+
+		when(archivedBillPaymentsRepository.findByBillIdOrderByDateAsc(1)).thenReturn(List.of(mainPayment));
+		when(archivedBillPaymentsRepository.findByBillParentIdOrderByDateAsc(1)).thenReturn(List.of(refundPayment));
+
+		List<ArchivedBillPayments> result = archiveIoOperations.getAllArchivedBillPayments(bill);
+
+		assertThat(result).hasSize(2);
+	}
+
+	@Test
+	void testGetAllArchivedBillPayments_WithNullBill_ReturnsEmptyList() throws Exception {
+		List<ArchivedBillPayments> result = archiveIoOperations.getAllArchivedBillPayments(null);
+
+		assertThat(result).isEmpty();
+	}
+
+	@Test
+	void testSumArchivedPaymentsByFilters_DelegatesToRepository() throws Exception {
+		when(archivedBillPaymentsRepository.sumPaymentsByFilters(any(), any(), any(), any(), any()))
+			.thenReturn(2000.75);
+
+		double result = archiveIoOperations.sumArchivedPaymentsByFilters("C", null, null, null, null);
+
+		assertThat(result).isCloseTo(2000.75, org.assertj.core.data.Offset.offset(0.01));
+	}
+
+	@Test
+	void testSumArchivedPaymentsByUserAndFilters_DelegatesToRepository() throws Exception {
+		when(archivedBillPaymentsRepository.sumPaymentsByUserAndFilters(any(), any(), any(), any(), any(), any()))
+			.thenReturn(750.50);
+
+		double result = archiveIoOperations.sumArchivedPaymentsByUserAndFilters("user1", "C", null, null, null, null);
+
+		assertThat(result).isCloseTo(750.50, org.assertj.core.data.Offset.offset(0.01));
 	}
 }
