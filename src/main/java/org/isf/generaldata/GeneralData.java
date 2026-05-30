@@ -52,6 +52,7 @@ public final class GeneralData extends ConfigurationProperties {
 	public static String ADMCHART;
 	public static String DISCHART;
 	public static String PATIENTBILL;
+	public static String PATIENTARCHIVEDBILL;
 	public static String BILLSREPORT;
 	public static String BILLSREPORTPENDING;
 	public static String BILLSREPORTMONTHLY;
@@ -117,6 +118,7 @@ public final class GeneralData extends ConfigurationProperties {
 	private static final String DEFAULT_ADMCHART = "patient_adm_chart";
 	private static final String DEFAULT_DISCHART = "patient_dis_chart";
 	private static final String DEFAULT_PATIENTBILL = "PatientBill";
+	private static final String DEFAULT_PATIENTARCHIVEDBILL = "PatientArchivedBill";
 	private static final String DEFAULT_BILLSREPORT = "BillsReport";
 	private static final String DEFAULT_BILLSREPORTPENDING = "BillsReportPending";
 	private static final String DEFAULT_BILLSREPORTMONTHLY = "BillsReportMonthly";
@@ -191,6 +193,7 @@ public final class GeneralData extends ConfigurationProperties {
 		ADMCHART = myGetProperty("ADMCHART", DEFAULT_ADMCHART);
 		DISCHART = myGetProperty("DISCHART", DEFAULT_DISCHART);
 		PATIENTBILL = myGetProperty("PATIENTBILL", DEFAULT_PATIENTBILL);
+		PATIENTARCHIVEDBILL = myGetProperty("PATIENTARCHIVEDBILL", DEFAULT_PATIENTARCHIVEDBILL);
 		BILLSREPORT = myGetProperty("BILLSREPORT", DEFAULT_BILLSREPORT);
 		BILLSREPORTPENDING = myGetProperty("BILLSREPORTPENDING", DEFAULT_BILLSREPORTPENDING);
 		BILLSREPORTMONTHLY = myGetProperty("BILLSREPORTMONTHLY", DEFAULT_BILLSREPORTMONTHLY);
