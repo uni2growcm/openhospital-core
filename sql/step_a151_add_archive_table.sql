@@ -97,3 +97,15 @@ VALUES (
    'angal.billbrowser.archive.btn', 'x', 'A',
    'billsmanager', 'none', 'A', 5
 );
+
+INSERT INTO oh_groupmenu (
+    GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE, GM_CREATED_BY, GM_CREATED_DATE, GM_LAST_MODIFIED_BY, GM_LAST_MODIFIED_DATE
+) SELECT
+    'admin', 'btnbillreport', 1, NULL, NULL, NULL,NULL
+FROM DUAL
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM oh_groupmenu
+    WHERE GM_UG_ID_A = 'admin'
+      AND GM_MNI_ID_A = 'btnbillreport'
+);
