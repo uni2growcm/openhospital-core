@@ -39,6 +39,8 @@ import org.isf.exatype.model.ExamType;
 import org.isf.utils.db.Auditable;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.util.Objects;
+
 @Entity
 @Table(name="OH_EXAM")
 @EntityListeners(AuditingEntityListener.class)
@@ -140,10 +142,20 @@ public class Exam extends Auditable<String> {
 	}
 
 	@Override
-	public boolean equals(Object anObject) {
-		return anObject instanceof Exam && (getCode().equals(((Exam) anObject).getCode())
-			   && getDescription().equalsIgnoreCase(((Exam) anObject).getDescription()) && getExamtype().equals(((Exam) anObject).getExamtype())
-			   && getProcedure().equals(((Exam) anObject).getProcedure()) && getDefaultResult().equals(((Exam) anObject).getDefaultResult()));
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+
+		if (!(obj instanceof Exam other)) {
+			return false;
+		}
+
+		return Objects.equals(code, other.code)
+			&& Objects.equals(description, other.description)
+			&& Objects.equals(examtype, other.examtype)
+			&& Objects.equals(procedure, other.procedure)
+			&& Objects.equals(defaultResult, other.defaultResult);
 	}
 
 	@Override
