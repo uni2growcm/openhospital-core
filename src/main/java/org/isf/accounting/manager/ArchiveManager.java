@@ -29,6 +29,9 @@ import org.isf.accounting.model.ArchivedBillItems;
 import org.isf.accounting.model.ArchivedBillPayments;
 import org.isf.accounting.service.archive.ArchiveIoOperations;
 import org.isf.utils.exception.OHServiceException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -76,6 +79,12 @@ public class ArchiveManager {
 	public List<ArchivedBill> getArchivedBillsWithFilters(String status, LocalDateTime dateFrom, LocalDateTime dateTo,
 	                                                       Integer patientId, String guarantorId) throws OHServiceException {
 		return archiveIoOperations.getArchivedBillsWithFilters(status, dateFrom, dateTo, patientId, guarantorId);
+	}
+
+	public Page<ArchivedBill> getArchivedBillsWithFilters(String status, LocalDateTime dateFrom, LocalDateTime dateTo,
+	                                                       Integer patientId, String guarantorId, int page, int size) throws OHServiceException {
+		Pageable pageable = PageRequest.of(page, size);
+		return archiveIoOperations.getArchivedBillsWithFilters(status, dateFrom, dateTo, patientId, guarantorId, pageable);
 	}
 
 	public long countArchivedBillsWithFilters(String status, LocalDateTime dateFrom, LocalDateTime dateTo,

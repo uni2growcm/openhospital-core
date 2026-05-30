@@ -34,6 +34,8 @@ import org.isf.utils.db.TranslateOHServiceException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.model.OHExceptionMessage;
 import org.isf.utils.time.TimeTools;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -220,6 +222,13 @@ public class ArchiveIoOperations {
 		LocalDateTime from = dateFrom != null ? TimeTools.getBeginningOfDay(dateFrom) : null;
 		LocalDateTime to = dateTo != null ? TimeTools.getBeginningOfNextDay(dateTo) : null;
 		return archivedBillRepository.findArchivedBillsWithFilters(status, from, to, patientId, guarantorId);
+	}
+
+	public Page<ArchivedBill> getArchivedBillsWithFilters(String status, LocalDateTime dateFrom, LocalDateTime dateTo,
+	                                                       Integer patientId, String guarantorId, Pageable pageable) throws OHServiceException {
+		LocalDateTime from = dateFrom != null ? TimeTools.getBeginningOfDay(dateFrom) : null;
+		LocalDateTime to = dateTo != null ? TimeTools.getBeginningOfNextDay(dateTo) : null;
+		return archivedBillRepository.findArchivedBillsWithFilters(status, from, to, patientId, guarantorId, pageable);
 	}
 
 	public long countArchivedBillsWithFilters(String status, LocalDateTime dateFrom, LocalDateTime dateTo,

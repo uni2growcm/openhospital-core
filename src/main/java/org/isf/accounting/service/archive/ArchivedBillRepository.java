@@ -25,6 +25,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.isf.accounting.model.ArchivedBill;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -63,6 +65,27 @@ public interface ArchivedBillRepository extends JpaRepository<ArchivedBill, Inte
 		@Param("dateTo") LocalDateTime dateTo,
 		@Param("patientId") Integer patientId,
 		@Param("guarantorId") String guarantorId);
+
+	@Query(value = "SELECT b FROM ArchivedBill b WHERE "
+		+ "(:status IS NULL OR b.status = :status) AND "
+		+ "(:dateFrom IS NULL OR b.date >= :dateFrom) AND "
+		+ "(:dateTo IS NULL OR b.date < :dateTo) AND "
+		+ "(:patientId IS NULL OR b.billPatientId = :patientId) AND "
+		+ "(:guarantorId IS NULL OR b.guarantorId = :guarantorId) "
+		+ "ORDER BY b.date DESC",
+		countQuery = "SELECT COUNT(b) FROM ArchivedBill b WHERE "
+		+ "(:status IS NULL OR b.status = :status) AND "
+		+ "(:dateFrom IS NULL OR b.date >= :dateFrom) AND "
+		+ "(:dateTo IS NULL OR b.date < :dateTo) AND "
+		+ "(:patientId IS NULL OR b.billPatientId = :patientId) AND "
+		+ "(:guarantorId IS NULL OR b.guarantorId = :guarantorId)")
+	Page<ArchivedBill> findArchivedBillsWithFilters(
+		@Param("status") String status,
+		@Param("dateFrom") LocalDateTime dateFrom,
+		@Param("dateTo") LocalDateTime dateTo,
+		@Param("patientId") Integer patientId,
+		@Param("guarantorId") String guarantorId,
+		Pageable pageable);
 
 	@Query("SELECT COUNT(b) FROM ArchivedBill b WHERE "
 		+ "(:status IS NULL OR b.status = :status) AND "
