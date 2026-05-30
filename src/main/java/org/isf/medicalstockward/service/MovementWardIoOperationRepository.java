@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2024 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -57,4 +57,12 @@ public interface MovementWardIoOperationRepository extends JpaRepository<Movemen
 					@Param("medicalCode") int medicalCode,
 					@Param("lotCode") String lotCode,
 					@Param("date") LocalDateTime date);
+
+	@Query("select m from MovementWard m " +
+		"left join fetch m.medical med " +
+		"left join fetch m.patient p " +
+		"left join fetch m.lot " +
+		"where m.code in :ids " +
+		"order by m.date desc")
+	List<MovementWard> findAllByIds(@Param("ids") List<Integer> ids);
 }
