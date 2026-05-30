@@ -125,21 +125,25 @@ public class Pregnancy extends Auditable<String> {
 	 * 
 	 * @return String representing gestational age (e.g., "24+3")
 	 */
-	@Transient
-	public String getCurrentGestationalAge() {
-		if (this.lmp == null) {
+	public String getGestationalAge(LocalDate referenceDate) {
+
+		if (lmp == null || referenceDate == null) {
 			return null;
 		}
 
-		LocalDate lmpDate = this.lmp.toLocalDate();
+		long totalDays = ChronoUnit.DAYS.between(
+			lmp.toLocalDate(),
+			referenceDate
+		);
 
-		long daysDifference = ChronoUnit.DAYS.between(lmpDate, LocalDate.now());
+		long weeks = totalDays / 7;
+		long days = totalDays % 7;
 
-		long weeks = daysDifference / 7;
-		long days = daysDifference % 7;
+		return weeks + " " + MessageBundle.getMessage("angal.maternity.gestationalage.weeks") + " " + days + " " + MessageBundle.getMessage("angal.maternity.gestationalage.days");
+	}
 
-		return weeks + " " + MessageBundle.getMessage("angal.maternity.gestationalage.weeks") + " " + days +
-			" " + MessageBundle.getMessage("angal.maternity.gestationalage.days");
+	public String getCurrentGestationalAge() {
+		return getGestationalAge(LocalDate.now());
 	}
 
 	public Integer getId() {
