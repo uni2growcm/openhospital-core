@@ -73,10 +73,11 @@ public class LabManager {
 	/**
 	 * Verify if the object is valid for CRUD and return a list of errors, if any.
 	 *
-	 * @param laboratory
+	 * @param laboratory the laboratory to validate
+	 * @param isUpdate true for update (result and material required), false for insert (result and material optional)
 	 * @throws OHDataValidationException
 	 */
-	protected void validateLaboratory(Laboratory laboratory) throws OHDataValidationException {
+	protected void validateLaboratory(Laboratory laboratory, boolean isUpdate) throws OHDataValidationException {
 		List<OHExceptionMessage> errors = new ArrayList<>();
 		if (laboratory.getExam() != null && laboratory.getExam().getProcedure() == 2) {
 			laboratory.setResult(MessageBundle.getMessage("angal.lab.multipleresults.txt"));
@@ -101,12 +102,20 @@ public class LabManager {
 		if (laboratory.getExam() == null) {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.lab.pleaseselectanexam.msg")));
 		}
-		if (laboratory.getResult().isEmpty()) {
+
+		if (isUpdate && (laboratory.getResult() == null || laboratory.getResult().isEmpty())) {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.labnew.someexamswithoutresultpleasecheck.msg")));
 		}
-		if (laboratory.getMaterial().isEmpty()) {
-			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.lab.pleaseselectamaterial.msg")));
+
+		if (isUpdate) {
+			String material = laboratory.getMaterial();
+			if (material == null || material.isEmpty() || "undefined".equals(material)) {
+				errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.lab.pleaseselectamaterial.msg")));
+			}
+		} else if (!isUpdate && (laboratory.getMaterial() == null || laboratory.getMaterial().isEmpty())) {
+			laboratory.setMaterial("undefined");
 		}
+
 		if (laboratory.getInOutPatient().isEmpty()) {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.lab.pleaseinsertiforipdoroforopd.msg")));
 		}
@@ -216,7 +225,7 @@ public class LabManager {
 	 * @throws OHServiceException
 	 */
 	public Laboratory newLaboratory(Laboratory laboratory, List<String> labRow) throws OHServiceException {
-		validateLaboratory(laboratory);
+		validateLaboratory(laboratory,false);
 		setPatientConsistency(laboratory);
 		procedure = laboratory.getExam().getProcedure();
 		return switch (procedure) {
@@ -241,7 +250,7 @@ public class LabManager {
 	 * @throws OHServiceException
 	 */
 	public Laboratory newLaboratory2(Laboratory laboratory, List<LaboratoryRow> labRow) throws OHServiceException {
-		validateLaboratory(laboratory);
+		validateLaboratory(laboratory,false);
 		setPatientConsistency(laboratory);
 		procedure = laboratory.getExam().getProcedure();
 		return switch (procedure) {
@@ -291,7 +300,7 @@ public class LabManager {
 	 * @throws OHServiceException
 	 */
 	public Laboratory updateLaboratory(Laboratory laboratory, List<String> labRow) throws OHServiceException {
-		validateLaboratory(laboratory);
+		validateLaboratory(laboratory,true);
 		Integer procedure = laboratory.getExam().getProcedure();
 		return switch (procedure) {
 		case 1 -> ioOperations.updateLabFirstProcedure(laboratory);
