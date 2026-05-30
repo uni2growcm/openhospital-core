@@ -43,8 +43,6 @@ import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.model.OHExceptionMessage;
 import org.isf.ward.model.Ward;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -430,22 +428,27 @@ public class MovWardBrowserManager {
 	 * @throws OHServiceException if an error occurs retrieving the medicals.
 	 */
 	public Page<MedicalWard> getMedicalsWardTotalQuantity(
-		String wardId,
-		int page,
-		int pageSize) throws OHServiceException {
+		String wardId, int page, int pageSize) throws OHServiceException {
 
-		List<MedicalWard> allMedicalWards = getMedicalsWardTotalQuantity(wardId);
+		return ioOperations.getMedicalsWardTotalQuantityPaginated(wardId, page, pageSize);
+	}
 
-		int total = allMedicalWards.size();
-		int fromIndex = page * pageSize;
-		int toIndex = Math.min(fromIndex + pageSize, total);
-		List<MedicalWard> pageContent = fromIndex >= total
-			? new ArrayList<>()
-			: allMedicalWards.subList(fromIndex, toIndex);
+	/**
+	 * Gets the paginated incoming {@link Movement}s associated to the specified ward
+	 * and filtered by movement date range.
+	 *
+	 * @param wardId the ward id.
+	 * @param dateFrom the lower bound for the movement date range.
+	 * @param dateTo the upper bound for the movement date range.
+	 * @param page the page number (zero-based).
+	 * @param pageSize the number of elements per page.
+	 * @return the paginated list of retrieved incoming movements.
+	 * @throws OHServiceException if an error occurs retrieving the movements.
+	 */
+	public Page<Movement> getIncomingMovements(String wardId,
+	                                           LocalDateTime dateFrom, LocalDateTime dateTo,
+	                                           int page, int pageSize) throws OHServiceException {
 
-		return new PageImpl<>(
-			pageContent,
-			PageRequest.of(page, pageSize),
-			total);
+		return ioOperations.getIncomingMovements(wardId, dateFrom, dateTo, page, pageSize);
 	}
 }

@@ -19,35 +19,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.isf.medicalstockward.service;
+package org.isf.accounting.manager;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import org.isf.accounting.service.archive.ArchiveIoOperations;
+import org.isf.utils.exception.OHServiceException;
+import org.springframework.stereotype.Component;
 
-import org.isf.medicalstock.model.Movement;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Repository;
+@Component
+public class ArchiveManager {
 
-@Repository
-public interface MedicalStockWardIoOperationRepositoryCustom {
+	private final ArchiveIoOperations archiveIoOperations;
 
-	List<Integer> findAllWardMovement(String wardId, LocalDateTime dateFrom, LocalDateTime dateTo);
+	public ArchiveManager(ArchiveIoOperations archiveIoOperations) {
+		this.archiveIoOperations = archiveIoOperations;
+	}
 
-	Page<Integer> findWardMovementsWithFilter(
-		String wardId,
-		LocalDateTime dateFrom,
-		LocalDateTime dateTo,
-		String medicalTypeCode,
-		Integer medicalCode,
-		String sex,
-		Integer ageFrom,
-		Integer ageTo,
-		Float weightFrom,
-		Float weightTo,
-		Pageable pageable);
+	public void archiveClosedBills() throws OHServiceException {
+			archiveIoOperations.archiveClosedBills();
+	}
 
-	Page<Movement> findIncomingMovements(String wardId,
-	                                     LocalDateTime dateFrom, LocalDateTime dateTo,
-	                                     Pageable pageable);
 }

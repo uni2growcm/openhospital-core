@@ -22,6 +22,8 @@
 package org.isf.medicalstockward.service;
 
 import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,7 +37,10 @@ import jakarta.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
 import org.isf.medicals.model.Medical;
+import org.isf.medicalstock.model.Movement;
+import org.isf.medicalstock.service.MovementIoOperationRepository;
 import org.isf.medicalstockward.model.MovementWard;
+import org.isf.medstockmovtype.model.MovementType;
 import org.isf.medtype.model.MedicalType;
 import org.isf.orthanc.model.Patient;
 import org.isf.utils.time.TimeTools;
@@ -51,6 +56,16 @@ public class MedicalStockWardIoOperationRepositoryImpl implements MedicalStockWa
 	private static final String WARD = "ward";
 	private static final String DATE = "date";
 	private static final String CODE = "code";
+
+	private final MovementIoOperationRepository movementRepository;
+	private final MovementWardIoOperationRepository movementWardRepository;
+
+	public MedicalStockWardIoOperationRepositoryImpl(
+		MovementIoOperationRepository movementRepository,
+		MovementWardIoOperationRepository movementWardRepository) {
+		this.movementRepository = movementRepository;
+		this.movementWardRepository = movementWardRepository;
+	}
 
 	@PersistenceContext
 	private EntityManager entityManager;
@@ -75,7 +90,7 @@ public class MedicalStockWardIoOperationRepositoryImpl implements MedicalStockWa
 		List<Order> orderList = new ArrayList<>();
 		orderList.add(builder.asc(root.get(DATE)));
 
-		query.where(predicates.toArray(new Predicate[] {})).orderBy(orderList);
+		query.where(predicates.toArray(new Predicate[]{})).orderBy(orderList);
 		return entityManager.createQuery(query).getResultList();
 	}
 
@@ -154,36 +169,196 @@ public class MedicalStockWardIoOperationRepositoryImpl implements MedicalStockWa
 		Float weightFrom, Float weightTo,
 		Pageable pageable) {
 
-		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-
-		CriteriaQuery<Integer> query = builder.createQuery(Integer.class);
-		Root<MovementWard> root = query.from(MovementWard.class);
-		query.select(root.<Integer>get(CODE));
-
-		List<Predicate> predicates = buildFilteredWardMovementPredicates(
-			builder, root, wardId, dateFrom, dateTo,
+		FilterQuery fq = buildNativeFilter(wardId, dateFrom, dateTo,
 			medicalTypeCode, medicalCode, sex, ageFrom, ageTo, weightFrom, weightTo);
 
-		List<Order> orderList = new ArrayList<>();
-		orderList.add(builder.asc(root.get(DATE)));
-		query.where(predicates.toArray(new Predicate[]{})).orderBy(orderList);
+		String countSql = "SELECT COUNT(*) FROM OH_MEDICALDSRSTOCKMOVWARD m "
+			+ fq.joinClause + fq.whereClause;
+		jakarta.persistence.Query countQuery = entityManager.createNativeQuery(countSql);
+		fq.applyParams(countQuery);
+		Long total = ((Number) countQuery.getSingleResult()).longValue();
 
-		List<Integer> ids = entityManager.createQuery(query)
-			.setFirstResult((int) pageable.getOffset())
-			.setMaxResults(pageable.getPageSize())
-			.getResultList();
+		if (total == 0) {
+			return new PageImpl<>(new ArrayList<>(), pageable, 0);
+		}
 
-		CriteriaQuery<Long> countQuery = builder.createQuery(Long.class);
-		Root<MovementWard> countRoot = countQuery.from(MovementWard.class);
-		countQuery.select(builder.count(countRoot));
+		String idsSql = "SELECT m.MMVN_ID FROM OH_MEDICALDSRSTOCKMOVWARD m "
+			+ fq.joinClause + fq.whereClause
+			+ " ORDER BY m.MMVN_DATE DESC, m.MMVN_ID DESC"
+			+ " LIMIT " + pageable.getPageSize()
+			+ " OFFSET " + pageable.getOffset();
 
-		List<Predicate> countPredicates = buildFilteredWardMovementPredicates(
-			builder, countRoot, wardId, dateFrom, dateTo,
-			medicalTypeCode, medicalCode, sex, ageFrom, ageTo, weightFrom, weightTo);
-		countQuery.where(countPredicates.toArray(new Predicate[]{}));
+		jakarta.persistence.Query idsQuery = entityManager.createNativeQuery(idsSql);
+		fq.applyParams(idsQuery);
 
-		Long total = entityManager.createQuery(countQuery).getSingleResult();
+		@SuppressWarnings("unchecked")
+		List<Number> rawIds = idsQuery.getResultList();
+		List<Integer> ids = rawIds.stream()
+			.map(Number::intValue)
+			.collect(java.util.stream.Collectors.toList());
 
 		return new PageImpl<>(ids, pageable, total);
+	}
+
+	private FilterQuery buildNativeFilter(
+		String wardId, LocalDateTime dateFrom, LocalDateTime dateTo,
+		String medicalTypeCode, Integer medicalCode,
+		String sex, Integer ageFrom, Integer ageTo,
+		Float weightFrom, Float weightTo) {
+
+		FilterQuery fq = new FilterQuery();
+
+		if (StringUtils.isNotEmpty(wardId)) {
+			fq.whereClause.append(" AND m.MMVN_WRD_ID_A = :wardId");
+			fq.params.put("wardId", wardId);
+		}
+		if (dateFrom != null && dateTo != null) {
+			fq.whereClause.append(" AND m.MMVN_DATE BETWEEN :dateFrom AND :dateTo");
+			fq.params.put("dateFrom", TimeTools.getBeginningOfDay(dateFrom));
+			fq.params.put("dateTo", TimeTools.getBeginningOfNextDay(dateTo));
+		}
+		if (StringUtils.isNotEmpty(medicalTypeCode)) {
+			fq.joinClause.append(
+				" INNER JOIN OH_MEDICALDSR med ON m.MMVN_MDSR_ID = med.MDSR_ID"
+					+ " INNER JOIN OH_MEDICALDSRTYPE mt ON med.MDSR_MDSRT_ID_A = mt.MDSRT_ID_A");
+			fq.whereClause.append(" AND mt.MDSRT_ID_A = :medicalTypeCode");
+			fq.params.put("medicalTypeCode", medicalTypeCode);
+		}
+		if (medicalCode != null) {
+			fq.whereClause.append(" AND m.MMVN_MDSR_ID = :medicalCode");
+			fq.params.put("medicalCode", medicalCode);
+		}
+		if (StringUtils.isNotEmpty(sex) && !"A".equals(sex)) {
+			fq.joinClause.append(" INNER JOIN OH_PATIENT p ON m.MMVN_PAT_ID = p.PAT_ID");
+			fq.whereClause.append(" AND p.PAT_SEX = :sex");
+			fq.params.put("sex", sex);
+		}
+
+		if (ageFrom != null && ageFrom >= 0) {
+			fq.whereClause.append(" AND m.MMVN_PAT_AGE >= :ageFrom");
+			fq.params.put("ageFrom", ageFrom);
+		}
+		if (ageTo != null && ageTo >= 0) {
+			fq.whereClause.append(" AND m.MMVN_PAT_AGE <= :ageTo");
+			fq.params.put("ageTo", ageTo);
+		}
+		if (weightFrom != null && weightFrom > 0) {
+			fq.whereClause.append(" AND m.MMVN_PAT_WEIGHT >= :weightFrom");
+			fq.params.put("weightFrom", weightFrom);
+		}
+		if (weightTo != null && weightTo > 0) {
+			fq.whereClause.append(" AND m.MMVN_PAT_WEIGHT <= :weightTo");
+			fq.params.put("weightTo", weightTo);
+		}
+
+		return fq;
+	}
+
+	private static class FilterQuery {
+		final StringBuilder joinClause = new StringBuilder();
+		final StringBuilder whereClause = new StringBuilder(" WHERE 1=1 ");
+		final java.util.Map<String, Object> params = new java.util.LinkedHashMap<>();
+
+		void applyParams(jakarta.persistence.Query query) {
+			params.forEach(query::setParameter);
+		}
+	}
+
+	private Movement convertMovementWardToMovement(MovementWard mw) {
+		MovementType typeCharge = new MovementType(
+			"fromward",
+			mw.getWard().getDescription(),
+			"*",
+			"*"
+		);
+		return new Movement(
+			mw.getMedical(),
+			typeCharge,
+			mw.getWardTo(),
+			mw.getLot(),
+			mw.getDate(),
+			mw.getQuantity().intValue(),
+			null,
+			null
+		);
+	}
+
+	@Override
+	public Page<Movement> findIncomingMovements(String wardId,
+	                                            LocalDateTime dateFrom, LocalDateTime dateTo,
+	                                            Pageable pageable) {
+		String baseCentralWhere =
+			" MMV_WRD_ID_A = :wardId AND MMV_DATE BETWEEN :dateFrom AND :dateTo ";
+		String baseWardWhere =
+			" MMVN_WRD_ID_A_TO = :wardId AND MMVN_DATE BETWEEN :dateFrom AND :dateTo ";
+
+		String countSql =
+			"SELECT COUNT(*) FROM ("
+				+ "  SELECT 1 FROM OH_MEDICALDSRSTOCKMOV WHERE " + baseCentralWhere
+				+ "  UNION ALL "
+				+ "  SELECT 1 FROM OH_MEDICALDSRSTOCKMOVWARD WHERE " + baseWardWhere
+				+ ") AS combined";
+
+		Long total = ((Number) entityManager.createNativeQuery(countSql)
+			.setParameter("wardId", wardId)
+			.setParameter("dateFrom", dateFrom)
+			.setParameter("dateTo", dateTo)
+			.getSingleResult()).longValue();
+
+		if (total == 0) {
+			return new PageImpl<>(new ArrayList<>(), pageable, 0);
+		}
+
+		String idsSql =
+			"SELECT id, type_source FROM ("
+				+ "  SELECT MMV_ID AS id, 'central' AS type_source, MMV_DATE AS mov_date"
+				+ "  FROM OH_MEDICALDSRSTOCKMOV WHERE " + baseCentralWhere
+				+ "  UNION ALL "
+				+ "  SELECT MMVN_ID AS id, 'ward' AS type_source, MMVN_DATE AS mov_date"
+				+ "  FROM OH_MEDICALDSRSTOCKMOVWARD WHERE " + baseWardWhere
+				+ ") AS combined"
+				+ " ORDER BY mov_date DESC"
+				+ " LIMIT " + pageable.getPageSize()
+				+ " OFFSET " + pageable.getOffset();
+
+		@SuppressWarnings("unchecked")
+		List<Object[]> rows = entityManager.createNativeQuery(idsSql)
+			.setParameter("wardId", wardId)
+			.setParameter("dateFrom", dateFrom)
+			.setParameter("dateTo", dateTo)
+			.getResultList();
+
+		List<Integer> centralIds = new ArrayList<>();
+		List<Integer> wardIds = new ArrayList<>();
+		List<Object[]> orderedRows = new ArrayList<>(rows);
+
+		for (Object[] row : rows) {
+			Integer id = ((Number) row[0]).intValue();
+			String source = (String) row[1];
+			if ("central".equals(source)) centralIds.add(id);
+			else wardIds.add(id);
+		}
+
+		Map<Integer, Movement> centralMap = new HashMap<>();
+		Map<Integer, Movement> wardMap = new HashMap<>();
+
+		if (!centralIds.isEmpty()) {
+			movementRepository.findAllByIdsWithFetch(centralIds)
+				.forEach(m -> centralMap.put(m.getCode(), m));
+		}
+		if (!wardIds.isEmpty()) {
+			movementWardRepository.findAllByIds(wardIds)
+				.forEach(mw -> wardMap.put(mw.getCode(), convertMovementWardToMovement(mw)));
+		}
+
+		List<Movement> result = new ArrayList<>(rows.size());
+		for (Object[] row : orderedRows) {
+			Integer id = ((Number) row[0]).intValue();
+			String source = (String) row[1];
+			Movement m = "central".equals(source) ? centralMap.get(id) : wardMap.get(id);
+			if (m != null) result.add(m);
+		}
+
+		return new PageImpl<>(result, pageable, total);
 	}
 }

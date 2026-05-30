@@ -87,6 +87,9 @@ class Tests extends OHCoreTestCase {
 	private static TestUserGroup testUserGroup;
 	private static TestBillItemGroup testBillItemGroup;
 	private static TestBillItemGroupItem testBillItemGroupItem;
+	private static TestArchivedBill testArchivedBill;
+	private static TestArchivedBillItems testArchivedBillItems;
+	private static TestArchivedBillPayments testArchivedBillPayments;
 
 	@Autowired
 	private BillBrowserManager billBrowserManager;
@@ -124,6 +127,9 @@ class Tests extends OHCoreTestCase {
 		testUser = new TestUser();
 		testBillItemGroup = new TestBillItemGroup();
 		testBillItemGroupItem = new TestBillItemGroupItem();
+		testArchivedBill = new TestArchivedBill();
+		testArchivedBillItems = new TestArchivedBillItems();
+		testArchivedBillPayments = new TestArchivedBillPayments();
 	}
 
 	@BeforeEach
@@ -481,6 +487,43 @@ class Tests extends OHCoreTestCase {
 		billBrowserManager.deleteBillItemGroup(foundUpdatedGroup.getId());
 
 		assertThat(billBrowserManager.getBillItemGroupById(foundUpdatedGroup.getId())).isNull();
+	}
+
+	// ==================== ARCHIVED BILL MODEL TESTS ====================
+	@Test
+	void testArchivedBillGets() throws Exception {
+		ArchivedBill archivedBill = testArchivedBill.setup(false);
+		testArchivedBill.check(archivedBill);
+	}
+
+	@Test
+	void testArchivedBillSets() throws Exception {
+		ArchivedBill archivedBill = testArchivedBill.setup(true);
+		testArchivedBill.check(archivedBill);
+	}
+
+	@Test
+	void testArchivedBillItemsGets() throws Exception {
+		ArchivedBillItems item = testArchivedBillItems.setup(false);
+		testArchivedBillItems.check(item);
+	}
+
+	@Test
+	void testArchivedBillItemsSets() throws Exception {
+		ArchivedBillItems item = testArchivedBillItems.setup(true);
+		testArchivedBillItems.check(item);
+	}
+
+	@Test
+	void testArchivedBillPaymentsGets() throws Exception {
+		ArchivedBillPayments payment = testArchivedBillPayments.setup(false);
+		testArchivedBillPayments.check(payment);
+	}
+
+	@Test
+	void testArchivedBillPaymentsSets() throws Exception {
+		ArchivedBillPayments payment = testArchivedBillPayments.setup(true);
+		testArchivedBillPayments.check(payment);
 	}
 
 	private int setupTestBill(boolean usingSet) throws OHException {
