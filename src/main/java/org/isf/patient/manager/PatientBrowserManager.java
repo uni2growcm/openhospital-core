@@ -39,9 +39,11 @@ import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.model.OHExceptionMessage;
 import org.isf.utils.pagination.PagedResponse;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.stereotype.Component;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Component;
 
 @Component
 public class PatientBrowserManager {
@@ -467,6 +469,26 @@ public class PatientBrowserManager {
 	 */
 	public List<Patient> getPatientsByOneOfFieldsLikeWithLimit(String keyword, int limit) throws OHServiceException {
 		return ioOperations.getPatientsByOneOfFieldsLikeWithLimit(keyword, limit);
+	}
+
+	/**
+	 * Method that returns a limited list of {@link Patient}s not logically deleted, having the passed String in:<br>
+	 * - code<br>
+	 * - firstName<br>
+	 * - secondName<br>
+	 * - taxCode<br>
+	 * - note<br>
+	 *
+	 * @param keyword - String to search, {@code null} for full list
+	 * @param femalesOnly - if true, only female patients will be returned
+	 * @param page - the page number (0-indexed)
+	 * @param size - the page size
+	 * @return a {@link Page} of {@link Patient}s (could be empty)
+	 * @throws OHServiceException when there is an error
+	 */
+	public Page<Patient> getPatientsByOneOfFieldsLike(String keyword, boolean femalesOnly, int page, int size) throws OHServiceException {
+		Pageable pageable = PageRequest.of(page, size);
+		return ioOperations.getPatientsByOneOfFieldsLikeWith(keyword, femalesOnly, pageable);
 	}
 
 	public List<Patient> getPatientByCodeOrName(String input) throws OHServiceException {
