@@ -837,6 +837,19 @@ public class BillBrowserManager {
 	}
 
 	/**
+	 * Update a BillItemGroup with a new list of items.
+	 * Handles lazy initialization by working directly via repositories.
+	 *
+	 * @param group    the BillItemGroup to update
+	 * @param newItems the new list of items
+	 * @return the updated BillItemGroup
+	 * @throws OHServiceException when fails to update
+	 */
+	public BillItemGroup updateBillItemGroupWithItems(BillItemGroup group, List<BillItemGroupItem> newItems) throws OHServiceException {
+		return ioOperations.updateBillItemGroupWithItems(group, newItems);
+	}
+
+	/**
 	 * Export payments to Sage using streaming (no memory overload)
 	 *
 	 * @param dateFrom start date (inclusive)

@@ -53,7 +53,15 @@ public interface OperationRowIoOperationRepository extends JpaRepository<Operati
 	@Query("select count(o) from OperationRow o where active=1")
 	long countAllActiveOperations();
 
-	@Query("SELECT o FROM OperationRow o WHERE (o.admission.patient = :patient OR o.opd.patient = :patient) AND (o.bill IS NULL OR o.bill.id = 0)")
+	@Query("""
+		SELECT o
+		FROM OperationRow o
+		LEFT JOIN o.admission a
+		LEFT JOIN o.opd opd
+		WHERE (a.patient = :patient OR opd.patient = :patient)
+		AND (o.bill IS NULL OR o.bill.id = 0)
+		"""
+	)
 	List<OperationRow> findByPatientAndBillIsNull(@Param("patient") Patient patient);
 
 	@Modifying

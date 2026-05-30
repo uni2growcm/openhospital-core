@@ -420,6 +420,41 @@ public class AccountingIoOperations {
 	}
 
 	/**
+	 * Update a BillItemGroup with a new list of items.
+	 * Handles lazy initialization by working directly via repositories.
+	 *
+	 * @param group    the BillItemGroup to update
+	 * @param newItems the new list of items
+	 * @return the updated BillItemGroup
+	 * @throws OHServiceException when fails to update
+	 */
+	@Transactional
+	public BillItemGroup updateBillItemGroupWithItems(BillItemGroup group, List<BillItemGroupItem> newItems) throws OHServiceException {
+		if (billItemGroupRepository.existsByTitleAndIdNot(group.getTitle(), group.getId())) {
+			throw new OHDataValidationException(
+				new OHExceptionMessage(MessageBundle.getMessage("angal.newbill.billitemgroupduplicatetitle")));
+		}
+
+		billItemGroupItemRepository.deleteByGroupId(group.getId());
+		billItemGroupItemRepository.flush();
+
+		BillItemGroup managed = billItemGroupRepository.findById(group.getId())
+			.orElseThrow(() -> new OHDataValidationException(
+				new OHExceptionMessage("Group not found")));
+
+		managed.setTitle(group.getTitle());
+		managed.setDescription(group.getDescription());
+		managed.setTotal(group.getTotal());
+
+		for (BillItemGroupItem item : newItems) {
+			item.setId(0);
+			managed.addItem(item);
+		}
+
+		return billItemGroupRepository.save(managed);
+	}
+
+	/**
 	 * Delete a billItemGroup and all its associated items (cascade delete)
 	 *
 	 * @param groupId the id of the BillItemGroup to delete
