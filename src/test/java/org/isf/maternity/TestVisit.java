@@ -54,15 +54,11 @@ public class TestVisit {
 	private void set(PregnancyVisit v, Pregnancy p, Typology vt) {
 		v.setPregnancy(p);
 		v.setVisitDate(visitDate);
-		v.setGestationalWeeks(weeks);
-		v.setGestationalDays(days);
 		v.setMaternalWeight(weight);
 		v.setVisitType(vt);
 	}
 
 	public void check(PregnancyVisit v) {
-		assertThat(v.getGestationalWeeks()).isEqualTo(weeks);
-		assertThat(v.getGestationalDays()).isEqualTo(days);
 		assertThat(v.getMaternalWeight()).isEqualTo(weight);
 		assertThat(v.getVisitType()).isNotNull();
 	}

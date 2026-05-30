@@ -56,6 +56,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
@@ -445,6 +446,163 @@ class Tests extends OHCoreTestCase {
 		setupTestPatient(false);
 		List<Patient> patients = patientBrowserManager.getPatientsByOneOfFieldsLike("dupa");
 		assertThat(patients).isEmpty();
+	}
+
+	@Test
+	void testIoGetPatientsByOneOfFieldsLikeWithPagination() throws Exception {
+		setupTestPatient(false);
+		// Get patients with pagination (page 0, size 10)
+		Pageable pageable = PageRequest.of(0, 10);
+		Page<Patient> page = patientIoOperation.getPatientsByOneOfFieldsLikeWith(null, false, pageable);
+		assertThat(page.getContent()).isNotEmpty();
+		testPatient.check(page.getContent().get(0));
+	}
+
+	@Test
+	void testIoGetPatientsByOneOfFieldsLikeWithPaginationFirstName() throws Exception {
+		// given:
+		Integer code = setupTestPatient(false);
+		Patient foundPatient = patientIoOperation.getPatient(code);
+
+		// when:
+		Pageable pageable = PageRequest.of(0, 10);
+		Page<Patient> page = patientIoOperation.getPatientsByOneOfFieldsLikeWith(foundPatient.getFirstName(), false,  pageable);
+
+		// then:
+		assertThat(page.getContent()).isNotEmpty();
+		testPatient.check(page.getContent().get(0));
+		assertThat(page.getTotalElements()).isGreaterThan(0);
+	}
+
+	@Test
+	void testIoGetPatientsByOneOfFieldsLikeWithPaginationNotExistingString() throws Exception {
+		setupTestPatient(false);
+		Pageable pageable = PageRequest.of(0, 10);
+		Page<Patient> page = patientIoOperation.getPatientsByOneOfFieldsLikeWith("nonexistingkeyword", false, pageable);
+		assertThat(page.getContent()).isEmpty();
+		assertThat(page.getTotalElements()).isZero();
+	}
+
+	@Test
+	void testMgrGetPatientsByOneOfFieldsLikeWithPagination() throws Exception {
+		setupTestPatient(false);
+		// Get patients with pagination (page 0, size 10)
+		Page<Patient> page = patientBrowserManager.getPatientsByOneOfFieldsLike(null, false , 0, 10);
+		assertThat(page.getContent()).isNotEmpty();
+		testPatient.check(page.getContent().get(0));
+	}
+
+	@Test
+	void testMgrGetPatientsByOneOfFieldsLikeWithPaginationNotExistingString() throws Exception {
+		setupTestPatient(false);
+		Page<Patient> page = patientBrowserManager.getPatientsByOneOfFieldsLike("nonexistingkeyword", false, 0, 10);
+		assertThat(page.getContent()).isEmpty();
+		assertThat(page.getTotalElements()).isZero();
+	}
+
+	@Test
+	void testIoGetPatientsByOneOfFieldsLikeWithPaginationFemalesOnly() throws Exception {
+		// given:
+		Integer maleCode = setupTestPatient(false);
+		Patient malePatient = patientIoOperation.getPatient(maleCode);
+		malePatient.setSex('M');
+		patientIoOperationRepository.saveAndFlush(malePatient);
+
+		Integer femaleCode = setupTestPatient(false);
+		Patient femalePatient = patientIoOperation.getPatient(femaleCode);
+		femalePatient.setSex('F');
+		patientIoOperationRepository.saveAndFlush(femalePatient);
+
+		// when:
+		Pageable pageable = PageRequest.of(0, 10);
+		Page<Patient> page = patientIoOperation.getPatientsByOneOfFieldsLikeWith(null, true, pageable);
+
+		// then:
+		assertThat(page.getContent()).isNotEmpty();
+		for (Patient patient : page.getContent()) {
+			assertThat(patient.getSex()).isEqualTo('F');
+		}
+		assertThat(page.getTotalElements()).isGreaterThan(0);
+	}
+
+	@Test
+	void testIoGetPatientsByOneOfFieldsLikeWithPaginationAllPatients() throws Exception {
+		// given:
+		Integer maleCode = setupTestPatient(false);
+		Patient malePatient = patientIoOperation.getPatient(maleCode);
+		malePatient.setSex('M');
+		patientIoOperationRepository.saveAndFlush(malePatient);
+
+		Integer femaleCode = setupTestPatient(false);
+		Patient femalePatient = patientIoOperation.getPatient(femaleCode);
+		femalePatient.setSex('F');
+		patientIoOperationRepository.saveAndFlush(femalePatient);
+
+		// when:
+		Pageable pageable = PageRequest.of(0, 10);
+		Page<Patient> page = patientIoOperation.getPatientsByOneOfFieldsLikeWith(null, false, pageable);
+
+		// then:
+		assertThat(page.getContent()).isNotEmpty();
+		assertThat(page.getTotalElements()).isGreaterThanOrEqualTo(2);
+	}
+
+	@Test
+	void testMgrGetPatientsByOneOfFieldsLikeWithPaginationFemalesOnly() throws Exception {
+
+		Integer maleCode = setupTestPatient(false);
+		Patient malePatient = patientIoOperation.getPatient(maleCode);
+		malePatient.setSex('M');
+		patientIoOperationRepository.saveAndFlush(malePatient);
+
+		Integer femaleCode = setupTestPatient(false);
+		Patient femalePatient = patientIoOperation.getPatient(femaleCode);
+		femalePatient.setSex('F');
+		patientIoOperationRepository.saveAndFlush(femalePatient);
+
+		Page<Patient> page = patientBrowserManager.getPatientsByOneOfFieldsLike(null, true, 0, 10);
+
+		assertThat(page.getContent()).isNotEmpty();
+		for (Patient patient : page.getContent()) {
+			assertThat(patient.getSex()).isEqualTo('F');
+		}
+		assertThat(page.getTotalElements()).isGreaterThan(0);
+	}
+
+	@Test
+	void testMgrGetPatientsByOneOfFieldsLikeWithPaginationAllPatients() throws Exception {
+		// given:
+		Integer maleCode = setupTestPatient(false);
+		Patient malePatient = patientIoOperation.getPatient(maleCode);
+		malePatient.setSex('M');
+		patientIoOperationRepository.saveAndFlush(malePatient);
+
+		Integer femaleCode = setupTestPatient(false);
+		Patient femalePatient = patientIoOperation.getPatient(femaleCode);
+		femalePatient.setSex('F');
+		patientIoOperationRepository.saveAndFlush(femalePatient);
+
+		Page<Patient> page = patientBrowserManager.getPatientsByOneOfFieldsLike(null, false, 0, 10);
+
+		assertThat(page.getContent()).isNotEmpty();
+		assertThat(page.getTotalElements()).isGreaterThanOrEqualTo(2);
+	}
+
+	@Test
+	void testMgrGetPatientsByOneOfFieldsLikeWithPaginationFemalesOnlyByFirstName() throws Exception {
+		// given:
+		Integer femaleCode = setupTestPatient(false);
+		Patient femalePatient = patientIoOperation.getPatient(femaleCode);
+		femalePatient.setSex('F');
+		patientIoOperationRepository.saveAndFlush(femalePatient);
+
+		Page<Patient> page = patientBrowserManager.getPatientsByOneOfFieldsLike(femalePatient.getFirstName(), true, 0, 10);
+
+		assertThat(page.getContent()).isNotEmpty();
+		testPatient.check(page.getContent().get(0));
+		for (Patient patient : page.getContent()) {
+			assertThat(patient.getSex()).isEqualTo('F');
+		}
 	}
 
 	@Test
