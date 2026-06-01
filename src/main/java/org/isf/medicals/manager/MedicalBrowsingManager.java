@@ -123,7 +123,7 @@ public class MedicalBrowsingManager {
 	 * @throws OHServiceException
 	 */
 	public List<Medical> getMedicals(String description) throws OHServiceException {
-		return ioOperations.getMedicals(description, false);
+		return ioOperations.getMedicals(description);
 	}
 
 	/**
