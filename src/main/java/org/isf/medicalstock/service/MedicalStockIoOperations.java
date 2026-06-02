@@ -25,7 +25,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -716,6 +718,48 @@ public class MedicalStockIoOperations {
 		}
 
 		return lots;
+	}
+
+	/**
+	 * Batch loads the nearest expiry date for each medical in the provided list.
+	 *
+	 * @param medicalCodes list of medical codes
+	 * @return map of medical code to nearest expiry date (only for medicals with lots in stock)
+	 * @throws OHServiceException if an error occurs
+	 */
+	public Map<Integer, LocalDate> getNearestExpiryDateByMedicalCodes(List<Integer> medicalCodes) throws OHServiceException {
+		if (medicalCodes == null || medicalCodes.isEmpty()) {
+			return Collections.emptyMap();
+		}
+
+		List<Lot> allLots = lotRepository.findByMedicalCodeInOrderByDueDate(medicalCodes);
+
+		if (allLots.isEmpty()) {
+			return Collections.emptyMap();
+		}
+
+		List<String> lotCodes = allLots.stream().map(Lot::getCode).collect(Collectors.toList());
+		List<Object[]> mainStoreQuantities = lotRepository.getMainStoreQuantities(lotCodes);
+
+		Map<String, Integer> qtyByLot = new HashMap<>();
+		for (Object[] row : mainStoreQuantities) {
+			String lotCode = (String) row[0];
+			int qty = ((Long) row[1]).intValue();
+			qtyByLot.put(lotCode, qty);
+		}
+
+		Map<Integer, LocalDate> nearestExpiryByMedical = new HashMap<>();
+		for (Lot lot : allLots) {
+			int qty = qtyByLot.getOrDefault(lot.getCode(), 0);
+			if (lot.getDueDate() != null && qty > 0) {
+				LocalDate expiryDate = lot.getDueDate().toLocalDate();
+				int medCode = lot.getMedical().getCode();
+				nearestExpiryByMedical.merge(medCode, expiryDate,
+					(existing, candidate) -> candidate.isBefore(existing) ? candidate : existing);
+			}
+		}
+
+		return nearestExpiryByMedical;
 	}
 
 	/**
