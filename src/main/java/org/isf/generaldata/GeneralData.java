@@ -54,6 +54,7 @@ public final class GeneralData extends ConfigurationProperties {
 	public static String PATIENTBILL;
 	public static String PATIENTARCHIVEDBILL;
 	public static String BILLSREPORT;
+	public static String BILLSREFUNDREPORT;
 	public static String BILLSREPORTPENDING;
 	public static String BILLSREPORTMONTHLY;
 	public static String PHARMACEUTICALORDER;
@@ -121,6 +122,7 @@ public final class GeneralData extends ConfigurationProperties {
 	private static final String DEFAULT_PATIENTBILL = "PatientBill";
 	private static final String DEFAULT_PATIENTARCHIVEDBILL = "PatientArchivedBill";
 	private static final String DEFAULT_BILLSREPORT = "BillsReport";
+	private static final String DEFAULT_BILLSREFUNDREPORT = "BillsRefundReportUserAllInDate";
 	private static final String DEFAULT_BILLSREPORTPENDING = "BillsReportPending";
 	private static final String DEFAULT_BILLSREPORTMONTHLY = "BillsReportMonthly";
 	private static final String DEFAULT_PHARMACEUTICALORDER = "PharmaceuticalOrder";
@@ -197,6 +199,7 @@ public final class GeneralData extends ConfigurationProperties {
 		PATIENTBILL = myGetProperty("PATIENTBILL", DEFAULT_PATIENTBILL);
 		PATIENTARCHIVEDBILL = myGetProperty("PATIENTARCHIVEDBILL", DEFAULT_PATIENTARCHIVEDBILL);
 		BILLSREPORT = myGetProperty("BILLSREPORT", DEFAULT_BILLSREPORT);
+		BILLSREFUNDREPORT = myGetProperty("BILLSREFUNDREPORT", DEFAULT_BILLSREFUNDREPORT);
 		BILLSREPORTPENDING = myGetProperty("BILLSREPORTPENDING", DEFAULT_BILLSREPORTPENDING);
 		BILLSREPORTMONTHLY = myGetProperty("BILLSREPORTMONTHLY", DEFAULT_BILLSREPORTMONTHLY);
 		PHARMACEUTICALORDER = myGetProperty("PHARMACEUTICALORDER", DEFAULT_PHARMACEUTICALORDER);
