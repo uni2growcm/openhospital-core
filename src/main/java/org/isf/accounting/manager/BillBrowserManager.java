@@ -30,6 +30,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.isf.accounting.model.*;
+import org.isf.accounting.service.AccountingItemPaymentIoOperationRepository;
 import org.isf.therapy.manager.TherapyManager;
 import org.isf.lab.manager.LabManager;
 import org.isf.operation.manager.OperationRowBrowserManager;
@@ -514,6 +515,43 @@ public class BillBrowserManager {
 
 	public List<BillPayments> getAllBillPayments(Bill bill) throws OHServiceException {
 		return ioOperations.getAllBillPayments(bill);
+	}
+
+	/**
+	 * Retrieves item payments for a given bill.
+	 *
+	 * @param billID the bill ID
+	 * @return the list of item payments
+	 * @throws OHServiceException
+	 */
+	public List<ItemPayments> getItemPayments(int billID) throws OHServiceException {
+		if (billID == 0) {
+			return new ArrayList<>();
+		}
+		return ioOperations.getItemPayments(billID);
+	}
+
+	/**
+	 * Creates new item payments for a bill, replacing any existing ones.
+	 *
+	 * @param bill the bill
+	 * @param itemPayments the list of item payments
+	 * @throws OHServiceException
+	 */
+	@Transactional(rollbackFor = OHServiceException.class)
+	public void newItemPayments(Bill bill, List<ItemPayments> itemPayments) throws OHServiceException {
+		ioOperations.newItemPayments(bill, itemPayments);
+	}
+
+	/**
+	 * Deletes all item payments for a given bill.
+	 *
+	 * @param billID the bill ID
+	 * @throws OHServiceException
+	 */
+	@Transactional(rollbackFor = OHServiceException.class)
+	public void deleteItemPaymentsByBillId(int billID) throws OHServiceException {
+		ioOperations.deleteItemPaymentsByBillId(billID);
 	}
 
 	/**
