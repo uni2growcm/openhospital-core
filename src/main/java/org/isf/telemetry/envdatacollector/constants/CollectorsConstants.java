@@ -84,7 +84,7 @@ public interface CollectorsConstants {
 	String APP_ALLOWMULTIPLEOPENEDBILL = "app_allowmultipleopenedbill";
 	String APP_ALLOWPRINTOPENEDBILL = "app_allowprintopenedbill";
 	String APP_RECEIPTPRINTER = "app_receiptprinter";
-	public static final String APP_ENABLEARCHIVE = "APP_ENABLEARCHIVE";
+	String APP_ENABLEARCHIVE = "APP_ENABLEARCHIVE";
 	String APP_AUTOMATICLOT_IN = "app_automaticlot_in";
 	String APP_AUTOMATICLOT_OUT = "app_automaticlot_out";
 	String APP_AUTOMATICLOTWARD_TOWARD = "app_automaticlotward_toward";
