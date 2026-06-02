@@ -578,6 +578,11 @@ public class BillBrowserManager {
 			ioOperations.newBillPayments(savedRefundBill, payments);
 		}
 
+		if (GeneralData.STOCKMVTONBILLSAVE) {
+			// isCharge=true inverts qty → puts items back into ward stock
+			updateMedicalStock(refundItems, savedRefundBill.getId(), true);
+		}
+
 		return savedRefundBill;
 	}
 

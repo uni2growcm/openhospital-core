@@ -84,10 +84,6 @@ class TestBillRefund extends OHCoreTestCase {
 		cleanH2InMemoryDb();
 	}
 
-	// =========================================================================
-	// RefundBillItemDto — unit tests (no DB)
-	// =========================================================================
-
 	@Test
 	@DisplayName("RefundBillItemDto: getRefundableQty = totalQty - alreadyRefundedQty")
 	void dtoRefundableQtyIsComputedCorrectly() throws OHException {
@@ -107,10 +103,6 @@ class TestBillRefund extends OHCoreTestCase {
 
 		assertThat(dto.getRefundableQty()).isZero();
 	}
-
-	// =========================================================================
-	// AccountingIoOperations — getRefundBills
-	// =========================================================================
 
 	@Test
 	@DisplayName("IoOps: getRefundBills returns bills whose parentId matches the given billId")
@@ -134,10 +126,6 @@ class TestBillRefund extends OHCoreTestCase {
 
 		assertThat(refundBills).isEmpty();
 	}
-
-	// =========================================================================
-	// AccountingIoOperations — getRefundedItems
-	// =========================================================================
 
 	@Test
 	@DisplayName("IoOps: getRefundedItems returns items stored under refund bills")
@@ -163,10 +151,6 @@ class TestBillRefund extends OHCoreTestCase {
 		assertThat(refundedItems).isEmpty();
 	}
 
-	// =========================================================================
-	// BillBrowserManager — getRefundBills
-	// =========================================================================
-
 	@Test
 	@DisplayName("Manager: getRefundBills delegates correctly and returns refund bills")
 	void mgrGetRefundBillsReturnsRefundBills() throws OHException, OHServiceException {
@@ -179,10 +163,6 @@ class TestBillRefund extends OHCoreTestCase {
 		assertThat(result).hasSize(2);
 		assertThat(result).allMatch(b -> original.getId() == b.getParentId());
 	}
-
-	// =========================================================================
-	// BillBrowserManager — getRefundItems
-	// =========================================================================
 
 	@Test
 	@DisplayName("Manager: getRefundItems returns empty list for billId 0")
@@ -256,10 +236,6 @@ class TestBillRefund extends OHCoreTestCase {
 		assertThat(result.get(0).getAlreadyRefundedQty()).isEqualTo(5); // 2 + 3
 		assertThat(result.get(0).getRefundableQty()).isEqualTo(5);      // 10 - 5
 	}
-
-	// =========================================================================
-	// BillBrowserManager — refundBill
-	// =========================================================================
 
 	@Test
 	@DisplayName("Manager: refundBill persists the refund bill with parentId pointing to original")
@@ -346,10 +322,6 @@ class TestBillRefund extends OHCoreTestCase {
 		assertThat(result.get(0).getAlreadyRefundedQty()).isEqualTo(3);
 		assertThat(result.get(0).getRefundableQty()).isEqualTo(5); // 8 - 3
 	}
-
-	// =========================================================================
-	// Helpers
-	// =========================================================================
 
 	private Bill persistBill(String status) throws OHException {
 		Patient patient = testPatient.setup(false);
