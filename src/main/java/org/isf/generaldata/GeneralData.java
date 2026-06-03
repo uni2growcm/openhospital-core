@@ -75,7 +75,6 @@ public final class GeneralData extends ConfigurationProperties {
 	public static String VIEWER;
 	public static boolean MAINMENUALWAYSONTOP;
 	public static boolean RECEIPTPRINTER;
-	public static boolean ENABLEARCHIVE;
 	public static boolean VIDEOMODULEENABLED;
 	public static boolean PATIENTVACCINEEXTENDED;
 	public static boolean ENHANCEDSEARCH;
@@ -142,7 +141,6 @@ public final class GeneralData extends ConfigurationProperties {
 	private static final boolean DEFAULT_TELEMETRYENABLED = false;
 	private static final boolean DEFAULT_MAINMENUALWAYSONTOP = false;
 	private static final boolean DEFAULT_RECEIPTPRINTER = false;
-	private static final boolean DEFAULT_ENABLEARCHIVE = false;
 	private static final boolean DEFAULT_VIDEOMODULEENABLED = false;
 	private static final boolean DEFAULT_PATIENTVACCINEEXTENDED = false;
 	private static final boolean DEFAULT_ENHANCEDSEARCH = false;
@@ -222,7 +220,6 @@ public final class GeneralData extends ConfigurationProperties {
 		TELEMETRYENABLED = myGetProperty("TELEMETRYENABLED", DEFAULT_TELEMETRYENABLED);
 		MAINMENUALWAYSONTOP = myGetProperty("MAINMENUALWAYSONTOP", DEFAULT_MAINMENUALWAYSONTOP);
 		RECEIPTPRINTER = myGetProperty("RECEIPTPRINTER", DEFAULT_RECEIPTPRINTER);
-		ENABLEARCHIVE = myGetProperty("ENABLEARCHIVE", DEFAULT_ENABLEARCHIVE);
 		VIDEOMODULEENABLED = myGetProperty("VIDEOMODULEENABLED", DEFAULT_VIDEOMODULEENABLED);
 		PATIENTVACCINEEXTENDED = myGetProperty("PATIENTVACCINEEXTENDED", DEFAULT_PATIENTVACCINEEXTENDED);
 		ENHANCEDSEARCH = myGetProperty("ENHANCEDSEARCH", DEFAULT_ENHANCEDSEARCH);

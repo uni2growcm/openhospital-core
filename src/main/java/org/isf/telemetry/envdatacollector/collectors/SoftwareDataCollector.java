@@ -111,7 +111,6 @@ public class SoftwareDataCollector extends AbstractDataCollector {
 			result.put(CollectorsConstants.APP_ALLOWMULTIPLEOPENEDBILL, String.valueOf(GeneralData.ALLOWMULTIPLEOPENEDBILL));
 			result.put(CollectorsConstants.APP_ALLOWPRINTOPENEDBILL, String.valueOf(GeneralData.ALLOWPRINTOPENEDBILL));
 			result.put(CollectorsConstants.APP_RECEIPTPRINTER, String.valueOf(GeneralData.RECEIPTPRINTER));
-			result.put(CollectorsConstants.APP_ENABLEARCHIVE, String.valueOf(GeneralData.ENABLEARCHIVE));
 			result.put(CollectorsConstants.APP_AUTOMATICLOT_IN, String.valueOf(GeneralData.AUTOMATICLOT_IN));
 			result.put(CollectorsConstants.APP_AUTOMATICLOT_OUT, String.valueOf(GeneralData.AUTOMATICLOT_OUT));
 			result.put(CollectorsConstants.APP_AUTOMATICLOTWARD_TOWARD, String.valueOf(GeneralData.AUTOMATICLOTWARD_TOWARD));
