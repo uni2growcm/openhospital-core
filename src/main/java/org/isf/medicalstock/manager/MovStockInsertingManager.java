@@ -22,9 +22,11 @@
 package org.isf.medicalstock.manager;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.isf.generaldata.GeneralData;
 import org.isf.generaldata.MessageBundle;
@@ -283,6 +285,17 @@ public class MovStockInsertingManager {
 			return new ArrayList<>();
 		}
 		return ioOperations.getLotsByMedical(medical, removeEmpty);
+	}
+
+	/**
+	 * Batch loads the nearest expiry date for each medical in the provided list.
+	 *
+	 * @param medicalCodes list of medical codes
+	 * @return map of medical code to nearest expiry date
+	 * @throws OHServiceException
+	 */
+	public Map<Integer, LocalDate> getNearestExpiryDateByMedicals(List<Integer> medicalCodes) throws OHServiceException {
+		return ioOperations.getNearestExpiryDateByMedicalCodes(medicalCodes);
 	}
 
 	/**

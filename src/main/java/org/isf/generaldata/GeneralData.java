@@ -37,6 +37,7 @@ public final class GeneralData extends ConfigurationProperties {
 	public static boolean APISERVER;
 
 	public static boolean STOCKMVTONBILLSAVE;
+	public static boolean ENABLEMEDICALREFUND;
 	public static boolean ALLOWBILLGUARANTOR;
 	public static String LANGUAGE;
 	public static boolean HIGHLIGHTEXPIRINGMEDICAL;
@@ -99,6 +100,7 @@ public final class GeneralData extends ConfigurationProperties {
 	public static int PASSWORDLOCKTIME;
 	public static int PASSWORDIDLE;
 
+	public static  final boolean DEFAULT_ENABLEMEDICALREFUND = false;
 	public static final boolean DEFAULT_STOCKMVTONBILLSAVE = false;
 	private static final boolean DEFAULT_ALLOWBILLGUARANTOR  = false;
 	private static final String DEFAULT_LANGUAGE = "en";
@@ -177,7 +179,7 @@ public final class GeneralData extends ConfigurationProperties {
 		super(fileProperties, EXIT_ON_FAIL);
 		STOCKMVTONBILLSAVE = myGetProperty("STOCKMVTONBILLSAVE", DEFAULT_STOCKMVTONBILLSAVE);
 		ALLOWBILLGUARANTOR = myGetProperty("ALLOWBILLGUARANTOR", DEFAULT_ALLOWBILLGUARANTOR);
-		STOCKMVTONBILLSAVE = myGetProperty("STOCKMVTONBILLSAVE", DEFAULT_STOCKMVTONBILLSAVE);
+		ENABLEMEDICALREFUND = myGetProperty("ENABLEMEDICALREFUND", DEFAULT_ENABLEMEDICALREFUND);
 		SINGLEUSER = myGetProperty("SINGLEUSER", DEFAULT_SINGLEUSER);
 		USERSLISTLOGIN = myGetProperty("USERSLISTLOGIN", DEFAULT_USERSLISTLOGIN);
 		MODE = myGetProperty("MODE", DEFAULT_MODE);
