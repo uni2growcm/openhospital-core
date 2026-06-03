@@ -34,13 +34,12 @@ INSERT INTO oh_groupmenu
     GM_LAST_MODIFIED_BY,
     GM_LAST_MODIFIED_DATE
 )
-VALUES
-    (
-        'admin',
-        'archive',
-        1,
-        NULL,
-        NULL,
-        NULL,
-        NULL
-    );
+SELECT
+    'admin', 'archive', 1, NULL, NULL, NULL,NULL
+FROM DUAL
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM oh_groupmenu
+    WHERE GM_UG_ID_A = 'admin'
+      AND GM_MNI_ID_A = 'archive'
+);
