@@ -30,9 +30,7 @@ import org.isf.accounting.model.BillItems;
 public class RefundBillItemDto {
 
 	private BillItems billItem;
-	/** Sum of quantities already refunded across all previous refund bills. */
 	private int alreadyRefundedQty;
-	/** Quantity the user has chosen to refund in the current operation (0 by default). */
 	private int refundQty;
 
 	public RefundBillItemDto() {
@@ -68,7 +66,6 @@ public class RefundBillItemDto {
 		this.refundQty = refundQty;
 	}
 
-	/** Maximum quantity that can still be refunded for this item. */
 	public int getRefundableQty() {
 		return billItem.getItemQuantity() - alreadyRefundedQty;
 	}
