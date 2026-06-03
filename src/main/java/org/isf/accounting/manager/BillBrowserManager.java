@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.isf.accounting.dto.RefundBillItemDto;
 import org.isf.accounting.model.*;
 import org.isf.therapy.manager.TherapyManager;
 import org.isf.lab.manager.LabManager;
@@ -46,20 +47,10 @@ import org.isf.medicalstockward.model.MovementWard;
 import org.isf.menu.manager.Context;
 import org.isf.patient.manager.PatientBrowserManager;
 import org.isf.menu.model.User;
-import org.isf.medicals.manager.MedicalBrowsingManager;
-import org.isf.medicals.model.Medical;
-import org.isf.medicalstock.manager.MovStockInsertingManager;
-import org.isf.medicalstock.model.Lot;
-import org.isf.medicalstockward.manager.MovWardBrowserManager;
-import org.isf.medicalstockward.model.MedicalWard;
-import org.isf.medicalstockward.model.MovementWard;
-import org.isf.menu.manager.Context;
-import org.isf.patient.manager.PatientBrowserManager;
 import org.isf.patient.model.Patient;
 import org.isf.priceslist.manager.PriceListManager;
 import org.isf.priceslist.model.ItemGroup;
 import org.isf.priceslist.model.Price;
-import org.isf.priceslist.manager.PriceListManager;
 import org.isf.utils.db.TranslateOHServiceException;
 import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHServiceException;
@@ -514,6 +505,85 @@ public class BillBrowserManager {
 
 	public List<BillPayments> getAllBillPayments(Bill bill) throws OHServiceException {
 		return ioOperations.getAllBillPayments(bill);
+	}
+
+	/**
+	 * Returns all refund bills that were created against the given bill.
+	 */
+	public List<Bill> getRefundBills(int billId) throws OHServiceException {
+		return ioOperations.getRefundBills(billId);
+	}
+
+	/**
+	 * Builds the list of {@link RefundBillItemDto} for the refund dialog.
+	 * Items are grouped by description so that multiple occurrences of the same
+	 * item are presented as a single row with a summed quantity.
+	 * Each row also carries the quantity that has already been refunded across
+	 * all previous refund bills.
+	 */
+	public List<RefundBillItemDto> getRefundItems(int billId) throws OHServiceException {
+		if (billId == 0) {
+			return new ArrayList<>();
+		}
+
+		List<BillItems> mainItems = ioOperations.getItems(billId);
+		List<BillItems> alreadyRefunded = ioOperations.getRefundedItems(billId);
+
+		// Aggregate already-refunded qty by item description
+		Map<String, Integer> refundedQtyByDesc = new HashMap<>();
+		for (BillItems item : alreadyRefunded) {
+			refundedQtyByDesc.merge(item.getItemDescription(), item.getItemQuantity(), Integer::sum);
+		}
+
+		// Group main items by description, summing quantities
+		Map<String, BillItems> grouped = new LinkedHashMap<>();
+		for (BillItems item : mainItems) {
+			String desc = item.getItemDescription();
+			if (grouped.containsKey(desc)) {
+				BillItems existing = grouped.get(desc);
+				existing.setItemQuantity(existing.getItemQuantity() + item.getItemQuantity());
+			} else {
+				grouped.put(desc, new BillItems(item));
+			}
+		}
+
+		List<RefundBillItemDto> result = new ArrayList<>();
+		for (BillItems item : grouped.values()) {
+			int alreadyQty = refundedQtyByDesc.getOrDefault(item.getItemDescription(), 0);
+			result.add(new RefundBillItemDto(item, alreadyQty));
+		}
+		return result;
+	}
+
+	/**
+	 * Persists a full refund operation atomically:
+	 * saves the refund bill, its items and the negative payment.
+	 *
+	 * @param originalBill the bill being refunded
+	 * @param refundBill   the refund bill to create (parentId must be set by the caller)
+	 * @param refundItems  the items to include in the refund bill (quantities = refunded qty)
+	 * @param payments     the payments to record (typically one entry with a negative amount)
+	 * @return the persisted refund bill
+	 */
+	@Transactional(rollbackFor = OHServiceException.class)
+	@TranslateOHServiceException
+	public Bill refundBill(Bill originalBill, Bill refundBill,
+			List<BillItems> refundItems, List<BillPayments> payments) throws OHServiceException {
+
+		Bill savedRefundBill = ioOperations.newBill(refundBill);
+
+		ioOperations.newBillItems(savedRefundBill, refundItems);
+
+		if (payments != null && !payments.isEmpty()) {
+			ioOperations.newBillPayments(savedRefundBill, payments);
+		}
+
+		if (GeneralData.STOCKMVTONBILLSAVE) {
+			// isCharge=true inverts qty → puts items back into ward stock
+			updateMedicalStock(refundItems, savedRefundBill.getId(), true);
+		}
+
+		return savedRefundBill;
 	}
 
 	/**
