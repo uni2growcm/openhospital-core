@@ -76,6 +76,7 @@ public interface AccountingBillIoOperationRepository extends JpaRepository<Bill,
 	Double findPriceByListIdAndGroupAndItem(@Param("listId") Integer listId, @Param("group") String group, @Param("itemId") String itemId);
 
 	@Query("SELECT b FROM Bill b WHERE "
+		+ "b.parentId IS NULL AND "
 		+ "(:status IS NULL OR b.status = :status) AND "
 		+ "(:dateFrom IS NULL OR b.date >= :dateFrom) AND "
 		+ "(:dateTo IS NULL OR b.date < :dateTo) AND "
@@ -91,6 +92,7 @@ public interface AccountingBillIoOperationRepository extends JpaRepository<Bill,
 		Pageable pageable);
 
 	@Query("SELECT COUNT(b) FROM Bill b WHERE "
+		+ "b.parentId IS NULL AND "
 		+ "(:status IS NULL OR b.status = :status) AND "
 		+ "(:dateFrom IS NULL OR b.date >= :dateFrom) AND "
 		+ "(:dateTo IS NULL OR b.date < :dateTo) AND "
@@ -131,4 +133,7 @@ public interface AccountingBillIoOperationRepository extends JpaRepository<Bill,
 
 	@Query("SELECT b FROM Bill b WHERE b.date >= :dateFrom AND b.date < :dateTo ORDER BY b.date")
 	List<Bill> findBillsForSage(@Param("dateFrom") LocalDateTime dateFrom, @Param("dateTo") LocalDateTime dateTo);
+
+	@Query("SELECT b FROM Bill b WHERE b.parentId = :parentId ORDER BY b.date DESC")
+	List<Bill> findByParentId(@Param("parentId") Integer parentId);
 }

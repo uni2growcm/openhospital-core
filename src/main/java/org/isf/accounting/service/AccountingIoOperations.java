@@ -299,6 +299,21 @@ public class AccountingIoOperations {
 	}
 
 	/**
+	 * Returns all refund bills linked to the given bill (i.e. bills whose parentId equals billId).
+	 */
+	public List<Bill> getRefundBills(int billId) throws OHServiceException {
+		return billRepository.findByParentId(billId);
+	}
+
+	/**
+	 * Returns all items stored under refund bills linked to the given bill.
+	 * Each item's quantity represents how many units were refunded in that particular refund bill.
+	 */
+	public List<BillItems> getRefundedItems(int billId) throws OHServiceException {
+		return billItemsRepository.findByBillParentIdOrderByItemDateAsc(billId);
+	}
+
+	/**
 	 * Retrieves all items of a bill (including those from refund bills)
 	 * @param bill the bill
 	 * @return complete list of items with quantities inverted for refunds
