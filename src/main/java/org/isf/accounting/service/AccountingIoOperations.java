@@ -638,6 +638,18 @@ public class AccountingIoOperations {
 	}
 
 	/**
+	 * Retrieves all item payments for a given bill and item.
+	 *
+	 * @param itemId the item ID
+	 * @param billId the bill ID
+	 * @return the list of item payments
+	 * @throws OHServiceException
+	 */
+	public List<ItemPayments> getItemPaymentsByItemId(String itemId, int billId) throws OHServiceException {
+		return itemPaymentRepository.findByItemIdAndBillIdOrderByIdAsc(itemId, billId);
+	}
+
+	/**
 	 * Deletes all item payments for a given bill.
 	 *
 	 * @param billId the bill ID

@@ -37,6 +37,8 @@ public interface AccountingItemPaymentIoOperationRepository extends JpaRepositor
 
 	List<ItemPayments> findByBillIdOrderByIdAsc(@Param("billId") Integer billId);
 
+	List<ItemPayments> findByItemIdAndBillIdOrderByIdAsc(@Param("itemId") String itemId, @Param("billId") Integer billId);
+
 	@Modifying
 	@Query(value = "DELETE FROM ItemPayments IP WHERE IP.bill.id = :billId")
 	void deleteWhereBillId(@Param("billId") Integer billId);
