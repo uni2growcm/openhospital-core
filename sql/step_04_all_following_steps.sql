@@ -148,4 +148,3 @@ source step_a151_add_archive_table.sql;
 source step_a152_add_archive_menuitem.sql;
 source step_a153_create_index_in_medical_stock_ward.sql;
 source step_a154_add_archive_menuitem.sql;
-source step_a155_fix_archive_button_permission.sql;

@@ -1,6 +1,14 @@
-
-INSERT INTO oh_menuitem
-(MNI_ID_A, MNI_BTN_LABEL, MNI_LABEL, MNI_TOOLTIP, MNI_SHORTCUT, MNI_SUBMENU, MNI_CLASS, MNI_IS_SUBMENU, MNI_POSITION)
+INSERT INTO oh_menuitem (
+    MNI_ID_A,
+    MNI_BTN_LABEL,
+    MNI_LABEL,
+    MNI_TOOLTIP,
+    MNI_SHORTCUT,
+    MNI_SUBMENU,
+    MNI_CLASS,
+    MNI_IS_SUBMENU,
+    MNI_POSITION
+)
 SELECT
     'archive',
     'angal.menu.btn.archive',
@@ -26,13 +34,17 @@ INSERT INTO oh_groupmenu
     GM_LAST_MODIFIED_BY,
     GM_LAST_MODIFIED_DATE
 )
-VALUES
-    (
-        'admin',
-        'archive',
-        1,
-        NULL,
-        NULL,
-        NULL,
-        NULL
-    );
+SELECT
+    'admin',
+    'archive',
+    1,
+    'system',
+    NOW(),
+    'system',
+    NOW()
+FROM DUAL
+WHERE NOT EXISTS (
+    SELECT 1 FROM oh_groupmenu
+    WHERE GM_UG_ID_A = 'admin'
+      AND GM_MNI_ID_A = 'archive'
+);
