@@ -47,15 +47,3 @@ WHERE NOT EXISTS (
     WHERE GM_UG_ID_A = 'admin'
       AND GM_MNI_ID_A = 'btnbillarchive'
 );
-
-SELECT
-    CASE
-        WHEN EXISTS (SELECT 1 FROM OH_MENUITEM WHERE MNI_ID_A = 'btnbillarchive')
-            THEN 'OH_MENUITEM: btnbillarchive present'
-        ELSE 'OH_MENUITEM: btnbillarchive absent'
-        END AS menu_item_status,
-    CASE
-        WHEN EXISTS (SELECT 1 FROM oh_groupmenu WHERE GM_UG_ID_A = 'admin' AND GM_MNI_ID_A = 'btnbillarchive')
-            THEN 'oh_groupmenu: btnbillarchive present for admin'
-        ELSE 'oh_groupmenu: btnbillarchive absent for admin'
-        END AS group_permission_status;
