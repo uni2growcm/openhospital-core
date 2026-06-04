@@ -45,6 +45,7 @@ import java.util.regex.Pattern;
 
 import javax.sql.DataSource;
 
+import org.hibernate.loader.ast.spi.Loadable;
 import org.isf.generaldata.GeneralData;
 import org.isf.generaldata.MessageBundle;
 import org.isf.hospital.manager.HospitalBrowsingManager;
@@ -858,7 +859,7 @@ public class JasperReportsManager {
 		}
 	}
 
-	public JasperReportResultDto getGenericReportFromDateToDatePdf(String fromDate, String toDate, String reductionPlan,String jasperFileFolder, String jasperFileName)
+	public JasperReportResultDto getGenericReportFromDateToDatePdf(LocalDate fromDate, LocalDate toDate, String reductionPlan,String jasperFileFolder, String jasperFileName)
 		throws OHServiceException {
 
 		try {
@@ -936,7 +937,7 @@ public class JasperReportsManager {
 		}
 	}
 
-	public void getGenericReportFromDateToDateExcel(String fromDate, String toDate, String reductionPlan, String jasperFileFolder, String jasperFileName, String exportFilename)
+	public void getGenericReportFromDateToDateExcel(LocalDate fromDate, LocalDate toDate, String reductionPlan, String jasperFileFolder, String jasperFileName, String exportFilename)
 		throws OHServiceException {
 
 		try {
@@ -945,11 +946,8 @@ public class JasperReportsManager {
 			JRQuery query = jasperReport.getMainDataset().getQuery();
 			String queryString = query.getText();
 
-			String dateFromQuery = TimeTools.formatDateTime(TimeTools.getDate(fromDate, DD_MM_YYYY), YYYY_MM_DD);
-			String dateToQuery = TimeTools.formatDateTime(TimeTools.getDate(toDate, DD_MM_YYYY), YYYY_MM_DD);
-
-			queryString = queryString.replace("$P{fromdate}", '\'' + dateFromQuery + '\'');
-			queryString = queryString.replace("$P{todate}", '\'' + dateToQuery + '\'');
+			queryString = queryString.replace("$P{fromdate}", "'" + java.sql.Date.valueOf(fromDate) + '\'');
+			queryString = queryString.replace("$P{todate}", "'" + java.sql.Date.valueOf(toDate) + '\'');
 			queryString = queryString.replace("$P{reductionplan}", '\'' + reductionPlan + '\'');
 
 			DbQueryLogger dbQuery = new DbQueryLogger();
@@ -1032,14 +1030,11 @@ public class JasperReportsManager {
 		return parameters;
 	}
 
-	private HashMap<String, Object> compileGenericReportFromDateToDateParameters(String fromDate, String toDate, String reductionPlan) throws OHServiceException {
+	private HashMap<String, Object> compileGenericReportFromDateToDateParameters(LocalDate fromDate, LocalDate toDate, String reductionPlan) throws OHServiceException {
 		HashMap<String, Object> parameters = getHospitalParameters();
 
-		LocalDateTime fromDateQuery = TimeTools.parseDate(fromDate, DD_MM_YYYY, true);
-		LocalDateTime toDateQuery = TimeTools.parseDate(toDate, DD_MM_YYYY, true);
-
-		parameters.put("fromdate", toDate(fromDateQuery)); // real param
-		parameters.put("todate", toDate(toDateQuery)); // real param
+		parameters.put("fromdate", toDate(fromDate)); // real param
+		parameters.put("todate", toDate(toDate)); // real param
 		parameters.put("reductionplan", reductionPlan); // real param
 		return parameters;
 	}
