@@ -152,41 +152,13 @@ ORDER BY A.ADM_DATE_ADM DESC]]>
 				<text><![CDATA[69374707 / 69374700 / 69374703]]></text>
 			</staticText>
 			<frame>
-				<reportElement x="0" y="210" width="350" height="20" uuid="ddf78ffd-1028-48e6-8e3a-6f657ffd5040"/>
+				<reportElement x="0" y="210" width="569" height="20" uuid="ddf78ffd-1028-48e6-8e3a-6f657ffd5040"/>
 				<textField>
-					<reportElement x="-1" y="0" width="61" height="20" uuid="d2649b9d-7668-40d9-806d-86b1bef8568d"/>
+					<reportElement x="-1" y="0" width="568" height="20" uuid="d2649b9d-7668-40d9-806d-86b1bef8568d"/>
 					<textElement>
 						<font fontName="Serif" size="14" isBold="true"/>
 					</textElement>
-					<textFieldExpression><![CDATA[$R{Period}]]></textFieldExpression>
-				</textField>
-				<textField>
-					<reportElement x="60" y="0" width="30" height="20" uuid="9b336608-4d40-4e36-9d6e-d8c37132d282"/>
-					<textElement>
-						<font fontName="Serif" size="14" isBold="true"/>
-					</textElement>
-					<textFieldExpression><![CDATA[$R{From}]]></textFieldExpression>
-				</textField>
-				<textField>
-					<reportElement x="90" y="0" width="110" height="20" uuid="ca97d2a6-ee0b-471e-b12b-28317f9ddb9f"/>
-					<textElement>
-						<font fontName="Serif" size="14" isBold="true"/>
-					</textElement>
-					<textFieldExpression><![CDATA[$P{fromdate}]]></textFieldExpression>
-				</textField>
-				<textField>
-					<reportElement x="230" y="0" width="120" height="20" uuid="87c7b726-3571-42a0-9c83-39aee0daef0e"/>
-					<textElement>
-						<font fontName="Serif" size="14" isBold="true"/>
-					</textElement>
-					<textFieldExpression><![CDATA[$P{todate}]]></textFieldExpression>
-				</textField>
-				<textField>
-					<reportElement x="200" y="0" width="30" height="20" uuid="45ec168a-bcc4-4847-a4ce-2a5f6f929738"/>
-					<textElement>
-						<font fontName="Serif" size="14" isBold="true"/>
-					</textElement>
-					<textFieldExpression><![CDATA[$R{To}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$R{Period} + " "  + $R{From} + " " + new java.text.SimpleDateFormat("dd/MM/yyyy").format($P{fromdate}) + " " + $R{To}+ " " + new java.text.SimpleDateFormat("dd/MM/yyyy").format($P{todate})]]></textFieldExpression>
 				</textField>
 			</frame>
 		</band>

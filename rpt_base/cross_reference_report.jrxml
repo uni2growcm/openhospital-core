@@ -154,14 +154,14 @@ AND a.ADM_ID = $P{admID}]]>
 				<frame>
 					<reportElement x="19" y="20" width="540" height="20" uuid="059c9b29-eedc-4ce1-8c7e-b630319721bf"/>
 					<textField>
-						<reportElement x="0" y="0" width="150" height="20" uuid="77a5f0f2-3486-4cde-bd41-02c3572d52f5"/>
+						<reportElement x="0" y="0" width="160" height="20" uuid="77a5f0f2-3486-4cde-bd41-02c3572d52f5"/>
 						<textElement>
 							<font size="12" isBold="true"/>
 						</textElement>
 						<textFieldExpression><![CDATA[$R{DDN}]]></textFieldExpression>
 					</textField>
 					<textField isBlankWhenNull="true">
-						<reportElement x="150" y="0" width="390" height="20" uuid="f0450f8e-b860-4e00-a213-6d4bac10713a"/>
+						<reportElement x="160" y="0" width="380" height="20" uuid="f0450f8e-b860-4e00-a213-6d4bac10713a"/>
 						<textElement>
 							<font size="12"/>
 						</textElement>
@@ -215,14 +215,14 @@ AND a.ADM_ID = $P{admID}]]>
 				<frame>
 					<reportElement x="20" y="20" width="540" height="20" uuid="af58d5e0-28ef-45f6-a621-2a31e708c6a6"/>
 					<textField>
-						<reportElement x="0" y="0" width="119" height="20" uuid="2a7f4151-145e-4d7f-84d7-1913737aaea0"/>
+						<reportElement x="0" y="0" width="90" height="20" uuid="2a7f4151-145e-4d7f-84d7-1913737aaea0"/>
 						<textElement>
 							<font size="12" isBold="true"/>
 						</textElement>
 						<textFieldExpression><![CDATA[$R{alert}]]></textFieldExpression>
 					</textField>
-					<textField isBlankWhenNull="true">
-						<reportElement x="120" y="0" width="420" height="20" uuid="57635908-c3aa-473e-9db7-5c537b82b74c"/>
+					<textField textAdjust="ScaleFont" isBlankWhenNull="true">
+						<reportElement x="90" y="0" width="450" height="20" uuid="57635908-c3aa-473e-9db7-5c537b82b74c"/>
 						<textElement>
 							<font size="12"/>
 						</textElement>
@@ -238,7 +238,7 @@ AND a.ADM_ID = $P{admID}]]>
 						</textElement>
 						<textFieldExpression><![CDATA[$R{transportation}]]></textFieldExpression>
 					</textField>
-					<textField isBlankWhenNull="true">
+					<textField textAdjust="ScaleFont" isBlankWhenNull="true">
 						<reportElement x="130" y="0" width="410" height="20" uuid="f32c3390-103b-4030-b403-2faa0f8b097a"/>
 						<textElement>
 							<font size="12"/>
@@ -255,7 +255,7 @@ AND a.ADM_ID = $P{admID}]]>
 						</textElement>
 						<textFieldExpression><![CDATA[$R{referenceReason}]]></textFieldExpression>
 					</textField>
-					<textField isBlankWhenNull="true">
+					<textField textAdjust="ScaleFont" isBlankWhenNull="true">
 						<reportElement x="169" y="0" width="371" height="20" uuid="10746405-19fa-4b6d-b17c-71d7e17295ba"/>
 						<textElement>
 							<font size="12"/>
@@ -282,7 +282,7 @@ AND a.ADM_ID = $P{admID}]]>
 						</textElement>
 						<textFieldExpression><![CDATA[$R{diagnosis}]]></textFieldExpression>
 					</textField>
-					<textField isBlankWhenNull="true">
+					<textField textAdjust="ScaleFont" isBlankWhenNull="true">
 						<reportElement x="121" y="0" width="419" height="20" uuid="54bbba19-56f5-4c2d-880c-13c7e9745f43"/>
 						<textElement>
 							<font size="12"/>
@@ -299,7 +299,7 @@ AND a.ADM_ID = $P{admID}]]>
 						</textElement>
 						<textFieldExpression><![CDATA[$R{treatment}]]></textFieldExpression>
 					</textField>
-					<textField isBlankWhenNull="true">
+					<textField textAdjust="ScaleFont" isBlankWhenNull="true">
 						<reportElement x="120" y="0" width="420" height="20" uuid="9d9b5122-22ec-42dd-9ec6-4923d4570ab9"/>
 						<textElement>
 							<font size="12"/>
@@ -316,14 +316,14 @@ AND a.ADM_ID = $P{admID}]]>
 						</textElement>
 						<textFieldExpression><![CDATA[$R{outcome}]]></textFieldExpression>
 					</textField>
-					<textField isBlankWhenNull="true">
+					<textField textAdjust="ScaleFont" isBlankWhenNull="true">
 						<reportElement x="121" y="0" width="419" height="20" uuid="199d423a-6d3e-4cdd-a553-6d1db7fd28ec"/>
 						<textElement>
 							<font size="12"/>
 						</textElement>
 						<textFieldExpression><![CDATA[$F{ADM_OUTCOME}]]></textFieldExpression>
 					</textField>
-					<textField isBlankWhenNull="true">
+					<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 						<reportElement x="-20" y="60" width="560" height="60" uuid="9407e37b-a229-4e07-b338-cf1276f4bcc7"/>
 						<textElement>
 							<font size="12"/>

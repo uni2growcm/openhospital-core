@@ -74,7 +74,7 @@
 		<variableExpression><![CDATA[$F{TOTAL_DISCHARGES} == null ? 0L : $F{TOTAL_DISCHARGES}]]></variableExpression>
 	</variable>
 	<title>
-		<band height="230" splitType="Stretch">
+		<band height="250" splitType="Stretch">
 			<rectangle>
 				<reportElement x="0" y="-1" width="1071" height="121" uuid="bfd5a13e-4fc1-4779-b738-7be66118e917"/>
 			</rectangle>
@@ -139,65 +139,6 @@
 				</textElement>
 				<text><![CDATA[69374707 / 69374700 / 69374703]]></text>
 			</staticText>
-			<textField>
-				<reportElement x="67" y="140" width="933" height="31" uuid="c6f235ff-be06-4bad-a3f7-aa4a3c9fe443"/>
-				<textElement textAlignment="Center">
-					<font fontName="Serif" size="18" isBold="true" isUnderline="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$R{J_TITLE}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="1" y="190" width="50" height="17" uuid="0ab15e2a-efb3-445a-b6be-8db7132afa95"/>
-				<box>
-					<topPen lineWidth="1.0"/>
-					<leftPen lineWidth="1.0"/>
-					<bottomPen lineWidth="1.0"/>
-					<rightPen lineWidth="1.0"/>
-				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="12" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$R{FROM}]]></textFieldExpression>
-			</textField>
-			<textField pattern="dd/MM/yyyy">
-				<reportElement x="52" y="190" width="100" height="17" uuid="4799ac3d-44c3-4965-b7dc-d0b3d8e47641"/>
-				<box>
-					<topPen lineWidth="1.0"/>
-					<leftPen lineWidth="1.0" lineColor="#FFFFFF"/>
-					<bottomPen lineWidth="1.0"/>
-					<rightPen lineWidth="1.0"/>
-				</box>
-				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font size="12"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$P{fromdate}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="153" y="190" width="30" height="17" uuid="a7061dde-36af-4053-ba06-ce35acec9a69"/>
-				<box>
-					<topPen lineWidth="1.0"/>
-					<leftPen lineWidth="1.0" lineColor="#FFFFFF"/>
-					<bottomPen lineWidth="1.0"/>
-					<rightPen lineWidth="1.0"/>
-				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="12" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$R{TO}]]></textFieldExpression>
-			</textField>
-			<textField pattern="dd/MM/yyyy">
-				<reportElement x="184" y="190" width="100" height="17" uuid="dd474f4e-045d-476b-8d87-6abf28dcf013"/>
-				<box>
-					<topPen lineWidth="1.0"/>
-					<leftPen lineWidth="1.0" lineColor="#FFFFFF"/>
-					<bottomPen lineWidth="1.0"/>
-					<rightPen lineWidth="1.0"/>
-				</box>
-				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font size="12"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$P{todate}]]></textFieldExpression>
-			</textField>
 			<staticText>
 				<reportElement x="510" y="21" width="57" height="14" uuid="0b818cf4-946c-4608-941b-566709743625"/>
 				<textElement textAlignment="Center">
@@ -205,6 +146,30 @@
 				</textElement>
 				<text><![CDATA[-----***-----]]></text>
 			</staticText>
+			<textField>
+				<reportElement x="67" y="170" width="933" height="31" uuid="6f3a6c58-9dd0-4707-8fed-60a7404f8f4d"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="18" isBold="true" isUnderline="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{J_TITLE}]]></textFieldExpression>
+			</textField>
+			<rectangle>
+				<reportElement x="336" y="129" width="401" height="31" backcolor="#633008" uuid="afa0ab8c-373c-42f9-90c0-ede7b60b7403"/>
+			</rectangle>
+			<textField>
+				<reportElement x="340" y="130" width="397" height="30" forecolor="#FFFFFF" uuid="7df529fb-955f-4922-8708-644d4b13391c"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="18"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{GeneralPediatricsDepartment}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="-1" y="220" width="568" height="20" uuid="8d684c79-124e-4f62-a78e-715598b7cad4"/>
+				<textElement>
+					<font fontName="Serif" size="14" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{PERIOD} + " "  + $R{FROM} + " " + new java.text.SimpleDateFormat("dd/MM/yyyy").format($P{fromdate}) + " " + $R{TO}+ " " + new java.text.SimpleDateFormat("dd/MM/yyyy").format($P{todate})]]></textFieldExpression>
+			</textField>
 		</band>
 	</title>
 	<pageHeader>

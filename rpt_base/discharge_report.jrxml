@@ -38,7 +38,7 @@ AND a.ADM_ID = $P{admID}]]>
 		<band splitType="Stretch"/>
 	</title>
 	<pageHeader>
-		<band height="167" splitType="Stretch">
+		<band height="192" splitType="Stretch">
 			<rectangle>
 				<reportElement x="0" y="-1" width="550" height="121" forecolor="#000000" uuid="f54a9b38-dd41-4352-be2a-c1e8ec687b06"/>
 			</rectangle>
@@ -50,7 +50,7 @@ AND a.ADM_ID = $P{admID}]]>
 				<text><![CDATA[-----***-----]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="80" y="130" width="401" height="30" uuid="9688ea26-fa71-4d42-a1ec-d74ec0b18154"/>
+				<reportElement x="80" y="160" width="401" height="30" uuid="9688ea26-fa71-4d42-a1ec-d74ec0b18154"/>
 				<textElement textAlignment="Center">
 					<font fontName="Serif" size="20" isBold="true" isUnderline="true"/>
 				</textElement>
@@ -117,6 +117,16 @@ AND a.ADM_ID = $P{admID}]]>
 				</textElement>
 				<text><![CDATA[69374707 / 69374700 / 69374703]]></text>
 			</staticText>
+			<rectangle>
+				<reportElement x="79" y="129" width="401" height="31" backcolor="#633008" uuid="09016d9e-f345-496c-9e0e-1483e6111770"/>
+			</rectangle>
+			<textField>
+				<reportElement x="83" y="130" width="397" height="30" forecolor="#FFFFFF" uuid="48cc12c1-13a4-4e6e-b5f8-ec95588f246a"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="18"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{GeneralPediatricsDepartment}]]></textFieldExpression>
+			</textField>
 		</band>
 	</pageHeader>
 	<columnHeader>
@@ -170,7 +180,7 @@ AND a.ADM_ID = $P{admID}]]>
 						</textElement>
 						<textFieldExpression><![CDATA[$R{FullNameOfFather}]]></textFieldExpression>
 					</textField>
-					<textField isBlankWhenNull="true">
+					<textField textAdjust="ScaleFont" isBlankWhenNull="true">
 						<reportElement x="170" y="0" width="200" height="20" uuid="1b6bab7d-5de9-458c-8797-080c19c34e28"/>
 						<textElement>
 							<font size="14"/>
@@ -184,7 +194,7 @@ AND a.ADM_ID = $P{admID}]]>
 						</textElement>
 						<textFieldExpression><![CDATA[$R{Phone}]]></textFieldExpression>
 					</textField>
-					<textField isBlankWhenNull="true">
+					<textField textAdjust="ScaleFont" isBlankWhenNull="true">
 						<reportElement x="470" y="0" width="89" height="20" uuid="f846b82d-e6c8-432b-bd0c-0b278393ad1a"/>
 						<textElement>
 							<font size="14"/>
@@ -201,7 +211,7 @@ AND a.ADM_ID = $P{admID}]]>
 						</textElement>
 						<textFieldExpression><![CDATA[$R{FullNameOfMother}]]></textFieldExpression>
 					</textField>
-					<textField isBlankWhenNull="true">
+					<textField textAdjust="ScaleFont" isBlankWhenNull="true">
 						<reportElement x="190" y="0" width="180" height="20" uuid="506e28e0-8051-4f01-a228-a6309ed312f8"/>
 						<textElement>
 							<font size="14"/>
@@ -215,7 +225,7 @@ AND a.ADM_ID = $P{admID}]]>
 						</textElement>
 						<textFieldExpression><![CDATA[$R{Phone}]]></textFieldExpression>
 					</textField>
-					<textField isBlankWhenNull="true">
+					<textField textAdjust="ScaleFont" isBlankWhenNull="true">
 						<reportElement x="470" y="0" width="89" height="20" uuid="baf26bb2-b628-4dce-a0b9-0bc4fb55f0f4"/>
 						<textElement>
 							<font size="14"/>

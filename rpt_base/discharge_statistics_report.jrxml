@@ -73,7 +73,7 @@
 		</groupFooter>
 	</group>
 	<title>
-		<band height="167" splitType="Stretch">
+		<band height="194" splitType="Stretch">
 			<rectangle>
 				<reportElement x="0" y="-1" width="550" height="121" forecolor="#000000" uuid="f54a9b38-dd41-4352-be2a-c1e8ec687b06"/>
 			</rectangle>
@@ -85,7 +85,7 @@
 				<text><![CDATA[-----***-----]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="80" y="130" width="401" height="30" uuid="9688ea26-fa71-4d42-a1ec-d74ec0b18154"/>
+				<reportElement x="80" y="160" width="401" height="30" uuid="9688ea26-fa71-4d42-a1ec-d74ec0b18154"/>
 				<textElement textAlignment="Center">
 					<font fontName="Serif" size="20" isBold="true" isUnderline="true"/>
 				</textElement>
@@ -152,6 +152,16 @@
 				</textElement>
 				<text><![CDATA[69374707 / 69374700 / 69374703]]></text>
 			</staticText>
+			<rectangle>
+				<reportElement x="79" y="129" width="401" height="31" backcolor="#633008" uuid="62954333-3376-4db9-a2ad-90f7310ce2d5"/>
+			</rectangle>
+			<textField>
+				<reportElement x="83" y="130" width="397" height="30" forecolor="#FFFFFF" uuid="acb8d419-d438-4d25-820b-864bcc8f7983"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="18"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{GeneralPediatricsDepartment}]]></textFieldExpression>
+			</textField>
 		</band>
 	</title>
 	<pageHeader>
