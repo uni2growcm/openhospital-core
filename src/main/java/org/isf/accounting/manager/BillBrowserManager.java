@@ -249,7 +249,7 @@ public class BillBrowserManager {
 
 		if (billPayments != null && !billPayments.isEmpty()) {
 			ioOperations.newBillPayments(newBill, billPayments);
-			boolean isRefund = newBill.getParentId() > 0;
+			boolean isRefund = newBill.getParentId() != null && newBill.getParentId() > 0;
 			List<ItemPayments> itemPayments = computeItemPayments(newBill, billItems, billPayments, isRefund);
 			ioOperations.newItemPayments(newBill, itemPayments);
 		}
