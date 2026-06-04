@@ -1,0 +1,41 @@
+CREATE TABLE IF NOT EXISTS OH_ITEMPAYMENTS (
+    ITP_ID          int(11) NOT NULL AUTO_INCREMENT,
+    ITP_BLL_ID      int(11) NOT NULL,
+    ITP_ITEM_ID     varchar(50) DEFAULT NULL,
+    ITP_ITEM_DESC   varchar(100) DEFAULT NULL,
+    ITP_DATE        datetime NOT NULL,
+    ITP_AMOUNT      double NOT NULL,
+    ITP_USR_ID_A    varchar(50) NOT NULL,
+    ITP_ITEM_GROUP  varchar(3) DEFAULT NULL,
+    IS_REFUND       tinyint(1) DEFAULT 0,
+    ITP_CREATED_BY           varchar(50) DEFAULT NULL,
+    ITP_CREATED_DATE         datetime DEFAULT NULL,
+    ITP_LAST_MODIFIED_BY     varchar(50) DEFAULT NULL,
+    ITP_LAST_MODIFIED_DATE   datetime DEFAULT NULL,
+    ITP_ACTIVE               tinyint(1) NOT NULL DEFAULT 1,
+    PRIMARY KEY (ITP_ID),
+    CONSTRAINT FK_ITEMPAYMENTS_BILL
+        FOREIGN KEY (ITP_BLL_ID) REFERENCES OH_BILLS(BLL_ID) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS OH_ARCHIVED_ITEMPAYMENTS (
+    `ITP_ID`                  int NOT NULL AUTO_INCREMENT,
+    `ITP_BLL_ID`              int NOT NULL,
+    `ITP_ITEM_ID`             varchar(50) DEFAULT NULL,
+    `ITP_ITEM_DESC`           varchar(100) DEFAULT NULL,
+    `ITP_DATE`                datetime NOT NULL,
+    `ITP_AMOUNT`              double NOT NULL,
+    `ITP_USR_ID_A`            varchar(50) NOT NULL,
+    `ITP_ITEM_GROUP`          varchar(3) DEFAULT NULL,
+    `IS_REFUND`               tinyint(1) DEFAULT 0,
+    `ITP_CREATED_BY`          varchar(50) DEFAULT NULL,
+    `ITP_CREATED_DATE`        datetime DEFAULT NULL,
+    `ITP_LAST_MODIFIED_BY`    varchar(50) DEFAULT NULL,
+    `ITP_LAST_MODIFIED_DATE`  datetime DEFAULT NULL,
+    `ITP_ACTIVE`              tinyint(1) NOT NULL DEFAULT 1,
+    PRIMARY KEY (`ITP_ID`),
+    KEY `IDX_OH_ARCHIVED_ITEMPAYMENTS_BLL_ID` (`ITP_BLL_ID`),
+    CONSTRAINT `FK_OH_ARCHIVED_ITEMPAYMENTS_BLL_ID`
+        FOREIGN KEY (`ITP_BLL_ID`)
+            REFERENCES `OH_ARCHIVED_BILLS` (`BLL_ID`)
+) ENGINE=InnoDB;
