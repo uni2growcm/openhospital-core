@@ -43,8 +43,8 @@ public class ArchiveManager {
 		this.archiveIoOperations = archiveIoOperations;
 	}
 
-	public void archiveClosedBills() throws OHServiceException {
-		archiveIoOperations.archiveClosedBills();
+	public int archiveClosedBills() throws OHServiceException {
+		return archiveIoOperations.archiveClosedBills();
 	}
 
 	// ---------------------------------------------------------------------------
