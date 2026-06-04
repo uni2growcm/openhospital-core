@@ -858,6 +858,25 @@ public class JasperReportsManager {
 		}
 	}
 
+	public JasperReportResultDto getGenericReportFromDateToDatePdf(String fromDate, String toDate, String reductionPlan,String jasperFileFolder, String jasperFileName)
+		throws OHServiceException {
+
+		try {
+			HashMap<String, Object> parameters = compileGenericReportFromDateToDateParameters(fromDate, toDate, reductionPlan);
+			addBundleParameter(jasperFileFolder, jasperFileName, parameters);
+
+			String pdfFilename = compilePDFFilename(jasperFileFolder, jasperFileName, null, "pdf");
+			String filename = compileJasperFilename(jasperFileFolder, jasperFileName);
+
+			JasperReportResultDto result = generateJasperReport(filename, pdfFilename, parameters);
+			JasperExportManager.exportReportToPdfFile(result.getJasperPrint(), pdfFilename);
+			return result;
+		} catch (Exception e) {
+			LOGGER.error("", e);
+			throw new OHReportException(e, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
+		}
+	}
+
 	public void getGenericReportFromDateToDateExcel(LocalDate fromDate, LocalDate toDate, String jasperFileFolder, String jasperFileName, String exportFilename)
 					throws OHServiceException {
 
@@ -901,6 +920,37 @@ public class JasperReportsManager {
 
 			queryString = queryString.replace("$P{fromdate}", '\'' + dateFromQuery + '\'');
 			queryString = queryString.replace("$P{todate}", '\'' + dateToQuery + '\'');
+
+			DbQueryLogger dbQuery = new DbQueryLogger();
+			ResultSet resultSet = dbQuery.getData(queryString, true);
+
+			File exportFile = new File(exportFilename);
+			ExcelExporter xlsExport = new ExcelExporter();
+			if (exportFile.getName().endsWith(".xls")) {
+				xlsExport.exportResultsetToExcelOLD(resultSet, exportFile);
+			} else {
+				xlsExport.exportResultsetToExcel(resultSet, exportFile);
+			}
+		} catch (Exception exception) {
+			throw new OHReportException(exception, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
+		}
+	}
+
+	public void getGenericReportFromDateToDateExcel(String fromDate, String toDate, String reductionPlan, String jasperFileFolder, String jasperFileName, String exportFilename)
+		throws OHServiceException {
+
+		try {
+			File jasperFile = new File(compileJasperFilename(jasperFileFolder, jasperFileName));
+			JasperReport jasperReport = (JasperReport) JRLoader.loadObject(jasperFile);
+			JRQuery query = jasperReport.getMainDataset().getQuery();
+			String queryString = query.getText();
+
+			String dateFromQuery = TimeTools.formatDateTime(TimeTools.getDate(fromDate, DD_MM_YYYY), YYYY_MM_DD);
+			String dateToQuery = TimeTools.formatDateTime(TimeTools.getDate(toDate, DD_MM_YYYY), YYYY_MM_DD);
+
+			queryString = queryString.replace("$P{fromdate}", '\'' + dateFromQuery + '\'');
+			queryString = queryString.replace("$P{todate}", '\'' + dateToQuery + '\'');
+			queryString = queryString.replace("$P{reductionplan}", '\'' + reductionPlan + '\'');
 
 			DbQueryLogger dbQuery = new DbQueryLogger();
 			ResultSet resultSet = dbQuery.getData(queryString, true);
@@ -979,6 +1029,18 @@ public class JasperReportsManager {
 
 		parameters.put("fromdate", toDate(fromDateQuery)); // real param
 		parameters.put("todate", toDate(toDateQuery)); // real param
+		return parameters;
+	}
+
+	private HashMap<String, Object> compileGenericReportFromDateToDateParameters(String fromDate, String toDate, String reductionPlan) throws OHServiceException {
+		HashMap<String, Object> parameters = getHospitalParameters();
+
+		LocalDateTime fromDateQuery = TimeTools.parseDate(fromDate, DD_MM_YYYY, true);
+		LocalDateTime toDateQuery = TimeTools.parseDate(toDate, DD_MM_YYYY, true);
+
+		parameters.put("fromdate", toDate(fromDateQuery)); // real param
+		parameters.put("todate", toDate(toDateQuery)); // real param
+		parameters.put("reductionplan", reductionPlan); // real param
 		return parameters;
 	}
 

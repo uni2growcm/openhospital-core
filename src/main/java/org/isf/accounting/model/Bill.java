@@ -115,7 +115,6 @@ public class Bill extends Auditable<String> implements Cloneable, Comparable<Bil
 
 	@ManyToOne
 	@JoinColumn(name = "BLL_RP_ID")
-	@Transient
 	private ReductionPlan reductionPlan;
 
 	@ManyToOne
