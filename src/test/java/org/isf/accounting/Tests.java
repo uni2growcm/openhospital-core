@@ -51,6 +51,7 @@ import org.isf.accounting.service.AccountingBillIoOperationRepository;
 import org.isf.accounting.service.AccountingBillItemsIoOperationRepository;
 import org.isf.accounting.service.AccountingBillPaymentIoOperationRepository;
 import org.isf.accounting.service.AccountingIoOperations;
+import org.isf.accounting.service.AccountingItemPaymentIoOperationRepository;
 import org.isf.menu.TestUser;
 import org.isf.menu.TestUserGroup;
 import org.isf.menu.model.User;
@@ -90,6 +91,7 @@ class Tests extends OHCoreTestCase {
 	private static TestArchivedBill testArchivedBill;
 	private static TestArchivedBillItems testArchivedBillItems;
 	private static TestArchivedBillPayments testArchivedBillPayments;
+	private static TestItemPayments testItemPayments;
 
 	@Autowired
 	private BillBrowserManager billBrowserManager;
@@ -111,6 +113,8 @@ class Tests extends OHCoreTestCase {
 	private UserIoOperationRepository userIoOperationRepository;
 	@Autowired
 	private UserGroupIoOperationRepository userGroupIoOperationRepository;
+	@Autowired
+	private AccountingItemPaymentIoOperationRepository accountingItemPaymentIoOperationRepository;
 
 	static Stream<Arguments> allowbillguarantor() {
 		return Stream.of(Arguments.of(false), Arguments.of(true));
@@ -130,6 +134,7 @@ class Tests extends OHCoreTestCase {
 		testArchivedBill = new TestArchivedBill();
 		testArchivedBillItems = new TestArchivedBillItems();
 		testArchivedBillPayments = new TestArchivedBillPayments();
+		testItemPayments = new TestItemPayments();
 	}
 
 	@BeforeEach
@@ -174,6 +179,77 @@ class Tests extends OHCoreTestCase {
 	void testBillPaymentsSets() throws Exception {
 		int id = setupTestBillPayments(true);
 		checkBillPaymentsIntoDb(id);
+	}
+
+	// ==================== ITEM PAYMENTS TESTS ====================
+	@Test
+	void testItemPaymentsGets() throws Exception {
+		int id = setupTestItemPayments(false);
+		checkItemPaymentsIntoDb(id);
+	}
+
+	@Test
+	void testItemPaymentsSets() throws Exception {
+		int id = setupTestItemPayments(true);
+		checkItemPaymentsIntoDb(id);
+	}
+
+	@Test
+	void testIoGetItemPayments() throws Exception {
+		int id = setupTestItemPayments(false);
+		ItemPayments foundItemPayment = accountingItemPaymentIoOperationRepository.findById(id).orElse(null);
+		assertThat(foundItemPayment).isNotNull();
+		List<ItemPayments> itemPayments = accountingIoOperation.getItemPayments(foundItemPayment.getBill().getId());
+		assertThat(itemPayments.get(0).getAmount()).isCloseTo(foundItemPayment.getAmount(), offset(0.1));
+	}
+
+	@Test
+	void testIoGetAllItemPayments() throws Exception {
+		setupTestItemPayments(false);
+		List<ItemPayments> itemPayments = accountingIoOperation.getItemPayments(0);
+		assertThat(itemPayments).isNotEmpty();
+	}
+
+	@Test
+	void testIoNewItemPayments() throws Exception {
+		int existingId = setupTestItemPayments(false);
+		ItemPayments existingManaged = accountingItemPaymentIoOperationRepository.findById(existingId).orElse(null);
+		assertThat(existingManaged).isNotNull();
+
+		Bill bill = existingManaged.getBill();
+		ItemPayments existingFromGui = new ItemPayments();
+		existingFromGui.setId(existingManaged.getId());
+		existingFromGui.setAmount(existingManaged.getAmount());
+		existingFromGui.setDate(existingManaged.getDate());
+		existingFromGui.setUser(existingManaged.getUser());
+		existingFromGui.setBill(bill);
+		existingFromGui.setItemId(existingManaged.getItemId());
+		existingFromGui.setItemDescription(existingManaged.getItemDescription());
+		existingFromGui.setItemGroup(existingManaged.getItemGroup());
+		existingFromGui.setRefund(existingManaged.isRefund());
+
+		ItemPayments newItemPayment = testItemPayments.setup(null, false);
+
+		List<ItemPayments> itemPayments = new ArrayList<>();
+		itemPayments.add(existingFromGui);
+		itemPayments.add(newItemPayment);
+
+		accountingIoOperation.newItemPayments(bill, itemPayments);
+
+		List<ItemPayments> persisted = accountingIoOperation.getItemPayments(bill.getId());
+		assertThat(persisted).hasSize(2);
+		assertThat(persisted).extracting(p -> p.getBill().getId()).containsOnly(bill.getId());
+		assertThat(persisted).extracting(ItemPayments::getId).doesNotContain(existingId);
+	}
+
+	@Test
+	void testIoDeleteItemPaymentsByBillId() throws Exception {
+		int id = setupTestItemPayments(false);
+		ItemPayments foundItemPayment = accountingItemPaymentIoOperationRepository.findById(id).orElse(null);
+		assertThat(foundItemPayment).isNotNull();
+		accountingIoOperation.deleteItemPaymentsByBillId(foundItemPayment.getBill().getId());
+		List<ItemPayments> itemPayments = accountingIoOperation.getItemPayments(foundItemPayment.getBill().getId());
+		assertThat(itemPayments).isEmpty();
 	}
 
 	// ==================== LISTENER TESTS ====================
@@ -584,6 +660,27 @@ class Tests extends OHCoreTestCase {
 		testBill.check(foundBillPayment.getBill());
 		testPriceList.check(foundBillPayment.getBill().getPriceList());
 		testPatient.check(foundBillPayment.getBill().getBillPatient());
+	}
+
+	private int setupTestItemPayments(boolean usingSet) throws OHException {
+		Patient patient = testPatient.setup(false);
+		PriceList priceList = testPriceList.setup(false);
+		Bill bill = testBill.setup(priceList, patient, null, usingSet);
+		ItemPayments itemPayment = testItemPayments.setup(bill, usingSet);
+		priceListIoOperationRepository.saveAndFlush(priceList);
+		patientIoOperationRepository.saveAndFlush(patient);
+		accountingBillIoOperationRepository.saveAndFlush(bill);
+		accountingItemPaymentIoOperationRepository.saveAndFlush(itemPayment);
+		return itemPayment.getId();
+	}
+
+	private void checkItemPaymentsIntoDb(int id) throws OHException {
+		ItemPayments foundItemPayment = accountingItemPaymentIoOperationRepository.findById(id).orElse(null);
+		assertThat(foundItemPayment).isNotNull();
+		testItemPayments.check(foundItemPayment);
+		testBill.check(foundItemPayment.getBill());
+		testPriceList.check(foundItemPayment.getBill().getPriceList());
+		testPatient.check(foundItemPayment.getBill().getBillPatient());
 	}
 
 	private Patient setupTestPatient(boolean usingSet) throws OHException {

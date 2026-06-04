@@ -249,6 +249,9 @@ public class BillBrowserManager {
 
 		if (billPayments != null && !billPayments.isEmpty()) {
 			ioOperations.newBillPayments(newBill, billPayments);
+			boolean isRefund = newBill.getParentId() > 0;
+			List<ItemPayments> itemPayments = computeItemPayments(newBill, billItems, billPayments, isRefund);
+			ioOperations.newItemPayments(newBill, itemPayments);
 		}
 
 		return newBill;
@@ -282,6 +285,8 @@ public class BillBrowserManager {
 				paymentsToSave.add(newPayment);
 			}
 			ioOperations.newBillPayments(updatedBill, paymentsToSave);
+			List<ItemPayments> itemPayments = computeItemPayments(updatedBill, billItems, paymentsToSave, false);
+			ioOperations.newItemPayments(updatedBill, itemPayments);
 		}
 
 		markPrescriptionsAsBilled(billItems, updatedBill);
@@ -529,13 +534,11 @@ public class BillBrowserManager {
 		List<BillItems> mainItems = ioOperations.getItems(billId);
 		List<BillItems> alreadyRefunded = ioOperations.getRefundedItems(billId);
 
-		// Aggregate already-refunded qty by item description
 		Map<String, Integer> refundedQtyByDesc = new HashMap<>();
 		for (BillItems item : alreadyRefunded) {
 			refundedQtyByDesc.merge(item.getItemDescription(), item.getItemQuantity(), Integer::sum);
 		}
 
-		// Group main items by description, summing quantities
 		Map<String, BillItems> grouped = new LinkedHashMap<>();
 		for (BillItems item : mainItems) {
 			String desc = item.getItemDescription();
@@ -576,6 +579,8 @@ public class BillBrowserManager {
 
 		if (payments != null && !payments.isEmpty()) {
 			ioOperations.newBillPayments(savedRefundBill, payments);
+			List<ItemPayments> itemPayments = computeItemPayments(savedRefundBill, refundItems, payments, true);
+			ioOperations.newItemPayments(savedRefundBill, itemPayments);
 		}
 
 		if (GeneralData.STOCKMVTONBILLSAVE) {
@@ -584,6 +589,107 @@ public class BillBrowserManager {
 		}
 
 		return savedRefundBill;
+	}
+
+	/**
+	 * Distributes the total payment amount across bill items using a waterfall
+	 * (FIFO) strategy: each item is fully covered before moving to the next.
+	 * For refund bills, all amounts are negated and {@code isRefund} is set to {@code true}.
+	 *
+	 * @param bill     the bill
+	 * @param items    the bill items (order determines priority)
+	 * @param payments the payments whose total drives the allocation
+	 * @param isRefund whether this is a refund bill
+	 * @return the list of item payments to persist
+	 */
+	private List<ItemPayments> computeItemPayments(
+			Bill bill, List<BillItems> items, List<BillPayments> payments, boolean isRefund) {
+
+		if (items == null || items.isEmpty() || payments == null || payments.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		double totalPaid = payments.stream().mapToDouble(p -> Math.abs(p.getAmount())).sum();
+		if (totalPaid == 0) {
+			return Collections.emptyList();
+		}
+
+		String user = payments.get(0).getUser();
+		LocalDateTime now = LocalDateTime.now();
+		List<ItemPayments> result = new ArrayList<>();
+
+		for (BillItems item : items) {
+			if (totalPaid <= 0) break;
+
+			double due = item.getItemAmount() * item.getItemQuantity();
+			if (due <= 0) continue;
+
+			double allocated = Math.min(due, totalPaid);
+			totalPaid -= allocated;
+
+			result.add(new ItemPayments(
+				0,
+				item.getItemId(),
+				item.getItemDescription(),
+				bill,
+				isRefund,
+				isRefund ? -allocated : allocated,
+				user,
+				item.getItemGroup(),
+				now
+			));
+		}
+
+		return result;
+	}
+
+	/**
+	 * Retrieves item payments for a given bill.
+	 *
+	 * @param billID the bill ID
+	 * @return the list of item payments
+	 * @throws OHServiceException
+	 */
+	public List<ItemPayments> getItemPayments(int billID) throws OHServiceException {
+		if (billID == 0) {
+			return new ArrayList<>();
+		}
+		return ioOperations.getItemPayments(billID);
+	}
+
+	/**
+	 * Retrieves item payments for a given bill and item.
+	 *
+	 * @param itemId the item ID
+	 * @param billID the bill ID
+	 * @return the list of item payments for this specific item
+	 * @throws OHServiceException
+	 */
+	public List<ItemPayments> getItemPaymentsByItemId(String itemId, int billID) throws OHServiceException {
+		return ioOperations.getItemPaymentsByItemId(itemId, billID);
+	}
+
+	/**
+	 * Creates new item payments for a bill, replacing any existing ones.
+	 *
+	 * @param bill the bill
+	 * @param itemPayments the list of item payments
+	 * @throws OHServiceException
+	 */
+	@Transactional(rollbackFor = OHServiceException.class)
+	public void newItemPayments(Bill bill, List<ItemPayments> itemPayments) throws OHServiceException {
+		ioOperations.newItemPayments(bill, itemPayments);
+	}
+
+	/**
+	 * Deletes all item payments for a given bill.
+	 *
+	 * @param billID the bill ID
+	 * @throws OHServiceException
+	 */
+	@Transactional(rollbackFor = OHServiceException.class)
+	public void deleteItemPaymentsByBillId(int billID) throws OHServiceException {
+		ioOperations.deleteItemPaymentsByBillId(billID);
 	}
 
 	/**

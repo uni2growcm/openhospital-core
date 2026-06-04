@@ -38,6 +38,7 @@ import org.isf.accounting.model.BillItemGroup;
 import org.isf.accounting.model.BillItemGroupItem;
 import org.isf.accounting.model.BillItems;
 import org.isf.accounting.model.BillPayments;
+import org.isf.accounting.model.ItemPayments;
 import org.isf.generaldata.MessageBundle;
 import org.isf.generaldata.SageConfig;
 import org.isf.lab.manager.LabManager;
@@ -69,6 +70,7 @@ public class AccountingIoOperations {
 	private AccountingBillItemsIoOperationRepository billItemsRepository;
 	private BillItemGroupIoOperationRepository billItemGroupRepository;
 	private BillItemGroupItemIoOperationRepository billItemGroupItemRepository;
+	private AccountingItemPaymentIoOperationRepository itemPaymentRepository;
 
 	private TherapyManager therapyManager;
 	private LabManager labManager;
@@ -80,6 +82,7 @@ public class AccountingIoOperations {
 		AccountingBillItemsIoOperationRepository accountingBillItemsIoOperationRepository,
 		BillItemGroupIoOperationRepository billItemGroupRepository,
 		BillItemGroupItemIoOperationRepository billItemGroupItemRepository,
+		AccountingItemPaymentIoOperationRepository accountingItemPaymentIoOperationRepository,
 		TherapyManager therapyManager,
 		LabManager labManager,
 		OperationRowBrowserManager operationRowBrowserManager
@@ -89,6 +92,7 @@ public class AccountingIoOperations {
 		this.billItemsRepository = accountingBillItemsIoOperationRepository;
 		this.billItemGroupRepository = billItemGroupRepository;
 		this.billItemGroupItemRepository = billItemGroupItemRepository;
+		this.itemPaymentRepository = accountingItemPaymentIoOperationRepository;
 		this.therapyManager = therapyManager;
 		this.labManager = labManager;
 		this.operationRowBrowserManager = operationRowBrowserManager;
@@ -598,6 +602,61 @@ public class AccountingIoOperations {
 	 */
 	public void deleteBillItemGroupItem(int itemId) throws OHServiceException {
 		billItemGroupItemRepository.deleteById(itemId);
+	}
+
+	/**
+	 * Retrieves all item payments for a given bill.
+	 *
+	 * @param billId the bill ID
+	 * @return the list of item payments
+	 * @throws OHServiceException
+	 */
+	public List<ItemPayments> getItemPayments(int billId) throws OHServiceException {
+		if (billId != 0) {
+			return itemPaymentRepository.findByBillIdOrderByIdAsc(billId);
+		}
+		return itemPaymentRepository.findAllByOrderByIdAsc();
+	}
+
+	/**
+	 * Creates new item payments for a bill, replacing any existing ones.
+	 *
+	 * @param bill the bill
+	 * @param itemPayments the list of item payments to save
+	 * @throws OHServiceException
+	 */
+	public void newItemPayments(Bill bill, List<ItemPayments> itemPayments) throws OHServiceException {
+		itemPaymentRepository.deleteWhereBillId(bill.getId());
+		for (ItemPayments itemPayment : itemPayments) {
+			itemPayment.setBill(bill);
+			itemPayment.setId(0);
+			if (itemPayment.getDate() == null) {
+				itemPayment.setDate(LocalDateTime.now());
+			}
+			itemPaymentRepository.save(itemPayment);
+		}
+	}
+
+	/**
+	 * Retrieves all item payments for a given bill and item.
+	 *
+	 * @param itemId the item ID
+	 * @param billId the bill ID
+	 * @return the list of item payments
+	 * @throws OHServiceException
+	 */
+	public List<ItemPayments> getItemPaymentsByItemId(String itemId, int billId) throws OHServiceException {
+		return itemPaymentRepository.findByItemIdAndBillIdOrderByIdAsc(itemId, billId);
+	}
+
+	/**
+	 * Deletes all item payments for a given bill.
+	 *
+	 * @param billId the bill ID
+	 * @throws OHServiceException
+	 */
+	public void deleteItemPaymentsByBillId(int billId) throws OHServiceException {
+		itemPaymentRepository.deleteWhereBillId(billId);
 	}
 
 	/**
