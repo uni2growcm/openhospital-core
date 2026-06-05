@@ -24,6 +24,7 @@ package org.isf.medicalstock.manager;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -345,10 +346,15 @@ public class MovStockInsertingManager {
 	@TranslateOHServiceException
 	public List<Movement> newMultipleChargingMovements(List<Movement> movements, String referenceNumber) throws OHServiceException {
 
-		// TODO: verify the need of this checkReference in the whole class
-		boolean checkReference = referenceNumber == null; // referenceNumber == null, each movement should have referenceNumber set
+		boolean checkReference = referenceNumber == null;
+
+		if ((referenceNumber == null || referenceNumber.isBlank()) && GeneralData.REFERENCE_AUTOMATIC) {
+			LocalDateTime now = TimeTools.getNow();
+			referenceNumber = generateReference(GeneralData.REFERENCE_PREFIX_CHARGE, now);
+			checkReference = true;
+		}
+
 		if (!checkReference) {
-			// referenceNumber != null, all movement will have same referenceNumber, we check only once for all
 			List<OHExceptionMessage> errors = checkReferenceNumber(referenceNumber);
 			if (!errors.isEmpty()) {
 				throw new OHDataValidationException(errors);
@@ -357,6 +363,9 @@ public class MovStockInsertingManager {
 		List<Movement> insertedMovements = new ArrayList<>();
 		for (Movement mov : movements) {
 			try {
+				if (referenceNumber != null && !referenceNumber.isBlank()) {
+					mov.setRefNo(referenceNumber);
+				}
 				insertedMovements.add(prepareChargingMovement(mov, checkReference, false));
 			} catch (OHServiceException e) {
 				List<OHExceptionMessage> errors = e.getMessages();
@@ -433,9 +442,13 @@ public class MovStockInsertingManager {
 	@Transactional(rollbackFor = OHServiceException.class)
 	public List<Movement> newMultipleDischargingMovements(List<Movement> movements, String referenceNumber) throws OHServiceException {
 
-		boolean checkReference = referenceNumber == null; // referenceNumber == null, each movement should have referenceNumber set
+		boolean checkReference = referenceNumber == null;
+		if ((referenceNumber == null || referenceNumber.isBlank()) && GeneralData.REFERENCE_AUTOMATIC) {
+			LocalDateTime now = TimeTools.getNow();
+			referenceNumber = generateReference(GeneralData.REFERENCE_PREFIX_DISCHARGE, now);
+			checkReference = true;
+		}
 		if (!checkReference) {
-			// referenceNumber != null, all movement will have same referenceNumber, we check only once for all
 			List<OHExceptionMessage> errors = checkReferenceNumber(referenceNumber);
 			if (!errors.isEmpty()) {
 				throw new OHDataValidationException(errors);
@@ -444,7 +457,10 @@ public class MovStockInsertingManager {
 		List<Movement> dischargingMovements = new ArrayList<>();
 		for (Movement mov : movements) {
 			try {
-				dischargingMovements.addAll(prepareDischargingMovement(mov, checkReference, false));
+				if (referenceNumber != null && !referenceNumber.isBlank()) {
+					mov.setRefNo(referenceNumber);
+				}
+				dischargingMovements.addAll(prepareDischargingMovement(mov, checkReference,false));
 			} catch (OHServiceException e) {
 				List<OHExceptionMessage> errors = e.getMessages();
 				errors.add(new OHExceptionMessage(mov.getMedical().getDescription()));
@@ -466,7 +482,7 @@ public class MovStockInsertingManager {
 	@Transactional(rollbackFor = OHServiceException.class)
 	public List<Movement> newMultipleDischargingMovements(List<Movement> movements, String referenceNumber, boolean isForInventory) throws OHServiceException {
 
-		boolean checkReference = referenceNumber == null; // referenceNumber == null, each movement should have referenceNumber set
+		boolean checkReference = referenceNumber == null;
 		if (!checkReference) {
 			// referenceNumber != null, all movement will have same referenceNumber, we check only once for all
 			List<OHExceptionMessage> errors = checkReferenceNumber(referenceNumber);
@@ -537,5 +553,18 @@ public class MovStockInsertingManager {
 	 */
 	public List<Integer> getMedicalsFromLot(String code) throws OHServiceException {
 		return ioOperations.getMedicalsFromLot(code);
+	}
+
+	/**
+	 * Generates an automatic reference based on prefix and date.
+	 *
+	 * @param prefix The prefix (e.g., "REF+", "REF-")
+	 * @param date The date of the movement
+	 * @return The generated reference string
+	 */
+	private String generateReference(String prefix, LocalDateTime date) {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(GeneralData.REFERENCE_TIMESTAMP_FORMAT);
+		String timestamp = date.format(formatter);
+		return prefix + timestamp;
 	}
 }
