@@ -38,17 +38,31 @@ public class TestPregnancy {
 	private final  LocalDateTime eddLmp = LocalDateTime.of(2025, 10, 22, 0, 0);
 	private final LocalDateTime eddScan = LocalDateTime.of(2025, 10, 20, 0, 0);
 
+	// Test data for obstetric history
+	private final Integer testGravidity = 4;
+	private final Integer testParity = 2;
+	private final Integer testMiscarriages = 1;
+	private final Integer testTermDeliveries = 2;
+	private final Integer testPretermDeliveries = 1;
+	private final Integer testLivingChildren = 2;
+	private final Integer testStillbirths = 0;
+	private final Integer testDeceasedChildren = 0;
+	private final Integer testDesiredChildren = 4;
+	private final String testBreastfeeding = "Y";
+	private final Integer testLastChildYears = 2;
+	private final Integer testLastChildMonths = 3;
+	private final Integer testLastChildWeeks = 0;
+	private final Integer testLastChildDays = 0;
+
 	public Pregnancy setup(Patient patient, boolean usingSet) throws OHException {
 		Pregnancy pregnancy;
 
 		if (usingSet) {
 			pregnancy = new Pregnancy();
-			setParameters(pregnancy, patient);
 		} else {
 			pregnancy = new Pregnancy(patient, date, lmp);
-			setParameters(pregnancy, patient);
 		}
-
+		setParameters(pregnancy, patient);
 		return pregnancy;
 	}
 
@@ -57,12 +71,23 @@ public class TestPregnancy {
 		p.setLmp(lmp);
 		p.setEddLmp(eddLmp);
 		p.setEddScan(eddScan);
-		Integer gravidity = 1;
-		p.setGravidity(gravidity);
-		Integer parity = 0;
-		p.setParity(parity);
-		Integer miscarriages = 0;
-		p.setMiscarriages(miscarriages);
+
+		// Obstetric history
+		p.setGravidity(testGravidity);
+		p.setParity(testParity);
+		p.setMiscarriages(testMiscarriages);
+		p.setTermDeliveries(testTermDeliveries);
+		p.setPretermDeliveries(testPretermDeliveries);
+		p.setLivingChildren(testLivingChildren);
+		p.setStillbirths(testStillbirths);
+		p.setDeceasedChildren(testDeceasedChildren);
+		p.setDesiredChildren(testDesiredChildren);
+		p.setBreastfeeding(testBreastfeeding);
+		p.setLastChildYears(testLastChildYears);
+		p.setLastChildMonths(testLastChildMonths);
+		p.setLastChildWeeks(testLastChildWeeks);
+		p.setLastChildDays(testLastChildDays);
+
 		p.setRiskLevel(RiskLevel.LOW);
 		p.setStatus(PregnancyStatus.ONGOING);
 	}
@@ -71,5 +96,21 @@ public class TestPregnancy {
 		assertThat(p.getStatus()).isEqualTo(PregnancyStatus.ONGOING);
 		assertThat(p.getRiskLevel()).isEqualTo(RiskLevel.LOW);
 		assertThat(p.getLmp()).isEqualTo(lmp);
+
+		// Obstetric history checks
+		assertThat(p.getGravidity()).isEqualTo(testGravidity);
+		assertThat(p.getParity()).isEqualTo(testParity);
+		assertThat(p.getMiscarriages()).isEqualTo(testMiscarriages);
+		assertThat(p.getTermDeliveries()).isEqualTo(testTermDeliveries);
+		assertThat(p.getPretermDeliveries()).isEqualTo(testPretermDeliveries);
+		assertThat(p.getLivingChildren()).isEqualTo(testLivingChildren);
+		assertThat(p.getStillbirths()).isEqualTo(testStillbirths);
+		assertThat(p.getDeceasedChildren()).isEqualTo(testDeceasedChildren);
+		assertThat(p.getDesiredChildren()).isEqualTo(testDesiredChildren);
+		assertThat(p.getBreastfeeding()).isEqualTo(testBreastfeeding);
+		assertThat(p.getLastChildYears()).isEqualTo(testLastChildYears);
+		assertThat(p.getLastChildMonths()).isEqualTo(testLastChildMonths);
+		assertThat(p.getLastChildWeeks()).isEqualTo(testLastChildWeeks);
+		assertThat(p.getLastChildDays()).isEqualTo(testLastChildDays);
 	}
 }
