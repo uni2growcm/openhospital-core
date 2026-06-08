@@ -22,21 +22,9 @@
 package org.isf.admission.model;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
-import jakarta.persistence.AttributeOverride;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.EntityResult;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.SqlResultSetMapping;
-import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
-import jakarta.persistence.Version;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
 import org.isf.admtype.model.AdmissionType;
@@ -109,9 +97,13 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 	@JoinColumn(name = "ADM_IN_DIS_ID_A")
 	private Disease diseaseIn;                // disease in key  (null)
 
-	@ManyToOne
-	@JoinColumn(name = "ADM_OUT_DIS_ID_A")
-	private Disease diseaseOut1;            // disease out key  (null)
+	@ManyToMany
+	@JoinTable(
+		name = "OH_COMPLICATIONDIAGNOSIS",
+		joinColumns = @JoinColumn(name = "CD_ADM_ID"),
+		inverseJoinColumns = @JoinColumn(name = "CD_DIS_ID_A")
+	)
+	private List<Disease> diseaseOut1;
 
 	@ManyToOne
 	@JoinColumn(name = "ADM_OUT_DIS_ID_A_2")
@@ -242,6 +234,9 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 	@Column(name = "ADM_DEATH_PERIOD")
 	private String deathPeriod;
 
+	@Column(name = "ADM_OTHERS_INFORMATION", columnDefinition = "TEXT")
+	private String othersInformation;
+
 	public Admission() {
 		super();
 	}
@@ -277,7 +272,7 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 	 * @param deleted
 	 */
 	public Admission(int id, int admitted, String type, Ward ward, int prog, Patient patient, LocalDateTime admDate, AdmissionType admType, String fhu,
-					 Disease diseaseIn, Disease diseaseOut1, Disease diseaseOut2, Disease diseaseOut3,
+					 Disease diseaseIn, List<Disease> diseaseOut1, Disease diseaseOut2, Disease diseaseOut3,
 					 LocalDateTime disDate, DischargeType disType, String anamnesis, Float transUnit, LocalDateTime visitDate,
 					 PregnantTreatmentType pregTreatmentType, LocalDateTime deliveryDate, DeliveryType deliveryType, DeliveryResultType deliveryResult, Float weight,
 					 LocalDateTime ctrlDate1, LocalDateTime ctrlDate2,
@@ -353,7 +348,7 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 	 */
 	public Admission(int id, int admitted, String type, Ward ward, int prog, Patient patient,
 					 LocalDateTime admDate, AdmissionType admType, String fhu,
-					 Disease diseaseIn, Disease diseaseOut1, Disease diseaseOut2, Disease diseaseOut3,
+					 Disease diseaseIn, List<Disease> diseaseOut1, Disease diseaseOut2, Disease diseaseOut3,
 					 LocalDateTime disDate, DischargeType disType, String anamnesis, Float transUnit,
 					 LocalDateTime visitDate, PregnantTreatmentType pregTreatmentType,
 					 LocalDateTime deliveryDate, DeliveryType deliveryType, DeliveryResultType deliveryResult,
@@ -363,7 +358,7 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 					 Boolean alertReceived, Boolean referenceSheet, Boolean qualifiedAgent, String transportation,
 					 String courseOfAction, LocalDateTime nextAppointment, String referralAlert,
 					 String referralReason, String treatmentReceived,
-					 String outcome, String improvementFeedback, String deathPeriod ) {
+					 String outcome, String improvementFeedback, String deathPeriod, String othersInformation ) {
 
 		this(id, admitted, type, ward, prog, patient, admDate, admType, fhu,
 			diseaseIn, diseaseOut1, diseaseOut2, diseaseOut3,
@@ -386,6 +381,7 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 		this.outcome = outcome;
 		this.improvementFeedback = improvementFeedback;
 		this.deathPeriod = deathPeriod;
+		this.othersInformation = othersInformation;
 	}
 
 	public Float getTransUnit() {
@@ -500,11 +496,11 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 		this.diseaseIn = diseaseIn;
 	}
 
-	public Disease getDiseaseOut1() {
+	public List<Disease> getDiseaseOut1() {
 		return diseaseOut1;
 	}
 
-	public void setDiseaseOut1(Disease diseaseOut1) {
+	public void setDiseaseOut1(List<Disease> diseaseOut1) {
 		this.diseaseOut1 = diseaseOut1;
 	}
 
@@ -746,6 +742,14 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 
 	public void setDeathPeriod(String deathPeriod) {
 		this.deathPeriod = deathPeriod;
+	}
+
+	public String getOthersInformation() {
+		return othersInformation;
+	}
+
+	public void setOthersInformation(String othersInformation) {
+		this.othersInformation = othersInformation;
 	}
 
 	@Override

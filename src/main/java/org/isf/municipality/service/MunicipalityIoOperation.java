@@ -19,22 +19,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.isf.commune.model;
+package org.isf.municipality.service;
 
-import jakarta.persistence.AttributeOverride;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import org.isf.base.model.BaseEntity;
+import org.isf.base.service.BaseIoOperation;
+import org.isf.municipality.model.Municipality;
+import org.isf.utils.db.TranslateOHServiceException;
+import org.isf.utils.exception.OHServiceException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-@Entity
-@Table(name="OH_COMMUNE")
-@AttributeOverride(name = "createdBy", column = @Column(name = "COM_CREATED_BY", updatable = false))
-@AttributeOverride(name = "createdDate", column = @Column(name = "COM_CREATED_DATE", updatable = false))
-@AttributeOverride(name = "lastModifiedBy", column = @Column(name = "COM_LAST_MODIFIED_BY"))
-@AttributeOverride(name = "lastModifiedDate", column = @Column(name = "COM_LAST_MODIFIED_DATE"))
-@AttributeOverride(name = "active", column = @Column(name = "COM_ACTIVE"))
-@AttributeOverride(name = "id",   column = @Column(name="COM_ID"))
-@AttributeOverride(name = "name", column = @Column(name="COM_NAME"))
-public class Commune extends BaseEntity {
+@Service
+@Transactional(rollbackFor = OHServiceException.class)
+@TranslateOHServiceException
+public class MunicipalityIoOperation extends BaseIoOperation<Municipality, MunicipalityIoOperationRepository> {
+
+	public MunicipalityIoOperation(MunicipalityIoOperationRepository municipalityIoOperationRepository) {
+		super(municipalityIoOperationRepository);
+	}
 }

@@ -37,6 +37,8 @@ import org.isf.admtype.model.AdmissionType;
 import org.isf.admtype.service.AdmissionTypeIoOperationRepository;
 import org.isf.disctype.model.DischargeType;
 import org.isf.disctype.service.DischargeTypeIoOperationRepository;
+import org.isf.disease.manager.DiseaseBrowserManager;
+import org.isf.disease.model.Disease;
 import org.isf.encounter.model.Encounter;
 import org.isf.encounter.model.EncounterStatus;
 import org.isf.generaldata.GeneralData;

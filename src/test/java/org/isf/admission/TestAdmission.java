@@ -24,6 +24,7 @@ package org.isf.admission;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.isf.admission.model.Admission;
 import org.isf.admtype.model.AdmissionType;
@@ -73,13 +74,14 @@ public class TestAdmission {
 	private String outcome = "Outcome";
 	private String improvementFeedback = "Improvement Feedback";
 	private String deathPeriod = "BEFORE_ADMISSION";
+	private String othersInformation = "Other Information";
 
 	public Admission setup(
 			Ward ward,
 			Patient patient,
 			AdmissionType admissionType,
 			Disease diseaseIn,
-			Disease diseaseOut1,
+			List<Disease> diseaseOut1,
 			Disease diseaseOut2,
 			Disease diseaseOut3,
 			Operation operation,
@@ -102,7 +104,7 @@ public class TestAdmission {
 					CTRLDATE1, CTRLDATE2, ABORTDATE, userID, deleted, preTreatment, preAssessment, entryReason,
 					alertReceived, referenceSheet, qualifiedAgent, transportation, courseOfAction, nextAppointment,
 					referralAlert, referralReason, treatmentReceived,
-					outcome, improvementFeedback, deathPeriod);
+					outcome, improvementFeedback, deathPeriod, othersInformation);
 		}
 
 		return admission;
@@ -114,7 +116,7 @@ public class TestAdmission {
 			Patient patient,
 			AdmissionType admissionType,
 			Disease diseaseIn,
-			Disease diseaseOut1,
+			List<Disease> diseaseOut1,
 			Disease diseaseOut2,
 			Disease diseaseOut3,
 			Operation operation,

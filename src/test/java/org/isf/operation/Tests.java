@@ -569,7 +569,7 @@ class Tests extends OHCoreTestCase {
 		DeliveryType deliveryType = testDeliveryType.setup(false);
 		DeliveryResultType deliveryResult = testDeliveryResultType.setup(false);
 
-		Admission admission = testAdmission.setup(ward, patient, admissionType, diseaseIn, diseaseOut1,
+		Admission admission = testAdmission.setup(ward, patient, admissionType, diseaseIn, List.of(diseaseOut1),
 			diseaseOut2, diseaseOut3, operation, dischargeType, pregTreatmentType,
 			deliveryType, deliveryResult, false);
 		operationRow.setAdmission(admission);
@@ -620,7 +620,7 @@ class Tests extends OHCoreTestCase {
 		DeliveryType deliveryType = testDeliveryType.setup(false);
 		DeliveryResultType deliveryResult = testDeliveryResultType.setup(false);
 
-		Admission admission = testAdmission.setup(ward, patient, admissionType, diseaseIn, diseaseOut1,
+		Admission admission = testAdmission.setup(ward, patient, admissionType, diseaseIn, List.of(diseaseOut1),
 			diseaseOut2, diseaseOut3, operation, dischargeType, pregTreatmentType,
 			deliveryType, deliveryResult, false);
 		// Don't set admission; leave it as default value of null;  operationRow.setAdmission(admission);
@@ -758,7 +758,7 @@ class Tests extends OHCoreTestCase {
 		DeliveryType deliveryType = testDeliveryType.setup(false);
 		DeliveryResultType deliveryResult = testDeliveryResultType.setup(false);
 
-		Admission admission = testAdmission.setup(ward, patient, admissionType, diseaseIn, diseaseOut1,
+		Admission admission = testAdmission.setup(ward, patient, admissionType, diseaseIn, List.of(diseaseOut1),
 			diseaseOut2, diseaseOut3, operation, dischargeType, pregTreatmentType,
 			deliveryType, deliveryResult, false);
 		operationRow.setAdmission(admission);
@@ -809,7 +809,7 @@ class Tests extends OHCoreTestCase {
 		DeliveryType deliveryType = testDeliveryType.setup(false);
 		DeliveryResultType deliveryResult = testDeliveryResultType.setup(false);
 
-		Admission admission = testAdmission.setup(ward, patient, admissionType, diseaseIn, diseaseOut1,
+		Admission admission = testAdmission.setup(ward, patient, admissionType, diseaseIn, List.of(diseaseOut1),
 			diseaseOut2, diseaseOut3, operation, dischargeType, pregTreatmentType,
 			deliveryType, deliveryResult, false);
 		// Don't set admission; leave it as default value of null;  operationRow.setAdmission(admission);
@@ -933,7 +933,7 @@ class Tests extends OHCoreTestCase {
 		DeliveryType deliveryType = testDeliveryType.setup(false);
 		DeliveryResultType deliveryResult = testDeliveryResultType.setup(false);
 
-		Admission admission = testAdmission.setup(ward, patient, admissionType, diseaseIn, diseaseOut1,
+		Admission admission = testAdmission.setup(ward, patient, admissionType, diseaseIn, List.of(diseaseOut1),
 			diseaseOut2, diseaseOut3, operation, dischargeType, pregTreatmentType,
 			deliveryType, deliveryResult, false);
 		operationRow.setAdmission(admission);
@@ -1050,7 +1050,7 @@ class Tests extends OHCoreTestCase {
 		DeliveryType deliveryType = testDeliveryType.setup(false);
 		DeliveryResultType deliveryResult = testDeliveryResultType.setup(false);
 
-		Admission admission = testAdmission.setup(ward, patient, admissionType, diseaseIn, diseaseOut1,
+		Admission admission = testAdmission.setup(ward, patient, admissionType, diseaseIn, List.of(diseaseOut1),
 			diseaseOut2, diseaseOut3, operation, dischargeType, pregTreatmentType,
 			deliveryType, deliveryResult, false);
 
@@ -1151,7 +1151,7 @@ class Tests extends OHCoreTestCase {
 		DeliveryType deliveryType = testDeliveryType.setup(false);
 		DeliveryResultType deliveryResult = testDeliveryResultType.setup(false);
 
-		Admission admission = testAdmission.setup(ward, patient, admissionType, diseaseIn, diseaseOut1,
+		Admission admission = testAdmission.setup(ward, patient, admissionType, diseaseIn, List.of(diseaseOut1),
 			diseaseOut2, diseaseOut3, operation, dischargeType, pregTreatmentType,
 			deliveryType, deliveryResult, false);
 		operationRow.setAdmission(admission);

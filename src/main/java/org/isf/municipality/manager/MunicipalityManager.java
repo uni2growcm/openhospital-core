@@ -19,21 +19,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.isf.commune.service;
+package org.isf.municipality.manager;
 
-import org.isf.base.service.BaseIoOperation;
-import org.isf.commune.model.Commune;
-import org.isf.utils.db.TranslateOHServiceException;
-import org.isf.utils.exception.OHServiceException;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.isf.base.manager.BaseManager;
+import org.isf.municipality.model.Municipality;
+import org.isf.municipality.service.MunicipalityIoOperation;
+import org.springframework.stereotype.Component;
 
-@Service
-@Transactional(rollbackFor = OHServiceException.class)
-@TranslateOHServiceException
-public class CommuneIoOperation extends BaseIoOperation<Commune, CommuneIoOperationRepository> {
+@Component
+public class MunicipalityManager extends BaseManager<Municipality> {
 
-	public CommuneIoOperation(CommuneIoOperationRepository communeIoOperationRepository) {
-		super(communeIoOperationRepository);
+	public MunicipalityManager(MunicipalityIoOperation municipalityIoOperation) {
+		super(municipalityIoOperation);
 	}
 }

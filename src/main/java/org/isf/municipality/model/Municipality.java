@@ -19,12 +19,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.isf.commune.service;
+package org.isf.municipality.model;
 
-import org.isf.base.service.BaseIoOperationRepository;
-import org.isf.commune.model.Commune;
-import org.springframework.stereotype.Repository;
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import org.isf.base.model.BaseEntity;
 
-@Repository
-public interface CommuneIoOperationRepository extends BaseIoOperationRepository<Commune> {
+@Entity
+@Table(name="OH_MUNICIPALITIES")
+@AttributeOverride(name = "createdBy", column = @Column(name = "MUN_CREATED_BY", updatable = false))
+@AttributeOverride(name = "createdDate", column = @Column(name = "MUN_CREATED_DATE", updatable = false))
+@AttributeOverride(name = "lastModifiedBy", column = @Column(name = "MUN_LAST_MODIFIED_BY"))
+@AttributeOverride(name = "lastModifiedDate", column = @Column(name = "MUN_LAST_MODIFIED_DATE"))
+@AttributeOverride(name = "active", column = @Column(name = "MUN_ACTIVE"))
+@AttributeOverride(name = "id",   column = @Column(name="MUN_ID"))
+@AttributeOverride(name = "name", column = @Column(name="MUN_NAME"))
+public class Municipality extends BaseEntity {
 }

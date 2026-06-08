@@ -25,6 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.assertj.core.api.Condition;
 import org.isf.OHCoreTestCase;
@@ -369,7 +370,7 @@ class TestMergePatient extends OHCoreTestCase {
 			Disease diseaseIn = testDisease.setup(diseaseType, false);
 			Disease diseaseOut1 = testDisease.setup(diseaseType, false);
 			diseaseOut1.setCode("888");
-			Admission admission = testAdmission.setup(ward, patient1, admissionType, diseaseIn, diseaseOut1,
+			Admission admission = testAdmission.setup(ward, patient1, admissionType, diseaseIn, List.of(diseaseOut1),
 				null, null, null, null, null, null, null, false);
 
 			wardIoOperationRepository.saveAndFlush(ward);
@@ -404,7 +405,7 @@ class TestMergePatient extends OHCoreTestCase {
 			Disease diseaseIn = testDisease.setup(diseaseType, false);
 			Disease diseaseOut1 = testDisease.setup(diseaseType, false);
 			diseaseOut1.setCode("888");
-			Admission admission = testAdmission.setup(ward, patient2, admissionType, diseaseIn, diseaseOut1,
+			Admission admission = testAdmission.setup(ward, patient2, admissionType, diseaseIn, List.of(diseaseOut1),
 				null, null, null, null, null, null, null, false);
 
 			wardIoOperationRepository.saveAndFlush(ward);

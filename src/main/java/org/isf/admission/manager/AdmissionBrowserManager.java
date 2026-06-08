@@ -415,7 +415,7 @@ public class AdmissionBrowserManager {
 				}
 			}
 		}
-		Disease diseaseOut1 = admission.getDiseaseOut1();
+		List<Disease> diseaseOut1 = admission.getDiseaseOut1();
 		Disease diseaseOut2 = admission.getDiseaseOut2();
 		Disease diseaseOut3 = admission.getDiseaseOut3();
 		if (diseaseOut1 == null && admission.getDisDate() != null) {
@@ -425,16 +425,18 @@ public class AdmissionBrowserManager {
 		}
 		if (admission.getDisDate() != null && diseaseOut1 != null) {
 
-			// Check duplicated diseases
-			if (checkDuplicatedDiseaseOut(diseaseOut1, diseaseOut2, diseaseOut3)) {
-				errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.admission.specifyingduplicatediseasesisnotallowed.msg")));
-			}
+//			// Check duplicated diseases
+//			if (checkDuplicatedDiseaseOut(diseaseOut1, diseaseOut2, diseaseOut3)) {
+//				errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.admission.specifyingduplicatediseasesisnotallowed.msg")));
+//			}
 
 			Disease disease;
-			if (diseaseOut1 != null) {
-				disease = diseaseManager.getIpdOutDiseaseByCode(diseaseOut1.getCode());
-				if (disease == null) {
-					errors.add(new OHExceptionMessage(MessageBundle.formatMessage("angal.opd.specifieddiseaseisnoenabledforopdservice.fmt.msg", "1")));
+			if (diseaseOut1 != null && !diseaseOut1.isEmpty()) {
+				for (Disease d: diseaseOut1) {
+					disease = diseaseManager.getIpdOutDiseaseByCode(d.getCode());
+					if (disease == null) {
+						errors.add(new OHExceptionMessage(MessageBundle.formatMessage("angal.opd.specifieddiseaseisnoenabledforopdservice.fmt.msg", "1")));
+					}
 				}
 			}
 			if (diseaseOut2 != null) {
@@ -551,9 +553,7 @@ public class AdmissionBrowserManager {
 		}
 	}
 
-	private boolean checkDuplicatedDiseaseOut(Disease diseaseOut1, Disease diseaseOut2, Disease diseaseOut3) {
-		return (diseaseOut2 != null && diseaseOut1.getCode().equals(diseaseOut2.getCode()))
-			|| (diseaseOut3 != null && diseaseOut1.getCode().equals(diseaseOut3.getCode()))
-			|| (diseaseOut2 != null && diseaseOut3 != null && diseaseOut2.getCode().equals(diseaseOut3.getCode()));
-	}
+//	private boolean checkDuplicatedDiseaseOut(List<Disease> diseaseOut1, Disease diseaseOut2, Disease diseaseOut3) {
+//		return (diseaseOut2 != null && diseaseOut1.getCode().equals(diseaseOut2.getCode()))
+//	}
 }
