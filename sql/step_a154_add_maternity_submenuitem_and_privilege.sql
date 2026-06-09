@@ -102,3 +102,74 @@ FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM oh_groupmenu WHERE GM_ID = 831);
 INSERT INTO oh_groupmenu (GM_ID, GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE, GM_CREATED_BY, GM_CREATED_DATE, GM_LAST_MODIFIED_BY, GM_LAST_MODIFIED_DATE)
 SELECT 832, 'admin', 'maternity.therapy', 1, NULL, NULL, NULL, NULL
 FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM oh_groupmenu WHERE GM_ID = 832);
+
+-- CPN / FAMILY PLANNING / HIV
+
+UPDATE oh_menuitem
+SET MNI_LABEL = 'angal.menu.btn.anc',
+    MNI_BTN_LABEL = 'angal.menu.btn.anc'
+WHERE MNI_ID_A = 'cpn';
+
+UPDATE oh_menuitem
+SET MNI_LABEL = 'angal.menu.familyplanning',
+    MNI_BTN_LABEL = 'angal.menu.familyplanning'
+WHERE MNI_ID_A = 'familyplanning';
+
+UPDATE oh_menuitem
+SET MNI_LABEL = 'angal.menu.btn.hivfollowup',
+    MNI_BTN_LABEL = 'angal.menu.btn.hivfollowup'
+WHERE MNI_ID_A = 'hiv';
+
+INSERT INTO oh_groupmenu
+(GM_ID, GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE,
+ GM_CREATED_BY, GM_CREATED_DATE,
+ GM_LAST_MODIFIED_BY, GM_LAST_MODIFIED_DATE)
+SELECT
+    (SELECT MAX(GM_ID)+1 FROM oh_groupmenu),
+    'admin',
+    'cpn',
+    1,
+    NULL,NULL,NULL,NULL
+FROM DUAL
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM oh_groupmenu
+    WHERE GM_UG_ID_A='admin'
+      AND GM_MNI_ID_A='cpn'
+);
+
+INSERT INTO oh_groupmenu
+(GM_ID, GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE,
+ GM_CREATED_BY, GM_CREATED_DATE,
+ GM_LAST_MODIFIED_BY, GM_LAST_MODIFIED_DATE)
+SELECT
+    (SELECT MAX(GM_ID)+1 FROM oh_groupmenu),
+    'admin',
+    'familyplanning',
+    1,
+    NULL,NULL,NULL,NULL
+FROM DUAL
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM oh_groupmenu
+    WHERE GM_UG_ID_A='admin'
+      AND GM_MNI_ID_A='familyplanning'
+);
+
+INSERT INTO oh_groupmenu
+(GM_ID, GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE,
+ GM_CREATED_BY, GM_CREATED_DATE,
+ GM_LAST_MODIFIED_BY, GM_LAST_MODIFIED_DATE)
+SELECT
+    (SELECT MAX(GM_ID)+1 FROM oh_groupmenu),
+    'admin',
+    'hiv',
+    1,
+    NULL,NULL,NULL,NULL
+FROM DUAL
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM oh_groupmenu
+    WHERE GM_UG_ID_A='admin'
+      AND GM_MNI_ID_A='hiv'
+);
