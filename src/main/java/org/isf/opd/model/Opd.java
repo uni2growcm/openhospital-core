@@ -131,6 +131,14 @@ public class Opd extends Auditable<String> {
 	@Column(name="OPD_RECEIVING_HOSP")
 	private String receivingHospital;
 
+	@Nullable
+	@Column(name = "OPD_MALNUTRITION")
+	private String malnutrition;
+
+	@Nullable
+	@Column(name = "OPD_REASON")
+	private String reason;
+
 	/*@Column(name="OPD_REASON")
    	private String reason; // ADDED: Arnaud
 
@@ -361,6 +369,22 @@ public class Opd extends Auditable<String> {
 	public void setPrescription(String prescription) {
 		this.prescription = prescription;
 	}*/
+
+	public String getMalnutrition() {
+		return malnutrition;
+	}
+
+	public void setMalnutrition(String malnutrition) {
+		this.malnutrition = malnutrition;
+	}
+
+	public String getReason() {
+		return reason;
+	}
+
+	public void setReason(String reason) {
+		this.reason = reason;
+	}
 	
 	public Visit getNextVisit() {
 		return nextVisit;
