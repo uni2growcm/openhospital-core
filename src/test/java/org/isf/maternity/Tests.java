@@ -30,7 +30,6 @@ import org.isf.patient.service.PatientIoOperationRepository;
 import org.isf.typology.TestTypology;
 import org.isf.typology.manager.TypologyBrowserManager;
 import org.isf.typology.model.Typology;
-import org.isf.utils.exception.OHServiceException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,7 +40,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class Tests extends OHCoreTestCase {
 
@@ -554,18 +552,15 @@ class Tests extends OHCoreTestCase {
 	@Test
 	void testObstetricHistoryFieldsCRUD() throws Exception {
 
-		// CREATE PATIENT
 		Patient patient = testPatient.setup(false);
 		patientIoOperationRepository.save(patient);
 
-		// CREATE PREGNANCY WITH FULL OBSTETRIC HISTORY
 		Pregnancy pregnancy = testPregnancy.setup(patient, false);
 		pregnancy = pregnancyBrowserManager.newPregnancy(pregnancy);
 
 		assertThat(pregnancy).isNotNull();
 		assertThat(pregnancy.getId()).isNotNull();
 
-		// VERIFY OBSTETRIC HISTORY VALUES
 		assertThat(pregnancy.getGravidity()).isEqualTo(4);
 		assertThat(pregnancy.getParity()).isEqualTo(2);
 		assertThat(pregnancy.getMiscarriages()).isEqualTo(1);
@@ -581,7 +576,6 @@ class Tests extends OHCoreTestCase {
 		assertThat(pregnancy.getLastChildWeeks()).isEqualTo(0);
 		assertThat(pregnancy.getLastChildDays()).isEqualTo(0);
 
-		// READ AND VERIFY PERSISTENCE
 		List<Pregnancy> list = pregnancyBrowserManager.getPregnanciesByPatient(patient.getCode());
 		assertThat(list).isNotEmpty();
 		assertThat(list).hasSize(1);
@@ -594,7 +588,6 @@ class Tests extends OHCoreTestCase {
 		assertThat(retrieved.getBreastfeeding()).isEqualTo("Y");
 		assertThat(retrieved.getDesiredChildren()).isEqualTo(4);
 
-		// UPDATE OBSTETRIC HISTORY
 		retrieved.setGravidity(5);
 		retrieved.setTermDeliveries(3);
 		retrieved.setPretermDeliveries(1);

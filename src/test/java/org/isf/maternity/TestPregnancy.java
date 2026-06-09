@@ -37,8 +37,6 @@ public class TestPregnancy {
 	private final LocalDateTime lmp = LocalDateTime.of(2025, 1, 15, 10, 0);
 	private final  LocalDateTime eddLmp = LocalDateTime.of(2025, 10, 22, 0, 0);
 	private final LocalDateTime eddScan = LocalDateTime.of(2025, 10, 20, 0, 0);
-
-	// Test data for obstetric history
 	private final Integer testGravidity = 4;
 	private final Integer testParity = 2;
 	private final Integer testMiscarriages = 1;
@@ -71,8 +69,6 @@ public class TestPregnancy {
 		p.setLmp(lmp);
 		p.setEddLmp(eddLmp);
 		p.setEddScan(eddScan);
-
-		// Obstetric history
 		p.setGravidity(testGravidity);
 		p.setParity(testParity);
 		p.setMiscarriages(testMiscarriages);
@@ -96,8 +92,6 @@ public class TestPregnancy {
 		assertThat(p.getStatus()).isEqualTo(PregnancyStatus.ONGOING);
 		assertThat(p.getRiskLevel()).isEqualTo(RiskLevel.LOW);
 		assertThat(p.getLmp()).isEqualTo(lmp);
-
-		// Obstetric history checks
 		assertThat(p.getGravidity()).isEqualTo(testGravidity);
 		assertThat(p.getParity()).isEqualTo(testParity);
 		assertThat(p.getMiscarriages()).isEqualTo(testMiscarriages);
