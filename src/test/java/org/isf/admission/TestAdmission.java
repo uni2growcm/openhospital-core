@@ -81,7 +81,7 @@ public class TestAdmission {
 			Patient patient,
 			AdmissionType admissionType,
 			Disease diseaseIn,
-			List<Disease> diseaseOut1,
+			List<Disease> complicationDiagnosis,
 			Disease diseaseOut2,
 			Disease diseaseOut3,
 			Operation operation,
@@ -94,12 +94,12 @@ public class TestAdmission {
 
 		if (usingSet) {
 			admission = new Admission();
-			setParameters(admission, ward, patient, admissionType, diseaseIn, diseaseOut1, diseaseOut2,
+			setParameters(admission, ward, patient, admissionType, diseaseIn, complicationDiagnosis, diseaseOut2,
 					diseaseOut3, operation, dischargeType, pregTreatmentType, deliveryType, deliveryResult);
 		} else {
 			// Create Admission with all parameters
 			admission = new Admission(id, admitted, type, ward, yProg, patient, ADMINDATE, admissionType, FHU, diseaseIn,
-					diseaseOut1, diseaseOut2, diseaseOut3, DISDATE, dischargeType, anamnesis,
+					complicationDiagnosis, diseaseOut2, diseaseOut3, DISDATE, dischargeType, anamnesis,
 					transUnit, VISITDATE, pregTreatmentType, DELIVERYDATE, deliveryType, deliveryResult, weight,
 					CTRLDATE1, CTRLDATE2, ABORTDATE, userID, deleted, preTreatment, preAssessment, entryReason,
 					alertReceived, referenceSheet, qualifiedAgent, transportation, courseOfAction, nextAppointment,
@@ -116,7 +116,7 @@ public class TestAdmission {
 			Patient patient,
 			AdmissionType admissionType,
 			Disease diseaseIn,
-			List<Disease> diseaseOut1,
+			List<Disease> complicationDiagnosis,
 			Disease diseaseOut2,
 			Disease diseaseOut3,
 			Operation operation,
@@ -136,7 +136,7 @@ public class TestAdmission {
 		admission.setDeliveryType(deliveryType);
 		admission.setDisDate(DISDATE);
 		admission.setDiseaseIn(diseaseIn);
-		admission.setDiseaseOut1(diseaseOut1);
+		admission.setComplicationDiagnosis(complicationDiagnosis);
 		admission.setDiseaseOut2(diseaseOut2);
 		admission.setDiseaseOut3(diseaseOut3);
 		admission.setDisType(dischargeType);

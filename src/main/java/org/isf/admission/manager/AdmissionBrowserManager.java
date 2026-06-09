@@ -415,24 +415,24 @@ public class AdmissionBrowserManager {
 				}
 			}
 		}
-		List<Disease> diseaseOut1 = admission.getDiseaseOut1();
+		List<Disease> complicationDiagnosis = admission.getComplicationDiagnosis();
 		Disease diseaseOut2 = admission.getDiseaseOut2();
 		Disease diseaseOut3 = admission.getDiseaseOut3();
-		if (diseaseOut1 == null && admission.getDisDate() != null) {
+		if (complicationDiagnosis == null && admission.getDisDate() != null) {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.admission.pleaseselectatleastfirstdiagnosisout.msg")));
-		} else if (diseaseOut1 != null && admission.getDisDate() == null) {
+		} else if (complicationDiagnosis != null && admission.getDisDate() == null) {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.admission.pleaseinsertadischargedate.msg")));
 		}
-		if (admission.getDisDate() != null && diseaseOut1 != null) {
+		if (admission.getDisDate() != null && complicationDiagnosis != null) {
 
 //			// Check duplicated diseases
-//			if (checkDuplicatedDiseaseOut(diseaseOut1, diseaseOut2, diseaseOut3)) {
+//			if (checkDuplicatedDiseaseOut(complicationDiagnosis, diseaseOut2, diseaseOut3)) {
 //				errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.admission.specifyingduplicatediseasesisnotallowed.msg")));
 //			}
 
 			Disease disease;
-			if (diseaseOut1 != null && !diseaseOut1.isEmpty()) {
-				for (Disease d: diseaseOut1) {
+			if (complicationDiagnosis != null && !complicationDiagnosis.isEmpty()) {
+				for (Disease d: complicationDiagnosis) {
 					disease = diseaseManager.getIpdOutDiseaseByCode(d.getCode());
 					if (disease == null) {
 						errors.add(new OHExceptionMessage(MessageBundle.formatMessage("angal.opd.specifieddiseaseisnoenabledforopdservice.fmt.msg", "1")));
@@ -553,7 +553,4 @@ public class AdmissionBrowserManager {
 		}
 	}
 
-//	private boolean checkDuplicatedDiseaseOut(List<Disease> diseaseOut1, Disease diseaseOut2, Disease diseaseOut3) {
-//		return (diseaseOut2 != null && diseaseOut1.getCode().equals(diseaseOut2.getCode()))
-//	}
 }

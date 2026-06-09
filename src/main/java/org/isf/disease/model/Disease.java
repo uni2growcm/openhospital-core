@@ -73,7 +73,7 @@ public class Disease extends Auditable<String> {
 	@Column(name="DIS_IPD_OUT_INCLUDE")
 	private boolean ipdOutInclude;
 
-	@ManyToMany(mappedBy = "diseaseOut1")
+	@ManyToMany(mappedBy = "complicationDiagnosis")
 	private List<Admission> admissions = new ArrayList<>();
 
 	@Transient

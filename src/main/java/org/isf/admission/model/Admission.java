@@ -103,7 +103,7 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 		joinColumns = @JoinColumn(name = "CD_ADM_ID"),
 		inverseJoinColumns = @JoinColumn(name = "CD_DIS_ID_A")
 	)
-	private List<Disease> diseaseOut1;
+	private List<Disease> complicationDiagnosis;
 
 	@ManyToOne
 	@JoinColumn(name = "ADM_OUT_DIS_ID_A_2")
@@ -252,7 +252,7 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 	 * @param admType
 	 * @param fhu
 	 * @param diseaseIn
-	 * @param diseaseOut1
+	 * @param complicationDiagnosis
 	 * @param diseaseOut2
 	 * @param diseaseOut3
 	 * @param disDate
@@ -272,7 +272,7 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 	 * @param deleted
 	 */
 	public Admission(int id, int admitted, String type, Ward ward, int prog, Patient patient, LocalDateTime admDate, AdmissionType admType, String fhu,
-					 Disease diseaseIn, List<Disease> diseaseOut1, Disease diseaseOut2, Disease diseaseOut3,
+					 Disease diseaseIn, List<Disease> complicationDiagnosis, Disease diseaseOut2, Disease diseaseOut3,
 					 LocalDateTime disDate, DischargeType disType, String anamnesis, Float transUnit, LocalDateTime visitDate,
 					 PregnantTreatmentType pregTreatmentType, LocalDateTime deliveryDate, DeliveryType deliveryType, DeliveryResultType deliveryResult, Float weight,
 					 LocalDateTime ctrlDate1, LocalDateTime ctrlDate2,
@@ -288,7 +288,7 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 		this.admissionType = admType;
 		this.fHU = fhu;
 		this.diseaseIn = diseaseIn;
-		this.diseaseOut1 = diseaseOut1;
+		this.complicationDiagnosis = complicationDiagnosis;
 		this.diseaseOut2 = diseaseOut2;
 		this.diseaseOut3 = diseaseOut3;
 		this.disDate = TimeTools.truncateToSeconds(disDate);
@@ -321,7 +321,7 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 	 * @param admType          the admission type
 	 * @param fhu              the first health unit (if applicable)
 	 * @param diseaseIn        the disease at admission
-	 * @param diseaseOut1      the primary disease at discharge
+	 * @param complicationDiagnosis      the primary disease at discharge
 	 * @param diseaseOut2      the secondary disease at discharge
 	 * @param diseaseOut3      the tertiary disease at discharge
 	 * @param disDate          the discharge date and time
@@ -348,7 +348,7 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 	 */
 	public Admission(int id, int admitted, String type, Ward ward, int prog, Patient patient,
 					 LocalDateTime admDate, AdmissionType admType, String fhu,
-					 Disease diseaseIn, List<Disease> diseaseOut1, Disease diseaseOut2, Disease diseaseOut3,
+					 Disease diseaseIn, List<Disease> complicationDiagnosis, Disease diseaseOut2, Disease diseaseOut3,
 					 LocalDateTime disDate, DischargeType disType, String anamnesis, Float transUnit,
 					 LocalDateTime visitDate, PregnantTreatmentType pregTreatmentType,
 					 LocalDateTime deliveryDate, DeliveryType deliveryType, DeliveryResultType deliveryResult,
@@ -361,7 +361,7 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 					 String outcome, String improvementFeedback, String deathPeriod, String othersInformation ) {
 
 		this(id, admitted, type, ward, prog, patient, admDate, admType, fhu,
-			diseaseIn, diseaseOut1, diseaseOut2, diseaseOut3,
+			diseaseIn, complicationDiagnosis, diseaseOut2, diseaseOut3,
 			disDate, disType, anamnesis, transUnit, visitDate,
 			pregTreatmentType, deliveryDate, deliveryType, deliveryResult, weight,
 			ctrlDate1, ctrlDate2, abortDate, userID, deleted);
@@ -496,12 +496,12 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 		this.diseaseIn = diseaseIn;
 	}
 
-	public List<Disease> getDiseaseOut1() {
-		return diseaseOut1;
+	public List<Disease> getComplicationDiagnosis() {
+		return complicationDiagnosis;
 	}
 
-	public void setDiseaseOut1(List<Disease> diseaseOut1) {
-		this.diseaseOut1 = diseaseOut1;
+	public void setComplicationDiagnosis(List<Disease> complicationDiagnosis) {
+		this.complicationDiagnosis = complicationDiagnosis;
 	}
 
 	public Disease getDiseaseOut2() {

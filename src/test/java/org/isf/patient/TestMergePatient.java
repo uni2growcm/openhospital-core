@@ -368,9 +368,9 @@ class TestMergePatient extends OHCoreTestCase {
 			AdmissionType admissionType = testAdmissionType.setup(false);
 			DiseaseType diseaseType = testDiseaseType.setup(false);
 			Disease diseaseIn = testDisease.setup(diseaseType, false);
-			Disease diseaseOut1 = testDisease.setup(diseaseType, false);
-			diseaseOut1.setCode("888");
-			Admission admission = testAdmission.setup(ward, patient1, admissionType, diseaseIn, List.of(diseaseOut1),
+			Disease complicationDiagnosis = testDisease.setup(diseaseType, false);
+			complicationDiagnosis.setCode("888");
+			Admission admission = testAdmission.setup(ward, patient1, admissionType, diseaseIn, List.of(complicationDiagnosis),
 				null, null, null, null, null, null, null, false);
 
 			wardIoOperationRepository.saveAndFlush(ward);
@@ -378,7 +378,7 @@ class TestMergePatient extends OHCoreTestCase {
 			admissionTypeIoOperationRepository.saveAndFlush(admissionType);
 			diseaseTypeIoOperationRepository.saveAndFlush(diseaseType);
 			diseaseIoOperationRepository.saveAndFlush(diseaseIn);
-			diseaseIoOperationRepository.saveAndFlush(diseaseOut1);
+			diseaseIoOperationRepository.saveAndFlush(complicationDiagnosis);
 			admissionIoOperationRepository.saveAndFlush(admission);
 
 			Patient patient2 = testPatient.setup(false);
@@ -403,9 +403,9 @@ class TestMergePatient extends OHCoreTestCase {
 			AdmissionType admissionType = testAdmissionType.setup(false);
 			DiseaseType diseaseType = testDiseaseType.setup(false);
 			Disease diseaseIn = testDisease.setup(diseaseType, false);
-			Disease diseaseOut1 = testDisease.setup(diseaseType, false);
-			diseaseOut1.setCode("888");
-			Admission admission = testAdmission.setup(ward, patient2, admissionType, diseaseIn, List.of(diseaseOut1),
+			Disease complicationDiagnosis = testDisease.setup(diseaseType, false);
+			complicationDiagnosis.setCode("888");
+			Admission admission = testAdmission.setup(ward, patient2, admissionType, diseaseIn, List.of(complicationDiagnosis),
 				null, null, null, null, null, null, null, false);
 
 			wardIoOperationRepository.saveAndFlush(ward);
@@ -413,7 +413,7 @@ class TestMergePatient extends OHCoreTestCase {
 			admissionTypeIoOperationRepository.saveAndFlush(admissionType);
 			diseaseTypeIoOperationRepository.saveAndFlush(diseaseType);
 			diseaseIoOperationRepository.saveAndFlush(diseaseIn);
-			diseaseIoOperationRepository.saveAndFlush(diseaseOut1);
+			diseaseIoOperationRepository.saveAndFlush(complicationDiagnosis);
 			admissionIoOperationRepository.saveAndFlush(admission);
 
 			patientBrowserManager.mergePatient(mergedPatient, obsoletePatient);
