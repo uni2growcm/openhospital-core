@@ -134,7 +134,7 @@ public class Patient extends Auditable<String> {
 	private String transportMeans;
 
 	@Column(name="PAT_BLAMA")
-	private String blama; // name or number
+	private String blama;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "PAT_COUNTRY_ID")
