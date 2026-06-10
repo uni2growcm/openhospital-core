@@ -106,19 +106,16 @@ FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM oh_groupmenu WHERE GM_ID = 832);
 -- CPN / FAMILY PLANNING / HIV
 
 UPDATE oh_menuitem
-SET MNI_LABEL = 'angal.menu.btn.anc',
-    MNI_BTN_LABEL = 'angal.menu.btn.anc'
-WHERE MNI_ID_A = 'cpn';
-
-UPDATE oh_menuitem
-SET MNI_LABEL = 'angal.menu.familyplanning',
-    MNI_BTN_LABEL = 'angal.menu.familyplanning'
+SET MNI_CLASS = 'org.isf.maternity.gui.FamilyPlanningBrowser'
 WHERE MNI_ID_A = 'familyplanning';
 
 UPDATE oh_menuitem
-SET MNI_LABEL = 'angal.menu.btn.hivfollowup',
-    MNI_BTN_LABEL = 'angal.menu.btn.hivfollowup'
+SET MNI_CLASS = 'org.isf.maternity.gui.HIVFollowUpBrowser'
 WHERE MNI_ID_A = 'hiv';
+
+UPDATE oh_menuitem
+SET MNI_CLASS = 'org.isf.maternity.gui.MaternityBrowser'
+WHERE MNI_ID_A = 'anc';
 
 INSERT INTO oh_groupmenu
 (GM_ID, GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE,
