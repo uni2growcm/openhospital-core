@@ -25,13 +25,11 @@ import org.isf.partner.model.Partner;
 import org.isf.typology.model.Typology;
 import org.isf.utils.exception.OHServiceException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
-@Transactional(rollbackFor = OHServiceException.class)
 public class PartnerIoOperations {
 
 	private final PartnerIoOperationRepository repository;
@@ -129,7 +127,6 @@ public class PartnerIoOperations {
 	 * @param id the identifier of the partner to delete
 	 * @throws OHServiceException if an error occurs while updating data
 	 */
-	@Transactional
 	public void softDelete(int id) throws OHServiceException {
 		repository.softDelete(id);
 	}

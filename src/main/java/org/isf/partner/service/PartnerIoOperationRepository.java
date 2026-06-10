@@ -28,7 +28,6 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -58,7 +57,6 @@ public interface PartnerIoOperationRepository extends JpaRepository<Partner, Int
 	List<Partner> searchActive(@Param("keyword") String keyword);
 
 	@Modifying
-	@Transactional
 	@Query("UPDATE Partner p SET p.active = 0 WHERE p.id = :id")
 	void softDelete(int id);
 

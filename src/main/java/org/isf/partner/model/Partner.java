@@ -22,6 +22,8 @@
 package org.isf.partner.model;
 
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Entity;
@@ -34,9 +36,13 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Transient;
 import jakarta.persistence.Version;
 import jakarta.validation.constraints.NotNull;
+import org.isf.patient.model.Patient;
 import org.isf.typology.model.Typology;
 import org.isf.utils.db.Auditable;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "OH_PARTNERS")
@@ -84,6 +90,9 @@ public class Partner extends Auditable<String> {
 	@Version
 	@Column(name = "PRT_LOCK")
 	private Integer lock;
+
+	@ManyToMany(mappedBy = "partners", fetch = FetchType.LAZY)
+	private Set<Patient> patients = new HashSet<>();
 
 	@Transient
 	private volatile int hashCode;
@@ -209,5 +218,13 @@ public class Partner extends Auditable<String> {
 
 	public boolean isActive() {
 		return getActive() == 1;
+	}
+
+	public Set<Patient> getPatients() {
+		return patients;
+	}
+
+	public void setPatients(Set<Patient> patients) {
+		this.patients = patients;
 	}
 }

@@ -23,10 +23,13 @@ package org.isf.patient.model;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.HashSet;
+import java.util.Set;
 
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
@@ -36,7 +39,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import jakarta.persistence.Version;
@@ -46,6 +49,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.isf.anamnesis.model.PatientHistory;
 import org.isf.country.model.Country;
 import org.isf.opd.model.Opd;
+import org.isf.partner.model.Partner;
 import org.isf.patconsensus.model.PatientConsensus;
 import org.isf.priceslist.model.PriceList;
 import org.isf.reductionplan.model.ReductionPlan;
@@ -210,6 +214,14 @@ public class Patient extends Auditable<String> {
 	@ManyToOne
 	@JoinColumn(name = "PAT_PL_ID")
 	private PriceList priceList;
+
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(
+		name = "OH_PATIENT_PARTNERS",
+		joinColumns = @JoinColumn(name = "PP_PAT_ID", referencedColumnName = "PAT_ID"),
+		inverseJoinColumns = @JoinColumn(name = "PP_PRT_ID", referencedColumnName = "PRT_ID")
+	)
+	private Set<Partner> partners = new HashSet<>();
 
 	public Patient() {
 		this.firstName = "";
@@ -561,6 +573,14 @@ public class Patient extends Auditable<String> {
 		this.note = note;
 	}
 
+	public Set<Partner> getPartners() {
+		return partners;
+	}
+
+	public void setPartners(Set<Partner> partners) {
+		this.partners = partners;
+	}
+
 	@Override
 	public String toString() {
 		return getName();
@@ -768,6 +788,16 @@ public class Patient extends Auditable<String> {
 			infoBfr.append(taxCode);
 		}
 		return infoBfr.toString();
+	}
+
+	public void addPartner(Partner partner) {
+		if (!partners.contains(partner)) {
+			partners.add(partner);
+		}
+	}
+
+	public void removePartner(Partner partner) {
+		partners.remove(partner);
 	}
 
 	public Integer getNumberOfChildren() {
