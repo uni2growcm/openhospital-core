@@ -136,8 +136,8 @@ public class Opd extends Auditable<String> {
 	private String malnutrition;
 
 	@Nullable
-	@Column(name = "OPD_REASON")
-	private String reason;
+	@Column(name = "OPD_REFERING_MOTIF")
+	private String referingMotif;
 
 	/*@Column(name="OPD_REASON")
    	private String reason; // ADDED: Arnaud
@@ -378,12 +378,12 @@ public class Opd extends Auditable<String> {
 		this.malnutrition = malnutrition;
 	}
 
-	public String getReason() {
-		return reason;
+	public String getReferingMotif() {
+		return referingMotif;
 	}
 
-	public void setReason(String reason) {
-		this.reason = reason;
+	public void setReferingMotif(String referingMotif) {
+		this.referingMotif = referingMotif;
 	}
 	
 	public Visit getNextVisit() {
