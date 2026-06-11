@@ -21,23 +21,18 @@
  */
 package org.isf.disease.model;
 
-import jakarta.persistence.AttributeOverride;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
-import jakarta.persistence.Version;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
+import org.isf.admission.model.Admission;
 import org.isf.distype.model.DiseaseType;
 import org.isf.utils.db.Auditable;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name="OH_DISEASE")
@@ -61,7 +56,11 @@ public class Disease extends Auditable<String> {
 	@ManyToOne
 	@NotFound(action = NotFoundAction.IGNORE)
 	@JoinColumn(name="DIS_DCL_ID_A")
-	private DiseaseType diseaseType; 
+	private DiseaseType diseaseType;
+
+	@ManyToMany(mappedBy = "diagnosisIn")
+	private List<Admission> admissions = new ArrayList<>();
+
 
 	@Version
 	@Column(name="DIS_LOCK")
@@ -153,6 +152,14 @@ public class Disease extends Auditable<String> {
     
     public void setIpdOutInclude(boolean ipdOutInclude) {
 		this.ipdOutInclude = ipdOutInclude;
+	}
+
+	public List<Admission> getAdmissions() {
+		return admissions;
+	}
+
+	public void setAdmissions(List<Admission> admissions) {
+		this.admissions = admissions;
 	}
 
 	@Override

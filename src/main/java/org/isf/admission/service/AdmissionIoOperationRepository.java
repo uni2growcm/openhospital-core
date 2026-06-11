@@ -38,7 +38,7 @@ public interface AdmissionIoOperationRepository extends JpaRepository<Admission,
 	@Query(value = "select a FROM Admission a WHERE a.admitted = 1 AND a.ward.code = :ward")
 	List<Admission> findAllWhereWard(@Param("ward") String ward);
 
-	@Query(value = "select a FROM Admission a WHERE a.patient.code = :patient and a.deleted='N' and a.admitted = 1")
+	@Query(value = "select a FROM Admission a LEFT JOIN FETCH a.diagnosisIn WHERE a.patient.code = :patient and a.deleted='N' and a.admitted = 1")
 	Admission findOneWherePatientIn(@Param("patient") int patient);
 
 	@Query(value = "select a FROM Admission a WHERE a.patient.code =:patient and a.deleted='N' order by a.admDate asc")
