@@ -26,6 +26,7 @@ import java.util.List;
 import org.isf.command.model.Command;
 import org.isf.command.model.CommandRow;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -34,4 +35,7 @@ public interface CommandRowIoOperationRepository extends JpaRepository<CommandRo
 	List<CommandRow> findByCommandOrderById(Command command);
 
 	List<CommandRow> findByCommandAndActiveOrderById(Command command, int active);
+
+	@Query("SELECT DISTINCT cr.medical.id FROM CommandRow cr WHERE cr.active = 1")
+	List<Integer> findDistinctMedicalIdsFromActiveRows();
 }

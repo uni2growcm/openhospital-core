@@ -77,4 +77,8 @@ public class CommandBrowserManager {
 	public List<CommandRow> getActiveRowsByCommand(Command command) throws OHServiceException {
 		return ioOperations.getActiveRowsByCommand(command);
 	}
+
+	public List<Integer> getMedicalIdsAlreadyInCommandRows() throws OHServiceException {
+		return ioOperations.getMedicalIdsAlreadyInCommandRows();
+	}
 }

@@ -83,4 +83,8 @@ public class CommandIoOperations {
 	public List<CommandRow> getActiveRowsByCommand(Command command) throws OHServiceException {
 		return rowRepository.findByCommandAndActiveOrderById(command, 1);
 	}
+
+	public List<Integer> getMedicalIdsAlreadyInCommandRows() throws OHServiceException {
+		return rowRepository.findDistinctMedicalIdsFromActiveRows();
+	}
 }
