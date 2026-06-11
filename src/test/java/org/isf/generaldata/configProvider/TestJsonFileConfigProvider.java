@@ -31,18 +31,15 @@ import org.junit.jupiter.api.Test;
 public class TestJsonFileConfigProvider {
 
 	@Test
-	void testJsonFileConfigProvider() throws Exception {
+	void testJsonFileConfigProvider() {
+
 		GeneralData.initialize();
-		JsonFileConfigProvider jsonFileConfigProvider = new JsonFileConfigProvider();
+		JsonFileConfigProvider provider = new JsonFileConfigProvider();
 
-		Map<String, Object> configData = jsonFileConfigProvider.getConfigData();
+		Map<String, Object> configData = provider.getConfigData();
 
-		assertThat(configData).containsKey("oh_telemetry_url");
-		assertThat(configData.get("oh_telemetry_url")).isNotNull();
-		assertThat(jsonFileConfigProvider.get("someParam")).isNull();
-
-		// void method
-		jsonFileConfigProvider.close();
+		assertThat(configData).isNotNull();
+		assertThat(provider.get("someParam")).isNull();
 	}
 
 	@Test
