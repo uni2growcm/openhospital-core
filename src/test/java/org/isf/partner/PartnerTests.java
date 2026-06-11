@@ -80,10 +80,6 @@ class PartnerTests extends OHCoreTestCase {
 		typologyIoOperationRepository.saveAndFlush(partnerType);
 	}
 
-	// ============================================
-	// MODEL TESTS
-	// ============================================
-
 	@Test
 	void testPartnerGets() throws Exception {
 		int id = setupTestPartner(false);
@@ -129,10 +125,6 @@ class PartnerTests extends OHCoreTestCase {
 		partner.setName("Test Partner");
 		assertThat(partner).hasToString("Test Partner");
 	}
-
-	// ============================================
-	// IO (SERVICE) TESTS
-	// ============================================
 
 	@Test
 	void testIoGetAllPartners() throws Exception {
@@ -247,10 +239,6 @@ class PartnerTests extends OHCoreTestCase {
 		assertThat(result).hasSize(1);
 		assertThat(result.get(0).getName()).isEqualTo("Test Partner");
 	}
-
-	// ============================================
-	// MANAGER TESTS
-	// ============================================
 
 	@Test
 	void testMgrGetPartners() throws Exception {
@@ -370,10 +358,6 @@ class PartnerTests extends OHCoreTestCase {
 
 		assertThat(result).isTrue();
 	}
-
-	// ============================================
-	// HELPERS
-	// ============================================
 
 	private int setupTestPartner(boolean usingSet) throws OHException {
 		Partner partner = testPartner.setup(usingSet, partnerType);
