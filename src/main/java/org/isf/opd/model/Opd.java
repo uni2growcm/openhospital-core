@@ -133,7 +133,7 @@ public class Opd extends Auditable<String> {
 
 	@Nullable
 	@Column(name = "OPD_MALNUTRITION")
-	private String malnutrition;
+	private boolean malnutrition = false;
 
 	@Nullable
 	@Column(name = "OPD_REFERING_MOTIF")
@@ -370,11 +370,11 @@ public class Opd extends Auditable<String> {
 		this.prescription = prescription;
 	}*/
 
-	public String getMalnutrition() {
+	public boolean isMalnutrition() {
 		return malnutrition;
 	}
 
-	public void setMalnutrition(String malnutrition) {
+	public void setMalnutrition(boolean malnutrition) {
 		this.malnutrition = malnutrition;
 	}
 
