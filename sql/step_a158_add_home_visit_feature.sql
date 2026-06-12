@@ -1,6 +1,3 @@
--- =============================================
--- Table: OH_STAFF
--- =============================================
 CREATE TABLE IF NOT EXISTS OH_STAFF (
     STF_ID                  INT AUTO_INCREMENT PRIMARY KEY,
     STF_FIRST_NAME          VARCHAR(50)  NOT NULL,
@@ -17,11 +14,6 @@ CREATE TABLE IF NOT EXISTS OH_STAFF (
     KEY IDX_STAFF_NAME (STF_LAST_NAME, STF_FIRST_NAME),
     KEY IDX_STAFF_PROFESSION (STF_PROFESSION)
 )   ENGINE=InnoDB;
-
--- =============================================
--- Table: OH_HOME_VISIT
--- Description: Home visits tracking for patients
--- =============================================
 
 CREATE TABLE IF NOT EXISTS OH_HOME_VISIT (
     HV_ID                       INT AUTO_INCREMENT PRIMARY KEY,
@@ -51,9 +43,6 @@ CREATE TABLE IF NOT EXISTS OH_HOME_VISIT (
     KEY IDX_HOME_VISIT_NEXT_DATE (HV_NEXT_VISIT_DATE)
 )   ENGINE=InnoDB;
 
--- =============================================
--- Menu: Home Visit Management
--- =============================================
 INSERT INTO oh_menuitem
 (MNI_ID_A, MNI_BTN_LABEL, MNI_LABEL, MNI_TOOLTIP, MNI_SHORTCUT, MNI_SUBMENU, MNI_CLASS, MNI_IS_SUBMENU, MNI_POSITION)
 SELECT
@@ -71,9 +60,6 @@ WHERE NOT EXISTS (
     SELECT 1 FROM oh_menuitem WHERE MNI_ID_A = 'homevisit'
 );
 
--- =========================
--- STAFF MENU ITEM
--- =========================
 INSERT INTO oh_menuitem
 (MNI_ID_A, MNI_BTN_LABEL, MNI_LABEL, MNI_TOOLTIP, MNI_SHORTCUT, MNI_SUBMENU, MNI_CLASS, MNI_IS_SUBMENU, MNI_POSITION)
 SELECT
@@ -91,9 +77,6 @@ WHERE NOT EXISTS (
     SELECT 1 FROM oh_menuitem WHERE MNI_ID_A = 'staff'
 );
 
--- =========================
--- GROUP MENU
--- =========================
 INSERT INTO oh_groupmenu
 (GM_ID, GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE, GM_CREATED_BY, GM_CREATED_DATE, GM_LAST_MODIFIED_BY, GM_LAST_MODIFIED_DATE)
 SELECT
