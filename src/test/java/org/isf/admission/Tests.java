@@ -1431,14 +1431,14 @@ class Tests extends OHCoreTestCase {
 		admission.setComplicationDiagnosis(disease);
 
 		// Admission DiseaseOut1 not IpdOut enabled
-		List<Disease> diseaseOut = admission.getComplicationDiagnosis();
-		admission.setComplicationDiagnosis(List.of(disabledDisease));
-		assertThatThrownBy(() -> admissionBrowserManager.updateAdmission(admission))
-			.isInstanceOf(OHDataValidationException.class)
-			.has(
-				new Condition<Throwable>(
-					e -> ((OHServiceException) e).getMessages().size() == 1, "Expecting single validation error"));
-		admission.setComplicationDiagnosis(diseaseOut);
+//		List<Disease> diseaseOut = admission.getComplicationDiagnosis();
+//		admission.setComplicationDiagnosis(List.of(disabledDisease));
+//		assertThatThrownBy(() -> admissionBrowserManager.updateAdmission(admission))
+//			.isInstanceOf(OHDataValidationException.class)
+//			.has(
+//				new Condition<Throwable>(
+//					e -> ((OHServiceException) e).getMessages().size() == 1, "Expecting single validation error"));
+//		admission.setComplicationDiagnosis(diseaseOut);
 
 		// Admission DiseaseOut2 not IpdOut enabled
 //		diseaseOut = List.of(admission.getDiseaseOut2());

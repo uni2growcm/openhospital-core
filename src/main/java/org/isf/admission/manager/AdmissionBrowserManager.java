@@ -416,9 +416,10 @@ public class AdmissionBrowserManager {
 			}
 		}
 
+		List<Disease> diseaseOut1 = admission.getComplicationDiagnosis();
 		Disease diseaseOut2 = admission.getDiseaseOut2();
 		Disease diseaseOut3 = admission.getDiseaseOut3();
-		if (admission.getDisDate() != null) {
+		if (admission.getDisDate() != null && (diseaseOut1 == null || diseaseOut1.isEmpty())) {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.admission.pleaseselectatleastfirstdiagnosisout.msg")));
 		}
 
