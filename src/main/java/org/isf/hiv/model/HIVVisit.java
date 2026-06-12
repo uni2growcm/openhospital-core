@@ -106,8 +106,6 @@ public class HIVVisit extends Auditable<String> {
 	@Column(name = "HVV_LOCK")
 	private Integer lock;
 
-	// ==================== Enum Interne ====================
-
 	public enum PCRResult {
 		POSITIVE("angal.hiv.pcr.positive"),
 		NEGATIVE("angal.hiv.pcr.negative"),
@@ -293,8 +291,6 @@ public class HIVVisit extends Auditable<String> {
 	public void setLock(Integer lock) {
 		this.lock = lock;
 	}
-
-	// ==================== equals, hashCode, toString ====================
 
 	@Override
 	public int hashCode() {
