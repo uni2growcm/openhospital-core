@@ -366,7 +366,8 @@ class HomeVisitTests extends OHCoreTestCase {
 
 		HomeVisit updated = homeVisitBrowserManager.getHomeVisit(id);
 		assertThat(updated.getStatus()).isEqualTo(HomeVisitStatus.POSTPONED);
-		assertThat(updated.getNextVisitDate()).isEqualTo(newDate);
+		assertThat(updated.getVisitStartDate()).isEqualTo(newDate);
+		assertThat(updated.getNextVisitDate()).isNull();
 	}
 
 	@Test
