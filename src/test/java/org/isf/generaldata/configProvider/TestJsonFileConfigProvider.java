@@ -22,43 +22,101 @@
 package org.isf.generaldata.configProvider;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
+import static org.mockserver.integration.ClientAndServer.startClientAndServer;
+import static org.mockserver.model.HttpRequest.request;
+import static org.mockserver.model.HttpResponse.response;
 
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.isf.generaldata.GeneralData;
+import org.isf.generaldata.Version;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.mockserver.integration.ClientAndServer;
+import org.mockserver.model.MediaType;
 
 public class TestJsonFileConfigProvider {
 
+	private static final String CONFIG_JSON = """
+		{
+		  "default": {
+		    "oh_telemetry_url": "https://europe-west1-open-hospital-telemetry.cloudfunctions.net/open-hospital-telemetry"
+		  }
+		}""";
+
+	private ClientAndServer mockServer;
+
+	@BeforeEach
+	public void startServer() {
+		mockServer = startClientAndServer(1081);
+	}
+
+	@AfterEach
+	public void stopServer() {
+		mockServer.stop();
+	}
+
 	@Test
 	void testJsonFileConfigProvider() throws Exception {
-		GeneralData.initialize();
-		JsonFileConfigProvider jsonFileConfigProvider = new JsonFileConfigProvider();
+		mockServer.when(request().withMethod("GET").withPath("/test"))
+			.respond(response().withStatusCode(200)
+				.withContentType(MediaType.APPLICATION_JSON)
+				.withBody(CONFIG_JSON)
+				.withDelay(TimeUnit.MILLISECONDS, 200));
 
-		Map<String, Object> configData = jsonFileConfigProvider.getConfigData();
+		try (MockedStatic<GeneralData> mockedGeneralData = mockStatic(GeneralData.class);
+			MockedStatic<Version> mockedVersion = Mockito.mockStatic(Version.class)) {
 
-		assertThat(configData).containsKey("oh_telemetry_url");
-		assertThat(configData.get("oh_telemetry_url")).isNotNull();
-		assertThat(jsonFileConfigProvider.get("someParam")).isNull();
+			Version mockVersion = mock(Version.class);
+			mockedVersion.when(Version::getVersion).thenReturn(mockVersion);
+			when(mockVersion.toString()).thenReturn("");
 
-		// void method
-		jsonFileConfigProvider.close();
+			mockedGeneralData.when(GeneralData::initialize).thenAnswer(invocation -> {
+				GeneralData.PARAMSURL = "http://localhost:1081/test";
+				return null;
+			});
+
+			GeneralData.initialize();
+
+			JsonFileConfigProvider jsonFileConfigProvider = new JsonFileConfigProvider();
+
+			Map<String, Object> configData = jsonFileConfigProvider.getConfigData();
+
+			assertThat(configData).containsKey("oh_telemetry_url");
+			assertThat(configData.get("oh_telemetry_url")).isNotNull();
+			assertThat(jsonFileConfigProvider.get("someParam")).isNull();
+
+			jsonFileConfigProvider.close();
+		}
 	}
 
 	@Test
 	void testJsonFileConfigProviderBadUrl() throws Exception {
-		GeneralData.initialize();
-		GeneralData.PARAMSURL = "https://somebadaddress.xxx";
+		try (MockedStatic<GeneralData> mockedGeneralData = mockStatic(GeneralData.class)) {
 
-		JsonFileConfigProvider jsonFileConfigProvider = new JsonFileConfigProvider();
+			mockedGeneralData.when(GeneralData::initialize).thenAnswer(invocation -> {
+				GeneralData.PARAMSURL = "https://somebadaddress.xxx";
+				return null;
+			});
 
-		Map<String, Object> configData = jsonFileConfigProvider.getConfigData();
+			GeneralData.initialize();
 
-		assertThat(configData).isEmpty();
+			JsonFileConfigProvider jsonFileConfigProvider = new JsonFileConfigProvider();
 
-		assertThat(jsonFileConfigProvider.get("someParam")).isNull();
+			Map<String, Object> configData = jsonFileConfigProvider.getConfigData();
 
-		// void method
-		jsonFileConfigProvider.close();
+			assertThat(configData).isEmpty();
+
+			assertThat(jsonFileConfigProvider.get("someParam")).isNull();
+
+			jsonFileConfigProvider.close();
+		}
 	}
 }
