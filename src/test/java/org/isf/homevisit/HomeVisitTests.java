@@ -81,10 +81,6 @@ class HomeVisitTests extends OHCoreTestCase {
 		patientIoOperationRepository.saveAndFlush(testPatient);
 	}
 
-	// ============================================
-	// MODEL TESTS
-	// ============================================
-
 	@Test
 	void testHomeVisitGets() throws Exception {
 		int id = setupTestHomeVisit(false);
@@ -130,10 +126,6 @@ class HomeVisitTests extends OHCoreTestCase {
 		homeVisit.setVisitStartDate(LocalDateTime.of(2026, 12, 15, 10, 0, 0));
 		assertThat(homeVisit.toString()).contains("Mr Bobo");
 	}
-
-	// ============================================
-	// IO (SERVICE) TESTS
-	// ============================================
 
 	@Test
 	void testIoGetAllActive() throws Exception {
@@ -256,10 +248,6 @@ class HomeVisitTests extends OHCoreTestCase {
 		assertThat(raw).isPresent();
 		assertThat(raw.get().getActive()).isEqualTo(0);
 	}
-
-	// ============================================
-	// MANAGER TESTS
-	// ============================================
 
 	@Test
 	void testMgrGetHomeVisits() throws Exception {
@@ -396,10 +384,6 @@ class HomeVisitTests extends OHCoreTestCase {
 		assertThat(raw).isPresent();
 		assertThat(raw.get().getActive()).isEqualTo(0);
 	}
-
-	// ============================================
-	// HELPERS
-	// ============================================
 
 	private int setupTestHomeVisit(boolean usingSet) throws OHException {
 		HomeVisit homeVisit = testHomeVisit.setup(testPatient, usingSet);

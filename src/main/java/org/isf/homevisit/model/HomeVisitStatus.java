@@ -28,9 +28,7 @@ public enum HomeVisitStatus {
 	PLANNED("angal.homevisit.status.planned"),
 	COMPLETED("angal.homevisit.status.completed"),
 	CANCELLED("angal.homevisit.status.cancelled"),
-	POSTPONED("angal.homevisit.status.postponed"),
-	MISSED("angal.homevisit.status.missed");
-
+	POSTPONED("angal.homevisit.status.postponed");
 	private final String messageKey;
 
 	HomeVisitStatus(String messageKey) {

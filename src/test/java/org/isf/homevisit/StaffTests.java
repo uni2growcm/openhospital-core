@@ -67,20 +67,16 @@ class StaffTests extends OHCoreTestCase {
 		cleanH2InMemoryDb();
 	}
 
-	// ============================================
-	// MODEL TESTS
-	// ============================================
-
 	@Test
 	void testStaffGets() throws Exception {
-		int id = setupTestStaff(false);
-		checkStaffIntoDb(id);
+		Integer code = setupTestStaff(false);
+		checkStaffIntoDb(code);
 	}
 
 	@Test
 	void testStaffSets() throws Exception {
-		int id = setupTestStaff(true);
-		checkStaffIntoDb(id);
+		Integer code = setupTestStaff(true);
+		checkStaffIntoDb(code);
 	}
 
 	@Test
@@ -89,11 +85,11 @@ class StaffTests extends OHCoreTestCase {
 		staffIoOperationRepository.saveAndFlush(staff1);
 
 		Staff staff2 = new Staff();
-		staff2.setId(staff1.getId());
+		staff2.setCode(staff1.getCode());
 		assertThat(staff1).isEqualTo(staff2);
 
 		Staff staff3 = new Staff();
-		staff3.setId(staff1.getId() + 1);
+		staff3.setCode(staff1.getCode() + 1);
 		assertThat(staff1).isNotEqualTo(staff3);
 
 		assertThat(staff1).isNotNull();
@@ -106,32 +102,39 @@ class StaffTests extends OHCoreTestCase {
 		staffIoOperationRepository.saveAndFlush(staff);
 
 		int hashCode = staff.hashCode();
-		assertThat(hashCode).isEqualTo(23 * 133 + staff.getId());
+		assertThat(hashCode).isEqualTo(23 * 133 + (staff.getCode() == null ? 0 : staff.getCode()));
 		assertThat(staff.hashCode()).isEqualTo(hashCode);
 	}
 
 	@Test
 	void testStaffToString() throws Exception {
 		Staff staff = testStaff.setup(false);
-		staff.setFirstName("John");
-		staff.setLastName("Doe");
-		assertThat(staff).hasToString("John Doe");
+		staff.setFirstName("Bobo");
+		staff.setLastName("Mr");
+		staff.setPosition("Head Nurse");
+		assertThat(staff).hasToString("Bobo Mr");
 	}
 
-	// ============================================
-	// IO (SERVICE) TESTS
-	// ============================================
+	@Test
+	void testStaffToStringWithoutPosition() throws Exception {
+		Staff staff = testStaff.setup(false);
+		staff.setFirstName("Bobo");
+		staff.setLastName("Mr");
+		staff.setPosition(null);
+		assertThat(staff.toString()).isEqualTo("Bobo Mr");
+	}
 
 	@Test
 	void testIoGetAllActive() throws Exception {
-		int id = setupTestStaff(false);
-		Staff foundStaff = staffIoOperationRepository.findById(id).orElse(null);
+		Integer code = setupTestStaff(false);
+		Staff foundStaff = staffIoOperationRepository.findById(code).orElse(null);
 		assertThat(foundStaff).isNotNull();
 
 		List<Staff> staffList = staffIoOperations.getAllActive();
 
 		assertThat(staffList).hasSize(1);
 		assertThat(staffList.get(0).getFirstName()).isEqualTo(foundStaff.getFirstName());
+		assertThat(staffList.get(0).getPosition()).isEqualTo(foundStaff.getPosition());
 	}
 
 	@Test
@@ -147,88 +150,97 @@ class StaffTests extends OHCoreTestCase {
 
 	@Test
 	void testIoGetStaffById() throws Exception {
-		int id = setupTestStaff(false);
+		Integer code = setupTestStaff(false);
 
-		Optional<Staff> result = staffIoOperations.getById(id);
+		Optional<Staff> result = staffIoOperations.getById(code);
 
 		assertThat(result).isPresent();
-		assertThat(result.get().getCode()).isEqualTo("STF_TEST");
+		assertThat(result.get().getFirstName()).isEqualTo("Bobo");
+		assertThat(result.get().getPosition()).isEqualTo("Head Nurse");
 	}
 
 	@Test
 	void testIoGetStaffByCode() throws Exception {
-		setupTestStaff(false);
+		Integer code = setupTestStaff(false);
 
-		Optional<Staff> result = staffIoOperations.getByCode("STF_TEST");
+		Optional<Staff> result = staffIoOperations.getById(code);
 
 		assertThat(result).isPresent();
-		assertThat(result.get().getFirstName()).isEqualTo("John");
+		assertThat(result.get().getFirstName()).isEqualTo("Bobo");
+		assertThat(result.get().getPosition()).isEqualTo("Head Nurse");
 	}
 
 	@Test
 	void testIoSaveNewStaff() throws Exception {
 		Staff staff = testStaff.setup(true);
 		Staff saved = staffIoOperations.save(staff);
-		assertThat(saved.getId()).isPositive();
-		assertThat(saved.getFirstName()).isEqualTo("John");
+		assertThat(saved.getCode()).isPositive();
+		assertThat(saved.getFirstName()).isEqualTo("Bobo");
+		assertThat(saved.getPosition()).isEqualTo("Head Nurse");
 		assertThat(saved.getActive()).isEqualTo(1);
 	}
 
 	@Test
 	void testIoUpdateStaff() throws Exception {
-		int id = setupTestStaff(false);
-		Staff foundStaff = staffIoOperationRepository.findById(id).orElse(null);
+		Integer code = setupTestStaff(false);
+		Staff foundStaff = staffIoOperationRepository.findById(code).orElse(null);
 		assertThat(foundStaff).isNotNull();
 
 		foundStaff.setFirstName("Jane");
+		foundStaff.setPosition("Senior Nurse");
 		Staff updated = staffIoOperations.save(foundStaff);
 
 		assertThat(updated.getFirstName()).isEqualTo("Jane");
+		assertThat(updated.getPosition()).isEqualTo("Senior Nurse");
 	}
 
 	@Test
 	void testIoSoftDeleteStaff() throws Exception {
-		int id = setupTestStaff(false);
+		Integer code = setupTestStaff(false);
 
-		Optional<Staff> beforeDelete = staffIoOperations.getById(id);
+		Optional<Staff> beforeDelete = staffIoOperations.getById(code);
 		assertThat(beforeDelete).isPresent();
 
-		staffIoOperations.softDelete(id);
+		staffIoOperations.softDelete(code);
 		entityManager.flush();
 		entityManager.clear();
 
-		Optional<Staff> afterDelete = staffIoOperations.getById(id);
+		Optional<Staff> afterDelete = staffIoOperations.getById(code);
 		assertThat(afterDelete).isEmpty();
 
-		Optional<Staff> raw = staffIoOperationRepository.findById(id);
+		Optional<Staff> raw = staffIoOperationRepository.findById(code);
 		assertThat(raw).isPresent();
 		assertThat(raw.get().getActive()).isEqualTo(0);
 	}
 
 	@Test
-	void testIoExistsByCode() throws Exception {
+	void testIoSearchStaffByPosition() throws Exception {
 		setupTestStaff(false);
+		List<Staff> resultByPosition = staffIoOperations.search("Head Nurse");
+		assertThat(resultByPosition).hasSize(1);
+		assertThat(resultByPosition.get(0).getPosition()).isEqualTo("Head Nurse");
+	}
 
-		boolean exists = staffIoOperations.existsByCode("STF_TEST");
-		assertThat(exists).isTrue();
-
-		boolean notExists = staffIoOperations.existsByCode("NON_EXISTENT");
-		assertThat(notExists).isFalse();
+	@Test
+	void testIoSearchStaffByPhone() throws Exception {
+		setupTestStaff(false);
+		List<Staff> resultByPhone = staffIoOperations.search("690001234");
+		assertThat(resultByPhone).hasSize(1);
+		assertThat(resultByPhone.get(0).getPhone()).isEqualTo("+237 690001234");
 	}
 
 	@Test
 	void testIoSearchStaff() throws Exception {
-		setupTestStaff(false);
+		Integer code = setupTestStaff(false);
 
-		List<Staff> result = staffIoOperations.search("John");
+		List<Staff> resultByFirstName = staffIoOperations.search("Bobo");
+		assertThat(resultByFirstName).hasSize(1);
+		assertThat(resultByFirstName.get(0).getFirstName()).isEqualTo("Bobo");
 
-		assertThat(result).hasSize(1);
-		assertThat(result.get(0).getFirstName()).isEqualTo("John");
+		List<Staff> resultByCode = staffIoOperations.search(code.toString());
+		assertThat(resultByCode).hasSize(1);
+		assertThat(resultByCode.get(0).getCode()).isEqualTo(code);
 	}
-
-	// ============================================
-	// MANAGER TESTS
-	// ============================================
 
 	@Test
 	void testMgrGetStaff() throws Exception {
@@ -237,17 +249,19 @@ class StaffTests extends OHCoreTestCase {
 		List<Staff> result = staffBrowserManager.getStaff();
 
 		assertThat(result).hasSize(1);
-		assertThat(result.get(0).getFirstName()).isEqualTo("John");
+		assertThat(result.get(0).getFirstName()).isEqualTo("Bobo");
+		assertThat(result.get(0).getPosition()).isEqualTo("Head Nurse");
 	}
 
 	@Test
 	void testMgrGetStaffById() throws Exception {
-		int id = setupTestStaff(false);
+		Integer code = setupTestStaff(false);
 
-		Staff result = staffBrowserManager.getStaff(id);
+		Staff result = staffBrowserManager.getStaff(code);
 
 		assertThat(result).isNotNull();
-		assertThat(result.getId()).isEqualTo(id);
+		assertThat(result.getCode()).isEqualTo(code);
+		assertThat(result.getPosition()).isEqualTo("Head Nurse");
 	}
 
 	@Test
@@ -258,99 +272,75 @@ class StaffTests extends OHCoreTestCase {
 	}
 
 	@Test
-	void testMgrGetStaffByCode() throws Exception {
-		setupTestStaff(false);
-
-		Optional<Staff> result = staffBrowserManager.getStaffByCode("STF_TEST");
-
-		assertThat(result).isPresent();
-		assertThat(result.get().getFirstName()).isEqualTo("John");
-	}
-
-	@Test
 	void testMgrSaveNewStaff() throws Exception {
 		Staff staff = testStaff.setup(true);
 
 		Staff saved = staffBrowserManager.saveStaff(staff);
 
-		assertThat(saved.getId()).isPositive();
-		checkStaffIntoDb(saved.getId());
+		assertThat(saved.getCode()).isPositive();
+		assertThat(saved.getPosition()).isEqualTo("Head Nurse");
+		checkStaffIntoDb(saved.getCode());
 	}
 
 	@Test
 	void testMgrUpdateStaff() throws Exception {
-		int id = setupTestStaff(false);
-		Staff foundStaff = staffIoOperationRepository.findById(id).orElse(null);
+		Integer code = setupTestStaff(false);
+		Staff foundStaff = staffIoOperationRepository.findById(code).orElse(null);
 		assertThat(foundStaff).isNotNull();
 
 		foundStaff.setFirstName("Jane");
+		foundStaff.setPosition("Senior Nurse");
 		Staff updated = staffBrowserManager.saveStaff(foundStaff);
 
 		assertThat(updated.getFirstName()).isEqualTo("Jane");
+		assertThat(updated.getPosition()).isEqualTo("Senior Nurse");
 	}
 
 	@Test
 	void testMgrDeleteStaff() throws Exception {
-		int id = setupTestStaff(false);
+		Integer code = setupTestStaff(false);
 
-		staffBrowserManager.deleteStaff(id);
+		staffBrowserManager.deleteStaff(code);
 		entityManager.flush();
 		entityManager.clear();
 
-		assertThatThrownBy(() -> staffBrowserManager.getStaff(id))
+		assertThatThrownBy(() -> staffBrowserManager.getStaff(code))
 			.isInstanceOf(EntityNotFoundException.class);
 
-		Optional<Staff> raw = staffIoOperationRepository.findById(id);
+		Optional<Staff> raw = staffIoOperationRepository.findById(code);
 		assertThat(raw).isPresent();
 		assertThat(raw.get().getActive()).isEqualTo(0);
 	}
 
 	@Test
+	void testMgrSearchStaffByPosition() throws Exception {
+		setupTestStaff(false);
+		List<Staff> resultByPosition = staffBrowserManager.searchStaff("Head Nurse");
+		assertThat(resultByPosition).hasSize(1);
+		assertThat(resultByPosition.get(0).getPosition()).isEqualTo("Head Nurse");
+	}
+
+	@Test
 	void testMgrSearchStaff() throws Exception {
-		setupTestStaff(false);
+		Integer code = setupTestStaff(false);
 
-		List<Staff> result = staffBrowserManager.searchStaff("John");
+		List<Staff> resultByFirstName = staffBrowserManager.searchStaff("Bobo");
+		assertThat(resultByFirstName).hasSize(1);
+		assertThat(resultByFirstName.get(0).getFirstName()).isEqualTo("Bobo");
 
-		assertThat(result).hasSize(1);
-		assertThat(result.get(0).getFirstName()).isEqualTo("John");
+		List<Staff> resultByCode = staffBrowserManager.searchStaff(code.toString());
+		assertThat(resultByCode).hasSize(1);
+		assertThat(resultByCode.get(0).getCode()).isEqualTo(code);
 	}
 
-	@Test
-	void testMgrIsCodeUnique_true() throws Exception {
-		boolean result = staffBrowserManager.isCodeUnique("NEW_CODE", null);
-		assertThat(result).isTrue();
-	}
-
-	@Test
-	void testMgrIsCodeUnique_false() throws Exception {
-		setupTestStaff(false);
-
-		boolean result = staffBrowserManager.isCodeUnique("STF_TEST", null);
-
-		assertThat(result).isFalse();
-	}
-
-	@Test
-	void testMgrIsCodeUnique_trueWhenSameStaff() throws Exception {
-		int id = setupTestStaff(false);
-
-		boolean result = staffBrowserManager.isCodeUnique("STF_TEST", id);
-
-		assertThat(result).isTrue();
-	}
-
-	// ============================================
-	// HELPERS
-	// ============================================
-
-	private int setupTestStaff(boolean usingSet) throws OHException {
+	private Integer setupTestStaff(boolean usingSet) throws OHException {
 		Staff staff = testStaff.setup(usingSet);
 		staffIoOperationRepository.saveAndFlush(staff);
-		return staff.getId();
+		return staff.getCode();
 	}
 
-	private void checkStaffIntoDb(int id) throws OHException {
-		Staff foundStaff = staffIoOperationRepository.findById(id).orElse(null);
+	private void checkStaffIntoDb(Integer code) throws OHException {
+		Staff foundStaff = staffIoOperationRepository.findById(code).orElse(null);
 		assertThat(foundStaff).isNotNull();
 		testStaff.check(foundStaff);
 	}

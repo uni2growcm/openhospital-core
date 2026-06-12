@@ -49,11 +49,7 @@ public class Staff extends Auditable<String> {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "STF_ID")
-	private int id;
-
-	@NotNull
-	@Column(name = "STF_CODE", unique = true, length = 20)
-	private String code;
+	private Integer code;
 
 	@NotNull
 	@Column(name = "STF_FIRST_NAME", length = 50)
@@ -65,6 +61,9 @@ public class Staff extends Auditable<String> {
 
 	@Column(name = "STF_PROFESSION", length = 50)
 	private String profession;
+
+	@Column(name = "STF_POSITION", length = 50)
+	private String position;
 
 	@Column(name = "STF_PHONE", length = 50)
 	private String phone;
@@ -80,34 +79,78 @@ public class Staff extends Auditable<String> {
 		super();
 	}
 
-	public Staff(String code, String firstName, String lastName, String profession, String phone) {
+	public Staff(String firstName, String lastName, String position, String profession, String phone) {
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.profession = profession;
+		this.phone = phone;
+		this.position = position;
+	}
+
+	public Staff(Integer code, String firstName, String lastName, String position, String profession, String phone) {
 		this.code = code;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.profession = profession;
 		this.phone = phone;
+		this.position = position;
 	}
 
-	public int getId() { return id; }
-	public void setId(int id) { this.id = id; }
+	public Integer getCode() {
+		return code;
+	}
 
-	public String getCode() { return code; }
-	public void setCode(String code) { this.code = code; }
+	public void setCode(Integer code) {
+		this.code = code;
+	}
 
-	public String getFirstName() { return firstName; }
-	public void setFirstName(String firstName) { this.firstName = firstName; }
+	public String getFirstName() {
+		return firstName;
+	}
 
-	public String getLastName() { return lastName; }
-	public void setLastName(String lastName) { this.lastName = lastName; }
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
 
-	public String getProfession() { return profession; }
-	public void setProfession(String profession) { this.profession = profession; }
+	public String getLastName() {
+		return lastName;
+	}
 
-	public String getPhone() { return phone; }
-	public void setPhone(String phone) { this.phone = phone; }
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
 
-	public Integer getLock() { return lock; }
-	public void setLock(Integer lock) { this.lock = lock; }
+	public String getProfession() {
+		return profession;
+	}
+
+	public void setProfession(String profession) {
+		this.profession = profession;
+	}
+
+	public String getPosition() {
+		return position;
+	}
+
+	public void setPosition(String position) {
+		this.position = position;
+	}
+
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+
+	public Integer getLock() {
+		return lock;
+	}
+
+	public void setLock(Integer lock) {
+		this.lock = lock;
+	}
 
 	public String getFullName() {
 		return firstName + " " + lastName;
@@ -117,7 +160,7 @@ public class Staff extends Auditable<String> {
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (!(o instanceof Staff other)) return false;
-		return id != 0 && id == other.id;
+		return code != null && code.equals(other.code);
 	}
 
 	@Override
@@ -125,7 +168,7 @@ public class Staff extends Auditable<String> {
 		if (this.hashCode == 0) {
 			final int m = 23;
 			int c = 133;
-			c = m * c + id;
+			c = m * c + (code == null ? 0 : code);
 			this.hashCode = c;
 		}
 		return this.hashCode;

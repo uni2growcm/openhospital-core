@@ -150,6 +150,4 @@ source step_a153_create_index_in_medical_stock_ward.sql;
 source step_a154_add_maternity_submenuitem_and_privilege.sql;
 source step_a155_add_bill_refund_menuitem.sql;
 source step_a156_add_item_payments_table.sql;
-source step_a157_add_staff_table.sql;
-source step_a158_add_home_visit_table.sql;
-source step_a159_add_home_visit_menu.sql;
+source step_a158_add_home_visit_feature.sql;

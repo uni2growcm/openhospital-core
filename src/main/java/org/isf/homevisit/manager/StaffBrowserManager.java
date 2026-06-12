@@ -67,16 +67,6 @@ public class StaffBrowserManager {
 	}
 
 	/**
-	 * Returns a staff member by code
-	 * @param code staff code
-	 * @return Optional containing staff if found
-	 * @throws OHServiceException
-	 */
-	public Optional<Staff> getStaffByCode(String code) throws OHServiceException {
-		return ioOperations.getByCode(code);
-	}
-
-	/**
 	 * Searches staff members by keyword
 	 * @param keyword search keyword
 	 * @return list of matching staff
@@ -107,24 +97,6 @@ public class StaffBrowserManager {
 	}
 
 	/**
-	 * Checks if a staff code is unique
-	 * @param code staff code to check
-	 * @param excludeId id to exclude (for updates)
-	 * @return true if unique, false otherwise
-	 * @throws OHServiceException
-	 */
-	public boolean isCodeUnique(String code, Integer excludeId) throws OHServiceException {
-		Optional<Staff> existing = ioOperations.getByCode(code);
-		if (existing.isEmpty()) {
-			return true;
-		}
-		if (excludeId != null && existing.get().getId() == excludeId) {
-			return true;
-		}
-		return false;
-	}
-
-	/**
 	 * Validates staff data
 	 * @param staff staff to validate
 	 * @throws OHDataValidationException
@@ -132,11 +104,6 @@ public class StaffBrowserManager {
 	 */
 	private void validateStaff(Staff staff) throws OHDataValidationException, OHServiceException {
 		List<OHExceptionMessage> errors = new ArrayList<>();
-
-		if (staff.getCode() == null || staff.getCode().trim().isEmpty()) {
-			errors.add(new OHExceptionMessage(
-				MessageBundle.getMessage("angal.staff.validation.code.required.msg")));
-		}
 
 		if (staff.getFirstName() == null || staff.getFirstName().trim().isEmpty()) {
 			errors.add(new OHExceptionMessage(
@@ -148,9 +115,9 @@ public class StaffBrowserManager {
 				MessageBundle.getMessage("angal.staff.validation.lastname.required.msg")));
 		}
 
-		if (!isCodeUnique(staff.getCode(), staff.getId() == 0 ? null : staff.getId())) {
+		if (staff.getPosition() == null || staff.getPosition().trim().isEmpty()) {
 			errors.add(new OHExceptionMessage(
-				MessageBundle.formatMessage("angal.staff.validation.code.exists.msg", staff.getCode())));
+				MessageBundle.getMessage("angal.staff.validation.position.required.msg")));
 		}
 
 		if (!errors.isEmpty()) {

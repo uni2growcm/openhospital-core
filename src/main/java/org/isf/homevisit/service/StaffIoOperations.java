@@ -24,6 +24,7 @@ package org.isf.homevisit.service;
 import org.isf.homevisit.model.Staff;
 import org.isf.utils.exception.OHServiceException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -57,16 +58,6 @@ public class StaffIoOperations {
 	}
 
 	/**
-	 * Returns a staff member by code
-	 * @param code staff code
-	 * @return Optional containing staff if found and active
-	 * @throws OHServiceException
-	 */
-	public Optional<Staff> getByCode(String code) throws OHServiceException {
-		return repository.findByCodeAndActive(code, 1);
-	}
-
-	/**
 	 * Searches active staff members by keyword (name or profession)
 	 * @param keyword search keyword
 	 * @return list of matching staff
@@ -94,17 +85,8 @@ public class StaffIoOperations {
 	 * @param id staff id to delete
 	 * @throws OHServiceException
 	 */
+	@Transactional
 	public void softDelete(int id) throws OHServiceException {
 		repository.softDelete(id);
-	}
-
-	/**
-	 * Checks if a staff code already exists for active staff
-	 * @param code staff code to check
-	 * @return true if exists, false otherwise
-	 * @throws OHServiceException
-	 */
-	public boolean existsByCode(String code) throws OHServiceException {
-		return repository.existsByCodeAndActive(code, 1);
 	}
 }

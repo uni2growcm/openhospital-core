@@ -1,0 +1,131 @@
+-- =============================================
+-- Table: OH_STAFF
+-- =============================================
+CREATE TABLE IF NOT EXISTS OH_STAFF (
+    STF_ID                  INT AUTO_INCREMENT PRIMARY KEY,
+    STF_FIRST_NAME          VARCHAR(50)  NOT NULL,
+    STF_LAST_NAME           VARCHAR(50)  NOT NULL,
+    STF_PROFESSION          VARCHAR(50)  DEFAULT NULL,
+    STF_POSITION            VARCHAR(50),
+    STF_PHONE               VARCHAR(50)  DEFAULT NULL,
+    STF_IS_ACTIVE           TINYINT(1)   NOT NULL DEFAULT 1,
+    STF_CREATED_BY          VARCHAR(50)  DEFAULT NULL,
+    STF_CREATED_DATE        DATETIME     DEFAULT NULL,
+    STF_LAST_MODIFIED_BY    VARCHAR(50)  DEFAULT NULL,
+    STF_LAST_MODIFIED_DATE  DATETIME     DEFAULT NULL,
+    STF_LOCK                INT          DEFAULT 0,
+    KEY IDX_STAFF_NAME (STF_LAST_NAME, STF_FIRST_NAME),
+    KEY IDX_STAFF_PROFESSION (STF_PROFESSION)
+)   ENGINE=InnoDB;
+
+-- =============================================
+-- Table: OH_HOME_VISIT
+-- Description: Home visits tracking for patients
+-- =============================================
+
+CREATE TABLE IF NOT EXISTS OH_HOME_VISIT (
+    HV_ID                       INT AUTO_INCREMENT PRIMARY KEY,
+    HV_PAT_ID                   INT          NOT NULL,
+    HV_STAFF_ID                 INT          DEFAULT NULL,
+    HV_VISIT_START_DATE         DATETIME     NOT NULL,
+    HV_VISIT_END_DATE           DATETIME     DEFAULT NULL,
+    HV_STATUS                   VARCHAR(20)  NOT NULL DEFAULT 'PLANNED',
+    HV_PURPOSE                  VARCHAR(255) DEFAULT NULL,
+    HV_CLINICAL_NOTES           TEXT         DEFAULT NULL,
+    HV_OBSERVATIONS             TEXT         DEFAULT NULL,
+    HV_ADDRESS                  VARCHAR(255) DEFAULT NULL,
+    HV_CONTACT_PHONE            VARCHAR(50)  DEFAULT NULL,
+    HV_NEXT_VISIT_DATE          DATETIME     DEFAULT NULL,
+    HV_CREATED_BY               VARCHAR(50)  DEFAULT NULL,
+    HV_CREATED_DATE             DATETIME     DEFAULT NULL,
+    HV_LAST_MODIFIED_BY         VARCHAR(50)  DEFAULT NULL,
+    HV_LAST_MODIFIED_DATE       DATETIME     DEFAULT NULL,
+    HV_ACTIVE                   TINYINT(1)   NOT NULL DEFAULT 1,
+    HV_LOCK                     INT          DEFAULT 0,
+    FOREIGN KEY (HV_PAT_ID) REFERENCES OH_PATIENT(PAT_ID),
+    FOREIGN KEY (HV_STAFF_ID) REFERENCES OH_STAFF(STF_ID),
+    KEY IDX_HOME_VISIT_PATIENT (HV_PAT_ID),
+    KEY IDX_HOME_VISIT_STAFF (HV_STAFF_ID),
+    KEY IDX_HOME_VISIT_START_DATE (HV_VISIT_START_DATE),
+    KEY IDX_HOME_VISIT_STATUS (HV_STATUS),
+    KEY IDX_HOME_VISIT_NEXT_DATE (HV_NEXT_VISIT_DATE)
+)   ENGINE=InnoDB;
+
+-- =============================================
+-- Menu: Home Visit Management
+-- =============================================
+INSERT INTO oh_menuitem
+(MNI_ID_A, MNI_BTN_LABEL, MNI_LABEL, MNI_TOOLTIP, MNI_SHORTCUT, MNI_SUBMENU, MNI_CLASS, MNI_IS_SUBMENU, MNI_POSITION)
+SELECT
+    'homevisit',
+    'angal.menu.btn.homevisit',
+    'angal.menu.homevisit',
+    'angal.menu.tooltip.homevisit',
+    'H',
+    'opd',
+    'org.isf.homevisit.gui.HomeVisitBrowser',
+    'N',
+    5
+FROM DUAL
+WHERE NOT EXISTS (
+    SELECT 1 FROM oh_menuitem WHERE MNI_ID_A = 'homevisit'
+);
+
+-- =========================
+-- STAFF MENU ITEM
+-- =========================
+INSERT INTO oh_menuitem
+(MNI_ID_A, MNI_BTN_LABEL, MNI_LABEL, MNI_TOOLTIP, MNI_SHORTCUT, MNI_SUBMENU, MNI_CLASS, MNI_IS_SUBMENU, MNI_POSITION)
+SELECT
+    'staff',
+    'angal.menu.btn.staff',
+    'angal.menu.staff',
+    'angal.menu.tooltip.staff',
+    'S',
+    'generaldata',
+    'org.isf.homevisit.gui.StaffBrowser',
+    'N',
+    16
+FROM DUAL
+WHERE NOT EXISTS (
+    SELECT 1 FROM oh_menuitem WHERE MNI_ID_A = 'staff'
+);
+
+-- =========================
+-- GROUP MENU
+-- =========================
+INSERT INTO oh_groupmenu
+(GM_ID, GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE, GM_CREATED_BY, GM_CREATED_DATE, GM_LAST_MODIFIED_BY, GM_LAST_MODIFIED_DATE)
+SELECT
+    (SELECT COALESCE(MAX(GM_ID), 0) + 1 FROM oh_groupmenu),
+    'admin',
+    'homevisit',
+    1,
+    NULL,
+    NULL,
+    NULL,
+    NULL
+FROM DUAL
+WHERE NOT EXISTS (
+    SELECT 1 FROM oh_groupmenu WHERE GM_MNI_ID_A = 'homevisit' AND GM_UG_ID_A = 'admin'
+);
+
+INSERT INTO oh_groupmenu
+(GM_ID, GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE, GM_CREATED_BY, GM_CREATED_DATE, GM_LAST_MODIFIED_BY, GM_LAST_MODIFIED_DATE)
+SELECT
+    (SELECT COALESCE(MAX(GM_ID), 0) + 1 FROM oh_groupmenu),
+    'admin',
+    'staff',
+    1,
+    NULL,
+    NULL,
+    NULL,
+    NULL
+FROM DUAL
+WHERE NOT EXISTS (
+    SELECT 1 FROM oh_groupmenu WHERE GM_MNI_ID_A = 'staff' AND GM_UG_ID_A = 'admin'
+);
+
+INSERT INTO oh_groupmenu (GM_ID, GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE)
+SELECT (SELECT COALESCE(MAX(GM_ID), 0) + 1 FROM oh_groupmenu), 'admin', 'homevisit', 1
+    WHERE NOT EXISTS (SELECT 1 FROM oh_groupmenu WHERE GM_UG_ID_A = 'admin' AND GM_MNI_ID_A = 'homevisit');

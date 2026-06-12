@@ -28,10 +28,10 @@ import org.isf.utils.exception.OHException;
 
 public class TestStaff {
 
-	private String code = "STF_TEST";
-	private String firstName = "John";
-	private String lastName = "Doe";
+	private String firstName = "Bobo";
+	private String lastName = "Mr";
 	private String profession = "Nurse";
+	private String position = "Head Nurse";
 	private String phone = "+237 690001234";
 
 	public Staff setup(boolean usingSet) throws OHException {
@@ -40,25 +40,27 @@ public class TestStaff {
 			staff = new Staff();
 			setParameters(staff);
 		} else {
-			staff = new Staff(code, firstName, lastName, profession, phone);
+			staff = new Staff(firstName, lastName, position, profession, phone);
 		}
 		return staff;
 	}
 
 	public void setParameters(Staff staff) {
-		staff.setCode(code);
 		staff.setFirstName(firstName);
 		staff.setLastName(lastName);
 		staff.setProfession(profession);
+		staff.setPosition(position);
 		staff.setPhone(phone);
 		staff.setActive(1);
 	}
 
 	public void check(Staff staff) {
-		assertThat(staff.getCode()).isEqualTo(code);
+		assertThat(staff.getCode()).isNotNull();
+		assertThat(staff.getCode()).isPositive();
 		assertThat(staff.getFirstName()).isEqualTo(firstName);
 		assertThat(staff.getLastName()).isEqualTo(lastName);
 		assertThat(staff.getProfession()).isEqualTo(profession);
+		assertThat(staff.getPosition()).isEqualTo(position);
 		assertThat(staff.getPhone()).isEqualTo(phone);
 		assertThat(staff.getActive()).isEqualTo(1);
 	}
