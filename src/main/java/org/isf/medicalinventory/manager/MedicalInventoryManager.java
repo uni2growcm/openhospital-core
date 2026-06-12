@@ -22,6 +22,7 @@
 package org.isf.medicalinventory.manager;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -111,6 +112,12 @@ public class MedicalInventoryManager {
 	@Transactional
 	public MedicalInventory newMedicalInventory(MedicalInventory medicalInventory, List<MedicalInventoryRow> newMedicalInventoryRows)
 		throws OHServiceException {
+		if (GeneralData.REFERENCE_AUTOMATIC &&
+			(medicalInventory.getInventoryReference() == null || medicalInventory.getInventoryReference().isBlank())) {
+			LocalDateTime now = TimeTools.getNow();
+			String autoRef = generateReference(GeneralData.REFERENCE_PREFIX_INVENTORY, now);
+			medicalInventory.setInventoryReference(autoRef);
+		}
 		validateMedicalInventory(medicalInventory, true);
 		MedicalInventory inventory = ioOperations.newMedicalInventory(medicalInventory);
 		for (MedicalInventoryRow inventoryRow : newMedicalInventoryRows) {
@@ -281,7 +288,7 @@ public class MedicalInventoryManager {
 	 * Validate the Inventory rows of inventory.
 	 *
 	 * @param inventory the {@link MedicalInventory}
-	 * @param inventoryRowSearchList- The list of {@link MedicalInventory}
+	 * @param inventoryRowSearchList The list of {@link MedicalInventory}
 	 * @param allMedicals if {@code true} will check also medicals not in {@code inventoryRowSearchList}
 	 * @throws OHServiceException
 	 */
@@ -561,7 +568,7 @@ public class MedicalInventoryManager {
 	 * Confirm the Inventory rows of inventory.
 	 *
 	 * @param inventory the {@link MedicalInventory}
-	 * @param inventoryRowSearchList- The list of {@link MedicalInventory}
+	 * @param inventoryRowSearchList The list of {@link MedicalInventory}
 	 * @param allMedicals if {@code true}, it will add new {@link MedicalInventoryRow}s if found in the latest stock movements. If {@code false}, only existing
 	 *        rows will be updated.
 	 * @return List {@link Movement}. It could be {@code empty}.
@@ -615,7 +622,7 @@ public class MedicalInventoryManager {
 	 * Confirm the Inventory rows of ward inventory.
 	 *
 	 * @param inventory the {@link MedicalInventory}
-	 * @param inventoryRowSearchList- The list of {@link MedicalInventory}
+	 * @param inventoryRowSearchList The list of {@link MedicalInventory}
 	 * @param allMedicals if {@code true}, it will add new {@link MedicalInventoryRow}s if found in the latest stock movements. If {@code false}, only existing
 	 *        rows will be updated.
 	 * @return List of {@link MovementWard}s. It could be {@code empty}.
@@ -910,5 +917,19 @@ public class MedicalInventoryManager {
 			inventory = this.updateMedicalInventory(inventory, false);
 		}
 		return inventory;
+	}
+
+	/**
+	 * Generates an automatic inventory reference based on prefix and date.
+	 * Uses the timestamp format defined in GeneralData.
+	 *
+	 * @param prefix The prefix (e.g., "INV")
+	 * @param date The inventory date
+	 * @return The generated reference string
+	 */
+	private String generateReference(String prefix, LocalDateTime date) {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(GeneralData.REFERENCE_TIMESTAMP_FORMAT);
+		String timestamp = date.format(formatter);
+		return prefix + timestamp;
 	}
 }
