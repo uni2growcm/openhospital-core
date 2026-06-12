@@ -25,7 +25,8 @@ import org.isf.generaldata.MessageBundle;
 
 public enum Family {
 	DELIVERYTYPE("angal.typology.deliverytype"),
-	VISITTYPE("angal.typology.visittype");
+	VISITTYPE("angal.typology.visittype"),
+	HIVTREATMENTTYPE("angal.typology.hivtreatmenttype");
 
 	private final String key;
 
