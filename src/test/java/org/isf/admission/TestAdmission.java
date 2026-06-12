@@ -24,6 +24,7 @@ package org.isf.admission;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.isf.admission.model.Admission;
 import org.isf.admtype.model.AdmissionType;
@@ -73,13 +74,16 @@ public class TestAdmission {
 	private String outcome = "Outcome";
 	private String improvementFeedback = "Improvement Feedback";
 	private String deathPeriod = "BEFORE_ADMISSION";
+	private String othersInformation = "Other Information";
+	private List<Disease> diagnosisIn;
+	private List<Disease> diagnosisOut;
 
 	public Admission setup(
 			Ward ward,
 			Patient patient,
 			AdmissionType admissionType,
 			Disease diseaseIn,
-			Disease diseaseOut1,
+			List<Disease> complicationDiagnosis,
 			Disease diseaseOut2,
 			Disease diseaseOut3,
 			Operation operation,
@@ -87,22 +91,25 @@ public class TestAdmission {
 			PregnantTreatmentType pregTreatmentType,
 			DeliveryType deliveryType,
 			DeliveryResultType deliveryResult,
+			List<Disease> diagnosisIn,
+			List<Disease> diagnosisOut,
 			boolean usingSet) throws OHException {
 		Admission admission;
 
 		if (usingSet) {
 			admission = new Admission();
-			setParameters(admission, ward, patient, admissionType, diseaseIn, diseaseOut1, diseaseOut2,
-					diseaseOut3, operation, dischargeType, pregTreatmentType, deliveryType, deliveryResult);
+			setParameters(admission, ward, patient, admissionType, diseaseIn, complicationDiagnosis, diseaseOut2,
+					diseaseOut3, operation, dischargeType, pregTreatmentType, deliveryType, deliveryResult,
+					diagnosisIn, diagnosisOut);
 		} else {
-			// Create Admission with all parameters
 			admission = new Admission(id, admitted, type, ward, yProg, patient, ADMINDATE, admissionType, FHU, diseaseIn,
-					diseaseOut1, diseaseOut2, diseaseOut3, DISDATE, dischargeType, anamnesis,
+					complicationDiagnosis, diseaseOut2, diseaseOut3, DISDATE, dischargeType, anamnesis,
 					transUnit, VISITDATE, pregTreatmentType, DELIVERYDATE, deliveryType, deliveryResult, weight,
 					CTRLDATE1, CTRLDATE2, ABORTDATE, userID, deleted, preTreatment, preAssessment, entryReason,
 					alertReceived, referenceSheet, qualifiedAgent, transportation, courseOfAction, nextAppointment,
 					referralAlert, referralReason, treatmentReceived,
-					outcome, improvementFeedback, deathPeriod);
+					outcome, improvementFeedback, deathPeriod, othersInformation,
+					diagnosisIn, diagnosisOut);
 		}
 
 		return admission;
@@ -114,14 +121,16 @@ public class TestAdmission {
 			Patient patient,
 			AdmissionType admissionType,
 			Disease diseaseIn,
-			Disease diseaseOut1,
+			List<Disease> complicationDiagnosis,
 			Disease diseaseOut2,
 			Disease diseaseOut3,
 			Operation operation,
 			DischargeType dischargeType,
 			PregnantTreatmentType pregTreatmentType,
 			DeliveryType deliveryType,
-			DeliveryResultType deliveryResult) {
+			DeliveryResultType deliveryResult,
+			List<Disease> diagnosisIn,
+			List<Disease> diagnosisOut) {
 		admission.setAbortDate(ABORTDATE);
 		admission.setAdmDate(ADMINDATE);
 		admission.setAdmitted(admitted);
@@ -134,7 +143,7 @@ public class TestAdmission {
 		admission.setDeliveryType(deliveryType);
 		admission.setDisDate(DISDATE);
 		admission.setDiseaseIn(diseaseIn);
-		admission.setDiseaseOut1(diseaseOut1);
+		admission.setComplicationDiagnosis(complicationDiagnosis);
 		admission.setDiseaseOut2(diseaseOut2);
 		admission.setDiseaseOut3(diseaseOut3);
 		admission.setDisType(dischargeType);
@@ -164,6 +173,9 @@ public class TestAdmission {
 		admission.setOutcome(outcome);
 		admission.setImprovementFeedback(improvementFeedback);
 		admission.setDeathPeriod(deathPeriod);
+		admission.setOthersInformation(othersInformation);
+		admission.setDiagnosisIn(diagnosisIn);
+		admission.setDiagnosisOut(diagnosisOut);
 	}
 
 	public void check(Admission admission) {
@@ -201,9 +213,13 @@ public class TestAdmission {
 		assertThat(admission.getTreatmentReceived()).isEqualTo(treatmentReceived);
 		assertThat(admission.getOutcome()).isEqualTo(outcome);
 		assertThat(admission.getImprovementFeedback()).isEqualTo(improvementFeedback);
+		assertThat(admission.getOthersInformation()).isEqualTo(othersInformation);
 
 		assertThat(admission.getDeliveryResult()).isNotNull();
 		assertThat(admission.getDeliveryType()).isNotNull();
 		assertThat(admission.getPregTreatmentType()).isNotNull();
+
+		assertThat(admission.getDiagnosisIn()).isNotNull();
+		assertThat(admission.getDiagnosisOut()).isNotNull();
 	}
 }

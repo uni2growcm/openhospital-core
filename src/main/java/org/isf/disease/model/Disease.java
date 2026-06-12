@@ -21,23 +21,18 @@
  */
 package org.isf.disease.model;
 
-import jakarta.persistence.AttributeOverride;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
-import jakarta.persistence.Version;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
+import org.isf.admission.model.Admission;
 import org.isf.distype.model.DiseaseType;
 import org.isf.utils.db.Auditable;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name="OH_DISEASE")
@@ -78,6 +73,15 @@ public class Disease extends Auditable<String> {
 	@Column(name="DIS_IPD_OUT_INCLUDE")
 	private boolean ipdOutInclude;
 
+	@ManyToMany(mappedBy = "complicationDiagnosis")
+	private List<Admission> admissionsComplication = new ArrayList<>();
+
+	@ManyToMany(mappedBy = "diagnosisIn")
+	private List<Admission> admissionsIn = new ArrayList<>();
+
+	@ManyToMany(mappedBy = "diagnosisOut")
+	private List<Admission> admissionsOut = new ArrayList<>();
+
 	@Transient
 	private volatile int hashCode;
 
@@ -97,6 +101,24 @@ public class Disease extends Auditable<String> {
         this.description = aDescription;
         this.diseaseType = aType;
     }
+
+	/**
+	 * @param aCode
+	 * @param aDescription
+	 * @param aType
+	 * @param admissionsComplication
+	 */
+	public Disease(String aCode, String aDescription, DiseaseType aType, List<Admission> admissionsComplication,
+				   List<Admission> admissionsIn, List<Admission> admissionsOut
+	) {
+		super();
+		this.code = aCode;
+		this.description = aDescription;
+		this.diseaseType = aType;
+		this.admissionsComplication = admissionsComplication;
+		this.admissionsIn = admissionsIn;
+		this.admissionsOut = admissionsOut;
+	}
     
     public String getCode() {
         return this.code;
@@ -152,6 +174,14 @@ public class Disease extends Auditable<String> {
     
     public void setIpdOutInclude(boolean ipdOutInclude) {
 		this.ipdOutInclude = ipdOutInclude;
+	}
+
+	public List<Admission> getAdmissionsComplication() {
+		return admissionsComplication;
+	}
+
+	public void setAdmissionsComplication(List<Admission> admissionsComplication) {
+		this.admissionsComplication = admissionsComplication;
 	}
 
 	@Override

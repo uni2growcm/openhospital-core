@@ -19,17 +19,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.isf.commune.manager;
+package org.isf.municipality.service;
 
-import org.isf.base.manager.BaseManager;
-import org.isf.commune.model.Commune;
-import org.isf.commune.service.CommuneIoOperation;
-import org.springframework.stereotype.Component;
+import org.isf.base.service.BaseIoOperationRepository;
+import org.isf.municipality.model.Municipality;
+import org.springframework.stereotype.Repository;
 
-@Component
-public class CommuneManager extends BaseManager<Commune> {
-
-	public CommuneManager(CommuneIoOperation communeIoOperation) {
-		super(communeIoOperation);
-	}
+@Repository
+public interface MunicipalityIoOperationRepository extends BaseIoOperationRepository<Municipality> {
 }

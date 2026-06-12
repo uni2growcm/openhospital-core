@@ -62,6 +62,24 @@ public class DiseaseBrowserManager {
 	}
 
 	/**
+	 * Returns all diseases, deleted ones also In case of error a message error is shown and a {@code null} value is returned.
+	 *
+	 * @param diseasesCodeList the list of disease code to retrieve.
+	 * @return the stored diseases.
+	 * @throws OHServiceException
+	 */
+	public List<Disease> getDiseaseAllByCode(List<String> diseasesCodeList) throws OHServiceException {
+		List<Disease> diseases = new ArrayList<>();
+		for (String code : diseasesCodeList) {
+			Disease disease = ioOperations.getDiseaseByCode(code);
+			if (disease != null) {
+				diseases.add(disease);
+			}
+		}
+		return diseases;
+	}
+
+	/**
 	 * Returns all the stored {@link Disease} with the specified typecode and flag ODP true. In case of error a message error is shown and a {@code null} value
 	 * is returned.
 	 *
