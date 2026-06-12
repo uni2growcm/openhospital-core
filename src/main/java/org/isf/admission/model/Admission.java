@@ -105,6 +105,22 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 	)
 	private List<Disease> complicationDiagnosis;
 
+	@ManyToMany
+	@JoinTable(
+		name = "OH_OUTDIAGNOSIS",
+		joinColumns = @JoinColumn(name = "OD_ADM_ID"),
+		inverseJoinColumns = @JoinColumn(name = "OD_DIS_ID_A")
+	)
+	private List<Disease> diagnosisOut;
+
+	@ManyToMany
+	@JoinTable(
+		name = "OH_INDIAGNOSIS",
+		joinColumns = @JoinColumn(name = "ID_ADM_ID"),
+		inverseJoinColumns = @JoinColumn(name = "ID_DIS_ID_A")
+	)
+	private List<Disease> diagnosisIn;
+
 	@ManyToOne
 	@JoinColumn(name = "ADM_OUT_DIS_ID_A_2")
 	private Disease diseaseOut2;            // disease out key (null)
@@ -358,7 +374,7 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 					 Boolean alertReceived, Boolean referenceSheet, Boolean qualifiedAgent, String transportation,
 					 String courseOfAction, LocalDateTime nextAppointment, String referralAlert,
 					 String referralReason, String treatmentReceived,
-					 String outcome, String improvementFeedback, String deathPeriod, String othersInformation ) {
+					 String outcome, String improvementFeedback, String deathPeriod, String othersInformation) {
 
 		this(id, admitted, type, ward, prog, patient, admDate, admType, fhu,
 			diseaseIn, complicationDiagnosis, diseaseOut2, diseaseOut3,
@@ -382,6 +398,88 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 		this.improvementFeedback = improvementFeedback;
 		this.deathPeriod = deathPeriod;
 		this.othersInformation = othersInformation;
+	}
+
+	/**
+	 * Creates a new Admission with all attributes including pre-admission treatment and assessment.
+	 *
+	 * @param id               the unique identifier of the admission
+	 * @param admitted         flag indicating if the patient is admitted (1 = admitted, 0 = not admitted)
+	 * @param type             the type of admission (e.g., emergency, scheduled)
+	 * @param ward             the ward to which the patient is assigned
+	 * @param prog             the progressive number of the admission
+	 * @param patient          the patient associated with this admission
+	 * @param admDate          the admission date and time
+	 * @param admType          the admission type
+	 * @param fhu              the first health unit (if applicable)
+	 * @param diseaseIn        the disease at admission
+	 * @param complicationDiagnosis      the primary disease at discharge
+	 * @param diseaseOut2      the secondary disease at discharge
+	 * @param diseaseOut3      the tertiary disease at discharge
+	 * @param disDate          the discharge date and time
+	 * @param disType          the discharge type
+	 * @param anamnesis        anamnesis about the admission
+	 * @param transUnit        transfusion units administered
+	 * @param visitDate        date of the last visit during admission
+	 * @param pregTreatmentType pregnancy treatment type if applicable
+	 * @param deliveryDate     delivery date if applicable
+	 * @param deliveryType     delivery type if applicable
+	 * @param deliveryResult   delivery result if applicable
+	 * @param weight           newborn weight if applicable
+	 * @param ctrlDate1        first control date after admission
+	 * @param ctrlDate2        second control date after admission
+	 * @param abortDate        abortion date if applicable
+	 * @param userID           the identifier of the user who created the admission
+	 * @param deleted          deletion flag ('Y' or 'N')
+	 * @param preTreatment     treatment received by the patient before admission
+	 * @param preAssessment    assessment performed before the patient's admission
+	 * @param entryReason	   reason for admission of a patient
+	 * @param alertReceived
+	 * @param referenceSheet
+	 * @param qualifiedAgent
+	 * @param diagnosisOut
+	 * @param diagnosisIn
+	 */
+	public Admission(int id, int admitted, String type, Ward ward, int prog, Patient patient,
+					 LocalDateTime admDate, AdmissionType admType, String fhu,
+					 Disease diseaseIn, List<Disease> complicationDiagnosis, Disease diseaseOut2, Disease diseaseOut3,
+					 LocalDateTime disDate, DischargeType disType, String anamnesis, Float transUnit,
+					 LocalDateTime visitDate, PregnantTreatmentType pregTreatmentType,
+					 LocalDateTime deliveryDate, DeliveryType deliveryType, DeliveryResultType deliveryResult,
+					 Float weight, LocalDateTime ctrlDate1, LocalDateTime ctrlDate2,
+					 LocalDateTime abortDate, String userID, char deleted,
+					 String preTreatment, String preAssessment, String entryReason,
+					 Boolean alertReceived, Boolean referenceSheet, Boolean qualifiedAgent, String transportation,
+					 String courseOfAction, LocalDateTime nextAppointment, String referralAlert,
+					 String referralReason, String treatmentReceived,
+					 String outcome, String improvementFeedback, String deathPeriod, String othersInformation,
+					 List<Disease> diagnosisIn, List<Disease> diagnosisOut
+	) {
+
+		this(id, admitted, type, ward, prog, patient, admDate, admType, fhu,
+			diseaseIn, complicationDiagnosis, diseaseOut2, diseaseOut3,
+			disDate, disType, anamnesis, transUnit, visitDate,
+			pregTreatmentType, deliveryDate, deliveryType, deliveryResult, weight,
+			ctrlDate1, ctrlDate2, abortDate, userID, deleted);
+
+		this.preTreatment = preTreatment;
+		this.preAssessment = preAssessment;
+		this.entryReason = entryReason;
+		this.alertReceived = alertReceived;
+		this.referenceSheet = referenceSheet;
+		this.qualifiedAgent = qualifiedAgent;
+		this.transportation = transportation;
+		this.courseOfAction = courseOfAction;
+		this.nextAppointment = nextAppointment;
+		this.referralAlert = referralAlert;
+		this.referralReason = referralReason;
+		this.treatmentReceived = treatmentReceived;
+		this.outcome = outcome;
+		this.improvementFeedback = improvementFeedback;
+		this.deathPeriod = deathPeriod;
+		this.othersInformation = othersInformation;
+		this.diagnosisIn =	diagnosisIn;
+		this.diagnosisOut = diagnosisOut;
 	}
 
 	public Float getTransUnit() {
@@ -462,6 +560,22 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 
 	public void setDeliveryDate(LocalDateTime deliveryDate) {
 		this.deliveryDate = TimeTools.truncateToSeconds(deliveryDate);
+	}
+
+	public List<Disease> getDiagnosisOut() {
+		return diagnosisOut;
+	}
+
+	public void setDiagnosisOut(List<Disease> diagnosisOut) {
+		this.diagnosisOut = diagnosisOut;
+	}
+
+	public List<Disease> getDiagnosisIn() {
+		return diagnosisIn;
+	}
+
+	public void setDiagnosisIn(List<Disease> diagnosisIn) {
+		this.diagnosisIn = diagnosisIn;
 	}
 
 	public DeliveryResultType getDeliveryResult() {

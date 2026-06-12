@@ -415,30 +415,17 @@ public class AdmissionBrowserManager {
 				}
 			}
 		}
-		List<Disease> complicationDiagnosis = admission.getComplicationDiagnosis();
+
 		Disease diseaseOut2 = admission.getDiseaseOut2();
 		Disease diseaseOut3 = admission.getDiseaseOut3();
-		if (complicationDiagnosis == null && admission.getDisDate() != null) {
+		if (admission.getDisDate() != null) {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.admission.pleaseselectatleastfirstdiagnosisout.msg")));
-		} else if (complicationDiagnosis != null && admission.getDisDate() == null) {
-			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.admission.pleaseinsertadischargedate.msg")));
 		}
-		if (admission.getDisDate() != null && complicationDiagnosis != null) {
 
-//			// Check duplicated diseases
-//			if (checkDuplicatedDiseaseOut(complicationDiagnosis, diseaseOut2, diseaseOut3)) {
-//				errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.admission.specifyingduplicatediseasesisnotallowed.msg")));
-//			}
+		if (admission.getDisDate() != null) {
 
 			Disease disease;
-			if (complicationDiagnosis != null && !complicationDiagnosis.isEmpty()) {
-				for (Disease d: complicationDiagnosis) {
-					disease = diseaseManager.getIpdOutDiseaseByCode(d.getCode());
-					if (disease == null) {
-						errors.add(new OHExceptionMessage(MessageBundle.formatMessage("angal.opd.specifieddiseaseisnoenabledforopdservice.fmt.msg", "1")));
-					}
-				}
-			}
+
 			if (diseaseOut2 != null) {
 				disease = diseaseManager.getIpdOutDiseaseByCode(diseaseOut2.getCode());
 				if (disease == null) {

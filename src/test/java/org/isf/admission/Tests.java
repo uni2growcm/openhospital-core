@@ -1295,7 +1295,7 @@ class Tests extends OHCoreTestCase {
 				.isInstanceOf(OHDataValidationException.class)
 				.has(
 						new Condition<Throwable>(
-								e -> ((OHServiceException) e).getMessages().size() == 2, "Expecting two validation errors"));
+								e -> ((OHServiceException) e).getMessages().size() == 1, "Expecting single validation error"));
 	}
 
 	@ParameterizedTest(name = "Test with MATERNITYRESTARTINJUNE={0}")
@@ -1429,16 +1429,6 @@ class Tests extends OHCoreTestCase {
 		assertThatThrownBy(() -> admissionBrowserManager.updateAdmission(admission))
 			.isInstanceOf(OHDataValidationException.class);
 		admission.setComplicationDiagnosis(disease);
-
-		// DiseaseOut1() != null && DisDate() == null
-		disDate = admission.getDisDate();
-		admission.setDisDate(null);
-		assertThatThrownBy(() -> admissionBrowserManager.updateAdmission(admission))
-			.isInstanceOf(OHDataValidationException.class)
-			.has(
-				new Condition<Throwable>(
-					e -> ((OHServiceException) e).getMessages().size() == 1, "Expecting single validation error"));
-		admission.setDisDate(disDate);
 
 		// Admission DiseaseOut1 not IpdOut enabled
 		List<Disease> diseaseOut = admission.getComplicationDiagnosis();
@@ -1637,6 +1627,10 @@ class Tests extends OHCoreTestCase {
 		diseaseOut2.setCode("777");
 		Disease diseaseOut3 = testDisease.setup(diseaseType, false, true, false, false);
 		diseaseOut3.setCode("666");
+		Disease diagnosisInDisease = testDisease.setup(diseaseType, false, false, false, false);
+		diagnosisInDisease.setCode("555");
+		Disease diagnosisOutDisease = testDisease.setup(diseaseType, false, false, false, false);
+		diagnosisOutDisease.setCode("444");
 		OperationType operationType = testOperationType.setup(false);
 		Operation operation = testOperation.setup(operationType, false);
 		DischargeType dischargeType = testDischargeType.setup(false);
@@ -1646,7 +1640,9 @@ class Tests extends OHCoreTestCase {
 
 		Admission admission = testAdmission.setup(ward, patient, admissionType, diseaseIn,  new ArrayList<>(List.of(complicationDiagnosis)),
 			diseaseOut2, diseaseOut3, operation, dischargeType, pregTreatmentType,
-			deliveryType, deliveryResult, usingSet);
+			deliveryType, deliveryResult,
+			new ArrayList<>(List.of(diagnosisInDisease)), new ArrayList<>(List.of(diagnosisOutDisease)),
+			usingSet);
 
 		wardIoOperationRepository.saveAndFlush(ward);
 		patientIoOperationRepository.saveAndFlush(patient);
@@ -1656,6 +1652,8 @@ class Tests extends OHCoreTestCase {
 		diseaseIoOperationRepository.saveAndFlush(complicationDiagnosis);
 		diseaseIoOperationRepository.saveAndFlush(diseaseOut2);
 		diseaseIoOperationRepository.saveAndFlush(diseaseOut3);
+		diseaseIoOperationRepository.saveAndFlush(diagnosisInDisease);
+		diseaseIoOperationRepository.saveAndFlush(diagnosisOutDisease);
 		operationTypeIoOperationRepository.saveAndFlush(operationType);
 		operationIoOperationRepository.saveAndFlush(operation);
 		dischargeTypeIoOperationRepository.saveAndFlush(dischargeType);
@@ -1684,6 +1682,10 @@ class Tests extends OHCoreTestCase {
 		diseaseOut2.setCode("777");
 		Disease diseaseOut3 = testDisease.setup(diseaseType, false, true, false, false);
 		diseaseOut3.setCode("666");
+		Disease diagnosisInDisease = testDisease.setup(diseaseType, false, false, false, false);
+		diagnosisInDisease.setCode("333");
+		Disease diagnosisOutDisease = testDisease.setup(diseaseType, false, false, false, false);
+		diagnosisOutDisease.setCode("222");
 		OperationType operationType = testOperationType.setup(false);
 		Operation operation = testOperation.setup(operationType, false);
 		DischargeType dischargeType = testDischargeType.setup(false);
@@ -1705,6 +1707,8 @@ class Tests extends OHCoreTestCase {
 		diseaseIoOperationRepository.saveAndFlush(complicationDiagnosis);
 		diseaseIoOperationRepository.saveAndFlush(diseaseOut2);
 		diseaseIoOperationRepository.saveAndFlush(diseaseOut3);
+		diseaseIoOperationRepository.saveAndFlush(diagnosisInDisease);
+		diseaseIoOperationRepository.saveAndFlush(diagnosisOutDisease);
 		operationTypeIoOperationRepository.saveAndFlush(operationType);
 		operationIoOperationRepository.saveAndFlush(operation);
 		dischargeTypeIoOperationRepository.saveAndFlush(dischargeType);
@@ -1714,7 +1718,9 @@ class Tests extends OHCoreTestCase {
 
 		return testAdmission.setup(ward, patient, admissionType, diseaseIn, new ArrayList<>(List.of(complicationDiagnosis)),
 			diseaseOut2, diseaseOut3, operation, dischargeType, pregTreatmentType,
-			deliveryType, deliveryResult, true);
+			deliveryType, deliveryResult,
+			new ArrayList<>(List.of(diagnosisInDisease)), new ArrayList<>(List.of(diagnosisOutDisease)),
+			true);
 	}
 
 }

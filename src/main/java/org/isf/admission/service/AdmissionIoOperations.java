@@ -37,10 +37,7 @@ import org.isf.admtype.model.AdmissionType;
 import org.isf.admtype.service.AdmissionTypeIoOperationRepository;
 import org.isf.disctype.model.DischargeType;
 import org.isf.disctype.service.DischargeTypeIoOperationRepository;
-import org.isf.disease.manager.DiseaseBrowserManager;
-import org.isf.disease.model.Disease;
 import org.isf.encounter.model.Encounter;
-import org.isf.encounter.model.EncounterStatus;
 import org.isf.generaldata.GeneralData;
 import org.isf.patient.model.Patient;
 import org.isf.patient.service.PatientIoOperationRepository;
@@ -138,7 +135,12 @@ public class AdmissionIoOperations {
 	 * @return the patient admission.
 	 */
 	public Admission getCurrentAdmission(Patient patient) {
-		return repository.findOneWherePatientIn(patient.getCode());
+		Admission admission = repository.findOneWherePatientIn(patient.getCode());
+		if (admission != null) {
+			Hibernate.initialize(admission.getDiagnosisIn());
+			Hibernate.initialize(admission.getDiagnosisOut());
+		}
+		return admission;
 	}
 
 	/**
@@ -149,7 +151,12 @@ public class AdmissionIoOperations {
 	 * @throws OHServiceException if an error occurs during database request.
 	 */
 	public Admission getAdmission(int id) throws OHServiceException {
-		return repository.findById(id).orElse(null);
+		Admission admission = repository.findById(id).orElse(null);
+		if (admission != null) {
+			Hibernate.initialize(admission.getDiagnosisIn());
+			Hibernate.initialize(admission.getDiagnosisOut());
+		}
+		return admission;
 	}
 
 	/**
@@ -160,7 +167,12 @@ public class AdmissionIoOperations {
 	 * @throws OHServiceException if an error occurs during database request.
 	 */
 	public List<Admission> getAdmissions(Patient patient) throws OHServiceException {
-		return repository.findAllWherePatientByOrderByDate(patient.getCode());
+		List<Admission> admissions = repository.findAllWherePatientByOrderByDate(patient.getCode());
+		admissions.forEach(a -> {
+			Hibernate.initialize(a.getDiagnosisIn());
+			Hibernate.initialize(a.getDiagnosisOut());
+		});
+		return admissions;
 	}
 
 	/**
@@ -171,7 +183,12 @@ public class AdmissionIoOperations {
 	 * @throws OHServiceException if an error occurs during the insertion.
 	 */
 	public Admission newAdmission(Admission admission) throws OHServiceException {
-		return repository.save(admission);
+		Admission admissionSaved = repository.save(admission);
+
+		Hibernate.initialize(admissionSaved.getDiagnosisIn());
+		Hibernate.initialize(admissionSaved.getDiagnosisOut());
+
+		return admissionSaved;
 	}
 
 	/**
@@ -194,7 +211,12 @@ public class AdmissionIoOperations {
 	 * @throws OHServiceException if an error occurs.
 	 */
 	public Admission updateAdmission(Admission admission) throws OHServiceException {
-		return repository.save(admission);
+		Admission admissionUpdated = repository.save(admission);
+
+		Hibernate.initialize(admissionUpdated.getDiagnosisIn());
+		Hibernate.initialize(admissionUpdated.getDiagnosisOut());
+
+		return admissionUpdated;
 	}
 
 	/**
@@ -297,6 +319,10 @@ public class AdmissionIoOperations {
 			return null;
 		}
 		foundAdmission.setDeleted('Y');
+
+		Hibernate.initialize(foundAdmission.getDiagnosisIn());
+		Hibernate.initialize(foundAdmission.getDiagnosisOut());
+
 		return repository.save(foundAdmission);
 	}
 
@@ -339,7 +365,12 @@ public class AdmissionIoOperations {
 	 * @throws OHServiceException if an error occurs during database request.
 	 */
 	public List<Admission> getAdmissionsByAdmissionDate(LocalDateTime dateFrom, LocalDateTime dateTo) throws OHServiceException {
-		return repository.findAllWhereAdmissionDate(dateFrom, dateTo);
+		List<Admission> admissions = repository.findAllWhereAdmissionDate(dateFrom, dateTo);
+		admissions.forEach(a -> {
+			Hibernate.initialize(a.getDiagnosisIn());
+			Hibernate.initialize(a.getDiagnosisOut());
+		});
+		return admissions;
 	}
 
 	/**
@@ -351,7 +382,12 @@ public class AdmissionIoOperations {
 	 * @throws OHServiceException if an error occurs during database request.
 	 */
 	public List<Admission> getAdmissionsByDischargeDate(LocalDateTime dateFrom, LocalDateTime dateTo) throws OHServiceException {
-		return repository.findAllWhereDischargeDate(dateFrom, dateTo);
+		List<Admission> admissions = repository.findAllWhereDischargeDate(dateFrom, dateTo);
+		admissions.forEach(a -> {
+			Hibernate.initialize(a.getDiagnosisIn());
+			Hibernate.initialize(a.getDiagnosisOut());
+		});
+		return admissions;
 	}
 
 	/**
@@ -365,6 +401,11 @@ public class AdmissionIoOperations {
 	 */
 	public PagedResponse<Admission> getAdmissionsByAdmissionDates(LocalDateTime dateFrom, LocalDateTime dateTo, Pageable pageable) throws OHServiceException {
 		Page<Admission> pagedResult = repository.findAllWhere_AdmissionDate_Paginated(dateFrom, dateTo, pageable);
+		pagedResult.getContent().forEach(a -> {
+			Hibernate.initialize(a.getComplicationDiagnosis());
+			Hibernate.initialize(a.getDiagnosisIn());
+			Hibernate.initialize(a.getDiagnosisOut());
+		});
 		return setPaginationData(pagedResult);
 	}
 
@@ -379,6 +420,11 @@ public class AdmissionIoOperations {
 	 */
 	public PagedResponse<Admission> getAdmissionsByDischargeDates(LocalDateTime dateFrom, LocalDateTime dateTo, Pageable pageable) throws OHServiceException {
 		Page<Admission> pagedResult = repository.findAllWhere_DischargeDate_Paginated(dateFrom, dateTo, pageable);
+		pagedResult.getContent().forEach(a -> {
+			Hibernate.initialize(a.getComplicationDiagnosis());
+			Hibernate.initialize(a.getDiagnosisIn());
+			Hibernate.initialize(a.getDiagnosisOut());
+		});
 		return setPaginationData(pagedResult);
 	}
 
@@ -414,6 +460,11 @@ public class AdmissionIoOperations {
 	 */
 	public List<Admission> getAdmissionsByEncounter(Encounter encounter) throws OHServiceException{
 		LocalDateTime closedAt = encounter.getClosedAt() == null ? LocalDateTime.now() : encounter.getClosedAt();
-		return repository.getAdmissionByDateBetweenAndPatientCode(encounter.getPerformedAt(), closedAt, encounter.getPatient().getCode());
+		List<Admission> admissions = repository.getAdmissionByDateBetweenAndPatientCode(encounter.getPerformedAt(), closedAt, encounter.getPatient().getCode());
+		admissions.forEach(a -> {
+			Hibernate.initialize(a.getDiagnosisIn());
+			Hibernate.initialize(a.getDiagnosisOut());
+		});
+		return admissions;
 	}
 }

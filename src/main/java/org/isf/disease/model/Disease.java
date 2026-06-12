@@ -74,7 +74,13 @@ public class Disease extends Auditable<String> {
 	private boolean ipdOutInclude;
 
 	@ManyToMany(mappedBy = "complicationDiagnosis")
-	private List<Admission> admissions = new ArrayList<>();
+	private List<Admission> admissionsComplication = new ArrayList<>();
+
+	@ManyToMany(mappedBy = "diagnosisIn")
+	private List<Admission> admissionsIn = new ArrayList<>();
+
+	@ManyToMany(mappedBy = "diagnosisOut")
+	private List<Admission> admissionsOut = new ArrayList<>();
 
 	@Transient
 	private volatile int hashCode;
@@ -100,14 +106,18 @@ public class Disease extends Auditable<String> {
 	 * @param aCode
 	 * @param aDescription
 	 * @param aType
-	 * @param admissions
+	 * @param admissionsComplication
 	 */
-	public Disease(String aCode, String aDescription, DiseaseType aType, List<Admission> admissions) {
+	public Disease(String aCode, String aDescription, DiseaseType aType, List<Admission> admissionsComplication,
+				   List<Admission> admissionsIn, List<Admission> admissionsOut
+	) {
 		super();
 		this.code = aCode;
 		this.description = aDescription;
 		this.diseaseType = aType;
-		this.admissions = admissions;
+		this.admissionsComplication = admissionsComplication;
+		this.admissionsIn = admissionsIn;
+		this.admissionsOut = admissionsOut;
 	}
     
     public String getCode() {
@@ -166,12 +176,12 @@ public class Disease extends Auditable<String> {
 		this.ipdOutInclude = ipdOutInclude;
 	}
 
-	public List<Admission> getAdmissions() {
-		return admissions;
+	public List<Admission> getAdmissionsComplication() {
+		return admissionsComplication;
 	}
 
-	public void setAdmissions(List<Admission> admissions) {
-		this.admissions = admissions;
+	public void setAdmissionsComplication(List<Admission> admissionsComplication) {
+		this.admissionsComplication = admissionsComplication;
 	}
 
 	@Override
