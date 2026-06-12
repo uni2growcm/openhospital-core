@@ -29,7 +29,6 @@ import org.isf.utils.exception.OHException;
 
 public class TestPartner {
 
-	private String code = "PRT_TEST";
 	private String name = "Test Partner";
 	private String contactPerson = "John Doe";
 	private String phone = "+237 690001234";
@@ -43,13 +42,12 @@ public class TestPartner {
 			partner = new Partner();
 			setParameters(partner, type);
 		} else {
-			partner = new Partner(code, name, type, contactPerson, phone, email, address, notes);
+			partner = new Partner(name, type, contactPerson, phone, email, address, notes);
 		}
 		return partner;
 	}
 
 	public void setParameters(Partner partner, Typology type) {
-		partner.setCode(code);
 		partner.setName(name);
 		partner.setType(type);
 		partner.setContactPerson(contactPerson);
@@ -61,7 +59,8 @@ public class TestPartner {
 	}
 
 	public void check(Partner partner) {
-		assertThat(partner.getCode()).isEqualTo(code);
+		assertThat(partner.getCode()).isNotNull();
+		assertThat(partner.getCode()).isPositive();
 		assertThat(partner.getName()).isEqualTo(name);
 		assertThat(partner.getContactPerson()).isEqualTo(contactPerson);
 		assertThat(partner.getPhone()).isEqualTo(phone);

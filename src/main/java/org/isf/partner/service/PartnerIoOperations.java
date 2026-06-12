@@ -25,6 +25,7 @@ import org.isf.partner.model.Partner;
 import org.isf.typology.model.Typology;
 import org.isf.utils.exception.OHServiceException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -59,18 +60,6 @@ public class PartnerIoOperations {
 	public Optional<Partner> getById(int id) throws OHServiceException {
 		return repository.findById(id)
 			.filter(Partner::isActive);
-	}
-
-	/**
-	 * Method that gets an active {@link Partner} by its code.
-	 *
-	 * @param code the partner code
-	 * @return an {@link Optional} containing the matching {@link Partner},
-	 *         or an empty {@link Optional} if no active partner is found
-	 * @throws OHServiceException if an error occurs while retrieving data
-	 */
-	public Optional<Partner> getByCode(String code) throws OHServiceException {
-		return repository.findByCodeAndActiveTrue(code);
 	}
 
 	/**
@@ -127,20 +116,8 @@ public class PartnerIoOperations {
 	 * @param id the identifier of the partner to delete
 	 * @throws OHServiceException if an error occurs while updating data
 	 */
+	@Transactional
 	public void softDelete(int id) throws OHServiceException {
 		repository.softDelete(id);
-	}
-
-	/**
-	 * Method that checks whether an active {@link Partner} with the specified
-	 * code already exists.
-	 *
-	 * @param code the partner code
-	 * @return {@code true} if an active partner with the specified code exists,
-	 *         {@code false} otherwise
-	 * @throws OHServiceException if an error occurs while checking data
-	 */
-	public boolean existsByCode(String code) throws OHServiceException {
-		return repository.existsByCodeAndActiveTrue(code);
 	}
 }

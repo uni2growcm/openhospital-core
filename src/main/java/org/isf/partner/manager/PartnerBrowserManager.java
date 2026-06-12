@@ -57,15 +57,15 @@ public class PartnerBrowserManager {
 	/**
 	 * Returns the {@link Partner} with the given id.
 	 *
-	 * @param id the id of the partner to retrieve.
+	 * @param code the code of the partner to retrieve.
 	 * @return the {@link Partner} with the given id.
 	 * @throws EntityNotFoundException if no active partner is found with the given id.
 	 * @throws OHServiceException when fails to fetch the partner.
 	 */
-	public Partner getPartner(int id) throws OHServiceException {
-		return ioOperations.getById(id)
+	public Partner getPartner(Integer code) throws OHServiceException {
+		return ioOperations.getById(code)
 			.orElseThrow(() -> new EntityNotFoundException(
-				MessageBundle.formatMessage("angal.partner.notfound.msg", String.valueOf(id))
+				MessageBundle.formatMessage("angal.partner.notfound.msg", String.valueOf(code))
 			));
 	}
 
@@ -76,8 +76,8 @@ public class PartnerBrowserManager {
 	 * @return an {@link Optional} containing the {@link Partner} if found and active, or empty otherwise.
 	 * @throws OHServiceException when fails to fetch the partner.
 	 */
-	public Optional<Partner> getPartnerByCode(String code) throws OHServiceException {
-		return ioOperations.getByCode(code);
+	public Optional<Partner> getPartnerByCode(Integer code) throws OHServiceException {
+		return ioOperations.getById(code);
 	}
 
 	/**
@@ -142,24 +142,6 @@ public class PartnerBrowserManager {
 	}
 
 	/**
-	 * Checks whether the given code is unique among active {@link Partner}s.
-	 * When {@code excludeId} is provided, the partner with that id is excluded
-	 * from the uniqueness check (useful when updating an existing partner).
-	 *
-	 * @param code      the code to check.
-	 * @param excludeId the id of the partner to exclude from the check, or {@code null} for a creation check.
-	 * @return {@code true} if the code is not used by any other active partner, {@code false} otherwise.
-	 * @throws OHServiceException when fails to execute the uniqueness check.
-	 */
-	public boolean isCodeUnique(String code, Integer excludeId) throws OHServiceException {
-		if (excludeId != null) {
-			Optional<Partner> existing = ioOperations.getByCode(code);
-			return existing.isEmpty() || existing.get().getId() == excludeId;
-		}
-		return !ioOperations.existsByCode(code);
-	}
-
-	/**
 	 * Validates the given {@link Partner} before saving.
 	 *
 	 * @param partner the partner to validate.
@@ -169,18 +151,14 @@ public class PartnerBrowserManager {
 	private void validatePartner(Partner partner) throws OHDataValidationException, OHServiceException {
 		List<OHExceptionMessage> errors = new ArrayList<>();
 
-		if (partner.getCode() == null || partner.getCode().trim().isEmpty()) {
-			errors.add(new OHExceptionMessage(
-				MessageBundle.getMessage("angal.partner.validation.code.required.msg")));
-		}
 		if (partner.getName() == null || partner.getName().trim().isEmpty()) {
 			errors.add(new OHExceptionMessage(
 				MessageBundle.getMessage("angal.partner.validation.name.required.msg")));
 		}
 
-		if (!isCodeUnique(partner.getCode(), partner.getId() == 0 ? null : partner.getId())) {
+		if (partner.getType() == null) {
 			errors.add(new OHExceptionMessage(
-				MessageBundle.formatMessage("angal.partner.validation.code.already.exists.msg", partner.getCode())));
+				MessageBundle.getMessage("angal.partner.validation.type.required.msg")));
 		}
 
 		if (!errors.isEmpty()) {

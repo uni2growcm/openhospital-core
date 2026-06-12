@@ -28,9 +28,9 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface PartnerIoOperationRepository extends JpaRepository<Partner, Integer> {
@@ -41,9 +41,6 @@ public interface PartnerIoOperationRepository extends JpaRepository<Partner, Int
 	@Query("SELECT p FROM Partner p WHERE p.active = 1 ORDER BY p.name ASC")
 	List<Partner> findByActiveTrueOrderByNameAsc();
 
-	@Query("SELECT p FROM Partner p WHERE p.code = :code AND p.active = 1")
-	Optional<Partner> findByCodeAndActiveTrue(@Param("code") String code);
-
 	@Query("SELECT p FROM Partner p WHERE p.type = :type AND p.active = 1")
 	List<Partner> findByTypeAndActiveTrue(@Param("type") Typology type);
 
@@ -51,15 +48,15 @@ public interface PartnerIoOperationRepository extends JpaRepository<Partner, Int
 	List<Partner> findByType_CodeAndActiveTrue(@Param("typeCode") String typeCode);
 
 	@Query("SELECT p FROM Partner p WHERE p.active = 1 AND " +
-		"(LOWER(p.name) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+		"(CONCAT('', p.code) LIKE CONCAT('%', :keyword, '%') OR " +
+		" LOWER(p.name) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
 		" LOWER(p.contactPerson) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
 		" LOWER(p.type.description) LIKE LOWER(CONCAT('%', :keyword, '%')))")
 	List<Partner> searchActive(@Param("keyword") String keyword);
 
 	@Modifying
+	@Transactional
 	@Query("UPDATE Partner p SET p.active = 0 WHERE p.id = :id")
 	void softDelete(int id);
 
-	@Query("SELECT CASE WHEN COUNT(p) > 0 THEN true ELSE false END FROM Partner p WHERE p.code = :code AND p.active = 1")
-	boolean existsByCodeAndActiveTrue(@Param("code") String code);
 }

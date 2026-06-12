@@ -57,11 +57,7 @@ public class Partner extends Auditable<String> {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "PRT_ID")
-	private int id;
-
-	@NotNull
-	@Column(name = "PRT_CODE", unique = true, length = 20)
-	private String code;
+	private Integer code;
 
 	@NotNull
 	@Column(name = "PRT_NAME", length = 100)
@@ -101,7 +97,18 @@ public class Partner extends Auditable<String> {
 		super();
 	}
 
-	public Partner(String code, String name, Typology type, String contactPerson,
+	public Partner(String name, Typology type, String contactPerson,
+	               String phone, String email, String address, String notes) {
+		this.name = name;
+		this.type = type;
+		this.contactPerson = contactPerson;
+		this.phone = phone;
+		this.email = email;
+		this.address = address;
+		this.notes = notes;
+	}
+
+	public Partner(Integer code, String name, Typology type, String contactPerson,
 	               String phone, String email, String address, String notes) {
 		this.code = code;
 		this.name = name;
@@ -113,19 +120,11 @@ public class Partner extends Auditable<String> {
 		this.notes = notes;
 	}
 
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
-	}
-
-	public String getCode() {
+	public Integer getCode() {
 		return code;
 	}
 
-	public void setCode(String code) {
+	public void setCode(Integer code) {
 		this.code = code;
 	}
 
@@ -197,7 +196,7 @@ public class Partner extends Auditable<String> {
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (!(o instanceof Partner other)) return false;
-		return id != 0 && id == other.id;
+		return code != null && code.equals(other.code);
 	}
 
 	@Override
@@ -205,7 +204,7 @@ public class Partner extends Auditable<String> {
 		if (this.hashCode == 0) {
 			final int m = 23;
 			int c = 133;
-			c = m * c + id;
+			c = m * c + (code == null ? 0 : code);
 			this.hashCode = c;
 		}
 		return this.hashCode;

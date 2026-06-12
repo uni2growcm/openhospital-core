@@ -82,14 +82,14 @@ class PartnerTests extends OHCoreTestCase {
 
 	@Test
 	void testPartnerGets() throws Exception {
-		int id = setupTestPartner(false);
-		checkPartnerIntoDb(id);
+		Integer code = setupTestPartner(false);
+		checkPartnerIntoDb(code);
 	}
 
 	@Test
 	void testPartnerSets() throws Exception {
-		int id = setupTestPartner(true);
-		checkPartnerIntoDb(id);
+		Integer code = setupTestPartner(true);
+		checkPartnerIntoDb(code);
 	}
 
 	@Test
@@ -98,11 +98,11 @@ class PartnerTests extends OHCoreTestCase {
 		partnerIoOperationRepository.saveAndFlush(partner1);
 
 		Partner partner2 = new Partner();
-		partner2.setId(partner1.getId());
+		partner2.setCode(partner1.getCode());
 		assertThat(partner1).isEqualTo(partner2);
 
 		Partner partner3 = new Partner();
-		partner3.setId(partner1.getId() + 1);
+		partner3.setCode(partner1.getCode() + 1);
 		assertThat(partner1).isNotEqualTo(partner3);
 
 		assertThat(partner1).isNotNull();
@@ -115,7 +115,7 @@ class PartnerTests extends OHCoreTestCase {
 		partnerIoOperationRepository.saveAndFlush(partner);
 
 		int hashCode = partner.hashCode();
-		assertThat(hashCode).isEqualTo(23 * 133 + partner.getId());
+		assertThat(hashCode).isEqualTo(23 * 133 + (partner.getCode() == null ? 0 : partner.getCode()));
 		assertThat(partner.hashCode()).isEqualTo(hashCode);
 	}
 
@@ -128,8 +128,8 @@ class PartnerTests extends OHCoreTestCase {
 
 	@Test
 	void testIoGetAllPartners() throws Exception {
-		int id = setupTestPartner(false);
-		Partner foundPartner = partnerIoOperationRepository.findById(id).orElse(null);
+		Integer code = setupTestPartner(false);
+		Partner foundPartner = partnerIoOperationRepository.findById(code).orElse(null);
 		assertThat(foundPartner).isNotNull();
 
 		List<Partner> partners = partnerIoOperations.getAll();
@@ -151,19 +151,9 @@ class PartnerTests extends OHCoreTestCase {
 
 	@Test
 	void testIoGetPartnerById() throws Exception {
-		int id = setupTestPartner(false);
+		Integer code = setupTestPartner(false);
 
-		Optional<Partner> result = partnerIoOperations.getById(id);
-
-		assertThat(result).isPresent();
-		assertThat(result.get().getCode()).isEqualTo("PRT_TEST");
-	}
-
-	@Test
-	void testIoGetPartnerByCode() throws Exception {
-		setupTestPartner(false);
-
-		Optional<Partner> result = partnerIoOperations.getByCode("PRT_TEST");
+		Optional<Partner> result = partnerIoOperations.getById(code);
 
 		assertThat(result).isPresent();
 		assertThat(result.get().getName()).isEqualTo("Test Partner");
@@ -176,22 +166,22 @@ class PartnerTests extends OHCoreTestCase {
 		List<Partner> result = partnerIoOperations.getByType(partnerType);
 
 		assertThat(result).hasSize(1);
-		assertThat(result.get(0).getCode()).isEqualTo("PRT_TEST");
+		assertThat(result.get(0).getName()).isEqualTo("Test Partner");
 	}
 
 	@Test
 	void testIoSaveNewPartner() throws Exception {
 		Partner partner = testPartner.setup(true, partnerType);
 		Partner saved = partnerIoOperations.save(partner);
-		assertThat(saved.getId()).isPositive();
+		assertThat(saved.getCode()).isPositive();
 		assertThat(saved.getName()).isEqualTo("Test Partner");
 		assertThat(saved.getActive()).isEqualTo(1);
 	}
 
 	@Test
 	void testIoUpdatePartner() throws Exception {
-		int id = setupTestPartner(false);
-		Partner foundPartner = partnerIoOperationRepository.findById(id).orElse(null);
+		Integer code = setupTestPartner(false);
+		Partner foundPartner = partnerIoOperationRepository.findById(code).orElse(null);
 		assertThat(foundPartner).isNotNull();
 
 		foundPartner.setName("Updated Partner");
@@ -202,42 +192,35 @@ class PartnerTests extends OHCoreTestCase {
 
 	@Test
 	void testIoSoftDeletePartner() throws Exception {
-		int id = setupTestPartner(false);
+		Integer code = setupTestPartner(false);
 
-		Optional<Partner> beforeDelete = partnerIoOperations.getById(id);
+		Optional<Partner> beforeDelete = partnerIoOperations.getById(code);
 		assertThat(beforeDelete).isPresent();
 
-		partnerIoOperations.softDelete(id);
+		partnerIoOperations.softDelete(code);
 		entityManager.flush();
 		entityManager.clear();
 
-		Optional<Partner> afterDelete = partnerIoOperations.getById(id);
+		Optional<Partner> afterDelete = partnerIoOperations.getById(code);
 		assertThat(afterDelete).isEmpty();
 
-		Optional<Partner> raw = partnerIoOperationRepository.findById(id);
+		Optional<Partner> raw = partnerIoOperationRepository.findById(code);
 		assertThat(raw).isPresent();
 		assertThat(raw.get().getActive()).isEqualTo(0);
-	}
-
-	@Test
-	void testIoExistsByCode() throws Exception {
-		setupTestPartner(false);
-
-		boolean exists = partnerIoOperations.existsByCode("PRT_TEST");
-		assertThat(exists).isTrue();
-
-		boolean notExists = partnerIoOperations.existsByCode("NON_EXISTENT");
-		assertThat(notExists).isFalse();
 	}
 
 	@Test
 	void testIoSearchPartners() throws Exception {
 		setupTestPartner(false);
 
-		List<Partner> result = partnerIoOperations.search("Test Partner");
+		List<Partner> resultByName = partnerIoOperations.search("Test Partner");
+		assertThat(resultByName).hasSize(1);
+		assertThat(resultByName.get(0).getName()).isEqualTo("Test Partner");
 
-		assertThat(result).hasSize(1);
-		assertThat(result.get(0).getName()).isEqualTo("Test Partner");
+		Partner saved = partnerIoOperations.getAll().get(0);
+		List<Partner> resultByCode = partnerIoOperations.search(saved.getCode().toString());
+		assertThat(resultByCode).hasSize(1);
+		assertThat(resultByCode.get(0).getCode()).isEqualTo(saved.getCode());
 	}
 
 	@Test
@@ -252,12 +235,12 @@ class PartnerTests extends OHCoreTestCase {
 
 	@Test
 	void testMgrGetPartner() throws Exception {
-		int id = setupTestPartner(false);
+		Integer code = setupTestPartner(false);
 
-		Partner result = partnerBrowserManager.getPartner(id);
+		Partner result = partnerBrowserManager.getPartner(code);
 
 		assertThat(result).isNotNull();
-		assertThat(result.getId()).isEqualTo(id);
+		assertThat(result.getCode()).isEqualTo(code);
 	}
 
 	@Test
@@ -269,9 +252,9 @@ class PartnerTests extends OHCoreTestCase {
 
 	@Test
 	void testMgrGetPartnerByCode() throws Exception {
-		setupTestPartner(false);
+		Integer code = setupTestPartner(false);
 
-		Optional<Partner> result = partnerBrowserManager.getPartnerByCode("PRT_TEST");
+		Optional<Partner> result = partnerBrowserManager.getPartnerByCode(code);
 
 		assertThat(result).isPresent();
 		assertThat(result.get().getName()).isEqualTo("Test Partner");
@@ -292,14 +275,14 @@ class PartnerTests extends OHCoreTestCase {
 
 		Partner saved = partnerBrowserManager.savePartner(partner);
 
-		assertThat(saved.getId()).isPositive();
-		checkPartnerIntoDb(saved.getId());
+		assertThat(saved.getCode()).isPositive();
+		checkPartnerIntoDb(saved.getCode());
 	}
 
 	@Test
 	void testMgrUpdatePartner() throws Exception {
-		int id = setupTestPartner(false);
-		Partner foundPartner = partnerIoOperationRepository.findById(id).orElse(null);
+		Integer code = setupTestPartner(false);
+		Partner foundPartner = partnerIoOperationRepository.findById(code).orElse(null);
 		assertThat(foundPartner).isNotNull();
 
 		foundPartner.setName("Updated Name");
@@ -310,17 +293,17 @@ class PartnerTests extends OHCoreTestCase {
 
 	@Test
 	void testMgrDeletePartner() throws Exception {
-		int id = setupTestPartner(false);
+		Integer code = setupTestPartner(false);
 
-		partnerBrowserManager.deletePartner(id);
+		partnerBrowserManager.deletePartner(code);
 		entityManager.flush();
 		entityManager.clear();
 
-		assertThatThrownBy(() -> partnerBrowserManager.getPartner(id))
+		assertThatThrownBy(() -> partnerBrowserManager.getPartner(code))
 			.isInstanceOf(EntityNotFoundException.class)
 			.hasMessageContaining("angal.partner.notfound.msg");
 
-		Optional<Partner> raw = partnerIoOperationRepository.findById(id);
+		Optional<Partner> raw = partnerIoOperationRepository.findById(code);
 		assertThat(raw).isPresent();
 		assertThat(raw.get().getActive()).isEqualTo(0);
 	}
@@ -329,44 +312,24 @@ class PartnerTests extends OHCoreTestCase {
 	void testMgrSearchPartners() throws Exception {
 		setupTestPartner(false);
 
-		List<Partner> result = partnerBrowserManager.searchPartners("test");
+		List<Partner> resultByName = partnerBrowserManager.searchPartners("test");
+		assertThat(resultByName).hasSize(1);
+		assertThat(resultByName.get(0).getName()).isEqualTo("Test Partner");
 
-		assertThat(result).hasSize(1);
-		assertThat(result.get(0).getName()).isEqualTo("Test Partner");
+		Partner saved = partnerBrowserManager.getPartners().get(0);
+		List<Partner> resultByCode = partnerBrowserManager.searchPartners(saved.getCode().toString());
+		assertThat(resultByCode).hasSize(1);
+		assertThat(resultByCode.get(0).getCode()).isEqualTo(saved.getCode());
 	}
 
-	@Test
-	void testMgrIsCodeUnique_true() throws Exception {
-		boolean result = partnerBrowserManager.isCodeUnique("NEW_CODE", null);
-		assertThat(result).isTrue();
-	}
-
-	@Test
-	void testMgrIsCodeUnique_false() throws Exception {
-		setupTestPartner(false);
-
-		boolean result = partnerBrowserManager.isCodeUnique("PRT_TEST", null);
-
-		assertThat(result).isFalse();
-	}
-
-	@Test
-	void testMgrIsCodeUnique_trueWhenSamePartner() throws Exception {
-		int id = setupTestPartner(false);
-
-		boolean result = partnerBrowserManager.isCodeUnique("PRT_TEST", id);
-
-		assertThat(result).isTrue();
-	}
-
-	private int setupTestPartner(boolean usingSet) throws OHException {
+	private Integer setupTestPartner(boolean usingSet) throws OHException {
 		Partner partner = testPartner.setup(usingSet, partnerType);
 		partnerIoOperationRepository.saveAndFlush(partner);
-		return partner.getId();
+		return partner.getCode();
 	}
 
-	private void checkPartnerIntoDb(int id) throws OHException {
-		Partner foundPartner = partnerIoOperationRepository.findById(id).orElse(null);
+	private void checkPartnerIntoDb(Integer code) throws OHException {
+		Partner foundPartner = partnerIoOperationRepository.findById(code).orElse(null);
 		assertThat(foundPartner).isNotNull();
 		testPartner.check(foundPartner);
 	}
