@@ -37,6 +37,7 @@ public final class GeneralData extends ConfigurationProperties {
 	public static boolean APISERVER;
 
 	public static boolean STOCKMVTONBILLSAVE;
+	public static int PAGINATIONPAGESIZE;
 	public static boolean ENABLEMEDICALREFUND;
 	public static boolean ALLOWBILLGUARANTOR;
 	public static String LANGUAGE;
@@ -105,7 +106,8 @@ public final class GeneralData extends ConfigurationProperties {
 	public static int PASSWORDLOCKTIME;
 	public static int PASSWORDIDLE;
 
-	public static  final boolean DEFAULT_ENABLEMEDICALREFUND = false;
+	public static final boolean DEFAULT_ENABLEMEDICALREFUND = false;
+	public static final int DEFAULT_PAGINATIONPAGESIZE = 100;
 	public static final boolean DEFAULT_STOCKMVTONBILLSAVE = false;
 	private static final boolean DEFAULT_ALLOWBILLGUARANTOR  = false;
 	private static final String DEFAULT_LANGUAGE = "en";
@@ -188,6 +190,7 @@ public final class GeneralData extends ConfigurationProperties {
 	private GeneralData(String fileProperties) {
 		super(fileProperties, EXIT_ON_FAIL);
 		STOCKMVTONBILLSAVE = myGetProperty("STOCKMVTONBILLSAVE", DEFAULT_STOCKMVTONBILLSAVE);
+		PAGINATIONPAGESIZE = myGetProperty("PAGINATIONPAGESIZ", DEFAULT_PAGINATIONPAGESIZE);
 		ALLOWBILLGUARANTOR = myGetProperty("ALLOWBILLGUARANTOR", DEFAULT_ALLOWBILLGUARANTOR);
 		ENABLEMEDICALREFUND = myGetProperty("ENABLEMEDICALREFUND", DEFAULT_ENABLEMEDICALREFUND);
 		SINGLEUSER = myGetProperty("SINGLEUSER", DEFAULT_SINGLEUSER);
