@@ -102,7 +102,6 @@ public class HomeVisitIoOperations {
 	 * @return saved home visit
 	 * @throws OHServiceException
 	 */
-	@Transactional
 	public HomeVisit save(HomeVisit homeVisit) throws OHServiceException {
 		return repository.save(homeVisit);
 	}

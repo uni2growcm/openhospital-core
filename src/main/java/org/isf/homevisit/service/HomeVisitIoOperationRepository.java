@@ -31,7 +31,6 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -54,12 +53,10 @@ public interface HomeVisitIoOperationRepository extends JpaRepository<HomeVisit,
 	                                Pageable pageable);
 
 	@Modifying
-	@Transactional
 	@Query("UPDATE HomeVisit hv SET hv.status = :status WHERE hv.id = :id")
 	void updateStatus(@Param("id") int id, @Param("status") HomeVisitStatus status);
 
 	@Modifying
-	@Transactional
 	@Query("UPDATE HomeVisit hv SET hv.active = 0 WHERE hv.id = :id")
 	void softDelete(@Param("id") int id);
 }
