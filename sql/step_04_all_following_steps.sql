@@ -152,5 +152,4 @@ source step_a155_add_bill_refund_menuitem.sql;
 source step_a156_add_item_payments_table.sql;
 source step_a157_maternity_pregnancy_obstetric_history.sql;
 source step_a158_add_home_visit_feature.sql;
-source step_a157_add_partners_feature.sql;
-source step_a158_maternity_pregnancy_obstetric_history.sql;
+source step_a159_add_partners_feature.sql;
