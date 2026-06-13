@@ -501,4 +501,8 @@ public class PatientBrowserManager {
 		}
 		return ioOperations.getPatientByCodeOrName(code, name);
 	}
+
+	public Patient getPatientWithPartnersById(Integer code) throws OHServiceException {
+		return ioOperations.getPatientWithPartners(code);
+	}
 }

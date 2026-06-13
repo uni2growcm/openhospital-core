@@ -31,6 +31,7 @@ import org.isf.generaldata.MessageBundle;
 import org.isf.patient.model.Patient;
 import org.isf.utils.db.Auditable;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import jakarta.annotation.Nullable;
 
 import jakarta.annotation.Nullable;
 
@@ -107,6 +108,50 @@ public class Pregnancy extends Auditable<String> {
 
 	@Transient
 	private volatile int hashCode;
+
+	@Nullable
+	@Column(name = "PRG_TERM_DELIVERIES")
+	private Integer termDeliveries;
+
+	@Nullable
+	@Column(name = "PRG_PRETERM_DELIVERIES")
+	private Integer pretermDeliveries;
+
+	@Nullable
+	@Column(name = "PRG_LIVING_CHILDREN")
+	private Integer livingChildren;
+
+	@Nullable
+	@Column(name = "PRG_STILLBIRTHS")
+	private Integer stillbirths;
+
+	@Nullable
+	@Column(name = "PRG_DECEASED_CHILDREN")
+	private Integer deceasedChildren;
+
+	@Nullable
+	@Column(name = "PRG_DESIRED_CHILDREN")
+	private Integer desiredChildren;
+
+	@Nullable
+	@Column(name = "PRG_BREASTFEEDING")
+	private String breastfeeding;
+
+	@Nullable
+	@Column(name = "PRG_LAST_CHILD_YEARS")
+	private Integer lastChildYears;
+
+	@Nullable
+	@Column(name = "PRG_LAST_CHILD_MONTHS")
+	private Integer lastChildMonths;
+
+	@Nullable
+	@Column(name = "PRG_LAST_CHILD_WEEKS")
+	private Integer lastChildWeeks;
+
+	@Nullable
+	@Column(name = "PRG_LAST_CHILD_DAYS")
+	private Integer lastChildDays;
 
 	public Pregnancy() {
 	}
@@ -244,6 +289,94 @@ public class Pregnancy extends Auditable<String> {
 
 	public void setVisits(List<PregnancyVisit> visits) {
 		this.visits = visits;
+	}
+
+	public Integer getTermDeliveries() {
+		return termDeliveries;
+	}
+
+	public void setTermDeliveries(Integer termDeliveries) {
+		this.termDeliveries = termDeliveries;
+	}
+
+	public Integer getPretermDeliveries() {
+		return pretermDeliveries;
+	}
+
+	public void setPretermDeliveries(Integer pretermDeliveries) {
+		this.pretermDeliveries = pretermDeliveries;
+	}
+
+	public Integer getLivingChildren() {
+		return livingChildren;
+	}
+
+	public void setLivingChildren(Integer livingChildren) {
+		this.livingChildren = livingChildren;
+	}
+
+	public Integer getStillbirths() {
+		return stillbirths;
+	}
+
+	public void setStillbirths(Integer stillbirths) {
+		this.stillbirths = stillbirths;
+	}
+
+	public Integer getDeceasedChildren() {
+		return deceasedChildren;
+	}
+
+	public void setDeceasedChildren(Integer deceasedChildren) {
+		this.deceasedChildren = deceasedChildren;
+	}
+
+	public Integer getDesiredChildren() {
+		return desiredChildren;
+	}
+
+	public void setDesiredChildren(Integer desiredChildren) {
+		this.desiredChildren = desiredChildren;
+	}
+
+	public String getBreastfeeding() {
+		return breastfeeding;
+	}
+
+	public void setBreastfeeding(String breastfeeding) {
+		this.breastfeeding = breastfeeding;
+	}
+
+	public Integer getLastChildYears() {
+		return lastChildYears;
+	}
+
+	public void setLastChildYears(Integer lastChildYears) {
+		this.lastChildYears = lastChildYears;
+	}
+
+	public Integer getLastChildMonths() {
+		return lastChildMonths;
+	}
+
+	public void setLastChildMonths(Integer lastChildMonths) {
+		this.lastChildMonths = lastChildMonths;
+	}
+
+	public Integer getLastChildWeeks() {
+		return lastChildWeeks;
+	}
+
+	public void setLastChildWeeks(Integer lastChildWeeks) {
+		this.lastChildWeeks = lastChildWeeks;
+	}
+
+	public Integer getLastChildDays() {
+		return lastChildDays;
+	}
+
+	public void setLastChildDays(Integer lastChildDays) {
+		this.lastChildDays = lastChildDays;
 	}
 
 	@Override

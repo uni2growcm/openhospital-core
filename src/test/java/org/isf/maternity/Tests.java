@@ -548,4 +548,96 @@ class Tests extends OHCoreTestCase {
 			newBornBrowserManager.countNewbornsByDelivery(delivery.getId())
 		).isEqualTo(0);
 	}
+
+	@Test
+	void testObstetricHistoryFieldsCRUD() throws Exception {
+
+		Patient patient = testPatient.setup(false);
+		patientIoOperationRepository.save(patient);
+
+		Pregnancy pregnancy = testPregnancy.setup(patient, false);
+		pregnancy = pregnancyBrowserManager.newPregnancy(pregnancy);
+
+		assertThat(pregnancy).isNotNull();
+		assertThat(pregnancy.getId()).isNotNull();
+
+		assertThat(pregnancy.getGravidity()).isEqualTo(4);
+		assertThat(pregnancy.getParity()).isEqualTo(2);
+		assertThat(pregnancy.getMiscarriages()).isEqualTo(1);
+		assertThat(pregnancy.getTermDeliveries()).isEqualTo(2);
+		assertThat(pregnancy.getPretermDeliveries()).isEqualTo(1);
+		assertThat(pregnancy.getLivingChildren()).isEqualTo(2);
+		assertThat(pregnancy.getStillbirths()).isEqualTo(0);
+		assertThat(pregnancy.getDeceasedChildren()).isEqualTo(0);
+		assertThat(pregnancy.getDesiredChildren()).isEqualTo(4);
+		assertThat(pregnancy.getBreastfeeding()).isEqualTo("Y");
+		assertThat(pregnancy.getLastChildYears()).isEqualTo(2);
+		assertThat(pregnancy.getLastChildMonths()).isEqualTo(3);
+		assertThat(pregnancy.getLastChildWeeks()).isEqualTo(0);
+		assertThat(pregnancy.getLastChildDays()).isEqualTo(0);
+
+		List<Pregnancy> list = pregnancyBrowserManager.getPregnanciesByPatient(patient.getCode());
+		assertThat(list).isNotEmpty();
+		assertThat(list).hasSize(1);
+
+		Pregnancy retrieved = list.get(0);
+		assertThat(retrieved.getGravidity()).isEqualTo(4);
+		assertThat(retrieved.getTermDeliveries()).isEqualTo(2);
+		assertThat(retrieved.getPretermDeliveries()).isEqualTo(1);
+		assertThat(retrieved.getLivingChildren()).isEqualTo(2);
+		assertThat(retrieved.getBreastfeeding()).isEqualTo("Y");
+		assertThat(retrieved.getDesiredChildren()).isEqualTo(4);
+
+		retrieved.setGravidity(5);
+		retrieved.setTermDeliveries(3);
+		retrieved.setPretermDeliveries(1);
+		retrieved.setMiscarriages(1);
+		retrieved.setLivingChildren(4);
+		retrieved.setDesiredChildren(5);
+		retrieved.setBreastfeeding("N");
+		retrieved.setLastChildYears(3);
+		retrieved.setLastChildMonths(6);
+
+		Pregnancy updated = pregnancyBrowserManager.updatePregnancy(retrieved);
+		assertThat(updated.getGravidity()).isEqualTo(5);
+		assertThat(updated.getTermDeliveries()).isEqualTo(3);
+		assertThat(updated.getLivingChildren()).isEqualTo(4);
+		assertThat(updated.getBreastfeeding()).isEqualTo("N");
+		assertThat(updated.getLastChildYears()).isEqualTo(3);
+		assertThat(updated.getLastChildMonths()).isEqualTo(6);
+	}
+
+	@Test
+	void testNullObstetricHistoryValues() throws Exception {
+
+		Patient patient = testPatient.setup(false);
+		patientIoOperationRepository.save(patient);
+
+		Pregnancy pregnancy = new Pregnancy(patient, LocalDateTime.now(), LocalDateTime.now().minusDays(30));
+		pregnancy.setGravidity(null);
+		pregnancy.setTermDeliveries(null);
+		pregnancy.setPretermDeliveries(null);
+		pregnancy.setMiscarriages(null);
+		pregnancy.setLivingChildren(null);
+		pregnancy.setStillbirths(null);
+		pregnancy.setDeceasedChildren(null);
+		pregnancy.setDesiredChildren(null);
+		pregnancy.setBreastfeeding(null);
+		pregnancy.setLastChildYears(null);
+		pregnancy.setLastChildMonths(null);
+		pregnancy.setLastChildWeeks(null);
+		pregnancy.setLastChildDays(null);
+		pregnancy.setRiskLevel(RiskLevel.LOW);
+		pregnancy.setStatus(PregnancyStatus.ONGOING);
+
+		Pregnancy saved = pregnancyBrowserManager.newPregnancy(pregnancy);
+		assertThat(saved).isNotNull();
+		assertThat(saved.getId()).isNotNull();
+
+		assertThat(saved.getGravidity()).isNull();
+		assertThat(saved.getTermDeliveries()).isNull();
+		assertThat(saved.getLivingChildren()).isNull();
+		assertThat(saved.getBreastfeeding()).isNull();
+		assertThat(saved.getLastChildYears()).isNull();
+	}
 }

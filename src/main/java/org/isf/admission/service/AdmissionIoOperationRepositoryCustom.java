@@ -46,6 +46,7 @@ public interface AdmissionIoOperationRepositoryCustom {
 		Integer ageTo,
 		Character sex,
 		Integer country,
+		Integer partner,
 		Pageable pageable
 	) throws OHServiceException;
 

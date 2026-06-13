@@ -397,6 +397,7 @@ public class AdmissionIoOperations {
 	 * @param ageTo             - the maximum patient age to filter by (inclusive); may be {@code null}.
 	 * @param sex               - the patient sex to filter by ({@code 'M'} or {@code 'F'}); may be {@code null}.
 	 * @param country           - the country to filter patients by; may be {@code null} to disable this filter.
+	 * @param partnerId         - the partner id to filter patients by; may be {@code null} to disable this filter.
 	 * @param pageable          - the pagination and sorting information.
 	 * @return a {@link Page} of {@link AdmittedPatient}s matching the given filters.
 	 * @throws OHServiceException when fails to fetch the admitted patients.
@@ -413,12 +414,13 @@ public class AdmissionIoOperations {
 		Integer ageTo,
 		Character sex,
 		Integer country,
+		Integer partnerId,
 		Pageable pageable) throws OHServiceException {
 		return repository.findPatientAdmissionsByFilters(
 			searchTerms, admissionStatus, wardCodes,
 			admissionDateFrom, admissionDateTo,
 			dischargeDateFrom, dischargeDateTo,
-			ageFrom, ageTo, sex,country, pageable
+			ageFrom, ageTo, sex, country, partnerId, pageable
 		);
 	}
 }
