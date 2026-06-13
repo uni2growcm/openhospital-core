@@ -137,6 +137,9 @@ public class Patient extends Auditable<String> {
 	@Column(name="PAT_TRANSPORT")
 	private String transportMeans;
 
+	@Column(name="PAT_BLAMA")
+	private String blama;
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "PAT_COUNTRY_ID")
 	private Country country;
@@ -372,6 +375,51 @@ public class Patient extends Auditable<String> {
 		this.affiliatedPatient = affiliatedPatient;
 	}
 
+	public Patient(Integer code, String firstName, String secondName, String name,
+	               LocalDate birthDate,
+	               int age, String agetype, char sex,
+	               String address, String city, String nextKin, String telephone, String note,
+	               String motherName, char mother, String fatherName, char father,
+	               String bloodType, char hasInsurance, char parentTogether, String taxCode,
+	               String maritalStatus, String profession, char deleted, int lock,
+	               String birthPlace, Integer numberOfChildren, String geographicPosition,
+	               String parentsResidence, String transportMeans, Country country,
+	               Patient affiliatedPatient, String blama) {
+		this.code = code;
+		this.firstName = firstName;
+		this.secondName = secondName;
+		this.name = name;
+		this.birthDate = birthDate;
+		this.age = age;
+		this.agetype = agetype;
+		this.sex = sex;
+		this.address = address;
+		this.city = city;
+		this.nextKin = nextKin;
+		this.telephone = telephone;
+		this.note = note;
+		this.motherName = motherName;
+		this.mother = mother;
+		this.fatherName = fatherName;
+		this.father = father;
+		this.bloodType = bloodType;
+		this.hasInsurance = hasInsurance;
+		this.parentTogether = parentTogether;
+		this.taxCode = taxCode;
+		this.maritalStatus = maritalStatus;
+		this.profession = profession;
+		this.deleted = deleted;
+		this.lock = lock;
+		this.birthPlace = birthPlace;
+		this.numberOfChildren = numberOfChildren;
+		this.geographicPosition = geographicPosition;
+		this.parentsResidence = parentsResidence;
+		this.transportMeans = transportMeans;
+		this.country = country;
+		this.affiliatedPatient = affiliatedPatient;
+		this.blama = blama;
+	}
+
 	public Patient(int code, String firstName, String secondName, String name, LocalDate birthDate, int age, String agetype, char sex,
 	               String address, String city, String nextKin, String telephone, String note,
 	               String motherName, char mother, String fatherName, char father,
@@ -426,6 +474,10 @@ public class Patient extends Auditable<String> {
 	public String getBirthPlace(){
 		return birthPlace;
 	}
+
+	public String getBlama(){ return blama; }
+
+	public void setBlama(String blama){ this.blama = blama; }
 
 	public void setBirthDate(LocalDate birthDate) {
 		this.birthDate = birthDate;
