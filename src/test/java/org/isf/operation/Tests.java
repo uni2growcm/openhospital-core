@@ -569,8 +569,8 @@ class Tests extends OHCoreTestCase {
 		DeliveryType deliveryType = testDeliveryType.setup(false);
 		DeliveryResultType deliveryResult = testDeliveryResultType.setup(false);
 
-		Admission admission = testAdmission.setup(ward, patient, admissionType, diseaseIn, List.of(complicationDiagnosis),
-			diseaseOut2, diseaseOut3, operation, dischargeType, pregTreatmentType,
+		Admission admission = testAdmission.setup(ward, patient, admissionType, List.of(complicationDiagnosis),
+			operation, dischargeType, pregTreatmentType,
 			deliveryType, deliveryResult, List.of(diseaseIn), List.of(diseaseOut2),false);
 		operationRow.setAdmission(admission);
 
@@ -620,8 +620,8 @@ class Tests extends OHCoreTestCase {
 		DeliveryType deliveryType = testDeliveryType.setup(false);
 		DeliveryResultType deliveryResult = testDeliveryResultType.setup(false);
 
-		Admission admission = testAdmission.setup(ward, patient, admissionType, diseaseIn, List.of(complicationDiagnosis),
-			diseaseOut2, diseaseOut3, operation, dischargeType, pregTreatmentType,
+		Admission admission = testAdmission.setup(ward, patient, admissionType, List.of(complicationDiagnosis),
+			operation, dischargeType, pregTreatmentType,
 			deliveryType, deliveryResult, List.of(diseaseIn), List.of(diseaseOut2), false);
 		// Don't set admission; leave it as default value of null;  operationRow.setAdmission(admission);
 
@@ -758,8 +758,8 @@ class Tests extends OHCoreTestCase {
 		DeliveryType deliveryType = testDeliveryType.setup(false);
 		DeliveryResultType deliveryResult = testDeliveryResultType.setup(false);
 
-		Admission admission = testAdmission.setup(ward, patient, admissionType, diseaseIn, List.of(complicationDiagnosis),
-			diseaseOut2, diseaseOut3, operation, dischargeType, pregTreatmentType,
+		Admission admission = testAdmission.setup(ward, patient, admissionType, List.of(complicationDiagnosis),
+			operation, dischargeType, pregTreatmentType,
 			deliveryType, deliveryResult, List.of(diseaseIn), List.of(diseaseOut2), false);
 		operationRow.setAdmission(admission);
 
@@ -809,8 +809,8 @@ class Tests extends OHCoreTestCase {
 		DeliveryType deliveryType = testDeliveryType.setup(false);
 		DeliveryResultType deliveryResult = testDeliveryResultType.setup(false);
 
-		Admission admission = testAdmission.setup(ward, patient, admissionType, diseaseIn, List.of(complicationDiagnosis),
-			diseaseOut2, diseaseOut3, operation, dischargeType, pregTreatmentType,
+		Admission admission = testAdmission.setup(ward, patient, admissionType, List.of(complicationDiagnosis),
+			operation, dischargeType, pregTreatmentType,
 			deliveryType, deliveryResult, List.of(diseaseIn), List.of(diseaseOut2), false);
 		// Don't set admission; leave it as default value of null;  operationRow.setAdmission(admission);
 
@@ -933,8 +933,8 @@ class Tests extends OHCoreTestCase {
 		DeliveryType deliveryType = testDeliveryType.setup(false);
 		DeliveryResultType deliveryResult = testDeliveryResultType.setup(false);
 
-		Admission admission = testAdmission.setup(ward, patient, admissionType, diseaseIn, List.of(complicationDiagnosis),
-			diseaseOut2, diseaseOut3, operation, dischargeType, pregTreatmentType,
+		Admission admission = testAdmission.setup(ward, patient, admissionType, List.of(complicationDiagnosis),
+			operation, dischargeType, pregTreatmentType,
 			deliveryType, deliveryResult, List.of(diseaseIn), List.of(diseaseOut2), false);
 		operationRow.setAdmission(admission);
 
@@ -1050,8 +1050,8 @@ class Tests extends OHCoreTestCase {
 		DeliveryType deliveryType = testDeliveryType.setup(false);
 		DeliveryResultType deliveryResult = testDeliveryResultType.setup(false);
 
-		Admission admission = testAdmission.setup(ward, patient, admissionType, diseaseIn, List.of(complicationDiagnosis),
-			diseaseOut2, diseaseOut3, operation, dischargeType, pregTreatmentType,
+		Admission admission = testAdmission.setup(ward, patient, admissionType, List.of(complicationDiagnosis),
+			operation, dischargeType, pregTreatmentType,
 			deliveryType, deliveryResult, List.of(diseaseIn), List.of(diseaseOut2), false);
 
 		OperationRow operationRow1 = new OperationRow(operation, "prescriber", "opResult", LocalDateTime.of(2021, 1, 1, 0, 0, 0), "remarks", admission,
@@ -1097,8 +1097,8 @@ class Tests extends OHCoreTestCase {
 		OperationRow operationRow = testOperationRow.setup(operation, true);
 
 		Patient patient = testPatient.setup(false);
-		Admission admission = testAdmission.setup(null, patient, null, null, null,
-			null, null, operation, null, null,
+		Admission admission = testAdmission.setup(null, patient, null, null,
+			operation, null, null,
 			null, null, null, null, false);
 		admission.setUserID("UserID");
 		operationRow.setAdmission(admission);
@@ -1151,8 +1151,8 @@ class Tests extends OHCoreTestCase {
 		DeliveryType deliveryType = testDeliveryType.setup(false);
 		DeliveryResultType deliveryResult = testDeliveryResultType.setup(false);
 
-		Admission admission = testAdmission.setup(ward, patient, admissionType, diseaseIn, List.of(complicationDiagnosis),
-			diseaseOut2, diseaseOut3, operation, dischargeType, pregTreatmentType,
+		Admission admission = testAdmission.setup(ward, patient, admissionType, List.of(complicationDiagnosis),
+			operation, dischargeType, pregTreatmentType,
 			deliveryType, deliveryResult, List.of(diseaseIn), List.of(diseaseOut2), false);
 		operationRow.setAdmission(admission);
 

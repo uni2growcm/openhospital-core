@@ -109,10 +109,10 @@ class Tests extends OHCoreTestCase {
 		LocalDateTime admDate = TimeTools.getNow();
 		AdmissionType admissionType = new AdmissionType("ZZ", "TestDescription");
 		Admission admission1 = new Admission(0, 1, "N", ward, 0, patient, admDate, admissionType,
-			"TestFHU", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+			"TestFHU", null, null, null, null, null, null, null, null, null, null, null, null, null, null,
 			"TestUserId", 'N');
 		Admission admission2 = new Admission(0, 1, "N", ward, 0, patient, admDate, admissionType,
-			"TestFHU", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+			"TestFHU", null, null, null, null, null, null, null, null, null, null, null, null, null, null,
 			"TestUserId", 'N');
 		admissionTypeIoOperationRepository.saveAndFlush(admissionType);
 		admissionIoOperationRepository.saveAndFlush(admission1);
@@ -311,10 +311,10 @@ class Tests extends OHCoreTestCase {
 		AdmissionType admissionType = new AdmissionType("ZZ", "TestDescription");
 		Admission admission1 = new Admission(0, 1, "N", ward, 1, patient, LocalDateTime.now(), admissionType, null, null,
 				null, null, null, null, null, null, null, null, null, null,
-				null, null, null, null, null, null, null, 'N');
+				null, null, null, null, 'N');
 		Admission admission2 = new Admission(0, 1, "N", ward, 1, patient, LocalDateTime.now(), admissionType, null, null,
 				null, null, null, null, null, null, null, null, null, null,
-				null, null, null, null, null, null, null, 'N');
+				null, null, null, null, 'N');
 		admissionTypeIoOperationRepository.saveAndFlush(admissionType);
 		admissionIoOperationRepository.saveAndFlush(admission1);
 		admissionIoOperationRepository.saveAndFlush(admission2);
@@ -416,10 +416,10 @@ class Tests extends OHCoreTestCase {
 		AdmissionType admissionType = new AdmissionType("ZZ", "TestDescription");
 		Admission admission1 = new Admission(0, 1, "N", ward, 1, patient, LocalDateTime.now(), admissionType, null, null,
 			null, null, null, null, null, null, null, null, null, null,
-			null, null, null, null, null, null, null, 'N');
+			null, null, null, null, 'N');
 		Admission admission2 = new Admission(0, 1, "N", ward, 1, patient, LocalDateTime.now(), admissionType, null, null,
 			null, null, null, null, null, null, null, null, null, null,
-			null, null, null, null, null, null, null, 'N');
+			null, null, null, null, 'N');
 		admissionTypeIoOperationRepository.saveAndFlush(admissionType);
 		admissionIoOperationRepository.saveAndFlush(admission1);
 		admissionIoOperationRepository.saveAndFlush(admission2);

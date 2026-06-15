@@ -21,6 +21,7 @@
  */
 package org.isf.admission.manager;
 
+import java.security.DigestException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -347,11 +348,13 @@ public class AdmissionBrowserManager {
 				}
 			}
 		}
-		Disease diseaseIn = admission.getDiseaseIn();
-		if (diseaseIn != null) {
-			Disease disease = diseaseManager.getIpdInDiseaseByCode(diseaseIn.getCode());
-			if (disease == null) {
-				errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.admission.diagnosisinisnotallowed.msg")));
+
+		if (admission.getDiagnosisIn() != null && !admission.getDiagnosisIn().isEmpty()) {
+			for (Disease disease : admission.getDiagnosisIn()) {
+				if (disease == null) {
+					errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.admission.diagnosisinisnotallowed.msg")));
+					break;
+				}
 			}
 		}
 
@@ -416,29 +419,8 @@ public class AdmissionBrowserManager {
 			}
 		}
 
-		List<Disease> diseaseOut1 = admission.getComplicationDiagnosis();
-		Disease diseaseOut2 = admission.getDiseaseOut2();
-		Disease diseaseOut3 = admission.getDiseaseOut3();
-		if (admission.getDisDate() != null && (diseaseOut1 == null || diseaseOut1.isEmpty())) {
+		if (admission.getDisDate() != null && (admission.getDiagnosisOut() == null || admission.getDiagnosisOut().isEmpty())) {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.admission.pleaseselectatleastfirstdiagnosisout.msg")));
-		}
-
-		if (admission.getDisDate() != null) {
-
-			Disease disease;
-
-			if (diseaseOut2 != null) {
-				disease = diseaseManager.getIpdOutDiseaseByCode(diseaseOut2.getCode());
-				if (disease == null) {
-					errors.add(new OHExceptionMessage(MessageBundle.formatMessage("angal.opd.specifieddiseaseisnoenabledforopdservice.fmt.msg", "2")));
-				}
-			}
-			if (diseaseOut3 != null) {
-				disease = diseaseManager.getIpdOutDiseaseByCode(diseaseOut3.getCode());
-				if (disease == null) {
-					errors.add(new OHExceptionMessage(MessageBundle.formatMessage("angal.opd.specifieddiseaseisnoenabledforopdservice.fmt.msg", "3")));
-				}
-			}
 		}
 
 		Float f = admission.getWeight();

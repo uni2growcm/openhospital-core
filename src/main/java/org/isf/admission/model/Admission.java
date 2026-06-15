@@ -93,10 +93,6 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 	@Column(name = "ADM_FHU")
 	private String fHU;                        // FromHealthUnit (null)
 
-	@ManyToOne
-	@JoinColumn(name = "ADM_IN_DIS_ID_A")
-	private Disease diseaseIn;                // disease in key  (null)
-
 	@ManyToMany
 	@JoinTable(
 		name = "OH_COMPLICATIONDIAGNOSIS",
@@ -120,14 +116,6 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 		inverseJoinColumns = @JoinColumn(name = "ID_DIS_ID_A")
 	)
 	private List<Disease> diagnosisIn;
-
-	@ManyToOne
-	@JoinColumn(name = "ADM_OUT_DIS_ID_A_2")
-	private Disease diseaseOut2;            // disease out key (null)
-
-	@ManyToOne
-	@JoinColumn(name = "ADM_OUT_DIS_ID_A_3")
-	private Disease diseaseOut3;            // disease out key (null)
 
 	@Column(name = "ADM_DATE_DIS")        // SQL type: datetime
 	private LocalDateTime disDate;        // discharge date (null)
@@ -267,10 +255,7 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 	 * @param admDate
 	 * @param admType
 	 * @param fhu
-	 * @param diseaseIn
 	 * @param complicationDiagnosis
-	 * @param diseaseOut2
-	 * @param diseaseOut3
 	 * @param disDate
 	 * @param disType
 	 * @param anamnesis
@@ -287,8 +272,9 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 	 * @param userID
 	 * @param deleted
 	 */
-	public Admission(int id, int admitted, String type, Ward ward, int prog, Patient patient, LocalDateTime admDate, AdmissionType admType, String fhu,
-					 Disease diseaseIn, List<Disease> complicationDiagnosis, Disease diseaseOut2, Disease diseaseOut3,
+	public Admission(int id, int admitted, String type, Ward ward, int prog, Patient patient, LocalDateTime admDate,
+					 AdmissionType admType, String fhu,
+					 List<Disease> complicationDiagnosis,
 					 LocalDateTime disDate, DischargeType disType, String anamnesis, Float transUnit, LocalDateTime visitDate,
 					 PregnantTreatmentType pregTreatmentType, LocalDateTime deliveryDate, DeliveryType deliveryType, DeliveryResultType deliveryResult, Float weight,
 					 LocalDateTime ctrlDate1, LocalDateTime ctrlDate2,
@@ -303,10 +289,7 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 		this.admDate = TimeTools.truncateToSeconds(admDate);
 		this.admissionType = admType;
 		this.fHU = fhu;
-		this.diseaseIn = diseaseIn;
 		this.complicationDiagnosis = complicationDiagnosis;
-		this.diseaseOut2 = diseaseOut2;
-		this.diseaseOut3 = diseaseOut3;
 		this.disDate = TimeTools.truncateToSeconds(disDate);
 		this.disType = disType;
 		this.anamnesis = anamnesis;
@@ -336,10 +319,7 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 	 * @param admDate          the admission date and time
 	 * @param admType          the admission type
 	 * @param fhu              the first health unit (if applicable)
-	 * @param diseaseIn        the disease at admission
 	 * @param complicationDiagnosis      the primary disease at discharge
-	 * @param diseaseOut2      the secondary disease at discharge
-	 * @param diseaseOut3      the tertiary disease at discharge
 	 * @param disDate          the discharge date and time
 	 * @param disType          the discharge type
 	 * @param anamnesis        anamnesis about the admission
@@ -363,8 +343,7 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 	 * @param qualifiedAgent
 	 */
 	public Admission(int id, int admitted, String type, Ward ward, int prog, Patient patient,
-					 LocalDateTime admDate, AdmissionType admType, String fhu,
-					 Disease diseaseIn, List<Disease> complicationDiagnosis, Disease diseaseOut2, Disease diseaseOut3,
+					 LocalDateTime admDate, AdmissionType admType, String fhu, List<Disease> complicationDiagnosis,
 					 LocalDateTime disDate, DischargeType disType, String anamnesis, Float transUnit,
 					 LocalDateTime visitDate, PregnantTreatmentType pregTreatmentType,
 					 LocalDateTime deliveryDate, DeliveryType deliveryType, DeliveryResultType deliveryResult,
@@ -376,8 +355,7 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 					 String referralReason, String treatmentReceived,
 					 String outcome, String improvementFeedback, String deathPeriod, String othersInformation) {
 
-		this(id, admitted, type, ward, prog, patient, admDate, admType, fhu,
-			diseaseIn, complicationDiagnosis, diseaseOut2, diseaseOut3,
+		this(id, admitted, type, ward, prog, patient, admDate, admType, fhu, complicationDiagnosis,
 			disDate, disType, anamnesis, transUnit, visitDate,
 			pregTreatmentType, deliveryDate, deliveryType, deliveryResult, weight,
 			ctrlDate1, ctrlDate2, abortDate, userID, deleted);
@@ -412,10 +390,7 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 	 * @param admDate          the admission date and time
 	 * @param admType          the admission type
 	 * @param fhu              the first health unit (if applicable)
-	 * @param diseaseIn        the disease at admission
-	 * @param complicationDiagnosis      the primary disease at discharge
-	 * @param diseaseOut2      the secondary disease at discharge
-	 * @param diseaseOut3      the tertiary disease at discharge
+	 * @param complicationDiagnosis      the diseases at discharge
 	 * @param disDate          the discharge date and time
 	 * @param disType          the discharge type
 	 * @param anamnesis        anamnesis about the admission
@@ -441,8 +416,7 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 	 * @param diagnosisIn
 	 */
 	public Admission(int id, int admitted, String type, Ward ward, int prog, Patient patient,
-					 LocalDateTime admDate, AdmissionType admType, String fhu,
-					 Disease diseaseIn, List<Disease> complicationDiagnosis, Disease diseaseOut2, Disease diseaseOut3,
+					 LocalDateTime admDate, AdmissionType admType, String fhu, List<Disease> complicationDiagnosis,
 					 LocalDateTime disDate, DischargeType disType, String anamnesis, Float transUnit,
 					 LocalDateTime visitDate, PregnantTreatmentType pregTreatmentType,
 					 LocalDateTime deliveryDate, DeliveryType deliveryType, DeliveryResultType deliveryResult,
@@ -456,8 +430,7 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 					 List<Disease> diagnosisIn, List<Disease> diagnosisOut
 	) {
 
-		this(id, admitted, type, ward, prog, patient, admDate, admType, fhu,
-			diseaseIn, complicationDiagnosis, diseaseOut2, diseaseOut3,
+		this(id, admitted, type, ward, prog, patient, admDate, admType, fhu, complicationDiagnosis,
 			disDate, disType, anamnesis, transUnit, visitDate,
 			pregTreatmentType, deliveryDate, deliveryType, deliveryResult, weight,
 			ctrlDate1, ctrlDate2, abortDate, userID, deleted);
@@ -602,36 +575,12 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 		this.disDate = TimeTools.truncateToSeconds(disDate);
 	}
 
-	public Disease getDiseaseIn() {
-		return diseaseIn;
-	}
-
-	public void setDiseaseIn(Disease diseaseIn) {
-		this.diseaseIn = diseaseIn;
-	}
-
 	public List<Disease> getComplicationDiagnosis() {
 		return complicationDiagnosis;
 	}
 
 	public void setComplicationDiagnosis(List<Disease> complicationDiagnosis) {
 		this.complicationDiagnosis = complicationDiagnosis;
-	}
-
-	public Disease getDiseaseOut2() {
-		return diseaseOut2;
-	}
-
-	public void setDiseaseOut2(Disease diseaseOut2) {
-		this.diseaseOut2 = diseaseOut2;
-	}
-
-	public Disease getDiseaseOut3() {
-		return diseaseOut3;
-	}
-
-	public void setDiseaseOut3(Disease diseaseOut3) {
-		this.diseaseOut3 = diseaseOut3;
 	}
 
 	public DischargeType getDisType() {

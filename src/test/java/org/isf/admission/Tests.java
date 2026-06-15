@@ -1363,12 +1363,8 @@ class Tests extends OHCoreTestCase {
 		admission.setYProg(-1);
 		LocalDateTime disDate = admission.getDisDate();
 		List<Disease> complicationDiagnosis = admission.getComplicationDiagnosis();
-		Disease diseaseOut2 = admission.getDiseaseOut2();
-		Disease diseaseOut3 = admission.getDiseaseOut3();
 		admission.setDisDate(null);
 		admission.setComplicationDiagnosis(null);
-		admission.setDiseaseOut2(null);
-		admission.setDiseaseOut3(null);
 		assertThatThrownBy(() -> admissionBrowserManager.updateAdmission(admission))
 			.isInstanceOf(OHDataValidationException.class)
 			.has(
@@ -1377,8 +1373,6 @@ class Tests extends OHCoreTestCase {
 		admission.setYProg(0);
 		admission.setDisDate(disDate);
 		admission.setComplicationDiagnosis(complicationDiagnosis);
-		admission.setDiseaseOut2(diseaseOut2);
-		admission.setDiseaseOut3(diseaseOut3);
 
 		// Admission date future date
 		LocalDateTime admDate = admission.getAdmDate();
@@ -1387,8 +1381,6 @@ class Tests extends OHCoreTestCase {
 		admission.setDisDate(null);
 		admission.setDisDate(null);
 		admission.setComplicationDiagnosis(null);
-		admission.setDiseaseOut2(null);
-		admission.setDiseaseOut3(null);
 		assertThatThrownBy(() -> admissionBrowserManager.updateAdmission(admission))
 			.isInstanceOf(OHDataValidationException.class)
 			.has(
@@ -1397,21 +1389,6 @@ class Tests extends OHCoreTestCase {
 		admission.setAdmDate(admDate);
 		admission.setDisDate(disDate);
 		admission.setComplicationDiagnosis(complicationDiagnosis);
-		admission.setDiseaseOut2(diseaseOut2);
-		admission.setDiseaseOut3(diseaseOut3);
-
-		// Admission DiseaseIn not IpdIn enabled
-		Disease diseaseIn = admission.getDiseaseIn();
-		Disease disabledDisease = testDisease.setup(diseaseIn.getType(), false); // includeIpdIn = includeIpdOut = includeOpd = false
-		disabledDisease.setCode("disabled");
-		diseaseIoOperationRepository.saveAndFlush(disabledDisease);
-		admission.setDiseaseIn(disabledDisease);
-		assertThatThrownBy(() -> admissionBrowserManager.updateAdmission(admission))
-			.isInstanceOf(OHDataValidationException.class)
-			.has(
-				new Condition<Throwable>(
-					e -> ((OHServiceException) e).getMessages().size() == 1, "Expecting single validation error"));
-		admission.setDiseaseIn(diseaseIn);
 
 		// Discharge date is after today
 		disDate = admission.getDisDate();
@@ -1422,43 +1399,6 @@ class Tests extends OHCoreTestCase {
 				new Condition<Throwable>(
 					e -> ((OHServiceException) e).getMessages().size() == 1, "Expecting single validation error"));
 		admission.setDisDate(disDate);
-
-		// DiseaseOut1() == null && DisDate() != null
-		List<Disease> disease = admission.getComplicationDiagnosis();
-		admission.setComplicationDiagnosis(null);
-		assertThatThrownBy(() -> admissionBrowserManager.updateAdmission(admission))
-			.isInstanceOf(OHDataValidationException.class);
-		admission.setComplicationDiagnosis(disease);
-
-		// Admission DiseaseOut1 not IpdOut enabled
-//		List<Disease> diseaseOut = admission.getComplicationDiagnosis();
-//		admission.setComplicationDiagnosis(List.of(disabledDisease));
-//		assertThatThrownBy(() -> admissionBrowserManager.updateAdmission(admission))
-//			.isInstanceOf(OHDataValidationException.class)
-//			.has(
-//				new Condition<Throwable>(
-//					e -> ((OHServiceException) e).getMessages().size() == 1, "Expecting single validation error"));
-//		admission.setComplicationDiagnosis(diseaseOut);
-
-		// Admission DiseaseOut2 not IpdOut enabled
-//		diseaseOut = List.of(admission.getDiseaseOut2());
-//		admission.setDiseaseOut2(disabledDisease);
-//		assertThatThrownBy(() -> admissionBrowserManager.updateAdmission(admission))
-//			.isInstanceOf(OHDataValidationException.class)
-//			.has(
-//				new Condition<Throwable>(
-//					e -> ((OHServiceException) e).getMessages().size() == 1, "Expecting single validation error"));
-//		admission.setDiseaseOut2(diseaseOut);
-
-		// Admission DiseaseOut3 not IpdOut enabled
-//		diseaseOut = admission.getDiseaseOut3();
-//		admission.setDiseaseOut3(disabledDisease);
-//		assertThatThrownBy(() -> admissionBrowserManager.updateAdmission(admission))
-//			.isInstanceOf(OHDataValidationException.class)
-//			.has(
-//				new Condition<Throwable>(
-//					e -> ((OHServiceException) e).getMessages().size() == 1, "Expecting single validation error"));
-//		admission.setDiseaseOut3(diseaseOut);
 	}
 
 	@ParameterizedTest(name = "Test with MATERNITYRESTARTINJUNE={0}")
@@ -1638,8 +1578,7 @@ class Tests extends OHCoreTestCase {
 		DeliveryType deliveryType = testDeliveryType.setup(false);
 		DeliveryResultType deliveryResult = testDeliveryResultType.setup(false);
 
-		Admission admission = testAdmission.setup(ward, patient, admissionType, diseaseIn,  new ArrayList<>(List.of(complicationDiagnosis)),
-			diseaseOut2, diseaseOut3, operation, dischargeType, pregTreatmentType,
+		Admission admission = testAdmission.setup(ward, patient, admissionType,  new ArrayList<>(List.of(complicationDiagnosis)), operation, dischargeType, pregTreatmentType,
 			deliveryType, deliveryResult,
 			new ArrayList<>(List.of(diagnosisInDisease)), new ArrayList<>(List.of(diagnosisOutDisease)),
 			usingSet);
@@ -1716,8 +1655,7 @@ class Tests extends OHCoreTestCase {
 		deliveryTypeIoOperationRepository.saveAndFlush(deliveryType);
 		deliveryResultIoOperationRepository.saveAndFlush(deliveryResult);
 
-		return testAdmission.setup(ward, patient, admissionType, diseaseIn, new ArrayList<>(List.of(complicationDiagnosis)),
-			diseaseOut2, diseaseOut3, operation, dischargeType, pregTreatmentType,
+		return testAdmission.setup(ward, patient, admissionType, new ArrayList<>(List.of(complicationDiagnosis)), operation, dischargeType, pregTreatmentType,
 			deliveryType, deliveryResult,
 			new ArrayList<>(List.of(diagnosisInDisease)), new ArrayList<>(List.of(diagnosisOutDisease)),
 			true);
