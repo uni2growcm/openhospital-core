@@ -150,4 +150,7 @@ source step_a153_create_index_in_medical_stock_ward.sql;
 source step_a154_add_maternity_submenuitem_and_privilege.sql;
 source step_a155_add_bill_refund_menuitem.sql;
 source step_a156_add_item_payments_table.sql;
-source step_a157_hiv_module.sql
+source step_a157_statistics_submenus.sql;
+source step_a158_add_partners_feature.sql;
+source step_a159_maternity_pregnancy_obstetric_history.sql;
+source step_a160_hiv_module.sql;

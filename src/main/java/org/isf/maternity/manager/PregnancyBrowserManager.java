@@ -32,6 +32,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
+import org.isf.generaldata.MessageBundle;
+import org.isf.utils.exception.model.OHExceptionMessage;
+import org.isf.utils.exception.model.OHSeverityLevel;
 
 @Component
 public class PregnancyBrowserManager {
@@ -198,5 +201,31 @@ public class PregnancyBrowserManager {
 	public Pregnancy closePregnancy(Integer pregnancyId, PregnancyStatus status)
 		throws OHServiceException {
 		return ioOperation.closePregnancy(pregnancyId, status);
+	}
+
+	/**
+	 * Validates obstetric history consistency.
+	 *
+	 * @param pregnancy the pregnancy to validate
+	 * @throws OHServiceException if validation fails
+	 */
+	private void validateObstetricHistory(Pregnancy pregnancy) throws OHServiceException {
+		Integer gravidity = pregnancy.getGravidity();
+		Integer term = pregnancy.getTermDeliveries();
+		Integer preterm = pregnancy.getPretermDeliveries();
+		Integer miscarriages = pregnancy.getMiscarriages();
+
+		if (gravidity != null && term != null && preterm != null && miscarriages != null) {
+			int sum = term + preterm + miscarriages;
+			if (!gravidity.equals(sum)) {
+				String message = MessageBundle.formatMessage(
+					"angal.maternity.gravidity.invalid.msg",
+					gravidity, sum
+				);
+				throw new OHServiceException(
+					new OHExceptionMessage(message)
+				);
+			}
+		}
 	}
 }
