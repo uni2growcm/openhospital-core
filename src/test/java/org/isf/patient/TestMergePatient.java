@@ -370,8 +370,8 @@ class TestMergePatient extends OHCoreTestCase {
 			Disease diseaseIn = testDisease.setup(diseaseType, false);
 			Disease complicationDiagnosis = testDisease.setup(diseaseType, false);
 			complicationDiagnosis.setCode("888");
-			Admission admission = testAdmission.setup(ward, patient1, admissionType, diseaseIn, List.of(complicationDiagnosis),
-				null, null, null, null, null, null, null, null, null, false);
+			Admission admission = testAdmission.setup(ward, patient1, admissionType, List.of(complicationDiagnosis),
+				null, null, null, null, null, null, null, false);
 
 			wardIoOperationRepository.saveAndFlush(ward);
 			Patient mergedPatient = patientIoOperationRepository.saveAndFlush(patient1);
@@ -405,8 +405,8 @@ class TestMergePatient extends OHCoreTestCase {
 			Disease diseaseIn = testDisease.setup(diseaseType, false);
 			Disease complicationDiagnosis = testDisease.setup(diseaseType, false);
 			complicationDiagnosis.setCode("888");
-			Admission admission = testAdmission.setup(ward, patient2, admissionType, diseaseIn, List.of(complicationDiagnosis),
-				null, null, null, null, null, null, null, null, null, false);
+			Admission admission = testAdmission.setup(ward, patient2, admissionType, List.of(complicationDiagnosis),
+				null, null, null, null, null, null, null, false);
 
 			wardIoOperationRepository.saveAndFlush(ward);
 			Patient obsoletePatient = patientIoOperationRepository.saveAndFlush(patient2);

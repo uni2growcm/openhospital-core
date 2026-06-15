@@ -207,8 +207,8 @@ class Tests extends OHCoreTestCase {
 		PregnantTreatmentType pregTreatmentType = testPregnantTreatmentType.setup(false);
 		DeliveryType deliveryType = testDeliveryType.setup(false);
 		DeliveryResultType deliveryResult = testDeliveryResultType.setup(false);
-		Admission admission = testAdmission.setup(ward, patient, admissionType, diseaseIn, List.of(complicationDiagnosis),
-				diseaseOut2, diseaseOut3, operation, dischargeType, pregTreatmentType,
+		Admission admission = testAdmission.setup(ward, patient, admissionType, List.of(complicationDiagnosis),
+				operation, dischargeType, pregTreatmentType,
 				deliveryType, deliveryResult, List.of(diseaseIn), List.of(diseaseOut2), true);
 
 		wardIoOperationRepository.saveAndFlush(ward);
@@ -291,8 +291,8 @@ class Tests extends OHCoreTestCase {
 		PregnantTreatmentType pregTreatmentType = testPregnantTreatmentType.setup(false);
 		DeliveryType deliveryType = testDeliveryType.setup(false);
 		DeliveryResultType deliveryResult = testDeliveryResultType.setup(false);
-		Admission admission = testAdmission.setup(ward, patient, admissionType, diseaseIn, List.of(complicationDiagnosis),
-				diseaseOut2, diseaseOut3, operation, dischargeType, pregTreatmentType,
+		Admission admission = testAdmission.setup(ward, patient, admissionType, List.of(complicationDiagnosis),
+				operation, dischargeType, pregTreatmentType,
 				deliveryType, deliveryResult, List.of(diseaseIn), List.of(diseaseOut2), true);
 
 		wardIoOperationRepository.saveAndFlush(ward);
@@ -338,8 +338,8 @@ class Tests extends OHCoreTestCase {
 			PregnantTreatmentType pregTreatmentType = testPregnantTreatmentType.setup(false);
 			DeliveryType deliveryType = testDeliveryType.setup(false);
 			DeliveryResultType deliveryResult = testDeliveryResultType.setup(false);
-			Admission admission = testAdmission.setup(ward, patient, admissionType, diseaseIn, List.of(complicationDiagnosis),
-					diseaseOut2, diseaseOut3, operation, dischargeType, pregTreatmentType,
+			Admission admission = testAdmission.setup(ward, patient, admissionType, List.of(complicationDiagnosis),
+					operation, dischargeType, pregTreatmentType,
 					deliveryType, deliveryResult, List.of(diseaseIn), List.of(diseaseOut2), true);
 
 			wardIoOperationRepository.saveAndFlush(ward);
@@ -388,8 +388,8 @@ class Tests extends OHCoreTestCase {
 			PregnantTreatmentType pregTreatmentType = testPregnantTreatmentType.setup(false);
 			DeliveryType deliveryType = testDeliveryType.setup(false);
 			DeliveryResultType deliveryResult = testDeliveryResultType.setup(false);
-			Admission admission = testAdmission.setup(ward, patient, admissionType, diseaseIn, List.of(complicationDiagnosis),
-					diseaseOut2, diseaseOut3, operation, dischargeType, pregTreatmentType,
+			Admission admission = testAdmission.setup(ward, patient, admissionType, List.of(complicationDiagnosis),
+					operation, dischargeType, pregTreatmentType,
 					deliveryType, deliveryResult, List.of(diseaseIn), List.of(diseaseOut2), true);
 
 			wardIoOperationRepository.saveAndFlush(ward);
@@ -438,8 +438,8 @@ class Tests extends OHCoreTestCase {
 			PregnantTreatmentType pregTreatmentType = testPregnantTreatmentType.setup(false);
 			DeliveryType deliveryType = testDeliveryType.setup(false);
 			DeliveryResultType deliveryResult = testDeliveryResultType.setup(false);
-			Admission admission = testAdmission.setup(ward, patient, admissionType, diseaseIn, List.of(complicationDiagnosis),
-					diseaseOut2, diseaseOut3, operation, dischargeType, pregTreatmentType,
+			Admission admission = testAdmission.setup(ward, patient, admissionType, List.of(complicationDiagnosis),
+					operation, dischargeType, pregTreatmentType,
 					deliveryType, deliveryResult, List.of(diseaseIn), List.of(diseaseOut2), true);
 
 			wardIoOperationRepository.saveAndFlush(ward);
@@ -489,8 +489,8 @@ class Tests extends OHCoreTestCase {
 			PregnantTreatmentType pregTreatmentType = testPregnantTreatmentType.setup(false);
 			DeliveryType deliveryType = testDeliveryType.setup(false);
 			DeliveryResultType deliveryResult = testDeliveryResultType.setup(false);
-			Admission admission = testAdmission.setup(ward, patient, admissionType, diseaseIn, List.of(complicationDiagnosis),
-					diseaseOut2, diseaseOut3, operation, dischargeType, pregTreatmentType,
+			Admission admission = testAdmission.setup(ward, patient, admissionType, List.of(complicationDiagnosis),
+					operation, dischargeType, pregTreatmentType,
 					deliveryType, deliveryResult, List.of(diseaseIn), List.of(diseaseOut2), true);
 
 			wardIoOperationRepository.saveAndFlush(ward);
@@ -539,8 +539,8 @@ class Tests extends OHCoreTestCase {
 			PregnantTreatmentType pregTreatmentType = testPregnantTreatmentType.setup(false);
 			DeliveryType deliveryType = testDeliveryType.setup(false);
 			DeliveryResultType deliveryResult = testDeliveryResultType.setup(false);
-			Admission admission = testAdmission.setup(ward, patient, admissionType, diseaseIn, List.of(complicationDiagnosis),
-					diseaseOut2, diseaseOut3, operation, dischargeType, pregTreatmentType,
+			Admission admission = testAdmission.setup(ward, patient, admissionType, List.of(complicationDiagnosis),
+					operation, dischargeType, pregTreatmentType,
 					deliveryType, deliveryResult, List.of(diseaseIn), List.of(diseaseOut2), true);
 
 			wardIoOperationRepository.saveAndFlush(ward);
@@ -622,7 +622,7 @@ class Tests extends OHCoreTestCase {
 		DeliveryType deliveryType = testDeliveryType.setup(false);
 		DeliveryResultType deliveryResult = testDeliveryResultType.setup(false);
 		Admission admission = testAdmission
-				.setup(ward, patient, admissionType, diseaseIn, List.of(complicationDiagnosis), diseaseOut2, diseaseOut3, operation, dischargeType, pregTreatmentType,
+				.setup(ward, patient, admissionType, List.of(complicationDiagnosis), operation, dischargeType, pregTreatmentType,
 						deliveryType, deliveryResult, List.of(diseaseIn), List.of(diseaseOut2), true);
 
 		wardIoOperationRepository.saveAndFlush(ward);

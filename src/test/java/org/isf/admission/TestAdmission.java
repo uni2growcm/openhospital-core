@@ -82,10 +82,7 @@ public class TestAdmission {
 			Ward ward,
 			Patient patient,
 			AdmissionType admissionType,
-			Disease diseaseIn,
 			List<Disease> complicationDiagnosis,
-			Disease diseaseOut2,
-			Disease diseaseOut3,
 			Operation operation,
 			DischargeType dischargeType,
 			PregnantTreatmentType pregTreatmentType,
@@ -98,12 +95,12 @@ public class TestAdmission {
 
 		if (usingSet) {
 			admission = new Admission();
-			setParameters(admission, ward, patient, admissionType, diseaseIn, complicationDiagnosis, diseaseOut2,
-					diseaseOut3, operation, dischargeType, pregTreatmentType, deliveryType, deliveryResult,
-					diagnosisIn, diagnosisOut);
+			setParameters(admission, ward, patient, admissionType, complicationDiagnosis,
+				operation, dischargeType, pregTreatmentType, deliveryType, deliveryResult,
+				diagnosisIn, diagnosisOut);
 		} else {
-			admission = new Admission(id, admitted, type, ward, yProg, patient, ADMINDATE, admissionType, FHU, diseaseIn,
-					complicationDiagnosis, diseaseOut2, diseaseOut3, DISDATE, dischargeType, anamnesis,
+			admission = new Admission(id, admitted, type, ward, yProg, patient, ADMINDATE, admissionType, FHU,
+					complicationDiagnosis, DISDATE, dischargeType, anamnesis,
 					transUnit, VISITDATE, pregTreatmentType, DELIVERYDATE, deliveryType, deliveryResult, weight,
 					CTRLDATE1, CTRLDATE2, ABORTDATE, userID, deleted, preTreatment, preAssessment, entryReason,
 					alertReceived, referenceSheet, qualifiedAgent, transportation, courseOfAction, nextAppointment,
@@ -120,10 +117,7 @@ public class TestAdmission {
 			Ward ward,
 			Patient patient,
 			AdmissionType admissionType,
-			Disease diseaseIn,
 			List<Disease> complicationDiagnosis,
-			Disease diseaseOut2,
-			Disease diseaseOut3,
 			Operation operation,
 			DischargeType dischargeType,
 			PregnantTreatmentType pregTreatmentType,
@@ -142,10 +136,7 @@ public class TestAdmission {
 		admission.setDeliveryResult(deliveryResult);
 		admission.setDeliveryType(deliveryType);
 		admission.setDisDate(DISDATE);
-		admission.setDiseaseIn(diseaseIn);
 		admission.setComplicationDiagnosis(complicationDiagnosis);
-		admission.setDiseaseOut2(diseaseOut2);
-		admission.setDiseaseOut3(diseaseOut3);
 		admission.setDisType(dischargeType);
 		admission.setFHU(FHU);
 		admission.setAnamnesis(anamnesis);
