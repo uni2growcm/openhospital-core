@@ -151,6 +151,19 @@ public class HomeVisitBrowserManager {
 	}
 
 	/**
+	 * Cancels a home visit
+	 * @param id home visit id
+	 * @param reason cancel home visit reason
+	 * @throws OHServiceException
+	 */
+	public void cancelHomeVisit(int id, String reason) throws OHServiceException {
+		HomeVisit homeVisit = getHomeVisit(id);
+		homeVisit.setStatus(HomeVisitStatus.CANCELLED);
+		homeVisit.setCancellationReason(reason);
+		ioOperations.save(homeVisit);
+	}
+
+	/**
 	 * Reactivates a cancelled home visit back to PLANNED
 	 * @param id home visit id
 	 * @throws OHServiceException
@@ -205,21 +218,10 @@ public class HomeVisitBrowserManager {
 				MessageBundle.getMessage("angal.homevisit.validation.startdate.required.msg")));
 		}
 
-		if (homeVisit.getVisitStartDate() != null && homeVisit.getVisitStartDate().isBefore(LocalDateTime.now())) {
-			errors.add(new OHExceptionMessage(
-				MessageBundle.getMessage("angal.homevisit.validation.startdate.past.msg")));
-		}
-
 		if (homeVisit.getVisitEndDate() != null && homeVisit.getVisitStartDate() != null &&
 			homeVisit.getVisitEndDate().isBefore(homeVisit.getVisitStartDate())) {
 			errors.add(new OHExceptionMessage(
 				MessageBundle.getMessage("angal.homevisit.validation.enddate.after.start.msg")));
-		}
-
-		if (homeVisit.getId() == 0 && homeVisit.getVisitStartDate() != null &&
-			homeVisit.getVisitStartDate().isBefore(LocalDateTime.now())) {
-			errors.add(new OHExceptionMessage(
-				MessageBundle.getMessage("angal.homevisit.validation.startdate.past.msg")));
 		}
 
 		if (!errors.isEmpty()) {

@@ -98,6 +98,9 @@ public class HomeVisit extends Auditable<String> {
 	@Column(name = "HV_NEXT_VISIT_DATE")
 	private LocalDateTime nextVisitDate;
 
+	@Column(name = "HV_CANCELLATION_REASON", length = 500)
+	private String cancellationReason;
+
 	@Version
 	@Column(name = "HV_LOCK")
 	private Integer lock;
@@ -159,6 +162,11 @@ public class HomeVisit extends Auditable<String> {
 			return between(visitStartDate, visitEndDate).toMinutes();
 		}
 		return null;
+	}
+
+	public String getCancellationReason() { return cancellationReason; }
+	public void setCancellationReason(String cancellationReason) {
+		this.cancellationReason = cancellationReason;
 	}
 
 	@Override
