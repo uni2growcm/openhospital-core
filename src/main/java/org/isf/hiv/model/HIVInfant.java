@@ -263,7 +263,6 @@ public class HIVInfant extends Auditable<String> {
 	public void setVisits(List<HIVVisit> visits) {
 		this.visits = visits;
 	}
-
 	@Override
 	public int hashCode() {
 		return id != null ? id.hashCode() : super.hashCode();
