@@ -126,7 +126,7 @@ public class Medical extends Auditable<String> implements Comparable<Medical>, C
 	/**
 	 * Medical lots
 	 */
-	@OneToMany(mappedBy = "medical", cascade = { CascadeType.PERSIST })
+	@OneToMany(mappedBy = "medical", cascade = { CascadeType.PERSIST }, fetch = FetchType.EAGER)
 	List<Lot> lots = new ArrayList<>();
 
 	/**
