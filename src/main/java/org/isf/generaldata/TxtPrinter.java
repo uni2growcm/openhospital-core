@@ -34,6 +34,7 @@ public final class TxtPrinter extends ConfigurationProperties {
     public static String ZPL_FONT_TYPE;
     public static int ZPL_ROW_HEIGHT;
     public static String PRINTER;
+	public static String CHARSET;
     
     private static final boolean DEFAULT_USE_DEFAULT_PRINTER = true;
     private static final boolean DEFAULT_PRINT_AS_PAID = false;
@@ -43,7 +44,8 @@ public final class TxtPrinter extends ConfigurationProperties {
     private static final String DEFAULT_MODE = "PDF";
     private static final String DEFAULT_ZPL_FONT_TYPE = "A";
     private static final int DEFAULT_ZPL_ROW_HEIGHT = 9;
-    
+	private static final String DEFAULT_CHARSET = "ISO-8859-1";
+
     private static TxtPrinter mySingleData;
 
     private TxtPrinter(String fileProperties) {
@@ -60,6 +62,7 @@ public final class TxtPrinter extends ConfigurationProperties {
 		MODE = myGetProperty("MODE", DEFAULT_MODE);
 		ZPL_FONT_TYPE = myGetProperty("ZPL_FONT_TYPE", DEFAULT_ZPL_FONT_TYPE);
 	    ZPL_ROW_HEIGHT = myGetProperty("ZPL_ROW_HEIGHT", DEFAULT_ZPL_ROW_HEIGHT);
+		CHARSET = myGetProperty("CHARSET", DEFAULT_CHARSET);
     }
 
 	public static TxtPrinter getTxtPrinter() {

@@ -23,6 +23,7 @@ package org.isf.serviceprinting.manager;
 
 import java.io.*;
 import java.nio.file.Files;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Scanner;
 
@@ -90,6 +91,7 @@ public class PrintReceipt {
 					JRTextExporter exporter = new JRTextExporter();
 					exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
 					exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, fileName);
+					exporter.setParameter(JRExporterParameter.CHARACTER_ENCODING, TxtPrinter.CHARSET);
 					exporter.setParameter(JRTextExporterParameter.CHARACTER_WIDTH, (float)TxtPrinter.TXT_CHAR_WIDTH);
 					exporter.setParameter(JRTextExporterParameter.CHARACTER_HEIGHT, (float)TxtPrinter.TXT_CHAR_HEIGHT);
 					exporter.exportReport();
@@ -121,11 +123,14 @@ public class PrintReceipt {
 	private void removeEmptyLines(String TXTFile) throws IOException {
 		File f = new File(TXTFile);
 		StringBuilder output = new StringBuilder();
+		Charset charset = Charset.forName(TxtPrinter.CHARSET);
 		if (f.exists()) {
-			InputStreamReader reader = new InputStreamReader(Files.newInputStream(f.toPath()));
+			InputStreamReader reader = new InputStreamReader(Files.newInputStream(f.toPath()), charset);
 			Scanner sc = new Scanner(reader);
 			while (sc.hasNextLine()) {
-				String line = sc.nextLine();
+				String line = sc.nextLine()
+					.replaceAll("\\p{Zs}", " ")
+					.replaceAll("(?<=\\d)\\?(?=\\d{3}(\\D|$))", " ");
 				if (!line.trim().isEmpty()) {
 					output.append(line).append("\r\n");
 				}
@@ -142,10 +147,10 @@ public class PrintReceipt {
 			sc.close();
 			reader.close();
 			BufferedWriter bw = null;
-			FileWriter fw = null;
+			OutputStreamWriter fw = null;
 
 			try {
-				fw = new FileWriter(TXTFile);
+				fw = new OutputStreamWriter(new FileOutputStream(TXTFile), charset);
 				bw = new BufferedWriter(fw);
 				bw.write(output.toString());
 			} catch (IOException e) {
