@@ -47,4 +47,7 @@ public interface WardIoOperationRepository extends JpaRepository<Ward, String> {
 
 	@Query("select sum(w.beds) from Ward w where active=1")
 	long countAllActiveBeds();
+
+	@Query("SELECT w FROM Ward w WHERE w.isPharmacy = true ORDER BY w.description")
+	List<Ward> findPharmacyWards();
 }
