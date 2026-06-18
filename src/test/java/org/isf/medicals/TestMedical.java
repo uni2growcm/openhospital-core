@@ -31,7 +31,7 @@ import org.isf.utils.exception.OHException;
 public class TestMedical {
 
 	private Integer code;
-	private String prod_code = "TP1";
+	private String prodCode = "TP1";
 	private String description = "TestDescription";
 	private Integer pcsperpck = 11;
 	private double inqty = 30.30;
@@ -46,7 +46,7 @@ public class TestMedical {
 			setParameters(medical, medicalType);
 		} else {
 			// Create Medical with all parameters
-			medical = new Medical(code, medicalType, prod_code, description, pcsperpck, minqty, inqty, outqty);
+			medical = new Medical(code, medicalType, prodCode, description, pcsperpck, minqty, inqty, outqty);
 		}
 
 		return medical;
@@ -58,7 +58,7 @@ public class TestMedical {
 		medical.setMinqty(minqty);
 		medical.setOutqty(outqty);
 		medical.setPcsperpck(pcsperpck);
-		medical.setProdCode(prod_code);
+		medical.setProdCode(prodCode);
 		medical.setType(medicalType);
 	}
 
@@ -68,6 +68,6 @@ public class TestMedical {
 		assertThat(medical.getMinqty()).isCloseTo(minqty, offset(0.1));
 		assertThat(medical.getOutqty()).isCloseTo(outqty, offset(0.1));
 		assertThat(medical.getPcsperpck()).isEqualTo(pcsperpck);
-		assertThat(medical.getProdCode()).isEqualTo(prod_code);
+		assertThat(medical.getProdCode()).isEqualTo(prodCode);
 	}
 }

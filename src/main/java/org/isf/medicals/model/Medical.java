@@ -70,7 +70,7 @@ public class Medical extends Auditable<String> implements Comparable<Medical>, C
 	 */
 	@NotNull
 	@Column(name = "MDSR_CODE")
-	private String prod_code;
+	private String prodCode;
 
 	/**
 	 * Type of the medical
@@ -126,7 +126,7 @@ public class Medical extends Auditable<String> implements Comparable<Medical>, C
 	/**
 	 * Medical lots
 	 */
-	@OneToMany(mappedBy = "medical", cascade = { CascadeType.PERSIST })
+	@OneToMany(mappedBy = "medical", cascade = { CascadeType.PERSIST }, fetch = FetchType.EAGER)
 	List<Lot> lots = new ArrayList<>();
 
 	/**
@@ -157,7 +157,7 @@ public class Medical extends Auditable<String> implements Comparable<Medical>, C
 		super();
 		this.code = code;
 		this.type = type;
-		this.prod_code = prodCode;
+		this.prodCode = prodCode;
 		this.description = description;
 		this.initialqty = 0.;
 		this.pcsperpck = pcsperpck;
@@ -231,11 +231,11 @@ public class Medical extends Auditable<String> implements Comparable<Medical>, C
 	}
 
 	public String getProdCode() {
-		return prod_code;
+		return prodCode;
 	}
 
 	public void setProdCode(String prodCode) {
-		this.prod_code = prodCode;
+		this.prodCode = prodCode;
 	}
 
 	public Integer getPcsperpck() {
@@ -267,13 +267,13 @@ public class Medical extends Auditable<String> implements Comparable<Medical>, C
 		return Double.compare(getInitialqty(), medical.getInitialqty()) == 0 && Double.compare(getInqty(), medical.getInqty()) == 0
 			&& Double.compare(getOutqty(), medical.getOutqty()) == 0 && Double.compare(getMinqty(), medical.getMinqty()) == 0
 			&& getDeleted() == medical.getDeleted() && hashCode == medical.hashCode && Objects.equals(getCode(), medical.getCode())
-			&& Objects.equals(prod_code, medical.prod_code) && Objects.equals(getType(), medical.getType()) && Objects.equals(
+			&& Objects.equals(prodCode, medical.prodCode) && Objects.equals(getType(), medical.getType()) && Objects.equals(
 			getDescription(), medical.getDescription()) && Objects.equals(getPcsperpck(), medical.getPcsperpck()) && Objects.equals(getLots(),
 			medical.getLots()) && Objects.equals(getLock(), medical.getLock());
 	}
 	@Override
 	public int hashCode() {
-		return Objects.hash(getCode(), prod_code, getType(), getDescription(), getInitialqty(), getPcsperpck(), getInqty(), getOutqty(), getMinqty(), getLots(),
+		return Objects.hash(getCode(), prodCode, getType(), getDescription(), getInitialqty(), getPcsperpck(), getInqty(), getOutqty(), getMinqty(), getLots(),
 			getLock(), getDeleted(), hashCode);
 	}
 	@Override

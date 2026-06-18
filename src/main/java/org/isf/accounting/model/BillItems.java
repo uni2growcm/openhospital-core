@@ -79,7 +79,7 @@ public class BillItems extends Auditable<String> {
 	
 	/**
 	 * Store  the code of the item that is used for search purpose.
-	 * For medical for example it will store the prod_code.
+	 * For medical for example it will store the prodCode.
 	 * it is necessary for medical and otherPRices items
 	 * used in the patient bill edit
 	 * The field is not persisted
