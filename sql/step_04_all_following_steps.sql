@@ -153,3 +153,4 @@ source step_a156_add_item_payments_table.sql;
 source step_a157_statistics_submenus.sql;
 source step_a157_add_partners_feature.sql;
 source step_a158_maternity_pregnancy_obstetric_history.sql;
+source step_a159_description_village.sql;
