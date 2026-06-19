@@ -576,4 +576,37 @@ class Tests extends OHCoreTestCase {
 		assertThat(foundPatientVaccine).isNotNull();
 		testPatientVaccine.check(foundPatientVaccine);
 	}
+
+
+	@Test
+	void testPatientVaccineVillageField() throws Exception {
+		VaccineType vaccineType = testVaccineType.setup(false);
+		Vaccine vaccine = testVaccine.setup(vaccineType, false);
+		Patient patient = testPatient.setup(false);
+		PatientVaccine patientVaccine = testPatientVaccine.setup(patient, vaccine, true);
+
+		vaccineTypeIoOperationRepository.saveAndFlush(vaccineType);
+		vaccineIoOperationRepository.saveAndFlush(vaccine);
+		patientIoOperationRepository.saveAndFlush(patient);
+		patVacIoOperationRepository.saveAndFlush(patientVaccine);
+
+		PatientVaccine found = patVacIoOperationRepository.findById(patientVaccine.getCode()).orElse(null);
+		assertThat(found).isNotNull();
+		assertThat(found.getVillage()).isEqualTo("Test Village");
+	}
+
+	@Test
+	void testPatientVaccineVillageCanBeUpdated() throws Exception {
+		int code = setupTestPatientVaccine(false);
+		PatientVaccine found = patVacIoOperationRepository.findById(code).orElse(null);
+		assertThat(found).isNotNull();
+
+		String newVillage = "New Village Updated";
+		found.setVillage(newVillage);
+		patvacIoOperation.updatePatientVaccine(found);
+
+		PatientVaccine updated = patVacIoOperationRepository.findById(code).orElse(null);
+		assertThat(updated).isNotNull();
+		assertThat(updated.getVillage()).isEqualTo(newVillage);
+	}
 }

@@ -27,13 +27,18 @@ import java.util.List;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
 import org.isf.patvac.model.PatientVaccine;
+import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.time.TimeTools;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
@@ -56,7 +61,104 @@ public class PatVacIoOperationRepositoryImpl implements PatVacIoOperationReposit
 		return this.entityManager.
 				createQuery(getPatientVaccineQuery(vaccineTypeCode, vaccineCode, TimeTools.truncateToSeconds(dateFrom),
 				                                   TimeTools.truncateToSeconds(dateTo), sex, ageFrom, ageTo)).getResultList();
-	}	
+	}
+	/**
+	 * Returns a page of {@link PatientVaccine}s filtered by vaccine type, vaccine, date range, sex and age.
+	 * This method uses Criteria API for dynamic query building with pagination support.
+	 *
+	 * @param vaccineTypeCode the vaccine type code (can be {@code null})
+	 * @param vaccineCode the vaccine code (can be {@code null})
+	 * @param dateFrom the start date (can be {@code null})
+	 * @param dateTo the end date (can be {@code null})
+	 * @param sex the patient sex ('M', 'F' or 'A' for all)
+	 * @param ageFrom the minimum age (0 for no minimum)
+	 * @param ageTo the maximum age (0 for no maximum)
+	 * @param pageable the pagination information
+	 * @return a page of {@link PatientVaccine}s
+	 * @throws OHServiceException
+	 */
+	@Override
+	public Page<PatientVaccine> findAllByCodesAndDatesAndSexAndAgesWithPagination(
+		String vaccineTypeCode,
+		String vaccineCode,
+		LocalDateTime dateFrom,
+		LocalDateTime dateTo,
+		char sex,
+		int ageFrom,
+		int ageTo,
+		Pageable pageable) throws OHServiceException {
+
+		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+
+		// Query to fetch data
+		CriteriaQuery<PatientVaccine> query = cb.createQuery(PatientVaccine.class);
+		Root<PatientVaccine> pvRoot = query.from(PatientVaccine.class);
+		List<Predicate> predicates = buildPredicates(cb, pvRoot, vaccineTypeCode, vaccineCode,
+			TimeTools.truncateToSeconds(dateFrom), TimeTools.truncateToSeconds(dateTo), sex, ageFrom, ageTo);
+
+		query.select(pvRoot)
+			.where(cb.and(predicates.toArray(new Predicate[0])))
+			.orderBy(cb.desc(pvRoot.get("vaccineDate")), cb.asc(pvRoot.get("code")));
+
+		TypedQuery<PatientVaccine> typedQuery = entityManager.createQuery(query);
+		typedQuery.setFirstResult((int) pageable.getOffset());
+		typedQuery.setMaxResults(pageable.getPageSize());
+		List<PatientVaccine> content = typedQuery.getResultList();
+
+		// Query to count total elements
+		CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
+		Root<PatientVaccine> countRoot = countQuery.from(PatientVaccine.class);
+		List<Predicate> countPredicates = buildPredicates(cb, countRoot, vaccineTypeCode, vaccineCode,
+			TimeTools.truncateToSeconds(dateFrom), TimeTools.truncateToSeconds(dateTo), sex, ageFrom, ageTo);
+		countQuery.select(cb.count(countRoot))
+			.where(cb.and(countPredicates.toArray(new Predicate[0])));
+
+		Long total = entityManager.createQuery(countQuery).getSingleResult();
+
+		return new PageImpl<>(content, pageable, total);
+	}
+
+	/**
+	 * Builds the list of predicates for the query based on the filter criteria.
+	 *
+	 * @param cb the CriteriaBuilder
+	 * @param root the Root object
+	 * @param vaccineTypeCode the vaccine type code (can be {@code null})
+	 * @param vaccineCode the vaccine code (can be {@code null})
+	 * @param dateFrom the start date (can be {@code null})
+	 * @param dateTo the end date (can be {@code null})
+	 * @param sex the patient sex ('M', 'F' or 'A' for all)
+	 * @param ageFrom the minimum age (0 for no minimum)
+	 * @param ageTo the maximum age (0 for no maximum)
+	 * @return the list of predicates
+	 */
+	private List<Predicate> buildPredicates(CriteriaBuilder cb, Root<?> root,
+	                                        String vaccineTypeCode, String vaccineCode, LocalDateTime dateFrom,
+	                                        LocalDateTime dateTo, char sex, int ageFrom, int ageTo) {
+
+		List<Predicate> predicates = new ArrayList<>();
+
+		if (dateFrom != null) {
+			predicates.add(cb.greaterThanOrEqualTo(root.<LocalDateTime>get("vaccineDate"), dateFrom));
+		}
+		if (dateTo != null) {
+			predicates.add(cb.lessThanOrEqualTo(root.<LocalDateTime>get("vaccineDate"), dateTo));
+		}
+		if (vaccineTypeCode != null) {
+			predicates.add(cb.equal(root.join("vaccine").get("vaccineType").get("code"), vaccineTypeCode));
+		}
+		if (vaccineCode != null) {
+			predicates.add(cb.equal(root.join("vaccine").get("code"), vaccineCode));
+		}
+		if (sex != 'A') {
+			predicates.add(cb.equal(root.join("patient").get("sex"), sex));
+		}
+		if (ageFrom != 0 || ageTo != 0) {
+			predicates.add(cb.between(root.join("patient").<Integer>get("age"), ageFrom, ageTo));
+		}
+
+		return predicates;
+	}
 
 	private CriteriaQuery<PatientVaccine> getPatientVaccineQuery(
 			String vaccineTypeCode, 

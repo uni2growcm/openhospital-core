@@ -33,6 +33,8 @@ import org.isf.patvac.service.PatVacIoOperations;
 import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.model.OHExceptionMessage;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -53,6 +55,25 @@ public class PatVacManager {
 	 */
 	public List<PatientVaccine> getPatientVaccine(boolean minusOneWeek) throws OHServiceException {
 		return ioOperations.getPatientVaccine(minusOneWeek);
+	}
+
+	/**
+	 * Returns a page of {@link PatientVaccine}s filtered by vaccine type, vaccine, date range, sex and age.
+	 *
+	 * @param vaccineTypeCode the vaccine type code (can be {@code null})
+	 * @param vaccineCode the vaccine code (can be {@code null})
+	 * @param dateFrom the start date (can be {@code null})
+	 * @param dateTo the end date (can be {@code null})
+	 * @param sex the patient sex ('M', 'F' or 'A' for all)
+	 * @param ageFrom the minimum age (0 for no minimum)
+	 * @param ageTo the maximum age (0 for no maximum)
+	 * @param pageable the pagination information
+	 * @return a page of {@link PatientVaccine}s
+	 * @throws OHServiceException
+	 */
+	public Page<PatientVaccine> getPatientVaccinePage(String vaccineTypeCode, String vaccineCode, LocalDateTime dateFrom,
+													  LocalDateTime dateTo, char sex, int ageFrom, int ageTo, Pageable pageable) throws OHServiceException {
+		return ioOperations.getPatientVaccinePage(vaccineTypeCode, vaccineCode, dateFrom, dateTo, sex, ageFrom, ageTo, pageable);
 	}
 
 	/**

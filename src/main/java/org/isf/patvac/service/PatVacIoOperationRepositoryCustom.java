@@ -25,10 +25,33 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.isf.patvac.model.PatientVaccine;
+import org.isf.utils.exception.OHException;
+import org.isf.utils.exception.OHServiceException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface PatVacIoOperationRepositoryCustom {
 
 	List<PatientVaccine> findAllByCodesAndDatesAndSexAndAges(String vaccineTypeCode, String vaccineCode, LocalDateTime dateFrom, LocalDateTime dateTo, char sex,
 			int ageFrom, int ageTo);
+
+	/**
+	 * Returns a page of {@link PatientVaccine}s filtered by vaccine type, vaccine, date range, sex and age.
+	 * This method uses Criteria API for dynamic query building with pagination support.
+	 *
+	 * @param vaccineTypeCode the vaccine type code (can be {@code null})
+	 * @param vaccineCode the vaccine code (can be {@code null})
+	 * @param dateFrom the start date (can be {@code null})
+	 * @param dateTo the end date (can be {@code null})
+	 * @param sex the patient sex ('M', 'F' or 'A' for all)
+	 * @param ageFrom the minimum age (0 for no minimum)
+	 * @param ageTo the maximum age (0 for no maximum)
+	 * @param pageable the pagination information
+	 * @return a page of {@link PatientVaccine}s
+	 * @throws OHServiceException
+	 */
+	Page<PatientVaccine> findAllByCodesAndDatesAndSexAndAgesWithPagination(
+		String vaccineTypeCode, String vaccineCode, LocalDateTime dateFrom,
+		LocalDateTime dateTo, char sex, int ageFrom, int ageTo, Pageable pageable) throws OHServiceException;
 
 }
