@@ -21,7 +21,6 @@
  */
 package org.isf.maternity.service;
 
-import org.isf.maternity.model.FPMethod;
 import org.isf.maternity.model.FPStatus;
 import org.isf.maternity.model.FamilyPlanning;
 import org.isf.utils.db.TranslateOHServiceException;
@@ -32,7 +31,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -59,26 +58,26 @@ public class FamilyPlanningIoOperation {
     }
 
     public List<FamilyPlanning> getFamilyPlanningsByPatient(Integer patientCode) throws OHServiceException {
-        return repository.findByPatient_CodeOrderByStartDateDesc(patientCode);
+        return repository.findByPatient_CodeOrderByRegistrationDateDesc(patientCode);
     }
 
     public Page<FamilyPlanning> searchFamilyPlannings(
         Integer patientCode,
-        FPMethod method,
+        String methodCode,
         FPStatus status,
-        LocalDate fromDate,
-        LocalDate toDate,
+        LocalDateTime fromDate,
+        LocalDateTime toDate,
         Pageable pageable
     ) throws OHServiceException {
-        return repository.searchFamilyPlannings(patientCode, method, status, fromDate, toDate, pageable);
+        return repository.searchFamilyPlannings(patientCode, methodCode, status, fromDate, toDate, pageable);
     }
 
     public Page<FamilyPlanning> getFamilyPlanningsByDateRange(
-        LocalDate fromDate,
-        LocalDate toDate,
+        LocalDateTime fromDate,
+        LocalDateTime toDate,
         Pageable pageable
     ) throws OHServiceException {
-        return repository.findByStartDateBetween(fromDate, toDate, pageable);
+        return repository.findByRegistrationDateBetween(fromDate, toDate, pageable);
     }
 
     public boolean hasActiveFamilyPlanning(Integer patientCode) throws OHServiceException {
@@ -91,14 +90,14 @@ public class FamilyPlanningIoOperation {
 
     public FamilyPlanning getLatestFamilyPlanningByPatientAndStatus(Integer patientCode, FPStatus status)
         throws OHServiceException {
-        return repository.findTopByPatient_CodeAndStatusOrderByStartDateDesc(patientCode, status).orElse(null);
+        return repository.findTopByPatient_CodeAndStatusOrderByRegistrationDateDesc(patientCode, status).orElse(null);
     }
 
     public List<FamilyPlanning> getActiveFamilyPlanningsByPatient(Integer patientCode) throws OHServiceException {
         return repository.findByPatient_CodeAndStatus(patientCode, FPStatus.ACTIVE);
     }
 
-    public FamilyPlanning stopFamilyPlanning(Integer familyPlanningId, LocalDate endDate, String stopReason)
+    public FamilyPlanning stopFamilyPlanning(Integer familyPlanningId, LocalDateTime endDate, String stopReason)
         throws OHServiceException {
         FamilyPlanning fp = repository.findById(familyPlanningId)
             .orElseThrow(() ->
@@ -107,8 +106,6 @@ public class FamilyPlanningIoOperation {
                 )
             );
         fp.setStatus(FPStatus.STOPPED);
-        fp.setEndDate(endDate);
-        fp.setStopReason(stopReason);
         return repository.save(fp);
     }
 }

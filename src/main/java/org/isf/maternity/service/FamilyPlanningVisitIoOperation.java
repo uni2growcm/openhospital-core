@@ -21,7 +21,6 @@
  */
 package org.isf.maternity.service;
 
-import org.isf.maternity.model.FPVisitType;
 import org.isf.maternity.model.FamilyPlanningVisit;
 import org.isf.utils.db.TranslateOHServiceException;
 import org.isf.utils.exception.OHServiceException;
@@ -72,9 +71,9 @@ public class FamilyPlanningVisitIoOperation {
         Integer familyPlanningId,
         LocalDateTime fromDate,
         LocalDateTime toDate,
-        FPVisitType visitType
+        String visitTypeCode
     ) throws OHServiceException {
-        return repository.findVisitsByFilters(familyPlanningId, fromDate, toDate, visitType);
+        return repository.findVisitsByFilters(familyPlanningId, fromDate, toDate, visitTypeCode);
     }
 
     public FamilyPlanningVisit newVisit(FamilyPlanningVisit visit) throws OHServiceException {

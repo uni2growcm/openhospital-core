@@ -22,7 +22,6 @@
 package org.isf.maternity.manager;
 
 import org.isf.generaldata.MessageBundle;
-import org.isf.maternity.model.FPVisitType;
 import org.isf.maternity.model.FamilyPlanningVisit;
 import org.isf.maternity.service.FamilyPlanningVisitIoOperation;
 import org.isf.utils.exception.OHServiceException;
@@ -69,9 +68,9 @@ public class FamilyPlanningVisitBrowserManager {
         Integer familyPlanningId,
         LocalDateTime fromDate,
         LocalDateTime toDate,
-        FPVisitType visitType
+        String visitTypeCode
     ) throws OHServiceException {
-        return ioOperation.getVisitsByFilters(familyPlanningId, fromDate, toDate, visitType);
+        return ioOperation.getVisitsByFilters(familyPlanningId, fromDate, toDate, visitTypeCode);
     }
 
     public FamilyPlanningVisit newVisit(FamilyPlanningVisit visit) throws OHServiceException {

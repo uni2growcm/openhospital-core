@@ -21,7 +21,6 @@
  */
 package org.isf.maternity.service;
 
-import org.isf.maternity.model.FPMethod;
 import org.isf.maternity.model.FPStatus;
 import org.isf.maternity.model.FamilyPlanning;
 import org.springframework.data.domain.Page;
@@ -31,7 +30,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -39,9 +37,9 @@ import java.util.Optional;
 @Repository
 public interface FamilyPlanningIoOperationRepository extends JpaRepository<FamilyPlanning, Integer> {
 
-    List<FamilyPlanning> findByPatient_CodeOrderByStartDateDesc(Integer patientCode);
+    List<FamilyPlanning> findByPatient_CodeOrderByRegistrationDateDesc(Integer patientCode);
 
-    Optional<FamilyPlanning> findTopByPatient_CodeAndStatusOrderByStartDateDesc(Integer patientCode, FPStatus status);
+    Optional<FamilyPlanning> findTopByPatient_CodeAndStatusOrderByRegistrationDateDesc(Integer patientCode, FPStatus status);
 
     boolean existsByPatient_CodeAndStatus(Integer patientCode, FPStatus status);
 
@@ -49,23 +47,23 @@ public interface FamilyPlanningIoOperationRepository extends JpaRepository<Famil
 
     List<FamilyPlanning> findByPatient_CodeAndStatus(Integer patientCode, FPStatus status);
 
-    Page<FamilyPlanning> findByStartDateBetween(LocalDate from, LocalDate to, Pageable pageable);
+    Page<FamilyPlanning> findByRegistrationDateBetween(LocalDateTime from, LocalDateTime to, Pageable pageable);
 
     @Query("""
         SELECT f FROM FamilyPlanning f
         WHERE (:patientId IS NULL OR f.patient.code = :patientId)
-          AND (:method IS NULL OR f.method = :method)
+          AND (:methodCode IS NULL OR f.currentMethod.code = :methodCode)
           AND (:status IS NULL OR f.status = :status)
-          AND (:fromDate IS NULL OR f.startDate >= :fromDate)
-          AND (:toDate IS NULL OR f.startDate <= :toDate)
-        ORDER BY f.startDate DESC
+          AND (:fromDate IS NULL OR f.registrationDate >= :fromDate)
+          AND (:toDate IS NULL OR f.registrationDate <= :toDate)
+        ORDER BY f.registrationDate DESC
     """)
     Page<FamilyPlanning> searchFamilyPlannings(
         @Param("patientId") Integer patientId,
-        @Param("method") FPMethod method,
+        @Param("methodCode") String methodCode,
         @Param("status") FPStatus status,
-        @Param("fromDate") LocalDate fromDate,
-        @Param("toDate") LocalDate toDate,
+        @Param("fromDate") LocalDateTime fromDate,
+        @Param("toDate") LocalDateTime toDate,
         Pageable pageable
     );
 }

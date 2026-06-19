@@ -6,56 +6,149 @@
 
 -- ========================================================================
 -- Table OH_FAMILYPLANNING
--- Description : Main family planning record
+-- Description : Main family planning record (per patient enrollment)
 -- ========================================================================
 CREATE TABLE IF NOT EXISTS OH_FAMILYPLANNING (
-                                                 FP_ID               INT(11)       NOT NULL AUTO_INCREMENT,
-    FP_PAT_ID           INT(11)       NOT NULL,
-    FP_METHOD           VARCHAR(30)   NOT NULL,
-    FP_START_DATE       DATE          NOT NULL,
-    FP_END_DATE         DATE          DEFAULT NULL,
-    FP_STATUS           VARCHAR(30)   NOT NULL DEFAULT 'ACTIVE',
-    FP_STOP_REASON      LONGTEXT      DEFAULT NULL,
-    FP_NEXT_APP_DATE    DATE          DEFAULT NULL,
-    FP_NOTES            LONGTEXT      DEFAULT NULL,
-    FP_CREATED_BY       VARCHAR(50)   NOT NULL,
-    FP_CREATED_DATE     DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FP_LAST_MODIFIED_BY VARCHAR(50)   DEFAULT NULL,
-    FP_LAST_MODIFIED_DATE DATETIME    DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-    FP_ACTIVE           BOOLEAN       DEFAULT TRUE,
-    FP_LOCK             INT(11)       DEFAULT 0,
+    FP_ID                   INT(11) NOT NULL AUTO_INCREMENT,
+    FP_PAT_ID               INT(11) NOT NULL,
+
+    FP_STATUS               VARCHAR(30) NOT NULL,
+
+    FP_CURRENT_METHOD_CODE  VARCHAR(20) DEFAULT NULL,
+
+    FP_REGISTRATION_DATE    DATETIME NOT NULL,
+
+    FP_NOTES                LONGTEXT DEFAULT NULL,
+
+    FP_CREATED_BY           VARCHAR(50) NOT NULL,
+    FP_CREATED_DATE         DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    FP_LAST_MODIFIED_BY     VARCHAR(50) DEFAULT NULL,
+    FP_LAST_MODIFIED_DATE   DATETIME DEFAULT NULL
+                                ON UPDATE CURRENT_TIMESTAMP,
+
+    FP_ACTIVE               BOOLEAN DEFAULT TRUE,
+
+    FP_LOCK                 INT(11) DEFAULT 0,
+
     PRIMARY KEY (FP_ID),
-    CONSTRAINT FK_FAMILYPLANNING_PATIENT FOREIGN KEY (FP_PAT_ID) REFERENCES OH_PATIENT(PAT_ID) ON DELETE RESTRICT ON UPDATE CASCADE,
-    INDEX idx_familyplanning_patient (FP_PAT_ID),
-    INDEX idx_familyplanning_status (FP_STATUS),
-    INDEX idx_familyplanning_method (FP_METHOD),
-    INDEX idx_familyplanning_startdate (FP_START_DATE)
-    ) ENGINE = INNODB;
+
+    CONSTRAINT FK_FP_PATIENT
+        FOREIGN KEY (FP_PAT_ID)
+        REFERENCES OH_PATIENT(PAT_ID)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE,
+
+    CONSTRAINT FK_FP_CURRENT_METHOD
+        FOREIGN KEY (FP_CURRENT_METHOD_CODE)
+        REFERENCES OH_TYPOLOGIES(TYPO_CODE)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE,
+
+    INDEX IDX_FP_PATIENT (FP_PAT_ID),
+    INDEX IDX_FP_STATUS (FP_STATUS),
+    INDEX IDX_FP_CURRENT_METHOD (FP_CURRENT_METHOD_CODE)
+
+) ENGINE=INNODB;
+
+-- ========================================================================
+-- Table OH_FPMETHODHISTORY
+-- Description : Tracks contraceptive method changes over time per FP record
+-- ========================================================================
+CREATE TABLE IF NOT EXISTS OH_FPMETHODHISTORY (
+
+    FPMH_ID                 INT(11) NOT NULL AUTO_INCREMENT,
+
+    FPMH_FP_ID              INT(11) NOT NULL,
+
+    FPMH_METHOD_CODE        VARCHAR(20) NOT NULL,
+
+    FPMH_START_DATE         DATE NOT NULL,
+
+    FPMH_END_DATE           DATE DEFAULT NULL,
+
+    FPMH_STOP_REASON        VARCHAR(255) DEFAULT NULL,
+
+    FPMH_CREATED_BY         VARCHAR(50) NOT NULL,
+    FPMH_CREATED_DATE       DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    FPMH_LAST_MODIFIED_BY   VARCHAR(50) DEFAULT NULL,
+    FPMH_LAST_MODIFIED_DATE DATETIME DEFAULT NULL
+                                ON UPDATE CURRENT_TIMESTAMP,
+
+    FPMH_ACTIVE             BOOLEAN DEFAULT TRUE,
+
+    FPMH_LOCK               INT(11) DEFAULT 0,
+
+    PRIMARY KEY (FPMH_ID),
+
+    CONSTRAINT FK_FPMH_FP
+        FOREIGN KEY (FPMH_FP_ID)
+        REFERENCES OH_FAMILYPLANNING(FP_ID)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+
+    CONSTRAINT FK_FPMH_METHOD
+        FOREIGN KEY (FPMH_METHOD_CODE)
+        REFERENCES OH_TYPOLOGIES(TYPO_CODE)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE,
+
+    INDEX IDX_FPMH_FP (FPMH_FP_ID),
+    INDEX IDX_FPMH_METHOD (FPMH_METHOD_CODE)
+
+) ENGINE=INNODB;
 
 -- ========================================================================
 -- Table OH_FAMILYPLANNINGVISIT
 -- Description : Family planning follow-up visits
 -- ========================================================================
 CREATE TABLE IF NOT EXISTS OH_FAMILYPLANNINGVISIT (
-                                                      FPV_ID              INT(11)       NOT NULL AUTO_INCREMENT,
-    FPV_FP_ID           INT(11)       NOT NULL,
-    FPV_VISIT_DATE      DATETIME      NOT NULL,
-    FPV_VISIT_TYPE      VARCHAR(30)   NOT NULL,
-    FPV_COMPLAINTS      LONGTEXT      DEFAULT NULL,
-    FPV_NOTES           LONGTEXT      DEFAULT NULL,
-    FPV_NEXT_APP_DATE   DATE          DEFAULT NULL,
-    FPV_CREATED_BY      VARCHAR(50)   NOT NULL,
-    FPV_CREATED_DATE    DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FPV_LAST_MODIFIED_BY VARCHAR(50)  DEFAULT NULL,
-    FPV_LAST_MODIFIED_DATE DATETIME   DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-    FPV_ACTIVE          BOOLEAN       DEFAULT TRUE,
-    FPV_LOCK            INT(11)       DEFAULT 0,
+
+    FPV_ID                  INT(11) NOT NULL AUTO_INCREMENT,
+
+    FPV_FP_ID               INT(11) NOT NULL,
+
+    FPV_VISIT_DATE          DATETIME NOT NULL,
+
+    FPV_VISIT_TYPE_CODE     VARCHAR(20) NOT NULL,
+
+    FPV_NEXT_APP_DATE       DATE DEFAULT NULL,
+
+    FPV_NOTES               LONGTEXT DEFAULT NULL,
+
+    FPV_CREATED_BY          VARCHAR(50) NOT NULL,
+
+    FPV_CREATED_DATE        DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    FPV_LAST_MODIFIED_BY    VARCHAR(50) DEFAULT NULL,
+
+    FPV_LAST_MODIFIED_DATE  DATETIME DEFAULT NULL
+                                ON UPDATE CURRENT_TIMESTAMP,
+
+    FPV_ACTIVE              BOOLEAN DEFAULT TRUE,
+
+    FPV_LOCK                INT(11) DEFAULT 0,
+
     PRIMARY KEY (FPV_ID),
-    CONSTRAINT FK_FP_VISIT_FAMILYPLANNING FOREIGN KEY (FPV_FP_ID) REFERENCES OH_FAMILYPLANNING(FP_ID) ON DELETE CASCADE ON UPDATE CASCADE,
-    INDEX idx_fpvisit_familyplanning (FPV_FP_ID),
-    INDEX idx_fpvisit_date (FPV_VISIT_DATE),
-    INDEX idx_fpvisit_type (FPV_VISIT_TYPE)
-    ) ENGINE = INNODB;
+
+    CONSTRAINT FK_FPV_FP
+        FOREIGN KEY (FPV_FP_ID)
+        REFERENCES OH_FAMILYPLANNING(FP_ID)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+
+    CONSTRAINT FK_FPV_VISIT_TYPE
+        FOREIGN KEY (FPV_VISIT_TYPE_CODE)
+        REFERENCES OH_TYPOLOGIES(TYPO_CODE)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE,
+
+    INDEX IDX_FPV_FP (FPV_FP_ID),
+    INDEX IDX_FPV_DATE (FPV_VISIT_DATE),
+    INDEX IDX_FPV_TYPE (FPV_VISIT_TYPE_CODE)
+
+) ENGINE=INNODB;
 
 -- ========================================================================
 -- CUSTOM MENU : Internal actions for the Family Planning module

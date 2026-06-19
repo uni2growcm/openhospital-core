@@ -21,9 +21,9 @@
  */
 package org.isf.maternity;
 
-import org.isf.maternity.model.FPVisitType;
 import org.isf.maternity.model.FamilyPlanning;
 import org.isf.maternity.model.FamilyPlanningVisit;
+import org.isf.typology.model.Typology;
 
 import java.time.LocalDateTime;
 
@@ -31,27 +31,26 @@ public class TestFamilyPlanningVisit {
 
     private final LocalDateTime visitDate = LocalDateTime.of(2025, 7, 15, 10, 30);
 
-    public FamilyPlanningVisit setup(FamilyPlanning fp, boolean usingSet) {
+    public FamilyPlanningVisit setup(FamilyPlanning fp, Typology visitType, boolean usingSet) {
         FamilyPlanningVisit visit;
         if (usingSet) {
             visit = new FamilyPlanningVisit();
         } else {
-            visit = new FamilyPlanningVisit(fp, visitDate, FPVisitType.FOLLOWUP);
+            visit = new FamilyPlanningVisit(fp, visitDate, visitType);
         }
-        setParameters(visit, fp);
+        setParameters(visit, fp, visitType);
         return visit;
     }
 
-    private void setParameters(FamilyPlanningVisit visit, FamilyPlanning fp) {
+    private void setParameters(FamilyPlanningVisit visit, FamilyPlanning fp, Typology visitType) {
         visit.setFamilyPlanning(fp);
         visit.setVisitDate(visitDate);
-        visit.setVisitType(FPVisitType.FOLLOWUP);
-        visit.setComplaints("No complaints");
+        visit.setVisitType(visitType);
+        visit.setNotes("No complaints");
     }
 
     public void check(FamilyPlanningVisit visit) {
-        assert visit.getVisitType() == FPVisitType.FOLLOWUP;
         assert visit.getVisitDate().equals(visitDate);
-        assert visit.getComplaints().equals("No complaints");
+        assert visit.getNotes().equals("No complaints");
     }
 }

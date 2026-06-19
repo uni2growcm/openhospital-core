@@ -30,60 +30,59 @@ import org.isf.utils.db.Auditable;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "OH_FAMILYPLANNINGVISIT")
+@Table(name = "OH_FPMETHODHISTORY")
 @EntityListeners(AuditingEntityListener.class)
-@AttributeOverride(name = "createdBy", column = @Column(name = "FPV_CREATED_BY", updatable = false))
-@AttributeOverride(name = "createdDate", column = @Column(name = "FPV_CREATED_DATE", updatable = false))
-@AttributeOverride(name = "lastModifiedBy", column = @Column(name = "FPV_LAST_MODIFIED_BY"))
-@AttributeOverride(name = "active", column = @Column(name = "FPV_ACTIVE"))
-@AttributeOverride(name = "lastModifiedDate", column = @Column(name = "FPV_LAST_MODIFIED_DATE"))
-public class FamilyPlanningVisit extends Auditable<String> {
+@AttributeOverride(name = "createdBy", column = @Column(name = "FPMH_CREATED_BY", updatable = false))
+@AttributeOverride(name = "createdDate", column = @Column(name = "FPMH_CREATED_DATE", updatable = false))
+@AttributeOverride(name = "lastModifiedBy", column = @Column(name = "FPMH_LAST_MODIFIED_BY"))
+@AttributeOverride(name = "active", column = @Column(name = "FPMH_ACTIVE"))
+@AttributeOverride(name = "lastModifiedDate", column = @Column(name = "FPMH_LAST_MODIFIED_DATE"))
+public class FamilyPlanningMethodHistory extends Auditable<String> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "FPV_ID")
+    @Column(name = "FPMH_ID")
     private Integer id;
 
     @NotNull
     @ManyToOne
-    @JoinColumn(name = "FPV_FP_ID")
+    @JoinColumn(name = "FPMH_FP_ID")
     @JsonIgnore
     private FamilyPlanning familyPlanning;
 
     @NotNull
-    @Column(name = "FPV_VISIT_DATE")
-    private LocalDateTime visitDate;
+    @ManyToOne
+    @JoinColumn(name = "FPMH_METHOD_CODE")
+    private Typology method;
 
     @NotNull
-    @ManyToOne
-    @JoinColumn(name = "FPV_VISIT_TYPE_CODE")
-    private Typology visitType;
+    @Column(name = "FPMH_START_DATE")
+    private LocalDate startDate;
 
     @Nullable
-    @Column(name = "FPV_NEXT_APP_DATE")
-    private LocalDate nextAppointmentDate;
+    @Column(name = "FPMH_END_DATE")
+    private LocalDate endDate;
 
     @Nullable
-    @Column(name = "FPV_NOTES", columnDefinition = "LONGTEXT")
-    private String notes;
+    @Column(name = "FPMH_STOP_REASON", length = 255)
+    private String stopReason;
 
     @Version
-    @Column(name = "FPV_LOCK")
+    @Column(name = "FPMH_LOCK")
     private Integer lock;
 
     @Transient
     private volatile int hashCode;
 
-    public FamilyPlanningVisit() {
+    public FamilyPlanningMethodHistory() {
     }
 
-    public FamilyPlanningVisit(FamilyPlanning familyPlanning, LocalDateTime visitDate, Typology visitType) {
+    public FamilyPlanningMethodHistory(FamilyPlanning familyPlanning, Typology method, LocalDate startDate) {
         this.familyPlanning = familyPlanning;
-        this.visitDate = visitDate;
-        this.visitType = visitType;
+        this.method = method;
+        this.startDate = startDate;
     }
 
     public Integer getId() {
@@ -102,38 +101,38 @@ public class FamilyPlanningVisit extends Auditable<String> {
         this.familyPlanning = familyPlanning;
     }
 
-    public LocalDateTime getVisitDate() {
-        return visitDate;
+    public Typology getMethod() {
+        return method;
     }
 
-    public void setVisitDate(LocalDateTime visitDate) {
-        this.visitDate = visitDate;
+    public void setMethod(Typology method) {
+        this.method = method;
     }
 
-    public Typology getVisitType() {
-        return visitType;
+    public LocalDate getStartDate() {
+        return startDate;
     }
 
-    public void setVisitType(Typology visitType) {
-        this.visitType = visitType;
-    }
-
-    @Nullable
-    public LocalDate getNextAppointmentDate() {
-        return nextAppointmentDate;
-    }
-
-    public void setNextAppointmentDate(@Nullable LocalDate nextAppointmentDate) {
-        this.nextAppointmentDate = nextAppointmentDate;
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
     }
 
     @Nullable
-    public String getNotes() {
-        return notes;
+    public LocalDate getEndDate() {
+        return endDate;
     }
 
-    public void setNotes(@Nullable String notes) {
-        this.notes = notes;
+    public void setEndDate(@Nullable LocalDate endDate) {
+        this.endDate = endDate;
+    }
+
+    @Nullable
+    public String getStopReason() {
+        return stopReason;
+    }
+
+    public void setStopReason(@Nullable String stopReason) {
+        this.stopReason = stopReason;
     }
 
     public Integer getLock() {
@@ -147,7 +146,7 @@ public class FamilyPlanningVisit extends Auditable<String> {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof FamilyPlanningVisit other)) return false;
+        if (!(o instanceof FamilyPlanningMethodHistory other)) return false;
         return id != null && id.equals(other.id);
     }
 
@@ -164,11 +163,11 @@ public class FamilyPlanningVisit extends Auditable<String> {
 
     @Override
     public String toString() {
-        return "FamilyPlanningVisit{" +
+        return "FamilyPlanningMethodHistory{" +
                 "ID=" + id +
                 ", familyPlanningId=" + (familyPlanning != null ? familyPlanning.getId() : null) +
-                ", visitDate=" + visitDate +
-                ", visitType=" + (visitType != null ? visitType.getCode() : null) +
+                ", method=" + (method != null ? method.getCode() : null) +
+                ", startDate=" + startDate +
                 '}';
     }
 }

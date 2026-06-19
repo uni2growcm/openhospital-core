@@ -21,7 +21,6 @@
  */
 package org.isf.maternity.service;
 
-import org.isf.maternity.model.FPVisitType;
 import org.isf.maternity.model.FamilyPlanningVisit;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -54,13 +53,13 @@ public interface FamilyPlanningVisitIoOperationRepository extends JpaRepository<
         WHERE v.familyPlanning.id = :familyPlanningId
           AND (:fromDate IS NULL OR v.visitDate >= :fromDate)
           AND (:toDate IS NULL OR v.visitDate <= :toDate)
-          AND (:visitType IS NULL OR v.visitType = :visitType)
+          AND (:visitTypeCode IS NULL OR v.visitType.code = :visitTypeCode)
         ORDER BY v.visitDate ASC
     """)
     List<FamilyPlanningVisit> findVisitsByFilters(
         @Param("familyPlanningId") Integer familyPlanningId,
         @Param("fromDate") LocalDateTime fromDate,
         @Param("toDate") LocalDateTime toDate,
-        @Param("visitType") FPVisitType visitType
+        @Param("visitTypeCode") String visitTypeCode
     );
 }

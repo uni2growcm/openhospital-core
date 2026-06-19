@@ -19,26 +19,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.isf.maternity.model;
+package org.isf.maternity.service;
 
-@Deprecated(since = "1.15", forRemoval = true)
-public enum FPMethod {
-    PILL("angal.maternity.fpmethod.pill"),
-    INJECTABLE("angal.maternity.fpmethod.injectable"),
-    IMPLANT("angal.maternity.fpmethod.implant"),
-    IUD("angal.maternity.fpmethod.iud"),
-    CONDOM("angal.maternity.fpmethod.condom"),
-    STERILIZATION("angal.maternity.fpmethod.sterilization"),
-    LACTATIONAL_AMENORRHEA("angal.maternity.fpmethod.lam"),
-    NATURAL_METHOD("angal.maternity.fpmethod.natural");
+import org.isf.maternity.model.FamilyPlanningMethodHistory;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-    private final String key;
+import java.util.List;
 
-    FPMethod(String key) {
-        this.key = key;
-    }
+@Repository
+public interface FamilyPlanningMethodHistoryIoOperationRepository extends JpaRepository<FamilyPlanningMethodHistory, Integer> {
 
-    public String getKey() {
-        return key;
-    }
+    List<FamilyPlanningMethodHistory> findByFamilyPlanningIdOrderByStartDateAsc(Integer familyPlanningId);
+
+    List<FamilyPlanningMethodHistory> findByFamilyPlanningIdOrderByStartDateDesc(Integer familyPlanningId);
 }

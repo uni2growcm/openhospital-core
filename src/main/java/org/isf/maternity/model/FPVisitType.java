@@ -21,6 +21,7 @@
  */
 package org.isf.maternity.model;
 
+@Deprecated(since = "1.15", forRemoval = true)
 public enum FPVisitType {
     INITIAL("angal.maternity.fpvisittype.initial"),
     FOLLOWUP("angal.maternity.fpvisittype.followup"),

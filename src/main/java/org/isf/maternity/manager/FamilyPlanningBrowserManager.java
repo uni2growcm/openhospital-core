@@ -22,7 +22,6 @@
 package org.isf.maternity.manager;
 
 import org.isf.generaldata.MessageBundle;
-import org.isf.maternity.model.FPMethod;
 import org.isf.maternity.model.FPStatus;
 import org.isf.maternity.model.FamilyPlanning;
 import org.isf.maternity.service.FamilyPlanningIoOperation;
@@ -33,7 +32,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
@@ -65,20 +64,20 @@ public class FamilyPlanningBrowserManager {
 
     public Page<FamilyPlanning> searchFamilyPlannings(
         Integer patientCode,
-        FPMethod method,
+        String methodCode,
         FPStatus status,
-        LocalDate fromDate,
-        LocalDate toDate,
+        LocalDateTime fromDate,
+        LocalDateTime toDate,
         int page,
         int size
     ) throws OHServiceException {
         Pageable pageable = PageRequest.of(page, size);
-        return ioOperation.searchFamilyPlannings(patientCode, method, status, fromDate, toDate, pageable);
+        return ioOperation.searchFamilyPlannings(patientCode, methodCode, status, fromDate, toDate, pageable);
     }
 
     public Page<FamilyPlanning> getFamilyPlanningsByDateRange(
-        LocalDate fromDate,
-        LocalDate toDate,
+        LocalDateTime fromDate,
+        LocalDateTime toDate,
         int page,
         int size
     ) throws OHServiceException {
@@ -98,7 +97,7 @@ public class FamilyPlanningBrowserManager {
         return ioOperation.getActiveFamilyPlanningsByPatient(patientCode);
     }
 
-    public FamilyPlanning stopFamilyPlanning(Integer familyPlanningId, LocalDate endDate, String stopReason)
+    public FamilyPlanning stopFamilyPlanning(Integer familyPlanningId, LocalDateTime endDate, String stopReason)
         throws OHServiceException {
         return ioOperation.stopFamilyPlanning(familyPlanningId, endDate, stopReason);
     }
@@ -120,34 +119,26 @@ public class FamilyPlanningBrowserManager {
             );
         }
 
-        if (fp.getMethod() == null) {
+        if (fp.getRegistrationDate() == null) {
             throw new OHServiceException(
                 new OHExceptionMessage(
-                    MessageBundle.getMessage("angal.maternity.fpmethodrequired.msg")
+                    MessageBundle.getMessage("angal.maternity.fpregistrationdaterequired.msg")
                 )
             );
         }
 
-        if (fp.getStartDate() == null) {
+        if (fp.getRegistrationDate().isAfter(LocalDateTime.now())) {
             throw new OHServiceException(
                 new OHExceptionMessage(
-                    MessageBundle.getMessage("angal.maternity.fpstartdaterequired.msg")
+                    MessageBundle.getMessage("angal.maternity.fpregistrationdatecannotbeinfuture.msg")
                 )
             );
         }
 
-        if (fp.getStartDate().isAfter(LocalDate.now())) {
+        if (fp.getStatus() == null) {
             throw new OHServiceException(
                 new OHExceptionMessage(
-                    MessageBundle.getMessage("angal.maternity.fpstartdatecannotbeinfuture.msg")
-                )
-            );
-        }
-
-        if (fp.getStatus() == FPStatus.STOPPED && (fp.getStopReason() == null || fp.getStopReason().isBlank())) {
-            throw new OHServiceException(
-                new OHExceptionMessage(
-                    MessageBundle.getMessage("angal.maternity.fpstopreasonrequired.msg")
+                    MessageBundle.getMessage("angal.maternity.fpstatusrequired.msg")
                 )
             );
         }

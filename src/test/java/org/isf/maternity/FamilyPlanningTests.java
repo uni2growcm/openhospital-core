@@ -23,11 +23,15 @@ package org.isf.maternity;
 
 import org.isf.OHCoreTestCase;
 import org.isf.maternity.manager.FamilyPlanningBrowserManager;
+import org.isf.maternity.manager.FamilyPlanningMethodHistoryBrowserManager;
 import org.isf.maternity.manager.FamilyPlanningVisitBrowserManager;
 import org.isf.maternity.model.*;
 import org.isf.patient.TestPatient;
 import org.isf.patient.model.Patient;
 import org.isf.patient.service.PatientIoOperationRepository;
+import org.isf.typology.model.Family;
+import org.isf.typology.model.Typology;
+import org.isf.typology.service.TypologyIoOperationRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -46,24 +50,42 @@ class FamilyPlanningTests extends OHCoreTestCase {
     private static TestPatient testPatient;
     private static TestFamilyPlanning testFamilyPlanning;
     private static TestFamilyPlanningVisit testFamilyPlanningVisit;
+    private static TestFamilyPlanningMethodHistory testFamilyPlanningMethodHistory;
 
     @Autowired
     PatientIoOperationRepository patientIoOperationRepository;
     @Autowired
+    TypologyIoOperationRepository typologyIoOperationRepository;
+    @Autowired
     FamilyPlanningBrowserManager familyPlanningBrowserManager;
     @Autowired
     FamilyPlanningVisitBrowserManager familyPlanningVisitBrowserManager;
+    @Autowired
+    FamilyPlanningMethodHistoryBrowserManager familyPlanningMethodHistoryBrowserManager;
+
+    private Typology pillMethod;
+    private Typology implantMethod;
+    private Typology followupVisitType;
 
     @BeforeAll
     static void setUpClass() {
         testPatient = new TestPatient();
         testFamilyPlanning = new TestFamilyPlanning();
         testFamilyPlanningVisit = new TestFamilyPlanningVisit();
+        testFamilyPlanningMethodHistory = new TestFamilyPlanningMethodHistory();
     }
 
     @BeforeEach
     void setUp() {
         cleanH2InMemoryDb();
+        pillMethod = createTypology("PILL", "Pill", Family.FAMILYPLANNINGMETHODTYPE);
+        implantMethod = createTypology("IMPLANT", "Implant", Family.FAMILYPLANNINGMETHODTYPE);
+        followupVisitType = createTypology("FOLLOWUP", "Follow-up", Family.FAMILYPLANNINGVISITTYPE);
+    }
+
+    private Typology createTypology(String code, String description, Family family) {
+        Typology typology = new Typology(code, description, family);
+        return typologyIoOperationRepository.save(typology);
     }
 
     @Test
@@ -71,7 +93,7 @@ class FamilyPlanningTests extends OHCoreTestCase {
         Patient patient = testPatient.setup(false);
         patientIoOperationRepository.save(patient);
 
-        FamilyPlanning fp = testFamilyPlanning.setup(patient, false);
+        FamilyPlanning fp = testFamilyPlanning.setup(patient, pillMethod, false);
         fp = familyPlanningBrowserManager.newFamilyPlanning(fp);
         assertThat(fp).isNotNull();
         assertThat(fp.getId()).isNotNull();
@@ -104,16 +126,14 @@ class FamilyPlanningTests extends OHCoreTestCase {
         Patient patient = testPatient.setup(false);
         patientIoOperationRepository.save(patient);
 
-        FamilyPlanning fp = testFamilyPlanning.setup(patient, false);
+        FamilyPlanning fp = testFamilyPlanning.setup(patient, pillMethod, false);
         fp = familyPlanningBrowserManager.newFamilyPlanning(fp);
 
         FamilyPlanning stopped = familyPlanningBrowserManager.stopFamilyPlanning(
-            fp.getId(), LocalDate.now(), "Patient decided to stop"
+            fp.getId(), LocalDateTime.now(), "Patient decided to stop"
         );
 
         assertThat(stopped.getStatus()).isEqualTo(FPStatus.STOPPED);
-        assertThat(stopped.getStopReason()).isEqualTo("Patient decided to stop");
-        assertThat(stopped.getEndDate()).isNotNull();
         assertThat(familyPlanningBrowserManager.hasActiveFamilyPlanning(patient.getCode())).isFalse();
     }
 
@@ -122,28 +142,14 @@ class FamilyPlanningTests extends OHCoreTestCase {
         Patient patient = testPatient.setup(false);
         patientIoOperationRepository.save(patient);
 
-        FamilyPlanning fp1 = testFamilyPlanning.setup(patient, false);
+        FamilyPlanning fp1 = testFamilyPlanning.setup(patient, pillMethod, false);
         familyPlanningBrowserManager.newFamilyPlanning(fp1);
 
-        FamilyPlanning fp2 = testFamilyPlanning.setup(patient, true);
-        fp2.setStartDate(LocalDate.of(2025, 7, 1));
+        FamilyPlanning fp2 = testFamilyPlanning.setup(patient, implantMethod, true);
+        fp2.setRegistrationDate(LocalDateTime.of(2025, 7, 1, 10, 0));
 
         assertThrows(Exception.class, () -> {
             familyPlanningBrowserManager.newFamilyPlanning(fp2);
-        });
-    }
-
-    @Test
-    void testStopReasonRequiredWhenStopped() throws Exception {
-        Patient patient = testPatient.setup(false);
-        patientIoOperationRepository.save(patient);
-
-        FamilyPlanning fp = testFamilyPlanning.setup(patient, true);
-        fp.setStatus(FPStatus.STOPPED);
-        fp.setStartDate(LocalDate.of(2025, 6, 1));
-
-        assertThrows(Exception.class, () -> {
-            familyPlanningBrowserManager.newFamilyPlanning(fp);
         });
     }
 
@@ -155,19 +161,17 @@ class FamilyPlanningTests extends OHCoreTestCase {
         Patient patient2 = testPatient.setup(false);
         patientIoOperationRepository.save(patient2);
 
-        LocalDate now = LocalDate.now();
+        LocalDateTime now = LocalDateTime.now();
 
-        FamilyPlanning fp1 = testFamilyPlanning.setup(patient1, true);
-        fp1.setStartDate(now.minusDays(10));
-        fp1.setMethod(FPMethod.IMPLANT);
+        FamilyPlanning fp1 = testFamilyPlanning.setup(patient1, implantMethod, true);
+        fp1.setRegistrationDate(now.minusDays(10));
         fp1.setStatus(FPStatus.ACTIVE);
         fp1 = familyPlanningBrowserManager.newFamilyPlanning(fp1);
 
         familyPlanningBrowserManager.stopFamilyPlanning(fp1.getId(), now.minusDays(7), "Changed method");
 
-        FamilyPlanning fp2 = testFamilyPlanning.setup(patient2, true);
-        fp2.setStartDate(now.minusDays(5));
-        fp2.setMethod(FPMethod.PILL);
+        FamilyPlanning fp2 = testFamilyPlanning.setup(patient2, pillMethod, true);
+        fp2.setRegistrationDate(now.minusDays(5));
         fp2.setStatus(FPStatus.ACTIVE);
         fp2 = familyPlanningBrowserManager.newFamilyPlanning(fp2);
 
@@ -181,9 +185,11 @@ class FamilyPlanningTests extends OHCoreTestCase {
         assertThat(byPatient.getContent()).allMatch(p -> p.getPatient().getCode().equals(patient1.getCode()));
 
         Page<FamilyPlanning> byMethod = familyPlanningBrowserManager.searchFamilyPlannings(
-            null, FPMethod.IMPLANT, null, null, null, 0, 10
+            null, "IMPLANT", null, null, null, 0, 10
         );
-        assertThat(byMethod.getContent()).allMatch(p -> p.getMethod() == FPMethod.IMPLANT);
+        assertThat(byMethod.getContent()).allMatch(p ->
+            p.getCurrentMethod() != null && "IMPLANT".equals(p.getCurrentMethod().getCode())
+        );
 
         Page<FamilyPlanning> byStatus = familyPlanningBrowserManager.searchFamilyPlannings(
             null, null, FPStatus.ACTIVE, null, null, 0, 10
@@ -193,7 +199,7 @@ class FamilyPlanningTests extends OHCoreTestCase {
         Page<FamilyPlanning> byDate = familyPlanningBrowserManager.searchFamilyPlannings(
             null, null, null, now.minusDays(7), now, 0, 10
         );
-        assertThat(byDate.getContent()).allMatch(p -> !p.getStartDate().isBefore(now.minusDays(7)));
+        assertThat(byDate.getContent()).allMatch(p -> !p.getRegistrationDate().isBefore(now.minusDays(7)));
     }
 
     @Test
@@ -201,10 +207,10 @@ class FamilyPlanningTests extends OHCoreTestCase {
         Patient patient = testPatient.setup(false);
         patientIoOperationRepository.save(patient);
 
-        FamilyPlanning fp = testFamilyPlanning.setup(patient, false);
+        FamilyPlanning fp = testFamilyPlanning.setup(patient, pillMethod, false);
         fp = familyPlanningBrowserManager.newFamilyPlanning(fp);
 
-        FamilyPlanningVisit visit = testFamilyPlanningVisit.setup(fp, false);
+        FamilyPlanningVisit visit = testFamilyPlanningVisit.setup(fp, followupVisitType, false);
         FamilyPlanningVisit saved = familyPlanningVisitBrowserManager.newVisit(visit);
         assertThat(saved.getId()).isNotNull();
 
@@ -220,9 +226,9 @@ class FamilyPlanningTests extends OHCoreTestCase {
         assertThat(last).isNotNull();
         assertThat(last.getId()).isEqualTo(saved.getId());
 
-        last.setComplaints("Headache");
+        last.setNotes("Headache");
         FamilyPlanningVisit updated = familyPlanningVisitBrowserManager.updateVisit(last);
-        assertThat(updated.getComplaints()).isEqualTo("Headache");
+        assertThat(updated.getNotes()).isEqualTo("Headache");
 
         List<FamilyPlanningVisit> range = familyPlanningVisitBrowserManager.getVisitsByDateRange(
             fp.getId(),
@@ -235,7 +241,7 @@ class FamilyPlanningTests extends OHCoreTestCase {
             fp.getId(),
             updated.getVisitDate().minusDays(1),
             updated.getVisitDate().plusDays(1),
-            FPVisitType.FOLLOWUP
+            "FOLLOWUP"
         );
         assertThat(filtered).isNotEmpty();
 
@@ -249,26 +255,26 @@ class FamilyPlanningTests extends OHCoreTestCase {
         Patient patient = testPatient.setup(false);
         patientIoOperationRepository.save(patient);
 
-        FamilyPlanning fp = testFamilyPlanning.setup(patient, false);
+        FamilyPlanning fp = testFamilyPlanning.setup(patient, pillMethod, false);
         fp = familyPlanningBrowserManager.newFamilyPlanning(fp);
 
-        FamilyPlanningVisit visitNoFp = testFamilyPlanningVisit.setup(fp, true);
+        FamilyPlanningVisit visitNoFp = testFamilyPlanningVisit.setup(fp, followupVisitType, true);
         visitNoFp.setFamilyPlanning(null);
 
         assertThrows(Exception.class, () -> {
             familyPlanningVisitBrowserManager.newVisit(visitNoFp);
         });
 
-        FamilyPlanningVisit visitFutureDate = testFamilyPlanningVisit.setup(fp, true);
+        FamilyPlanningVisit visitFutureDate = testFamilyPlanningVisit.setup(fp, followupVisitType, true);
         visitFutureDate.setFamilyPlanning(fp);
-        visitFutureDate.setVisitType(FPVisitType.FOLLOWUP);
+        visitFutureDate.setVisitType(followupVisitType);
         visitFutureDate.setVisitDate(LocalDateTime.now().plusDays(10));
 
         assertThrows(Exception.class, () -> {
             familyPlanningVisitBrowserManager.newVisit(visitFutureDate);
         });
 
-        FamilyPlanningVisit visitNoType = testFamilyPlanningVisit.setup(fp, true);
+        FamilyPlanningVisit visitNoType = testFamilyPlanningVisit.setup(fp, followupVisitType, true);
         visitNoType.setFamilyPlanning(fp);
         visitNoType.setVisitDate(LocalDateTime.now().minusDays(1));
         visitNoType.setVisitType(null);
@@ -287,19 +293,45 @@ class FamilyPlanningTests extends OHCoreTestCase {
         Patient patient = testPatient.setup(false);
         patientIoOperationRepository.save(patient);
 
-        FamilyPlanning fpNoPatient = testFamilyPlanning.setup(patient, true);
+        FamilyPlanning fpNoPatient = testFamilyPlanning.setup(patient, pillMethod, true);
         fpNoPatient.setPatient(null);
         assertThrows(Exception.class, () -> {
             familyPlanningBrowserManager.newFamilyPlanning(fpNoPatient);
         });
 
-        FamilyPlanning fpFutureDate = testFamilyPlanning.setup(patient, true);
+        FamilyPlanning fpFutureDate = testFamilyPlanning.setup(patient, pillMethod, true);
         fpFutureDate.setPatient(patient);
-        fpFutureDate.setMethod(FPMethod.PILL);
-        fpFutureDate.setStartDate(LocalDate.now().plusDays(10));
+        fpFutureDate.setCurrentMethod(pillMethod);
+        fpFutureDate.setRegistrationDate(LocalDateTime.now().plusDays(10));
         fpFutureDate.setStatus(FPStatus.ACTIVE);
         assertThrows(Exception.class, () -> {
             familyPlanningBrowserManager.newFamilyPlanning(fpFutureDate);
         });
+    }
+
+    @Test
+    void testMethodHistoryFullFlow() throws Exception {
+        Patient patient = testPatient.setup(false);
+        patientIoOperationRepository.save(patient);
+
+        FamilyPlanning fp = testFamilyPlanning.setup(patient, pillMethod, false);
+        fp = familyPlanningBrowserManager.newFamilyPlanning(fp);
+
+        FamilyPlanningMethodHistory history = testFamilyPlanningMethodHistory.setup(fp, pillMethod, false);
+        FamilyPlanningMethodHistory saved = familyPlanningMethodHistoryBrowserManager.newMethodHistory(history);
+        assertThat(saved.getId()).isNotNull();
+
+        List<FamilyPlanningMethodHistory> historyList =
+            familyPlanningMethodHistoryBrowserManager.getMethodHistoryByFamilyPlanning(fp.getId());
+        assertThat(historyList).hasSize(1);
+
+        saved.setStopReason("Changed method");
+        FamilyPlanningMethodHistory updated = familyPlanningMethodHistoryBrowserManager.updateMethodHistory(saved);
+        assertThat(updated.getStopReason()).isEqualTo("Changed method");
+
+        familyPlanningMethodHistoryBrowserManager.deleteMethodHistory(saved);
+        List<FamilyPlanningMethodHistory> afterDelete =
+            familyPlanningMethodHistoryBrowserManager.getMethodHistoryByFamilyPlanning(fp.getId());
+        assertThat(afterDelete).isEmpty();
     }
 }

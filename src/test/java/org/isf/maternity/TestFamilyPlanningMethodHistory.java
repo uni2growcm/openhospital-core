@@ -21,39 +21,34 @@
  */
 package org.isf.maternity;
 
-import org.isf.maternity.model.FPStatus;
 import org.isf.maternity.model.FamilyPlanning;
-import org.isf.patient.model.Patient;
+import org.isf.maternity.model.FamilyPlanningMethodHistory;
 import org.isf.typology.model.Typology;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
-public class TestFamilyPlanning {
+public class TestFamilyPlanningMethodHistory {
 
-    private final LocalDateTime registrationDate = LocalDateTime.of(2025, 6, 1, 10, 0);
+    private final LocalDate startDate = LocalDate.of(2025, 6, 1);
 
-    public FamilyPlanning setup(Patient patient, Typology method, boolean usingSet) {
-        FamilyPlanning fp;
+    public FamilyPlanningMethodHistory setup(FamilyPlanning fp, Typology method, boolean usingSet) {
+        FamilyPlanningMethodHistory history;
         if (usingSet) {
-            fp = new FamilyPlanning();
+            history = new FamilyPlanningMethodHistory();
         } else {
-            fp = new FamilyPlanning(patient, registrationDate);
+            history = new FamilyPlanningMethodHistory(fp, method, startDate);
         }
-        setParameters(fp, patient, method);
-        return fp;
+        setParameters(history, fp, method);
+        return history;
     }
 
-    private void setParameters(FamilyPlanning fp, Patient patient, Typology method) {
-        fp.setPatient(patient);
-        fp.setCurrentMethod(method);
-        fp.setRegistrationDate(registrationDate);
-        fp.setStatus(FPStatus.ACTIVE);
-        fp.setNotes("Test family planning record");
+    private void setParameters(FamilyPlanningMethodHistory history, FamilyPlanning fp, Typology method) {
+        history.setFamilyPlanning(fp);
+        history.setMethod(method);
+        history.setStartDate(startDate);
     }
 
-    public void check(FamilyPlanning fp) {
-        assert fp.getStatus() == FPStatus.ACTIVE;
-        assert fp.getRegistrationDate().equals(registrationDate);
-        assert fp.getNotes().equals("Test family planning record");
+    public void check(FamilyPlanningMethodHistory history) {
+        assert history.getStartDate().equals(startDate);
     }
 }

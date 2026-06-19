@@ -25,10 +25,10 @@ import jakarta.persistence.*;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotNull;
 import org.isf.patient.model.Patient;
+import org.isf.typology.model.Typology;
 import org.isf.utils.db.Auditable;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -54,33 +54,24 @@ public class FamilyPlanning extends Auditable<String> {
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    @Column(name = "FP_METHOD")
-    private FPMethod method;
-
-    @NotNull
-    @Column(name = "FP_START_DATE")
-    private LocalDate startDate;
-
-    @Nullable
-    @Column(name = "FP_END_DATE")
-    private LocalDate endDate;
-
-    @NotNull
-    @Enumerated(EnumType.STRING)
     @Column(name = "FP_STATUS")
     private FPStatus status;
 
     @Nullable
-    @Column(name = "FP_STOP_REASON", columnDefinition = "LONGTEXT")
-    private String stopReason;
+    @ManyToOne
+    @JoinColumn(name = "FP_CURRENT_METHOD_CODE")
+    private Typology currentMethod;
 
-    @Nullable
-    @Column(name = "FP_NEXT_APP_DATE")
-    private LocalDate nextAppointmentDate;
+    @NotNull
+    @Column(name = "FP_REGISTRATION_DATE")
+    private LocalDateTime registrationDate;
 
     @Nullable
     @Column(name = "FP_NOTES", columnDefinition = "LONGTEXT")
     private String notes;
+
+    @OneToMany(mappedBy = "familyPlanning", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<FamilyPlanningMethodHistory> methodHistory;
 
     @OneToMany(mappedBy = "familyPlanning")
     private List<FamilyPlanningVisit> visits;
@@ -95,10 +86,9 @@ public class FamilyPlanning extends Auditable<String> {
     public FamilyPlanning() {
     }
 
-    public FamilyPlanning(Patient patient, FPMethod method, LocalDate startDate) {
+    public FamilyPlanning(Patient patient, LocalDateTime registrationDate) {
         this.patient = patient;
-        this.method = method;
-        this.startDate = startDate;
+        this.registrationDate = registrationDate;
         this.status = FPStatus.ACTIVE;
     }
 
@@ -118,31 +108,6 @@ public class FamilyPlanning extends Auditable<String> {
         this.patient = patient;
     }
 
-    public FPMethod getMethod() {
-        return method;
-    }
-
-    public void setMethod(FPMethod method) {
-        this.method = method;
-    }
-
-    public LocalDate getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(LocalDate startDate) {
-        this.startDate = startDate;
-    }
-
-    @Nullable
-    public LocalDate getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(@Nullable LocalDate endDate) {
-        this.endDate = endDate;
-    }
-
     public FPStatus getStatus() {
         return status;
     }
@@ -152,21 +117,20 @@ public class FamilyPlanning extends Auditable<String> {
     }
 
     @Nullable
-    public String getStopReason() {
-        return stopReason;
+    public Typology getCurrentMethod() {
+        return currentMethod;
     }
 
-    public void setStopReason(@Nullable String stopReason) {
-        this.stopReason = stopReason;
+    public void setCurrentMethod(@Nullable Typology currentMethod) {
+        this.currentMethod = currentMethod;
     }
 
-    @Nullable
-    public LocalDate getNextAppointmentDate() {
-        return nextAppointmentDate;
+    public LocalDateTime getRegistrationDate() {
+        return registrationDate;
     }
 
-    public void setNextAppointmentDate(@Nullable LocalDate nextAppointmentDate) {
-        this.nextAppointmentDate = nextAppointmentDate;
+    public void setRegistrationDate(LocalDateTime registrationDate) {
+        this.registrationDate = registrationDate;
     }
 
     @Nullable
@@ -176,6 +140,14 @@ public class FamilyPlanning extends Auditable<String> {
 
     public void setNotes(@Nullable String notes) {
         this.notes = notes;
+    }
+
+    public List<FamilyPlanningMethodHistory> getMethodHistory() {
+        return methodHistory;
+    }
+
+    public void setMethodHistory(List<FamilyPlanningMethodHistory> methodHistory) {
+        this.methodHistory = methodHistory;
     }
 
     public List<FamilyPlanningVisit> getVisits() {
@@ -217,7 +189,7 @@ public class FamilyPlanning extends Auditable<String> {
         return "FamilyPlanning{" +
                 "ID=" + id +
                 ", patient=" + patient +
-                ", method='" + method + '\'' +
+                ", currentMethod='" + (currentMethod != null ? currentMethod.getCode() : null) + '\'' +
                 ", status='" + status + '\'' +
                 '}';
     }
