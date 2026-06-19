@@ -167,6 +167,7 @@ public class AdmissionIoOperationRepositoryImpl implements AdmissionIoOperationR
 		Integer ageTo,
 		Character sex,
 		Integer country,
+		Integer partner,
 		Pageable pageable) throws OHServiceException {
 
 		boolean admitted = "admitted".equals(admissionStatus);
@@ -187,6 +188,10 @@ public class AdmissionIoOperationRepositoryImpl implements AdmissionIoOperationR
 
 		if (country != null) {
 			where.append(" AND c.CNT_ID = :country");
+		}
+
+		if (partner != null) {
+			where.append(" AND p.PAT_ID IN (SELECT pp.PP_PAT_ID FROM OH_PATIENT_PARTNERS pp WHERE pp.PP_PRT_ID = :partner)");
 		}
 
 		if (ageFrom != null) {
@@ -240,6 +245,7 @@ public class AdmissionIoOperationRepositoryImpl implements AdmissionIoOperationR
 		dataQuery.setParameter("search", paramTerms);
 		if (sex != null)    dataQuery.setParameter("sex", String.valueOf(sex));
 		if (country != null)  dataQuery.setParameter("country", country);
+		if (partner != null)   dataQuery.setParameter("partner", partner);
 		if (ageFrom != null) dataQuery.setParameter("ageFrom", ageFrom);
 		if (ageTo != null)   dataQuery.setParameter("ageTo", ageTo);
 		if (wardCodes != null && !wardCodes.isEmpty() && !notAdmitted) {
@@ -253,6 +259,7 @@ public class AdmissionIoOperationRepositoryImpl implements AdmissionIoOperationR
 		countQuery.setParameter("search", paramTerms);
 		if (sex != null)    countQuery.setParameter("sex", String.valueOf(sex));
 		if (country != null)  countQuery.setParameter("country", country);
+		if (partner != null) countQuery.setParameter("partner", partner);
 		if (ageFrom != null) countQuery.setParameter("ageFrom", ageFrom);
 		if (ageTo != null)   countQuery.setParameter("ageTo", ageTo);
 		if (wardCodes != null && !wardCodes.isEmpty() && !notAdmitted) {

@@ -94,6 +94,11 @@ public final class GeneralData extends ConfigurationProperties {
 	public static String PATIENTPHOTOSTORAGE;
 	public static Integer SESSIONTIMEOUT;
 	public static String PARAMSURL;
+	public static boolean REFERENCE_AUTOMATIC;
+	public static String REFERENCE_PREFIX_CHARGE;
+	public static String REFERENCE_PREFIX_DISCHARGE;
+	public static String REFERENCE_PREFIX_INVENTORY;
+	public static String REFERENCE_TIMESTAMP_FORMAT;
 
 	public static boolean STRONGPASSWORD;
 	public static int STRONGLENGTH;
@@ -170,6 +175,11 @@ public final class GeneralData extends ConfigurationProperties {
 	public static final int IMAGE_THUMBNAIL_MAX_WIDTH = 140;
 	public static final int MAX_PROFILE_IMAGE_FILE_SIZE_BYTES = 32768;
 	public static final String DEFAULT_PARAMSURL = "";
+	private static final boolean DEFAULT_REFERENCE_AUTOMATIC = true;
+	private static final String DEFAULT_REFERENCE_PREFIX_CHARGE = "REF+";
+	private static final String DEFAULT_REFERENCE_PREFIX_DISCHARGE = "REF-";
+	private static final String DEFAULT_REFERENCE_PREFIX_INVENTORY = "INV";
+	private static final String DEFAULT_REFERENCE_TIMESTAMP_FORMAT = "yyyyMMdd'T'HHmmss";
 
 	private static GeneralData mySingleData;
 
@@ -241,6 +251,11 @@ public final class GeneralData extends ConfigurationProperties {
 		PATIENTBILLSTATEMENT = myGetProperty("PATIENTBILLSTATEMENT", DEFAULT_PATIENTBILLSTATEMENT);
 		PATIENTARCHIVEBILLSTATEMENT = myGetProperty("PATIENTARCHIVEBILLSTATEMENT", DEFAULT_PATIENTARCHIVEBILLSTATEMENT);
 		DEBUG = myGetProperty("DEBUG", DEFAULT_DEBUG);
+		REFERENCE_AUTOMATIC = myGetProperty("REFERENCE_AUTOMATIC", DEFAULT_REFERENCE_AUTOMATIC);
+		REFERENCE_PREFIX_CHARGE = myGetProperty("REFERENCE_PREFIX_CHARGE", DEFAULT_REFERENCE_PREFIX_CHARGE);
+		REFERENCE_PREFIX_DISCHARGE = myGetProperty("REFERENCE_PREFIX_DISCHARGE", DEFAULT_REFERENCE_PREFIX_DISCHARGE);
+		REFERENCE_PREFIX_INVENTORY = myGetProperty("REFERENCE_PREFIX_INVENTORY", DEFAULT_REFERENCE_PREFIX_INVENTORY);
+		REFERENCE_TIMESTAMP_FORMAT = myGetProperty("REFERENCE_TIMESTAMP_FORMAT", DEFAULT_REFERENCE_TIMESTAMP_FORMAT);
 
 		STRONGPASSWORD = myGetProperty("STRONGPASSWORD", DEFAULT_STRONGPASSWORD);
 		STRONGLENGTH = myGetProperty("STRONGLENGTH", DEFAULT_STRONGLENGTH);

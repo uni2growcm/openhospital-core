@@ -391,4 +391,9 @@ public class PatientIoOperations {
 			name != null ? name : "",
 			NOT_DELETED_STATUS);
 	}
+
+	public Patient getPatientWithPartners(Integer code) throws OHServiceException {
+		Optional<Patient> patient = repository.findByIdWithPartners(code);
+		return patient.orElse(null);
+	}
 }

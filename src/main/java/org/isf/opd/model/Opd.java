@@ -131,6 +131,14 @@ public class Opd extends Auditable<String> {
 	@Column(name="OPD_RECEIVING_HOSP")
 	private String receivingHospital;
 
+	@Nullable
+	@Column(name = "OPD_MALNUTRITION")
+	private boolean malnutrition = false;
+
+	@Nullable
+	@Column(name = "OPD_REFERING_MOTIF")
+	private String referingMotif;
+
 	/*@Column(name="OPD_REASON")
    	private String reason; // ADDED: Arnaud
 
@@ -361,6 +369,22 @@ public class Opd extends Auditable<String> {
 	public void setPrescription(String prescription) {
 		this.prescription = prescription;
 	}*/
+
+	public boolean isMalnutrition() {
+		return malnutrition;
+	}
+
+	public void setMalnutrition(boolean malnutrition) {
+		this.malnutrition = malnutrition;
+	}
+
+	public String getReferingMotif() {
+		return referingMotif;
+	}
+
+	public void setReferingMotif(String referingMotif) {
+		this.referingMotif = referingMotif;
+	}
 	
 	public Visit getNextVisit() {
 		return nextVisit;
