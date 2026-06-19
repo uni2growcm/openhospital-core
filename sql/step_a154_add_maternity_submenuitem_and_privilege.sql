@@ -29,7 +29,6 @@ WHERE MNI_ID_A IN (
                    'maternity.vaccin',
                    'maternity.therapy'
     );
-DELETE FROM oh_menuitem WHERE MNI_ID_A IN ('cpn', 'hiv', 'familyplanning');
 
 -- CPN
 INSERT INTO oh_menuitem
