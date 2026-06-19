@@ -86,6 +86,17 @@ public class MalnutritionManager {
 	}
 
 	/**
+	 * Retrieves all the {@link Malnutrition} associated to the given admission idopd.
+	 *
+	 * @param opdId the admission id to use as filter.
+	 * @return all the retrieved malnutrition or {@code null} if the specified admission id is {@code null}.
+	 * @throws OHServiceException
+	 */
+	public List<Malnutrition> getMalnutritionByOpd(String opdId) throws OHServiceException {
+		return ioOperation.getMalnutritionByOpd(opdId);
+	}
+
+	/**
 	 * Returns the last {@link Malnutrition} entry for specified patient ID
 	 *
 	 * @param patientID the patient ID

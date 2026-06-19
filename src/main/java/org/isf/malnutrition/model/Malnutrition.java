@@ -38,6 +38,7 @@ import jakarta.persistence.Version;
 import jakarta.validation.constraints.NotNull;
 
 import org.isf.admission.model.Admission;
+import org.isf.opd.model.Opd;
 import org.isf.utils.db.Auditable;
 import org.isf.utils.time.TimeTools;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -85,6 +86,10 @@ public class Malnutrition extends Auditable<String> {
 	@Version
 	@Column(name="MLN_LOCK")
 	private int lock;
+
+	@ManyToOne
+	@JoinColumn(name = "MLN_OPD_ID")
+	private Opd opd;
 
 	@Transient
 	private volatile int hashCode;
@@ -155,6 +160,14 @@ public class Malnutrition extends Auditable<String> {
 
 	public float getWeight() {
 		return weight;
+	}
+
+	public Opd getOpd() {
+		return opd;
+	}
+
+	public void setOpd(Opd opd) {
+		this.opd = opd;
 	}
 
 	@Override

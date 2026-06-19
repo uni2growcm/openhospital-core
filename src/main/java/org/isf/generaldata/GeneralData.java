@@ -105,6 +105,7 @@ public final class GeneralData extends ConfigurationProperties {
 	public static int PASSWORDTRIES;
 	public static int PASSWORDLOCKTIME;
 	public static int PASSWORDIDLE;
+	public static boolean MALNUTRITIONMODULEENABLED;
 
 	public static final boolean DEFAULT_ENABLEMEDICALREFUND = false;
 	public static final int DEFAULT_PAGINATIONPAGESIZE = 100;
@@ -180,6 +181,7 @@ public final class GeneralData extends ConfigurationProperties {
 	private static final String DEFAULT_REFERENCE_PREFIX_DISCHARGE = "REF-";
 	private static final String DEFAULT_REFERENCE_PREFIX_INVENTORY = "INV";
 	private static final String DEFAULT_REFERENCE_TIMESTAMP_FORMAT = "yyyyMMdd'T'HHmmss";
+	private static final boolean DEFAULT_MALNUTRITIONMODULEENABLED = true;
 
 	private static GeneralData mySingleData;
 
@@ -256,6 +258,7 @@ public final class GeneralData extends ConfigurationProperties {
 		REFERENCE_PREFIX_DISCHARGE = myGetProperty("REFERENCE_PREFIX_DISCHARGE", DEFAULT_REFERENCE_PREFIX_DISCHARGE);
 		REFERENCE_PREFIX_INVENTORY = myGetProperty("REFERENCE_PREFIX_INVENTORY", DEFAULT_REFERENCE_PREFIX_INVENTORY);
 		REFERENCE_TIMESTAMP_FORMAT = myGetProperty("REFERENCE_TIMESTAMP_FORMAT", DEFAULT_REFERENCE_TIMESTAMP_FORMAT);
+		MALNUTRITIONMODULEENABLED = myGetProperty("MALNUTRITIONMODULEENABLED", DEFAULT_MALNUTRITIONMODULEENABLED);
 
 		STRONGPASSWORD = myGetProperty("STRONGPASSWORD", DEFAULT_STRONGPASSWORD);
 		STRONGLENGTH = myGetProperty("STRONGLENGTH", DEFAULT_STRONGLENGTH);
