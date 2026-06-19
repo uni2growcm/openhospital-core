@@ -1,160 +1,247 @@
 -- ========================================================================
--- SCRIPT : step_a159_familyplanning.sql
--- OBJECTIVE : Create tables for the Family Planning module
---             and add corresponding access privileges
+-- SCRIPT : step_a159_familyplanning_merged.sql
+-- OBJECTIVE : Create Family Planning module tables and migrate existing data
+--             This script handles both fresh installation and upgrades
 -- ========================================================================
 
 -- ========================================================================
--- Table OH_FAMILYPLANNING
--- Description : Main family planning record (per patient enrollment)
+-- 1. TABLE OH_FAMILYPLANNING
+--    Main family planning record (per patient enrollment)
 -- ========================================================================
 CREATE TABLE IF NOT EXISTS OH_FAMILYPLANNING (
-    FP_ID                   INT(11) NOT NULL AUTO_INCREMENT,
+                                                 FP_ID                   INT(11) NOT NULL AUTO_INCREMENT,
     FP_PAT_ID               INT(11) NOT NULL,
-
     FP_STATUS               VARCHAR(30) NOT NULL,
-
     FP_CURRENT_METHOD_CODE  VARCHAR(20) DEFAULT NULL,
-
     FP_REGISTRATION_DATE    DATETIME NOT NULL,
-
     FP_NOTES                LONGTEXT DEFAULT NULL,
-
     FP_CREATED_BY           VARCHAR(50) NOT NULL,
     FP_CREATED_DATE         DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
     FP_LAST_MODIFIED_BY     VARCHAR(50) DEFAULT NULL,
-    FP_LAST_MODIFIED_DATE   DATETIME DEFAULT NULL
-                                ON UPDATE CURRENT_TIMESTAMP,
-
+    FP_LAST_MODIFIED_DATE   DATETIME DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
     FP_ACTIVE               BOOLEAN DEFAULT TRUE,
-
     FP_LOCK                 INT(11) DEFAULT 0,
-
     PRIMARY KEY (FP_ID),
-
     CONSTRAINT FK_FP_PATIENT
-        FOREIGN KEY (FP_PAT_ID)
-        REFERENCES OH_PATIENT(PAT_ID)
-        ON DELETE RESTRICT
-        ON UPDATE CASCADE,
-
-    CONSTRAINT FK_FP_CURRENT_METHOD
-        FOREIGN KEY (FP_CURRENT_METHOD_CODE)
-        REFERENCES OH_TYPOLOGIES(TYPO_CODE)
-        ON DELETE RESTRICT
-        ON UPDATE CASCADE,
-
+    FOREIGN KEY (FP_PAT_ID)
+    REFERENCES OH_PATIENT(PAT_ID)
+                                                  ON DELETE RESTRICT ON UPDATE CASCADE,
     INDEX IDX_FP_PATIENT (FP_PAT_ID),
-    INDEX IDX_FP_STATUS (FP_STATUS),
-    INDEX IDX_FP_CURRENT_METHOD (FP_CURRENT_METHOD_CODE)
-
-) ENGINE=INNODB;
+    INDEX IDX_FP_STATUS (FP_STATUS)
+    ) ENGINE=INNODB;
 
 -- ========================================================================
--- Table OH_FPMETHODHISTORY
--- Description : Tracks contraceptive method changes over time per FP record
+-- 2. TABLE OH_FPMETHODHISTORY
+--    Tracks contraceptive method changes over time per FP record
 -- ========================================================================
 CREATE TABLE IF NOT EXISTS OH_FPMETHODHISTORY (
-
-    FPMH_ID                 INT(11) NOT NULL AUTO_INCREMENT,
-
+                                                  FPMH_ID                 INT(11) NOT NULL AUTO_INCREMENT,
     FPMH_FP_ID              INT(11) NOT NULL,
-
     FPMH_METHOD_CODE        VARCHAR(20) NOT NULL,
-
     FPMH_START_DATE         DATE NOT NULL,
-
     FPMH_END_DATE           DATE DEFAULT NULL,
-
     FPMH_STOP_REASON        VARCHAR(255) DEFAULT NULL,
-
     FPMH_CREATED_BY         VARCHAR(50) NOT NULL,
     FPMH_CREATED_DATE       DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
     FPMH_LAST_MODIFIED_BY   VARCHAR(50) DEFAULT NULL,
-    FPMH_LAST_MODIFIED_DATE DATETIME DEFAULT NULL
-                                ON UPDATE CURRENT_TIMESTAMP,
-
+    FPMH_LAST_MODIFIED_DATE DATETIME DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
     FPMH_ACTIVE             BOOLEAN DEFAULT TRUE,
-
     FPMH_LOCK               INT(11) DEFAULT 0,
-
     PRIMARY KEY (FPMH_ID),
-
     CONSTRAINT FK_FPMH_FP
-        FOREIGN KEY (FPMH_FP_ID)
-        REFERENCES OH_FAMILYPLANNING(FP_ID)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE,
-
-    CONSTRAINT FK_FPMH_METHOD
-        FOREIGN KEY (FPMH_METHOD_CODE)
-        REFERENCES OH_TYPOLOGIES(TYPO_CODE)
-        ON DELETE RESTRICT
-        ON UPDATE CASCADE,
-
+    FOREIGN KEY (FPMH_FP_ID)
+    REFERENCES OH_FAMILYPLANNING(FP_ID)
+                                                  ON DELETE CASCADE ON UPDATE CASCADE,
     INDEX IDX_FPMH_FP (FPMH_FP_ID),
     INDEX IDX_FPMH_METHOD (FPMH_METHOD_CODE)
-
-) ENGINE=INNODB;
+    ) ENGINE=INNODB;
 
 -- ========================================================================
--- Table OH_FAMILYPLANNINGVISIT
--- Description : Family planning follow-up visits
+-- 3. TABLE OH_FAMILYPLANNINGVISIT
+--    Family planning follow-up visits
 -- ========================================================================
 CREATE TABLE IF NOT EXISTS OH_FAMILYPLANNINGVISIT (
-
-    FPV_ID                  INT(11) NOT NULL AUTO_INCREMENT,
-
+                                                      FPV_ID                  INT(11) NOT NULL AUTO_INCREMENT,
     FPV_FP_ID               INT(11) NOT NULL,
-
     FPV_VISIT_DATE          DATETIME NOT NULL,
-
     FPV_VISIT_TYPE_CODE     VARCHAR(20) NOT NULL,
-
     FPV_NEXT_APP_DATE       DATE DEFAULT NULL,
-
     FPV_NOTES               LONGTEXT DEFAULT NULL,
-
     FPV_CREATED_BY          VARCHAR(50) NOT NULL,
-
     FPV_CREATED_DATE        DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
     FPV_LAST_MODIFIED_BY    VARCHAR(50) DEFAULT NULL,
-
-    FPV_LAST_MODIFIED_DATE  DATETIME DEFAULT NULL
-                                ON UPDATE CURRENT_TIMESTAMP,
-
+    FPV_LAST_MODIFIED_DATE  DATETIME DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
     FPV_ACTIVE              BOOLEAN DEFAULT TRUE,
-
     FPV_LOCK                INT(11) DEFAULT 0,
-
     PRIMARY KEY (FPV_ID),
-
     CONSTRAINT FK_FPV_FP
-        FOREIGN KEY (FPV_FP_ID)
-        REFERENCES OH_FAMILYPLANNING(FP_ID)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE,
-
-    CONSTRAINT FK_FPV_VISIT_TYPE
-        FOREIGN KEY (FPV_VISIT_TYPE_CODE)
-        REFERENCES OH_TYPOLOGIES(TYPO_CODE)
-        ON DELETE RESTRICT
-        ON UPDATE CASCADE,
-
+    FOREIGN KEY (FPV_FP_ID)
+    REFERENCES OH_FAMILYPLANNING(FP_ID)
+                                                  ON DELETE CASCADE ON UPDATE CASCADE,
     INDEX IDX_FPV_FP (FPV_FP_ID),
-    INDEX IDX_FPV_DATE (FPV_VISIT_DATE),
-    INDEX IDX_FPV_TYPE (FPV_VISIT_TYPE_CODE)
-
-) ENGINE=INNODB;
+    INDEX IDX_FPV_DATE (FPV_VISIT_DATE)
+    ) ENGINE=INNODB;
 
 -- ========================================================================
--- CUSTOM MENU : Internal actions for the Family Planning module
--- These entries are hidden (MNI_CLASS = '') and used for permission
--- management via OH_GROUPMENU.
+-- 4. ADD FOREIGN KEYS (if they don't exist)
+--    These are added separately to avoid issues if tables already exist
 -- ========================================================================
+
+-- Add FK for FP_CURRENT_METHOD_CODE
+SET @fk_exists = (
+    SELECT COUNT(*)
+    FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE
+    WHERE TABLE_SCHEMA = DATABASE()
+    AND TABLE_NAME = 'OH_FAMILYPLANNING'
+    AND CONSTRAINT_NAME = 'FK_FP_CURRENT_METHOD'
+);
+
+SET @add_fk = IF(@fk_exists = 0,
+    'ALTER TABLE OH_FAMILYPLANNING
+     ADD CONSTRAINT FK_FP_CURRENT_METHOD
+     FOREIGN KEY (FP_CURRENT_METHOD_CODE)
+     REFERENCES OH_TYPOLOGIES(TYPO_CODE)
+     ON DELETE RESTRICT ON UPDATE CASCADE',
+    'SELECT 1');
+PREPARE stmt FROM @add_fk;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add FK for FPV_VISIT_TYPE_CODE
+SET @fk_exists_visit = (
+    SELECT COUNT(*)
+    FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE
+    WHERE TABLE_SCHEMA = DATABASE()
+    AND TABLE_NAME = 'OH_FAMILYPLANNINGVISIT'
+    AND CONSTRAINT_NAME = 'FK_FPV_VISIT_TYPE'
+);
+
+SET @add_fk_visit = IF(@fk_exists_visit = 0,
+    'ALTER TABLE OH_FAMILYPLANNINGVISIT
+     ADD CONSTRAINT FK_FPV_VISIT_TYPE
+     FOREIGN KEY (FPV_VISIT_TYPE_CODE)
+     REFERENCES OH_TYPOLOGIES(TYPO_CODE)
+     ON DELETE RESTRICT ON UPDATE CASCADE',
+    'SELECT 1');
+PREPARE stmt FROM @add_fk_visit;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- ========================================================================
+-- 5. ADD INDEXES (if they don't exist)
+-- ========================================================================
+
+-- Index for FP_CURRENT_METHOD_CODE
+SET @index_exists_method = (
+    SELECT COUNT(*)
+    FROM INFORMATION_SCHEMA.STATISTICS
+    WHERE TABLE_SCHEMA = DATABASE()
+    AND TABLE_NAME = 'OH_FAMILYPLANNING'
+    AND INDEX_NAME = 'IDX_FP_CURRENT_METHOD'
+);
+
+SET @add_index_method = IF(@index_exists_method = 0,
+    'ALTER TABLE OH_FAMILYPLANNING ADD INDEX IDX_FP_CURRENT_METHOD (FP_CURRENT_METHOD_CODE)',
+    'SELECT 1');
+PREPARE stmt FROM @add_index_method;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Index for FPV_VISIT_TYPE_CODE
+SET @index_exists_visit = (
+    SELECT COUNT(*)
+    FROM INFORMATION_SCHEMA.STATISTICS
+    WHERE TABLE_SCHEMA = DATABASE()
+    AND TABLE_NAME = 'OH_FAMILYPLANNINGVISIT'
+    AND INDEX_NAME = 'IDX_FPV_VISIT_TYPE_CODE'
+);
+
+SET @add_index_visit = IF(@index_exists_visit = 0,
+    'ALTER TABLE OH_FAMILYPLANNINGVISIT ADD INDEX IDX_FPV_VISIT_TYPE_CODE (FPV_VISIT_TYPE_CODE)',
+    'SELECT 1');
+PREPARE stmt FROM @add_index_visit;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- ========================================================================
+-- 6. MIGRATE EXISTING DATA (if upgrading from old schema)
+--    These operations are safe and will only run if old columns exist
+-- ========================================================================
+
+-- 6.1 Migrate method history from old columns
+SELECT COUNT(*) INTO @has_fp_method FROM INFORMATION_SCHEMA.COLUMNS
+WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'OH_FAMILYPLANNING' AND COLUMN_NAME = 'FP_METHOD';
+
+SET @migrate_history = IF(@has_fp_method > 0,
+    'INSERT INTO OH_FPMETHODHISTORY
+        (FPMH_FP_ID, FPMH_METHOD_CODE, FPMH_START_DATE, FPMH_END_DATE, FPMH_STOP_REASON,
+         FPMH_CREATED_BY, FPMH_CREATED_DATE, FPMH_LAST_MODIFIED_BY, FPMH_LAST_MODIFIED_DATE,
+         FPMH_ACTIVE, FPMH_LOCK)
+     SELECT
+         FP_ID,
+         LOWER(FP_METHOD),
+         FP_START_DATE,
+         FP_END_DATE,
+         FP_STOP_REASON,
+         FP_CREATED_BY,
+         FP_CREATED_DATE,
+         FP_LAST_MODIFIED_BY,
+         FP_LAST_MODIFIED_DATE,
+         FP_ACTIVE,
+         FP_LOCK
+     FROM OH_FAMILYPLANNING
+     WHERE FP_METHOD IS NOT NULL
+       AND NOT EXISTS (SELECT 1 FROM OH_FPMETHODHISTORY h WHERE h.FPMH_FP_ID = OH_FAMILYPLANNING.FP_ID)',
+    'SELECT 1');
+PREPARE stmt FROM @migrate_history;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- 6.2 Set FP_CURRENT_METHOD_CODE from old data
+SET @update_method = IF(@has_fp_method > 0,
+    'UPDATE OH_FAMILYPLANNING fp
+     SET fp.FP_CURRENT_METHOD_CODE = LOWER(fp.FP_METHOD)
+     WHERE fp.FP_METHOD IS NOT NULL
+       AND fp.FP_CURRENT_METHOD_CODE IS NULL',
+    'SELECT 1');
+PREPARE stmt FROM @update_method;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- 6.3 Set FP_REGISTRATION_DATE from old START_DATE
+SELECT COUNT(*) INTO @has_fp_start_date FROM INFORMATION_SCHEMA.COLUMNS
+WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'OH_FAMILYPLANNING' AND COLUMN_NAME = 'FP_START_DATE';
+
+SET @update_reg_date = IF(@has_fp_start_date > 0,
+    'UPDATE OH_FAMILYPLANNING fp
+     SET fp.FP_REGISTRATION_DATE = CONVERT(fp.FP_START_DATE, DATETIME)
+     WHERE fp.FP_START_DATE IS NOT NULL
+       AND (fp.FP_REGISTRATION_DATE IS NULL OR fp.FP_REGISTRATION_DATE = ''0000-00-00 00:00:00'')',
+    'SELECT 1');
+PREPARE stmt FROM @update_reg_date;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- 6.4 Migrate visit type data
+SELECT COUNT(*) INTO @has_fpv_visit_type FROM INFORMATION_SCHEMA.COLUMNS
+WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'OH_FAMILYPLANNINGVISIT' AND COLUMN_NAME = 'FPV_VISIT_TYPE';
+
+SET @update_visit_type = IF(@has_fpv_visit_type > 0,
+    'UPDATE OH_FAMILYPLANNINGVISIT fpv
+     SET fpv.FPV_VISIT_TYPE_CODE = LOWER(fpv.FPV_VISIT_TYPE)
+     WHERE fpv.FPV_VISIT_TYPE IS NOT NULL
+       AND fpv.FPV_VISIT_TYPE_CODE IS NULL',
+    'SELECT 1');
+PREPARE stmt FROM @update_visit_type;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- ========================================================================
+-- 7. CUSTOM MENU : Internal actions for the Family Planning module
+--    These entries are hidden (MNI_CLASS = '') and used for permission
+--    management via OH_GROUPMENU.
+-- ========================================================================
+
 INSERT INTO oh_menuitem (MNI_ID_A, MNI_BTN_LABEL, MNI_LABEL, MNI_TOOLTIP, MNI_SHORTCUT, MNI_SUBMENU, MNI_CLASS, MNI_IS_SUBMENU, MNI_POSITION)
 SELECT 'familyplanning.new', 'angal.maternity.familyplanning.new.btn', 'angal.maternity.familyplanning.new.btn', 'x', '', 'familyplanning_internal', '', 'N', 1
 FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM oh_menuitem WHERE MNI_ID_A = 'familyplanning.new');
@@ -180,8 +267,9 @@ SELECT 'familyplanning.deletevisit', 'angal.maternity.familyplanning.deletevisit
 FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM oh_menuitem WHERE MNI_ID_A = 'familyplanning.deletevisit');
 
 -- ========================================================================
--- PRIVILEGES : Grant permissions to admin group
+-- 8. PRIVILEGES : Grant permissions to admin group
 -- ========================================================================
+
 INSERT INTO oh_groupmenu (GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE, GM_CREATED_BY, GM_CREATED_DATE, GM_LAST_MODIFIED_BY, GM_LAST_MODIFIED_DATE)
 SELECT 'admin', 'familyplanning.new', 1, NULL, NULL, NULL, NULL
 FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM oh_groupmenu WHERE GM_UG_ID_A = 'admin' AND GM_MNI_ID_A = 'familyplanning.new');
@@ -205,3 +293,7 @@ FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM oh_groupmenu WHERE GM_UG_ID_A = 'admin
 INSERT INTO oh_groupmenu (GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE, GM_CREATED_BY, GM_CREATED_DATE, GM_LAST_MODIFIED_BY, GM_LAST_MODIFIED_DATE)
 SELECT 'admin', 'familyplanning.deletevisit', 1, NULL, NULL, NULL, NULL
 FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM oh_groupmenu WHERE GM_UG_ID_A = 'admin' AND GM_MNI_ID_A = 'familyplanning.deletevisit');
+
+-- ========================================================================
+-- END OF SCRIPT
+-- ========================================================================
