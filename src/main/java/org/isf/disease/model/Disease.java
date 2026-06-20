@@ -61,6 +61,8 @@ public class Disease extends Auditable<String> {
 	@ManyToMany(mappedBy = "diagnosisIn")
 	private List<Admission> admissions = new ArrayList<>();
 
+	@ManyToMany(mappedBy = "diagnosisOut")
+	private List<Admission> admissionsOut = new ArrayList<>();
 
 	@Version
 	@Column(name="DIS_LOCK")

@@ -13,4 +13,4 @@ CREATE TABLE IF NOT EXISTS `OH_COUNTRY` (
     UNIQUE KEY `uk_country_iso_code` (`CNT_ISO_CODE`),
     UNIQUE KEY `uk_country_phone_code` (`CNT_PHONE_CODE`),
     UNIQUE KEY `uk_country_name` (`CNT_NAME`)
-    ) ENGINE=InnoDB
+    ) ENGINE=InnoDB;
