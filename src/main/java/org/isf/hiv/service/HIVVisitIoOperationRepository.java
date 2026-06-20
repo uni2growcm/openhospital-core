@@ -19,22 +19,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.isf.patient.service;
+package org.isf.hiv.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
-import org.isf.patient.model.Patient;
+import org.isf.hiv.model.HIVVisit;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
-public interface PatientIoOperationRepositoryCustom {
+@Repository
+public interface HIVVisitIoOperationRepository extends JpaRepository<HIVVisit, Integer> {
 
-	List<Patient> findByFieldsContainingWordsFromLiteral(String regex);
+	List<HIVVisit> findByHivInfant_IdOrderByVisitDateDesc(Integer infantId);
 
-	List<Patient> findByFieldsContainingWordsFromLiteral(String literal, int limit);
-	List<Patient> findFemaleByFieldsContainingWordsFromLiteral(String literal);
+	Page<HIVVisit> findByHivInfant_Id(Integer infantId, Pageable pageable);
 
-	Page<Patient> findByFieldsContainingWordsFromLiteral(String keyword, boolean femalesOnly, Pageable pageable);
-
-	Page<Patient> findByFieldsContainingWordsFromLiteral(String keyword, boolean femalesOnly, Integer minAge, Integer maxAge, Pageable pageable);
+	@Query("SELECT v FROM HIVVisit v WHERE v.hivInfant.id = :infantId "
+		+ "AND (:dateFrom IS NULL OR v.visitDate >= :dateFrom) "
+		+ "AND (:dateTo IS NULL OR v.visitDate <= :dateTo)")
+	List<HIVVisit> findByInfantIdAndDateRange(
+		@Param("infantId") Integer infantId,
+		@Param("dateFrom") LocalDateTime dateFrom,
+		@Param("dateTo") LocalDateTime dateTo);
 }
