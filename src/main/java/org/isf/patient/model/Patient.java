@@ -23,10 +23,13 @@ package org.isf.patient.model;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.HashSet;
+import java.util.Set;
 
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
@@ -36,7 +39,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import jakarta.persistence.Version;
@@ -46,6 +49,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.isf.anamnesis.model.PatientHistory;
 import org.isf.country.model.Country;
 import org.isf.opd.model.Opd;
+import org.isf.partner.model.Partner;
 import org.isf.patconsensus.model.PatientConsensus;
 import org.isf.priceslist.model.PriceList;
 import org.isf.reductionplan.model.ReductionPlan;
@@ -133,6 +137,9 @@ public class Patient extends Auditable<String> {
 	@Column(name="PAT_TRANSPORT")
 	private String transportMeans;
 
+	@Column(name="PAT_BLAMA")
+	private String blama;
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "PAT_COUNTRY_ID")
 	private Country country;
@@ -210,6 +217,14 @@ public class Patient extends Auditable<String> {
 	@ManyToOne
 	@JoinColumn(name = "PAT_PL_ID")
 	private PriceList priceList;
+
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(
+		name = "OH_PATIENT_PARTNERS",
+		joinColumns = @JoinColumn(name = "PP_PAT_ID", referencedColumnName = "PAT_ID"),
+		inverseJoinColumns = @JoinColumn(name = "PP_PRT_ID", referencedColumnName = "PRT_ID")
+	)
+	private Set<Partner> partners = new HashSet<>();
 
 	public Patient() {
 		this.firstName = "";
@@ -360,6 +375,51 @@ public class Patient extends Auditable<String> {
 		this.affiliatedPatient = affiliatedPatient;
 	}
 
+	public Patient(Integer code, String firstName, String secondName, String name,
+	               LocalDate birthDate,
+	               int age, String agetype, char sex,
+	               String address, String city, String nextKin, String telephone, String note,
+	               String motherName, char mother, String fatherName, char father,
+	               String bloodType, char hasInsurance, char parentTogether, String taxCode,
+	               String maritalStatus, String profession, char deleted, int lock,
+	               String birthPlace, Integer numberOfChildren, String geographicPosition,
+	               String parentsResidence, String transportMeans, Country country,
+	               Patient affiliatedPatient, String blama) {
+		this.code = code;
+		this.firstName = firstName;
+		this.secondName = secondName;
+		this.name = name;
+		this.birthDate = birthDate;
+		this.age = age;
+		this.agetype = agetype;
+		this.sex = sex;
+		this.address = address;
+		this.city = city;
+		this.nextKin = nextKin;
+		this.telephone = telephone;
+		this.note = note;
+		this.motherName = motherName;
+		this.mother = mother;
+		this.fatherName = fatherName;
+		this.father = father;
+		this.bloodType = bloodType;
+		this.hasInsurance = hasInsurance;
+		this.parentTogether = parentTogether;
+		this.taxCode = taxCode;
+		this.maritalStatus = maritalStatus;
+		this.profession = profession;
+		this.deleted = deleted;
+		this.lock = lock;
+		this.birthPlace = birthPlace;
+		this.numberOfChildren = numberOfChildren;
+		this.geographicPosition = geographicPosition;
+		this.parentsResidence = parentsResidence;
+		this.transportMeans = transportMeans;
+		this.country = country;
+		this.affiliatedPatient = affiliatedPatient;
+		this.blama = blama;
+	}
+
 	public Patient(int code, String firstName, String secondName, String name, LocalDate birthDate, int age, String agetype, char sex,
 	               String address, String city, String nextKin, String telephone, String note,
 	               String motherName, char mother, String fatherName, char father,
@@ -414,6 +474,10 @@ public class Patient extends Auditable<String> {
 	public String getBirthPlace(){
 		return birthPlace;
 	}
+
+	public String getBlama(){ return blama; }
+
+	public void setBlama(String blama){ this.blama = blama; }
 
 	public void setBirthDate(LocalDate birthDate) {
 		this.birthDate = birthDate;
@@ -559,6 +623,14 @@ public class Patient extends Auditable<String> {
 
 	public void setNote(String note) {
 		this.note = note;
+	}
+
+	public Set<Partner> getPartners() {
+		return partners;
+	}
+
+	public void setPartners(Set<Partner> partners) {
+		this.partners = partners;
 	}
 
 	@Override
@@ -768,6 +840,16 @@ public class Patient extends Auditable<String> {
 			infoBfr.append(taxCode);
 		}
 		return infoBfr.toString();
+	}
+
+	public void addPartner(Partner partner) {
+		if (!partners.contains(partner)) {
+			partners.add(partner);
+		}
+	}
+
+	public void removePartner(Partner partner) {
+		partners.remove(partner);
 	}
 
 	public Integer getNumberOfChildren() {
