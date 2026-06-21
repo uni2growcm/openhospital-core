@@ -117,7 +117,7 @@ source step_a120_settings.sql;
 source step_a121_create_table_country.sql;
 source step_a122_alter_patient_add_new_fields.sql;
 source step_a123_menuitem_add_country_menu.sql;
-source step_a124_add_refering_and_receiving_hospitals_in_table_opd.sql;
+source step_a124_alter_table_opd_add_new_fields.sql;
 source step_a125_create_table_typologies.sql;
 source step_a126_maternity_pregnancy.sql;
 source step_a127_maternity_pregnancy_visit.sql;
