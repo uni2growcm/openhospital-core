@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -23,6 +23,7 @@ package org.isf.operation.service;
 
 import java.util.List;
 
+import org.isf.articlefamily.model.ArticleFamily;
 import org.isf.operation.model.Operation;
 import org.isf.opetype.model.OperationType;
 import org.isf.utils.db.TranslateOHServiceException;
@@ -134,5 +135,32 @@ public class OperationIoOperations {
 	public Page<Operation> getOperationPageable(int page, int size) throws OHServiceException {
 		return repository.findAllPageable(PageRequest.of(page, size));
 
+	}
+
+	/**
+	 * Returns the list of {@link Operation}s filtered by type description and/or article family.
+	 * Both parameters are optional — pass {@code null} to ignore a filter.
+	 *
+	 * @param typeDescription - the operation type description filter, or {@code null}
+	 * @param articleFamily   - the article family filter, or {@code null}
+	 * @return the filtered list of {@link Operation}s
+	 * @throws OHServiceException
+	 */
+	public List<Operation> getOperationsByFilters(String typeDescription, ArticleFamily articleFamily) throws OHServiceException {
+		boolean hasType   = typeDescription != null && !typeDescription.isBlank();
+		boolean hasFamily = articleFamily != null;
+
+		if (hasType && hasFamily) {
+			return repository.findByTypeDescriptionAndArticleFamilyId(
+				'%' + typeDescription + '%', articleFamily.getId());
+		}
+		if (hasType) {
+			return repository.findAllByType_DescriptionContainsOrderByDescriptionAsc(
+				'%' + typeDescription + '%');
+		}
+		if (hasFamily) {
+			return repository.findByArticleFamilyId(articleFamily.getId());
+		}
+		return repository.findByOrderByDescriptionAsc();
 	}
 }

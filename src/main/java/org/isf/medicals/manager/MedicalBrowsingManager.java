@@ -24,6 +24,7 @@ package org.isf.medicals.manager;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.isf.articlefamily.model.ArticleFamily;
 import org.isf.generaldata.MessageBundle;
 import org.isf.medicals.model.Medical;
 import org.isf.medicals.service.MedicalsIoOperations;
@@ -38,9 +39,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.isf.utils.pagination.PagedResponse;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 
 /**
  * Class that provides gui separation from database operations and gives some
@@ -360,4 +358,56 @@ public class MedicalBrowsingManager {
 		return ioOperations.getMedicalsPageable(pageable, activeFilter, medicalTypeCode);
 	}
 
+	/**
+	 * Retrieves all medicals filtered by article family.
+	 * @param family the article family filter
+	 * @return list of medicals sorted by type and description
+	 * @throws OHServiceException if an error occurs
+	 */
+	public List<Medical> getMedicalsByArticleFamily(ArticleFamily family) throws OHServiceException {
+		return ioOperations.getMedicalsByArticleFamily(family);
+	}
+
+	/**
+	 * Retrieves all medicals filtered by type and article family.
+	 * @param type the medical type code (can be null)
+	 * @param family the article family (can be null)
+	 * @return list of medicals sorted by type and description
+	 * @throws OHServiceException if an error occurs
+	 */
+	public List<Medical> getMedicalsByTypeAndArticleFamily(String type, ArticleFamily family) throws OHServiceException {
+		return ioOperations.getMedicalsByTypeAndArticleFamily(type, family);
+	}
+
+	/**
+	 * Retrieves a paginated list of medical records filtered by type, description, article family, and deleted status.
+	 *
+	 * @param type The type code of medical items to filter by. Can be {@code null} to ignore this filter.
+	 * @param description The description of medical items to filter by. Can be {@code null} to ignore this filter.
+	 * @param articleFamily The article family to filter by. Can be {@code null} to ignore this filter.
+	 * @param deleted The deletion status of medical items. Use 'Y' for deleted, 'N' for active, or {@code null} for all.
+	 * @param nameSorted If {@code true}, sorts by description; if {@code false}, sorts by prod_code.
+	 * @param page The page number (0-based index).
+	 * @param size The number of items per page.
+	 * @return A {@link Page} containing the filtered medical records.
+	 * @throws OHServiceException If an error occurs.
+	 */
+	public Page<Medical> getMedicalsByTypeDescriptionFamilyAndDeleted(
+		String type,
+		String description,
+		ArticleFamily articleFamily,
+		Character deleted,
+		boolean nameSorted,
+		int page,
+		int size) throws OHServiceException {
+
+		Pageable pageable;
+		if (nameSorted) {
+			pageable = PageRequest.of(page, size, Sort.by("description").ascending());
+		} else {
+			pageable = PageRequest.of(page, size, Sort.by("prod_code").ascending());
+		}
+
+		return ioOperations.getMedicalsByTypeDescriptionFamilyAndDeleted(type, description, articleFamily, deleted, pageable);
+	}
 }

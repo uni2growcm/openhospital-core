@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -25,8 +25,6 @@ import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -35,6 +33,7 @@ import jakarta.persistence.Transient;
 import jakarta.persistence.Version;
 import jakarta.validation.constraints.NotNull;
 
+import org.isf.articlefamily.model.ArticleFamily;
 import org.isf.exatype.model.ExamType;
 import org.isf.utils.db.Auditable;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -70,6 +69,10 @@ public class Exam extends Auditable<String> {
 	@ManyToOne
 	@JoinColumn(name="EXA_EXC_ID_A")
 	private ExamType examtype;
+
+	@ManyToOne
+	@JoinColumn(name="EXA_AFM_ID")
+	private ArticleFamily articleFamily;
 
 	@Version
 	@Column(name="EXA_LOCK")
@@ -115,6 +118,14 @@ public class Exam extends Auditable<String> {
 
 	public void setExamtype(ExamType examtype) {
 		this.examtype = examtype;
+	}
+
+	public ArticleFamily getArticleFamily() {
+		return articleFamily;
+	}
+
+	public void setArticleFamily(ArticleFamily articleFamily) {
+		this.articleFamily = articleFamily;
 	}
 
 	public Integer getLock() {
