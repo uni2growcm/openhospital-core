@@ -19,22 +19,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.isf.patient.service;
+package org.isf.maternity.model;
 
-import java.util.List;
+public enum FPStatus {
+    ACTIVE("angal.maternity.fpstatus.active"),
+    STOPPED("angal.maternity.fpstatus.stopped"),
+    CHANGED("angal.maternity.fpstatus.changed"),
+    LOST_TO_FOLLOWUP("angal.maternity.fpstatus.lost");
 
-import org.isf.patient.model.Patient;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+    private final String key;
 
-public interface PatientIoOperationRepositoryCustom {
+    FPStatus(String key) {
+        this.key = key;
+    }
 
-	List<Patient> findByFieldsContainingWordsFromLiteral(String regex);
-
-	List<Patient> findByFieldsContainingWordsFromLiteral(String literal, int limit);
-	List<Patient> findFemaleByFieldsContainingWordsFromLiteral(String literal);
-
-	Page<Patient> findByFieldsContainingWordsFromLiteral(String keyword, boolean femalesOnly, Pageable pageable);
-
-	Page<Patient> findByFieldsContainingWordsFromLiteral(String keyword, boolean femalesOnly, Integer minAge, Integer maxAge, Pageable pageable);
+    public String getKey() {
+        return key;
+    }
 }

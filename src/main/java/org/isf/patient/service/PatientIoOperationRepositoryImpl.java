@@ -227,4 +227,74 @@ public class PatientIoOperationRepositoryImpl implements PatientIoOperationRepos
 
 		return new PageImpl<>(content, pageable, total);
 	}
+
+	@Override
+	public Page<Patient> findByFieldsContainingWordsFromLiteral(String keyword, boolean femalesOnly, Integer minAge, Integer maxAge, Pageable pageable) {
+		String[] words = getWordsToSearchForInPatientsRepository(keyword);
+		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+
+		// Count query
+		CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
+		Root<Patient> countRoot = countQuery.from(Patient.class);
+		List<Predicate> countPredicates = new ArrayList<>();
+
+		for (String word : words) {
+			countPredicates.add(wordExistsInOneOfPatientFields(word, cb, countRoot));
+		}
+
+		countPredicates.add(cb.or(
+			cb.equal(countRoot.get("deleted"), 'N'),
+			cb.isNull(countRoot.get("deleted"))
+		));
+
+		if (femalesOnly) {
+			countPredicates.add(cb.equal(cb.lower(countRoot.get("sex")), "f"));
+		}
+
+		if (minAge != null) {
+			countPredicates.add(cb.greaterThanOrEqualTo(countRoot.get("age"), minAge));
+		}
+		if (maxAge != null) {
+			countPredicates.add(cb.lessThanOrEqualTo(countRoot.get("age"), maxAge));
+		}
+
+		countQuery.select(cb.count(countRoot)).where(cb.and(countPredicates.toArray(new Predicate[0])));
+		Long total = entityManager.createQuery(countQuery).getSingleResult();
+
+		CriteriaQuery<Patient> contentQuery = cb.createQuery(Patient.class);
+		Root<Patient> patientRoot = contentQuery.from(Patient.class);
+		List<Predicate> contentPredicates = new ArrayList<>();
+
+		for (String word : words) {
+			contentPredicates.add(wordExistsInOneOfPatientFields(word, cb, patientRoot));
+		}
+
+		contentPredicates.add(cb.or(
+			cb.equal(patientRoot.get("deleted"), 'N'),
+			cb.isNull(patientRoot.get("deleted"))
+		));
+
+		if (femalesOnly) {
+			contentPredicates.add(cb.equal(cb.lower(patientRoot.get("sex")), "f"));
+		}
+
+		if (minAge != null) {
+			contentPredicates.add(cb.greaterThanOrEqualTo(patientRoot.get("age"), minAge));
+		}
+		if (maxAge != null) {
+			contentPredicates.add(cb.lessThanOrEqualTo(patientRoot.get("age"), maxAge));
+		}
+
+		contentQuery.select(patientRoot)
+			.where(cb.and(contentPredicates.toArray(new Predicate[0])))
+			.orderBy(cb.desc(patientRoot.get("code")));
+
+		TypedQuery<Patient> typedQuery = entityManager.createQuery(contentQuery);
+		typedQuery.setFirstResult((int) pageable.getOffset());
+		typedQuery.setMaxResults(pageable.getPageSize());
+
+		List<Patient> content = typedQuery.getResultList();
+
+		return new PageImpl<>(content, pageable, total);
+	}
 }

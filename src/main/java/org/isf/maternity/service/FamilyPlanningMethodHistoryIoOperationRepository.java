@@ -19,22 +19,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.isf.patient.service;
+package org.isf.maternity.service;
+
+import org.isf.maternity.model.FamilyPlanningMethodHistory;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import org.isf.patient.model.Patient;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+@Repository
+public interface FamilyPlanningMethodHistoryIoOperationRepository extends JpaRepository<FamilyPlanningMethodHistory, Integer> {
 
-public interface PatientIoOperationRepositoryCustom {
+    List<FamilyPlanningMethodHistory> findByFamilyPlanningIdOrderByStartDateAsc(Integer familyPlanningId);
 
-	List<Patient> findByFieldsContainingWordsFromLiteral(String regex);
-
-	List<Patient> findByFieldsContainingWordsFromLiteral(String literal, int limit);
-	List<Patient> findFemaleByFieldsContainingWordsFromLiteral(String literal);
-
-	Page<Patient> findByFieldsContainingWordsFromLiteral(String keyword, boolean femalesOnly, Pageable pageable);
-
-	Page<Patient> findByFieldsContainingWordsFromLiteral(String keyword, boolean femalesOnly, Integer minAge, Integer maxAge, Pageable pageable);
+    List<FamilyPlanningMethodHistory> findByFamilyPlanningIdOrderByStartDateDesc(Integer familyPlanningId);
 }
