@@ -1,12 +1,3 @@
--- ========================================================================
--- SCRIPT COMPLET - Menu Maternité avec sous-menus
--- Objectif :
---   - Clic sur "Maternité" → affiche 3 sous-menus : CPN, VIH, Planning Familial
---   - CPN         → ouvre org.isf.maternity.gui.MaternityBrowser
---   - VIH         → ouvre org.isf.hiv.gui.HIVInfantBrowser
---   - Planning    → ouvre org.isf.maternity.gui.FamilyPlanningBrowser
---   - Les boutons internes de MaternityBrowser restent tous visibles
--- ========================================================================
 UPDATE oh_menuitem
 SET
     MNI_IS_SUBMENU = 'Y',

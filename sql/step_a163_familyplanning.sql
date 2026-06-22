@@ -1,13 +1,3 @@
--- ========================================================================
--- SCRIPT : step_a159_familyplanning_merged.sql
--- OBJECTIVE : Create Family Planning module tables and migrate existing data
---             This script handles both fresh installation and upgrades
--- ========================================================================
-
--- ========================================================================
--- 1. TABLE OH_FAMILYPLANNING
---    Main family planning record (per patient enrollment)
--- ========================================================================
 CREATE TABLE IF NOT EXISTS OH_FAMILYPLANNING (
     FP_ID                   INT(11) NOT NULL AUTO_INCREMENT,
     FP_PAT_ID               INT(11) NOT NULL,
@@ -29,10 +19,6 @@ CREATE TABLE IF NOT EXISTS OH_FAMILYPLANNING (
     INDEX IDX_FP_STATUS (FP_STATUS)
     ) ENGINE=INNODB;
 
--- ========================================================================
--- 2. TABLE OH_FPMETHODHISTORY
---    Tracks contraceptive method changes over time per FP record
--- ========================================================================
 CREATE TABLE IF NOT EXISTS OH_FPMETHODHISTORY (
     FPMH_ID                 INT(11) NOT NULL AUTO_INCREMENT,
     FPMH_FP_ID              INT(11) NOT NULL,
@@ -54,10 +40,6 @@ CREATE TABLE IF NOT EXISTS OH_FPMETHODHISTORY (
     INDEX IDX_FPMH_METHOD (FPMH_METHOD_CODE)
     ) ENGINE=INNODB;
 
--- ========================================================================
--- 3. TABLE OH_FAMILYPLANNINGVISIT
---    Family planning follow-up visits
--- ========================================================================
 CREATE TABLE IF NOT EXISTS OH_FAMILYPLANNINGVISIT (
     FPV_ID                  INT(11) NOT NULL AUTO_INCREMENT,
     FPV_FP_ID               INT(11) NOT NULL,
@@ -79,12 +61,6 @@ CREATE TABLE IF NOT EXISTS OH_FAMILYPLANNINGVISIT (
     INDEX IDX_FPV_DATE (FPV_VISIT_DATE)
     ) ENGINE=INNODB;
 
--- ========================================================================
--- 4. ADD FOREIGN KEYS (if they don't exist)
---    These are added separately to avoid issues if tables already exist
--- ========================================================================
-
--- Add FK for FP_CURRENT_METHOD_CODE
 SET @fk_exists = (
     SELECT COUNT(*)
     FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE
@@ -124,11 +100,6 @@ PREPARE stmt FROM @add_fk_visit;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
 
--- ========================================================================
--- 5. ADD INDEXES (if they don't exist)
--- ========================================================================
-
--- Index for FP_CURRENT_METHOD_CODE
 SET @index_exists_method = (
     SELECT COUNT(*)
     FROM INFORMATION_SCHEMA.STATISTICS
@@ -160,12 +131,6 @@ PREPARE stmt FROM @add_index_visit;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
 
--- ========================================================================
--- 6. MIGRATE EXISTING DATA (if upgrading from old schema)
---    These operations are safe and will only run if old columns exist
--- ========================================================================
-
--- 6.1 Migrate method history from old columns
 SELECT COUNT(*) INTO @has_fp_method FROM INFORMATION_SCHEMA.COLUMNS
 WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'OH_FAMILYPLANNING' AND COLUMN_NAME = 'FP_METHOD';
 
@@ -233,12 +198,6 @@ PREPARE stmt FROM @update_visit_type;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
 
--- ========================================================================
--- 7. CUSTOM MENU : Internal actions for the Family Planning module
---    These entries are hidden (MNI_CLASS = '') and used for permission
---    management via OH_GROUPMENU.
--- ========================================================================
-
 INSERT INTO oh_menuitem (MNI_ID_A, MNI_BTN_LABEL, MNI_LABEL, MNI_TOOLTIP, MNI_SHORTCUT, MNI_SUBMENU, MNI_CLASS, MNI_IS_SUBMENU, MNI_POSITION)
 SELECT 'familyplanning.new', 'angal.maternity.familyplanning.new.btn', 'angal.maternity.familyplanning.new.btn', 'x', '', 'familyplanning_internal', '', 'N', 1
 FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM oh_menuitem WHERE MNI_ID_A = 'familyplanning.new');
@@ -262,10 +221,6 @@ FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM oh_menuitem WHERE MNI_ID_A = 'familypl
 INSERT INTO oh_menuitem (MNI_ID_A, MNI_BTN_LABEL, MNI_LABEL, MNI_TOOLTIP, MNI_SHORTCUT, MNI_SUBMENU, MNI_CLASS, MNI_IS_SUBMENU, MNI_POSITION)
 SELECT 'familyplanning.deletevisit', 'angal.maternity.familyplanning.deletevisit.btn', 'angal.maternity.familyplanning.deletevisit.btn', 'x', '', 'familyplanning_internal', '', 'N', 6
 FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM oh_menuitem WHERE MNI_ID_A = 'familyplanning.deletevisit');
-
--- ========================================================================
--- 8. PRIVILEGES : Grant permissions to admin group
--- ========================================================================
 
 INSERT INTO oh_groupmenu (GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE, GM_CREATED_BY, GM_CREATED_DATE, GM_LAST_MODIFIED_BY, GM_LAST_MODIFIED_DATE)
 SELECT 'admin', 'familyplanning.new', 1, NULL, NULL, NULL, NULL
