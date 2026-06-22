@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -26,6 +26,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.isf.articlefamily.model.ArticleFamily;
 import org.isf.generaldata.MessageBundle;
 import org.isf.operation.model.Operation;
 import org.isf.operation.service.OperationIoOperations;
@@ -212,4 +213,15 @@ public class OperationBrowserManager {
 		return data;
 	}
 
+	/**
+	 * Returns the list of {@link Operation}s filtered by type description and/or article family.
+	 *
+	 * @param typeDescription the operation type description filter, or {@code null}
+	 * @param articleFamily   the article family filter, or {@code null}
+	 * @return the filtered list of {@link Operation}s
+	 * @throws OHServiceException
+	 */
+	public List<Operation> getOperationsByFilters(String typeDescription, ArticleFamily articleFamily) throws OHServiceException {
+		return ioOperations.getOperationsByFilters(typeDescription, articleFamily);
+	}
 }

@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -35,6 +35,7 @@ import jakarta.persistence.Transient;
 import jakarta.persistence.Version;
 import jakarta.validation.constraints.NotNull;
 
+import org.isf.articlefamily.model.ArticleFamily;
 import org.isf.operation.enums.OperationTarget;
 import org.isf.opetype.model.OperationType;
 import org.isf.utils.db.Auditable;
@@ -62,6 +63,10 @@ public class Operation extends Auditable<String> {
 	@ManyToOne
 	@JoinColumn(name = "OPE_OCL_ID_A")
 	private OperationType type;
+
+	@ManyToOne
+	@JoinColumn(name = "OPE_AFM_ID")
+	private ArticleFamily articleFamily;
 
 	@NotNull
 	@Column(name = "OPE_STAT")
@@ -139,6 +144,14 @@ public class Operation extends Auditable<String> {
 
 	public void setType(OperationType aType) {
 		this.type = aType;
+	}
+
+	public ArticleFamily getArticleFamily() {
+		return articleFamily;
+	}
+
+	public void setArticleFamily(ArticleFamily articleFamily) {
+		this.articleFamily = articleFamily;
 	}
 
 	@Override
