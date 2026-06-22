@@ -22,9 +22,12 @@
 package org.isf.medicalstock.manager;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.isf.generaldata.GeneralData;
 import org.isf.generaldata.MessageBundle;
@@ -67,7 +70,7 @@ public class MovStockInsertingManager {
 	 * @param checkReference if {@code true} it will use {@link #checkReferenceNumber(String) checkReferenceNumber}
 	 * @throws OHServiceException
 	 */
-	protected void validateMovement(Movement movement, boolean checkReference) throws OHServiceException {
+	protected void validateMovement(Movement movement, boolean checkReference, boolean isForInventory) throws OHServiceException {
 		List<OHExceptionMessage> errors = new ArrayList<>();
 
 		// Check the Date
@@ -100,7 +103,7 @@ public class MovStockInsertingManager {
 				if (null == supplier) {
 					errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.medicalstock.multiplecharging.pleaseselectasupplier.msg")));
 				}
-			} else {
+			} else if (!isForInventory){
 				Object ward = movement.getWard();
 				if (null == ward) {
 					errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.medicalstock.multipledischarging.pleaseselectaward.msg")));
@@ -286,6 +289,17 @@ public class MovStockInsertingManager {
 	}
 
 	/**
+	 * Batch loads the nearest expiry date for each medical in the provided list.
+	 *
+	 * @param medicalCodes list of medical codes
+	 * @return map of medical code to nearest expiry date
+	 * @throws OHServiceException
+	 */
+	public Map<Integer, LocalDate> getNearestExpiryDateByMedicals(List<Integer> medicalCodes) throws OHServiceException {
+		return ioOperations.getNearestExpiryDateByMedicalCodes(medicalCodes);
+	}
+
+	/**
 	 * Checks if the provided quantity is under the medical limits.
 	 *
 	 * @param medicalSelected the selected medical.
@@ -332,10 +346,15 @@ public class MovStockInsertingManager {
 	@TranslateOHServiceException
 	public List<Movement> newMultipleChargingMovements(List<Movement> movements, String referenceNumber) throws OHServiceException {
 
-		// TODO: verify the need of this checkReference in the whole class
-		boolean checkReference = referenceNumber == null; // referenceNumber == null, each movement should have referenceNumber set
+		boolean checkReference = referenceNumber == null;
+
+		if ((referenceNumber == null || referenceNumber.isBlank()) && GeneralData.REFERENCE_AUTOMATIC) {
+			LocalDateTime now = TimeTools.getNow();
+			referenceNumber = generateReference(GeneralData.REFERENCE_PREFIX_CHARGE, now);
+			checkReference = true;
+		}
+
 		if (!checkReference) {
-			// referenceNumber != null, all movement will have same referenceNumber, we check only once for all
 			List<OHExceptionMessage> errors = checkReferenceNumber(referenceNumber);
 			if (!errors.isEmpty()) {
 				throw new OHDataValidationException(errors);
@@ -344,7 +363,10 @@ public class MovStockInsertingManager {
 		List<Movement> insertedMovements = new ArrayList<>();
 		for (Movement mov : movements) {
 			try {
-				insertedMovements.add(prepareChargingMovement(mov, checkReference));
+				if (referenceNumber != null && !referenceNumber.isBlank()) {
+					mov.setRefNo(referenceNumber);
+				}
+				insertedMovements.add(prepareChargingMovement(mov, checkReference, false));
 			} catch (OHServiceException e) {
 				List<OHExceptionMessage> errors = e.getMessages();
 				errors.add(new OHExceptionMessage(
@@ -365,8 +387,8 @@ public class MovStockInsertingManager {
 	 * @throws OHServiceException
 	 */
 	@Transactional(rollbackFor = OHServiceException.class)
-	protected Movement prepareChargingMovement(Movement movement, boolean checkReference) throws OHServiceException {
-		validateMovement(movement, checkReference);
+	protected Movement prepareChargingMovement(Movement movement, boolean checkReference, boolean isForInventory) throws OHServiceException {
+		validateMovement(movement, checkReference, isForInventory);
 		return ioOperations.prepareChargingMovement(movement);
 	}
 
@@ -420,7 +442,47 @@ public class MovStockInsertingManager {
 	@Transactional(rollbackFor = OHServiceException.class)
 	public List<Movement> newMultipleDischargingMovements(List<Movement> movements, String referenceNumber) throws OHServiceException {
 
-		boolean checkReference = referenceNumber == null; // referenceNumber == null, each movement should have referenceNumber set
+		boolean checkReference = referenceNumber == null;
+		if ((referenceNumber == null || referenceNumber.isBlank()) && GeneralData.REFERENCE_AUTOMATIC) {
+			LocalDateTime now = TimeTools.getNow();
+			referenceNumber = generateReference(GeneralData.REFERENCE_PREFIX_DISCHARGE, now);
+			checkReference = true;
+		}
+		if (!checkReference) {
+			List<OHExceptionMessage> errors = checkReferenceNumber(referenceNumber);
+			if (!errors.isEmpty()) {
+				throw new OHDataValidationException(errors);
+			}
+		}
+		List<Movement> dischargingMovements = new ArrayList<>();
+		for (Movement mov : movements) {
+			try {
+				if (referenceNumber != null && !referenceNumber.isBlank()) {
+					mov.setRefNo(referenceNumber);
+				}
+				dischargingMovements.addAll(prepareDischargingMovement(mov, checkReference,false));
+			} catch (OHServiceException e) {
+				List<OHExceptionMessage> errors = e.getMessages();
+				errors.add(new OHExceptionMessage(mov.getMedical().getDescription()));
+				throw new OHDataValidationException(errors);
+			}
+		}
+		return dischargingMovements;
+	}
+
+	/**
+	 * Insert a list of discharging {@link Movement}s
+	 *
+	 * @param movements the list of {@link Movement}s
+	 * @param referenceNumber the reference number to be set for all movements if {@link null}, each movements must have a different referenceNumber
+	 * @param isForInventory is the movement concerns an inventory
+	 * @return a list of {@Link Movement}s.
+	 * @throws OHServiceException
+	 */
+	@Transactional(rollbackFor = OHServiceException.class)
+	public List<Movement> newMultipleDischargingMovements(List<Movement> movements, String referenceNumber, boolean isForInventory) throws OHServiceException {
+
+		boolean checkReference = referenceNumber == null;
 		if (!checkReference) {
 			// referenceNumber != null, all movement will have same referenceNumber, we check only once for all
 			List<OHExceptionMessage> errors = checkReferenceNumber(referenceNumber);
@@ -431,7 +493,7 @@ public class MovStockInsertingManager {
 		List<Movement> dischargingMovements = new ArrayList<>();
 		for (Movement mov : movements) {
 			try {
-				dischargingMovements.addAll(prepareDischargingMovement(mov, checkReference));
+				dischargingMovements.addAll(prepareDischargingMovement(mov, checkReference, isForInventory));
 			} catch (OHServiceException e) {
 				List<OHExceptionMessage> errors = e.getMessages();
 				errors.add(new OHExceptionMessage(mov.getMedical().getDescription()));
@@ -461,8 +523,8 @@ public class MovStockInsertingManager {
 	 * @param checkReference if {@code true} every movement must have unique reference number
 	 * @throws OHServiceException
 	 */
-	private List<Movement> prepareDischargingMovement(Movement movement, boolean checkReference) throws OHServiceException {
-		validateMovement(movement, checkReference);
+	private List<Movement> prepareDischargingMovement(Movement movement, boolean checkReference, boolean isForInventory) throws OHServiceException {
+		validateMovement(movement, checkReference, isForInventory);
 		if (isAutomaticLotOut()) {
 			return ioOperations.newAutomaticDischargingMovement(movement);
 		} else {
@@ -491,5 +553,18 @@ public class MovStockInsertingManager {
 	 */
 	public List<Integer> getMedicalsFromLot(String code) throws OHServiceException {
 		return ioOperations.getMedicalsFromLot(code);
+	}
+
+	/**
+	 * Generates an automatic reference based on prefix and date.
+	 *
+	 * @param prefix The prefix (e.g., "REF+", "REF-")
+	 * @param date The date of the movement
+	 * @return The generated reference string
+	 */
+	private String generateReference(String prefix, LocalDateTime date) {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(GeneralData.REFERENCE_TIMESTAMP_FORMAT);
+		String timestamp = date.format(formatter);
+		return prefix + timestamp;
 	}
 }

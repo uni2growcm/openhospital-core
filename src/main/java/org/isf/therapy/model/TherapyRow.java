@@ -101,6 +101,10 @@ public class TherapyRow extends Auditable<String> {
 	@Column(name="THR_SMS")	
 	private int smsInt;
 
+	@NotNull
+	@Column(name="THR_QTY_BOUGTH", columnDefinition = "DOUBLE default 0")
+	private Double qtyBougth = 0.0;
+
 	@Transient
 	private volatile int hashCode;
 	
@@ -260,6 +264,14 @@ public class TherapyRow extends Auditable<String> {
 
 	public void setSmsInt(int smsInt) {
 		this.smsInt = smsInt;
+	}
+
+	public Double getQtyBougth() {
+		return qtyBougth;
+	}
+
+	public void setQtyBougth(Double qtyBougth) {
+		this.qtyBougth = qtyBougth;
 	}
 
 	@Override

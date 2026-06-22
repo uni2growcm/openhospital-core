@@ -55,16 +55,16 @@
 			</exclusions>
 		</dependency>
 		<dependency>
-		    <groupId>org.mock-server</groupId>
-		    <artifactId>mockserver-junit-jupiter</artifactId>
-		    <version>5.15.0</version>
-		    <scope>test</scope>
-		    <exclusions>
-		    	<exclusion>
-		    		<groupId>io.swagger.core.v3</groupId>
-		    		<artifactId>swagger-core</artifactId>
-		    	</exclusion>
-		    </exclusions>
+			<groupId>org.mock-server</groupId>
+			<artifactId>mockserver-junit-jupiter</artifactId>
+			<version>5.15.0</version>
+			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>io.swagger.core.v3</groupId>
+					<artifactId>swagger-core</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -81,22 +81,22 @@
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-openfeign</artifactId>
-			<version>4.0.6</version>
+			<version>4.2.0</version>
 		</dependency>
 		<dependency>
-		    <groupId>net.java.dev.jna</groupId>
-		    <artifactId>jna</artifactId>
-		    <version>5.15.0</version>
+			<groupId>net.java.dev.jna</groupId>
+			<artifactId>jna</artifactId>
+			<version>5.15.0</version>
 		</dependency>
 		<dependency>
-		    <groupId>net.java.dev.jna</groupId>
-		    <artifactId>jna-platform</artifactId>
-		    <version>5.15.0</version>
+			<groupId>net.java.dev.jna</groupId>
+			<artifactId>jna-platform</artifactId>
+			<version>5.16.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi-ooxml</artifactId>
-			<version>5.3.0</version>
+			<version>5.4.0</version>
 		</dependency>
 		<dependency>
 			<groupId>io.github.openfeign</groupId>
@@ -171,7 +171,7 @@
 		<dependency>
 			<groupId>com.github.oshi</groupId>
 			<artifactId>oshi-core</artifactId>
-			<version>6.6.5</version>
+			<version>6.7.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.dcm4che</groupId>
@@ -218,7 +218,7 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>3.5.1</version>
+				<version>3.5.2</version>
 				<configuration>
 					<redirectTestOutputToFile>true</redirectTestOutputToFile>
 					<reportsDirectory>${project.build.directory}/test-reports</reportsDirectory>

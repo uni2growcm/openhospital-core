@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2024 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -36,7 +36,13 @@ public final class GeneralData extends ConfigurationProperties {
 	public static boolean DEMODATA;
 	public static boolean APISERVER;
 
+	public static boolean STOCKMVTONBILLSAVE;
+	public static int PAGINATIONPAGESIZE;
+	public static boolean ENABLEMEDICALREFUND;
+	public static boolean ALLOWBILLGUARANTOR;
 	public static String LANGUAGE;
+	public static boolean HIGHLIGHTEXPIRINGMEDICAL;
+	public static Integer HIGHLIGHTEXPIRINGMEDICALDAYS;
 	public static boolean AUTOMATICLOT_IN;
 	public static boolean AUTOMATICLOT_OUT;
 	public static boolean AUTOMATICLOTWARD_TOWARD;
@@ -48,11 +54,14 @@ public final class GeneralData extends ConfigurationProperties {
 	public static String ADMCHART;
 	public static String DISCHART;
 	public static String PATIENTBILL;
+	public static String PATIENTARCHIVEDBILL;
 	public static String BILLSREPORT;
+	public static String BILLSREFUNDREPORT;
 	public static String BILLSREPORTPENDING;
 	public static String BILLSREPORTMONTHLY;
 	public static String PHARMACEUTICALORDER;
 	public static String PHARMACEUTICALSTOCK;
+	public static String PHARMACEUTICALSTOCKNOZERO;
 	public static String PHARMACEUTICALSTOCKLOT;
 	public static String PHARMACEUTICALAMC;
 	public static boolean PATIENTEXTENDED;
@@ -72,6 +81,7 @@ public final class GeneralData extends ConfigurationProperties {
 	public static boolean VIDEOMODULEENABLED;
 	public static boolean PATIENTVACCINEEXTENDED;
 	public static boolean ENHANCEDSEARCH;
+	public static boolean ENABLEMORTUARYMODULE;
 	public static boolean XMPPMODULEENABLED;
 	public static boolean DICOMMODULEENABLED;
 	public static boolean DICOMTHUMBNAILS;
@@ -79,10 +89,16 @@ public final class GeneralData extends ConfigurationProperties {
 	public static boolean ALLOWMULTIPLEOPENEDBILL;
 	public static String PATIENTBILLGROUPED;
 	public static String PATIENTBILLSTATEMENT;
+	public static String PATIENTARCHIVEBILLSTATEMENT;
 	public static boolean DEBUG;
 	public static String PATIENTPHOTOSTORAGE;
 	public static Integer SESSIONTIMEOUT;
 	public static String PARAMSURL;
+	public static boolean REFERENCE_AUTOMATIC;
+	public static String REFERENCE_PREFIX_CHARGE;
+	public static String REFERENCE_PREFIX_DISCHARGE;
+	public static String REFERENCE_PREFIX_INVENTORY;
+	public static String REFERENCE_TIMESTAMP_FORMAT;
 
 	public static boolean STRONGPASSWORD;
 	public static int STRONGLENGTH;
@@ -90,12 +106,18 @@ public final class GeneralData extends ConfigurationProperties {
 	public static int PASSWORDLOCKTIME;
 	public static int PASSWORDIDLE;
 
+	public static final boolean DEFAULT_ENABLEMEDICALREFUND = false;
+	public static final int DEFAULT_PAGINATIONPAGESIZE = 100;
+	public static final boolean DEFAULT_STOCKMVTONBILLSAVE = false;
+	private static final boolean DEFAULT_ALLOWBILLGUARANTOR  = false;
 	private static final String DEFAULT_LANGUAGE = "en";
 	private static final boolean DEFAULT_SINGLEUSER = false;
 	private static final boolean DEFAULT_USERSLISTLOGIN = false;
 	private static final String DEFAULT_MODE = "";
 	private static final boolean DEFAULT_DEMODATA = false;
 	private static final boolean DEFAULT_APISERVER = false;
+	private static final boolean DEFAULT_HIGHLIGHTEXPIRINGMEDICAL = false;
+	private static final Integer DEFAULT_HIGHLIGHTEXPIRINGMEDICALDAYS = 30;
 	private static final boolean DEFAULT_AUTOMATICLOT_IN = true;
 	private static final boolean DEFAULT_AUTOMATICLOT_OUT = true;
 	private static final boolean DEFAULT_AUTOMATICLOTWARD_TOWARD = true;
@@ -107,11 +129,14 @@ public final class GeneralData extends ConfigurationProperties {
 	private static final String DEFAULT_ADMCHART = "patient_adm_chart";
 	private static final String DEFAULT_DISCHART = "patient_dis_chart";
 	private static final String DEFAULT_PATIENTBILL = "PatientBill";
+	private static final String DEFAULT_PATIENTARCHIVEDBILL = "PatientArchivedBill";
 	private static final String DEFAULT_BILLSREPORT = "BillsReport";
+	private static final String DEFAULT_BILLSREFUNDREPORT = "BillsRefundReportUserAllInDate";
 	private static final String DEFAULT_BILLSREPORTPENDING = "BillsReportPending";
 	private static final String DEFAULT_BILLSREPORTMONTHLY = "BillsReportMonthly";
 	private static final String DEFAULT_PHARMACEUTICALORDER = "PharmaceuticalOrder";
 	private static final String DEFAULT_PHARMACEUTICALSTOCK = "PharmaceuticalStock_ver4";
+	private static final String DEFAULT_PHARMACEUTICALSTOCKNOZERO = "PharmaceuticalStock_ver4_1";
 	private static final String DEFAULT_PHARMACEUTICALSTOCKLOT = "PharmaceuticalStock_ver5"; // TODO: verify if really used
 	private static final String DEFAULT_PHARMACEUTICALAMC = "PharmaceuticalAMC";
 	private static final boolean DEFAULT_PATIENTEXTENDED = false;
@@ -130,6 +155,7 @@ public final class GeneralData extends ConfigurationProperties {
 	private static final boolean DEFAULT_VIDEOMODULEENABLED = false;
 	private static final boolean DEFAULT_PATIENTVACCINEEXTENDED = false;
 	private static final boolean DEFAULT_ENHANCEDSEARCH = false;
+	private static final boolean DEFAULT_ENABLEMORTUARYMODULE = false;
 	private static final boolean DEFAULT_XMPPMODULEENABLED = false;
 	private static final boolean DEFAULT_DICOMMODULEENABLED = false;
 	private static final boolean DEFAULT_DICOMTHUMBNAILS = true;
@@ -137,6 +163,7 @@ public final class GeneralData extends ConfigurationProperties {
 	private static final boolean DEFAULT_ALLOWMULTIPLEOPENEDBILL = false;
 	private static final String DEFAULT_PATIENTBILLGROUPED = "PatientBillGrouped";
 	private static final String DEFAULT_PATIENTBILLSTATEMENT = "PatientBillStatement";
+	private static final String DEFAULT_PATIENTARCHIVEBILLSTATEMENT = "PatientArchiveBillStatement";
 	private static final boolean DEFAULT_DEBUG = false;
 	private static final int DEFAULT_STRONGLENGTH = 6;
 	private static final int DEFAULT_SESSIONTIMEOUT = 5;
@@ -148,6 +175,11 @@ public final class GeneralData extends ConfigurationProperties {
 	public static final int IMAGE_THUMBNAIL_MAX_WIDTH = 140;
 	public static final int MAX_PROFILE_IMAGE_FILE_SIZE_BYTES = 32768;
 	public static final String DEFAULT_PARAMSURL = "";
+	private static final boolean DEFAULT_REFERENCE_AUTOMATIC = true;
+	private static final String DEFAULT_REFERENCE_PREFIX_CHARGE = "REF+";
+	private static final String DEFAULT_REFERENCE_PREFIX_DISCHARGE = "REF-";
+	private static final String DEFAULT_REFERENCE_PREFIX_INVENTORY = "INV";
+	private static final String DEFAULT_REFERENCE_TIMESTAMP_FORMAT = "yyyyMMdd'T'HHmmss";
 
 	private static GeneralData mySingleData;
 
@@ -157,6 +189,10 @@ public final class GeneralData extends ConfigurationProperties {
 
 	private GeneralData(String fileProperties) {
 		super(fileProperties, EXIT_ON_FAIL);
+		STOCKMVTONBILLSAVE = myGetProperty("STOCKMVTONBILLSAVE", DEFAULT_STOCKMVTONBILLSAVE);
+		PAGINATIONPAGESIZE = myGetProperty("PAGINATIONPAGESIZ", DEFAULT_PAGINATIONPAGESIZE);
+		ALLOWBILLGUARANTOR = myGetProperty("ALLOWBILLGUARANTOR", DEFAULT_ALLOWBILLGUARANTOR);
+		ENABLEMEDICALREFUND = myGetProperty("ENABLEMEDICALREFUND", DEFAULT_ENABLEMEDICALREFUND);
 		SINGLEUSER = myGetProperty("SINGLEUSER", DEFAULT_SINGLEUSER);
 		USERSLISTLOGIN = myGetProperty("USERSLISTLOGIN", DEFAULT_USERSLISTLOGIN);
 		MODE = myGetProperty("MODE", DEFAULT_MODE);
@@ -164,6 +200,8 @@ public final class GeneralData extends ConfigurationProperties {
 		APISERVER = myGetProperty("APISERVER", DEFAULT_APISERVER);
 		LANGUAGE = myGetProperty("LANGUAGE", DEFAULT_LANGUAGE);
 		AUTOMATICLOT_IN = myGetProperty("AUTOMATICLOT_IN", DEFAULT_AUTOMATICLOT_IN);
+		HIGHLIGHTEXPIRINGMEDICAL = myGetProperty("HIGHLIGHTEXPIRINGMEDICAL", DEFAULT_HIGHLIGHTEXPIRINGMEDICAL);
+		HIGHLIGHTEXPIRINGMEDICALDAYS = myGetProperty("HIGHLIGHTEXPIRINGMEDICALDAYS", DEFAULT_HIGHLIGHTEXPIRINGMEDICALDAYS);
 		AUTOMATICLOT_OUT = myGetProperty("AUTOMATICLOT_OUT", DEFAULT_AUTOMATICLOT_OUT);
 		AUTOMATICLOTWARD_TOWARD = myGetProperty("AUTOMATICLOTWARD_TOWARD", DEFAULT_AUTOMATICLOTWARD_TOWARD);
 		LOTWITHCOST = myGetProperty("LOTWITHCOST", DEFAULT_LOTWITHCOST);
@@ -174,11 +212,14 @@ public final class GeneralData extends ConfigurationProperties {
 		ADMCHART = myGetProperty("ADMCHART", DEFAULT_ADMCHART);
 		DISCHART = myGetProperty("DISCHART", DEFAULT_DISCHART);
 		PATIENTBILL = myGetProperty("PATIENTBILL", DEFAULT_PATIENTBILL);
+		PATIENTARCHIVEDBILL = myGetProperty("PATIENTARCHIVEDBILL", DEFAULT_PATIENTARCHIVEDBILL);
 		BILLSREPORT = myGetProperty("BILLSREPORT", DEFAULT_BILLSREPORT);
+		BILLSREFUNDREPORT = myGetProperty("BILLSREFUNDREPORT", DEFAULT_BILLSREFUNDREPORT);
 		BILLSREPORTPENDING = myGetProperty("BILLSREPORTPENDING", DEFAULT_BILLSREPORTPENDING);
 		BILLSREPORTMONTHLY = myGetProperty("BILLSREPORTMONTHLY", DEFAULT_BILLSREPORTMONTHLY);
 		PHARMACEUTICALORDER = myGetProperty("PHARMACEUTICALORDER", DEFAULT_PHARMACEUTICALORDER);
 		PHARMACEUTICALSTOCK = myGetProperty("PHARMACEUTICALSTOCK", DEFAULT_PHARMACEUTICALSTOCK);
+		PHARMACEUTICALSTOCKNOZERO = myGetProperty("PHARMACEUTICALSTOCKNOZERO", DEFAULT_PHARMACEUTICALSTOCKNOZERO);
 		PHARMACEUTICALSTOCKLOT = myGetProperty("PHARMACEUTICALSTOCKLOT", DEFAULT_PHARMACEUTICALSTOCKLOT);
 		PHARMACEUTICALAMC = myGetProperty("PHARMACEUTICALAMC", DEFAULT_PHARMACEUTICALAMC);
 		PATIENTEXTENDED = myGetProperty("PATIENTEXTENDED", DEFAULT_PATIENTEXTENDED);
@@ -200,6 +241,7 @@ public final class GeneralData extends ConfigurationProperties {
 		VIDEOMODULEENABLED = myGetProperty("VIDEOMODULEENABLED", DEFAULT_VIDEOMODULEENABLED);
 		PATIENTVACCINEEXTENDED = myGetProperty("PATIENTVACCINEEXTENDED", DEFAULT_PATIENTVACCINEEXTENDED);
 		ENHANCEDSEARCH = myGetProperty("ENHANCEDSEARCH", DEFAULT_ENHANCEDSEARCH);
+		ENABLEMORTUARYMODULE = myGetProperty("ENABLEMORTUARYMODULE", DEFAULT_ENABLEMORTUARYMODULE);
 		XMPPMODULEENABLED = myGetProperty("XMPPMODULEENABLED", DEFAULT_XMPPMODULEENABLED);
 		DICOMMODULEENABLED = myGetProperty("DICOMMODULEENABLED", DEFAULT_DICOMMODULEENABLED);
 		DICOMTHUMBNAILS = myGetProperty("DICOMTHUMBNAILS", DEFAULT_DICOMTHUMBNAILS);
@@ -207,7 +249,13 @@ public final class GeneralData extends ConfigurationProperties {
 		ALLOWMULTIPLEOPENEDBILL = myGetProperty("ALLOWMULTIPLEOPENEDBILL", DEFAULT_ALLOWMULTIPLEOPENEDBILL);
 		PATIENTBILLGROUPED = myGetProperty("PATIENTBILLGROUPED", DEFAULT_PATIENTBILLGROUPED);
 		PATIENTBILLSTATEMENT = myGetProperty("PATIENTBILLSTATEMENT", DEFAULT_PATIENTBILLSTATEMENT);
+		PATIENTARCHIVEBILLSTATEMENT = myGetProperty("PATIENTARCHIVEBILLSTATEMENT", DEFAULT_PATIENTARCHIVEBILLSTATEMENT);
 		DEBUG = myGetProperty("DEBUG", DEFAULT_DEBUG);
+		REFERENCE_AUTOMATIC = myGetProperty("REFERENCE_AUTOMATIC", DEFAULT_REFERENCE_AUTOMATIC);
+		REFERENCE_PREFIX_CHARGE = myGetProperty("REFERENCE_PREFIX_CHARGE", DEFAULT_REFERENCE_PREFIX_CHARGE);
+		REFERENCE_PREFIX_DISCHARGE = myGetProperty("REFERENCE_PREFIX_DISCHARGE", DEFAULT_REFERENCE_PREFIX_DISCHARGE);
+		REFERENCE_PREFIX_INVENTORY = myGetProperty("REFERENCE_PREFIX_INVENTORY", DEFAULT_REFERENCE_PREFIX_INVENTORY);
+		REFERENCE_TIMESTAMP_FORMAT = myGetProperty("REFERENCE_TIMESTAMP_FORMAT", DEFAULT_REFERENCE_TIMESTAMP_FORMAT);
 
 		STRONGPASSWORD = myGetProperty("STRONGPASSWORD", DEFAULT_STRONGPASSWORD);
 		STRONGLENGTH = myGetProperty("STRONGLENGTH", DEFAULT_STRONGLENGTH);

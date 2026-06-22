@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2024 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.isf.accounting.model.Bill;
 import org.isf.lab.model.Laboratory;
 import org.isf.lab.model.LaboratoryForPrint;
 import org.isf.lab.model.LaboratoryRow;
@@ -421,4 +422,57 @@ public class LabIoOperations {
 		return this.repository.countAllActiveLabs();
 	}
 
+	/**
+	 * Get a list of distinct prescribers from laboratory records
+	 *
+	 * @return a {@link List} of distinct prescriber names
+	 * @throws OHServiceException if an error occurs while accessing the repository
+	 */
+	public List<String> getDistinctPrescribers() throws OHServiceException {
+		return repository.findDistinctPrescribers();
+	}
+	/**
+	 * Check if a patient has pending laboratory exams that haven't been billed yet.
+	 *
+	 * @param patientCode the patient's code
+	 * @return true if the patient has pending exams, false otherwise
+	 * @throws OHServiceException
+	 */
+	public boolean hasLabWithoutBill(int patientCode) throws OHServiceException {
+		List<Laboratory> labs = repository.findByPatientCodeAndBillIsNull(patientCode);
+		return labs != null && !labs.isEmpty();
+	}
+
+	/**
+	 * Gets all laboratories for a patient that haven't been billed yet.
+	 *
+	 * @param patientCode the patient's code
+	 * @return list of unbilled Laboratory objects
+	 * @throws OHServiceException if an error occurs
+	 */
+	public List<Laboratory> getLabWithoutBill(int patientCode) throws OHServiceException {
+		return repository.findByPatientCodeAndBillIsNull(patientCode);
+	}
+
+	/**
+	 * Updates a Laboratory object (used to mark as billed after bill creation).
+	 *
+	 * @param laboratory the Laboratory to update
+	 * @return the updated Laboratory object
+	 * @throws OHServiceException if an error occurs
+	 */
+	public Laboratory update(Laboratory laboratory) throws OHServiceException {
+		return repository.save(laboratory);
+	}
+
+	/**
+	 * Updates the bill for a specific laboratory exam.
+	 *
+	 * @param labId the laboratory ID
+	 * @param bill the Bill object to associate
+	 * @throws OHServiceException if an error occurs during the update
+	 */
+	public void updateBillForLaboratory(int labId, Bill bill) throws OHServiceException {
+		repository.updateBillForLaboratory(labId, bill);
+	}
 }

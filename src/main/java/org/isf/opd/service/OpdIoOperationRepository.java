@@ -72,8 +72,12 @@ public interface OpdIoOperationRepository extends JpaRepository<Opd, Integer>, O
 	@Query("select o from Opd o where o.patient.code = :code order by o.prog_year")
 	Page<Opd> findAllByPatient_CodeOrderByProgYearDescPageable(@Param("code") Integer code, Pageable pageable);
 
-	@Query("select o from Opd o where o.patient.code = :code and o.ward = :ward order by o.prog_year")
-	Page<Opd> findAllByPatient_CodeAndWardOrderByProgYearDescPageable(@Param("code") int code, @Param("ward") Ward ward, Pageable pageable);
+	Page<Opd> findAllByPatient_CodeOrderByDateDesc(Integer code, Pageable pageable);
+
+	Page<Opd> findAllByOrderByDateDesc(Pageable pageable);
+
+	@Query("select o from Opd o where o.prog_year = :prog_year")
+	Page<Opd> findByProgYear(@Param("prog_year") Integer prog_year, Pageable pageable );
 
 	@Query(value = "SELECT op FROM Opd op WHERE "
 		+ "(:wardCode IS NULL OR op.ward.code = :wardCode) "
@@ -84,7 +88,7 @@ public interface OpdIoOperationRepository extends JpaRepository<Opd, Integer>, O
 		+ "AND (:sex = 'A' OR op.sex = :sex) "
 		+ "AND (:newPatient = 'A' OR op.newPatient = :newPatient) "
 		+ "AND (:user IS NULL OR op.userID = :user) "
-		+ "ORDER BY op.prog_year")
+		+ "ORDER BY op.date DESC")
 	Page<Opd> findOpdListPageable(
 		@Param("wardCode") String wardCode,
 		@Param("diseaseType") String diseaseType,
@@ -102,6 +106,11 @@ public interface OpdIoOperationRepository extends JpaRepository<Opd, Integer>, O
 
 	@Query("select count(o) from Opd o where active=1")
 	long countAllActiveOpds();
+
+	@Query("select count(o) from Opd o where o.prog_year = :prog_year")
+	long countByProgYear(@Param("prog_year") Integer prog_year);
+
+	long countByPatient_CodeOrderByDateDesc(Integer code);
 
 	@Query("select o from Opd o where o.prog_year = :prog_year order by o.prog_year")
 	Page<Opd> findByProgYearPageable(@Param("prog_year") int progYear, Pageable pageable);

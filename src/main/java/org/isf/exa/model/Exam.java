@@ -25,6 +25,8 @@ import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -37,6 +39,8 @@ import org.isf.exatype.model.ExamType;
 import org.isf.utils.db.Auditable;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.util.Objects;
+
 @Entity
 @Table(name="OH_EXAM")
 @EntityListeners(AuditingEntityListener.class)
@@ -48,7 +52,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 public class Exam extends Auditable<String> {
 
 	@Id
-	@Column(name="EXA_ID_A")	
+	@Column(name="EXA_ID_A")
 	private String code;
 
 	@NotNull
@@ -73,11 +77,11 @@ public class Exam extends Auditable<String> {
 
 	@Transient
 	private volatile int hashCode;
-	
-	public Exam() 
-    {
+
+	public Exam()
+	{
 		super();
-    }
+	}
 	
 	public Exam(String code, String description, ExamType examtype,
 			Integer procedure, String defaultResult) {
@@ -138,27 +142,38 @@ public class Exam extends Auditable<String> {
 	}
 
 	@Override
-	public boolean equals(Object anObject) {
-		return anObject instanceof Exam && (getCode().equals(((Exam) anObject).getCode())
-				&& getDescription().equalsIgnoreCase(((Exam) anObject).getDescription()) && getExamtype().equals(((Exam) anObject).getExamtype()));
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+
+		if (!(obj instanceof Exam other)) {
+			return false;
+		}
+
+		return Objects.equals(code, other.code)
+			&& Objects.equals(description, other.description)
+			&& Objects.equals(examtype, other.examtype)
+			&& Objects.equals(procedure, other.procedure)
+			&& Objects.equals(defaultResult, other.defaultResult);
 	}
 
 	@Override
 	public String toString() {
 		return getDescription();
-	}	
+	}
 
 	@Override
 	public int hashCode() {
 	    if (this.hashCode == 0) {
 	        final int m = 23;
 	        int c = 133;
-	        c = m * c + code.hashCode();   
+	        c = m * c + code.hashCode();
 	        this.hashCode = c;
-	    }	  
+	    }
 	    return this.hashCode;
 	}
-	
+
 	public String getSearchString() {
 		StringBuilder sbNameCode = new StringBuilder();
 		sbNameCode.append(getCode().toLowerCase());

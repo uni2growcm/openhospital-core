@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -24,6 +24,7 @@ package org.isf.admission.service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -34,6 +35,9 @@ import org.isf.admission.model.AdmittedPatient;
 import org.isf.patient.model.Patient;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.time.TimeTools;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
@@ -150,4 +154,129 @@ public class AdmissionIoOperationRepositoryImpl implements AdmissionIoOperationR
 		return terms;
 	}
 
+	@Override
+	public Page<AdmittedPatient> findPatientAdmissionsByFilters(
+		String searchTerms,
+		String admissionStatus,
+		List<String> wardCodes,
+		LocalDateTime admissionDateFrom,
+		LocalDateTime admissionDateTo,
+		LocalDateTime dischargeDateFrom,
+		LocalDateTime dischargeDateTo,
+		Integer ageFrom,
+		Integer ageTo,
+		Character sex,
+		Integer country,
+		Integer partner,
+		Pageable pageable) throws OHServiceException {
+
+		boolean admitted = "admitted".equals(admissionStatus);
+		boolean notAdmitted = "notAdmitted".equals(admissionStatus);
+
+		StringBuilder where = new StringBuilder();
+		where.append(" WHERE ((p.PAT_DELETED='N') OR (p.PAT_DELETED IS NULL))");
+
+		String[] terms = getTermsToSearch(searchTerms);
+		String paramTerms = like(terms);
+		where.append(" AND (lower(concat_ws(' ', p.PAT_ID, p.PAT_SNAME, p.PAT_FNAME,")
+			.append(" p.PAT_NAME, p.PAT_NOTE, p.PAT_TAXCODE, p.PAT_CITY,")
+			.append(" p.PAT_ADDR, p.PAT_TELE)) LIKE :search)");
+
+		if (sex != null) {
+			where.append(" AND p.PAT_SEX = :sex");
+		}
+
+		if (country != null) {
+			where.append(" AND c.CNT_ID = :country");
+		}
+
+		if (partner != null) {
+			where.append(" AND p.PAT_ID IN (SELECT pp.PP_PAT_ID FROM OH_PATIENT_PARTNERS pp WHERE pp.PP_PRT_ID = :partner)");
+		}
+
+		if (ageFrom != null) {
+			where.append(" AND p.PAT_BDATE IS NOT NULL")
+				.append(" AND TIMESTAMPDIFF(YEAR, p.PAT_BDATE, CURDATE()) >= :ageFrom");
+		}
+
+		if (ageTo != null) {
+			where.append(" AND p.PAT_BDATE IS NOT NULL")
+				.append(" AND TIMESTAMPDIFF(YEAR, p.PAT_BDATE, CURDATE()) <= :ageTo");
+		}
+
+		if (admitted) {
+			where.append(" AND a.ADM_ID IS NOT NULL");
+		} else if (notAdmitted) {
+			where.append(" AND a.ADM_ID IS NULL");
+		}
+
+		if (wardCodes != null && !wardCodes.isEmpty() && !notAdmitted) {
+			where.append(" AND a.ADM_WRD_ID_A IN (:wardCodes)");
+		}
+
+		if (admissionDateFrom != null) {
+			where.append(" AND DATE(a.ADM_DATE_ADM) >= '")
+				.append(TimeTools.formatDateTime(admissionDateFrom, "yyyy-MM-dd")).append("'");
+		}
+
+		if (admissionDateTo != null) {
+			where.append(" AND DATE(a.ADM_DATE_ADM) <= '")
+				.append(TimeTools.formatDateTime(admissionDateTo, "yyyy-MM-dd")).append("'");
+		}
+
+		if (dischargeDateFrom != null) {
+			where.append(" AND DATE(a.ADM_DATE_DIS) >= '")
+				.append(TimeTools.formatDateTime(dischargeDateFrom, "yyyy-MM-dd")).append("'");
+		}
+		if (dischargeDateTo != null) {
+			where.append(" AND DATE(a.ADM_DATE_DIS) <= '")
+				.append(TimeTools.formatDateTime(dischargeDateTo, "yyyy-MM-dd")).append("'");
+		}
+
+		String from = " FROM OH_PATIENT as p"
+			+ " LEFT JOIN (SELECT * FROM OH_ADMISSION WHERE ADM_IN = 1"
+			+ "   AND ((ADM_DELETED='N') OR (ADM_DELETED IS NULL))) as a"
+			+ "   ON p.PAT_ID = a.ADM_PAT_ID"
+			+ " LEFT JOIN OH_COUNTRY as c"
+			+ "   ON p.PAT_COUNTRY_ID = c.CNT_ID";
+
+		String dataSql = "SELECT *" + from + where + " ORDER BY p.PAT_ID DESC";
+		Query dataQuery = entityManager.createNativeQuery(dataSql, "AdmittedPatient");
+		dataQuery.setParameter("search", paramTerms);
+		if (sex != null)    dataQuery.setParameter("sex", String.valueOf(sex));
+		if (country != null)  dataQuery.setParameter("country", country);
+		if (partner != null)   dataQuery.setParameter("partner", partner);
+		if (ageFrom != null) dataQuery.setParameter("ageFrom", ageFrom);
+		if (ageTo != null)   dataQuery.setParameter("ageTo", ageTo);
+		if (wardCodes != null && !wardCodes.isEmpty() && !notAdmitted) {
+			dataQuery.setParameter("wardCodes", new ArrayList<>(wardCodes));
+		}
+		dataQuery.setFirstResult((int) pageable.getOffset());
+		dataQuery.setMaxResults(pageable.getPageSize());
+
+		String countSql = "SELECT COUNT(*)" + from + where;
+		Query countQuery = entityManager.createNativeQuery(countSql);
+		countQuery.setParameter("search", paramTerms);
+		if (sex != null)    countQuery.setParameter("sex", String.valueOf(sex));
+		if (country != null)  countQuery.setParameter("country", country);
+		if (partner != null) countQuery.setParameter("partner", partner);
+		if (ageFrom != null) countQuery.setParameter("ageFrom", ageFrom);
+		if (ageTo != null)   countQuery.setParameter("ageTo", ageTo);
+		if (wardCodes != null && !wardCodes.isEmpty() && !notAdmitted) {
+			countQuery.setParameter("wardCodes", new ArrayList<>(wardCodes));
+		}
+		long total = ((Number) countQuery.getSingleResult()).longValue();
+
+		List<AdmittedPatient> admittedPatients = new ArrayList<>();
+		dataQuery.getResultList().forEach(record -> {
+			Object[] row = (Object[]) record;
+			Patient p = (Patient) row[0];
+			if (p.getCountry() != null){
+				p.getCountry().getName();
+			}
+			admittedPatients.add(new AdmittedPatient(p, (Admission) row[1]));
+		});
+
+		return new PageImpl<>(admittedPatients, pageable, total);
+	}
 }

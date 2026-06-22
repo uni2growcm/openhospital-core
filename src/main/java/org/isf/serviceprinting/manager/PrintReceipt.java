@@ -21,10 +21,10 @@
  */
 package org.isf.serviceprinting.manager;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
+import java.nio.file.Files;
 import java.util.List;
+import java.util.Scanner;
 
 import javax.print.Doc;
 import javax.print.DocFlavor;
@@ -80,19 +80,24 @@ public class PrintReceipt {
 					JRTextExporter exporter = new JRTextExporter();
 					exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
 					exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, fileName);
-					exporter.setParameter(JRTextExporterParameter.CHARACTER_WIDTH, TxtPrinter.TXT_CHAR_WIDTH);
-					exporter.setParameter(JRTextExporterParameter.CHARACTER_HEIGHT, TxtPrinter.TXT_CHAR_HEIGHT);
+					exporter.setParameter(JRTextExporterParameter.CHARACTER_WIDTH, (float) TxtPrinter.TXT_CHAR_WIDTH);
+					exporter.setParameter(JRTextExporterParameter.CHARACTER_HEIGHT, (float) TxtPrinter.TXT_CHAR_HEIGHT);
 					exporter.exportReport();
 					
 					printFileZPL(fileName, !TxtPrinter.USE_DEFAULT_PRINTER);
 					
 				} else if (TxtPrinter.MODE.equalsIgnoreCase("TXT")) {
-						
-					if (jasperPrint.getPages().size() > 1) {
-						printReversPages(jasperPrint);
-					} else {
-						JasperPrintManager.printReport(jasperPrint, !TxtPrinter.USE_DEFAULT_PRINTER);
-					}
+					JRTextExporter exporter = new JRTextExporter();
+					exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
+					exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, fileName);
+					exporter.setParameter(JRTextExporterParameter.CHARACTER_WIDTH, (float)TxtPrinter.TXT_CHAR_WIDTH);
+					exporter.setParameter(JRTextExporterParameter.CHARACTER_HEIGHT, (float)TxtPrinter.TXT_CHAR_HEIGHT);
+					exporter.exportReport();
+
+					removeEmptyLines(fileName);
+
+					printFileTxt(fileName, defaultPrintService);
+					printerCutOff(defaultPrintService);
 				} else if (TxtPrinter.MODE.equalsIgnoreCase("PDF")) {
 					
 					if (jasperPrint.getPages().size() > 1) {
@@ -112,7 +117,91 @@ public class PrintReceipt {
 			LOGGER.error(exception.getMessage(), exception);
 		}
 	}
-	
+
+	private void removeEmptyLines(String TXTFile) throws IOException {
+		File f = new File(TXTFile);
+		StringBuilder output = new StringBuilder();
+		if (f.exists()) {
+			InputStreamReader reader = new InputStreamReader(Files.newInputStream(f.toPath()));
+			Scanner sc = new Scanner(reader);
+			while (sc.hasNextLine()) {
+				String line = sc.nextLine();
+				if (!line.trim().isEmpty()) {
+					output.append(line).append("\r\n");
+				}
+			}
+
+			output.append("\n");
+			output.append("\n");
+			output.append("\n");
+			output.append("\n");
+			output.append("\n");
+			output.append("\n");
+			output.append("\n");
+
+			sc.close();
+			reader.close();
+			BufferedWriter bw = null;
+			FileWriter fw = null;
+
+			try {
+				fw = new FileWriter(TXTFile);
+				bw = new BufferedWriter(fw);
+				bw.write(output.toString());
+			} catch (IOException e) {
+				//noinspection CallToPrintStackTrace
+				e.printStackTrace();
+			} finally {
+				try {
+					if (bw != null) {
+						bw.close();
+					}
+					if (fw != null) {
+						fw.close();
+					}
+				} catch (IOException ex) {
+					//noinspection CallToPrintStackTrace
+					ex.printStackTrace();
+				}
+			}
+		}
+	}
+
+	/**
+	 * @param file File name
+	 * @param printService Printer Service
+	 */
+	private void printFileTxt(String file, PrintService printService) {
+		try {
+			System.out.println("Using: " + printService.getName());
+			DocFlavor flavor = DocFlavor.INPUT_STREAM.AUTOSENSE;
+			PrintRequestAttributeSet printRequestAttributeSet = new HashPrintRequestAttributeSet();
+			DocAttributeSet das = new HashDocAttributeSet();
+			FileInputStream fis = new FileInputStream(file);
+			Doc doc = new SimpleDoc(fis, flavor, das);
+
+			DocPrintJob job = printService.createPrintJob();
+			job.print(doc, printRequestAttributeSet);
+		} catch (FileNotFoundException | PrintException e) {
+			//noinspection CallToPrintStackTrace
+			e.printStackTrace();
+		}
+	}
+
+	private void printerCutOff(PrintService printService) {
+		DocPrintJob job = printService.createPrintJob();
+		byte[] bytes = { 0x1d, 0x56, 0x00 };
+		DocFlavor flavor = DocFlavor.BYTE_ARRAY.AUTOSENSE;
+		Doc doc = new SimpleDoc(bytes, flavor, null);
+		try {
+			job.print(doc, null);
+		} catch (PrintException e) {
+			//noinspection CallToPrintStackTrace
+			e.printStackTrace();
+		}
+	}
+
+
 	/**
 	 * @param file
 	 * @param showDialog
@@ -148,7 +237,7 @@ public class PrintReceipt {
 
 					StringBuilder zpl = new StringBuilder();
 					int i = 0;
-					while (!aLine.equals("")) {
+					while (aLine != null && !aLine.equals("")) {
 						zpl.append("^FO0,").append(i * charH);         //line position
 						zpl.append(font).append(',').append(charH);    //font size
 						zpl.append("^FD").append(aLine).append("^FS"); //line field

@@ -22,6 +22,7 @@
 package org.isf.medicalinventory.manager;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -111,6 +112,12 @@ public class MedicalInventoryManager {
 	@Transactional
 	public MedicalInventory newMedicalInventory(MedicalInventory medicalInventory, List<MedicalInventoryRow> newMedicalInventoryRows)
 		throws OHServiceException {
+		if (GeneralData.REFERENCE_AUTOMATIC &&
+			(medicalInventory.getInventoryReference() == null || medicalInventory.getInventoryReference().isBlank())) {
+			LocalDateTime now = TimeTools.getNow();
+			String autoRef = generateReference(GeneralData.REFERENCE_PREFIX_INVENTORY, now);
+			medicalInventory.setInventoryReference(autoRef);
+		}
 		validateMedicalInventory(medicalInventory, true);
 		MedicalInventory inventory = ioOperations.newMedicalInventory(medicalInventory);
 		for (MedicalInventoryRow inventoryRow : newMedicalInventoryRows) {
@@ -281,7 +288,7 @@ public class MedicalInventoryManager {
 	 * Validate the Inventory rows of inventory.
 	 *
 	 * @param inventory the {@link MedicalInventory}
-	 * @param inventoryRowSearchList- The list of {@link MedicalInventory}
+	 * @param inventoryRowSearchList The list of {@link MedicalInventory}
 	 * @param allMedicals if {@code true} will check also medicals not in {@code inventoryRowSearchList}
 	 * @throws OHServiceException
 	 */
@@ -561,7 +568,7 @@ public class MedicalInventoryManager {
 	 * Confirm the Inventory rows of inventory.
 	 *
 	 * @param inventory the {@link MedicalInventory}
-	 * @param inventoryRowSearchList- The list of {@link MedicalInventory}
+	 * @param inventoryRowSearchList The list of {@link MedicalInventory}
 	 * @param allMedicals if {@code true}, it will add new {@link MedicalInventoryRow}s if found in the latest stock movements. If {@code false}, only existing
 	 *        rows will be updated.
 	 * @return List {@link Movement}. It could be {@code empty}.
@@ -578,10 +585,7 @@ public class MedicalInventoryManager {
 		// TODO: to explore the possibility to allow charges and discharges with same referenceNumber
 		String chargeReferenceNumber = referenceNumber + "-charge";
 		String dischargeReferenceNumber = referenceNumber + "-discharge";
-		MovementType chargeType = medicalDsrStockMovementTypeBrowserManager.getMovementType(inventory.getChargeType());
 		MovementType dischargeType = medicalDsrStockMovementTypeBrowserManager.getMovementType(inventory.getDischargeType());
-		Supplier supplier = supplierManager.getByID(inventory.getSupplier());
-		Ward ward = wardManager.findWard(inventory.getDestination());
 		LocalDateTime inventoryDate = inventory.getInventoryDate();
 		// prepare movements
 		List<Movement> chargeMovements = new ArrayList<>();
@@ -593,20 +597,20 @@ public class MedicalInventoryManager {
 			Medical medical = medicalInventoryRow.getMedical();
 			Lot currentLot = medicalInventoryRow.getLot();
 			if (ajustQty > 0) { // charge movement when realQty > theoQty
-				Movement movement = new Movement(medical, chargeType, null, currentLot, inventoryDate, ajustQty.intValue(), supplier, chargeReferenceNumber);
+				Movement movement = new Movement(medical, dischargeType, null, currentLot, inventoryDate, -ajustQty.intValue(), null, chargeReferenceNumber);
 				chargeMovements.add(movement);
 			} else if (ajustQty < 0) { // discharge movement when realQty < theoQty
-				Movement movement = new Movement(medical, dischargeType, ward, currentLot, inventoryDate, -ajustQty.intValue(), null, dischargeReferenceNumber);
+				Movement movement = new Movement(medical, dischargeType, null, currentLot, inventoryDate, -ajustQty.intValue(), null, dischargeReferenceNumber);
 				dischargeMovements.add(movement);
 			} // else ajustQty = 0, continue
 		}
 		// create movements
 		List<Movement> insertedMovements = new ArrayList<>();
 		if (!chargeMovements.isEmpty()) {
-			insertedMovements.addAll(movStockInsertingManager.newMultipleChargingMovements(chargeMovements, chargeReferenceNumber));
+			insertedMovements.addAll(movStockInsertingManager.newMultipleDischargingMovements(chargeMovements, chargeReferenceNumber, true));
 		}
 		if (!dischargeMovements.isEmpty()) {
-			insertedMovements.addAll(movStockInsertingManager.newMultipleDischargingMovements(dischargeMovements, dischargeReferenceNumber));
+			insertedMovements.addAll(movStockInsertingManager.newMultipleDischargingMovements(dischargeMovements, dischargeReferenceNumber, true));
 		}
 		String status = InventoryStatus.done.toString();
 		inventory.setStatus(status);
@@ -618,7 +622,7 @@ public class MedicalInventoryManager {
 	 * Confirm the Inventory rows of ward inventory.
 	 *
 	 * @param inventory the {@link MedicalInventory}
-	 * @param inventoryRowSearchList- The list of {@link MedicalInventory}
+	 * @param inventoryRowSearchList The list of {@link MedicalInventory}
 	 * @param allMedicals if {@code true}, it will add new {@link MedicalInventoryRow}s if found in the latest stock movements. If {@code false}, only existing
 	 *        rows will be updated.
 	 * @return List of {@link MovementWard}s. It could be {@code empty}.
@@ -913,5 +917,19 @@ public class MedicalInventoryManager {
 			inventory = this.updateMedicalInventory(inventory, false);
 		}
 		return inventory;
+	}
+
+	/**
+	 * Generates an automatic inventory reference based on prefix and date.
+	 * Uses the timestamp format defined in GeneralData.
+	 *
+	 * @param prefix The prefix (e.g., "INV")
+	 * @param date The inventory date
+	 * @return The generated reference string
+	 */
+	private String generateReference(String prefix, LocalDateTime date) {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(GeneralData.REFERENCE_TIMESTAMP_FORMAT);
+		String timestamp = date.format(formatter);
+		return prefix + timestamp;
 	}
 }

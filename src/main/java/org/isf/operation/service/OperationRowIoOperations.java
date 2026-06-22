@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2024 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -24,6 +24,7 @@ package org.isf.operation.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.isf.accounting.model.Bill;
 import org.isf.admission.model.Admission;
 import org.isf.opd.model.Opd;
 import org.isf.operation.model.OperationRow;
@@ -107,4 +108,48 @@ public class OperationRowIoOperations {
 		return this.repository.countAllActiveOperations();
 	}
 
+	/**
+	 * Check if a patient has pending operations that haven't been billed yet.
+	 *
+	 * @param patient the patient
+	 * @return true if the patient has pending operations, false otherwise
+	 * @throws OHServiceException
+	 */
+	public boolean hasOperationWithoutBill(Patient patient) throws OHServiceException {
+		List<OperationRow> operations = repository.findByPatientAndBillIsNull(patient);
+		return operations != null && !operations.isEmpty();
+	}
+
+	/**
+	 * Gets all operation rows for a patient that haven't been billed yet.
+	 *
+	 * @param patient the patient
+	 * @return list of unbilled OperationRow objects
+	 * @throws OHServiceException if an error occurs
+	 */
+	public List<OperationRow> getOperationWithoutBill(Patient patient) throws OHServiceException {
+		return repository.findByPatientAndBillIsNull(patient);
+	}
+
+	/**
+	 * Updates an OperationRow object (used to mark as billed after bill creation).
+	 *
+	 * @param operationRow the OperationRow to update
+	 * @return the updated OperationRow object
+	 * @throws OHServiceException if an error occurs
+	 */
+	public OperationRow update(OperationRow operationRow) throws OHServiceException {
+		return repository.save(operationRow);
+	}
+
+	/**
+	 * Updates the bill for a specific operation row.
+	 *
+	 * @param operationId the operation row ID
+	 * @param bill the Bill object to associate
+	 * @throws OHServiceException if an error occurs during the update
+	 */
+	public void updateBillForOperationRow(int operationId, Bill bill) throws OHServiceException {
+		repository.updateBillForOperationRow(operationId, bill);
+	}
 }

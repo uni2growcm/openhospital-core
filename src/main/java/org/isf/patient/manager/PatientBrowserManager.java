@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -39,7 +39,10 @@ import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.model.OHExceptionMessage;
 import org.isf.utils.pagination.PagedResponse;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -55,7 +58,7 @@ public class PatientBrowserManager {
 
 	protected LinkedHashMap<String, String> professionHashMap;
 
-	public PatientBrowserManager(PatientIoOperations ioOperations, AdmissionBrowserManager admissionManager, BillBrowserManager billManager) {
+	public PatientBrowserManager(PatientIoOperations ioOperations, AdmissionBrowserManager admissionManager, @Lazy BillBrowserManager billManager) {
 		this.ioOperations = ioOperations;
 		this.admissionManager = admissionManager;
 		this.billManager = billManager;
@@ -294,6 +297,23 @@ public class PatientBrowserManager {
 		return ioOperations.getPatientsByOneOfFieldsLike(keyword);
 	}
 
+	/**
+	 * Method that returns the list of the first 50 female {@link Patient}s not logically deleted, having the passed String in:<br>
+	 * - code<br>
+	 * - firstName<br>
+	 * - secondName<br>
+	 * - taxCode<br>
+	 * - note<br>
+	 *
+	 * @param keyword
+	 *            - String to search, {@code null} for full list
+	 * @return the list of {@link Patient}s (could be empty)
+	 * @throws OHServiceException
+	 */
+	public List<Patient> getFemalePatientsByOneOfFieldsLike(String keyword) throws OHServiceException {
+		return ioOperations.getFemalePatientsByOneOfFieldsLike(keyword);
+	}
+
 	public PatientProfilePhoto retrievePatientProfilePhoto(Patient patient) throws OHServiceException {
 		return ioOperations.retrievePatientProfilePhoto(patient);
 	}
@@ -432,5 +452,57 @@ public class PatientBrowserManager {
 	 */
 	public List<Patient> getPatientByCodes(List<Integer> codes) throws OHServiceException {
 		return ioOperations.getPatientByCodes(codes);
+	}
+
+	/**
+	 * Method that returns a limited list of {@link Patient}s not logically deleted, having the passed String in:<br>
+	 * - code<br>
+	 * - firstName<br>
+	 * - secondName<br>
+	 * - taxCode<br>
+	 * - note<br>
+	 *
+	 * @param keyword - String to search, {@code null} for full list
+	 * @param limit - maximum number of patients to return
+	 * @return the list of {@link Patient}s limited to 'limit' records (could be empty)
+	 * @throws OHServiceException
+	 */
+	public List<Patient> getPatientsByOneOfFieldsLikeWithLimit(String keyword, int limit) throws OHServiceException {
+		return ioOperations.getPatientsByOneOfFieldsLikeWithLimit(keyword, limit);
+	}
+
+	/**
+	 * Method that returns a limited list of {@link Patient}s not logically deleted, having the passed String in:<br>
+	 * - code<br>
+	 * - firstName<br>
+	 * - secondName<br>
+	 * - taxCode<br>
+	 * - note<br>
+	 *
+	 * @param keyword - String to search, {@code null} for full list
+	 * @param femalesOnly - if true, only female patients will be returned
+	 * @param page - the page number (0-indexed)
+	 * @param size - the page size
+	 * @return a {@link Page} of {@link Patient}s (could be empty)
+	 * @throws OHServiceException when there is an error
+	 */
+	public Page<Patient> getPatientsByOneOfFieldsLike(String keyword, boolean femalesOnly, int page, int size) throws OHServiceException {
+		Pageable pageable = PageRequest.of(page, size);
+		return ioOperations.getPatientsByOneOfFieldsLikeWith(keyword, femalesOnly, pageable);
+	}
+
+	public List<Patient> getPatientByCodeOrName(String input) throws OHServiceException {
+		Integer code = null;
+		String name = input != null ? input.trim() : "";
+		try {
+			code = Integer.parseInt(name);
+		} catch (NumberFormatException e) {
+
+		}
+		return ioOperations.getPatientByCodeOrName(code, name);
+	}
+
+	public Patient getPatientWithPartnersById(Integer code) throws OHServiceException {
+		return ioOperations.getPatientWithPartners(code);
 	}
 }

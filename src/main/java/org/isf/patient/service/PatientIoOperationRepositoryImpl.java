@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -26,16 +26,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.isf.patient.model.Patient;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-
-import org.isf.patient.model.Patient;
-import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 public class PatientIoOperationRepositoryImpl implements PatientIoOperationRepositoryCustom {
@@ -49,6 +53,23 @@ public class PatientIoOperationRepositoryImpl implements PatientIoOperationRepos
 		return this.entityManager.
 				createQuery(buildSearchQuery(literal)).
 				getResultList();
+	}
+
+	@Override
+	public List<Patient> findByFieldsContainingWordsFromLiteral(String literal, int limit) {
+		CriteriaQuery<Patient> query = buildSearchQuery(literal);
+
+		return entityManager.createQuery(query)
+			.setMaxResults(limit)
+			.getResultList();
+	}
+
+	@Override
+	public List<Patient> findFemaleByFieldsContainingWordsFromLiteral(String literal) {
+		return this.entityManager
+			.createQuery(buildSearchQueryForFemale(literal))
+			.setMaxResults(100)
+			.getResultList();
 	}
 
 	private CriteriaQuery<Patient> buildSearchQuery(String regex) {
@@ -98,7 +119,8 @@ public class PatientIoOperationRepositoryImpl implements PatientIoOperationRepos
 				cb.like(cb.lower(root.get("address").as(String.class)), like(word)),
 				cb.like(cb.lower(root.get("telephone").as(String.class)), like(word)),
 				cb.like(cb.lower(root.get("note").as(String.class)), like(word)),
-				cb.like(cb.lower(root.get("taxCode").as(String.class)), like(word))
+				cb.like(cb.lower(root.get("taxCode").as(String.class)), like(word)),
+				cb.like(cb.lower(root.get("birthPlace").as(String.class)), like(word))
 		);
 	}
 
@@ -137,4 +159,72 @@ public class PatientIoOperationRepositoryImpl implements PatientIoOperationRepos
 		return entityManager.createQuery(query).getResultList();
 	}
 
+	private CriteriaQuery<Patient> buildSearchQueryForFemale(String regex) {
+		String[] words = getWordsToSearchForInPatientsRepository(regex);
+
+		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+		CriteriaQuery<Patient> query = cb.createQuery(Patient.class);
+		Root<Patient> patientRoot = query.from(Patient.class);
+
+		List<Predicate> where = new ArrayList<>();
+
+		for (String word : words) {
+			where.add(wordExistsInOneOfPatientFields(word, cb, patientRoot));
+		}
+
+		Predicate notDeleted = cb.or(
+			cb.equal(patientRoot.get("deleted"), 'N'),
+			cb.isNull(patientRoot.get("deleted"))
+		);
+
+		Predicate female = cb.equal(
+			cb.lower(patientRoot.get("sex")),
+			"f"
+		);
+
+		where.add(notDeleted);
+		where.add(female);
+
+		query.select(patientRoot)
+			.where(cb.and(where.toArray(new Predicate[0])))
+			.orderBy(cb.desc(patientRoot.get("code")));
+
+		return query;
+	}
+
+	@Override
+	public Page<Patient> findByFieldsContainingWordsFromLiteral(String keyword, boolean femalesOnly, Pageable pageable) {
+		String[] words = getWordsToSearchForInPatientsRepository(keyword);
+		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+
+		CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
+		Root<Patient> countRoot = countQuery.from(Patient.class);
+		List<Predicate> countPredicates = new ArrayList<>();
+
+		for (String word : words) {
+			countPredicates.add(wordExistsInOneOfPatientFields(word, cb, countRoot));
+		}
+
+		countPredicates.add(cb.or(
+			cb.equal(countRoot.get("deleted"), 'N'),
+			cb.isNull(countRoot.get("deleted"))
+		));
+
+		if (femalesOnly) {
+			countPredicates.add(cb.equal(cb.lower(countRoot.get("sex")), "f"));
+		}
+
+		countQuery.select(cb.count(countRoot)).where(cb.and(countPredicates.toArray(new Predicate[0])));
+		Long total = entityManager.createQuery(countQuery).getSingleResult();
+
+		CriteriaQuery<Patient> contentQuery = femalesOnly ? buildSearchQueryForFemale(keyword) : buildSearchQuery(keyword);
+		TypedQuery<Patient> typedQuery = entityManager.createQuery(contentQuery);
+
+		typedQuery.setFirstResult((int) pageable.getOffset());
+		typedQuery.setMaxResults(pageable.getPageSize());
+
+		List<Patient> content = typedQuery.getResultList();
+
+		return new PageImpl<>(content, pageable, total);
+	}
 }

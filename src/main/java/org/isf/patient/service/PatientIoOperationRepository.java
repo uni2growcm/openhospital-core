@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -23,10 +23,12 @@ package org.isf.patient.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.isf.patient.model.Patient;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -64,4 +66,14 @@ public interface PatientIoOperationRepository extends JpaRepository<Patient, Int
 	long countAllActiveNotDeletedPatients();
 	
 	List<Patient> findAllByCodeIn(List<Integer> codes);
+
+	@Query("select p from Patient p where (p.code = :code or lower(p.name) like lower(concat('%', :name, '%'))) and (p.deleted = :deletedStatus or p.deleted is null) order by p.name")
+	List<Patient> findByCodeOrNameContainingAndNotDeleted(
+		@Param("code") Integer code,
+		@Param("name") String name,
+		@Param("deletedStatus") char deletedStatus);
+
+	@EntityGraph(attributePaths = {"partners", "partners.type"})
+	@Query("SELECT p FROM Patient p WHERE p.code = :id")
+	Optional<Patient> findByIdWithPartners(@Param("id") Integer id);
 }

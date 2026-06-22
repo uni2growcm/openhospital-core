@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2024 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -24,11 +24,13 @@ package org.isf.lab.service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.isf.accounting.model.Bill;
 import org.isf.lab.model.Laboratory;
 import org.isf.patient.model.Patient;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -68,4 +70,12 @@ public interface LabIoOperationRepository extends JpaRepository<Laboratory, Inte
 	@Query("select count(l) from Laboratory l where active=1")
 	long countAllActiveLabs();
 
+	@Query("select distinct l.prescriber from Laboratory l where l.prescriber is not null and l.prescriber <> ''")
+	List<String> findDistinctPrescribers();
+	@Query("SELECT l FROM Laboratory l WHERE l.patient.code = :patientCode AND (l.bill IS NULL OR l.bill.id = 0)")
+	List<Laboratory> findByPatientCodeAndBillIsNull(@Param("patientCode") int patientCode);
+
+	@Modifying
+	@Query("UPDATE Laboratory l SET l.bill = :bill WHERE l.code = :labId")
+	void updateBillForLaboratory(@Param("labId") int labId, @Param("bill") Bill bill);
 }

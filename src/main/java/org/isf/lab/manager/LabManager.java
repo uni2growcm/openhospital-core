@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.isf.accounting.model.Bill;
 import org.isf.generaldata.GeneralData;
 import org.isf.generaldata.MessageBundle;
 import org.isf.lab.model.Laboratory;
@@ -43,6 +44,8 @@ import org.isf.utils.pagination.PagedResponse;
 import org.isf.utils.validator.DefaultSorter;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.swing.*;
 
 @Component
 public class LabManager {
@@ -70,10 +73,11 @@ public class LabManager {
 	/**
 	 * Verify if the object is valid for CRUD and return a list of errors, if any.
 	 *
-	 * @param laboratory
+	 * @param laboratory the laboratory to validate
+	 * @param isUpdate true for update (result and material required), false for insert (result and material optional)
 	 * @throws OHDataValidationException
 	 */
-	protected void validateLaboratory(Laboratory laboratory) throws OHDataValidationException {
+	protected void validateLaboratory(Laboratory laboratory, boolean isUpdate) throws OHDataValidationException {
 		List<OHExceptionMessage> errors = new ArrayList<>();
 		if (laboratory.getExam() != null && laboratory.getExam().getProcedure() == 2) {
 			laboratory.setResult(MessageBundle.getMessage("angal.lab.multipleresults.txt"));
@@ -98,12 +102,20 @@ public class LabManager {
 		if (laboratory.getExam() == null) {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.lab.pleaseselectanexam.msg")));
 		}
-		if (laboratory.getResult().isEmpty()) {
+
+		if (isUpdate && (laboratory.getResult() == null || laboratory.getResult().isEmpty())) {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.labnew.someexamswithoutresultpleasecheck.msg")));
 		}
-		if (laboratory.getMaterial().isEmpty()) {
-			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.lab.pleaseselectamaterial.msg")));
+
+		if (isUpdate) {
+			String material = laboratory.getMaterial();
+			if (material == null || material.isEmpty() || "undefined".equals(material)) {
+				errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.lab.pleaseselectamaterial.msg")));
+			}
+		} else if (!isUpdate && (laboratory.getMaterial() == null || laboratory.getMaterial().isEmpty())) {
+			laboratory.setMaterial("undefined");
 		}
+
 		if (laboratory.getInOutPatient().isEmpty()) {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.lab.pleaseinsertiforipdoroforopd.msg")));
 		}
@@ -213,7 +225,7 @@ public class LabManager {
 	 * @throws OHServiceException
 	 */
 	public Laboratory newLaboratory(Laboratory laboratory, List<String> labRow) throws OHServiceException {
-		validateLaboratory(laboratory);
+		validateLaboratory(laboratory,false);
 		setPatientConsistency(laboratory);
 		procedure = laboratory.getExam().getProcedure();
 		return switch (procedure) {
@@ -238,7 +250,7 @@ public class LabManager {
 	 * @throws OHServiceException
 	 */
 	public Laboratory newLaboratory2(Laboratory laboratory, List<LaboratoryRow> labRow) throws OHServiceException {
-		validateLaboratory(laboratory);
+		validateLaboratory(laboratory,false);
 		setPatientConsistency(laboratory);
 		procedure = laboratory.getExam().getProcedure();
 		return switch (procedure) {
@@ -288,7 +300,7 @@ public class LabManager {
 	 * @throws OHServiceException
 	 */
 	public Laboratory updateLaboratory(Laboratory laboratory, List<String> labRow) throws OHServiceException {
-		validateLaboratory(laboratory);
+		validateLaboratory(laboratory,true);
 		Integer procedure = laboratory.getExam().getProcedure();
 		return switch (procedure) {
 		case 1 -> ioOperations.updateLabFirstProcedure(laboratory);
@@ -484,4 +496,72 @@ public class LabManager {
 		return ioOperations.getLaboratoryPageable(exam, dateFrom, dateTo, patient, page, size);
 	}
 
+	/**
+	 * Get a list of distinct prescribers from laboratory records
+	 *
+	 * @return a {@link List} of distinct prescriber names
+	 * @throws OHServiceException if an error occurs while accessing the data source
+	 */
+	public List<String> getDistinctPrescribers() throws OHServiceException {
+		return ioOperations.getDistinctPrescribers();
+	}
+
+	/**
+	 * Check if a patient has pending laboratory exams that haven't been billed yet.
+	 *
+	 * @param patientCode the patient's code as String
+	 * @return true if the patient has pending exams, false otherwise
+	 * @throws OHServiceException
+	 */
+	public boolean hasLabWithoutBill(String patientCode) throws OHServiceException {
+		if (patientCode == null || patientCode.isEmpty()) {
+			return false;
+		}
+		return ioOperations.hasLabWithoutBill(Integer.parseInt(patientCode));
+	}
+
+	/**
+	 * Check if a patient has pending laboratory exams that haven't been billed yet.
+	 *
+	 * @param patientCode the patient's code
+	 * @return true if the patient has pending exams, false otherwise
+	 * @throws OHServiceException
+	 */
+	public boolean hasLabWithoutBill(int patientCode) throws OHServiceException {
+		return ioOperations.hasLabWithoutBill(patientCode);
+	}
+
+	/**
+	 * Gets all laboratory exams for a patient that haven't been billed yet.
+	 *
+	 * @param patientCode the patient's code
+	 * @return list of unbilled Laboratory objects
+	 * @throws OHServiceException if an error occurs
+	 */
+	public List<Laboratory> getLabWithoutBill(int patientCode) throws OHServiceException {
+		return ioOperations.getLabWithoutBill(patientCode);
+	}
+
+	/**
+	 * Updates a laboratory exam (used to mark as billed after bill creation).
+	 *
+	 * @param laboratory the Laboratory to update
+	 * @return the updated Laboratory
+	 * @throws OHServiceException if an error occurs
+	 */
+	public Laboratory updateLaboratory(Laboratory laboratory) throws OHServiceException {
+		return ioOperations.update(laboratory);
+	}
+
+	/**
+	 * Updates the bill for a specific laboratory exam.
+	 *
+	 * @param labId the laboratory ID
+	 * @param bill the Bill object to associate
+	 * @throws OHServiceException if an error occurs during the update
+	 */
+	@Transactional
+	public void updateBillForLaboratory(int labId, Bill bill) throws OHServiceException {
+		ioOperations.updateBillForLaboratory(labId, bill);
+	}
 }

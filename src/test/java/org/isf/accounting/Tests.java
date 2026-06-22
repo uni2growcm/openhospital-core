@@ -28,16 +28,36 @@ import static org.assertj.core.data.Offset.offset;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
+
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.provider.Arguments;
+import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.test.annotation.Rollback;
 
 import org.isf.OHCoreTestCase;
 import org.isf.accounting.manager.BillBrowserManager;
-import org.isf.accounting.model.Bill;
-import org.isf.accounting.model.BillItems;
-import org.isf.accounting.model.BillPayments;
+import org.isf.accounting.model.*;
 import org.isf.accounting.service.AccountingBillIoOperationRepository;
 import org.isf.accounting.service.AccountingBillItemsIoOperationRepository;
 import org.isf.accounting.service.AccountingBillPaymentIoOperationRepository;
 import org.isf.accounting.service.AccountingIoOperations;
+import org.isf.accounting.service.AccountingItemPaymentIoOperationRepository;
+import org.isf.menu.TestUser;
+import org.isf.menu.TestUserGroup;
+import org.isf.menu.model.User;
+import org.isf.menu.model.UserGroup;
+import org.isf.menu.service.UserGroupIoOperationRepository;
+import org.isf.menu.service.UserIoOperationRepository;
 import org.isf.patient.TestPatient;
 import org.isf.patient.model.Patient;
 import org.isf.patient.model.PatientMergedEvent;
@@ -47,12 +67,15 @@ import org.isf.priceslist.model.PriceList;
 import org.isf.priceslist.service.PricesListIoOperationRepository;
 import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHException;
+import org.isf.utils.exception.OHServiceException;
+import org.isf.utils.pagination.PageInfo;
 import org.isf.utils.time.TimeTools;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import java.io.File;
 
 class Tests extends OHCoreTestCase {
 
@@ -61,23 +84,41 @@ class Tests extends OHCoreTestCase {
 	private static TestBillPayments testBillPayments;
 	private static TestPatient testPatient;
 	private static TestPriceList testPriceList;
+	private static TestUser testUser;
+	private static TestUserGroup testUserGroup;
+	private static TestBillItemGroup testBillItemGroup;
+	private static TestBillItemGroupItem testBillItemGroupItem;
+	private static TestArchivedBill testArchivedBill;
+	private static TestArchivedBillItems testArchivedBillItems;
+	private static TestArchivedBillPayments testArchivedBillPayments;
+	private static TestItemPayments testItemPayments;
 
 	@Autowired
-	BillBrowserManager billBrowserManager;
+	private BillBrowserManager billBrowserManager;
 	@Autowired
-	AccountingIoOperations accountingIoOperation;
+	private AccountingIoOperations accountingIoOperation;
 	@Autowired
-	ApplicationEventPublisher applicationEventPublisher;
+	private ApplicationEventPublisher applicationEventPublisher;
 	@Autowired
-	AccountingBillIoOperationRepository accountingBillIoOperationRepository;
+	private AccountingBillIoOperationRepository accountingBillIoOperationRepository;
 	@Autowired
-	AccountingBillItemsIoOperationRepository accountingBillItemsIoOperationRepository;
+	private AccountingBillItemsIoOperationRepository accountingBillItemsIoOperationRepository;
 	@Autowired
-	AccountingBillPaymentIoOperationRepository accountingBillPaymentIoOperationRepository;
+	private AccountingBillPaymentIoOperationRepository accountingBillPaymentIoOperationRepository;
 	@Autowired
-	PricesListIoOperationRepository priceListIoOperationRepository;
+	private PricesListIoOperationRepository priceListIoOperationRepository;
 	@Autowired
-	PatientIoOperationRepository patientIoOperationRepository;
+	private PatientIoOperationRepository patientIoOperationRepository;
+	@Autowired
+	private UserIoOperationRepository userIoOperationRepository;
+	@Autowired
+	private UserGroupIoOperationRepository userGroupIoOperationRepository;
+	@Autowired
+	private AccountingItemPaymentIoOperationRepository accountingItemPaymentIoOperationRepository;
+
+	static Stream<Arguments> allowbillguarantor() {
+		return Stream.of(Arguments.of(false), Arguments.of(true));
+	}
 
 	@BeforeAll
 	static void setUpClass() {
@@ -86,13 +127,23 @@ class Tests extends OHCoreTestCase {
 		testBillPayments = new TestBillPayments();
 		testPatient = new TestPatient();
 		testPriceList = new TestPriceList();
+		testUserGroup = new TestUserGroup();
+		testUser = new TestUser();
+		testBillItemGroup = new TestBillItemGroup();
+		testBillItemGroupItem = new TestBillItemGroupItem();
+		testArchivedBill = new TestArchivedBill();
+		testArchivedBillItems = new TestArchivedBillItems();
+		testArchivedBillPayments = new TestArchivedBillPayments();
+		testItemPayments = new TestItemPayments();
 	}
 
 	@BeforeEach
 	void setUp() {
+		MockitoAnnotations.openMocks(this);
 		cleanH2InMemoryDb();
 	}
 
+	// ==================== BILL TESTS ====================
 	@Test
 	void testBillGets() throws Exception {
 		int id = setupTestBill(false);
@@ -105,6 +156,7 @@ class Tests extends OHCoreTestCase {
 		checkBillIntoDb(id);
 	}
 
+	// ==================== BILL ITEMS TESTS ====================
 	@Test
 	void testBillItemsGets() throws Exception {
 		int id = setupTestBillItems(false);
@@ -129,157 +181,225 @@ class Tests extends OHCoreTestCase {
 		checkBillPaymentsIntoDb(id);
 	}
 
+	// ==================== ITEM PAYMENTS TESTS ====================
 	@Test
-	void testListenerShouldUpdatePatientToMergedWhenPatientMergedEventArrive() throws Exception {
-		// given:
-		int id = setupTestBill(false);
-		Bill foundBill = accountingBillIoOperationRepository.findById(id).orElse(null);
-		assertThat(foundBill).isNotNull();
-		Patient mergedPatient = setupTestPatient(false);
-
-		// when:
-		applicationEventPublisher.publishEvent(new PatientMergedEvent(foundBill.getBillPatient(), mergedPatient));
-
-		// then:
-		Bill resultBill = accountingBillIoOperationRepository.findById(id).orElse(null);
-		assertThat(resultBill).isNotNull();
-		assertThat(resultBill.getBillPatient().getCode()).isEqualTo(mergedPatient.getCode());
+	void testItemPaymentsGets() throws Exception {
+		int id = setupTestItemPayments(false);
+		checkItemPaymentsIntoDb(id);
 	}
 
+	@Test
+	void testItemPaymentsSets() throws Exception {
+		int id = setupTestItemPayments(true);
+		checkItemPaymentsIntoDb(id);
+	}
+
+	@Test
+	void testIoGetItemPayments() throws Exception {
+		int id = setupTestItemPayments(false);
+		ItemPayments foundItemPayment = accountingItemPaymentIoOperationRepository.findById(id).orElse(null);
+		assertThat(foundItemPayment).isNotNull();
+		List<ItemPayments> itemPayments = accountingIoOperation.getItemPayments(foundItemPayment.getBill().getId());
+		assertThat(itemPayments.get(0).getAmount()).isCloseTo(foundItemPayment.getAmount(), offset(0.1));
+	}
+
+	@Test
+	void testIoGetAllItemPayments() throws Exception {
+		setupTestItemPayments(false);
+		List<ItemPayments> itemPayments = accountingIoOperation.getItemPayments(0);
+		assertThat(itemPayments).isNotEmpty();
+	}
+
+	@Test
+	void testIoNewItemPayments() throws Exception {
+		int existingId = setupTestItemPayments(false);
+		ItemPayments existingManaged = accountingItemPaymentIoOperationRepository.findById(existingId).orElse(null);
+		assertThat(existingManaged).isNotNull();
+
+		Bill bill = existingManaged.getBill();
+		ItemPayments existingFromGui = new ItemPayments();
+		existingFromGui.setId(existingManaged.getId());
+		existingFromGui.setAmount(existingManaged.getAmount());
+		existingFromGui.setDate(existingManaged.getDate());
+		existingFromGui.setUser(existingManaged.getUser());
+		existingFromGui.setBill(bill);
+		existingFromGui.setItemId(existingManaged.getItemId());
+		existingFromGui.setItemDescription(existingManaged.getItemDescription());
+		existingFromGui.setItemGroup(existingManaged.getItemGroup());
+		existingFromGui.setRefund(existingManaged.isRefund());
+
+		ItemPayments newItemPayment = testItemPayments.setup(null, false);
+
+		List<ItemPayments> itemPayments = new ArrayList<>();
+		itemPayments.add(existingFromGui);
+		itemPayments.add(newItemPayment);
+
+		accountingIoOperation.newItemPayments(bill, itemPayments);
+
+		List<ItemPayments> persisted = accountingIoOperation.getItemPayments(bill.getId());
+		assertThat(persisted).hasSize(2);
+		assertThat(persisted).extracting(p -> p.getBill().getId()).containsOnly(bill.getId());
+		assertThat(persisted).extracting(ItemPayments::getId).doesNotContain(existingId);
+	}
+
+	@Test
+	void testIoDeleteItemPaymentsByBillId() throws Exception {
+		int id = setupTestItemPayments(false);
+		ItemPayments foundItemPayment = accountingItemPaymentIoOperationRepository.findById(id).orElse(null);
+		assertThat(foundItemPayment).isNotNull();
+		accountingIoOperation.deleteItemPaymentsByBillId(foundItemPayment.getBill().getId());
+		List<ItemPayments> itemPayments = accountingIoOperation.getItemPayments(foundItemPayment.getBill().getId());
+		assertThat(itemPayments).isEmpty();
+	}
+
+	// ==================== LISTENER TESTS ====================
+	@Test
+	void testListenerShouldUpdatePatientToMergedWhenPatientMergedEventArrive() throws Exception {
+		int id = setupTestBill(false);
+		Bill foundBill = accountingBillIoOperationRepository.findById(id).orElse(null);
+		Assertions.assertThat(foundBill).isNotNull();
+		Patient mergedPatient = setupTestPatient(false);
+
+		applicationEventPublisher.publishEvent(new PatientMergedEvent(foundBill.getBillPatient(), mergedPatient));
+
+		Bill resultBill = accountingBillIoOperationRepository.findById(id).orElse(null);
+		Assertions.assertThat(resultBill).isNotNull();
+		Assertions.assertThat(resultBill.getBillPatient().getCode()).isEqualTo(mergedPatient.getCode());
+	}
+
+	// ==================== IO OPERATIONS TESTS ====================
 	@Test
 	void testIoGetPendingBills() throws Exception {
 		int id = setupTestBill(false);
 		Bill foundBill = accountingBillIoOperationRepository.findById(id).orElse(null);
-		assertThat(foundBill).isNotNull();
+		Assertions.assertThat(foundBill).isNotNull();
 		List<Bill> bills = accountingIoOperation.getPendingBills(0);
-		assertThat(bills).contains(foundBill);
+		Assertions.assertThat(bills).contains(foundBill);
 	}
 
 	@Test
 	void testIoGetPendingBillsPatId() throws Exception {
 		int id = setupTestBill(false);
 		Bill foundBill = accountingBillIoOperationRepository.findById(id).orElse(null);
-		assertThat(foundBill).isNotNull();
+		Assertions.assertThat(foundBill).isNotNull();
 		List<Bill> bills = accountingIoOperation.getPendingBills(foundBill.getBillPatient().getCode());
-		assertThat(foundBill.getAmount()).isCloseTo(bills.get(0).getAmount(), offset(0.1));
+		Assertions.assertThat(foundBill.getAmount()).isCloseTo(bills.get(0).getAmount(), offset(0.1));
 	}
 
 	@Test
 	void testIoGetBills() throws Exception {
 		int id = setupTestBill(false);
 		Bill foundBill = accountingBillIoOperationRepository.findById(id).orElse(null);
-		assertThat(foundBill).isNotNull();
+		Assertions.assertThat(foundBill).isNotNull();
 		List<Bill> bills = accountingIoOperation.getBills();
-		assertThat(bills).contains(foundBill);
+		Assertions.assertThat(bills).contains(foundBill);
 	}
 
 	@Test
 	void testIoGetBill() throws Exception {
 		int id = setupTestBill(false);
 		Bill foundBill = accountingBillIoOperationRepository.findById(id).orElse(null);
-		assertThat(foundBill).isNotNull();
+		Assertions.assertThat(foundBill).isNotNull();
 		Bill bill = accountingIoOperation.getBill(id);
-		assertThat(bill.getAmount()).isCloseTo(foundBill.getAmount(), offset(0.1));
+		Assertions.assertThat(bill.getAmount()).isCloseTo(foundBill.getAmount(), offset(0.1));
 	}
 
 	@Test
 	void ioBillChecks() throws Exception {
 		int id = setupTestBill(false);
 		Bill foundBill = accountingBillIoOperationRepository.findById(id).orElse(null);
-		assertThat(foundBill).isNotNull();
+		Assertions.assertThat(foundBill).isNotNull();
 		List<Bill> bills = accountingIoOperation.getBills();
-		assertThat(bills).hasSize(1);
+		Assertions.assertThat(bills).hasSize(1);
 		Bill bill = bills.get(0);
 
 		int id2 = setupTestBill(false);
 		Bill foundBill2 = accountingBillIoOperationRepository.findById(id2).orElse(null);
-		assertThat(foundBill2).isNotNull();
+		Assertions.assertThat(foundBill2).isNotNull();
 
-		assertThat(bill)
-			.isNotEqualTo(TimeTools.getNow())
-			.isEqualTo(foundBill);
+		Assertions.assertThat(bill).isNotEqualTo(TimeTools.getNow()).isEqualTo(foundBill);
 		foundBill2.setId(-1);
-		assertThat(bill).isNotEqualTo(foundBill2);
-		assertThat(bill.compareTo(foundBill2)).isEqualTo(id + 1); // id - (-1)
+		Assertions.assertThat(bill).isNotEqualTo(foundBill2);
+		Assertions.assertThat(bill.compareTo(foundBill2)).isEqualTo(id + 1);
 		foundBill.setId(id);
 
-		assertThat(bill.hashCode()).isPositive();
+		Assertions.assertThat(bill.hashCode()).isPositive();
 	}
 
 	@Test
 	void testIoGetUsers() throws Exception {
 		int id = setupTestBillPayments(false);
 		BillPayments foundBillPayment = accountingBillPaymentIoOperationRepository.findById(id).orElse(null);
-		assertThat(foundBillPayment).isNotNull();
+		Assertions.assertThat(foundBillPayment).isNotNull();
 		List<String> userIds = accountingIoOperation.getUsers();
-		assertThat(userIds).contains(foundBillPayment.getUser());
+		Assertions.assertThat(userIds).contains(foundBillPayment.getUser());
 	}
 
 	@Test
 	void testIoGetItems() throws Exception {
 		int billItemID = setupTestBillItems(false);
 		BillItems foundBillItem = accountingBillItemsIoOperationRepository.findById(billItemID).orElse(null);
-		assertThat(foundBillItem).isNotNull();
+		Assertions.assertThat(foundBillItem).isNotNull();
 		List<BillItems> billItems = accountingIoOperation.getItems(foundBillItem.getBill().getId());
-		assertThat(billItems).contains(foundBillItem);
+		Assertions.assertThat(billItems).contains(foundBillItem);
 	}
 
 	@Test
 	void ioGetAllItems() throws Exception {
 		setupTestBillItems(false);
 		List<BillItems> billItems = accountingIoOperation.getItems(0);
-		assertThat(billItems).isNotEmpty();
+		Assertions.assertThat(billItems).isNotEmpty();
 	}
 
 	@Test
 	void testIoGetItemsBillId() throws Exception {
 		int id = setupTestBillItems(false);
 		BillItems foundBillItem = accountingBillItemsIoOperationRepository.findById(id).orElse(null);
-		assertThat(foundBillItem).isNotNull();
+		Assertions.assertThat(foundBillItem).isNotNull();
 		List<BillItems> billItems = accountingIoOperation.getItems(foundBillItem.getBill().getId());
-		assertThat(billItems.get(0).getItemAmount()).isCloseTo(foundBillItem.getItemAmount(), offset(0.1));
+		Assertions.assertThat(billItems.get(0).getItemAmount()).isCloseTo(foundBillItem.getItemAmount(), offset(0.1));
 	}
 
 	@Test
 	void testIoGetPayments() throws Exception {
 		int id = setupTestBillPayments(false);
 		BillPayments foundBillPayment = accountingBillPaymentIoOperationRepository.findById(id).orElse(null);
-		assertThat(foundBillPayment).isNotNull();
+		Assertions.assertThat(foundBillPayment).isNotNull();
 		LocalDateTime dateFrom = foundBillPayment.getDate().minusYears(1);
 		LocalDateTime dateTo = TimeTools.getNow();
 		List<BillPayments> billPayments = accountingIoOperation.getPayments(dateFrom, dateTo);
-		assertThat(billPayments).contains(foundBillPayment);
+		Assertions.assertThat(billPayments).contains(foundBillPayment);
 	}
 
 	@Test
 	void testIoGetPaymentsBillId() throws Exception {
 		int id = setupTestBillPayments(false);
 		BillPayments foundBillPayment = accountingBillPaymentIoOperationRepository.findById(id).orElse(null);
-		assertThat(foundBillPayment).isNotNull();
+		Assertions.assertThat(foundBillPayment).isNotNull();
 		List<BillPayments> billItems = accountingIoOperation.getPayments(foundBillPayment.getBill().getId());
-		assertThat(billItems.get(0).getAmount()).isCloseTo(foundBillPayment.getAmount(), offset(0.1));
+		Assertions.assertThat(billItems.get(0).getAmount()).isCloseTo(foundBillPayment.getAmount(), offset(0.1));
 	}
 
 	@Test
 	void ioGetBillsByDateForPatient() throws Exception {
 		int id = setupTestBill(false);
 		Bill foundBill = accountingBillIoOperationRepository.findById(id).orElse(null);
-		assertThat(foundBill).isNotNull();
+		Assertions.assertThat(foundBill).isNotNull();
 		LocalDateTime dateFrom = foundBill.getDate().minusYears(1);
 		LocalDateTime dateTo = TimeTools.getNow();
 		List<Bill> billItems = accountingIoOperation.getBillsBetweenDatesWherePatient(dateFrom, dateTo, foundBill.getBillPatient());
-		assertThat(billItems).isNotEmpty();
-		assertThat(billItems.get(0).getAmount()).isCloseTo(foundBill.getAmount(), offset(0.1));
+		Assertions.assertThat(billItems).isNotEmpty();
+		Assertions.assertThat(billItems.get(0).getAmount()).isCloseTo(foundBill.getAmount(), offset(0.1));
 	}
 
 	@Test
 	void ioGetPendingBills() throws Exception {
 		int id = setupTestBill(false);
 		Bill foundBill = accountingBillIoOperationRepository.findById(id).orElse(null);
-		assertThat(foundBill).isNotNull();
+		Assertions.assertThat(foundBill).isNotNull();
 		List<Bill> billItems = accountingIoOperation.getPendingBillsAffiliate(foundBill.getBillPatient().getCode());
-		assertThat(billItems).isNotEmpty();
-		assertThat(billItems.get(0).getAmount()).isCloseTo(foundBill.getAmount(), offset(0.1));
+		Assertions.assertThat(billItems).isNotEmpty();
+		Assertions.assertThat(billItems.get(0).getAmount()).isCloseTo(foundBill.getAmount(), offset(0.1));
 	}
 
 	@Test
@@ -295,117 +415,84 @@ class Tests extends OHCoreTestCase {
 
 	@Test
 	void testIoNewBillItems() throws Exception {
-		// given: an existing bill with one item already stored
 		int existingId = setupTestBillItems(false);
 		BillItems existingManaged = accountingBillItemsIoOperationRepository.findById(existingId).orElse(null);
-		assertThat(existingManaged).isNotNull();
+		Assertions.assertThat(existingManaged).isNotNull();
 
 		Bill bill = existingManaged.getBill();
-
-		// Simulate same item as new object from GUI
 		BillItems existingFromGui = testBillItems.setup(null, false);
 		existingFromGui.setId(existingId);
 
-		// and: a second (new) item created by the GUI (id = null / 0)
 		BillItems newItemFromGui = testBillItems.setup(null, false);
 
-		// GUI behaviour: resend the whole list: existing + new
 		List<BillItems> billItems = new ArrayList<>();
 		billItems.add(existingFromGui);
 		billItems.add(newItemFromGui);
 
-		// when: we call the service that internally does delete + re-insert
 		accountingIoOperation.newBillItems(bill, billItems);
 
-		// then: for that bill we now have exactly two items
 		List<BillItems> persisted = accountingIoOperation.getItems(bill.getId());
-		assertThat(persisted).hasSize(2);
-
-		// all items belong to the correct bill
-		assertThat(persisted)
-			.extracting(i -> i.getBill().getId())
-			.containsOnly(bill.getId());
-
-		// and none of them keeps the old id (they've been re-inserted)
-		assertThat(persisted)
-			.extracting(BillItems::getId)
-			.doesNotContain(existingId);
+		Assertions.assertThat(persisted).hasSize(2);
+		Assertions.assertThat(persisted).extracting(i -> i.getBill().getId()).containsOnly(bill.getId());
+		Assertions.assertThat(persisted).extracting(BillItems::getId).doesNotContain(existingId);
 	}
 
 	@Test
 	void testIoNewBillPaymentsResendExistingAndNew() throws Exception {
-		// given: an existing bill with one payment already stored
 		int existingId = setupTestBillPayments(false);
 		BillPayments existingPayment = accountingBillPaymentIoOperationRepository.findById(existingId).orElse(null);
-		assertThat(existingPayment).isNotNull();
+		Assertions.assertThat(existingPayment).isNotNull();
 
-		// Simulate same payment as new object from GUI
 		Bill bill = existingPayment.getBill();
 		BillPayments existingFromGui = new BillPayments();
 		existingFromGui.setId(existingPayment.getId());
 		existingFromGui.setAmount(existingPayment.getAmount());
 		existingFromGui.setDate(existingPayment.getDate());
 		existingFromGui.setUser(existingPayment.getUser());
-		existingFromGui.setBill(bill); // oppure null, tanto lo setti in newBillPayments
+		existingFromGui.setBill(bill);
 
-		// and: a second (new) payment created by the GUI (id = null / 0)
 		BillPayments newPayment = testBillPayments.setup(null, false);
 
-		// GUI behaviour: resend the whole list: existing + new
 		List<BillPayments> billPayments = new ArrayList<>();
-		billPayments.add(existingFromGui); // existing, with original id
-		billPayments.add(newPayment); // new, with no id
+		billPayments.add(existingFromGui);
+		billPayments.add(newPayment);
 
-		// when: we call the service that internally does delete + re-insert
 		accountingIoOperation.newBillPayments(bill, billPayments);
 
-		// then: for that bill we now have exactly two payments
 		List<BillPayments> persisted = accountingIoOperation.getPayments(bill.getId());
-		assertThat(persisted).hasSize(2);
-
-		// all payments belong to the correct bill
-		assertThat(persisted)
-			.extracting(p -> p.getBill().getId())
-			.containsOnly(bill.getId());
-
-		// and none of them keeps the old id (they've been re-inserted)
-		assertThat(persisted)
-			.extracting(BillPayments::getId)
-			.doesNotContain(existingId);
+		Assertions.assertThat(persisted).hasSize(2);
+		Assertions.assertThat(persisted).extracting(p -> p.getBill().getId()).containsOnly(bill.getId());
+		Assertions.assertThat(persisted).extracting(BillPayments::getId).doesNotContain(existingId);
 	}
 
 	@Test
 	void testIoUpdateBill() throws Exception {
 		int id = setupTestBill(true);
 		Bill bill = accountingBillIoOperationRepository.findById(id).orElse(null);
-		assertThat(bill).isNotNull();
+		Assertions.assertThat(bill).isNotNull();
 		bill.setAmount(12.34);
-
 		accountingIoOperation.updateBill(bill);
-
-		assertThat(bill.getAmount()).isCloseTo(12.34, offset(0.1));
+		Assertions.assertThat(bill.getAmount()).isCloseTo(12.34, offset(0.1));
 	}
 
 	@Test
 	void testIoDeleteBill() throws Exception {
 		int id = setupTestBill(true);
 		Bill bill = accountingBillIoOperationRepository.findById(id).orElse(null);
-		assertThat(bill).isNotNull();
-
+		Assertions.assertThat(bill).isNotNull();
 		accountingIoOperation.deleteBill(bill);
-		assertThat(accountingBillIoOperationRepository.findById(id)).isEmpty();
+		Assertions.assertThat(accountingBillIoOperationRepository.findById(id)).isEmpty();
 	}
 
 	@Test
 	void testIoGetBillsTimeRange() throws Exception {
 		int id = setupTestBill(false);
 		Bill foundBill = accountingBillIoOperationRepository.findById(id).orElse(null);
-		assertThat(foundBill).isNotNull();
+		Assertions.assertThat(foundBill).isNotNull();
 		LocalDateTime dateFrom = foundBill.getDate().minusYears(1);
 		LocalDateTime dateTo = TimeTools.getNow();
 		List<Bill> bills = accountingIoOperation.getBillsBetweenDates(dateFrom, dateTo);
-
-		assertThat(bills).contains(foundBill);
+		Assertions.assertThat(bills).contains(foundBill);
 	}
 
 	@Test
@@ -415,447 +502,104 @@ class Tests extends OHCoreTestCase {
 
 		int id = setupTestBill(false);
 		Bill foundBill = accountingBillIoOperationRepository.findById(id).orElse(null);
-		assertThat(foundBill).isNotNull();
+		Assertions.assertThat(foundBill).isNotNull();
 
 		List<Bill> bills = accountingIoOperation.getBillsBetweenDates(dateFrom, dateTo);
-		assertThat(bills).contains(foundBill);
+		Assertions.assertThat(bills).contains(foundBill);
 
 		bills = accountingIoOperation.getBillsBetweenDates(LocalDateTime.of(10, 1, 1, 0, 0, 0), dateFrom);
-		assertThat(bills).doesNotContain(foundBill);
+		Assertions.assertThat(bills).doesNotContain(foundBill);
 
 		bills = accountingIoOperation.getBillsBetweenDates(dateTo, LocalDateTime.of(11, 1, 1, 0, 0, 0));
-		assertThat(bills).doesNotContain(foundBill);
+		Assertions.assertThat(bills).doesNotContain(foundBill);
 
 		id = setupTestBillItems(false);
 		BillItems foundBillItem = accountingBillItemsIoOperationRepository.findById(id).orElse(null);
-		assertThat(foundBillItem).isNotNull();
+		Assertions.assertThat(foundBillItem).isNotNull();
 		foundBill = accountingBillIoOperationRepository.findById(foundBillItem.getBill().getId()).orElse(null);
-		assertThat(foundBill).isNotNull();
+		Assertions.assertThat(foundBill).isNotNull();
 
 		bills = accountingIoOperation.getBillsBetweenDatesWhereBillItem(dateFrom, dateTo, foundBillItem);
-		assertThat(bills).contains(foundBill);
+		Assertions.assertThat(bills).contains(foundBill);
 
 		bills = accountingIoOperation.getBillsBetweenDatesWhereBillItem(dateFrom, dateTo, (BillItems) null);
-		assertThat(bills).contains(foundBill);
-
-		id = setupTestBillItems(true);
-		foundBillItem = accountingBillItemsIoOperationRepository.findById(id).orElse(null);
-		assertThat(foundBillItem).isNotNull();
-
-		bills = accountingIoOperation.getBillsBetweenDatesWhereBillItem(dateFrom, dateTo, foundBillItem);
-		assertThat(bills).contains(foundBill);
+		Assertions.assertThat(bills).contains(foundBill);
 	}
 
 	@Test
-	void testIoGetBillsPayment() throws Exception {
-		List<BillPayments> payments = new ArrayList<>();
+	void mgrTestBillItemGroup() throws Exception {
 
-		int id = setupTestBillPayments(false);
-		BillPayments foundBillPayment = accountingBillPaymentIoOperationRepository.findById(id).orElse(null);
-		assertThat(foundBillPayment).isNotNull();
+		BillItemGroup group = testBillItemGroup.setup(false);
+		List<BillItemGroupItem> list = new ArrayList<>();
+		for (int i = 0; i < 4; i ++) {
+			BillItemGroupItem billItemGroupItem = testBillItemGroupItem.setup(group, false);
+			list.add(billItemGroupItem);
+		}
 
-		payments.add(foundBillPayment);
-		List<Bill> bills = accountingIoOperation.getBills(payments);
+		group.setItems(list);
 
-		assertThat(bills.get(0).getAmount()).isCloseTo(foundBillPayment.getBill().getAmount(), offset(0.1));
+		BillItemGroup foundGroup = billBrowserManager.getBillItemGroupById(billBrowserManager.addBillItemGroup(group).getId());
+
+		assertThat(foundGroup).isNotNull();
+		assertThat(billBrowserManager.getItemsByGroupId(foundGroup.getId())).hasSize(4);
+
+		assertThat(billBrowserManager.getAllBillItemGroupItems()).hasSize(4);
+
+		assertThat(billBrowserManager.getAllBillItemGroups()).hasSize(1);
+
+		foundGroup.setTitle(group.getTitle() + "group");
+
+		list.remove(0);
+
+		foundGroup.setItems(list);
+
+		BillItemGroup updatedGroup = billBrowserManager.updateBillItemGroup(foundGroup);
+
+		BillItemGroup foundUpdatedGroup = billBrowserManager.getBillItemGroupById(updatedGroup.getId());
+
+		assertThat(foundUpdatedGroup).isNotNull();
+		assertThat(billBrowserManager.getItemsByGroupId(foundUpdatedGroup.getId())).hasSize(3);
+
+		billBrowserManager.deleteBillItemGroup(foundUpdatedGroup.getId());
+
+		assertThat(billBrowserManager.getBillItemGroupById(foundUpdatedGroup.getId())).isNull();
+	}
+
+	// ==================== ARCHIVED BILL MODEL TESTS ====================
+	@Test
+	void testArchivedBillGets() throws Exception {
+		ArchivedBill archivedBill = testArchivedBill.setup(false);
+		testArchivedBill.check(archivedBill);
 	}
 
 	@Test
-	void testIoGetPaymentsBill() throws Exception {
-		List<Bill> bills = new ArrayList<>();
-
-		int id = setupTestBillPayments(false);
-		BillPayments foundBillPayment = accountingBillPaymentIoOperationRepository.findById(id).orElse(null);
-		assertThat(foundBillPayment).isNotNull();
-		Bill foundBill = foundBillPayment.getBill();
-
-		bills.add(foundBill);
-		List<BillPayments> payments = accountingIoOperation.getPayments(bills);
-
-		assertThat(payments.get(0).getBill().getAmount()).isCloseTo(foundBill.getAmount(), offset(0.1));
+	void testArchivedBillSets() throws Exception {
+		ArchivedBill archivedBill = testArchivedBill.setup(true);
+		testArchivedBill.check(archivedBill);
 	}
 
 	@Test
-	void ioBillPaymentsChecks() throws Exception {
-		List<Bill> bills = new ArrayList<>();
-		int id = setupTestBillPayments(false);
-		BillPayments foundBillPayment = accountingBillPaymentIoOperationRepository.findById(id).orElse(null);
-		assertThat(foundBillPayment).isNotNull();
-		Bill foundBill = foundBillPayment.getBill();
-		bills.add(foundBill);
-		List<BillPayments> payments = accountingIoOperation.getPayments(bills);
-		assertThat(payments).hasSize(1);
-
-		BillPayments billPayment = payments.get(0);
-		assertThat(foundBillPayment).isEqualTo(foundBillPayment);
-		assertThat(foundBillPayment)
-			.isNotEqualTo(TimeTools.getNow())
-			.isEqualTo(billPayment);
-		int id2 = setupTestBillPayments(false);
-		BillPayments foundBillPayment2 = accountingBillPaymentIoOperationRepository.findById(id2).orElse(null);
-		assertThat(foundBillPayment2).isNotNull();
-		foundBillPayment2.setId(-1);
-		assertThat(foundBillPayment).isNotEqualTo(foundBillPayment2);
-		foundBillPayment.setId(id);
-
-		assertThat(billPayment.compareTo(billPayment)).isZero();
-
-		assertThat(billPayment.hashCode()).isPositive();
+	void testArchivedBillItemsGets() throws Exception {
+		ArchivedBillItems item = testArchivedBillItems.setup(false);
+		testArchivedBillItems.check(item);
 	}
 
 	@Test
-	void ioGetDistictsBillItems() throws Exception {
-		int id = setupTestBillItems(false);
-		BillItems foundBillItem = accountingBillItemsIoOperationRepository.findById(id).orElse(null);
-		assertThat(foundBillItem).isNotNull();
-		List<BillItems> billItems = accountingIoOperation.getDistictsBillItems();
-		assertThat(billItems).contains(foundBillItem);
+	void testArchivedBillItemsSets() throws Exception {
+		ArchivedBillItems item = testArchivedBillItems.setup(true);
+		testArchivedBillItems.check(item);
 	}
 
 	@Test
-	void ioBillItemChecks() throws Exception {
-		int id = setupTestBillItems(false);
-		BillItems foundBillItem = accountingBillItemsIoOperationRepository.findById(id).orElse(null);
-		assertThat(foundBillItem).isNotNull();
-		List<BillItems> billItems = accountingIoOperation.getDistictsBillItems();
-		assertThat(billItems).hasSize(1);
-		BillItems billItem = billItems.get(0);
-
-		assertThat(foundBillItem)
-			.isNotEqualTo(TimeTools.getNow())
-			.isEqualTo(billItem);
-		int id2 = setupTestBillItems(false);
-		BillItems foundBillItem2 = accountingBillItemsIoOperationRepository.findById(id2).orElse(null);
-		assertThat(foundBillItem2).isNotNull();
-		foundBillItem2.setId(-1);
-		assertThat(foundBillItem).isNotEqualTo(foundBillItem2);
-		foundBillItem.setId(id);
-
-		String itemId = billItem.getItemId();
-		String displayCode = billItem.getItemDisplayCode();
-		billItem.setItemDisplayCode(null);
-		assertThat(billItem.getItemDisplayCode()).isNull();
-		billItem.setItemDisplayCode("");
-		assertThat(billItem.getItemDisplayCode()).isNull();
-		billItem.setItemId("displayCode");
-		assertThat(billItem.getItemDisplayCode()).isEqualTo("displayCode");
-		billItem.setItemDisplayCode(displayCode);
-
-		billItem.setItemId(itemId);
-		billItem.setItemDisplayCode(displayCode);
-
-		assertThat(billItem.hashCode()).isPositive();
+	void testArchivedBillPaymentsGets() throws Exception {
+		ArchivedBillPayments payment = testArchivedBillPayments.setup(false);
+		testArchivedBillPayments.check(payment);
 	}
 
 	@Test
-	void ioGetPaymentsByDateForPatient() throws Exception {
-		int id = setupTestBillPayments(false);
-		BillPayments foundBillPayment = accountingBillPaymentIoOperationRepository.findById(id).orElse(null);
-		assertThat(foundBillPayment).isNotNull();
-		LocalDateTime dateFrom = LocalDateTime.of(1, 3, 2, 0, 0, 0, 0);
-		LocalDateTime dateTo = TimeTools.getNow();
-		List<BillPayments> billItems = accountingIoOperation.getPaymentsBetweenDatesWherePatient(dateFrom, dateTo, foundBillPayment.getBill().getBillPatient());
-		assertThat(billItems).isNotEmpty();
-		assertThat(billItems.get(0).getAmount()).isCloseTo(foundBillPayment.getAmount(), offset(0.1));
-	}
-
-	@Test
-	void mgrBillItemsChecks() throws Exception {
-		int id = setupTestBillItems(false);
-		BillItems billitem = accountingBillItemsIoOperationRepository.findById(id).orElse(null);
-		assertThat(billitem).isNotNull();
-		List<BillItems> billItems = billBrowserManager.getItems(0);
-		assertThat(billItems).isEmpty();
-		billItems = billBrowserManager.getItems(99999);
-		assertThat(billItems).isEmpty();
-		billItems = billBrowserManager.getItems(billitem.getBill().getId());
-		assertThat(billItems).hasSize(1);
-	}
-
-	@Test
-	void mgrGetPaymentsByDateForPatient() throws Exception {
-		int id = setupTestBillPayments(false);
-		BillPayments foundBillPayment = accountingBillPaymentIoOperationRepository.findById(id).orElse(null);
-		assertThat(foundBillPayment).isNotNull();
-		LocalDateTime dateFrom = LocalDateTime.of(1, 3, 2, 0, 0, 0, 0);
-		LocalDateTime dateTo = TimeTools.getNow();
-		List<BillPayments> billItems = billBrowserManager.getPayments(dateFrom, dateTo, foundBillPayment.getBill().getBillPatient());
-		assertThat(billItems).isNotEmpty();
-		assertThat(billItems.get(0).getAmount()).isCloseTo(foundBillPayment.getAmount(), offset(0.1));
-	}
-
-	@Test
-	void mgrGetAllPayments() throws Exception {
-		int id = setupTestBillPayments(false);
-		BillPayments foundBillPayment = accountingBillPaymentIoOperationRepository.findById(id).orElse(null);
-		assertThat(foundBillPayment).isNotNull();
-		List<BillPayments> billItems = billBrowserManager.getPayments(0); // get all
-		assertThat(billItems).isNotEmpty();
-		assertThat(billItems.get(0).getAmount()).isCloseTo(foundBillPayment.getAmount(), offset(0.1));
-	}
-
-	@Test
-	void mgrGetAllPaymentsWithId() throws Exception {
-		int id = setupTestBillPayments(false);
-		BillPayments foundBillPayment = accountingBillPaymentIoOperationRepository.findById(id).orElse(null);
-		assertThat(foundBillPayment).isNotNull();
-		List<BillPayments> billItems = billBrowserManager.getPayments(foundBillPayment.getBill().getId());
-		assertThat(billItems).isNotEmpty();
-		assertThat(billItems.get(0).getAmount()).isCloseTo(foundBillPayment.getAmount(), offset(0.1));
-	}
-
-	@Test
-	void mgrGetDistictsBillItems() throws Exception {
-		int id = setupTestBillItems(false);
-		BillItems foundBillItem = accountingBillItemsIoOperationRepository.findById(id).orElse(null);
-		assertThat(foundBillItem).isNotNull();
-		List<BillItems> billItems = billBrowserManager.getDistinctItems();
-		assertThat(billItems).contains(foundBillItem);
-	}
-
-	@Test
-	void mgrGetBillsBetweenDatesWherePatient() throws Exception {
-		int id = setupTestBill(false);
-		Bill foundBill = accountingBillIoOperationRepository.findById(id).orElse(null);
-		assertThat(foundBill).isNotNull();
-		LocalDateTime dateFrom = LocalDateTime.of(1, 3, 2, 0, 0, 0, 0);
-		LocalDateTime dateTo = TimeTools.getNow();
-		List<Bill> billItems = billBrowserManager.getBills(dateFrom, dateTo, foundBill.getBillPatient());
-		assertThat(billItems).isNotEmpty();
-		assertThat(billItems.get(0).getAmount()).isCloseTo(foundBill.getAmount(), offset(0.1));
-	}
-
-	@Test
-	void mgrGetPendingBillsForPatientId() throws Exception {
-		int id = setupTestBill(false);
-		Bill foundBill = accountingBillIoOperationRepository.findById(id).orElse(null);
-		assertThat(foundBill).isNotNull();
-		List<Bill> bills = billBrowserManager.getPendingBills(foundBill.getBillPatient().getCode());
-		assertThat(bills.get(0).getAmount()).isCloseTo(foundBill.getAmount(), offset(0.1));
-	}
-
-	@Test
-	void mgrNewBillNoItemsNoPayments() throws Exception {
-		Patient patient = testPatient.setup(false);
-		PriceList priceList = testPriceList.setup(false);
-		priceListIoOperationRepository.saveAndFlush(priceList);
-		patientIoOperationRepository.saveAndFlush(patient);
-		Bill bill = testBill.setup(priceList, patient, null, false);
-		billBrowserManager.newBill(
-			bill,
-			new ArrayList<>(),
-			new ArrayList<>());
-		assertThat(billBrowserManager.getBill(bill.getId()).getId()).isEqualTo(bill.getId());
-		assertThat(billBrowserManager.getItems(bill.getId())).isEmpty();
-		assertThat(billBrowserManager.getPayments(bill.getId())).isEmpty();
-	}
-
-	@Test
-	void mgrNewBillBillItemsNoPayments() throws Exception {
-		Patient patient = testPatient.setup(false);
-		PriceList priceList = testPriceList.setup(false);
-		priceListIoOperationRepository.saveAndFlush(priceList);
-		patientIoOperationRepository.saveAndFlush(patient);
-		Bill bill = testBill.setup(priceList, patient, null, false);
-		BillItems insertBillItem = testBillItems.setup(null, false);
-		List<BillItems> billItems = new ArrayList<>();
-		billItems.add(insertBillItem);
-		billBrowserManager.newBill(
-			bill,
-			billItems,
-			new ArrayList<>());
-		assertThat(billBrowserManager.getBill(bill.getId()).getId()).isEqualTo(bill.getId());
-		assertThat(billBrowserManager.getItems(bill.getId())).isNotEmpty();
-		assertThat(billBrowserManager.getPayments(bill.getId())).isEmpty();
-	}
-
-	@Test
-	void mgrNewBillNoItemsAndPayments() throws Exception {
-		Patient patient = testPatient.setup(false);
-		PriceList priceList = testPriceList.setup(false);
-		priceListIoOperationRepository.saveAndFlush(priceList);
-		patientIoOperationRepository.saveAndFlush(patient);
-		Bill bill = testBill.setup(priceList, patient, null, false);
-		BillPayments insertBillPayment = testBillPayments.setup(bill, false);
-		insertBillPayment.setDate(TimeTools.getNow());
-		List<BillPayments> billPayments = new ArrayList<>();
-		billPayments.add(insertBillPayment);
-		billBrowserManager.newBill(
-			bill,
-			new ArrayList<>(),
-			billPayments);
-		assertThat(billBrowserManager.getBill(bill.getId()).getId()).isEqualTo(bill.getId());
-		assertThat(billBrowserManager.getItems(bill.getId())).isEmpty();
-		assertThat(billBrowserManager.getPayments(bill.getId())).isNotEmpty();
-	}
-
-	@Test
-	void mgrNewBillItemsAndPayments() throws Exception {
-		Patient patient = testPatient.setup(false);
-		PriceList priceList = testPriceList.setup(false);
-		priceListIoOperationRepository.saveAndFlush(priceList);
-		patientIoOperationRepository.saveAndFlush(patient);
-		Bill bill = testBill.setup(priceList, patient, null, false);
-		BillItems insertBillItem = testBillItems.setup(bill, false);
-		BillPayments insertBillPayment = testBillPayments.setup(bill, false);
-		insertBillPayment.setDate(TimeTools.getNow());
-		List<BillItems> billItems = new ArrayList<>();
-		billItems.add(insertBillItem);
-		List<BillPayments> billPayments = new ArrayList<>();
-		billPayments.add(insertBillPayment);
-		billBrowserManager.newBill(
-			bill,
-			billItems,
-			billPayments);
-		assertThat(billBrowserManager.getBill(bill.getId()).getId()).isEqualTo(bill.getId());
-		assertThat(billBrowserManager.getItems(bill.getId())).isNotEmpty();
-		assertThat(billBrowserManager.getPayments(bill.getId())).isNotEmpty();
-	}
-
-	@Test
-	void mgrNewBillFailValidation() throws Exception {
-		Patient patient = testPatient.setup(false);
-		PriceList priceList = testPriceList.setup(false);
-		Bill bill = testBill.setup(priceList, patient, null, false);
-		List<BillItems> billItems = new ArrayList<>();
-		BillItems insertBillItem = testBillItems.setup(bill, false);
-		billItems.add(insertBillItem);
-		List<BillPayments> billPayments = new ArrayList<>();
-		BillPayments payments = testBillPayments.setup(bill, false);
-		billPayments.add(payments);
-
-		assertThatThrownBy(() -> billBrowserManager.newBill(bill, billItems, billPayments))
-			.isInstanceOf(OHDataValidationException.class);
-	}
-
-	@Test
-	void mgrGetBillsPayment() throws Exception {
-		int id = setupTestBillPayments(false);
-		BillPayments foundBillPayment = accountingBillPaymentIoOperationRepository.findById(id).orElse(null);
-		assertThat(foundBillPayment).isNotNull();
-
-		List<BillPayments> payments = new ArrayList<>();
-		payments.add(foundBillPayment);
-		List<Bill> bills = billBrowserManager.getBills(payments);
-
-		assertThat(bills.get(0).getAmount()).isCloseTo(foundBillPayment.getBill().getAmount(), offset(0.1));
-	}
-
-	@Test
-	void mgrGetBillsPaymentEmpty() throws Exception {
-		List<Bill> bills = billBrowserManager.getBills(new ArrayList<>());
-		assertThat(bills).isEmpty();
-	}
-
-	@Test
-	void mgrGetPayments() throws Exception {
-		int id = setupTestBillPayments(false);
-		BillPayments foundBillPayment = accountingBillPaymentIoOperationRepository.findById(id).orElse(null);
-		assertThat(foundBillPayment).isNotNull();
-		LocalDateTime dateFrom = foundBillPayment.getDate().minusYears(1);
-		LocalDateTime dateTo = TimeTools.getNow();
-		List<BillPayments> billPayments = billBrowserManager.getPayments(dateFrom, dateTo);
-		assertThat(billPayments).contains(foundBillPayment);
-	}
-
-	@Test
-	void mgrGetPaymentsBill() throws Exception {
-		int id = setupTestBillPayments(false);
-		BillPayments foundBillPayment = accountingBillPaymentIoOperationRepository.findById(id).orElse(null);
-		assertThat(foundBillPayment).isNotNull();
-		Bill foundBill = foundBillPayment.getBill();
-		List<Bill> bills = new ArrayList<>();
-		bills.add(foundBill);
-		List<BillPayments> payments = billBrowserManager.getPayments(bills);
-		assertThat(payments.get(0).getBill().getAmount()).isCloseTo(foundBill.getAmount(), offset(0.1));
-	}
-
-	@Test
-	void mgrGetBills() throws Exception {
-		LocalDateTime dateFrom = LocalDateTime.of(10, 9, 7, 0, 0, 0);
-		LocalDateTime dateTo = LocalDateTime.of(10, 9, 9, 0, 0, 0);
-
-		int id = setupTestBill(false);
-		Bill foundBill = accountingBillIoOperationRepository.findById(id).orElse(null);
-		assertThat(foundBill).isNotNull();
-
-		List<Bill> bills = billBrowserManager.getBills(dateFrom, dateTo);
-		assertThat(bills).contains(foundBill);
-
-		bills = billBrowserManager.getBills(LocalDateTime.of(10, 1, 1, 0, 0, 0), dateFrom);
-		assertThat(bills).doesNotContain(foundBill);
-
-		bills = billBrowserManager.getBills(dateTo, LocalDateTime.of(11, 1, 1, 0, 0, 0));
-		assertThat(bills).doesNotContain(foundBill);
-
-		id = setupTestBillItems(false);
-		BillItems foundBillItem = accountingBillItemsIoOperationRepository.findById(id).orElse(null);
-		assertThat(foundBillItem).isNotNull();
-		foundBill = accountingBillIoOperationRepository.findById(foundBillItem.getBill().getId()).orElse(null);
-		assertThat(foundBill).isNotNull();
-
-		bills = billBrowserManager.getBills(dateFrom, dateTo, foundBillItem);
-		assertThat(bills).contains(foundBill);
-
-		bills = billBrowserManager.getBills(dateFrom, dateTo, (BillItems) null);
-		assertThat(bills).contains(foundBill);
-
-		id = setupTestBillItems(true);
-		foundBillItem = accountingBillItemsIoOperationRepository.findById(id).orElse(null);
-		assertThat(foundBillItem).isNotNull();
-
-		bills = billBrowserManager.getBills(dateFrom, dateTo, foundBillItem);
-		assertThat(bills).contains(foundBill);
-	}
-
-	@Test
-	void mgrGetBill() throws Exception {
-		int id = setupTestBill(false);
-		Bill foundBill = accountingBillIoOperationRepository.findById(id).orElse(null);
-		assertThat(foundBill).isNotNull();
-		Bill bill = billBrowserManager.getBill(id);
-		assertThat(bill.getAmount()).isCloseTo(foundBill.getAmount(), offset(0.1));
-	}
-
-	@Test
-	void mgrGetPendingBillsAffiliate() throws Exception {
-		int id = setupTestBill(false);
-		Bill foundBill = accountingBillIoOperationRepository.findById(id).orElse(null);
-		assertThat(foundBill).isNotNull();
-		List<Bill> billItems = billBrowserManager.getPendingBillsAffiliate(foundBill.getBillPatient().getCode());
-		assertThat(billItems).isNotEmpty();
-		assertThat(billItems.get(0).getAmount()).isCloseTo(foundBill.getAmount(), offset(0.1));
-	}
-
-	@Test
-	void mgrUpdateBillNoItemsNoPayements() throws Exception {
-		int id = setupTestBill(true);
-		Bill bill = accountingBillIoOperationRepository.findById(id).orElse(null);
-		assertThat(bill).isNotNull();
-		bill.setAmount(12.34);
-		Bill updatedBill = billBrowserManager.updateBill(
-			bill,
-			new ArrayList<>(),
-			new ArrayList<>());
-		assertThat(updatedBill.getAmount()).isCloseTo(12.34, offset(0.1));
-	}
-
-	@Test
-	void mgrDeleteBill() throws Exception {
-		int id = setupTestBill(true);
-		Bill bill = accountingBillIoOperationRepository.findById(id).orElse(null);
-		assertThat(bill).isNotNull();
-		billBrowserManager.deleteBill(bill);
-		assertThat(accountingBillIoOperationRepository.findById(id)).isEmpty();
-	}
-
-	@Test
-	void mgrGetUsers() throws Exception {
-		int id = setupTestBillPayments(false);
-		BillPayments foundBillPayment = accountingBillPaymentIoOperationRepository.findById(id).orElse(null);
-		assertThat(foundBillPayment).isNotNull();
-		List<String> userIds = billBrowserManager.getUsers();
-		assertThat(userIds).contains(foundBillPayment.getUser());
+	void testArchivedBillPaymentsSets() throws Exception {
+		ArchivedBillPayments payment = testArchivedBillPayments.setup(true);
+		testArchivedBillPayments.check(payment);
 	}
 
 	private int setupTestBill(boolean usingSet) throws OHException {
@@ -870,7 +614,7 @@ class Tests extends OHCoreTestCase {
 
 	private void checkBillIntoDb(int id) throws OHException {
 		Bill foundBill = accountingBillIoOperationRepository.findById(id).orElse(null);
-		assertThat(foundBill).isNotNull();
+		Assertions.assertThat(foundBill).isNotNull();
 		testBill.check(foundBill);
 		testPriceList.check(foundBill.getPriceList());
 		testPatient.check(foundBill.getBillPatient());
@@ -890,7 +634,7 @@ class Tests extends OHCoreTestCase {
 
 	private void checkBillItemsIntoDb(int id) throws OHException {
 		BillItems foundBillItem = accountingBillItemsIoOperationRepository.findById(id).orElse(null);
-		assertThat(foundBillItem).isNotNull();
+		Assertions.assertThat(foundBillItem).isNotNull();
 		testBillItems.check(foundBillItem);
 		testBill.check(foundBillItem.getBill());
 		testPriceList.check(foundBillItem.getBill().getPriceList());
@@ -911,16 +655,101 @@ class Tests extends OHCoreTestCase {
 
 	private void checkBillPaymentsIntoDb(int id) throws OHException {
 		BillPayments foundBillPayment = accountingBillPaymentIoOperationRepository.findById(id).orElse(null);
-		assertThat(foundBillPayment).isNotNull();
+		Assertions.assertThat(foundBillPayment).isNotNull();
 		testBillPayments.check(foundBillPayment);
 		testBill.check(foundBillPayment.getBill());
 		testPriceList.check(foundBillPayment.getBill().getPriceList());
 		testPatient.check(foundBillPayment.getBill().getBillPatient());
 	}
 
+	private int setupTestItemPayments(boolean usingSet) throws OHException {
+		Patient patient = testPatient.setup(false);
+		PriceList priceList = testPriceList.setup(false);
+		Bill bill = testBill.setup(priceList, patient, null, usingSet);
+		ItemPayments itemPayment = testItemPayments.setup(bill, usingSet);
+		priceListIoOperationRepository.saveAndFlush(priceList);
+		patientIoOperationRepository.saveAndFlush(patient);
+		accountingBillIoOperationRepository.saveAndFlush(bill);
+		accountingItemPaymentIoOperationRepository.saveAndFlush(itemPayment);
+		return itemPayment.getId();
+	}
+
+	private void checkItemPaymentsIntoDb(int id) throws OHException {
+		ItemPayments foundItemPayment = accountingItemPaymentIoOperationRepository.findById(id).orElse(null);
+		assertThat(foundItemPayment).isNotNull();
+		testItemPayments.check(foundItemPayment);
+		testBill.check(foundItemPayment.getBill());
+		testPriceList.check(foundItemPayment.getBill().getPriceList());
+		testPatient.check(foundItemPayment.getBill().getBillPatient());
+	}
+
 	private Patient setupTestPatient(boolean usingSet) throws OHException {
 		Patient patient = testPatient.setup(usingSet);
 		patientIoOperationRepository.saveAndFlush(patient);
 		return patient;
+	}
+
+	@Test
+	void testGetPaymentsForSage() throws Exception {
+		int id = setupTestBillPayments(false);
+		BillPayments foundPayment = accountingBillPaymentIoOperationRepository.findById(id).orElse(null);
+		assertThat(foundPayment).isNotNull();
+		LocalDateTime dateFrom = foundPayment.getDate().minusDays(1);
+		LocalDateTime dateTo = foundPayment.getDate().plusDays(1);
+		List<BillPayments> payments = accountingIoOperation.getPaymentsForSage(dateFrom, dateTo);
+		assertThat(payments).isNotEmpty();
+		assertThat(payments).contains(foundPayment);
+	}
+
+	@Test
+	void testGetBillsForSage() throws Exception {
+
+		int id = setupTestBill(false);
+		Bill foundBill = accountingBillIoOperationRepository.findById(id).orElse(null);
+		assertThat(foundBill).isNotNull();
+		LocalDateTime dateFrom = foundBill.getDate().minusDays(1);
+		LocalDateTime dateTo = foundBill.getDate().plusDays(1);
+		List<Bill> bills = accountingIoOperation.getBillsForSage(dateFrom, dateTo);
+		assertThat(bills).isNotEmpty();
+		assertThat(bills).contains(foundBill);
+	}
+
+	@Test
+	void testExportSagePayments() throws Exception {
+		int id = setupTestBillPayments(false);
+		BillPayments foundPayment = accountingBillPaymentIoOperationRepository.findById(id).orElse(null);
+		Assertions.assertThat(foundPayment).isNotNull();
+		LocalDateTime dateFrom = foundPayment.getDate().minusDays(1);
+		LocalDateTime dateTo = foundPayment.getDate().plusDays(1);
+		File tempFile = File.createTempFile("sage_payments_test", ".txt");
+		boolean result = accountingIoOperation.exportSagePayments(tempFile, dateFrom, dateTo);
+		Assertions.assertThat(result).isTrue();
+		Assertions.assertThat(tempFile.exists()).isTrue();
+		Assertions.assertThat(tempFile.length()).isGreaterThan(0);
+		tempFile.delete();
+	}
+	@Test
+	void testExportSageBills() throws Exception {
+		int id = setupTestBillPayments(false);
+		BillPayments foundPayment = accountingBillPaymentIoOperationRepository.findById(id).orElse(null);
+		assertThat(foundPayment).isNotNull();
+		LocalDateTime dateFrom = foundPayment.getDate().minusDays(1);
+		LocalDateTime dateTo = foundPayment.getDate().plusDays(1);
+		File tempFile = File.createTempFile("sage_bills_test", ".txt");
+		boolean result = accountingIoOperation.exportSageBills(tempFile, dateFrom, dateTo);
+		assertThat(result).isTrue();
+		assertThat(tempFile.exists()).isTrue();
+		assertThat(tempFile.length()).isGreaterThan(0);
+		tempFile.delete();
+	}
+	@Test
+	void testFormatSagePayment() throws Exception {
+		int id = setupTestBillPayments(false);
+		BillPayments payment = accountingBillPaymentIoOperationRepository.findById(id).orElse(null);
+		assertThat(payment).isNotNull();
+		String formatted = accountingIoOperation.formatSagePaymentForTest(payment);
+		Assertions.assertThat(formatted).isNotNull();
+		Assertions.assertThat(formatted).contains(String.valueOf(payment.getBill().getId()));
+		Assertions.assertThat(formatted).contains(String.valueOf(payment.getAmount()).replace('.', ','));
 	}
 }
