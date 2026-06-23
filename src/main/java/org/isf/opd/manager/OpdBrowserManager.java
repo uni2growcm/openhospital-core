@@ -31,6 +31,7 @@ import org.isf.disease.model.Disease;
 import org.isf.generaldata.GeneralData;
 import org.isf.generaldata.MessageBundle;
 import org.isf.menu.manager.UserBrowsingManager;
+import org.isf.opd.model.DiagnosisEntry;
 import org.isf.opd.model.Opd;
 import org.isf.opd.service.OpdIoOperations;
 import org.isf.utils.exception.OHDataValidationException;
@@ -83,9 +84,7 @@ public class OpdBrowserManager {
 	 */
 	public void validateOpd(Opd opd, boolean insert) throws OHDataValidationException {
 
-		Disease disease = opd.getDisease();
-		Disease disease2 = opd.getDisease2();
-		Disease disease3 = opd.getDisease3();
+		List<DiagnosisEntry> diagnoses = opd.getDiagnoses();
 		Ward ward = opd.getWard();
 		if (opd.getUserID() == null) {
 			opd.setUserID(UserBrowsingManager.getCurrentUser());
@@ -114,44 +113,19 @@ public class OpdBrowserManager {
 		if (opd.getSex() == ' ') {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.opd.pleaseselectpatientssex.msg")));
 		}
-		// Check Disease n.1
-		if (disease == null) {
+		boolean hasActiveDiagnosis = opd.getDisease() != null;
+		if (!hasActiveDiagnosis && diagnoses != null) {
+			for (DiagnosisEntry entry : diagnoses) {
+				if (entry.isActive() && entry.getDisease() != null) {
+					hasActiveDiagnosis = true;
+					break;
+				}
+			}
+		}
+		if (!hasActiveDiagnosis) {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.opd.pleaseselectadisease.msg")));
-		} else {
-			// Check double diseases
-			if (disease2 != null && disease.getCode().equals(disease2.getCode())) {
-				errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.opd.specifyingduplicatediseasesisnotallowed.msg")));
-			}
-			if (disease3 != null && disease.getCode().equals(disease3.getCode())) {
-				errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.opd.specifyingduplicatediseasesisnotallowed.msg")));
-			}
-			if (disease2 != null && disease3 != null && disease2.getCode().equals(disease3.getCode())) {
-				errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.opd.specifyingduplicatediseasesisnotallowed.msg")));
-			}
 		}
-		try {
-			Disease opdDisease;
-			if (disease != null) {
-				opdDisease = diseaseBrowserManager.getOPDDiseaseByCode(disease.getCode());
-				if (opdDisease == null) {
-					errors.add(new OHExceptionMessage(MessageBundle.formatMessage("angal.opd.specifieddiseaseisnoenabledforopdservice.fmt.msg", "1")));
-				}
-			}
-			if (disease2 != null) {
-				opdDisease = diseaseBrowserManager.getOPDDiseaseByCode(disease2.getCode());
-				if (opdDisease == null) {
-					errors.add(new OHExceptionMessage(MessageBundle.formatMessage("angal.opd.specifieddiseaseisnoenabledforopdservice.fmt.msg", "2")));
-				}
-			}
-			if (disease3 != null) {
-				opdDisease = diseaseBrowserManager.getOPDDiseaseByCode(disease3.getCode());
-				if (opdDisease == null) {
-					errors.add(new OHExceptionMessage(MessageBundle.formatMessage("angal.opd.specifieddiseaseisnoenabledforopdservice.fmt.msg", "3")));
-				}
-			}
-		} catch (OHServiceException serviceException) {
-			LOGGER.error("Unable to validate diseases within OPD diseases.", serviceException);
-		}
+
 		if (!errors.isEmpty()) {
 			throw new OHDataValidationException(errors);
 		}
@@ -170,7 +144,7 @@ public class OpdBrowserManager {
 
 	/**
 	 * Return all Opds within specified dates and parameters
-	 * 
+	 *
 	 * @param ward
 	 * @param diseaseTypeCode
 	 * @param diseaseCode
@@ -249,7 +223,8 @@ public class OpdBrowserManager {
 	public Opd newOpd(Opd opd) throws OHServiceException {
 		setPatientConsistency(opd);
 		validateOpd(opd, true);
-		return ioOperations.newOpd(opd);
+		Opd savedOpd = ioOperations.newOpd(opd);
+		return savedOpd;
 	}
 
 	/**
@@ -261,7 +236,8 @@ public class OpdBrowserManager {
 	 */
 	public Opd updateOpd(Opd opd) throws OHServiceException {
 		validateOpd(opd, false);
-		return ioOperations.updateOpd(opd);
+		Opd updatedOpd = ioOperations.updateOpd(opd);
+		return updatedOpd;
 	}
 
 	/**
@@ -271,6 +247,7 @@ public class OpdBrowserManager {
 	 * @throws OHServiceException
 	 */
 	public void deleteOpd(Opd opd) throws OHServiceException {
+		ioOperations.deleteDiagnoses(opd.getCode());
 		ioOperations.deleteOpd(opd);
 	}
 
@@ -309,7 +286,7 @@ public class OpdBrowserManager {
 
 	/**
 	 * Get an OPD by its code
-	 * 
+	 *
 	 * @param code the OPD code
 	 * @return an OPD or {@code null}
 	 */
@@ -319,7 +296,7 @@ public class OpdBrowserManager {
 
 	/**
 	 * Get a list of OPD with specified Progressive in Year number
-	 * 
+	 *
 	 * @param code the OPD code
 	 * @return a list of OPD or an empty list
 	 */
@@ -461,5 +438,71 @@ public class OpdBrowserManager {
 		throws OHServiceException {
 		Pageable pageable = PageRequest.of(page, size);
 		return ioOperations.getOpdListByProgYear(progYear, pageable);
+	}
+
+	/**
+	 * Retrieves all active diagnoses for an OPD
+	 *
+	 * @param opdId the OPD ID
+	 * @return list of active diagnoses
+	 * @throws OHServiceException
+	 */
+	public List<DiagnosisEntry> getDiagnosesByOpdId(int opdId) throws OHServiceException {
+		return ioOperations.getDiagnosesList(opdId);
+	}
+
+	/**
+	 * Retrieves all diagnoses (active and inactive) for an OPD
+	 *
+	 * @param opdId the OPD ID
+	 * @return list of all diagnoses
+	 * @throws OHServiceException
+	 */
+	public List<DiagnosisEntry> getAllDiagnosesByOpdId(int opdId) throws OHServiceException {
+		return ioOperations.getAllDiagnosesList(opdId);
+	}
+
+	/**
+	 * Creates a new diagnosis
+	 *
+	 * @param diagnosis the diagnosis to create
+	 * @return created diagnosis
+	 * @throws OHServiceException
+	 */
+	public DiagnosisEntry newDiagnosis(DiagnosisEntry diagnosis) throws OHServiceException {
+		return ioOperations.newDiagnosis(diagnosis);
+	}
+
+	/**
+	 * Updates all diagnoses for an OPD (replaces existing ones)
+	 *
+	 * @param opdId the OPD ID
+	 * @param diagnoses list of diagnoses
+	 * @return list of updated diagnoses
+	 * @throws OHServiceException
+	 */
+	public List<DiagnosisEntry> updateDiagnoses(int opdId, List<DiagnosisEntry> diagnoses) throws OHServiceException {
+		return ioOperations.updateDiagnoses(opdId, diagnoses);
+	}
+
+	/**
+	 * Checks if an OPD has any active diagnoses
+	 *
+	 * @param opdId the OPD ID
+	 * @return {@code true} if has active diagnoses
+	 * @throws OHServiceException
+	 */
+	public boolean hasDiagnoses(int opdId) throws OHServiceException {
+		return ioOperations.hasDiagnoses(opdId);
+	}
+
+	/**
+	 * Deletes all diagnoses for an OPD
+	 *
+	 * @param opdId the OPD ID
+	 * @throws OHServiceException
+	 */
+	public void deleteDiagnoses(int opdId) throws OHServiceException {
+		ioOperations.deleteDiagnoses(opdId);
 	}
 }
