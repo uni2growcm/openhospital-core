@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -24,6 +24,7 @@ package org.isf.exa.service;
 import java.util.List;
 import java.util.Objects;
 
+import org.isf.articlefamily.model.ArticleFamily;
 import org.isf.exa.model.Exam;
 import org.isf.exa.model.ExamRow;
 import org.isf.exatype.model.ExamType;
@@ -238,5 +239,35 @@ public class ExamIoOperations {
 	 */
 	public Exam findByCode(String code) throws OHServiceException {
 		return repository.findById(code).orElse(null);
+	}
+
+	/**
+	 * Returns the list of {@link Exam}s filtered by exam type description and/or article family.
+	 * Both parameters are optional — pass {@code null} to ignore a filter.
+	 *
+	 * @param examTypeDescription - the exam type description filter, or {@code null}
+	 * @param articleFamily       - the article family filter, or {@code null}
+	 * @return the filtered list of {@link Exam}s
+	 * @throws OHServiceException
+	 */
+	public List<Exam> getExamsByFilters(String examTypeDescription, ArticleFamily articleFamily) throws OHServiceException {
+		boolean hasType   = examTypeDescription != null && !examTypeDescription.isBlank();
+		boolean hasFamily = articleFamily != null;
+
+		if (hasType && hasFamily) {
+			return repository
+				.findByExamtype_DescriptionContainingAndArticleFamilyOrderByExamtypeDescriptionAscDescriptionAsc(
+					examTypeDescription, articleFamily);
+		}
+		if (hasType) {
+			return repository
+				.findByExamtype_DescriptionContainingOrderByExamtypeDescriptionAscDescriptionAsc(
+					examTypeDescription);
+		}
+		if (hasFamily) {
+			return repository
+				.findByArticleFamilyOrderByExamtypeDescriptionAscDescriptionAsc(articleFamily);
+		}
+		return repository.findByOrderByDescriptionAscDescriptionAsc();
 	}
 }

@@ -23,6 +23,7 @@ package org.isf.medicals.service;
 
 import java.util.List;
 
+import org.isf.articlefamily.model.ArticleFamily;
 import org.isf.medicals.model.Medical;
 import org.isf.medicalstock.service.MovementIoOperationRepository;
 import org.isf.utils.db.TranslateOHServiceException;
@@ -214,7 +215,6 @@ public class MedicalsIoOperations {
 		}
 		return foundMedical != null;
 	}
-    
 
 	/**
 	 * Checks if the specified {@link Medical} exists or not.
@@ -314,6 +314,7 @@ public class MedicalsIoOperations {
 		}
 		return repository.findAllByTypeDescriptionContainsAndDescriptionContains(type, description, pageable);
 	}
+
 	/**
 	 * Returns PagedResponse of Medicals (manual pagination like OPD)
 	 *
@@ -366,5 +367,65 @@ public class MedicalsIoOperations {
 	 */
 	public Page<Medical> getMedicalsPageable(Pageable pageable, String activeFilter, String medicalTypeCode) throws OHServiceException {
 		return repository.findAllPageable(pageable, activeFilter, medicalTypeCode);
+	}
+
+	/**
+	 * Retrieves all medicals filtered by article family.
+	 * @param family the article family filter
+	 * @return list of medicals sorted by type and description
+	 * @throws OHServiceException if an error occurs
+	 */
+	public List<Medical> getMedicalsByArticleFamily(ArticleFamily family) throws OHServiceException {
+		return repository.findAllWhereArticleFamilyOrderByTypeAndDescription(family);
+	}
+
+	/**
+	 * Retrieves all medicals filtered by type and article family.
+	 * @param type the medical type code (can be null)
+	 * @param family the article family (can be null)
+	 * @return list of medicals sorted by type and description
+	 * @throws OHServiceException if an error occurs
+	 */
+	public List<Medical> getMedicalsByTypeAndArticleFamily(String type, ArticleFamily family) throws OHServiceException {
+		return repository.findAllWhereTypeAndArticleFamilyOrderByTypeAndDescription(type, family);
+	}
+
+	/**
+	 * Retrieves a paginated list of medical records filtered by type, description, article family, and deletion status.
+	 *
+	 * @param type The type code to filter by. Can be {@code null} or empty.
+	 * @param description The description to filter by. Can be {@code null} or empty.
+	 * @param articleFamily The article family to filter by. Can be {@code null}.
+	 * @param deleted The deletion status to filter by. Can be {@code null}, 'Y', or 'N'.
+	 * @param pageable The pagination information.
+	 * @return A {@link Page} of {@link Medical}s.
+	 * @throws OHServiceException If an error occurs.
+	 */
+	public Page<Medical> getMedicalsByTypeDescriptionFamilyAndDeleted(
+		String type,
+		String description,
+		ArticleFamily articleFamily,
+		Character deleted,
+		Pageable pageable) throws OHServiceException {
+
+		if (type == null) type = "";
+		if (description == null) description = "";
+		if (articleFamily != null) {
+			if (deleted != null) {
+				return repository.findAllByTypeDescriptionContainsAndDescriptionContainsAndArticleFamilyAndDeleted(
+					type, description, articleFamily, deleted, pageable);
+			} else {
+				return repository.findAllByTypeDescriptionContainsAndDescriptionContainsAndArticleFamily(
+					type, description, articleFamily, pageable);
+			}
+		} else {
+			if (deleted != null) {
+				return repository.findAllByTypeDescriptionContainsAndDescriptionContainsAndDeleted(
+					type, description, deleted, pageable);
+			} else {
+				return repository.findAllByTypeDescriptionContainsAndDescriptionContains(
+					type, description, pageable);
+			}
+		}
 	}
 }

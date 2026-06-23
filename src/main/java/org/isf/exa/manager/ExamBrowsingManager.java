@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -24,6 +24,7 @@ package org.isf.exa.manager;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.isf.articlefamily.model.ArticleFamily;
 import org.isf.exa.model.Exam;
 import org.isf.exa.service.ExamIoOperations;
 import org.isf.exatype.model.ExamType;
@@ -191,5 +192,17 @@ public class ExamBrowsingManager {
 	 */
 	public Exam findByCode(String code) throws OHServiceException {
 		return ioOperations.findByCode(code);
+	}
+
+	/**
+	 * Returns the list of {@link Exam}s filtered by exam type and/or article family.
+	 *
+	 * @param examTypeDescription the exam type description filter, or {@code null}
+	 * @param articleFamily       the article family filter, or {@code null}
+	 * @return the filtered list of {@link Exam}s
+	 * @throws OHServiceException
+	 */
+	public List<Exam> getExamsByFilters(String examTypeDescription, ArticleFamily articleFamily) throws OHServiceException {
+		return ioOperations.getExamsByFilters(examTypeDescription, articleFamily);
 	}
 }
