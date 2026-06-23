@@ -59,4 +59,28 @@ public interface HomeVisitIoOperationRepository extends JpaRepository<HomeVisit,
 	@Modifying
 	@Query("UPDATE HomeVisit hv SET hv.active = 0 WHERE hv.id = :id")
 	void softDelete(@Param("id") int id);
+
+	@Query("SELECT hv FROM HomeVisit hv " +
+		"LEFT JOIN hv.patient p " +
+		"LEFT JOIN hv.staff s " +
+		"WHERE hv.active = 1 " +
+		"AND (:code IS NULL OR p.code = :code) " +
+		"AND (:status IS NULL OR hv.status = :status) " +
+		"AND (:dateFrom IS NULL OR hv.visitStartDate >= :dateFrom) " +
+		"AND (:dateTo IS NULL OR hv.visitStartDate <= :dateTo) " +
+		"AND (:sex IS NULL OR p.sex = :sex) " +
+		"AND (:ageFrom IS NULL OR (YEAR(CURRENT_DATE) - YEAR(p.birthDate)) >= :ageFrom) " +
+		"AND (:ageTo IS NULL OR (YEAR(CURRENT_DATE) - YEAR(p.birthDate)) <= :ageTo) " +
+		"AND (:searchText IS NULL OR LOWER(p.name) LIKE LOWER(CONCAT('%', :searchText, '%'))) " +
+		"ORDER BY hv.visitStartDate DESC")
+	Page<HomeVisit> findWithFilters(
+		@Param("code") Integer code,
+		@Param("status") HomeVisitStatus status,
+		@Param("dateFrom") LocalDateTime dateFrom,
+		@Param("dateTo") LocalDateTime dateTo,
+		@Param("sex") Character sex,
+		@Param("ageFrom") Integer ageFrom,
+		@Param("ageTo") Integer ageTo,
+		@Param("searchText") String searchText,
+		Pageable pageable);
 }

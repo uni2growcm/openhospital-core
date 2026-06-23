@@ -142,4 +142,17 @@ public class HomeVisitIoOperations {
 	public void softDelete(int id) throws OHServiceException {
 		repository.softDelete(id);
 	}
+
+	public Page<HomeVisit> getWithFilters(
+		Integer code,
+		HomeVisitStatus status,
+		LocalDateTime dateFrom,
+		LocalDateTime dateTo,
+		Character sex,
+		Integer ageFrom,
+		Integer ageTo,
+		String searchText,
+		Pageable pageable) throws OHServiceException {
+		return repository.findWithFilters(code, status, dateFrom, dateTo, sex, ageFrom, ageTo, searchText, pageable);
+	}
 }

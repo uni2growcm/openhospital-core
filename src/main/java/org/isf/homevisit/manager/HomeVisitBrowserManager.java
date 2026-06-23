@@ -228,4 +228,28 @@ public class HomeVisitBrowserManager {
 			throw new OHDataValidationException(errors);
 		}
 	}
+
+	public Page<HomeVisit> getHomeVisitsWithFilters(
+		Integer code,
+		HomeVisitStatus status,
+		LocalDateTime dateFrom,
+		LocalDateTime dateTo,
+		Character sex,
+		Integer ageFrom,
+		Integer ageTo,
+		String searchText,
+		int page,
+		int size) throws OHServiceException {
+		Pageable pageable = PageRequest.of(page, size);
+		return ioOperations.getWithFilters(
+			code,
+			status,
+			dateFrom,
+			dateTo,
+			sex,
+			ageFrom,
+			ageTo,
+			searchText,
+			pageable);
+	}
 }
