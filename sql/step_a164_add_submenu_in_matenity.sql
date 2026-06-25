@@ -1,5 +1,3 @@
-
-
 UPDATE oh_menuitem
 SET    MNI_SUBMENU = 'maternity_internal'
 WHERE  MNI_SUBMENU = 'maternity'
