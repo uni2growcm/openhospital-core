@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -53,4 +53,18 @@ public interface OperationIoOperationRepository extends JpaRepository<Operation,
 	@Query(value = "SELECT * FROM OH_OPERATION ORDER BY OPE_DESC", nativeQuery = true)
 	Page<Operation> findAllPageable(Pageable pageable);
 
+	@Query(value = "SELECT * FROM OH_OPERATION JOIN OH_OPERATIONTYPE ON OPE_OCL_ID_A = OCL_ID_A " +
+		"WHERE OPE_AFM_ID = :familyId " +
+		"AND (OPE_FOR='opd_admission' OR OPE_FOR='opd' OR OPE_FOR='admission') " +
+		"ORDER BY OPE_DESC", nativeQuery = true)
+	List<Operation> findByArticleFamilyId(@Param("familyId") int familyId);
+
+	@Query(value = "SELECT * FROM OH_OPERATION JOIN OH_OPERATIONTYPE ON OPE_OCL_ID_A = OCL_ID_A " +
+		"WHERE OCL_DESC LIKE :desc " +
+		"AND OPE_AFM_ID = :familyId " +
+		"AND (OPE_FOR='opd_admission' OR OPE_FOR='admission' OR OPE_FOR='opd') " +
+		"ORDER BY OPE_DESC", nativeQuery = true)
+	List<Operation> findByTypeDescriptionAndArticleFamilyId(
+		@Param("desc") String typeDescription,
+		@Param("familyId") int familyId);
 }

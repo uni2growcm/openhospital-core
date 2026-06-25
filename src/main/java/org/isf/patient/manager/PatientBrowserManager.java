@@ -505,4 +505,35 @@ public class PatientBrowserManager {
 	public Patient getPatientWithPartnersById(Integer code) throws OHServiceException {
 		return ioOperations.getPatientWithPartners(code);
 	}
+
+	/**
+	 * Retrieves a paginated list of patients based on search criteria with age filtering.
+	 *
+	 * @param keyword the search term to match against patient fields
+	 * @param femalesOnly if true, only female patients are returned
+	 * @param minAge the minimum age in years (inclusive), null for no lower bound
+	 * @param maxAge the maximum age in years (inclusive), null for no upper bound
+	 * @param page the page number (0-indexed)
+	 * @param size the number of records per page
+	 * @return a page of patients matching the search criteria
+	 * @throws OHServiceException if an error occurs during the database operation
+	 */
+	public Page<Patient> getPatientsByFilters(String keyword, boolean femalesOnly, Integer minAge, Integer maxAge, int page, int size) throws OHServiceException {
+		Pageable pageable = PageRequest.of(page, size);
+		return ioOperations.getPatientsByOneOfFieldsLikeWith(keyword, femalesOnly, minAge, maxAge, pageable);
+	}
+
+	/**
+	 * Retrieves a paginated list of patients based on search criteria with age filtering.
+	 *
+	 * @param keyword the search term to match against patient fields
+	 * @param femalesOnly if true, only female patients are returned
+	 * @param minAge the minimum age in years (inclusive), null for no lower bound
+	 * @param maxAge the maximum age in years (inclusive), null for no upper bound
+	 * @return a page of patients matching the search criteria
+	 * @throws OHServiceException if an error occurs during the database operation
+	 */
+	public Page<Patient> getPatientsByOneOfFieldsLikeWith(String keyword, boolean femalesOnly, Integer minAge, Integer maxAge, Pageable pageable) throws OHServiceException {
+		return ioOperations.getPatientsByOneOfFieldsLikeWith(keyword, femalesOnly, minAge, maxAge, pageable);
+	}
 }

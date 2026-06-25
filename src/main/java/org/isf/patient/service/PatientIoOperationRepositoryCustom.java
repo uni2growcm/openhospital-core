@@ -35,4 +35,6 @@ public interface PatientIoOperationRepositoryCustom {
 	List<Patient> findFemaleByFieldsContainingWordsFromLiteral(String literal);
 
 	Page<Patient> findByFieldsContainingWordsFromLiteral(String keyword, boolean femalesOnly, Pageable pageable);
+
+	Page<Patient> findByFieldsContainingWordsFromLiteral(String keyword, boolean femalesOnly, Integer minAge, Integer maxAge, Pageable pageable);
 }

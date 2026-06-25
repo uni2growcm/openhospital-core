@@ -23,6 +23,7 @@ package org.isf.medicals.service;
 
 import java.util.List;
 
+import org.isf.articlefamily.model.ArticleFamily;
 import org.isf.medicals.model.Medical;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -105,4 +106,24 @@ public interface MedicalsIoOperationRepository extends JpaRepository<Medical, In
 		+ "AND (:medicalTypeCode IS NULL OR m.type.code = :medicalTypeCode)")
 	Page<Medical> findAllPageable(Pageable pageable, @Param("activeFilter") String activeFilter, @Param("medicalTypeCode") String medicalTypeCode);
 
+	@Query("SELECT m FROM Medical m WHERE m.articleFamily = :family ORDER BY m.type.description, m.description")
+	List<Medical> findAllWhereArticleFamilyOrderByTypeAndDescription(@Param("family") ArticleFamily family);
+
+	@Query("SELECT m FROM Medical m WHERE (m.type.code = :type) AND m.articleFamily = :family ORDER BY m.type.description, m.description")
+	List<Medical> findAllWhereTypeAndArticleFamilyOrderByTypeAndDescription(@Param("type") String type, @Param("family") ArticleFamily family);
+
+	@Query("SELECT m FROM Medical m WHERE m.type.description LIKE %:type% AND m.description LIKE %:description% AND m.articleFamily = :family")
+	Page<Medical> findAllByTypeDescriptionContainsAndDescriptionContainsAndArticleFamily(
+		@Param("type") String type,
+		@Param("description") String description,
+		@Param("family") ArticleFamily family,
+		Pageable pageable);
+
+	@Query("SELECT m FROM Medical m WHERE m.type.description LIKE %:type% AND m.description LIKE %:description% AND m.articleFamily = :family AND m.deleted = :deleted")
+	Page<Medical> findAllByTypeDescriptionContainsAndDescriptionContainsAndArticleFamilyAndDeleted(
+		@Param("type") String type,
+		@Param("description") String description,
+		@Param("family") ArticleFamily family,
+		@Param("deleted") Character deleted,
+		Pageable pageable);
 }
