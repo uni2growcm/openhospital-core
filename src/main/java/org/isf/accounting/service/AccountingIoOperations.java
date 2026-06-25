@@ -44,6 +44,7 @@ import org.isf.generaldata.SageConfig;
 import org.isf.lab.manager.LabManager;
 import org.isf.menu.model.User;
 import org.isf.operation.manager.OperationRowBrowserManager;
+import org.isf.partner.model.Partner;
 import org.isf.patient.model.Patient;
 import org.isf.priceslist.model.ItemGroup;
 import org.isf.priceslist.model.Price;
@@ -977,5 +978,103 @@ public class AccountingIoOperations {
 				}
 			});
 		}
+	}
+
+	/**
+	 * Retrieves a paginated list of bills filtered by status, date range,
+	 * patient, guarantor, and partner.
+	 *
+	 * @param status the status of the bills to filter by
+	 * @param dateFrom the start date of the billing period (inclusive)
+	 * @param dateTo the end date of the billing period (inclusive)
+	 * @param patient the patient associated with the bills
+	 * @param guarantor the guarantor associated with the bills
+	 * @param partner the partner associated with the bills
+	 * @param pageable pagination information
+	 * @return a page of filtered {@link Bill}s
+	 * @throws OHServiceException if an error occurs while retrieving the bills
+	 */
+	public Page<Bill> getBillsWithFilters(
+		String status,
+		LocalDateTime dateFrom,
+		LocalDateTime dateTo,
+		Patient patient,
+		User guarantor,
+		Partner partner,
+		Pageable pageable
+	) throws OHServiceException {
+		LocalDateTime from = dateFrom != null ? TimeTools.getBeginningOfDay(dateFrom) : null;
+		LocalDateTime to = dateTo != null ? TimeTools.getBeginningOfNextDay(dateTo) : null;
+		return billRepository.findBillsWithFilters(status, from, to, patient, guarantor, partner, pageable);
+	}
+
+	/**
+	 * Counts the number of bills matching the given filters.
+	 *
+	 * @param status the status of the bills to filter by
+	 * @param dateFrom the start date of the billing period (inclusive)
+	 * @param dateTo the end date of the billing period (inclusive)
+	 * @param patient the patient associated with the bills
+	 * @param guarantor the guarantor associated with the bills
+	 * @param partner the partner associated with the bills
+	 * @return the total number of matching {@link Bill}s
+	 * @throws OHServiceException if an error occurs while counting the bills
+	 */
+	public long countBillsWithFilters(
+		String status,
+		LocalDateTime dateFrom,
+		LocalDateTime dateTo,
+		Patient patient,
+		User guarantor,
+		Partner partner
+	) throws OHServiceException {
+		LocalDateTime from = dateFrom != null ? TimeTools.getBeginningOfDay(dateFrom) : null;
+		LocalDateTime to = dateTo != null ? TimeTools.getBeginningOfNextDay(dateTo) : null;
+		return billRepository.countBillsWithFilters(status, from, to, patient, guarantor, partner);
+	}
+
+	/**
+	 * Retrieves all bills within the specified date range for a given patient and partner.
+	 *
+	 * @param dateFrom the start date of the billing period (inclusive)
+	 * @param dateTo the end date of the billing period (inclusive)
+	 * @param patient the patient associated with the bills
+	 * @param partner the partner associated with the bills
+	 * @return the list of matching {@link Bill}s
+	 * @throws OHServiceException if an error occurs while retrieving the bills
+	 */
+	public List<Bill> getBillsByDatePatientAndPartner(
+		LocalDateTime dateFrom,
+		LocalDateTime dateTo,
+		Patient patient,
+		Partner partner
+	) throws OHServiceException {
+		return billRepository.findByDateBetweenAndPatientAndPartner(
+			TimeTools.getBeginningOfDay(dateFrom),
+			TimeTools.getBeginningOfNextDay(dateTo),
+			patient,
+			partner
+		);
+	}
+
+	/**
+	 * Retrieves all bills within the specified date range for a given partner.
+	 *
+	 * @param dateFrom the start date of the billing period (inclusive)
+	 * @param dateTo the end date of the billing period (inclusive)
+	 * @param partner the partner associated with the bills
+	 * @return the list of matching {@link Bill}s
+	 * @throws OHServiceException if an error occurs while retrieving the bills
+	 */
+	public List<Bill> getBillsByDateAndPartner(
+		LocalDateTime dateFrom,
+		LocalDateTime dateTo,
+		Partner partner
+	) throws OHServiceException {
+		return billRepository.findByDateBetweenAndPartner(
+			TimeTools.getBeginningOfDay(dateFrom),
+			TimeTools.getBeginningOfNextDay(dateTo),
+			partner
+		);
 	}
 }
