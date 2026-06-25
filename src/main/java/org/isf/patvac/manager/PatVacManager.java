@@ -74,6 +74,17 @@ public class PatVacManager {
 	}
 
 	/**
+	 * Returns all {@link PatientVaccine}s associated with the specified patient.
+	 *
+	 * @param patientCode the unique identifier of the patient
+	 * @return the list of {@link PatientVaccine}s for the given patient
+	 * @throws OHServiceException if an error occurs while retrieving the patient vaccines
+	 */
+	public List<PatientVaccine> getPatientVaccineByPatientId(int patientCode) throws OHServiceException {
+		return this.ioOperations.findForPatient(patientCode);
+	}
+
+	/**
 	 * Inserts a {@link PatientVaccine}.
 	 *
 	 * @param patVac the {@link PatientVaccine} to insert
