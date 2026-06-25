@@ -9,4 +9,4 @@ source delete_all_data.sql;
 -- load demo data
 source load_demo_data.sql;
 -- re-apply step_a schema changes that may have been overwritten by the demo dump
-source step_04b_following_steps_a.sql;
+source step_04b_following_steps.sql;
