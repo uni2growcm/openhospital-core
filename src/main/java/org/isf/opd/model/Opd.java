@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -35,6 +35,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import jakarta.persistence.Version;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
 import org.isf.disease.model.Disease;
@@ -44,6 +45,8 @@ import org.isf.utils.time.TimeTools;
 import org.isf.visits.model.Visit;
 import org.isf.ward.model.Ward;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.drew.lang.annotations.Nullable;
 
@@ -155,6 +158,11 @@ public class Opd extends Auditable<String> {
 	@Transient
 	private volatile int hashCode;
 
+	@OneToMany(mappedBy = "opd", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+	private List<DiagnosisEntry> diagnoses = new ArrayList<>();
+
+	public List<DiagnosisEntry> getDiagnoses() { return diagnoses; }
+	public void setDiagnoses(List<DiagnosisEntry> diagnoses) { this.diagnoses = diagnoses; }
 
 	public Opd() {
 	}

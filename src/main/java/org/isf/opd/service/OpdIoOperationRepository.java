@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2024 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -23,8 +23,11 @@ package org.isf.opd.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
+import org.isf.distype.model.DiseaseType;
 import org.isf.opd.model.Opd;
+import org.isf.opd.model.DiagnosisEntry;;
 import org.isf.patient.model.Patient;
 import org.isf.ward.model.Ward;
 import org.springframework.data.domain.Page;
@@ -32,6 +35,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import jakarta.transaction.Transactional;
+import org.springframework.data.jpa.repository.Modifying;
 
 public interface OpdIoOperationRepository extends JpaRepository<Opd, Integer>, OpdIoOperationRepositoryCustom {
 
@@ -109,4 +114,17 @@ public interface OpdIoOperationRepository extends JpaRepository<Opd, Integer>, O
 
 	@Query("select o from Opd o where o.prog_year = :prog_year order by o.prog_year")
 	Page<Opd> findByProgYearPageable(@Param("prog_year") int progYear, Pageable pageable);
+	@Query("SELECT d FROM DiagnosisEntry d WHERE d.opd.code = :opdId AND d.active = true ORDER BY d.orderNumber ASC")
+	List<DiagnosisEntry> findActiveDiagnosesByOpdId(@Param("opdId") int opdId);
+
+	@Query("SELECT d FROM DiagnosisEntry d WHERE d.opd.code = :opdId")
+	List<DiagnosisEntry> findAllDiagnosesByOpdId(@Param("opdId") int opdId);
+
+	@Query("SELECT COUNT(d) > 0 FROM DiagnosisEntry d WHERE d.opd.code = :opdId AND d.active = true")
+	boolean hasActiveDiagnoses(@Param("opdId") int opdId);
+
+	@Modifying
+	@Transactional
+	@Query("UPDATE DiagnosisEntry d SET d.active = false WHERE d.opd.code = :opdId")
+	void softDeleteDiagnosesByOpdId(@Param("opdId") int opdId);
 }

@@ -23,11 +23,15 @@ package org.isf.opd.service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
 import org.isf.generaldata.MessageBundle;
+import org.isf.opd.model.DiagnosisEntry;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.isf.opd.model.Opd;
 import org.isf.utils.db.TranslateOHServiceException;
 import org.isf.utils.exception.OHServiceException;
@@ -48,6 +52,9 @@ public class OpdIoOperations {
 
 	private OpdIoOperationRepository repository;
 
+	@PersistenceContext
+	private EntityManager entityManager;
+
 	public OpdIoOperations(OpdIoOperationRepository opdIoOperationRepository) {
 		this.repository = opdIoOperationRepository;
 	}
@@ -66,7 +73,7 @@ public class OpdIoOperations {
 			dateFrom = LocalDate.now().minusWeeks(1);
 		}
 		return getOpdList(null, MessageBundle.getMessage("angal.common.alltypes.txt"), MessageBundle.getMessage("angal.opd.alldiseases.txt"), dateFrom, dateTo,
-			0, 0, 'A', 'A', null);
+						0, 0, 'A', 'A', null);
 	}
 
 	/**
@@ -407,5 +414,58 @@ public class OpdIoOperations {
 	 */
 	public Page<Opd> getOpdListByProgYear(int progYear, Pageable pageable) throws OHServiceException {
 		return repository.findByProgYearPageable(progYear, pageable);
+	}
+
+	public List<DiagnosisEntry> getDiagnosesList(int opdId) throws OHServiceException {
+		return entityManager.createQuery(
+				"SELECT d FROM DiagnosisEntry d WHERE d.opd.code = :opdId AND d.active = true ORDER BY d.orderNumber ASC",
+				DiagnosisEntry.class)
+			.setParameter("opdId", opdId)
+			.getResultList();
+	}
+
+	public List<DiagnosisEntry> getAllDiagnosesList(int opdId) throws OHServiceException {
+		return entityManager.createQuery(
+				"SELECT d FROM DiagnosisEntry d WHERE d.opd.code = :opdId",
+				DiagnosisEntry.class)
+			.setParameter("opdId", opdId)
+			.getResultList();
+	}
+
+	public DiagnosisEntry newDiagnosis(DiagnosisEntry diagnosis) throws OHServiceException {
+		entityManager.persist(diagnosis);
+		return diagnosis;
+	}
+
+	public List<DiagnosisEntry> updateDiagnoses(int opdId, List<DiagnosisEntry> diagnoses) throws OHServiceException {
+		// Soft delete existing diagnoses
+		entityManager.createQuery("UPDATE DiagnosisEntry d SET d.active = false WHERE d.opd.code = :opdId")
+			.setParameter("opdId", opdId)
+			.executeUpdate();
+
+		if (diagnoses != null && !diagnoses.isEmpty()) {
+			for (DiagnosisEntry diagnosis : diagnoses) {
+				diagnosis.setId(null);
+				diagnosis.setActive(true);
+				entityManager.persist(diagnosis);
+			}
+			return diagnoses;
+		}
+		return new ArrayList<>();
+	}
+
+	public boolean hasDiagnoses(int opdId) throws OHServiceException {
+		Long count = entityManager.createQuery(
+				"SELECT COUNT(d) FROM DiagnosisEntry d WHERE d.opd.code = :opdId AND d.active = true",
+				Long.class)
+			.setParameter("opdId", opdId)
+			.getSingleResult();
+		return count > 0;
+	}
+
+	public void deleteDiagnoses(int opdId) throws OHServiceException {
+		entityManager.createQuery("UPDATE DiagnosisEntry d SET d.active = false WHERE d.opd.code = :opdId")
+			.setParameter("opdId", opdId)
+			.executeUpdate();
 	}
 }
