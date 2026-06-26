@@ -68,6 +68,7 @@ public class StatsIoOperationRepositoryImpl implements StatsIoOperationRepositor
 			conditions.append(" AND _patient.PAT_AGE <= ?");
 			parameters.add(ageTo);
 		}
+
 		if (periodFrom != null) {
 			conditions.append(" AND DATE(_pregvisit.PRGV_DATE) >= ?");
 			parameters.add(TimeTools.formatDateTime(periodFrom, YYYY_MM_DD));
@@ -138,6 +139,7 @@ public class StatsIoOperationRepositoryImpl implements StatsIoOperationRepositor
 		if (anyParameter) {
 			joinedTables.append(" INNER JOIN oh_patientexamination _patexam ON _patexam.PEX_PAT_ID = _patient.PAT_ID");
 		}
+
 		if (parameterHeight) {
 			conditions.append(" AND _patexam.PEX_HEIGHT > 0");
 		}
@@ -165,6 +167,7 @@ public class StatsIoOperationRepositoryImpl implements StatsIoOperationRepositor
 
 		String dataSql = "SELECT DISTINCT _patient.PAT_ID, _patient.PAT_FNAME, _patient.PAT_SNAME, _patient.PAT_AGE"
 			+ from + where;
+
 		Query dataQuery = entityManager.createNativeQuery(dataSql);
 		bindParameters(dataQuery, parameters);
 		dataQuery.setFirstResult((int) pageable.getOffset());
