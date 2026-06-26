@@ -50,11 +50,6 @@ INSERT INTO oh_menuitem (MNI_ID_A, MNI_BTN_LABEL, MNI_LABEL, MNI_TOOLTIP, MNI_SH
 SELECT 'maternity.therapy', 'angal.maternity.therapy.btn', 'angal.maternity.therapy.btn', 'x', '', 'maternity', '', 'N', 12
 FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM oh_menuitem WHERE MNI_ID_A = 'maternity.therapy');
 
-
--- =========================
--- Lier au groupe admin dans oh_groupmenu
--- =========================
-
 INSERT INTO oh_groupmenu (GM_ID, GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE, GM_CREATED_BY, GM_CREATED_DATE, GM_LAST_MODIFIED_BY, GM_LAST_MODIFIED_DATE)
 SELECT 821, 'admin', 'maternity.new', 1, NULL, NULL, NULL, NULL
 FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM oh_groupmenu WHERE GM_ID = 821);
