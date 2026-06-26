@@ -117,6 +117,18 @@ public class PregnancyDelivery extends Auditable<String> {
 	private Integer fatherAge;
 
 	@Nullable
+	@Column(name = "PRGDLV_FEEDING_MODE")
+	private String feedingMode;
+
+	@Nullable
+	@Column(name = "PRGDLV_NOTE", columnDefinition = "LONGTEXT")
+	private String note;
+
+	@Nullable
+	@Column(name = "PRGDLV_LOCHIA")
+	private String lochia;
+
+	@Nullable
 	@Column(name = "PRGDLV_FATHER_BIRTHPLACE")
 	private String fatherBirthplace;
 
@@ -142,6 +154,22 @@ public class PregnancyDelivery extends Auditable<String> {
 		this.pregnancy = pregnancy;
 		this.deliveryDate = deliveryDate;
 		this.deliveryType = pregnancyDeliveryType;
+	}
+
+	public PregnancyDelivery(
+		Pregnancy pregnancy,
+		Typology pregnancyDeliveryType,
+		LocalDateTime deliveryDate,
+		String feedingMode,
+		String note,
+		String lochia
+	) {
+		this.pregnancy = pregnancy;
+		this.deliveryDate = deliveryDate;
+		this.deliveryType = pregnancyDeliveryType;
+		this.feedingMode = feedingMode;
+		this.note = note;
+		this.lochia = lochia;
 	}
 
 	public Integer getId() {
@@ -294,6 +322,30 @@ public class PregnancyDelivery extends Auditable<String> {
 
 	public void setFatherProfession(String fatherProfession) {
 		this.fatherProfession = fatherProfession;
+	}
+
+	public String getFeedingMode() {
+		return feedingMode;
+	}
+
+	public void setFeedingMode(String feedingMode) {
+		this.feedingMode = feedingMode;
+	}
+
+	public String getNote() {
+		return note;
+	}
+
+	public void setNote(String note) {
+		this.note = note;
+	}
+
+	public String getLochia() {
+		return lochia;
+	}
+
+	public void setLochia(String lochia) {
+		this.lochia = lochia;
 	}
 
 	public Integer getLock() {
