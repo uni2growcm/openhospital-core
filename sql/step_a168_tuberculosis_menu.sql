@@ -6,14 +6,16 @@
 --   2. Adds opd.browser for the existing OpdBrowser
 --   3. Adds opd.tuberculosis for the TB module
 --   4. Adds privilege entries for admin group
--- Prerequisite: step_a166_tuberculosis_module.sql must have been run first.
+-- Prerequisite: step_a167_tuberculosis_module.sql must have been run first.
 -- ========================================================================
 
 -- Step 1: Move existing OPD internal privilege items to 'opd_internal' submenu
 -- (so they don't appear as submenu items under the new OPD container)
+-- Guard: only run this ONCE — if opd.browser already exists, skip.
 UPDATE oh_menuitem
 SET MNI_SUBMENU = 'opd_internal'
-WHERE MNI_SUBMENU = 'opd';
+WHERE MNI_SUBMENU = 'opd'
+  AND NOT EXISTS (SELECT 1 FROM oh_menuitem WHERE MNI_ID_A = 'opd.browser');
 
 UPDATE oh_menuitem
 SET MNI_IS_SUBMENU = 'Y',

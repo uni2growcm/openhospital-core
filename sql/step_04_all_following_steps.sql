@@ -160,5 +160,5 @@ Source step_a163_add_submenu_in_matenity.sql
 source step_a164_hiv_module.sql;
 source step_a165_familyplanning.sql;
 source step_a166_more_diagnoses_opd.sql;
-source step_a167_tuberculosis_menu.sql;
-source step_a168_tuberculosis_module.sql;
+source step_a167_tuberculosis_module.sql;
+source step_a168_tuberculosis_menu.sql;
