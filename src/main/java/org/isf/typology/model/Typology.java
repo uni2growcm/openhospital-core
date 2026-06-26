@@ -52,6 +52,7 @@ public class Typology extends Auditable<String> {
 	private String description;
 
 	@NotNull
+	@Enumerated(EnumType.STRING)
 	@Column(name = "TYPO_FAMILY", nullable = false, length = 255)
 	private Family family;
 
