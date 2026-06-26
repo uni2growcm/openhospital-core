@@ -28,7 +28,8 @@ public enum Family {
 	VISITTYPE("angal.typology.visittype"),
 	PARTNERTYPE("angal.typology.partnertype"),
 	FAMILYPLANNINGMETHODTYPE("angal.typology.familyplanningmethodtype"),
-	FAMILYPLANNINGVISITTYPE("angal.typology.familyplanningvisittype");
+	FAMILYPLANNINGVISITTYPE("angal.typology.familyplanningvisittype"),
+	HIVTREATMENTTYPE("angal.typology.hivtreatmenttype");
 
 	private final String key;
 
