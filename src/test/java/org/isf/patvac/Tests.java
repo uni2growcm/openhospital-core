@@ -577,7 +577,6 @@ class Tests extends OHCoreTestCase {
 		testPatientVaccine.check(foundPatientVaccine);
 	}
 
-
 	@Test
 	void testPatientVaccineVillageField() throws Exception {
 		VaccineType vaccineType = testVaccineType.setup(false);

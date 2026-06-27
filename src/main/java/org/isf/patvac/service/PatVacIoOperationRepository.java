@@ -65,5 +65,4 @@ public interface PatVacIoOperationRepository extends JpaRepository<PatientVaccin
 
 	Page<PatientVaccine> findByVaccine_VaccineType_CodeAndVaccine_CodeAndPatient_SexAndVaccineDateBetweenOrderByVaccineDateDesc(
 		String vaccineTypeCode, String vaccineCode, char sex, LocalDateTime dateFrom, LocalDateTime dateTo, Pageable pageable);
-
 }

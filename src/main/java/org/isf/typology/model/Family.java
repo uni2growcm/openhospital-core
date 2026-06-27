@@ -26,7 +26,10 @@ import org.isf.generaldata.MessageBundle;
 public enum Family {
 	DELIVERYTYPE("angal.typology.deliverytype"),
 	VISITTYPE("angal.typology.visittype"),
-	PARTNERTYPE("angal.typology.partnertype");
+	PARTNERTYPE("angal.typology.partnertype"),
+	FAMILYPLANNINGMETHODTYPE("angal.typology.familyplanningmethodtype"),
+	FAMILYPLANNINGVISITTYPE("angal.typology.familyplanningvisittype"),
+	HIVTREATMENTTYPE("angal.typology.hivtreatmenttype");
 
 	private final String key;
 

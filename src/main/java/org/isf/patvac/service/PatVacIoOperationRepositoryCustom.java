@@ -51,7 +51,12 @@ public interface PatVacIoOperationRepositoryCustom {
 	 * @throws OHServiceException
 	 */
 	Page<PatientVaccine> findAllByCodesAndDatesAndSexAndAgesWithPagination(
-		String vaccineTypeCode, String vaccineCode, LocalDateTime dateFrom,
-		LocalDateTime dateTo, char sex, int ageFrom, int ageTo, Pageable pageable) throws OHServiceException;
-
+		String vaccineTypeCode,
+		String vaccineCode,
+		LocalDateTime dateFrom,
+		LocalDateTime dateTo,
+		char sex,
+		int ageFrom,
+		int ageTo,
+		Pageable pageable) throws OHServiceException;
 }

@@ -89,23 +89,16 @@ public class PatVacIoOperationRepositoryImpl implements PatVacIoOperationReposit
 		Pageable pageable) throws OHServiceException {
 
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-
-		// Query to fetch data
 		CriteriaQuery<PatientVaccine> query = cb.createQuery(PatientVaccine.class);
 		Root<PatientVaccine> pvRoot = query.from(PatientVaccine.class);
-		List<Predicate> predicates = buildPredicates(cb, pvRoot, vaccineTypeCode, vaccineCode,
-			TimeTools.truncateToSeconds(dateFrom), TimeTools.truncateToSeconds(dateTo), sex, ageFrom, ageTo);
+		List<Predicate> predicates = buildPredicates(cb, pvRoot, vaccineTypeCode, vaccineCode, TimeTools.truncateToSeconds(dateFrom), TimeTools.truncateToSeconds(dateTo), sex, ageFrom, ageTo);
 
-		query.select(pvRoot)
-			.where(cb.and(predicates.toArray(new Predicate[0])))
-			.orderBy(cb.desc(pvRoot.get("vaccineDate")), cb.asc(pvRoot.get("code")));
+		query.select(pvRoot).where(cb.and(predicates.toArray(new Predicate[0]))).orderBy(cb.desc(pvRoot.get("vaccineDate")), cb.asc(pvRoot.get("code")));
 
 		TypedQuery<PatientVaccine> typedQuery = entityManager.createQuery(query);
 		typedQuery.setFirstResult((int) pageable.getOffset());
 		typedQuery.setMaxResults(pageable.getPageSize());
 		List<PatientVaccine> content = typedQuery.getResultList();
-
-		// Query to count total elements
 		CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
 		Root<PatientVaccine> countRoot = countQuery.from(PatientVaccine.class);
 		List<Predicate> countPredicates = buildPredicates(cb, countRoot, vaccineTypeCode, vaccineCode,
@@ -121,8 +114,6 @@ public class PatVacIoOperationRepositoryImpl implements PatVacIoOperationReposit
 	/**
 	 * Builds the list of predicates for the query based on the filter criteria.
 	 *
-	 * @param cb the CriteriaBuilder
-	 * @param root the Root object
 	 * @param vaccineTypeCode the vaccine type code (can be {@code null})
 	 * @param vaccineCode the vaccine code (can be {@code null})
 	 * @param dateFrom the start date (can be {@code null})
