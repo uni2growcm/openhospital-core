@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -22,21 +22,10 @@
 package org.isf.admission.model;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
-import jakarta.persistence.AttributeOverride;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.EntityResult;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.SqlResultSetMapping;
-import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
-import jakarta.persistence.Version;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
 import org.isf.admtype.model.AdmissionType;
@@ -104,6 +93,20 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 
 	@Column(name = "ADM_FHU")
 	private String fHU;                        // FromHealthUnit (null)
+
+	@ManyToMany
+	@JoinTable(name="OH_ADMISSIONDIAGNOSIS",
+		joinColumns = @JoinColumn(name="ADMD_ADM_ID"),
+		inverseJoinColumns = @JoinColumn(name="ADMD_DIS_ID_A")
+	)
+	private List<Disease> diagnosisIn =  new ArrayList<>();
+
+	@ManyToMany
+	@JoinTable(name="OH_ADMISSIONDIAGNOSISOUT",
+		joinColumns = @JoinColumn(name="ADMDO_ADM_ID"),
+		inverseJoinColumns = @JoinColumn(name="ADMDO_DIS_ID_A")
+	)
+	private List<Disease> diagnosisOut =  new ArrayList<>();
 
 	@ManyToOne
 	@JoinColumn(name = "ADM_IN_DIS_ID_A")
@@ -249,6 +252,113 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 		this.deleted = deleted;
 	}
 
+	/**
+	 * @param id
+	 * @param admitted
+	 * @param type
+	 * @param ward
+	 * @param prog
+	 * @param patient
+	 * @param admDate
+	 * @param admType
+	 * @param fhu
+	 * @param diseaseIn
+	 * @param diseaseOut1
+	 * @param diseaseOut2
+	 * @param diseaseOut3
+	 * @param disDate
+	 * @param disType
+	 * @param note
+	 * @param transUnit
+	 * @param visitDate
+	 * @param pregTreatmentType
+	 * @param deliveryDate
+	 * @param deliveryType
+	 * @param deliveryResult
+	 * @param weight
+	 * @param ctrlDate1
+	 * @param ctrlDate2
+	 * @param abortDate
+	 * @param userID
+	 * @param deleted
+	 */
+	public Admission(int id, int admitted, String type, Ward ward, int prog, Patient patient, LocalDateTime admDate, AdmissionType admType, String fhu,
+					 Disease diseaseIn, Disease diseaseOut1, Disease diseaseOut2, Disease diseaseOut3,
+					 LocalDateTime disDate, DischargeType disType, String note, Float transUnit, LocalDateTime visitDate,
+					 PregnantTreatmentType pregTreatmentType, LocalDateTime deliveryDate, DeliveryType deliveryType, DeliveryResultType deliveryResult, Float weight,
+					 LocalDateTime ctrlDate1, LocalDateTime ctrlDate2, LocalDateTime abortDate, String userID, char deleted, List<Disease> diagnosisIn
+	) {
+		super();
+		this.id = id;
+		this.admitted = admitted;
+		this.type = type;
+		this.ward = ward;
+		this.yProg = prog;
+		this.patient = patient;
+		this.admDate = TimeTools.truncateToSeconds(admDate);
+		this.admissionType = admType;
+		this.fHU = fhu;
+		this.diseaseIn = diseaseIn;
+		this.diseaseOut1 = diseaseOut1;
+		this.diseaseOut2 = diseaseOut2;
+		this.diseaseOut3 = diseaseOut3;
+		this.disDate = TimeTools.truncateToSeconds(disDate);
+		this.disType = disType;
+		this.note = note;
+		this.transUnit = transUnit;
+		this.visitDate = TimeTools.truncateToSeconds(visitDate);
+		this.pregTreatmentType = pregTreatmentType;
+		this.deliveryDate = TimeTools.truncateToSeconds(deliveryDate);
+		this.deliveryType = deliveryType;
+		this.deliveryResult = deliveryResult;
+		this.weight = weight;
+		this.ctrlDate1 = TimeTools.truncateToSeconds(ctrlDate1);
+		this.ctrlDate2 = TimeTools.truncateToSeconds(ctrlDate2);
+		this.abortDate = TimeTools.truncateToSeconds(abortDate);
+		this.userID = userID;
+		this.deleted = deleted;
+		this.diagnosisIn = diagnosisIn;
+	}
+
+	public Admission(int id, int admitted, String type, Ward ward, int prog, Patient patient, LocalDateTime admDate, AdmissionType admType, String fhu,
+					 Disease diseaseIn, Disease diseaseOut1, Disease diseaseOut2, Disease diseaseOut3,
+					 LocalDateTime disDate, DischargeType disType, String note, Float transUnit, LocalDateTime visitDate,
+					 PregnantTreatmentType pregTreatmentType, LocalDateTime deliveryDate, DeliveryType deliveryType, DeliveryResultType deliveryResult, Float weight,
+					 LocalDateTime ctrlDate1, LocalDateTime ctrlDate2, LocalDateTime abortDate, String userID, char deleted, List<Disease> diagnosisIn, List<Disease> diagnosisOut
+	) {
+		super();
+		this.id = id;
+		this.admitted = admitted;
+		this.type = type;
+		this.ward = ward;
+		this.yProg = prog;
+		this.patient = patient;
+		this.admDate = TimeTools.truncateToSeconds(admDate);
+		this.admissionType = admType;
+		this.fHU = fhu;
+		this.diseaseIn = diseaseIn;
+		this.diseaseOut1 = diseaseOut1;
+		this.diseaseOut2 = diseaseOut2;
+		this.diseaseOut3 = diseaseOut3;
+		this.disDate = TimeTools.truncateToSeconds(disDate);
+		this.disType = disType;
+		this.note = note;
+		this.transUnit = transUnit;
+		this.visitDate = TimeTools.truncateToSeconds(visitDate);
+		this.pregTreatmentType = pregTreatmentType;
+		this.deliveryDate = TimeTools.truncateToSeconds(deliveryDate);
+		this.deliveryType = deliveryType;
+		this.deliveryResult = deliveryResult;
+		this.weight = weight;
+		this.ctrlDate1 = TimeTools.truncateToSeconds(ctrlDate1);
+		this.ctrlDate2 = TimeTools.truncateToSeconds(ctrlDate2);
+		this.abortDate = TimeTools.truncateToSeconds(abortDate);
+		this.userID = userID;
+		this.deleted = deleted;
+		this.diagnosisIn = diagnosisIn;
+		this.diagnosisOut = diagnosisOut;
+	}
+
 	public Float getTransUnit() {
 		return transUnit;
 	}
@@ -351,6 +461,22 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 
 	public void setDisDate(LocalDateTime disDate) {
 		this.disDate = TimeTools.truncateToSeconds(disDate);
+	}
+
+	public List<Disease> getDiagnosisIn() {
+		return diagnosisIn;
+	}
+
+	public void setDiagnosisIn(List<Disease> diagnosisIn) {
+		this.diagnosisIn = diagnosisIn;
+	}
+
+	public List<Disease> getDiagnosisOut() {
+		return diagnosisOut;
+	}
+
+	public void setDiagnosisOut(List<Disease> diagnosisOut) {
+		this.diagnosisOut = diagnosisOut;
 	}
 
 	public Disease getDiseaseIn() {
