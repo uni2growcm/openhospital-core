@@ -152,5 +152,4 @@ source step_a162_add_article_families_feature.sql;
 Source step_a164_add_submenu_in_matenity.sql;
 source step_a165_hiv_module.sql;
 source step_a166_familyplanning.sql;
-source step_a167_more_diagnosis_opd.sql;
-source step_a168_alter_table_exam_med_operation_add_articlefamiliy.sql;
+source step_a167_more_diagnoses_opd.sql;
