@@ -146,7 +146,7 @@ source step_a156_add_item_payments_table.sql;
 source step_a157_add_partners_feature.sql;
 source step_a158_statistics_submenus.sql;
 source step_a159_maternity_pregnancy_obstetric_history.sql;
-source step_a160_add_command_tables.sql
+source step_a160_add_command_tables.sql;
 source step_a161_add_admission_diagnosis_out_and_in_table.sql;
 source step_a162_add_article_families_feature.sql;
 source step_a163_alter_table_exam_med_operation_add_articlefamiliy.sql;
