@@ -24,16 +24,56 @@ public class StatsBrowserManager {
 
 	/**
 	 * Validates the filters and returns the paginated pregnancy statistics.
+	 * This method handles all filters including:
+	 * - Patient demographics (age)
+	 * - Pregnancy filters (risk level, status, gravidity, parity, miscarriages, gestational age)
+	 * - Pregnancy visit filters (type, visit count, maternal weight, urine protein, edema, fetal presentation, blood pressure)
+	 * - Exams, vaccines, diseases, discharge types
+	 * - Patient parameters (height, weight, blood pressure, etc.)
 	 */
 	public Page<Patient> getPregnanciesStats(
-		Integer ageFrom, Integer ageTo,
-		LocalDateTime periodFrom, LocalDateTime periodTo,
-		String exam, String examResult, LocalDateTime examPeriodFrom, LocalDateTime examPeriodTo,
-		String vaccine, LocalDateTime vaccinePeriodFrom, LocalDateTime vaccinePeriodTo,
-		String disease, String dischargeType,
-		boolean parameterHeight, boolean parameterWeight, boolean parameterArtPress,
-		boolean parameterCardFreq, boolean parameterTemp, boolean parameterSaturation, boolean parameterRespRate,
-		int page, int size
+		Integer ageFrom,
+		Integer ageTo,
+		LocalDateTime periodFrom,
+		LocalDateTime periodTo,
+		String exam,
+		String examResult,
+		LocalDateTime examPeriodFrom,
+		LocalDateTime examPeriodTo,
+		String vaccine,
+		LocalDateTime vaccinePeriodFrom,
+		LocalDateTime vaccinePeriodTo,
+		String disease,
+		String dischargeType,
+		boolean parameterHeight,
+		boolean parameterWeight,
+		boolean parameterArtPress,
+		boolean parameterCardFreq,
+		boolean parameterTemp,
+		boolean parameterSaturation,
+		boolean parameterRespRate,
+
+		String riskLevel,
+		String status,
+		Integer gravidityMin,
+		Integer gravidityMax,
+		Integer parityMin,
+		Integer parityMax,
+		Integer miscarriageMin,
+		Integer miscarriageMax,
+		Integer gestationalAgeMin,
+		Integer gestationalAgeMax,
+		String visitType,
+		Integer visitCountMin,
+		Integer visitCountMax,
+		String maternalWeightRange,
+		String urineProtein,
+		String edema,
+		String fetalPresentation,
+		String systolicBpRange,
+		String diastolicBpRange,
+		int page,
+		int size
 	) throws OHServiceException {
 
 		validateFilters(ageFrom, ageTo, periodFrom, periodTo, examPeriodFrom, examPeriodTo,
@@ -46,29 +86,48 @@ public class StatsBrowserManager {
 			disease, dischargeType,
 			parameterHeight, parameterWeight, parameterArtPress,
 			parameterCardFreq, parameterTemp, parameterSaturation, parameterRespRate,
+			riskLevel, status,
+			gravidityMin, gravidityMax,
+			parityMin, parityMax,
+			miscarriageMin, miscarriageMax,
+			gestationalAgeMin, gestationalAgeMax,
+			visitType, visitCountMin, visitCountMax,
+			maternalWeightRange, urineProtein, edema,
+			fetalPresentation, systolicBpRange, diastolicBpRange,
 			page, size
 		);
 	}
 
+	/**
+	 * Validates all date and age range filters.
+	 */
 	private void validateFilters(
 		Integer ageFrom, Integer ageTo,
 		LocalDateTime periodFrom, LocalDateTime periodTo,
 		LocalDateTime examPeriodFrom, LocalDateTime examPeriodTo,
 		LocalDateTime vaccinePeriodFrom, LocalDateTime vaccinePeriodTo
 	) throws OHServiceException {
+
 		List<OHExceptionMessage> errors = new ArrayList<>();
 
 		if (ageFrom != null && ageTo != null && ageFrom > ageTo) {
-			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.stat.error.pleaseinsertvalidagerange")));
+			errors.add(new OHExceptionMessage(
+				MessageBundle.getMessage("angal.stat.error.pleaseinsertvalidagerange")));
 		}
+
 		if (periodFrom != null && periodTo != null && periodTo.isBefore(periodFrom)) {
-			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.stat.error.pleaseinsertvalidadmissionperiod")));
+			errors.add(new OHExceptionMessage(
+				MessageBundle.getMessage("angal.stat.error.pleaseinsertvalidadmissionperiod")));
 		}
+
 		if (examPeriodFrom != null && examPeriodTo != null && examPeriodTo.isBefore(examPeriodFrom)) {
-			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.stat.error.pleaseinsertvalidexamperiod")));
+			errors.add(new OHExceptionMessage(
+				MessageBundle.getMessage("angal.stat.error.pleaseinsertvalidexamperiod")));
 		}
+
 		if (vaccinePeriodFrom != null && vaccinePeriodTo != null && vaccinePeriodTo.isBefore(vaccinePeriodFrom)) {
-			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.stat.error.pleaseinsertvalidvaccineperiod")));
+			errors.add(new OHExceptionMessage(
+				MessageBundle.getMessage("angal.stat.error.pleaseinsertvalidvaccineperiod")));
 		}
 
 		if (!errors.isEmpty()) {

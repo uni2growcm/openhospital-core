@@ -28,14 +28,19 @@ public class StatsIoOperationRepositoryImpl implements StatsIoOperationRepositor
 
 	@Override
 	public Page<Patient> findPregnanciesStatsByFilters(
+		// ===== PATIENT DEMOGRAPHICS =====
 		Integer ageFrom,
 		Integer ageTo,
 		LocalDateTime periodFrom,
 		LocalDateTime periodTo,
+
+		// ===== EXAMS =====
 		String exam,
 		String examResult,
 		LocalDateTime examPeriodFrom,
 		LocalDateTime examPeriodTo,
+
+		// ===== VACCINES =====
 		String vaccine,
 		LocalDateTime vaccinePeriodFrom,
 		LocalDateTime vaccinePeriodTo,
@@ -48,14 +53,34 @@ public class StatsIoOperationRepositoryImpl implements StatsIoOperationRepositor
 		boolean parameterTemp,
 		boolean parameterSaturation,
 		boolean parameterRespRate,
+		String riskLevel,
+		String status,
+		Integer gravidityMin,
+		Integer gravidityMax,
+		Integer parityMin,
+		Integer parityMax,
+		Integer miscarriageMin,
+		Integer miscarriageMax,
+		Integer gestationalAgeMin,
+		Integer gestationalAgeMax,
+		String visitType,
+		Integer visitCountMin,
+		Integer visitCountMax,
+		String maternalWeightRange,
+		String urineProtein,
+		String edema,
+		String fetalPresentation,
+		String systolicBpRange,
+		String diastolicBpRange,
 		Pageable pageable
 	) throws OHServiceException {
 
-		StringBuilder joinedTables = new StringBuilder();
+		StringBuilder fromBuilder = new StringBuilder();
 		StringBuilder conditions = new StringBuilder();
 		List<Object> parameters = new ArrayList<>();
 
-		joinedTables.append(" INNER JOIN oh_pregnancy _pregnancy ON _patient.PAT_ID = _pregnancy.PRG_PAT_ID")
+		fromBuilder.append(" FROM oh_patient _patient")
+			.append(" INNER JOIN oh_pregnancy _pregnancy ON _patient.PAT_ID = _pregnancy.PRG_PAT_ID")
 			.append(" INNER JOIN oh_pregnancyvisit _pregvisit ON _pregvisit.PRGV_PRG_ID = _pregnancy.PRG_ID");
 
 		conditions.append("(_patient.PAT_DELETED = 'N' OR _patient.PAT_DELETED IS NULL)");
@@ -78,11 +103,126 @@ public class StatsIoOperationRepositoryImpl implements StatsIoOperationRepositor
 			parameters.add(TimeTools.formatDateTime(periodTo, YYYY_MM_DD));
 		}
 
+		if (riskLevel != null && !riskLevel.isEmpty() && !"Tous".equals(riskLevel)) {
+			conditions.append(" AND _pregnancy.PRG_RISK_LEVEL = ?");
+			parameters.add(riskLevel);
+		}
+
+		if (status != null && !status.isEmpty() && !"Tous".equals(status)) {
+			conditions.append(" AND _pregnancy.PRG_STATUS = ?");
+			parameters.add(status);
+		}
+
+		if (gravidityMin != null) {
+			conditions.append(" AND _pregnancy.PRG_GRAVIDITY >= ?");
+			parameters.add(gravidityMin);
+		}
+		if (gravidityMax != null) {
+			conditions.append(" AND _pregnancy.PRG_GRAVIDITY <= ?");
+			parameters.add(gravidityMax);
+		}
+
+		if (parityMin != null) {
+			conditions.append(" AND _pregnancy.PRG_PARITY >= ?");
+			parameters.add(parityMin);
+		}
+		if (parityMax != null) {
+			conditions.append(" AND _pregnancy.PRG_PARITY <= ?");
+			parameters.add(parityMax);
+		}
+
+		if (miscarriageMin != null) {
+			conditions.append(" AND _pregnancy.PRG_MISSCARRIAGES >= ?");
+			parameters.add(miscarriageMin);
+		}
+		if (miscarriageMax != null) {
+			conditions.append(" AND _pregnancy.PRG_MISSCARRIAGES <= ?");
+			parameters.add(miscarriageMax);
+		}
+
+		if (gestationalAgeMin != null || gestationalAgeMax != null) {
+			if (gestationalAgeMin != null) {
+				conditions.append(" AND DATEDIFF(NOW(), _pregnancy.PRG_LMP) >= ?");
+				parameters.add(gestationalAgeMin * 7);
+			}
+			if (gestationalAgeMax != null) {
+				conditions.append(" AND DATEDIFF(NOW(), _pregnancy.PRG_LMP) <= ?");
+				parameters.add(gestationalAgeMax * 7);
+			}
+		}
+
+		if (visitType != null && !visitType.isEmpty() && !"Tous".equals(visitType)) {
+			conditions.append(" AND _pregvisit.PRGV_TYPE_ID = ?");
+			parameters.add(visitType);
+		}
+
+		if (maternalWeightRange != null && !maternalWeightRange.isEmpty() && !"Tous".equals(maternalWeightRange)) {
+			switch (maternalWeightRange) {
+				case "< 50 kg":
+					conditions.append(" AND _pregvisit.PRGV_MATERNAL_WEIGHT < 50");
+					break;
+				case "50-70 kg":
+					conditions.append(" AND _pregvisit.PRGV_MATERNAL_WEIGHT BETWEEN 50 AND 70");
+					break;
+				case "70-90 kg":
+					conditions.append(" AND _pregvisit.PRGV_MATERNAL_WEIGHT BETWEEN 70 AND 90");
+					break;
+				case "90+ kg":
+					conditions.append(" AND _pregvisit.PRGV_MATERNAL_WEIGHT > 90");
+					break;
+			}
+		}
+
+		if (urineProtein != null && !urineProtein.isEmpty() && !"Tous".equals(urineProtein)) {
+			conditions.append(" AND _pregvisit.PRGV_URINE_PROTEIN = ?");
+			parameters.add(urineProtein);
+		}
+
+		if (edema != null && !edema.isEmpty() && !"Tous".equals(edema)) {
+			conditions.append(" AND _pregvisit.PRGV_EDEMA_PRESENCE = ?");
+			parameters.add(edema);
+		}
+
+		if (fetalPresentation != null && !fetalPresentation.isEmpty() && !"Tous".equals(fetalPresentation)) {
+			conditions.append(" AND _pregvisit.PRGV_FETAL_PRESENTATION = ?");
+			parameters.add(fetalPresentation);
+		}
+
+		if (systolicBpRange != null && !systolicBpRange.isEmpty() && !"Tous".equals(systolicBpRange)) {
+			switch (systolicBpRange) {
+				case "< 120":
+					conditions.append(" AND _pregvisit.PRGV_SYSTOLIC_BP < 120");
+					break;
+				case "120-139":
+					conditions.append(" AND _pregvisit.PRGV_SYSTOLIC_BP BETWEEN 120 AND 139");
+					break;
+				case "140+":
+					conditions.append(" AND _pregvisit.PRGV_SYSTOLIC_BP >= 140");
+					break;
+			}
+		}
+
+		if (diastolicBpRange != null && !diastolicBpRange.isEmpty() && !"Tous".equals(diastolicBpRange)) {
+			switch (diastolicBpRange) {
+				case "< 80":
+					conditions.append(" AND _pregvisit.PRGV_DIASTOLIC_BP < 80");
+					break;
+				case "80-89":
+					conditions.append(" AND _pregvisit.PRGV_DIASTOLIC_BP BETWEEN 80 AND 89");
+					break;
+				case "90+":
+					conditions.append(" AND _pregvisit.PRGV_DIASTOLIC_BP >= 90");
+					break;
+			}
+		}
+
+		boolean examJoined = false;
 		if (exam != null && !exam.isEmpty()) {
-			joinedTables.append(" INNER JOIN oh_laboratory _labo ON _labo.LAB_PAT_ID = _patient.PAT_ID")
+			fromBuilder.append(" INNER JOIN oh_laboratory _labo ON _labo.LAB_PAT_ID = _patient.PAT_ID")
 				.append(" INNER JOIN oh_exam _labexam ON _labo.LAB_EXA_ID_A = _labexam.EXA_ID_A");
 			conditions.append(" AND _labexam.EXA_DESC = ?");
 			parameters.add(exam);
+			examJoined = true;
 
 			if (examResult != null && !examResult.isEmpty()) {
 				conditions.append(" AND _labo.LAB_RES = ?");
@@ -99,7 +239,7 @@ public class StatsIoOperationRepositoryImpl implements StatsIoOperationRepositor
 		}
 
 		if (vaccine != null && !vaccine.isEmpty()) {
-			joinedTables.append(" INNER JOIN oh_patientvaccine _patvac ON _patvac.PAV_PAT_ID = _patient.PAT_ID")
+			fromBuilder.append(" INNER JOIN oh_patientvaccine _patvac ON _patvac.PAV_PAT_ID = _patient.PAT_ID")
 				.append(" INNER JOIN oh_vaccine _vaccine ON _vaccine.VAC_ID_A = _patvac.PAV_VAC_ID_A");
 			conditions.append(" AND _vaccine.VAC_DESC = ?");
 			parameters.add(vaccine);
@@ -116,7 +256,7 @@ public class StatsIoOperationRepositoryImpl implements StatsIoOperationRepositor
 
 		boolean admissionJoined = false;
 		if (disease != null && !disease.isEmpty()) {
-			joinedTables.append(" INNER JOIN oh_admission _patadm ON _patadm.ADM_PAT_ID = _patient.PAT_ID")
+			fromBuilder.append(" INNER JOIN oh_admission _patadm ON _patadm.ADM_PAT_ID = _patient.PAT_ID")
 				.append(" INNER JOIN oh_disease _disease ON _patadm.ADM_OUT_DIS_ID_A = _disease.DIS_ID_A")
 				.append(" OR _patadm.ADM_OUT_DIS_ID_A_2 = _disease.DIS_ID_A")
 				.append(" OR _patadm.ADM_OUT_DIS_ID_A_3 = _disease.DIS_ID_A");
@@ -127,9 +267,10 @@ public class StatsIoOperationRepositoryImpl implements StatsIoOperationRepositor
 
 		if (dischargeType != null && !dischargeType.isEmpty()) {
 			if (!admissionJoined) {
-				joinedTables.append(" INNER JOIN oh_admission _patadm ON _patadm.ADM_PAT_ID = _patient.PAT_ID");
+				fromBuilder.append(" INNER JOIN oh_admission _patadm ON _patadm.ADM_PAT_ID = _patient.PAT_ID");
+				admissionJoined = true;
 			}
-			joinedTables.append(" INNER JOIN oh_dischargetype _disctype ON _disctype.DIST_ID_A = _patadm.ADM_DIST_ID_A");
+			fromBuilder.append(" INNER JOIN oh_dischargetype _disctype ON _disctype.DIST_ID_A = _patadm.ADM_DIST_ID_A");
 			conditions.append(" AND _disctype.DIST_DESC = ?");
 			parameters.add(dischargeType);
 		}
@@ -137,9 +278,8 @@ public class StatsIoOperationRepositoryImpl implements StatsIoOperationRepositor
 		boolean anyParameter = parameterHeight || parameterWeight || parameterArtPress || parameterCardFreq
 			|| parameterTemp || parameterSaturation || parameterRespRate;
 		if (anyParameter) {
-			joinedTables.append(" INNER JOIN oh_patientexamination _patexam ON _patexam.PEX_PAT_ID = _patient.PAT_ID");
+			fromBuilder.append(" INNER JOIN oh_patientexamination _patexam ON _patexam.PEX_PAT_ID = _patient.PAT_ID");
 		}
-
 		if (parameterHeight) {
 			conditions.append(" AND _patexam.PEX_HEIGHT > 0");
 		}
@@ -162,11 +302,15 @@ public class StatsIoOperationRepositoryImpl implements StatsIoOperationRepositor
 			conditions.append(" AND _patexam.PEX_RR > 0");
 		}
 
-		String from = " FROM oh_patient _patient" + joinedTables;
+		String from = fromBuilder.toString();
 		String where = " WHERE " + conditions;
 
 		String dataSql = "SELECT DISTINCT _patient.PAT_ID, _patient.PAT_FNAME, _patient.PAT_SNAME, _patient.PAT_AGE"
 			+ from + where;
+
+		System.out.println("=== PREGNANCY STATS QUERY ===");
+		System.out.println("SQL: " + dataSql);
+		System.out.println("Parameters: " + parameters);
 
 		Query dataQuery = entityManager.createNativeQuery(dataSql);
 		bindParameters(dataQuery, parameters);
@@ -193,6 +337,12 @@ public class StatsIoOperationRepositoryImpl implements StatsIoOperationRepositor
 		return new PageImpl<>(patients, pageable, total);
 	}
 
+	/**
+	 * Binds a list of parameters to a JPA Query.
+	 *
+	 * @param query the JPA Query
+	 * @param parameters the list of parameters to bind
+	 */
 	private void bindParameters(Query query, List<Object> parameters) {
 		for (int i = 0; i < parameters.size(); i++) {
 			query.setParameter(i + 1, parameters.get(i));
