@@ -144,20 +144,16 @@ public class HomeVisitBrowserManager {
 	/**
 	 * Cancels a home visit
 	 * @param id home visit id
-	 * @throws OHServiceException
-	 */
-	public void cancelHomeVisit(int id) throws OHServiceException {
-		ioOperations.updateStatus(id, HomeVisitStatus.CANCELLED);
-	}
-
-	/**
-	 * Cancels a home visit
-	 * @param id home visit id
 	 * @param reason cancel home visit reason
 	 * @throws OHServiceException
 	 */
 	public void cancelHomeVisit(int id, String reason) throws OHServiceException {
 		HomeVisit homeVisit = getHomeVisit(id);
+		if (homeVisit.getStatus() == HomeVisitStatus.CANCELLED) {
+			throw new OHDataValidationException(List.of(new OHExceptionMessage(
+				MessageBundle.getMessage("angal.homevisit.postpone.cancelled.error")
+			)));
+		}
 		homeVisit.setStatus(HomeVisitStatus.CANCELLED);
 		homeVisit.setCancellationReason(reason);
 		ioOperations.save(homeVisit);
@@ -185,6 +181,11 @@ public class HomeVisitBrowserManager {
 	 */
 	public void postponeHomeVisit(int id, LocalDateTime newDate) throws OHServiceException {
 		HomeVisit homeVisit = getHomeVisit(id);
+		if (homeVisit.getStatus() == HomeVisitStatus.CANCELLED) {
+			throw new OHDataValidationException(List.of(new OHExceptionMessage(
+				MessageBundle.getMessage("angal.homevisit.postpone.cancelled.error")
+			)));
+		}
 		homeVisit.setStatus(HomeVisitStatus.POSTPONED);
 		homeVisit.setVisitStartDate(newDate);
 		homeVisit.setNextVisitDate(null);

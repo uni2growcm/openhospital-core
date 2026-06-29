@@ -57,7 +57,7 @@ public class HomeVisit extends Auditable<String> {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "HV_ID")
-	private int id;
+	private Integer id;
 
 	@NotNull
 	@ManyToOne
@@ -118,8 +118,8 @@ public class HomeVisit extends Auditable<String> {
 		this.status = HomeVisitStatus.PLANNED;
 	}
 
-	public int getId() { return id; }
-	public void setId(int id) { this.id = id; }
+	public Integer getId() { return id; }
+	public void setId(Integer id) { this.id = id; }
 
 	public Patient getPatient() { return patient; }
 	public void setPatient(Patient patient) { this.patient = patient; }

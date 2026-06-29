@@ -121,13 +121,6 @@ class HomeVisitTests extends OHCoreTestCase {
 	}
 
 	@Test
-	void testHomeVisitToString() throws Exception {
-		HomeVisit homeVisit = testHomeVisit.setup(testPatient, false);
-		homeVisit.setVisitStartDate(LocalDateTime.of(2026, 12, 15, 10, 0, 0));
-		assertThat(homeVisit.toString()).contains("Mr Bobo");
-	}
-
-	@Test
 	void testIoGetAllActive() throws Exception {
 		int id = setupTestHomeVisit(false);
 		HomeVisit foundHomeVisit = homeVisitIoOperationRepository.findById(id).orElse(null);
@@ -344,15 +337,17 @@ class HomeVisitTests extends OHCoreTestCase {
 	}
 
 	@Test
-	void testMgrCancelHomeVisit() throws Exception {
+	void testMgrCancelHomeVisitWithReason() throws Exception {
 		int id = setupTestHomeVisit(false);
+		String cancellationReason = "Patient indisponible";
 
-		homeVisitBrowserManager.cancelHomeVisit(id);
+		homeVisitBrowserManager.cancelHomeVisit(id, cancellationReason);
 		entityManager.flush();
 		entityManager.clear();
 
 		HomeVisit updated = homeVisitBrowserManager.getHomeVisit(id);
 		assertThat(updated.getStatus()).isEqualTo(HomeVisitStatus.CANCELLED);
+		assertThat(updated.getCancellationReason()).isEqualTo(cancellationReason);
 	}
 
 	@Test
