@@ -6,4 +6,5 @@ source step_a140_add_reduction_plan_and_price_list_to_patients.sql;
 source step_a141_add_column_reduction_plan_id_and_ward_id_to_table_oh_bills.sql;
 source step_a143_add_column_medicaldsr.sql;
 source step_a163_alter_table_exam_med_operation_add_articlefamiliy.sql;
+source step_a167_more_diagnosis_opd.sql;
 source step_a168_malnutrition_controle.sql;
