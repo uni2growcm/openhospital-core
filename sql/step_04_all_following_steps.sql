@@ -153,4 +153,3 @@ Source step_a164_add_submenu_in_matenity.sql;
 source step_a165_hiv_module.sql;
 source step_a166_familyplanning.sql;
 source step_a167_more_diagnosis_opd.sql;
-source step_a168_malnutrition_controle.sql;
