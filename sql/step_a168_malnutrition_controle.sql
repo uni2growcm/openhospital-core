@@ -76,6 +76,3 @@ WHERE NOT EXISTS (
     WHERE  GM_UG_ID_A  = 'admin'
       AND  GM_MNI_ID_A = 'btnopdmalnutrition'
 );
-
-ALTER TABLE oh_usergroup
-    ADD COLUMN IF NOT EXISTS UG_PERMISSIONS VARCHAR(1000) DEFAULT '';
