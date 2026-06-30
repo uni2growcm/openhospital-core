@@ -87,7 +87,7 @@ SELECT
     'x',
     'G',
     'stat.substats',
-    'org.isf.stat.reportlauncher.gui.ReportLauncher',
+    'org.isf.stat2.StatsBrowsing'
     'N',
     1
 FROM DUAL
