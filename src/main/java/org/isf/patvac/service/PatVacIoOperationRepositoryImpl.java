@@ -213,7 +213,6 @@ public class PatVacIoOperationRepositoryImpl implements PatVacIoOperationReposit
 
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 
-		// Query to fetch data
 		CriteriaQuery<PatientVaccine> query = cb.createQuery(PatientVaccine.class);
 		Root<PatientVaccine> pvRoot = query.from(PatientVaccine.class);
 		List<Predicate> predicates = buildPredicatesWithSearch(cb, pvRoot, vaccineTypeCode, vaccineCode,
@@ -229,7 +228,6 @@ public class PatVacIoOperationRepositoryImpl implements PatVacIoOperationReposit
 		typedQuery.setMaxResults(pageable.getPageSize());
 		List<PatientVaccine> content = typedQuery.getResultList();
 
-		// Query to count total elements
 		CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
 		Root<PatientVaccine> countRoot = countQuery.from(PatientVaccine.class);
 		List<Predicate> countPredicates = buildPredicatesWithSearch(cb, countRoot, vaccineTypeCode, vaccineCode,
@@ -272,7 +270,6 @@ public class PatVacIoOperationRepositoryImpl implements PatVacIoOperationReposit
 			predicates.add(cb.between(root.join("patient").<Integer>get("age"), ageFrom, ageTo));
 		}
 
-		// 🔥 NOUVEAU : Filtre par recherche patient (nom ou code)
 		if (patientSearchText != null && !patientSearchText.trim().isEmpty()) {
 			String searchPattern = "%" + patientSearchText.trim().toLowerCase() + "%";
 			Path<Object> patientPath = root.join("patient");
@@ -283,7 +280,6 @@ public class PatVacIoOperationRepositoryImpl implements PatVacIoOperationReposit
 			predicates.add(cb.or(codePredicate, namePredicate));
 		}
 
-		// 🔥 NOUVEAU : Filtre par village
 		if (villageText != null && !villageText.trim().isEmpty()) {
 			predicates.add(cb.like(
 				cb.lower(root.get("village").as(String.class)),
