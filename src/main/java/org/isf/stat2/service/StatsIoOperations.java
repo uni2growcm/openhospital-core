@@ -80,16 +80,10 @@ public class StatsIoOperations {
 	 * @throws OHServiceException if an error occurs during the database operation
 	 */
 	public Page<Patient> getPatientsStats(
-		int startIndex, int limit,
-		int ageFrom, int ageTo,
-		String periodFrom, String periodTo,
-		String sex, String ward,
-		String exam, String examResult,
-		String examPeriodFrom, String examPeriodTo,
-		String vaccine, String vaccinePeriodFrom, String vaccinePeriodTo,
-		String operation, String operationResult,
-		String operationPeriodFrom, String operationPeriodTo,
-		String disease, String dischargeType) throws OHServiceException {
+		int startIndex, int limit, int ageFrom, int ageTo, String periodFrom, String periodTo,
+		String sex, String ward, String exam, String examResult, String examPeriodFrom, String examPeriodTo,
+		String vaccine, String vaccinePeriodFrom, String vaccinePeriodTo, String operation, String operationResult,
+		String operationPeriodFrom, String operationPeriodTo, String disease, String dischargeType) throws OHServiceException {
 
 		StringBuilder sqlSelect = new StringBuilder();
 		sqlSelect.append("SELECT DISTINCT p FROM Patient p ");
