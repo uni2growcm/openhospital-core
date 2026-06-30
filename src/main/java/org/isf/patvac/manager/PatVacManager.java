@@ -171,4 +171,37 @@ public class PatVacManager {
 			throw new OHDataValidationException(errors);
 		}
 	}
+
+	/**
+	 * Returns a page of {@link PatientVaccine}s filtered by vaccine type, vaccine, date range, sex, age,
+	 * patient search and village.
+	 *
+	 * @param vaccineTypeCode the vaccine type code (can be {@code null})
+	 * @param vaccineCode the vaccine code (can be {@code null})
+	 * @param dateFrom the start date (can be {@code null})
+	 * @param dateTo the end date (can be {@code null})
+	 * @param sex the patient sex ('M', 'F' or 'A' for all)
+	 * @param ageFrom the minimum age (0 for no minimum)
+	 * @param ageTo the maximum age (0 for no maximum)
+	 * @param patientSearchText the patient name or code to search (can be empty)
+	 * @param villageText the village to filter (can be empty)
+	 * @param pageable the pagination information
+	 * @return a page of {@link PatientVaccine}s
+	 * @throws OHServiceException
+	 */
+	public Page<PatientVaccine> getPatientVaccinePage(
+		String vaccineTypeCode,
+		String vaccineCode,
+		LocalDateTime dateFrom,
+		LocalDateTime dateTo,
+		char sex,
+		int ageFrom,
+		int ageTo,
+		String patientSearchText,
+		String villageText,
+		Pageable pageable) throws OHServiceException {
+		return ioOperations.getPatientVaccinePage(
+			vaccineTypeCode, vaccineCode, dateFrom, dateTo, sex,
+			ageFrom, ageTo, patientSearchText, villageText, pageable);
+	}
 }

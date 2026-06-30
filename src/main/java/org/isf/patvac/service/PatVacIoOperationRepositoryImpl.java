@@ -28,10 +28,7 @@ import java.util.List;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.*;
 
 import org.isf.patvac.model.PatientVaccine;
 import org.isf.utils.exception.OHServiceException;
@@ -199,6 +196,101 @@ public class PatVacIoOperationRepositoryImpl implements PatVacIoOperationReposit
 		query.orderBy(cb.desc(pvRoot.get("vaccineDate")), cb.asc(pvRoot.get("code")));
 
 		return query;
+	}
+
+	@Override
+	public Page<PatientVaccine> findAllByCodesAndDatesAndSexAndAgesWithPagination(
+		String vaccineTypeCode,
+		String vaccineCode,
+		LocalDateTime dateFrom,
+		LocalDateTime dateTo,
+		char sex,
+		int ageFrom,
+		int ageTo,
+		String patientSearchText,
+		String villageText,
+		Pageable pageable) throws OHServiceException {
+
+		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+
+		// Query to fetch data
+		CriteriaQuery<PatientVaccine> query = cb.createQuery(PatientVaccine.class);
+		Root<PatientVaccine> pvRoot = query.from(PatientVaccine.class);
+		List<Predicate> predicates = buildPredicatesWithSearch(cb, pvRoot, vaccineTypeCode, vaccineCode,
+			TimeTools.truncateToSeconds(dateFrom), TimeTools.truncateToSeconds(dateTo), sex, ageFrom, ageTo,
+			patientSearchText, villageText);
+
+		query.select(pvRoot)
+			.where(cb.and(predicates.toArray(new Predicate[0])))
+			.orderBy(cb.desc(pvRoot.get("vaccineDate")), cb.asc(pvRoot.get("code")));
+
+		TypedQuery<PatientVaccine> typedQuery = entityManager.createQuery(query);
+		typedQuery.setFirstResult((int) pageable.getOffset());
+		typedQuery.setMaxResults(pageable.getPageSize());
+		List<PatientVaccine> content = typedQuery.getResultList();
+
+		// Query to count total elements
+		CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
+		Root<PatientVaccine> countRoot = countQuery.from(PatientVaccine.class);
+		List<Predicate> countPredicates = buildPredicatesWithSearch(cb, countRoot, vaccineTypeCode, vaccineCode,
+			TimeTools.truncateToSeconds(dateFrom), TimeTools.truncateToSeconds(dateTo), sex, ageFrom, ageTo,
+			patientSearchText, villageText);
+		countQuery.select(cb.count(countRoot))
+			.where(cb.and(countPredicates.toArray(new Predicate[0])));
+
+		Long total = entityManager.createQuery(countQuery).getSingleResult();
+
+		return new PageImpl<>(content, pageable, total);
+	}
+
+	/**
+	 * Builds the list of predicates for the query including patient search and village filters.
+	 */
+	private List<Predicate> buildPredicatesWithSearch(CriteriaBuilder cb, Root<?> root,
+	                                                  String vaccineTypeCode, String vaccineCode, LocalDateTime dateFrom,
+	                                                  LocalDateTime dateTo, char sex, int ageFrom, int ageTo,
+	                                                  String patientSearchText, String villageText) {
+
+		List<Predicate> predicates = new ArrayList<>();
+
+		if (dateFrom != null) {
+			predicates.add(cb.greaterThanOrEqualTo(root.<LocalDateTime>get("vaccineDate"), dateFrom));
+		}
+		if (dateTo != null) {
+			predicates.add(cb.lessThanOrEqualTo(root.<LocalDateTime>get("vaccineDate"), dateTo));
+		}
+		if (vaccineTypeCode != null) {
+			predicates.add(cb.equal(root.join("vaccine").get("vaccineType").get("code"), vaccineTypeCode));
+		}
+		if (vaccineCode != null) {
+			predicates.add(cb.equal(root.join("vaccine").get("code"), vaccineCode));
+		}
+		if (sex != 'A') {
+			predicates.add(cb.equal(root.join("patient").get("sex"), sex));
+		}
+		if (ageFrom != 0 || ageTo != 0) {
+			predicates.add(cb.between(root.join("patient").<Integer>get("age"), ageFrom, ageTo));
+		}
+
+		// 🔥 NOUVEAU : Filtre par recherche patient (nom ou code)
+		if (patientSearchText != null && !patientSearchText.trim().isEmpty()) {
+			String searchPattern = "%" + patientSearchText.trim().toLowerCase() + "%";
+			Path<Object> patientPath = root.join("patient");
+			Predicate codePredicate = cb.like(
+				cb.lower(patientPath.get("code").as(String.class)), searchPattern);
+			Predicate namePredicate = cb.like(
+				cb.lower(cb.concat(cb.concat(patientPath.get("firstName"), " "), patientPath.get("secondName"))), searchPattern);
+			predicates.add(cb.or(codePredicate, namePredicate));
+		}
+
+		// 🔥 NOUVEAU : Filtre par village
+		if (villageText != null && !villageText.trim().isEmpty()) {
+			predicates.add(cb.like(
+				cb.lower(root.get("village").as(String.class)),
+				"%" + villageText.trim().toLowerCase() + "%"));
+		}
+
+		return predicates;
 	}
 
 }
