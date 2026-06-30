@@ -19,12 +19,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.isf.opd.manager;
+package org.isf.tuberculosis.manager;
 
 import java.util.List;
 
-import org.isf.opd.model.TuberculosisContact;
-import org.isf.opd.service.TuberculosisContactIoOperations;
+import org.isf.tuberculosis.model.TuberculosisContact;
+import org.isf.tuberculosis.service.TuberculosisContactIoOperations;
 import org.isf.utils.exception.OHServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

@@ -19,7 +19,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.isf.opd.model;
+package org.isf.tuberculosis.model;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

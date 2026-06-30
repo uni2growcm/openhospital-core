@@ -1,8 +1,8 @@
-package org.isf.opd.service;
+package org.isf.tuberculosis.service;
 
 import java.util.List;
 
-import org.isf.opd.model.TuberculosisContact;
+import org.isf.tuberculosis.model.TuberculosisContact;
 import org.isf.utils.db.TranslateOHServiceException;
 import org.isf.utils.exception.OHServiceException;
 import org.springframework.beans.factory.annotation.Autowired;

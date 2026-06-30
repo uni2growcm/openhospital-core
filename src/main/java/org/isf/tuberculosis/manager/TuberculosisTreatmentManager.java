@@ -19,14 +19,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.isf.opd.manager;
+package org.isf.tuberculosis.manager;
 
 import java.time.LocalDate;
 import java.util.List;
 
-import org.isf.opd.model.TuberculosisTreatment;
-import org.isf.opd.model.TuberculosisTreatment.TreatmentStatus;
-import org.isf.opd.service.TuberculosisTreatmentIoOperations;
+import org.isf.tuberculosis.model.TuberculosisTreatment;
+import org.isf.tuberculosis.model.TuberculosisTreatment.TreatmentStatus;
+import org.isf.tuberculosis.service.TuberculosisTreatmentIoOperations;
 import org.isf.utils.exception.OHServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

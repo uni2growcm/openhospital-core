@@ -1,4 +1,4 @@
-package org.isf.opd;
+package org.isf.tuberculosis;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
@@ -7,10 +7,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
-import org.isf.opd.model.TuberculosisTreatment;
-import org.isf.opd.model.TuberculosisTreatment.LabResult;
-import org.isf.opd.model.TuberculosisVisit;
-import org.isf.opd.model.TuberculosisVisit.DotStatus;
+import org.isf.tuberculosis.model.TuberculosisTreatment;
+import org.isf.tuberculosis.model.TuberculosisTreatment.LabResult;
+import org.isf.tuberculosis.model.TuberculosisVisit;
+import org.isf.tuberculosis.model.TuberculosisVisit.DotStatus;
 
 public class TestTuberculosisVisit {
 

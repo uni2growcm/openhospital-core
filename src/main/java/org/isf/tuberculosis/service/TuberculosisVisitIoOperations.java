@@ -1,9 +1,9 @@
-package org.isf.opd.service;
+package org.isf.tuberculosis.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.isf.opd.model.TuberculosisVisit;
+import org.isf.tuberculosis.model.TuberculosisVisit;
 import org.isf.utils.db.TranslateOHServiceException;
 import org.isf.utils.exception.OHServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
