@@ -13,12 +13,12 @@ import org.isf.tuberculosis.manager.TuberculosisTreatmentManager;
 import org.isf.tuberculosis.manager.TuberculosisVisitManager;
 import org.isf.tuberculosis.model.TuberculosisContact;
 import org.isf.tuberculosis.model.TuberculosisTreatment;
-import org.isf.tuberculosis.model.TuberculosisTreatment.Classification;
-import org.isf.tuberculosis.model.TuberculosisTreatment.DiseaseLocation;
-import org.isf.tuberculosis.model.TuberculosisTreatment.LabResult;
-import org.isf.tuberculosis.model.TuberculosisTreatment.TreatmentStatus;
 import org.isf.tuberculosis.model.TuberculosisVisit;
-import org.isf.tuberculosis.model.TuberculosisVisit.DotStatus;
+import org.isf.tuberculosis.model.Classification;
+import org.isf.tuberculosis.model.DiseaseLocation;
+import org.isf.tuberculosis.model.DotStatus;
+import org.isf.tuberculosis.model.LabResult;
+import org.isf.tuberculosis.model.TreatmentStatus;
 import org.isf.tuberculosis.service.TuberculosisContactIoOperationRepository;
 import org.isf.tuberculosis.service.TuberculosisTreatmentIoOperationRepository;
 import org.isf.tuberculosis.service.TuberculosisTreatmentIoOperations;
@@ -182,9 +182,9 @@ class TuberculosisTests extends OHCoreTestCase {
         assertThat(list).hasSize(1);
 
         TuberculosisVisit updated = list.get(0);
-        updated.setWeight(62.0);
+        updated.setSmearResult(LabResult.POSITIVE);
         updated = visitManager.updateVisit(updated);
-        assertThat(updated.getWeight()).isEqualTo(62.0);
+        assertThat(updated.getSmearResult()).isEqualTo(LabResult.POSITIVE);
 
         TuberculosisVisit found = visitManager.getVisitById(updated.getId());
         assertThat(found).isNotNull();

@@ -7,7 +7,7 @@
 --   3. Creates 'tuberculosis' as a top-level main menu item
 --   4. Creates TB permission items under tuberculosis_internal
 --   5. Grants admin privileges
--- Prerequisite: step_a168_tuberculosis_module.sql must have been run first.
+-- Prerequisite: step_a169_tuberculosis_module.sql must have been run first.
 -- ========================================================================
 
 -- Step 1: Clean up old TB submenu items under OPD (from previous approach)

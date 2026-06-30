@@ -8,9 +8,9 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
 import org.isf.tuberculosis.model.TuberculosisTreatment;
-import org.isf.tuberculosis.model.TuberculosisTreatment.Classification;
-import org.isf.tuberculosis.model.TuberculosisTreatment.DiseaseLocation;
-import org.isf.tuberculosis.model.TuberculosisTreatment.TreatmentStatus;
+import org.isf.tuberculosis.model.Classification;
+import org.isf.tuberculosis.model.DiseaseLocation;
+import org.isf.tuberculosis.model.TreatmentStatus;
 import org.isf.patient.model.Patient;
 
 public class TestTuberculosisTreatment {

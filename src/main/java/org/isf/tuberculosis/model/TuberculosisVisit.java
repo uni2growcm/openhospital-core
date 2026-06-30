@@ -27,7 +27,6 @@ import java.time.LocalDateTime;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
-import org.isf.generaldata.MessageBundle;
 import org.isf.utils.db.Auditable;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -55,12 +54,6 @@ public class TuberculosisVisit extends Auditable<String> {
     @Column(name = "TBV_VISIT_DATE", nullable = false)
     private LocalDateTime visitDate;
 
-    @Column(name = "TBV_WEIGHT")
-    private Double weight;
-
-    @Column(name = "TBV_TEMPERATURE")
-    private Double temperature;
-
     @Column(name = "TBV_SYMPTOMS_IMPROVED")
     private Boolean symptomsImproved;
 
@@ -76,11 +69,23 @@ public class TuberculosisVisit extends Auditable<String> {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "TBV_SMEAR_RESULT")
-    private TuberculosisTreatment.LabResult smearResult;
+    private LabResult smearResult;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "TBV_GENEXPERT_RESULT")
+    private LabResult geneXpertResult;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "TBV_GENEXPERT_RIF_RESISTANCE")
+    private ResistanceResult geneXpertRifResistance;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "TBV_CULTURE_RESULT")
-    private TuberculosisTreatment.LabResult cultureResult;
+    private LabResult cultureResult;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "TBV_DST_RESULT")
+    private DstResult dstResult;
 
     @Column(name = "TBV_CONVERSION_DATE")
     private LocalDate conversionDate;
@@ -112,31 +117,6 @@ public class TuberculosisVisit extends Auditable<String> {
     @Version
     @Column(name = "TBV_LOCK")
     private Integer lock;
-
-    public enum DotStatus {
-        SUPERVISED("angal.tb.dot.supervised"),
-        SELF_ADMINISTERED("angal.tb.dot.selfadministered"),
-        MISSED("angal.tb.dot.missed");
-
-        private final String key;
-
-        DotStatus(String key) {
-            this.key = key;
-        }
-
-        public String getKey() {
-            return key;
-        }
-
-        public String getDescription() {
-            return MessageBundle.getMessage(key);
-        }
-
-        @Override
-        public String toString() {
-            return getDescription();
-        }
-    }
 
     public TuberculosisVisit() {
         super();
@@ -171,22 +151,6 @@ public class TuberculosisVisit extends Auditable<String> {
         this.visitDate = visitDate;
     }
 
-    public Double getWeight() {
-        return weight;
-    }
-
-    public void setWeight(Double weight) {
-        this.weight = weight;
-    }
-
-    public Double getTemperature() {
-        return temperature;
-    }
-
-    public void setTemperature(Double temperature) {
-        this.temperature = temperature;
-    }
-
     public Boolean getSymptomsImproved() {
         return symptomsImproved;
     }
@@ -219,20 +183,44 @@ public class TuberculosisVisit extends Auditable<String> {
         this.sideEffects = sideEffects;
     }
 
-    public TuberculosisTreatment.LabResult getSmearResult() {
+    public LabResult getSmearResult() {
         return smearResult;
     }
 
-    public void setSmearResult(TuberculosisTreatment.LabResult smearResult) {
+    public void setSmearResult(LabResult smearResult) {
         this.smearResult = smearResult;
     }
 
-    public TuberculosisTreatment.LabResult getCultureResult() {
+    public LabResult getGeneXpertResult() {
+        return geneXpertResult;
+    }
+
+    public void setGeneXpertResult(LabResult geneXpertResult) {
+        this.geneXpertResult = geneXpertResult;
+    }
+
+    public ResistanceResult getGeneXpertRifResistance() {
+        return geneXpertRifResistance;
+    }
+
+    public void setGeneXpertRifResistance(ResistanceResult geneXpertRifResistance) {
+        this.geneXpertRifResistance = geneXpertRifResistance;
+    }
+
+    public LabResult getCultureResult() {
         return cultureResult;
     }
 
-    public void setCultureResult(TuberculosisTreatment.LabResult cultureResult) {
+    public void setCultureResult(LabResult cultureResult) {
         this.cultureResult = cultureResult;
+    }
+
+    public DstResult getDstResult() {
+        return dstResult;
+    }
+
+    public void setDstResult(DstResult dstResult) {
+        this.dstResult = dstResult;
     }
 
     public LocalDate getConversionDate() {

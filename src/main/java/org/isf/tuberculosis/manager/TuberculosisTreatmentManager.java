@@ -25,7 +25,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import org.isf.tuberculosis.model.TuberculosisTreatment;
-import org.isf.tuberculosis.model.TuberculosisTreatment.TreatmentStatus;
+import org.isf.tuberculosis.model.TreatmentStatus;
 import org.isf.tuberculosis.service.TuberculosisTreatmentIoOperations;
 import org.isf.utils.exception.OHServiceException;
 import org.springframework.beans.factory.annotation.Autowired;

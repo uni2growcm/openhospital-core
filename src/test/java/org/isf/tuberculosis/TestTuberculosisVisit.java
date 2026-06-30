@@ -7,21 +7,25 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
+import org.isf.tuberculosis.model.DotStatus;
+import org.isf.tuberculosis.model.DstResult;
+import org.isf.tuberculosis.model.LabResult;
+import org.isf.tuberculosis.model.ResistanceResult;
 import org.isf.tuberculosis.model.TuberculosisTreatment;
-import org.isf.tuberculosis.model.TuberculosisTreatment.LabResult;
 import org.isf.tuberculosis.model.TuberculosisVisit;
-import org.isf.tuberculosis.model.TuberculosisVisit.DotStatus;
 
 public class TestTuberculosisVisit {
 
     private final LocalDateTime visitDate = LocalDateTime.of(2024, 2, 10, 14, 30);
-    private final Double weight = 58.5;
-    private final Double temperature = 36.8;
     private final Boolean symptomsImproved = true;
     private final Integer adherence = 95;
     private final DotStatus dotStatus = DotStatus.SUPERVISED;
     private final String sideEffects = "Mild nausea";
     private final LabResult smearResult = LabResult.NEGATIVE;
+    private final LabResult geneXpertResult = LabResult.NEGATIVE;
+    private final ResistanceResult geneXpertRifResistance = ResistanceResult.NOT_DETECTED;
+    private final LabResult cultureResult = LabResult.POSITIVE;
+    private final DstResult dstResult = DstResult.SUSCEPTIBLE;
     private final Double alt = 35.0;
     private final Double ast = 28.0;
     private final Double creatinine = 0.9;
@@ -47,13 +51,15 @@ public class TestTuberculosisVisit {
     private void set(TuberculosisVisit visit, TuberculosisTreatment treatment) {
         visit.setTreatment(treatment);
         visit.setVisitDate(visitDate);
-        visit.setWeight(weight);
-        visit.setTemperature(temperature);
         visit.setSymptomsImproved(symptomsImproved);
         visit.setAdherence(adherence);
         visit.setDotStatus(dotStatus);
         visit.setSideEffects(sideEffects);
         visit.setSmearResult(smearResult);
+        visit.setGeneXpertResult(geneXpertResult);
+        visit.setGeneXpertRifResistance(geneXpertRifResistance);
+        visit.setCultureResult(cultureResult);
+        visit.setDstResult(dstResult);
         visit.setAlt(alt);
         visit.setAst(ast);
         visit.setCreatinine(creatinine);
@@ -65,13 +71,15 @@ public class TestTuberculosisVisit {
 
     public void check(TuberculosisVisit visit) {
         assertThat(visit.getVisitDate()).isCloseTo(visitDate, within(1, ChronoUnit.SECONDS));
-        assertThat(visit.getWeight()).isEqualTo(weight);
-        assertThat(visit.getTemperature()).isEqualTo(temperature);
         assertThat(visit.getSymptomsImproved()).isEqualTo(symptomsImproved);
         assertThat(visit.getAdherence()).isEqualTo(adherence);
         assertThat(visit.getDotStatus()).isEqualTo(dotStatus);
         assertThat(visit.getSideEffects()).isEqualTo(sideEffects);
         assertThat(visit.getSmearResult()).isEqualTo(smearResult);
+        assertThat(visit.getGeneXpertResult()).isEqualTo(geneXpertResult);
+        assertThat(visit.getGeneXpertRifResistance()).isEqualTo(geneXpertRifResistance);
+        assertThat(visit.getCultureResult()).isEqualTo(cultureResult);
+        assertThat(visit.getDstResult()).isEqualTo(dstResult);
         assertThat(visit.getAlt()).isEqualTo(alt);
         assertThat(visit.getAst()).isEqualTo(ast);
         assertThat(visit.getCreatinine()).isEqualTo(creatinine);
