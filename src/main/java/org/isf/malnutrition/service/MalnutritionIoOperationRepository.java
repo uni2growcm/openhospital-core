@@ -37,4 +37,7 @@ public interface MalnutritionIoOperationRepository extends JpaRepository<Malnutr
 
 	@Query(value = "SELECT m FROM Malnutrition m WHERE m.admission.id = :id ORDER BY m.dateSupp")
 	List<Malnutrition> findAllWhereAdmissionByOrderDateDesc(@Param("id") int admissionID);
+
+	@Query("SELECT m FROM Malnutrition m WHERE m.opd.code = :opdId ORDER BY m.dateSupp DESC")
+	List<Malnutrition> findAllByOpdCode(@Param("opdId") int opdId);
 }
