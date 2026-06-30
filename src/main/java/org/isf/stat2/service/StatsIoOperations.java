@@ -114,11 +114,11 @@ public class StatsIoOperations {
 			hasAdmissionFilter = true;
 
 			if (periodFrom != null && !periodFrom.isEmpty()) {
-				sqlWhere.append("AND a.dischargeDate >= ? ");
+				sqlWhere.append("AND a.disDate >= ? ");
 				parameters.add(parseDate(periodFrom));
 			}
 			if (periodTo != null && !periodTo.isEmpty()) {
-				sqlWhere.append("AND a.dischargeDate <= ? ");
+				sqlWhere.append("AND a.disDate <= ? ");
 				parameters.add(parseDate(periodTo));
 			}
 		}
