@@ -22,7 +22,7 @@ SELECT
     'x',
     'R',
     'statistics',
-    'org.isf.stat.reportlauncher.gui.ReportLauncher',
+    'org.isf.stat.gui.EmptyReportsBrowser',
     'N',
     1
 FROM DUAL
