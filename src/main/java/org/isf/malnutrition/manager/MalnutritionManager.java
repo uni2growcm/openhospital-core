@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -83,6 +83,17 @@ public class MalnutritionManager {
 	 */
 	public List<Malnutrition> getMalnutrition(String admissionID) throws OHServiceException {
 		return ioOperation.getMalnutritions(admissionID);
+	}
+
+	/**
+	 * Retrieves all the {@link Malnutrition} associated to the given admission idopd.
+	 *
+	 * @param opdId the admission id to use as filter.
+	 * @return all the retrieved malnutrition or {@code null} if the specified admission id is {@code null}.
+	 * @throws OHServiceException
+	 */
+	public List<Malnutrition> getMalnutritionByOpd(String opdId) throws OHServiceException {
+		return ioOperation.getMalnutritionByOpd(opdId);
 	}
 
 	/**
