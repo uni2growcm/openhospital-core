@@ -37,56 +37,38 @@ public interface PatVacIoOperationRepositoryCustom {
 
 	/**
 	 * Returns a page of {@link PatientVaccine}s filtered by vaccine type, vaccine, date range, sex and age.
-	 * This method uses Criteria API for dynamic query building with pagination support.
 	 *
-	 * @param vaccineTypeCode the vaccine type code (can be {@code null})
-	 * @param vaccineCode the vaccine code (can be {@code null})
-	 * @param dateFrom the start date (can be {@code null})
-	 * @param dateTo the end date (can be {@code null})
-	 * @param sex the patient sex ('M', 'F' or 'A' for all)
-	 * @param ageFrom the minimum age (0 for no minimum)
-	 * @param ageTo the maximum age (0 for no maximum)
+	 * @param vaccineTypeCode the vaccine type code
+	 * @param vaccineCode the vaccine code
+	 * @param dateFrom the start date
+	 * @param dateTo the end date
+	 * @param sex the patient sex
+	 * @param ageFrom the minimum age
+	 * @param ageTo the maximum age
 	 * @param pageable the pagination information
 	 * @return a page of {@link PatientVaccine}s
 	 * @throws OHServiceException
 	 */
-	Page<PatientVaccine> findAllByCodesAndDatesAndSexAndAgesWithPagination(
-		String vaccineTypeCode,
-		String vaccineCode,
-		LocalDateTime dateFrom,
-		LocalDateTime dateTo,
-		char sex,
-		int ageFrom,
-		int ageTo,
-		Pageable pageable) throws OHServiceException;
+	Page<PatientVaccine> findAllByCodesAndDatesAndSexAndAgesWithPagination(String vaccineTypeCode, String vaccineCode, LocalDateTime dateFrom,
+		LocalDateTime dateTo, char sex, int ageFrom, int ageTo, Pageable pageable) throws OHServiceException;
 
 	/**
 	 * Returns a page of {@link PatientVaccine}s filtered by vaccine type, vaccine, date range, sex, age,
 	 * patient search and village.
-	 * This method uses Criteria API for dynamic query building with pagination support.
 	 *
-	 * @param vaccineTypeCode the vaccine type code (can be {@code null})
-	 * @param vaccineCode the vaccine code (can be {@code null})
-	 * @param dateFrom the start date (can be {@code null})
-	 * @param dateTo the end date (can be {@code null})
-	 * @param sex the patient sex ('M', 'F' or 'A' for all)
-	 * @param ageFrom the minimum age (0 for no minimum)
-	 * @param ageTo the maximum age (0 for no maximum)
-	 * @param patientSearchText the patient name or code to search (can be empty)
-	 * @param villageText the village to filter (can be empty)
+	 * @param vaccineTypeCode the vaccine type code
+	 * @param vaccineCode the vaccine code
+	 * @param dateFrom the start date
+	 * @param dateTo the end date
+	 * @param sex the patient sex
+	 * @param ageFrom the minimum age
+	 * @param ageTo the maximum age
+	 * @param patientSearchText the patient name or code to search
+	 * @param villageText the village to filter
 	 * @param pageable the pagination information
 	 * @return a page of {@link PatientVaccine}s
 	 * @throws OHServiceException
 	 */
-	Page<PatientVaccine> findAllByCodesAndDatesAndSexAndAgesWithPagination(
-		String vaccineTypeCode,
-		String vaccineCode,
-		LocalDateTime dateFrom,
-		LocalDateTime dateTo,
-		char sex,
-		int ageFrom,
-		int ageTo,
-		String patientSearchText,
-		String villageText,
-		Pageable pageable) throws OHServiceException;
+	Page<PatientVaccine> findAllByCodesAndDatesAndSexAndAgesWithPagination(String vaccineTypeCode, String vaccineCode, LocalDateTime dateFrom,
+		LocalDateTime dateTo, char sex, int ageFrom, int ageTo, String patientSearchText, String villageText, Pageable pageable) throws OHServiceException;
 }

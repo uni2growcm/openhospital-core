@@ -25,8 +25,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.isf.patvac.model.PatientVaccine;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -43,26 +41,4 @@ public interface PatVacIoOperationRepository extends JpaRepository<PatientVaccin
 
 	List<PatientVaccine> findByPatient_code(int patientId);
 
-	Page<PatientVaccine> findAllByVaccineDateBetweenOrderByVaccineDateDesc(LocalDateTime dateFrom, LocalDateTime dateTo, Pageable pageable);
-
-	Page<PatientVaccine> findByVaccine_VaccineType_CodeAndVaccineDateBetweenOrderByVaccineDateDesc(
-		String vaccineTypeCode, LocalDateTime dateFrom, LocalDateTime dateTo, Pageable pageable);
-
-	Page<PatientVaccine> findByVaccine_CodeAndVaccineDateBetweenOrderByVaccineDateDesc(
-		String vaccineCode, LocalDateTime dateFrom, LocalDateTime dateTo, Pageable pageable);
-
-	Page<PatientVaccine> findByVaccine_VaccineType_CodeAndVaccine_CodeAndVaccineDateBetweenOrderByVaccineDateDesc(
-		String vaccineTypeCode, String vaccineCode, LocalDateTime dateFrom, LocalDateTime dateTo, Pageable pageable);
-
-	Page<PatientVaccine> findByPatient_SexAndVaccineDateBetweenOrderByVaccineDateDesc(
-		char sex, LocalDateTime dateFrom, LocalDateTime dateTo, Pageable pageable);
-
-	Page<PatientVaccine> findByVaccine_VaccineType_CodeAndPatient_SexAndVaccineDateBetweenOrderByVaccineDateDesc(
-		String vaccineTypeCode, char sex, LocalDateTime dateFrom, LocalDateTime dateTo, Pageable pageable);
-
-	Page<PatientVaccine> findByVaccine_CodeAndPatient_SexAndVaccineDateBetweenOrderByVaccineDateDesc(
-		String vaccineCode, char sex, LocalDateTime dateFrom, LocalDateTime dateTo, Pageable pageable);
-
-	Page<PatientVaccine> findByVaccine_VaccineType_CodeAndVaccine_CodeAndPatient_SexAndVaccineDateBetweenOrderByVaccineDateDesc(
-		String vaccineTypeCode, String vaccineCode, char sex, LocalDateTime dateFrom, LocalDateTime dateTo, Pageable pageable);
 }
