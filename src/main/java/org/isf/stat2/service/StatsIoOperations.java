@@ -278,15 +278,7 @@ public class StatsIoOperations {
 	}
 
 	/**
-	 * Retrieves vaccine statistics grouped by vaccine, showing the number of
-	 * male and female patients who received each vaccine.
-	 *
-	 * This method aggregates data and returns a paginated list where each row
-	 * represents a vaccine with its corresponding gender counts.
-	 *
-	 * The statistics are calculated based on patients who have received each vaccine,
-	 * filtered by the provided criteria. The results are grouped by vaccine ID
-	 * and include counts for males and females separately.
+	 * Retrieves vaccine statistics grouped by vaccine, showing the number of male and female patients who received each vaccine.
 	 *
 	 * @param startIndex            Starting position for pagination
 	 * @param limit                 Number of records per page
@@ -735,8 +727,7 @@ public class StatsIoOperations {
 	}
 
 	/**
-	 * Retrieves disease statistics grouped by disease, showing the number of
-	 * male and female patients diagnosed with each disease.
+	 * Retrieves disease statistics grouped by disease, showing the number of male and female patients diagnosed with each disease.
 	 *
 	 * @param startIndex            Starting position for pagination
 	 * @param limit                 Number of records per page
@@ -936,8 +927,7 @@ public class StatsIoOperations {
 	}
 
 	/**
-	 * Retrieves operation statistics grouped by operation type, showing the number of
-	 * male and female patients who underwent each operation.
+	 * Retrieves operation statistics grouped by operation type, showing the number of male and female patients who underwent each operation.
 	 *
 	 * @param startIndex            Starting position for pagination
 	 * @param limit                 Number of records per page
@@ -1406,7 +1396,6 @@ public class StatsIoOperations {
 		if (parameterRespRate) {
 			sqlWhere.append("AND pe.freq > 0 ");
 		}
-
 		sql.append(sqlWhere);
 
 		Pageable pageable = PageRequest.of(startIndex / limit, limit);

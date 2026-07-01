@@ -120,8 +120,7 @@ public class StatsManager {
 	}
 
 	/**
-	 * Retrieves vaccine statistics grouped by vaccine, showing the number of
-	 * male and female patients who received each vaccine.
+	 * Retrieves vaccine statistics grouped by vaccine, showing the number of male and female patients who received each vaccine.
 	 *
 	 * @param startIndex            Starting position for pagination
 	 * @param limit                 Number of records per page
@@ -337,8 +336,7 @@ public class StatsManager {
 	}
 
 	/**
-	 * Retrieves operation statistics grouped by operation type, showing the number of
-	 * male and female patients who underwent each operation.
+	 * Retrieves operation statistics grouped by operation type, showing the number of male and female patients who underwent each operation.
 	 *
 	 * @param startIndex            Starting position for pagination
 	 * @param limit                 Number of records per page
