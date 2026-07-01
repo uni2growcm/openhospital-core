@@ -1,3 +1,24 @@
+/*
+ * Open Hospital (www.open-hospital.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ *
+ * Open Hospital is a free and open source software for healthcare data management.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * https://www.gnu.org/licenses/gpl-3.0-standalone.html
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
 package org.isf.stat2.service;
 
 import java.time.LocalDateTime;
@@ -28,19 +49,16 @@ public class StatsIoOperationRepositoryImpl implements StatsIoOperationRepositor
 
 	@Override
 	public Page<Patient> findPregnanciesStatsByFilters(
-		// ===== PATIENT DEMOGRAPHICS =====
 		Integer ageFrom,
 		Integer ageTo,
 		LocalDateTime periodFrom,
 		LocalDateTime periodTo,
 
-		// ===== EXAMS =====
 		String exam,
 		String examResult,
 		LocalDateTime examPeriodFrom,
 		LocalDateTime examPeriodTo,
 
-		// ===== VACCINES =====
 		String vaccine,
 		LocalDateTime vaccinePeriodFrom,
 		LocalDateTime vaccinePeriodTo,
@@ -151,6 +169,20 @@ public class StatsIoOperationRepositoryImpl implements StatsIoOperationRepositor
 			}
 		}
 
+		if (visitCountMin != null || visitCountMax != null) {
+			fromBuilder.append(" INNER JOIN (SELECT PRGV_PRG_ID, COUNT(*) AS visit_count"
+				+ " FROM oh_pregnancyvisit GROUP BY PRGV_PRG_ID) _visitcount"
+				+ " ON _visitcount.PRGV_PRG_ID = _pregnancy.PRG_ID");
+			if (visitCountMin != null) {
+				conditions.append(" AND _visitcount.visit_count >= ?");
+				parameters.add(visitCountMin);
+			}
+			if (visitCountMax != null) {
+				conditions.append(" AND _visitcount.visit_count <= ?");
+				parameters.add(visitCountMax);
+			}
+		}
+
 		if (visitType != null && !visitType.isEmpty() && !"Tous".equals(visitType)) {
 			conditions.append(" AND _pregvisit.PRGV_TYPE_ID = ?");
 			parameters.add(visitType);
@@ -179,8 +211,13 @@ public class StatsIoOperationRepositoryImpl implements StatsIoOperationRepositor
 		}
 
 		if (edema != null && !edema.isEmpty() && !"Tous".equals(edema)) {
-			conditions.append(" AND _pregvisit.PRGV_EDEMA_PRESENCE = ?");
-			parameters.add(edema);
+			if ("Pas d'œdème".equals(edema)) {
+				conditions.append(" AND _pregvisit.PRGV_EDEMA_PRESENCE = ?");
+				parameters.add("Pas d'œdème");
+			} else {
+				conditions.append(" AND _pregvisit.PRGV_EDEMA_PRESENCE = ?");
+				parameters.add(edema);
+			}
 		}
 
 		if (fetalPresentation != null && !fetalPresentation.isEmpty() && !"Tous".equals(fetalPresentation)) {
@@ -308,10 +345,6 @@ public class StatsIoOperationRepositoryImpl implements StatsIoOperationRepositor
 		String dataSql = "SELECT DISTINCT _patient.PAT_ID, _patient.PAT_FNAME, _patient.PAT_SNAME, _patient.PAT_AGE"
 			+ from + where;
 
-		System.out.println("=== PREGNANCY STATS QUERY ===");
-		System.out.println("SQL: " + dataSql);
-		System.out.println("Parameters: " + parameters);
-
 		Query dataQuery = entityManager.createNativeQuery(dataSql);
 		bindParameters(dataQuery, parameters);
 		dataQuery.setFirstResult((int) pageable.getOffset());
@@ -337,12 +370,6 @@ public class StatsIoOperationRepositoryImpl implements StatsIoOperationRepositor
 		return new PageImpl<>(patients, pageable, total);
 	}
 
-	/**
-	 * Binds a list of parameters to a JPA Query.
-	 *
-	 * @param query the JPA Query
-	 * @param parameters the list of parameters to bind
-	 */
 	private void bindParameters(Query query, List<Object> parameters) {
 		for (int i = 0; i < parameters.size(); i++) {
 			query.setParameter(i + 1, parameters.get(i));

@@ -1,3 +1,24 @@
+/*
+ * Open Hospital (www.open-hospital.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ *
+ * Open Hospital is a free and open source software for healthcare data management.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * https://www.gnu.org/licenses/gpl-3.0-standalone.html
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
 package org.isf.stat2.service;
 
 import java.time.LocalDateTime;
@@ -64,26 +85,6 @@ public class StatsIoOperations {
 		String fetalPresentation,
 		String systolicBpRange,
 		String diastolicBpRange,
-
-		// ===== BLOC 3 : DELIVERY FILTERS (à venir) =====
-		// String deliveryType,
-		// String deliveryMode,
-		// String laborDuration,
-		// String romRange,
-		// String perinealIntegrity,
-		// Boolean placentaComplete,
-		// String bloodLossRange,
-
-		// ===== BLOC 4 : NEWBORN FILTERS (à venir) =====
-		// String newbornSex,
-		// String birthWeightRange,
-		// String neonatalStatus,
-		// String apgar1Range,
-		// String apgar5Range,
-		// Boolean resuscitationRequired,
-		// String cryTime,
-		// String hivStatus,
-		// Boolean congenitalAnomalies,
 		int page,
 		int size
 	) throws OHServiceException {
@@ -103,16 +104,6 @@ public class StatsIoOperations {
 			visitType, visitCountMin, visitCountMax,
 			maternalWeightRange, urineProtein, edema,
 			fetalPresentation, systolicBpRange, diastolicBpRange,
-
-			// BLOC 3 : Delivery Filters (à venir)
-			// deliveryType, deliveryMode, laborDuration, romRange,
-			// perinealIntegrity, placentaComplete, bloodLossRange,
-
-			// BLOC 4 : Newborn Filters (à venir)
-			// newbornSex, birthWeightRange, neonatalStatus,
-			// apgar1Range, apgar5Range, resuscitationRequired,
-			// cryTime, hivStatus, congenitalAnomalies,
-
 			PageRequest.of(page, size)
 		);
 	}
