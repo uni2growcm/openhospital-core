@@ -41,7 +41,9 @@ import jakarta.persistence.Query;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @Service
@@ -90,20 +92,20 @@ public class StatsIoOperations {
 
 		StringBuilder sqlWhere = new StringBuilder();
 		sqlWhere.append("WHERE (p.deleted = 'N' OR p.deleted IS NULL) ");
-		List<Object> parameters = new ArrayList<>();
+		Map<String, Object> parameters = new HashMap<>();
 
 		if (ageFrom > 0) {
-			sqlWhere.append("AND p.age >= ? ");
-			parameters.add(ageFrom);
+			sqlWhere.append("AND p.age >= :ageFrom ");
+			parameters.put("ageFrom", ageFrom);
 		}
 		if (ageTo > 0) {
-			sqlWhere.append("AND p.age <= ? ");
-			parameters.add(ageTo);
+			sqlWhere.append("AND p.age <= :ageTo ");
+			parameters.put("ageTo", ageTo);
 		}
 
 		if (sex != null && !sex.isEmpty()) {
-			sqlWhere.append("AND p.sex = ? ");
-			parameters.add(sex);
+			sqlWhere.append("AND p.sex = :sex ");
+			parameters.put("sex", sex);
 		}
 
 		boolean hasAdmissionFilter = false;
@@ -114,12 +116,12 @@ public class StatsIoOperations {
 			hasAdmissionFilter = true;
 
 			if (periodFrom != null && !periodFrom.isEmpty()) {
-				sqlWhere.append("AND a.disDate >= ? ");
-				parameters.add(parseDate(periodFrom));
+				sqlWhere.append("AND a.disDate >= :periodFrom ");
+				parameters.put("periodFrom", parseDate(periodFrom));
 			}
 			if (periodTo != null && !periodTo.isEmpty()) {
-				sqlWhere.append("AND a.disDate <= ? ");
-				parameters.add(parseDate(periodTo));
+				sqlWhere.append("AND a.disDate <= :periodTo ");
+				parameters.put("periodTo", parseDate(periodTo));
 			}
 		}
 
@@ -129,43 +131,43 @@ public class StatsIoOperations {
 				hasAdmissionFilter = true;
 			}
 			sqlSelect.append("LEFT JOIN Ward w ON a.ward = w ");
-			sqlWhere.append("AND w.description = ? ");
-			parameters.add(ward);
+			sqlWhere.append("AND w.description = :ward ");
+			parameters.put("ward", ward);
 		}
 
 		if (exam != null && !exam.isEmpty()) {
 			sqlSelect.append("INNER JOIN Laboratory l ON l.patient = p ");
 			sqlSelect.append("INNER JOIN Exam e ON l.exam = e ");
-			sqlWhere.append("AND e.description = ? ");
-			parameters.add(exam);
+			sqlWhere.append("AND e.description = :exam ");
+			parameters.put("exam", exam);
 
 			if (examResult != null && !examResult.isEmpty()) {
-				sqlWhere.append("AND l.result = ? ");
-				parameters.add(examResult);
+				sqlWhere.append("AND l.result = :examResult ");
+				parameters.put("examResult", examResult);
 			}
 			if (examPeriodFrom != null && !examPeriodFrom.isEmpty()) {
-				sqlWhere.append("AND l.labDate >= ? ");
-				parameters.add(parseDate(examPeriodFrom));
+				sqlWhere.append("AND l.labDate >= :examPeriodFrom ");
+				parameters.put("examPeriodFrom", parseDate(examPeriodFrom));
 			}
 			if (examPeriodTo != null && !examPeriodTo.isEmpty()) {
-				sqlWhere.append("AND l.labDate <= ? ");
-				parameters.add(parseDate(examPeriodTo));
+				sqlWhere.append("AND l.labDate <= :examPeriodTo ");
+				parameters.put("examPeriodTo", parseDate(examPeriodTo));
 			}
 		}
 
 		if (vaccine != null && !vaccine.isEmpty()) {
 			sqlSelect.append("INNER JOIN PatientVaccine pv ON pv.patient = p ");
 			sqlSelect.append("INNER JOIN Vaccine v ON pv.vaccine = v ");
-			sqlWhere.append("AND v.description = ? ");
-			parameters.add(vaccine);
+			sqlWhere.append("AND v.description = :vaccine ");
+			parameters.put("vaccine", vaccine);
 
 			if (vaccinePeriodFrom != null && !vaccinePeriodFrom.isEmpty()) {
-				sqlWhere.append("AND pv.date >= ? ");
-				parameters.add(parseDate(vaccinePeriodFrom));
+				sqlWhere.append("AND pv.date >= :vaccinePeriodFrom ");
+				parameters.put("vaccinePeriodFrom", parseDate(vaccinePeriodFrom));
 			}
 			if (vaccinePeriodTo != null && !vaccinePeriodTo.isEmpty()) {
-				sqlWhere.append("AND pv.date <= ? ");
-				parameters.add(parseDate(vaccinePeriodTo));
+				sqlWhere.append("AND pv.date <= :vaccinePeriodTo ");
+				parameters.put("vaccinePeriodTo", parseDate(vaccinePeriodTo));
 			}
 		}
 
@@ -177,20 +179,20 @@ public class StatsIoOperations {
 			sqlSelect.append("LEFT JOIN Opd o ON o.patient = p ");
 			sqlSelect.append("INNER JOIN OperationRow orow ON (orow.admission = a OR orow.opd = o) ");
 			sqlSelect.append("INNER JOIN Operation op ON orow.operation = op ");
-			sqlWhere.append("AND op.description = ? ");
-			parameters.add(operation);
+			sqlWhere.append("AND op.description = :operation ");
+			parameters.put("operation", operation);
 
 			if (operationResult != null && !operationResult.isEmpty()) {
-				sqlWhere.append("AND orow.result = ? ");
-				parameters.add(operationResult);
+				sqlWhere.append("AND orow.result = :operationResult ");
+				parameters.put("operationResult", operationResult);
 			}
 			if (operationPeriodFrom != null && !operationPeriodFrom.isEmpty()) {
-				sqlWhere.append("AND orow.operationDate >= ? ");
-				parameters.add(parseDate(operationPeriodFrom));
+				sqlWhere.append("AND orow.operationDate >= :operationPeriodFrom ");
+				parameters.put("operationPeriodFrom", parseDate(operationPeriodFrom));
 			}
 			if (operationPeriodTo != null && !operationPeriodTo.isEmpty()) {
-				sqlWhere.append("AND orow.operationDate <= ? ");
-				parameters.add(parseDate(operationPeriodTo));
+				sqlWhere.append("AND orow.operationDate <= :operationPeriodTo ");
+				parameters.put("operationPeriodTo", parseDate(operationPeriodTo));
 			}
 		}
 
@@ -200,8 +202,8 @@ public class StatsIoOperations {
 				hasAdmissionFilter = true;
 			}
 			sqlSelect.append("INNER JOIN Disease d ON (a.diseaseOut1 = d OR a.diseaseOut2 = d OR a.diseaseOut3 = d) ");
-			sqlWhere.append("AND d.description = ? ");
-			parameters.add(disease);
+			sqlWhere.append("AND d.description = :disease ");
+			parameters.put("disease", disease);
 		}
 
 		if (dischargeType != null && !dischargeType.isEmpty()) {
@@ -209,9 +211,9 @@ public class StatsIoOperations {
 				sqlSelect.append("LEFT JOIN Admission a ON a.patient = p ");
 				hasAdmissionFilter = true;
 			}
-			sqlSelect.append("INNER JOIN DischargeType dt ON a.dischargeType = dt ");
-			sqlWhere.append("AND dt.description = ? ");
-			parameters.add(dischargeType);
+			sqlSelect.append("INNER JOIN DischargeType dt ON a.disType = dt ");
+			sqlWhere.append("AND dt.description = :dischargeType ");
+			parameters.put("dischargeType", dischargeType);
 		}
 
 		String sql = sqlSelect.toString() + sqlWhere.toString();
@@ -219,8 +221,8 @@ public class StatsIoOperations {
 		Pageable pageable = PageRequest.of(startIndex / limit, limit);
 
 		Query query = entityManager.createQuery(sql);
-		for (int i = 0; i < parameters.size(); i++) {
-			query.setParameter(i + 1, parameters.get(i));
+		for (Map.Entry<String, Object> entry : parameters.entrySet()) {
+			query.setParameter(entry.getKey(), entry.getValue());
 		}
 		query.setFirstResult((int) pageable.getOffset());
 		query.setMaxResults(pageable.getPageSize());
@@ -230,8 +232,8 @@ public class StatsIoOperations {
 
 		String countSql = "SELECT COUNT(DISTINCT p) " + sql.substring(sql.indexOf("FROM"));
 		Query countQuery = entityManager.createQuery(countSql);
-		for (int i = 0; i < parameters.size(); i++) {
-			countQuery.setParameter(i + 1, parameters.get(i));
+		for (Map.Entry<String, Object> entry : parameters.entrySet()) {
+			countQuery.setParameter(entry.getKey(), entry.getValue());
 		}
 		long total = (long) countQuery.getSingleResult();
 
@@ -271,7 +273,7 @@ public class StatsIoOperations {
 
 		Page<Patient> page = getPatientsStats(0, 1, ageFrom, ageTo, periodFrom, periodTo,
 			sex, ward, exam, examResult, examPeriodFrom, examPeriodTo, vaccine, vaccinePeriodFrom, vaccinePeriodTo,
-			operation, operationResult, operationPeriodFrom, operationPeriodTo, disease, dischargeType );
+			operation, operationResult, operationPeriodFrom, operationPeriodTo, disease, dischargeType);
 		return page.getTotalElements();
 	}
 
@@ -324,15 +326,15 @@ public class StatsIoOperations {
 
 		StringBuilder sqlWhere = new StringBuilder();
 		sqlWhere.append("WHERE (p.deleted = 'N' OR p.deleted IS NULL) ");
-		List<Object> parameters = new ArrayList<>();
+		Map<String, Object> parameters = new HashMap<>();
 
 		if (ageFrom > 0) {
-			sqlWhere.append("AND p.age >= ? ");
-			parameters.add(ageFrom);
+			sqlWhere.append("AND p.age >= :ageFrom ");
+			parameters.put("ageFrom", ageFrom);
 		}
 		if (ageTo > 0) {
-			sqlWhere.append("AND p.age <= ? ");
-			parameters.add(ageTo);
+			sqlWhere.append("AND p.age <= :ageTo ");
+			parameters.put("ageTo", ageTo);
 		}
 
 		boolean hasAdmissionFilter = false;
@@ -343,12 +345,12 @@ public class StatsIoOperations {
 			hasAdmissionFilter = true;
 
 			if (periodFrom != null && !periodFrom.isEmpty()) {
-				sqlWhere.append("AND a.dischargeDate >= ? ");
-				parameters.add(parseDate(periodFrom));
+				sqlWhere.append("AND a.dischargeDate >= :periodFrom ");
+				parameters.put("periodFrom", parseDate(periodFrom));
 			}
 			if (periodTo != null && !periodTo.isEmpty()) {
-				sqlWhere.append("AND a.dischargeDate <= ? ");
-				parameters.add(parseDate(periodTo));
+				sqlWhere.append("AND a.dischargeDate <= :periodTo ");
+				parameters.put("periodTo", parseDate(periodTo));
 			}
 		}
 
@@ -358,37 +360,37 @@ public class StatsIoOperations {
 				hasAdmissionFilter = true;
 			}
 			sql.append("LEFT JOIN Ward w ON a.ward = w ");
-			sqlWhere.append("AND w.description = ? ");
-			parameters.add(ward);
+			sqlWhere.append("AND w.description = :ward ");
+			parameters.put("ward", ward);
 		}
 
 		if (exam != null && !exam.isEmpty()) {
 			sql.append("INNER JOIN Laboratory l ON l.patient = p ");
 			sql.append("INNER JOIN Exam e ON l.exam = e ");
-			sqlWhere.append("AND e.description = ? ");
-			parameters.add(exam);
+			sqlWhere.append("AND e.description = :exam ");
+			parameters.put("exam", exam);
 
 			if (examResult != null && !examResult.isEmpty()) {
-				sqlWhere.append("AND l.result = ? ");
-				parameters.add(examResult);
+				sqlWhere.append("AND l.result = :examResult ");
+				parameters.put("examResult", examResult);
 			}
 			if (examPeriodFrom != null && !examPeriodFrom.isEmpty()) {
-				sqlWhere.append("AND l.labDate >= ? ");
-				parameters.add(parseDate(examPeriodFrom));
+				sqlWhere.append("AND l.labDate >= :examPeriodFrom ");
+				parameters.put("examPeriodFrom", parseDate(examPeriodFrom));
 			}
 			if (examPeriodTo != null && !examPeriodTo.isEmpty()) {
-				sqlWhere.append("AND l.labDate <= ? ");
-				parameters.add(parseDate(examPeriodTo));
+				sqlWhere.append("AND l.labDate <= :examPeriodTo ");
+				parameters.put("examPeriodTo", parseDate(examPeriodTo));
 			}
 		}
 
 		if (vaccinePeriodFrom != null && !vaccinePeriodFrom.isEmpty()) {
-			sqlWhere.append("AND pv.date >= ? ");
-			parameters.add(parseDate(vaccinePeriodFrom));
+			sqlWhere.append("AND pv.date >= :vaccinePeriodFrom ");
+			parameters.put("vaccinePeriodFrom", parseDate(vaccinePeriodFrom));
 		}
 		if (vaccinePeriodTo != null && !vaccinePeriodTo.isEmpty()) {
-			sqlWhere.append("AND pv.date <= ? ");
-			parameters.add(parseDate(vaccinePeriodTo));
+			sqlWhere.append("AND pv.date <= :vaccinePeriodTo ");
+			parameters.put("vaccinePeriodTo", parseDate(vaccinePeriodTo));
 		}
 
 		if (operation != null && !operation.isEmpty()) {
@@ -399,20 +401,20 @@ public class StatsIoOperations {
 			sql.append("LEFT JOIN Opd o ON o.patient = p ");
 			sql.append("INNER JOIN OperationRow orow ON (orow.admission = a OR orow.opd = o) ");
 			sql.append("INNER JOIN Operation op ON orow.operation = op ");
-			sqlWhere.append("AND op.description = ? ");
-			parameters.add(operation);
+			sqlWhere.append("AND op.description = :operation ");
+			parameters.put("operation", operation);
 
 			if (operationResult != null && !operationResult.isEmpty()) {
-				sqlWhere.append("AND orow.result = ? ");
-				parameters.add(operationResult);
+				sqlWhere.append("AND orow.result = :operationResult ");
+				parameters.put("operationResult", operationResult);
 			}
 			if (operationPeriodFrom != null && !operationPeriodFrom.isEmpty()) {
-				sqlWhere.append("AND orow.operationDate >= ? ");
-				parameters.add(parseDate(operationPeriodFrom));
+				sqlWhere.append("AND orow.operationDate >= :operationPeriodFrom ");
+				parameters.put("operationPeriodFrom", parseDate(operationPeriodFrom));
 			}
 			if (operationPeriodTo != null && !operationPeriodTo.isEmpty()) {
-				sqlWhere.append("AND orow.operationDate <= ? ");
-				parameters.add(parseDate(operationPeriodTo));
+				sqlWhere.append("AND orow.operationDate <= :operationPeriodTo ");
+				parameters.put("operationPeriodTo", parseDate(operationPeriodTo));
 			}
 		}
 
@@ -422,8 +424,8 @@ public class StatsIoOperations {
 				hasAdmissionFilter = true;
 			}
 			sql.append("INNER JOIN Disease d ON (a.diseaseOut1 = d OR a.diseaseOut2 = d OR a.diseaseOut3 = d) ");
-			sqlWhere.append("AND d.description = ? ");
-			parameters.add(disease);
+			sqlWhere.append("AND d.description = :disease ");
+			parameters.put("disease", disease);
 		}
 
 		if (dischargeType != null && !dischargeType.isEmpty()) {
@@ -431,9 +433,9 @@ public class StatsIoOperations {
 				sql.append("LEFT JOIN Admission a ON a.patient = p ");
 				hasAdmissionFilter = true;
 			}
-			sql.append("INNER JOIN DischargeType dt ON a.dischargeType = dt ");
-			sqlWhere.append("AND dt.description = ? ");
-			parameters.add(dischargeType);
+			sql.append("INNER JOIN DischargeType dt ON a.disType = dt ");
+			sqlWhere.append("AND dt.description = :dischargeType ");
+			parameters.put("dischargeType", dischargeType);
 		}
 
 		sql.append(sqlWhere);
@@ -441,8 +443,8 @@ public class StatsIoOperations {
 
 		Pageable pageable = PageRequest.of(startIndex / limit, limit);
 		Query query = entityManager.createQuery(sql.toString());
-		for (int i = 0; i < parameters.size(); i++) {
-			query.setParameter(i + 1, parameters.get(i));
+		for (Map.Entry<String, Object> entry : parameters.entrySet()) {
+			query.setParameter(entry.getKey(), entry.getValue());
 		}
 		query.setFirstResult((int) pageable.getOffset());
 		query.setMaxResults(pageable.getPageSize());
@@ -463,8 +465,8 @@ public class StatsIoOperations {
 		String countSql = "SELECT COUNT(DISTINCT v.id) " + sql.substring(sql.indexOf("FROM"));
 		countSql = countSql.replace("GROUP BY v.id ", "");
 		Query countQuery = entityManager.createQuery(countSql);
-		for (int i = 0; i < parameters.size(); i++) {
-			countQuery.setParameter(i + 1, parameters.get(i));
+		for (Map.Entry<String, Object> entry : parameters.entrySet()) {
+			countQuery.setParameter(entry.getKey(), entry.getValue());
 		}
 		long total = (long) countQuery.getSingleResult();
 
@@ -502,7 +504,7 @@ public class StatsIoOperations {
 
 		Page<VaccineStat> page = getVaccinesStats(0, 1, ageFrom, ageTo, periodFrom, periodTo,
 			ward, exam, examResult, examPeriodFrom, examPeriodTo, vaccinePeriodFrom, vaccinePeriodTo,
-			operation, operationResult, operationPeriodFrom, operationPeriodTo, disease, dischargeType );
+			operation, operationResult, operationPeriodFrom, operationPeriodTo, disease, dischargeType);
 		return page.getTotalElements();
 	}
 
@@ -548,15 +550,15 @@ public class StatsIoOperations {
 
 		StringBuilder sqlWhere = new StringBuilder();
 		sqlWhere.append("WHERE (p.deleted = 'N' OR p.deleted IS NULL) ");
-		List<Object> parameters = new ArrayList<>();
+		Map<String, Object> parameters = new HashMap<>();
 
 		if (ageFrom > 0) {
-			sqlWhere.append("AND p.age >= ? ");
-			parameters.add(ageFrom);
+			sqlWhere.append("AND p.age >= :ageFrom ");
+			parameters.put("ageFrom", ageFrom);
 		}
 		if (ageTo > 0) {
-			sqlWhere.append("AND p.age <= ? ");
-			parameters.add(ageTo);
+			sqlWhere.append("AND p.age <= :ageTo ");
+			parameters.put("ageTo", ageTo);
 		}
 
 		boolean hasAdmissionFilter = false;
@@ -567,12 +569,12 @@ public class StatsIoOperations {
 			hasAdmissionFilter = true;
 
 			if (periodFrom != null && !periodFrom.isEmpty()) {
-				sqlWhere.append("AND a.dischargeDate >= ? ");
-				parameters.add(parseDate(periodFrom));
+				sqlWhere.append("AND a.disDate >= :periodFrom ");
+				parameters.put("periodFrom", parseDate(periodFrom));
 			}
 			if (periodTo != null && !periodTo.isEmpty()) {
-				sqlWhere.append("AND a.dischargeDate <= ? ");
-				parameters.add(parseDate(periodTo));
+				sqlWhere.append("AND a.disDate <= :periodTo ");
+				parameters.put("periodTo", parseDate(periodTo));
 			}
 		}
 
@@ -582,37 +584,37 @@ public class StatsIoOperations {
 				hasAdmissionFilter = true;
 			}
 			sql.append("LEFT JOIN Ward w ON a.ward = w ");
-			sqlWhere.append("AND w.description = ? ");
-			parameters.add(ward);
+			sqlWhere.append("AND w.description = :ward ");
+			parameters.put("ward", ward);
 		}
 
 		if (examResult != null && !examResult.isEmpty()) {
-			sqlWhere.append("AND l.result = ? ");
-			parameters.add(examResult);
+			sqlWhere.append("AND l.result = :examResult ");
+			parameters.put("examResult", examResult);
 		}
 
 		if (examPeriodFrom != null && !examPeriodFrom.isEmpty()) {
-			sqlWhere.append("AND l.labDate >= ? ");
-			parameters.add(parseDate(examPeriodFrom));
+			sqlWhere.append("AND l.labDate >= :examPeriodFrom ");
+			parameters.put("examPeriodFrom", parseDate(examPeriodFrom));
 		}
 		if (examPeriodTo != null && !examPeriodTo.isEmpty()) {
-			sqlWhere.append("AND l.labDate <= ? ");
-			parameters.add(parseDate(examPeriodTo));
+			sqlWhere.append("AND l.labDate <= :examPeriodTo ");
+			parameters.put("examPeriodTo", parseDate(examPeriodTo));
 		}
 
 		if (vaccine != null && !vaccine.isEmpty()) {
 			sql.append("INNER JOIN PatientVaccine pv ON pv.patient = p ");
 			sql.append("INNER JOIN Vaccine v ON pv.vaccine = v ");
-			sqlWhere.append("AND v.description = ? ");
-			parameters.add(vaccine);
+			sqlWhere.append("AND v.description = :vaccine ");
+			parameters.put("vaccine", vaccine);
 
 			if (vaccinePeriodFrom != null && !vaccinePeriodFrom.isEmpty()) {
-				sqlWhere.append("AND pv.date >= ? ");
-				parameters.add(parseDate(vaccinePeriodFrom));
+				sqlWhere.append("AND pv.date >= :vaccinePeriodFrom ");
+				parameters.put("vaccinePeriodFrom", parseDate(vaccinePeriodFrom));
 			}
 			if (vaccinePeriodTo != null && !vaccinePeriodTo.isEmpty()) {
-				sqlWhere.append("AND pv.date <= ? ");
-				parameters.add(parseDate(vaccinePeriodTo));
+				sqlWhere.append("AND pv.date <= :vaccinePeriodTo ");
+				parameters.put("vaccinePeriodTo", parseDate(vaccinePeriodTo));
 			}
 		}
 
@@ -624,20 +626,20 @@ public class StatsIoOperations {
 			sql.append("LEFT JOIN Opd o ON o.patient = p ");
 			sql.append("INNER JOIN OperationRow orow ON (orow.admission = a OR orow.opd = o) ");
 			sql.append("INNER JOIN Operation op ON orow.operation = op ");
-			sqlWhere.append("AND op.description = ? ");
-			parameters.add(operation);
+			sqlWhere.append("AND op.description = :operation ");
+			parameters.put("operation", operation);
 
 			if (operationResult != null && !operationResult.isEmpty()) {
-				sqlWhere.append("AND orow.result = ? ");
-				parameters.add(operationResult);
+				sqlWhere.append("AND orow.result = :operationResult ");
+				parameters.put("operationResult", operationResult);
 			}
 			if (operationPeriodFrom != null && !operationPeriodFrom.isEmpty()) {
-				sqlWhere.append("AND orow.operationDate >= ? ");
-				parameters.add(parseDate(operationPeriodFrom));
+				sqlWhere.append("AND orow.operationDate >= :operationPeriodFrom ");
+				parameters.put("operationPeriodFrom", parseDate(operationPeriodFrom));
 			}
 			if (operationPeriodTo != null && !operationPeriodTo.isEmpty()) {
-				sqlWhere.append("AND orow.operationDate <= ? ");
-				parameters.add(parseDate(operationPeriodTo));
+				sqlWhere.append("AND orow.operationDate <= :operationPeriodTo ");
+				parameters.put("operationPeriodTo", parseDate(operationPeriodTo));
 			}
 		}
 
@@ -647,8 +649,8 @@ public class StatsIoOperations {
 				hasAdmissionFilter = true;
 			}
 			sql.append("INNER JOIN Disease d ON (a.diseaseOut1 = d OR a.diseaseOut2 = d OR a.diseaseOut3 = d) ");
-			sqlWhere.append("AND d.description = ? ");
-			parameters.add(disease);
+			sqlWhere.append("AND d.description = :disease ");
+			parameters.put("disease", disease);
 		}
 
 		if (dischargeType != null && !dischargeType.isEmpty()) {
@@ -656,9 +658,9 @@ public class StatsIoOperations {
 				sql.append("LEFT JOIN Admission a ON a.patient = p ");
 				hasAdmissionFilter = true;
 			}
-			sql.append("INNER JOIN DischargeType dt ON a.dischargeType = dt ");
-			sqlWhere.append("AND dt.description = ? ");
-			parameters.add(dischargeType);
+			sql.append("INNER JOIN DischargeType dt ON a.disType = dt ");
+			sqlWhere.append("AND dt.description = :dischargeType ");
+			parameters.put("dischargeType", dischargeType);
 		}
 
 		sql.append(sqlWhere);
@@ -666,8 +668,8 @@ public class StatsIoOperations {
 
 		Pageable pageable = PageRequest.of(startIndex / limit, limit);
 		Query query = entityManager.createQuery(sql.toString());
-		for (int i = 0; i < parameters.size(); i++) {
-			query.setParameter(i + 1, parameters.get(i));
+		for (Map.Entry<String, Object> entry : parameters.entrySet()) {
+			query.setParameter(entry.getKey(), entry.getValue());
 		}
 		query.setFirstResult((int) pageable.getOffset());
 		query.setMaxResults(pageable.getPageSize());
@@ -688,8 +690,8 @@ public class StatsIoOperations {
 		String countSql = "SELECT COUNT(DISTINCT e.id) " + sql.substring(sql.indexOf("FROM"));
 		countSql = countSql.replace("GROUP BY e.id ", "");
 		Query countQuery = entityManager.createQuery(countSql);
-		for (int i = 0; i < parameters.size(); i++) {
-			countQuery.setParameter(i + 1, parameters.get(i));
+		for (Map.Entry<String, Object> entry : parameters.entrySet()) {
+			countQuery.setParameter(entry.getKey(), entry.getValue());
 		}
 		long total = (long) countQuery.getSingleResult();
 
@@ -726,7 +728,7 @@ public class StatsIoOperations {
 		String disease, String dischargeType) throws OHServiceException {
 
 		Page<ExamStat> page = getExamsStats(0, 1, ageFrom, ageTo, periodFrom, periodTo, ward,
-			examResult,examPeriodFrom, examPeriodTo, vaccine, vaccinePeriodFrom, vaccinePeriodTo,
+			examResult, examPeriodFrom, examPeriodTo, vaccine, vaccinePeriodFrom, vaccinePeriodTo,
 			operation, operationResult, operationPeriodFrom, operationPeriodTo, disease, dischargeType
 		);
 		return page.getTotalElements();
@@ -774,65 +776,65 @@ public class StatsIoOperations {
 
 		StringBuilder sqlWhere = new StringBuilder();
 		sqlWhere.append("WHERE (p.deleted = 'N' OR p.deleted IS NULL) ");
-		List<Object> parameters = new ArrayList<>();
+		Map<String, Object> parameters = new HashMap<>();
 
 		if (ageFrom > 0) {
-			sqlWhere.append("AND p.age >= ? ");
-			parameters.add(ageFrom);
+			sqlWhere.append("AND p.age >= :ageFrom ");
+			parameters.put("ageFrom", ageFrom);
 		}
 		if (ageTo > 0) {
-			sqlWhere.append("AND p.age <= ? ");
-			parameters.add(ageTo);
+			sqlWhere.append("AND p.age <= :ageTo ");
+			parameters.put("ageTo", ageTo);
 		}
 
 		if (periodFrom != null && !periodFrom.isEmpty()) {
-			sqlWhere.append("AND a.dischargeDate >= ? ");
-			parameters.add(parseDate(periodFrom));
+			sqlWhere.append("AND a.disDate >= :periodFrom ");
+			parameters.put("periodFrom", parseDate(periodFrom));
 		}
 		if (periodTo != null && !periodTo.isEmpty()) {
-			sqlWhere.append("AND a.dischargeDate <= ? ");
-			parameters.add(parseDate(periodTo));
+			sqlWhere.append("AND a.disDate <= :periodTo ");
+			parameters.put("periodTo", parseDate(periodTo));
 		}
 
 		if (ward != null && !ward.isEmpty()) {
 			sql.append("LEFT JOIN Ward w ON a.ward = w ");
-			sqlWhere.append("AND w.description = ? ");
-			parameters.add(ward);
+			sqlWhere.append("AND w.description = :ward ");
+			parameters.put("ward", ward);
 		}
 
 		if (exam != null && !exam.isEmpty()) {
 			sql.append("INNER JOIN Laboratory l ON l.patient = p ");
 			sql.append("INNER JOIN Exam e ON l.exam = e ");
-			sqlWhere.append("AND e.description = ? ");
-			parameters.add(exam);
+			sqlWhere.append("AND e.description = :exam ");
+			parameters.put("exam", exam);
 
 			if (examResult != null && !examResult.isEmpty()) {
-				sqlWhere.append("AND l.result = ? ");
-				parameters.add(examResult);
+				sqlWhere.append("AND l.result = :examResult ");
+				parameters.put("examResult", examResult);
 			}
 			if (examPeriodFrom != null && !examPeriodFrom.isEmpty()) {
-				sqlWhere.append("AND l.labDate >= ? ");
-				parameters.add(parseDate(examPeriodFrom));
+				sqlWhere.append("AND l.labDate >= :examPeriodFrom ");
+				parameters.put("examPeriodFrom", parseDate(examPeriodFrom));
 			}
 			if (examPeriodTo != null && !examPeriodTo.isEmpty()) {
-				sqlWhere.append("AND l.labDate <= ? ");
-				parameters.add(parseDate(examPeriodTo));
+				sqlWhere.append("AND l.labDate <= :examPeriodTo ");
+				parameters.put("examPeriodTo", parseDate(examPeriodTo));
 			}
 		}
 
 		if (vaccine != null && !vaccine.isEmpty()) {
 			sql.append("INNER JOIN PatientVaccine pv ON pv.patient = p ");
 			sql.append("INNER JOIN Vaccine v ON pv.vaccine = v ");
-			sqlWhere.append("AND v.description = ? ");
-			parameters.add(vaccine);
+			sqlWhere.append("AND v.description = :vaccine ");
+			parameters.put("vaccine", vaccine);
 
 			if (vaccinePeriodFrom != null && !vaccinePeriodFrom.isEmpty()) {
-				sqlWhere.append("AND pv.date >= ? ");
-				parameters.add(parseDate(vaccinePeriodFrom));
+				sqlWhere.append("AND pv.date >= :vaccinePeriodFrom ");
+				parameters.put("vaccinePeriodFrom", parseDate(vaccinePeriodFrom));
 			}
 			if (vaccinePeriodTo != null && !vaccinePeriodTo.isEmpty()) {
-				sqlWhere.append("AND pv.date <= ? ");
-				parameters.add(parseDate(vaccinePeriodTo));
+				sqlWhere.append("AND pv.date <= :vaccinePeriodTo ");
+				parameters.put("vaccinePeriodTo", parseDate(vaccinePeriodTo));
 			}
 		}
 
@@ -840,27 +842,27 @@ public class StatsIoOperations {
 			sql.append("LEFT JOIN Opd o ON o.patient = p ");
 			sql.append("INNER JOIN OperationRow orow ON (orow.admission = a OR orow.opd = o) ");
 			sql.append("INNER JOIN Operation op ON orow.operation = op ");
-			sqlWhere.append("AND op.description = ? ");
-			parameters.add(operation);
+			sqlWhere.append("AND op.description = :operation ");
+			parameters.put("operation", operation);
 
 			if (operationResult != null && !operationResult.isEmpty()) {
-				sqlWhere.append("AND orow.result = ? ");
-				parameters.add(operationResult);
+				sqlWhere.append("AND orow.result = :operationResult ");
+				parameters.put("operationResult", operationResult);
 			}
 			if (operationPeriodFrom != null && !operationPeriodFrom.isEmpty()) {
-				sqlWhere.append("AND orow.operationDate >= ? ");
-				parameters.add(parseDate(operationPeriodFrom));
+				sqlWhere.append("AND orow.operationDate >= :operationPeriodFrom ");
+				parameters.put("operationPeriodFrom", parseDate(operationPeriodFrom));
 			}
 			if (operationPeriodTo != null && !operationPeriodTo.isEmpty()) {
-				sqlWhere.append("AND orow.operationDate <= ? ");
-				parameters.add(parseDate(operationPeriodTo));
+				sqlWhere.append("AND orow.operationDate <= :operationPeriodTo ");
+				parameters.put("operationPeriodTo", parseDate(operationPeriodTo));
 			}
 		}
 
 		if (dischargeType != null && !dischargeType.isEmpty()) {
-			sql.append("INNER JOIN DischargeType dt ON a.dischargeType = dt ");
-			sqlWhere.append("AND dt.description = ? ");
-			parameters.add(dischargeType);
+			sql.append("INNER JOIN DischargeType dt ON a.disType = dt ");
+			sqlWhere.append("AND dt.description = :dischargeType ");
+			parameters.put("dischargeType", dischargeType);
 		}
 
 		sql.append(sqlWhere);
@@ -868,8 +870,8 @@ public class StatsIoOperations {
 
 		Pageable pageable = PageRequest.of(startIndex / limit, limit);
 		Query query = entityManager.createQuery(sql.toString());
-		for (int i = 0; i < parameters.size(); i++) {
-			query.setParameter(i + 1, parameters.get(i));
+		for (Map.Entry<String, Object> entry : parameters.entrySet()) {
+			query.setParameter(entry.getKey(), entry.getValue());
 		}
 		query.setFirstResult((int) pageable.getOffset());
 		query.setMaxResults(pageable.getPageSize());
@@ -890,8 +892,8 @@ public class StatsIoOperations {
 		String countSql = "SELECT COUNT(DISTINCT d.id) " + sql.substring(sql.indexOf("FROM"));
 		countSql = countSql.replace("GROUP BY d.id ", "");
 		Query countQuery = entityManager.createQuery(countSql);
-		for (int i = 0; i < parameters.size(); i++) {
-			countQuery.setParameter(i + 1, parameters.get(i));
+		for (Map.Entry<String, Object> entry : parameters.entrySet()) {
+			countQuery.setParameter(entry.getKey(), entry.getValue());
 		}
 		long total = (long) countQuery.getSingleResult();
 
@@ -929,7 +931,7 @@ public class StatsIoOperations {
 
 		Page<DiseaseStat> page = getDiseasesStats(0, 1, ageFrom, ageTo, periodFrom, periodTo,
 			ward, exam, examResult, examPeriodFrom, examPeriodTo, vaccine, vaccinePeriodFrom, vaccinePeriodTo,
-			operation, operationResult, operationPeriodFrom, operationPeriodTo, dischargeType );
+			operation, operationResult, operationPeriodFrom, operationPeriodTo, dischargeType);
 		return page.getTotalElements();
 	}
 
@@ -977,90 +979,91 @@ public class StatsIoOperations {
 
 		StringBuilder sqlWhere = new StringBuilder();
 		sqlWhere.append("WHERE (p.deleted = 'N' OR p.deleted IS NULL) ");
-		List<Object> parameters = new ArrayList<>();
+		Map<String, Object> parameters = new HashMap<>();
 
 		if (ageFrom > 0) {
-			sqlWhere.append("AND p.age >= ? ");
-			parameters.add(ageFrom);
+			sqlWhere.append("AND p.age >= :ageFrom ");
+			parameters.put("ageFrom", ageFrom);
 		}
 		if (ageTo > 0) {
-			sqlWhere.append("AND p.age <= ? ");
-			parameters.add(ageTo);
+			sqlWhere.append("AND p.age <= :ageTo ");
+			parameters.put("ageTo", ageTo);
 		}
 
 		if (periodFrom != null && !periodFrom.isEmpty()) {
-			sqlWhere.append("AND (a.dischargeDate >= ? OR o.date >= ?) ");
-			parameters.add(parseDate(periodFrom));
-			parameters.add(parseDate(periodFrom));
+			sqlWhere.append("AND (a.disDate >= :periodFrom OR o.date >= :periodFrom) ");
+			parameters.put("periodFrom", parseDate(periodFrom));
 		}
 		if (periodTo != null && !periodTo.isEmpty()) {
-			sqlWhere.append("AND (a.dischargeDate <= ? OR o.date <= ?) ");
-			parameters.add(parseDate(periodTo));
-			parameters.add(parseDate(periodTo));
+			sqlWhere.append("AND (a.disDate <= :periodTo OR o.date <= :periodTo) ");
+			parameters.put("periodTo", parseDate(periodTo));
 		}
 
 		if (ward != null && !ward.isEmpty()) {
 			sql.append("LEFT JOIN Ward w ON a.ward = w ");
-			sqlWhere.append("AND w.description = ? ");
-			parameters.add(ward);
+			sqlWhere.append("AND w.description = :ward ");
+			parameters.put("ward", ward);
 		}
 
 		if (exam != null && !exam.isEmpty()) {
 			sql.append("INNER JOIN Laboratory l ON l.patient = p ");
 			sql.append("INNER JOIN Exam e ON l.exam = e ");
-			sqlWhere.append("AND e.description = ? ");
-			parameters.add(exam);
+			sqlWhere.append("AND e.description = :exam ");
+			parameters.put("exam", exam);
 
 			if (examResult != null && !examResult.isEmpty()) {
-				sqlWhere.append("AND l.result = ? ");
-				parameters.add(examResult);
+				sqlWhere.append("AND l.result = :examResult ");
+				parameters.put("examResult", examResult);
 			}
 			if (examPeriodFrom != null && !examPeriodFrom.isEmpty()) {
-				sqlWhere.append("AND l.labDate >= ? ");
-				parameters.add(parseDate(examPeriodFrom));
+				sqlWhere.append("AND l.labDate >= :examPeriodFrom ");
+				parameters.put("examPeriodFrom", parseDate(examPeriodFrom));
 			}
 			if (examPeriodTo != null && !examPeriodTo.isEmpty()) {
-				sqlWhere.append("AND l.labDate <= ? ");
-				parameters.add(parseDate(examPeriodTo));
+				sqlWhere.append("AND l.labDate <= :examPeriodTo ");
+				parameters.put("examPeriodTo", parseDate(examPeriodTo));
 			}
 		}
 
 		if (vaccine != null && !vaccine.isEmpty()) {
 			sql.append("INNER JOIN PatientVaccine pv ON pv.patient = p ");
 			sql.append("INNER JOIN Vaccine v ON pv.vaccine = v ");
-			sqlWhere.append("AND v.description = ? ");
-			parameters.add(vaccine);
+			sqlWhere.append("AND v.description = :vaccine ");
+			parameters.put("vaccine", vaccine);
 
 			if (vaccinePeriodFrom != null && !vaccinePeriodFrom.isEmpty()) {
-				sqlWhere.append("AND pv.date >= ? ");
-				parameters.add(parseDate(vaccinePeriodFrom));
+				sqlWhere.append("AND pv.date >= :vaccinePeriodFrom ");
+				parameters.put("vaccinePeriodFrom", parseDate(vaccinePeriodFrom));
 			}
 			if (vaccinePeriodTo != null && !vaccinePeriodTo.isEmpty()) {
-				sqlWhere.append("AND pv.date <= ? ");
-				parameters.add(parseDate(vaccinePeriodTo));
+				sqlWhere.append("AND pv.date <= :vaccinePeriodTo ");
+				parameters.put("vaccinePeriodTo", parseDate(vaccinePeriodTo));
 			}
 		}
+
 		if (operationResult != null && !operationResult.isEmpty()) {
-			sqlWhere.append("AND orow.result = ? ");
-			parameters.add(operationResult);
+			sqlWhere.append("AND orow.result = :operationResult ");
+			parameters.put("operationResult", operationResult);
 		}
 		if (operationPeriodFrom != null && !operationPeriodFrom.isEmpty()) {
-			sqlWhere.append("AND orow.operationDate >= ? ");
-			parameters.add(parseDate(operationPeriodFrom));
+			sqlWhere.append("AND orow.operationDate >= :operationPeriodFrom ");
+			parameters.put("operationPeriodFrom", parseDate(operationPeriodFrom));
 		}
 		if (operationPeriodTo != null && !operationPeriodTo.isEmpty()) {
-			sqlWhere.append("AND orow.operationDate <= ? ");
-			parameters.add(parseDate(operationPeriodTo));
+			sqlWhere.append("AND orow.operationDate <= :operationPeriodTo ");
+			parameters.put("operationPeriodTo", parseDate(operationPeriodTo));
 		}
+
 		if (disease != null && !disease.isEmpty()) {
 			sql.append("INNER JOIN Disease d ON (a.diseaseOut1 = d OR a.diseaseOut2 = d OR a.diseaseOut3 = d) ");
-			sqlWhere.append("AND d.description = ? ");
-			parameters.add(disease);
+			sqlWhere.append("AND d.description = :disease ");
+			parameters.put("disease", disease);
 		}
+
 		if (dischargeType != null && !dischargeType.isEmpty()) {
-			sql.append("INNER JOIN DischargeType dt ON a.dischargeType = dt ");
-			sqlWhere.append("AND dt.description = ? ");
-			parameters.add(dischargeType);
+			sql.append("INNER JOIN DischargeType dt ON a.disType = dt ");
+			sqlWhere.append("AND dt.description = :dischargeType ");
+			parameters.put("dischargeType", dischargeType);
 		}
 
 		sql.append(sqlWhere);
@@ -1068,8 +1071,8 @@ public class StatsIoOperations {
 
 		Pageable pageable = PageRequest.of(startIndex / limit, limit);
 		Query query = entityManager.createQuery(sql.toString());
-		for (int i = 0; i < parameters.size(); i++) {
-			query.setParameter(i + 1, parameters.get(i));
+		for (Map.Entry<String, Object> entry : parameters.entrySet()) {
+			query.setParameter(entry.getKey(), entry.getValue());
 		}
 		query.setFirstResult((int) pageable.getOffset());
 		query.setMaxResults(pageable.getPageSize());
@@ -1090,8 +1093,8 @@ public class StatsIoOperations {
 		String countSql = "SELECT COUNT(DISTINCT op.id) " + sql.substring(sql.indexOf("FROM"));
 		countSql = countSql.replace("GROUP BY op.id ", "");
 		Query countQuery = entityManager.createQuery(countSql);
-		for (int i = 0; i < parameters.size(); i++) {
-			countQuery.setParameter(i + 1, parameters.get(i));
+		for (Map.Entry<String, Object> entry : parameters.entrySet()) {
+			countQuery.setParameter(entry.getKey(), entry.getValue());
 		}
 		long total = (long) countQuery.getSingleResult();
 
@@ -1129,7 +1132,7 @@ public class StatsIoOperations {
 
 		Page<OperationStat> page = getOperationsStats(0, 1, ageFrom, ageTo, periodFrom, periodTo,
 			ward, exam, examResult, examPeriodFrom, examPeriodTo, vaccine, vaccinePeriodFrom, vaccinePeriodTo,
-			operationResult, operationPeriodFrom, operationPeriodTo, disease, dischargeType );
+			operationResult, operationPeriodFrom, operationPeriodTo, disease, dischargeType);
 		return page.getTotalElements();
 	}
 
@@ -1162,54 +1165,54 @@ public class StatsIoOperations {
 
 		StringBuilder sqlWhere = new StringBuilder();
 		sqlWhere.append("WHERE (p.deleted = 'N' OR p.deleted IS NULL) ");
-		List<Object> parameters = new ArrayList<>();
+		Map<String, Object> parameters = new HashMap<>();
 
 		if (weightFrom > 0) {
-			sqlWhere.append("AND d.weight >= ? ");
-			parameters.add(weightFrom);
+			sqlWhere.append("AND d.weight >= :weightFrom ");
+			parameters.put("weightFrom", weightFrom);
 		}
 		if (weightTo > 0) {
-			sqlWhere.append("AND d.weight <= ? ");
-			parameters.add(weightTo);
+			sqlWhere.append("AND d.weight <= :weightTo ");
+			parameters.put("weightTo", weightTo);
 		}
 		if (periodFrom != null && !periodFrom.isEmpty()) {
-			sqlWhere.append("AND d.date >= ? ");
-			parameters.add(parseDate(periodFrom));
+			sqlWhere.append("AND d.date >= :periodFrom ");
+			parameters.put("periodFrom", parseDate(periodFrom));
 		}
 		if (periodTo != null && !periodTo.isEmpty()) {
-			sqlWhere.append("AND d.date <= ? ");
-			parameters.add(parseDate(periodTo));
+			sqlWhere.append("AND d.date <= :periodTo ");
+			parameters.put("periodTo", parseDate(periodTo));
 		}
 		if (sex != null && !sex.isEmpty()) {
-			sqlWhere.append("AND d.sex = ? ");
-			parameters.add(sex);
+			sqlWhere.append("AND d.sex = :sex ");
+			parameters.put("sex", sex);
 		}
 		if (deliveryType != null && !deliveryType.isEmpty()) {
 			sql.append("INNER JOIN DeliveryType dt ON d.deliveryType = dt ");
-			sqlWhere.append("AND dt.description = ? ");
-			parameters.add(deliveryType);
+			sqlWhere.append("AND dt.description = :deliveryType ");
+			parameters.put("deliveryType", deliveryType);
 		}
 		if (deliveryResultType != null && !deliveryResultType.isEmpty()) {
 			sql.append("INNER JOIN DeliveryResultType drt ON d.deliveryResult = drt ");
-			sqlWhere.append("AND drt.description = ? ");
-			parameters.add(deliveryResultType);
+			sqlWhere.append("AND drt.description = :deliveryResultType ");
+			parameters.put("deliveryResultType", deliveryResultType);
 		}
 		if (disease != null && !disease.isEmpty()) {
 			sql.append("INNER JOIN Disease dis ON (a.diseaseOut1 = dis OR a.diseaseOut2 = dis OR a.diseaseOut3 = dis) ");
-			sqlWhere.append("AND dis.description = ? ");
-			parameters.add(disease);
+			sqlWhere.append("AND dis.description = :disease ");
+			parameters.put("disease", disease);
 		}
 		if (dischargeType != null && !dischargeType.isEmpty()) {
-			sql.append("INNER JOIN DischargeType dist ON a.dischargeType = dist ");
-			sqlWhere.append("AND dist.description = ? ");
-			parameters.add(dischargeType);
+			sql.append("INNER JOIN DischargeType dist ON a.disType = dist ");
+			sqlWhere.append("AND dist.description = :dischargeType ");
+			parameters.put("dischargeType", dischargeType);
 		}
 		sql.append(sqlWhere);
 
 		Pageable pageable = PageRequest.of(startIndex / limit, limit);
 		Query query = entityManager.createQuery(sql.toString());
-		for (int i = 0; i < parameters.size(); i++) {
-			query.setParameter(i + 1, parameters.get(i));
+		for (Map.Entry<String, Object> entry : parameters.entrySet()) {
+			query.setParameter(entry.getKey(), entry.getValue());
 		}
 		query.setFirstResult((int) pageable.getOffset());
 		query.setMaxResults(pageable.getPageSize());
@@ -1228,8 +1231,8 @@ public class StatsIoOperations {
 
 		String countSql = "SELECT COUNT(d) " + sql.substring(sql.indexOf("FROM"));
 		Query countQuery = entityManager.createQuery(countSql);
-		for (int i = 0; i < parameters.size(); i++) {
-			countQuery.setParameter(i + 1, parameters.get(i));
+		for (Map.Entry<String, Object> entry : parameters.entrySet()) {
+			countQuery.setParameter(entry.getKey(), entry.getValue());
 		}
 		long total = (long) countQuery.getSingleResult();
 
@@ -1256,7 +1259,7 @@ public class StatsIoOperations {
 		String deliveryType, String deliveryResultType, String disease, String dischargeType) throws OHServiceException {
 
 		Page<StatsDelivery> page = getDeliveriesStats(0, 1, weightFrom, weightTo,
-			periodFrom, periodTo, sex, deliveryType, deliveryResultType, disease, dischargeType );
+			periodFrom, periodTo, sex, deliveryType, deliveryResultType, disease, dischargeType);
 		return page.getTotalElements();
 	}
 
@@ -1303,79 +1306,78 @@ public class StatsIoOperations {
 
 		StringBuilder sqlWhere = new StringBuilder();
 		sqlWhere.append("WHERE (p.deleted = 'N' OR p.deleted IS NULL) ");
-		List<Object> parameters = new ArrayList<>();
+		Map<String, Object> parameters = new HashMap<>();
 
 		if (ageFrom > 0) {
-			sqlWhere.append("AND p.age >= ? ");
-			parameters.add(ageFrom);
+			sqlWhere.append("AND p.age >= :ageFrom ");
+			parameters.put("ageFrom", ageFrom);
 		}
 		if (ageTo > 0) {
-			sqlWhere.append("AND p.age <= ? ");
-			parameters.add(ageTo);
+			sqlWhere.append("AND p.age <= :ageTo ");
+			parameters.put("ageTo", ageTo);
 		}
 
 		if (periodFrom != null && !periodFrom.isEmpty()) {
-			sqlWhere.append("AND pv.visitDate >= ? ");
-			parameters.add(parseDate(periodFrom));
+			sqlWhere.append("AND pv.visitDate >= :periodFrom ");
+			parameters.put("periodFrom", parseDate(periodFrom));
 		}
 		if (periodTo != null && !periodTo.isEmpty()) {
-			sqlWhere.append("AND pv.visitDate <= ? ");
-			parameters.add(parseDate(periodTo));
+			sqlWhere.append("AND pv.visitDate <= :periodTo ");
+			parameters.put("periodTo", parseDate(periodTo));
 		}
 
 		if (exam != null && !exam.isEmpty()) {
 			sql.append("INNER JOIN Laboratory l ON l.patient = p ");
 			sql.append("INNER JOIN Exam e ON l.exam = e ");
-			sqlWhere.append("AND e.description = ? ");
-			parameters.add(exam);
+			sqlWhere.append("AND e.description = :exam ");
+			parameters.put("exam", exam);
 
 			if (examResult != null && !examResult.isEmpty()) {
-				sqlWhere.append("AND l.result = ? ");
-				parameters.add(examResult);
+				sqlWhere.append("AND l.result = :examResult ");
+				parameters.put("examResult", examResult);
 			}
 			if (examPeriodFrom != null && !examPeriodFrom.isEmpty()) {
-				sqlWhere.append("AND l.labDate >= ? ");
-				parameters.add(parseDate(examPeriodFrom));
+				sqlWhere.append("AND l.labDate >= :examPeriodFrom ");
+				parameters.put("examPeriodFrom", parseDate(examPeriodFrom));
 			}
 			if (examPeriodTo != null && !examPeriodTo.isEmpty()) {
-				sqlWhere.append("AND l.labDate <= ? ");
-				parameters.add(parseDate(examPeriodTo));
+				sqlWhere.append("AND l.labDate <= :examPeriodTo ");
+				parameters.put("examPeriodTo", parseDate(examPeriodTo));
 			}
 		}
 
 		if (vaccine != null && !vaccine.isEmpty()) {
 			sql.append("INNER JOIN PatientVaccine pv2 ON pv2.patient = p ");
 			sql.append("INNER JOIN Vaccine v ON pv2.vaccine = v ");
-			sqlWhere.append("AND v.description = ? ");
-			parameters.add(vaccine);
+			sqlWhere.append("AND v.description = :vaccine ");
+			parameters.put("vaccine", vaccine);
 
 			if (vaccinePeriodFrom != null && !vaccinePeriodFrom.isEmpty()) {
-				sqlWhere.append("AND pv2.date >= ? ");
-				parameters.add(parseDate(vaccinePeriodFrom));
+				sqlWhere.append("AND pv2.date >= :vaccinePeriodFrom ");
+				parameters.put("vaccinePeriodFrom", parseDate(vaccinePeriodFrom));
 			}
 			if (vaccinePeriodTo != null && !vaccinePeriodTo.isEmpty()) {
-				sqlWhere.append("AND pv2.date <= ? ");
-				parameters.add(parseDate(vaccinePeriodTo));
+				sqlWhere.append("AND pv2.date <= :vaccinePeriodTo ");
+				parameters.put("vaccinePeriodTo", parseDate(vaccinePeriodTo));
 			}
 		}
 
 		if (disease != null && !disease.isEmpty()) {
 			sql.append("LEFT JOIN Admission a ON a.patient = p ");
 			sql.append("INNER JOIN Disease d ON (a.diseaseOut1 = d OR a.diseaseOut2 = d OR a.diseaseOut3 = d) ");
-			sqlWhere.append("AND d.description = ? ");
-			parameters.add(disease);
+			sqlWhere.append("AND d.description = :disease ");
+			parameters.put("disease", disease);
 		}
 
 		if (dischargeType != null && !dischargeType.isEmpty()) {
 			if (!sql.toString().contains("LEFT JOIN Admission")) {
 				sql.append("LEFT JOIN Admission a ON a.patient = p ");
 			}
-			sql.append("INNER JOIN DischargeType dt ON a.dischargeType = dt ");
-			sqlWhere.append("AND dt.description = ? ");
-			parameters.add(dischargeType);
+			sql.append("INNER JOIN DischargeType dt ON a.disType = dt ");
+			sqlWhere.append("AND dt.description = :dischargeType ");
+			parameters.put("dischargeType", dischargeType);
 		}
 
-		// Paramètres patient (spécifique aux grossesses)
 		if (parameterHeight || parameterWeight || parameterArtPress ||
 			parameterCardFreq || parameterTemp || parameterSaturation ||
 			parameterRespRate) {
@@ -1409,8 +1411,8 @@ public class StatsIoOperations {
 
 		Pageable pageable = PageRequest.of(startIndex / limit, limit);
 		Query query = entityManager.createQuery(sql.toString());
-		for (int i = 0; i < parameters.size(); i++) {
-			query.setParameter(i + 1, parameters.get(i));
+		for (Map.Entry<String, Object> entry : parameters.entrySet()) {
+			query.setParameter(entry.getKey(), entry.getValue());
 		}
 		query.setFirstResult((int) pageable.getOffset());
 		query.setMaxResults(pageable.getPageSize());
@@ -1420,8 +1422,8 @@ public class StatsIoOperations {
 
 		String countSql = "SELECT COUNT(DISTINCT p) " + sql.substring(sql.indexOf("FROM"));
 		Query countQuery = entityManager.createQuery(countSql);
-		for (int i = 0; i < parameters.size(); i++) {
-			countQuery.setParameter(i + 1, parameters.get(i));
+		for (Map.Entry<String, Object> entry : parameters.entrySet()) {
+			countQuery.setParameter(entry.getKey(), entry.getValue());
 		}
 		long total = (long) countQuery.getSingleResult();
 
