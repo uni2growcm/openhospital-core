@@ -71,6 +71,14 @@ public class StatsIoOperationRepositoryImpl implements StatsIoOperationRepositor
 		boolean parameterTemp,
 		boolean parameterSaturation,
 		boolean parameterRespRate,
+		Double heightMin, Double heightMax,
+		Double weightMin, Double weightMax,
+		Double systolicMin, Double systolicMax,
+		Double diastolicMin, Double diastolicMax,
+		Double cardiacMin, Double cardiacMax,
+		Double tempMin, Double tempMax,
+		Double satMin, Double satMax,
+		Double respMin, Double respMax,
 		String riskLevel,
 		String status,
 		Integer gravidityMin,
@@ -317,26 +325,34 @@ public class StatsIoOperationRepositoryImpl implements StatsIoOperationRepositor
 		if (anyParameter) {
 			fromBuilder.append(" INNER JOIN oh_patientexamination _patexam ON _patexam.PEX_PAT_ID = _patient.PAT_ID");
 		}
+
 		if (parameterHeight) {
-			conditions.append(" AND _patexam.PEX_HEIGHT > 0");
+			addRangeCondition(conditions, parameters, "_patexam.PEX_HEIGHT", heightMin, heightMax);
 		}
+
 		if (parameterWeight) {
-			conditions.append(" AND _patexam.PEX_WEIGHT > 0");
+			addRangeCondition(conditions, parameters, "_patexam.PEX_WEIGHT", weightMin, weightMax);
 		}
-		if (parameterArtPress) {
-			conditions.append(" AND _patexam.PEX_AP_MIN > 0");
-		}
+
 		if (parameterCardFreq) {
-			conditions.append(" AND _patexam.PEX_HR > 0");
+			addRangeCondition(conditions, parameters, "_patexam.PEX_HR", cardiacMin, cardiacMax);
 		}
+
 		if (parameterTemp) {
-			conditions.append(" AND _patexam.PEX_TEMP > 0");
+			addRangeCondition(conditions, parameters, "_patexam.PEX_TEMP", tempMin, tempMax);
 		}
+
 		if (parameterSaturation) {
-			conditions.append(" AND _patexam.PEX_SAT > 0");
+			addRangeCondition(conditions, parameters, "_patexam.PEX_SAT", satMin, satMax);
 		}
+
 		if (parameterRespRate) {
-			conditions.append(" AND _patexam.PEX_RR > 0");
+			addRangeCondition(conditions, parameters, "_patexam.PEX_RR", respMin, respMax);
+		}
+
+		if (parameterArtPress) {
+			addRangeCondition(conditions, parameters, "_patexam.PEX_AP_MIN", systolicMin, systolicMax);
+			addRangeCondition(conditions, parameters, "_patexam.PEX_AP_MAX", diastolicMin, diastolicMax);
 		}
 
 		String from = fromBuilder.toString();
@@ -373,6 +389,18 @@ public class StatsIoOperationRepositoryImpl implements StatsIoOperationRepositor
 	private void bindParameters(Query query, List<Object> parameters) {
 		for (int i = 0; i < parameters.size(); i++) {
 			query.setParameter(i + 1, parameters.get(i));
+		}
+	}
+
+	private void addRangeCondition(StringBuilder conditions, List<Object> parameters,
+	                               String columnName, Double min, Double max) {
+		if (min != null) {
+			conditions.append(" AND ").append(columnName).append(" >= ?");
+			parameters.add(min);
+		}
+		if (max != null) {
+			conditions.append(" AND ").append(columnName).append(" <= ?");
+			parameters.add(max);
 		}
 	}
 }
