@@ -49,12 +49,14 @@ public class TestHomeVisit {
 			setParameters(homeVisit, patient);
 		} else {
 			homeVisit = new HomeVisit(patient, visitStartDate);
+			homeVisit.setStatus(status);
 			homeVisit.setPurpose(purpose);
 			homeVisit.setClinicalNotes(clinicalNotes);
 			homeVisit.setObservations(observations);
 			homeVisit.setAddress(address);
 			homeVisit.setContactPhone(contactPhone);
 			homeVisit.setNextVisitDate(nextVisitDate);
+			homeVisit.setActive(1);
 		}
 		return homeVisit;
 	}

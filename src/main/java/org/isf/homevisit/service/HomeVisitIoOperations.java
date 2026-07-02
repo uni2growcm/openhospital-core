@@ -118,22 +118,6 @@ public class HomeVisitIoOperations {
 	}
 
 	/**
-	 * Completes a home visit (sets end date and status to COMPLETED)
-	 * @param id home visit id
-	 * @param endDate end date and time
-	 * @throws OHServiceException
-	 */
-	public void completeVisit(int id, LocalDateTime endDate) throws OHServiceException {
-		Optional<HomeVisit> optional = repository.findById(id);
-		if (optional.isPresent() && optional.get().getActive() == 1) {
-			HomeVisit visit = optional.get();
-			visit.setVisitEndDate(endDate);
-			visit.setStatus(HomeVisitStatus.COMPLETED);
-			repository.save(visit);
-		}
-	}
-
-	/**
 	 * Soft deletes a home visit (sets active = 0)
 	 * @param id home visit id to delete
 	 * @throws OHServiceException
@@ -154,5 +138,15 @@ public class HomeVisitIoOperations {
 		String searchText,
 		Pageable pageable) throws OHServiceException {
 		return repository.findWithFilters(code, status, dateFrom, dateTo, sex, ageFrom, ageTo, searchText, pageable);
+	}
+
+	public HomeVisitStatus getCurrentStatus(int id) {
+		String statusStr = repository.findStatusStringById(id);
+		if (statusStr == null) return null;
+		try {
+			return HomeVisitStatus.valueOf(statusStr);
+		} catch (IllegalArgumentException e) {
+			return null;
+		}
 	}
 }

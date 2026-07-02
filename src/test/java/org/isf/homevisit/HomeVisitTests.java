@@ -23,8 +23,10 @@ package org.isf.homevisit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.BDDAssertions.within;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -38,6 +40,7 @@ import org.isf.homevisit.service.HomeVisitIoOperationRepository;
 import org.isf.homevisit.service.HomeVisitIoOperations;
 import org.isf.patient.model.Patient;
 import org.isf.patient.service.PatientIoOperationRepository;
+import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -126,7 +129,8 @@ class HomeVisitTests extends OHCoreTestCase {
 		HomeVisit foundHomeVisit = homeVisitIoOperationRepository.findById(id).orElse(null);
 		assertThat(foundHomeVisit).isNotNull();
 
-		Page<HomeVisit> result = homeVisitIoOperations.getAllActive(org.springframework.data.domain.PageRequest.of(0, 10));
+		Page<HomeVisit> result = homeVisitIoOperations.getAllActive(
+			org.springframework.data.domain.PageRequest.of(0, 10));
 
 		assertThat(result.getContent()).hasSize(1);
 		assertThat(result.getContent().get(0).getPurpose()).isEqualTo(foundHomeVisit.getPurpose());
@@ -156,7 +160,9 @@ class HomeVisitTests extends OHCoreTestCase {
 	void testIoGetByStatus() throws Exception {
 		setupTestHomeVisit(false);
 
-		Page<HomeVisit> result = homeVisitIoOperations.getByStatus(HomeVisitStatus.PLANNED, org.springframework.data.domain.PageRequest.of(0, 10));
+		Page<HomeVisit> result = homeVisitIoOperations.getByStatus(
+			HomeVisitStatus.PLANNED,
+			org.springframework.data.domain.PageRequest.of(0, 10));
 
 		assertThat(result.getContent()).hasSize(1);
 		assertThat(result.getContent().get(0).getStatus()).isEqualTo(HomeVisitStatus.PLANNED);
@@ -169,7 +175,9 @@ class HomeVisitTests extends OHCoreTestCase {
 		LocalDateTime startDate = LocalDateTime.of(2026, 12, 1, 0, 0, 0);
 		LocalDateTime endDate = LocalDateTime.of(2026, 12, 31, 23, 59, 59);
 
-		Page<HomeVisit> result = homeVisitIoOperations.getByDateRange(startDate, endDate, org.springframework.data.domain.PageRequest.of(0, 10));
+		Page<HomeVisit> result = homeVisitIoOperations.getByDateRange(
+			startDate, endDate,
+			org.springframework.data.domain.PageRequest.of(0, 10));
 
 		assertThat(result.getContent()).hasSize(1);
 	}
@@ -193,34 +201,6 @@ class HomeVisitTests extends OHCoreTestCase {
 		HomeVisit updated = homeVisitIoOperations.save(foundHomeVisit);
 
 		assertThat(updated.getPurpose()).isEqualTo("Updated purpose");
-	}
-
-	@Test
-	void testIoUpdateStatus() throws Exception {
-		int id = setupTestHomeVisit(false);
-
-		homeVisitIoOperations.updateStatus(id, HomeVisitStatus.COMPLETED);
-		entityManager.flush();
-		entityManager.clear();
-
-		java.util.Optional<HomeVisit> updated = homeVisitIoOperations.getById(id);
-		assertThat(updated).isPresent();
-		assertThat(updated.get().getStatus()).isEqualTo(HomeVisitStatus.COMPLETED);
-	}
-
-	@Test
-	void testIoCompleteVisit() throws Exception {
-		int id = setupTestHomeVisit(false);
-
-		LocalDateTime endDate = LocalDateTime.now();
-		homeVisitIoOperations.completeVisit(id, endDate);
-		entityManager.flush();
-		entityManager.clear();
-
-		java.util.Optional<HomeVisit> updated = homeVisitIoOperations.getById(id);
-		assertThat(updated).isPresent();
-		assertThat(updated.get().getStatus()).isEqualTo(HomeVisitStatus.COMPLETED);
-		assertThat(updated.get().getVisitEndDate()).isNotNull();
 	}
 
 	@Test
@@ -263,7 +243,7 @@ class HomeVisitTests extends OHCoreTestCase {
 	}
 
 	@Test
-	void testMgrGetHomeVisit_shouldThrowWhenNotFound() throws Exception {
+	void testMgrGetHomeVisit_shouldThrowWhenNotFound() {
 		assertThatThrownBy(() -> homeVisitBrowserManager.getHomeVisit(9999))
 			.isInstanceOf(EntityNotFoundException.class)
 			.hasMessageContaining("angal.homevisit.notfound.msg");
@@ -283,7 +263,8 @@ class HomeVisitTests extends OHCoreTestCase {
 	void testMgrGetHomeVisitsByStatus() throws Exception {
 		setupTestHomeVisit(false);
 
-		Page<HomeVisit> result = homeVisitBrowserManager.getHomeVisitsByStatus(HomeVisitStatus.PLANNED, 0, 10);
+		Page<HomeVisit> result = homeVisitBrowserManager.getHomeVisitsByStatus(
+			HomeVisitStatus.PLANNED, 0, 10);
 
 		assertThat(result.getContent()).hasSize(1);
 		assertThat(result.getContent().get(0).getStatus()).isEqualTo(HomeVisitStatus.PLANNED);
@@ -300,69 +281,168 @@ class HomeVisitTests extends OHCoreTestCase {
 	}
 
 	@Test
-	void testMgrUpdateHomeVisit() throws Exception {
+	void testMgrUpdateHomeVisit_shouldUpdatePurpose() throws Exception {
 		int id = setupTestHomeVisit(false);
-		HomeVisit foundHomeVisit = homeVisitIoOperationRepository.findById(id).orElse(null);
-		assertThat(foundHomeVisit).isNotNull();
+		HomeVisit visit = homeVisitBrowserManager.getHomeVisit(id);
 
-		foundHomeVisit.setPurpose("Updated purpose");
-		HomeVisit updated = homeVisitBrowserManager.saveHomeVisit(foundHomeVisit);
+		visit.setPurpose("Updated purpose");
+		HomeVisit updated = homeVisitBrowserManager.saveHomeVisit(visit);
 
 		assertThat(updated.getPurpose()).isEqualTo("Updated purpose");
 	}
 
 	@Test
-	void testMgrUpdateHomeVisitStatus() throws Exception {
+	void testMgrUpdateHomeVisit_completeFromPlanned() throws Exception {
 		int id = setupTestHomeVisit(false);
+		HomeVisit visit = homeVisitBrowserManager.getHomeVisit(id);
 
-		homeVisitBrowserManager.updateHomeVisitStatus(id, HomeVisitStatus.COMPLETED);
+		entityManager.detach(visit);
+		visit.setVisitStartDate(LocalDateTime.now().minusHours(1));
+		homeVisitBrowserManager.saveHomeVisit(visit);
 		entityManager.flush();
 		entityManager.clear();
 
-		HomeVisit updated = homeVisitBrowserManager.getHomeVisit(id);
-		assertThat(updated.getStatus()).isEqualTo(HomeVisitStatus.COMPLETED);
+		HomeVisit toComplete = homeVisitBrowserManager.getHomeVisit(id);
+		entityManager.detach(toComplete);
+		toComplete.setStatus(HomeVisitStatus.COMPLETED);
+		homeVisitBrowserManager.updateHomeVisit(toComplete);
+
+		HomeVisit reloaded = homeVisitBrowserManager.getHomeVisit(id);
+		assertThat(reloaded.getStatus()).isEqualTo(HomeVisitStatus.COMPLETED);
+		assertThat(reloaded.getVisitEndDate()).isNotNull();
 	}
 
 	@Test
-	void testMgrCompleteHomeVisit() throws Exception {
+	void testMgrUpdateHomeVisit_completeFromPostponed() throws Exception {
 		int id = setupTestHomeVisit(false);
+		HomeVisit visit = homeVisitBrowserManager.getHomeVisit(id);
 
-		homeVisitBrowserManager.completeHomeVisit(id);
+		entityManager.detach(visit);
+		visit.setStatus(HomeVisitStatus.POSTPONED);
+		visit.setVisitStartDate(LocalDateTime.now().plusDays(1));
+		homeVisitBrowserManager.updateHomeVisit(visit);
 		entityManager.flush();
 		entityManager.clear();
 
-		HomeVisit updated = homeVisitBrowserManager.getHomeVisit(id);
-		assertThat(updated.getStatus()).isEqualTo(HomeVisitStatus.COMPLETED);
-		assertThat(updated.getVisitEndDate()).isNotNull();
+		HomeVisit postponed = homeVisitBrowserManager.getHomeVisit(id);
+		entityManager.detach(postponed);
+		postponed.setStatus(HomeVisitStatus.COMPLETED);
+		postponed.setVisitStartDate(LocalDateTime.now().minusHours(1));
+		homeVisitBrowserManager.updateHomeVisit(postponed);
+
+		HomeVisit reloaded = homeVisitBrowserManager.getHomeVisit(id);
+		assertThat(reloaded.getStatus()).isEqualTo(HomeVisitStatus.COMPLETED);
+		assertThat(reloaded.getVisitEndDate()).isNotNull();
 	}
 
 	@Test
-	void testMgrCancelHomeVisitWithReason() throws Exception {
+	void testMgrUpdateHomeVisit_cancelWithReason() throws Exception {
 		int id = setupTestHomeVisit(false);
-		String cancellationReason = "Patient indisponible";
 
-		homeVisitBrowserManager.cancelHomeVisit(id, cancellationReason);
+		HomeVisit visit = homeVisitBrowserManager.getHomeVisit(id);
+		entityManager.detach(visit);
+
+		visit.setStatus(HomeVisitStatus.CANCELLED);
+		visit.setCancellationReason("Patient indisponible");
+		homeVisitBrowserManager.updateHomeVisit(visit);
+
 		entityManager.flush();
 		entityManager.clear();
 
-		HomeVisit updated = homeVisitBrowserManager.getHomeVisit(id);
-		assertThat(updated.getStatus()).isEqualTo(HomeVisitStatus.CANCELLED);
-		assertThat(updated.getCancellationReason()).isEqualTo(cancellationReason);
+		HomeVisit reloaded = homeVisitBrowserManager.getHomeVisit(id);
+		assertThat(reloaded.getStatus()).isEqualTo(HomeVisitStatus.CANCELLED);
+		assertThat(reloaded.getCancellationReason()).isEqualTo("Patient indisponible");
 	}
 
 	@Test
-	void testMgrPostponeHomeVisit() throws Exception {
+	void testMgrUpdateHomeVisit_cancelWithoutReason_shouldThrow() throws Exception {
 		int id = setupTestHomeVisit(false);
-		LocalDateTime newDate = LocalDateTime.of(2026, 12, 20, 14, 0, 0);
+		HomeVisit visit = homeVisitBrowserManager.getHomeVisit(id);
 
-		homeVisitBrowserManager.postponeHomeVisit(id, newDate);
+		visit.setStatus(HomeVisitStatus.CANCELLED);
+		assertThatThrownBy(() -> homeVisitBrowserManager.updateHomeVisit(visit))
+			.isInstanceOf(OHDataValidationException.class);
+	}
+
+	@Test
+	void testMgrUpdateHomeVisit_reactivateFromCancelled() throws Exception {
+		int id = setupTestHomeVisit(false);
+		HomeVisit visit = homeVisitBrowserManager.getHomeVisit(id);
+
+		entityManager.detach(visit);
+		visit.setStatus(HomeVisitStatus.CANCELLED);
+		visit.setCancellationReason("Test annulation");
+		homeVisitBrowserManager.updateHomeVisit(visit);
 		entityManager.flush();
 		entityManager.clear();
 
-		HomeVisit updated = homeVisitBrowserManager.getHomeVisit(id);
-		assertThat(updated.getStatus()).isEqualTo(HomeVisitStatus.POSTPONED);
-		assertThat(updated.getVisitStartDate()).isEqualTo(newDate);
-		assertThat(updated.getNextVisitDate()).isNull();
+		HomeVisit cancelled = homeVisitBrowserManager.getHomeVisit(id);
+		entityManager.detach(cancelled);
+		cancelled.setStatus(HomeVisitStatus.PLANNED);
+		homeVisitBrowserManager.updateHomeVisit(cancelled);
+
+		HomeVisit reloaded = homeVisitBrowserManager.getHomeVisit(id);
+		assertThat(reloaded.getStatus()).isEqualTo(HomeVisitStatus.PLANNED);
+		assertThat(reloaded.getCancellationReason()).isNull();
+	}
+
+	@Test
+	void testMgrUpdateHomeVisit_postpone() throws Exception {
+		int id = setupTestHomeVisit(false);
+		HomeVisit visit = homeVisitBrowserManager.getHomeVisit(id);
+		LocalDateTime newDate = LocalDateTime.now().plusDays(3);
+
+		visit.setStatus(HomeVisitStatus.POSTPONED);
+		visit.setVisitStartDate(newDate);
+		homeVisitBrowserManager.updateHomeVisit(visit);
+		entityManager.flush();
+		entityManager.clear();
+
+		HomeVisit reloaded = homeVisitBrowserManager.getHomeVisit(id);
+		assertThat(reloaded.getStatus()).isEqualTo(HomeVisitStatus.POSTPONED);
+		assertThat(reloaded.getVisitStartDate())
+			.isCloseTo(newDate, within(1, ChronoUnit.SECONDS));
+		assertThat(reloaded.getNextVisitDate()).isNull();
+	}
+
+	@Test
+	void testMgrUpdateHomeVisit_postponeWithPastDate_shouldThrow() throws Exception {
+		int id = setupTestHomeVisit(false);
+		HomeVisit visit = homeVisitBrowserManager.getHomeVisit(id);
+		entityManager.detach(visit);
+
+		visit.setStatus(HomeVisitStatus.POSTPONED);
+		visit.setVisitStartDate(null);
+		assertThatThrownBy(() -> homeVisitBrowserManager.updateHomeVisit(visit))
+			.isInstanceOf(OHDataValidationException.class);
+	}
+
+	@Test
+	void testMgrUpdateHomeVisit_invalidTransition_shouldThrow() throws Exception {
+		int id = setupTestHomeVisit(false);
+
+		HomeVisit visit = homeVisitIoOperationRepository.findById(id).orElseThrow();
+		visit.setStatus(HomeVisitStatus.COMPLETED);
+		visit.setVisitStartDate(LocalDateTime.now().minusHours(1));
+		homeVisitIoOperationRepository.saveAndFlush(visit);
+		entityManager.clear();
+
+		HomeVisit completed = homeVisitBrowserManager.getHomeVisit(id);
+		entityManager.detach(completed);
+
+		completed.setStatus(HomeVisitStatus.POSTPONED);
+		completed.setVisitStartDate(LocalDateTime.now().plusDays(1));
+		assertThatThrownBy(() -> homeVisitBrowserManager.updateHomeVisit(completed))
+			.isInstanceOf(OHDataValidationException.class);
+	}
+
+	@Test
+	void testMgrUpdateHomeVisit_withZeroId_shouldThrow() throws Exception {
+		HomeVisit visit = testHomeVisit.setup(testPatient, true);
+		visit.setId(0);
+
+		assertThatThrownBy(() -> homeVisitBrowserManager.updateHomeVisit(visit))
+			.isInstanceOf(OHDataValidationException.class);
 	}
 
 	@Test

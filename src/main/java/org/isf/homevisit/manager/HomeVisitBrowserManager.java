@@ -35,6 +35,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -133,66 +134,6 @@ public class HomeVisitBrowserManager {
 	}
 
 	/**
-	 * Completes a home visit
-	 * @param id home visit id
-	 * @throws OHServiceException
-	 */
-	public void completeHomeVisit(int id) throws OHServiceException {
-		ioOperations.completeVisit(id, LocalDateTime.now());
-	}
-
-	/**
-	 * Cancels a home visit
-	 * @param id home visit id
-	 * @param reason cancel home visit reason
-	 * @throws OHServiceException
-	 */
-	public void cancelHomeVisit(int id, String reason) throws OHServiceException {
-		HomeVisit homeVisit = getHomeVisit(id);
-		if (homeVisit.getStatus() == HomeVisitStatus.CANCELLED) {
-			throw new OHDataValidationException(List.of(new OHExceptionMessage(
-				MessageBundle.getMessage("angal.homevisit.postpone.cancelled.error")
-			)));
-		}
-		homeVisit.setStatus(HomeVisitStatus.CANCELLED);
-		homeVisit.setCancellationReason(reason);
-		ioOperations.save(homeVisit);
-	}
-
-	/**
-	 * Reactivates a cancelled home visit back to PLANNED
-	 * @param id home visit id
-	 * @throws OHServiceException
-	 */
-	public void reactivateHomeVisit(int id) throws OHServiceException {
-		HomeVisit homeVisit = getHomeVisit(id);
-		if (homeVisit.getStatus() != HomeVisitStatus.CANCELLED) {
-			throw new OHDataValidationException(List.of(new OHExceptionMessage(
-				MessageBundle.getMessage("angal.homevisit.reactivate.error"))));
-		}
-		ioOperations.updateStatus(id, HomeVisitStatus.PLANNED);
-	}
-
-	/**
-	 * Postpones a home visit to a new date
-	 * @param id home visit id
-	 * @param newDate new visit date
-	 * @throws OHServiceException
-	 */
-	public void postponeHomeVisit(int id, LocalDateTime newDate) throws OHServiceException {
-		HomeVisit homeVisit = getHomeVisit(id);
-		if (homeVisit.getStatus() == HomeVisitStatus.CANCELLED) {
-			throw new OHDataValidationException(List.of(new OHExceptionMessage(
-				MessageBundle.getMessage("angal.homevisit.postpone.cancelled.error")
-			)));
-		}
-		homeVisit.setStatus(HomeVisitStatus.POSTPONED);
-		homeVisit.setVisitStartDate(newDate);
-		homeVisit.setNextVisitDate(null);
-		ioOperations.save(homeVisit);
-	}
-
-	/**
 	 * Soft deletes a home visit
 	 * @param id home visit id to delete
 	 * @throws OHServiceException
@@ -228,6 +169,84 @@ public class HomeVisitBrowserManager {
 		if (!errors.isEmpty()) {
 			throw new OHDataValidationException(errors);
 		}
+	}
+
+	/**
+	 * @param homeVisit entité avec le nouveau statut et les champs modifiés par la GUI
+	 * @return home visit mis à jour et persisté
+	 * @throws OHServiceException
+	 */
+	public HomeVisit updateHomeVisit(HomeVisit homeVisit) throws OHServiceException {
+
+		if (homeVisit.getId() == 0) {
+			throw new OHDataValidationException(List.of(new OHExceptionMessage(
+				MessageBundle.getMessage("angal.homevisit.validation.id.required.msg")
+			)));
+		}
+
+		HomeVisitStatus requestedStatus = homeVisit.getStatus();
+		String requestedCancellationReason = homeVisit.getCancellationReason();
+		LocalDateTime requestedVisitStartDate = homeVisit.getVisitStartDate();
+
+		HomeVisitStatus currentStatus = ioOperations.getCurrentStatus(homeVisit.getId());
+		if (currentStatus == null) {
+			throw new EntityNotFoundException(
+				MessageBundle.formatMessage("angal.homevisit.notfound.msg",
+					String.valueOf(homeVisit.getId())));
+		}
+
+		List<OHExceptionMessage> errors = new ArrayList<>();
+
+		if (requestedStatus == HomeVisitStatus.COMPLETED) {
+			if (currentStatus != HomeVisitStatus.PLANNED &&
+				currentStatus != HomeVisitStatus.POSTPONED) {
+				errors.add(new OHExceptionMessage(
+					MessageBundle.getMessage("angal.homevisit.complete.error")));
+			} else {
+				homeVisit.setVisitEndDate(LocalDateTime.now());
+			}
+
+		} else if (requestedStatus == HomeVisitStatus.CANCELLED) {
+			if (currentStatus == HomeVisitStatus.CANCELLED) {
+				errors.add(new OHExceptionMessage(
+					MessageBundle.getMessage("angal.homevisit.cancel.error")));
+			} else if (requestedCancellationReason == null ||
+				requestedCancellationReason.trim().isEmpty()) {
+				errors.add(new OHExceptionMessage(
+					MessageBundle.getMessage("angal.homevisit.cancel.reason.required")));
+			}
+
+		} else if (requestedStatus == HomeVisitStatus.PLANNED) {
+			if (currentStatus != HomeVisitStatus.CANCELLED) {
+				errors.add(new OHExceptionMessage(
+					MessageBundle.getMessage("angal.homevisit.update.invalid.transition.msg")));
+			} else {
+				homeVisit.setCancellationReason(null);
+			}
+
+		}  else if (requestedStatus == HomeVisitStatus.POSTPONED) {
+			if (currentStatus != HomeVisitStatus.PLANNED &&
+				currentStatus != HomeVisitStatus.POSTPONED) {
+				errors.add(new OHExceptionMessage(
+					MessageBundle.getMessage("angal.homevisit.postpone.error")));
+			} else if (requestedVisitStartDate == null) {
+				errors.add(new OHExceptionMessage(
+					MessageBundle.getMessage("angal.homevisit.postpone.newdate.required")));
+			} else {
+				homeVisit.setNextVisitDate(null);
+			}
+
+		} else {
+			errors.add(new OHExceptionMessage(
+				MessageBundle.getMessage("angal.homevisit.update.invalid.transition.msg")));
+		}
+
+		if (!errors.isEmpty()) {
+			throw new OHDataValidationException(errors);
+		}
+
+		validateHomeVisit(homeVisit);
+		return ioOperations.save(homeVisit);
 	}
 
 	public Page<HomeVisit> getHomeVisitsWithFilters(

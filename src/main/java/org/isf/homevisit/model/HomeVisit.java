@@ -50,7 +50,7 @@ import static java.time.Duration.between;
 @AttributeOverride(name = "createdBy", column = @Column(name = "HV_CREATED_BY", updatable = false))
 @AttributeOverride(name = "createdDate", column = @Column(name = "HV_CREATED_DATE", updatable = false))
 @AttributeOverride(name = "lastModifiedBy", column = @Column(name = "HV_LAST_MODIFIED_BY"))
-@AttributeOverride(name = "active", column = @Column(name = "HV_ACTIVE"))
+@AttributeOverride(name = "active", column = @Column(name = "HV_DELETE"))
 @AttributeOverride(name = "lastModifiedDate", column = @Column(name = "HV_LAST_MODIFIED_DATE"))
 public class HomeVisit extends Auditable<String> {
 
@@ -116,6 +116,7 @@ public class HomeVisit extends Auditable<String> {
 		this.patient = patient;
 		this.visitStartDate = visitStartDate;
 		this.status = HomeVisitStatus.PLANNED;
+		this.active = 1;
 	}
 
 	public Integer getId() { return id; }

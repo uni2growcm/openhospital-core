@@ -83,4 +83,10 @@ public interface HomeVisitIoOperationRepository extends JpaRepository<HomeVisit,
 		@Param("ageTo") Integer ageTo,
 		@Param("searchText") String searchText,
 		Pageable pageable);
+
+	@Query("SELECT h.status FROM HomeVisit h WHERE h.id = :id")
+	HomeVisitStatus findStatusById(@Param("id") int id);
+
+	@Query(value = "SELECT HV_STATUS FROM OH_HOME_VISIT WHERE HV_ID = :id", nativeQuery = true)
+	String findStatusStringById(@Param("id") int id);
 }
