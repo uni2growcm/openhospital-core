@@ -9,3 +9,4 @@ source step_a163_alter_table_exam_med_operation_add_articlefamiliy.sql;
 source step_a167_more_diagnosis_opd.sql;
 source step_a168_malnutrition_controle.sql;
 source step_a169_description_village.sql;
+source step_a170_admission_update_form.sql;
