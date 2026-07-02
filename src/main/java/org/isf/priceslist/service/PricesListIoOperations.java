@@ -73,7 +73,9 @@ public class PricesListIoOperations {
 	 */
 	public void updatePrices(PriceList list, List<Price> prices) throws OHServiceException {
 		priceRepository.deleteByListId(list.getId());
+		priceRepository.flush();
 		for (Price price : prices) {
+			price.setId(0);
 			price.setList(list);
 			priceRepository.save(price);
 		}
