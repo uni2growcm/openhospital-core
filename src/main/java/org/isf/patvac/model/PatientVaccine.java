@@ -77,6 +77,9 @@ public class PatientVaccine extends Auditable<String> {
 	
 	@Column(name="PAV_LOCK")
 	private int lock;
+
+	@Column(name="PAV_VILLAGE")
+	private String village;
 	
 	@Transient
 	private volatile int hashCode;
@@ -153,6 +156,14 @@ public class PatientVaccine extends Auditable<String> {
 
 	public char getPatSex() {
 		return patient.getSex();
+	}
+
+	public String getVillage() {
+		return village;
+	}
+
+	public void setVillage(String village) {
+		this.village = village;
 	}
 
 	@Override
