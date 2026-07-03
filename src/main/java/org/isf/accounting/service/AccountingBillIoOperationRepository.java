@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.isf.accounting.model.Bill;
 import org.isf.menu.model.User;
+import org.isf.partner.model.Partner;
 import org.isf.priceslist.model.PriceList;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -136,4 +137,52 @@ public interface AccountingBillIoOperationRepository extends JpaRepository<Bill,
 
 	@Query("SELECT b FROM Bill b WHERE b.parentId = :parentId ORDER BY b.date DESC")
 	List<Bill> findByParentId(@Param("parentId") Integer parentId);
+
+	@Query("SELECT DISTINCT b FROM Bill b JOIN b.billPatient p LEFT JOIN p.partners pt " +
+		"WHERE (:dateFrom IS NULL OR b.date >= :dateFrom) " +
+		"AND (:dateTo IS NULL OR b.date < :dateTo) " +
+		"AND (:status IS NULL OR b.status = :status) " +
+		"AND (:patient IS NULL OR b.billPatient = :patient) " +
+		"AND (:guarantor IS NULL OR b.guarantor = :guarantor) " +
+		"AND (:partner IS NULL OR pt = :partner) " +
+		"ORDER BY b.date DESC")
+	Page<Bill> findBillsWithFilters(
+		@Param("status") String status,
+		@Param("dateFrom") LocalDateTime dateFrom,
+		@Param("dateTo") LocalDateTime dateTo,
+		@Param("patient") Patient patient,
+		@Param("guarantor") User guarantor,
+		@Param("partner") Partner partner,
+		Pageable pageable);
+
+	@Query("SELECT COUNT(DISTINCT b) FROM Bill b JOIN b.billPatient p LEFT JOIN p.partners pt " +
+		"WHERE (:dateFrom IS NULL OR b.date >= :dateFrom) " +
+		"AND (:dateTo IS NULL OR b.date < :dateTo) " +
+		"AND (:status IS NULL OR b.status = :status) " +
+		"AND (:patient IS NULL OR b.billPatient = :patient) " +
+		"AND (:guarantor IS NULL OR b.guarantor = :guarantor) " +
+		"AND (:partner IS NULL OR pt = :partner)")
+	long countBillsWithFilters(
+		@Param("status") String status,
+		@Param("dateFrom") LocalDateTime dateFrom,
+		@Param("dateTo") LocalDateTime dateTo,
+		@Param("patient") Patient patient,
+		@Param("guarantor") User guarantor,
+		@Param("partner") Partner partner);
+
+	@Query("SELECT b FROM Bill b JOIN b.billPatient p JOIN p.partners pt " +
+		"WHERE b.date >= :dateFrom AND b.date < :dateTo " +
+		"AND b.billPatient = :patient AND pt = :partner")
+	List<Bill> findByDateBetweenAndPatientAndPartner(
+		@Param("dateFrom") LocalDateTime dateFrom,
+		@Param("dateTo") LocalDateTime dateTo,
+		@Param("patient") Patient patient,
+		@Param("partner") Partner partner);
+
+	@Query("SELECT b FROM Bill b JOIN b.billPatient p JOIN p.partners pt " +
+		"WHERE b.date >= :dateFrom AND b.date < :dateTo AND pt = :partner")
+	List<Bill> findByDateBetweenAndPartner(
+		@Param("dateFrom") LocalDateTime dateFrom,
+		@Param("dateTo") LocalDateTime dateTo,
+		@Param("partner") Partner partner);
 }
