@@ -251,7 +251,7 @@ public class Laboratory extends Auditable<String> {
 	public String toString() {
 		return "-------------------------------------------\nLaboratory{" + "code=" + code + ", material=" + material
 				+ ", exam=" + exam + ", registrationDate=" + createdDate + ", examDate=" + labDate + ", result="
-				+ result + ", lock=" + lock + ", note=" + note + ", patient=" + patient + ", patName=" + patName
+				+ result + ", lock=" + lock + ", note=" + note + ", patient=" + patient + ", name=" + patName
 				+ ", InOutPatient=" + inOutPatient + ", age=" + age + ", sex=" + sex + ", hashCode=" + hashCode
 				+ "}\n---------------------------------------------";
 	}
