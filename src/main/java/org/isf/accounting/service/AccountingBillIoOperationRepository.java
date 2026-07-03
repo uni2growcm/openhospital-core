@@ -138,7 +138,7 @@ public interface AccountingBillIoOperationRepository extends JpaRepository<Bill,
 	@Query("SELECT b FROM Bill b WHERE b.parentId = :parentId ORDER BY b.date DESC")
 	List<Bill> findByParentId(@Param("parentId") Integer parentId);
 
-	@Query("SELECT DISTINCT b FROM Bill b JOIN b.billPatient p JOIN p.partners pt " +
+	@Query("SELECT DISTINCT b FROM Bill b JOIN b.billPatient p LEFT JOIN p.partners pt " +
 		"WHERE (:dateFrom IS NULL OR b.date >= :dateFrom) " +
 		"AND (:dateTo IS NULL OR b.date < :dateTo) " +
 		"AND (:status IS NULL OR b.status = :status) " +
@@ -155,7 +155,7 @@ public interface AccountingBillIoOperationRepository extends JpaRepository<Bill,
 		@Param("partner") Partner partner,
 		Pageable pageable);
 
-	@Query("SELECT COUNT(DISTINCT b) FROM Bill b JOIN b.billPatient p JOIN p.partners pt " +
+	@Query("SELECT COUNT(DISTINCT b) FROM Bill b JOIN b.billPatient p LEFT JOIN p.partners pt " +
 		"WHERE (:dateFrom IS NULL OR b.date >= :dateFrom) " +
 		"AND (:dateTo IS NULL OR b.date < :dateTo) " +
 		"AND (:status IS NULL OR b.status = :status) " +
