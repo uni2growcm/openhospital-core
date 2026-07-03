@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -92,7 +92,7 @@ public class JasperReportsManager {
 	private static final String STAT_REPORTERROR_MSG = "angal.stat.reporterror.msg";
 
 	private static final String RPT_BASE = "rpt_base";
-	
+
 	private static final String LOGO = "./rsc/images/logo_report.png";
 
 	private HospitalBrowsingManager hospitalManager;
@@ -334,7 +334,7 @@ public class JasperReportsManager {
 			throw new OHReportException(e, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
 		}
 	}
-	
+
 	public JasperReportResultDto getGenericReportPatientExamRequestPdf(int patientID, Locale locale) throws OHServiceException {
 
 		try {
@@ -1094,17 +1094,17 @@ public class JasperReportsManager {
         sbFilename.append(pdfFolderPath);
         sbFilename.append(File.separator);
         sbFilename.append(jasperFileName);
-        
+
         if (params != null) {
             params.forEach(p -> {
                 sbFilename.append('_');
                 sbFilename.append(p);
             });
         }
-        
+
         sbFilename.append('.');
         sbFilename.append(ext);
-        
+
         return sbFilename.toString();
 	}
 
