@@ -105,7 +105,7 @@ public class StatsIoOperations {
 
 		if (sex != null && !sex.isEmpty()) {
 			sqlWhere.append("AND p.sex = :sex ");
-			parameters.put("sex", sex);
+			parameters.put("sex", sex.charAt(0));
 		}
 
 		boolean hasAdmissionFilter = false;
@@ -183,7 +183,7 @@ public class StatsIoOperations {
 			parameters.put("operation", operation);
 
 			if (operationResult != null && !operationResult.isEmpty()) {
-				sqlWhere.append("AND orow.result = :operationResult ");
+				sqlWhere.append("AND orow.opResult = :operationResult ");
 				parameters.put("operationResult", operationResult);
 			}
 			if (operationPeriodFrom != null && !operationPeriodFrom.isEmpty()) {
@@ -377,11 +377,11 @@ public class StatsIoOperations {
 		}
 
 		if (vaccinePeriodFrom != null && !vaccinePeriodFrom.isEmpty()) {
-			sqlWhere.append("AND pv.date >= :vaccinePeriodFrom ");
+			sqlWhere.append("AND pv.vaccineDate >= :vaccinePeriodFrom ");
 			parameters.put("vaccinePeriodFrom", parseDate(vaccinePeriodFrom));
 		}
 		if (vaccinePeriodTo != null && !vaccinePeriodTo.isEmpty()) {
-			sqlWhere.append("AND pv.date <= :vaccinePeriodTo ");
+			sqlWhere.append("AND pv.vaccineDate <= :vaccinePeriodTo ");
 			parameters.put("vaccinePeriodTo", parseDate(vaccinePeriodTo));
 		}
 
@@ -397,7 +397,7 @@ public class StatsIoOperations {
 			parameters.put("operation", operation);
 
 			if (operationResult != null && !operationResult.isEmpty()) {
-				sqlWhere.append("AND orow.result = :operationResult ");
+				sqlWhere.append("AND orow.opResult = :operationResult ");
 				parameters.put("operationResult", operationResult);
 			}
 			if (operationPeriodFrom != null && !operationPeriodFrom.isEmpty()) {
@@ -622,7 +622,7 @@ public class StatsIoOperations {
 			parameters.put("operation", operation);
 
 			if (operationResult != null && !operationResult.isEmpty()) {
-				sqlWhere.append("AND orow.result = :operationResult ");
+				sqlWhere.append("AND orow.opResult = :operationResult ");
 				parameters.put("operationResult", operationResult);
 			}
 			if (operationPeriodFrom != null && !operationPeriodFrom.isEmpty()) {
@@ -837,7 +837,7 @@ public class StatsIoOperations {
 			parameters.put("operation", operation);
 
 			if (operationResult != null && !operationResult.isEmpty()) {
-				sqlWhere.append("AND orow.result = :operationResult ");
+				sqlWhere.append("AND orow.opResult = :operationResult ");
 				parameters.put("operationResult", operationResult);
 			}
 			if (operationPeriodFrom != null && !operationPeriodFrom.isEmpty()) {
@@ -1022,17 +1022,17 @@ public class StatsIoOperations {
 			parameters.put("vaccine", vaccine);
 
 			if (vaccinePeriodFrom != null && !vaccinePeriodFrom.isEmpty()) {
-				sqlWhere.append("AND pv.date >= :vaccinePeriodFrom ");
+				sqlWhere.append("AND orow.opDate >= :vaccinePeriodFrom ");
 				parameters.put("vaccinePeriodFrom", parseDate(vaccinePeriodFrom));
 			}
 			if (vaccinePeriodTo != null && !vaccinePeriodTo.isEmpty()) {
-				sqlWhere.append("AND pv.date <= :vaccinePeriodTo ");
+				sqlWhere.append("AND orow.opDate <= :vaccinePeriodTo ");
 				parameters.put("vaccinePeriodTo", parseDate(vaccinePeriodTo));
 			}
 		}
 
 		if (operationResult != null && !operationResult.isEmpty()) {
-			sqlWhere.append("AND orow.result = :operationResult ");
+			sqlWhere.append("AND orow.opResult = :operationResult ");
 			parameters.put("operationResult", operationResult);
 		}
 		if (operationPeriodFrom != null && !operationPeriodFrom.isEmpty()) {
@@ -1175,7 +1175,7 @@ public class StatsIoOperations {
 		}
 		if (sex != null && !sex.isEmpty()) {
 			sqlWhere.append("AND d.sex = :sex ");
-			parameters.put("sex", sex);
+			parameters.put("sex", sex.charAt(0));
 		}
 		if (deliveryType != null && !deliveryType.isEmpty()) {
 			sql.append("INNER JOIN DeliveryType dt ON d.deliveryType = dt ");
