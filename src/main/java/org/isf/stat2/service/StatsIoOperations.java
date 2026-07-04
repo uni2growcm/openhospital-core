@@ -162,11 +162,11 @@ public class StatsIoOperations {
 			parameters.put("vaccine", vaccine);
 
 			if (vaccinePeriodFrom != null && !vaccinePeriodFrom.isEmpty()) {
-				sqlWhere.append("AND pv.date >= :vaccinePeriodFrom ");
+				sqlWhere.append("AND pv.vaccineDate >= :vaccinePeriodFrom ");
 				parameters.put("vaccinePeriodFrom", parseDate(vaccinePeriodFrom));
 			}
 			if (vaccinePeriodTo != null && !vaccinePeriodTo.isEmpty()) {
-				sqlWhere.append("AND pv.date <= :vaccinePeriodTo ");
+				sqlWhere.append("AND pv.vaccineDate <= :vaccinePeriodTo ");
 				parameters.put("vaccinePeriodTo", parseDate(vaccinePeriodTo));
 			}
 		}
@@ -187,11 +187,11 @@ public class StatsIoOperations {
 				parameters.put("operationResult", operationResult);
 			}
 			if (operationPeriodFrom != null && !operationPeriodFrom.isEmpty()) {
-				sqlWhere.append("AND orow.operationDate >= :operationPeriodFrom ");
+				sqlWhere.append("AND orow.opDate >= :operationPeriodFrom ");
 				parameters.put("operationPeriodFrom", parseDate(operationPeriodFrom));
 			}
 			if (operationPeriodTo != null && !operationPeriodTo.isEmpty()) {
-				sqlWhere.append("AND orow.operationDate <= :operationPeriodTo ");
+				sqlWhere.append("AND orow.opDate <= :operationPeriodTo ");
 				parameters.put("operationPeriodTo", parseDate(operationPeriodTo));
 			}
 		}
@@ -337,11 +337,11 @@ public class StatsIoOperations {
 			hasAdmissionFilter = true;
 
 			if (periodFrom != null && !periodFrom.isEmpty()) {
-				sqlWhere.append("AND a.dischargeDate >= :periodFrom ");
+				sqlWhere.append("AND a.disDate  >= :periodFrom ");
 				parameters.put("periodFrom", parseDate(periodFrom));
 			}
 			if (periodTo != null && !periodTo.isEmpty()) {
-				sqlWhere.append("AND a.dischargeDate <= :periodTo ");
+				sqlWhere.append("AND a.disDate <= :periodTo ");
 				parameters.put("periodTo", parseDate(periodTo));
 			}
 		}
@@ -401,11 +401,11 @@ public class StatsIoOperations {
 				parameters.put("operationResult", operationResult);
 			}
 			if (operationPeriodFrom != null && !operationPeriodFrom.isEmpty()) {
-				sqlWhere.append("AND orow.operationDate >= :operationPeriodFrom ");
+				sqlWhere.append("AND orow.opDate >= :operationPeriodFrom ");
 				parameters.put("operationPeriodFrom", parseDate(operationPeriodFrom));
 			}
 			if (operationPeriodTo != null && !operationPeriodTo.isEmpty()) {
-				sqlWhere.append("AND orow.operationDate <= :operationPeriodTo ");
+				sqlWhere.append("AND orow.opDate <= :operationPeriodTo ");
 				parameters.put("operationPeriodTo", parseDate(operationPeriodTo));
 			}
 		}
@@ -601,11 +601,11 @@ public class StatsIoOperations {
 			parameters.put("vaccine", vaccine);
 
 			if (vaccinePeriodFrom != null && !vaccinePeriodFrom.isEmpty()) {
-				sqlWhere.append("AND pv.date >= :vaccinePeriodFrom ");
+				sqlWhere.append("AND pv.vaccineDate >= :vaccinePeriodFrom ");
 				parameters.put("vaccinePeriodFrom", parseDate(vaccinePeriodFrom));
 			}
 			if (vaccinePeriodTo != null && !vaccinePeriodTo.isEmpty()) {
-				sqlWhere.append("AND pv.date <= :vaccinePeriodTo ");
+				sqlWhere.append("AND pv.vaccineDate <= :vaccinePeriodTo ");
 				parameters.put("vaccinePeriodTo", parseDate(vaccinePeriodTo));
 			}
 		}
@@ -626,11 +626,11 @@ public class StatsIoOperations {
 				parameters.put("operationResult", operationResult);
 			}
 			if (operationPeriodFrom != null && !operationPeriodFrom.isEmpty()) {
-				sqlWhere.append("AND orow.operationDate >= :operationPeriodFrom ");
+				sqlWhere.append("AND orow.opDate >= :operationPeriodFrom ");
 				parameters.put("operationPeriodFrom", parseDate(operationPeriodFrom));
 			}
 			if (operationPeriodTo != null && !operationPeriodTo.isEmpty()) {
-				sqlWhere.append("AND orow.operationDate <= :operationPeriodTo ");
+				sqlWhere.append("AND orow.opDate <= :operationPeriodTo ");
 				parameters.put("operationPeriodTo", parseDate(operationPeriodTo));
 			}
 		}
@@ -820,11 +820,11 @@ public class StatsIoOperations {
 			parameters.put("vaccine", vaccine);
 
 			if (vaccinePeriodFrom != null && !vaccinePeriodFrom.isEmpty()) {
-				sqlWhere.append("AND pv.date >= :vaccinePeriodFrom ");
+				sqlWhere.append("AND pv.vaccineDate >= :vaccinePeriodFrom ");
 				parameters.put("vaccinePeriodFrom", parseDate(vaccinePeriodFrom));
 			}
 			if (vaccinePeriodTo != null && !vaccinePeriodTo.isEmpty()) {
-				sqlWhere.append("AND pv.date <= :vaccinePeriodTo ");
+				sqlWhere.append("AND pv.vaccineDate <= :vaccinePeriodTo ");
 				parameters.put("vaccinePeriodTo", parseDate(vaccinePeriodTo));
 			}
 		}
@@ -841,11 +841,11 @@ public class StatsIoOperations {
 				parameters.put("operationResult", operationResult);
 			}
 			if (operationPeriodFrom != null && !operationPeriodFrom.isEmpty()) {
-				sqlWhere.append("AND orow.operationDate >= :operationPeriodFrom ");
+				sqlWhere.append("AND orow.opDate >= :operationPeriodFrom ");
 				parameters.put("operationPeriodFrom", parseDate(operationPeriodFrom));
 			}
 			if (operationPeriodTo != null && !operationPeriodTo.isEmpty()) {
-				sqlWhere.append("AND orow.operationDate <= :operationPeriodTo ");
+				sqlWhere.append("AND orow.opDate <= :operationPeriodTo ");
 				parameters.put("operationPeriodTo", parseDate(operationPeriodTo));
 			}
 		}
@@ -1022,11 +1022,11 @@ public class StatsIoOperations {
 			parameters.put("vaccine", vaccine);
 
 			if (vaccinePeriodFrom != null && !vaccinePeriodFrom.isEmpty()) {
-				sqlWhere.append("AND orow.opDate >= :vaccinePeriodFrom ");
+				sqlWhere.append("AND pv.vaccineDate >= :vaccinePeriodFrom ");
 				parameters.put("vaccinePeriodFrom", parseDate(vaccinePeriodFrom));
 			}
 			if (vaccinePeriodTo != null && !vaccinePeriodTo.isEmpty()) {
-				sqlWhere.append("AND orow.opDate <= :vaccinePeriodTo ");
+				sqlWhere.append("AND pv.vaccineDate <= :vaccinePeriodTo ");
 				parameters.put("vaccinePeriodTo", parseDate(vaccinePeriodTo));
 			}
 		}
@@ -1036,11 +1036,11 @@ public class StatsIoOperations {
 			parameters.put("operationResult", operationResult);
 		}
 		if (operationPeriodFrom != null && !operationPeriodFrom.isEmpty()) {
-			sqlWhere.append("AND orow.operationDate >= :operationPeriodFrom ");
+			sqlWhere.append("AND orow.opDate >= :operationPeriodFrom ");
 			parameters.put("operationPeriodFrom", parseDate(operationPeriodFrom));
 		}
 		if (operationPeriodTo != null && !operationPeriodTo.isEmpty()) {
-			sqlWhere.append("AND orow.operationDate <= :operationPeriodTo ");
+			sqlWhere.append("AND orow.opDate <= :operationPeriodTo ");
 			parameters.put("operationPeriodTo", parseDate(operationPeriodTo));
 		}
 
@@ -1343,11 +1343,11 @@ public class StatsIoOperations {
 			parameters.put("vaccine", vaccine);
 
 			if (vaccinePeriodFrom != null && !vaccinePeriodFrom.isEmpty()) {
-				sqlWhere.append("AND pv2.date >= :vaccinePeriodFrom ");
+				sqlWhere.append("AND pv2.vaccineDate >= :vaccinePeriodFrom ");
 				parameters.put("vaccinePeriodFrom", parseDate(vaccinePeriodFrom));
 			}
 			if (vaccinePeriodTo != null && !vaccinePeriodTo.isEmpty()) {
-				sqlWhere.append("AND pv2.date <= :vaccinePeriodTo ");
+				sqlWhere.append("AND pv2.vaccineDate <= :vaccinePeriodTo ");
 				parameters.put("vaccinePeriodTo", parseDate(vaccinePeriodTo));
 			}
 		}
