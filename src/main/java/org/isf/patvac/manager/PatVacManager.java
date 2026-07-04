@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -91,6 +91,17 @@ public class PatVacManager {
 	public List<PatientVaccine> getPatientVaccine(String vaccineTypeCode, String vaccineCode, LocalDateTime dateFrom, LocalDateTime dateTo, char sex,
 		int ageFrom, int ageTo) throws OHServiceException {
 		return ioOperations.getPatientVaccine(vaccineTypeCode, vaccineCode, dateFrom, dateTo, sex, ageFrom, ageTo);
+	}
+
+	/**
+	 * Returns all {@link PatientVaccine}s associated with the specified patient.
+	 *
+	 * @param patientCode the unique identifier of the patient
+	 * @return the list of {@link PatientVaccine}s for the given patient
+	 * @throws OHServiceException if an error occurs while retrieving the patient vaccines
+	 */
+	public List<PatientVaccine> getPatientVaccineByPatientId(int patientCode) throws OHServiceException {
+		return this.ioOperations.findForPatient(patientCode);
 	}
 
 	/**

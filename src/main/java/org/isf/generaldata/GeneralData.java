@@ -40,6 +40,7 @@ public final class GeneralData extends ConfigurationProperties {
 	public static int PAGINATIONPAGESIZE;
 	public static boolean ENABLEMEDICALREFUND;
 	public static boolean ALLOWBILLGUARANTOR;
+	public static boolean ALLOWBILLPARTNER;
 	public static String LANGUAGE;
 	public static boolean HIGHLIGHTEXPIRINGMEDICAL;
 	public static Integer HIGHLIGHTEXPIRINGMEDICALDAYS;
@@ -112,6 +113,7 @@ public final class GeneralData extends ConfigurationProperties {
 	public static final int DEFAULT_PAGINATIONPAGESIZE = 100;
 	public static final boolean DEFAULT_STOCKMVTONBILLSAVE = false;
 	private static final boolean DEFAULT_ALLOWBILLGUARANTOR  = false;
+	private static final boolean DEFAULT_ALLOWBILLPARTNER  = false;
 	private static final String DEFAULT_LANGUAGE = "en";
 	private static final boolean DEFAULT_SINGLEUSER = false;
 	private static final boolean DEFAULT_USERSLISTLOGIN = false;
@@ -196,6 +198,7 @@ public final class GeneralData extends ConfigurationProperties {
 		STOCKMVTONBILLSAVE = myGetProperty("STOCKMVTONBILLSAVE", DEFAULT_STOCKMVTONBILLSAVE);
 		PAGINATIONPAGESIZE = myGetProperty("PAGINATIONPAGESIZ", DEFAULT_PAGINATIONPAGESIZE);
 		ALLOWBILLGUARANTOR = myGetProperty("ALLOWBILLGUARANTOR", DEFAULT_ALLOWBILLGUARANTOR);
+		ALLOWBILLPARTNER   = myGetProperty("ALLOWBILLPARTNER", DEFAULT_ALLOWBILLPARTNER);
 		ENABLEMEDICALREFUND = myGetProperty("ENABLEMEDICALREFUND", DEFAULT_ENABLEMEDICALREFUND);
 		SINGLEUSER = myGetProperty("SINGLEUSER", DEFAULT_SINGLEUSER);
 		USERSLISTLOGIN = myGetProperty("USERSLISTLOGIN", DEFAULT_USERSLISTLOGIN);
