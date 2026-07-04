@@ -17,7 +17,6 @@ import org.isf.tuberculosis.model.TuberculosisVisit;
 import org.isf.tuberculosis.model.Classification;
 import org.isf.tuberculosis.model.DiseaseLocation;
 import org.isf.tuberculosis.model.DotStatus;
-import org.isf.tuberculosis.model.LabResult;
 import org.isf.tuberculosis.model.TreatmentStatus;
 import org.isf.tuberculosis.service.TuberculosisContactIoOperationRepository;
 import org.isf.tuberculosis.service.TuberculosisTreatmentIoOperationRepository;
@@ -182,9 +181,9 @@ class TuberculosisTests extends OHCoreTestCase {
         assertThat(list).hasSize(1);
 
         TuberculosisVisit updated = list.get(0);
-        updated.setSmearResult(LabResult.POSITIVE);
+        updated.setSymptomsImproved(false);
         updated = visitManager.updateVisit(updated);
-        assertThat(updated.getSmearResult()).isEqualTo(LabResult.POSITIVE);
+        assertThat(updated.getSymptomsImproved()).isFalse();
 
         TuberculosisVisit found = visitManager.getVisitById(updated.getId());
         assertThat(found).isNotNull();

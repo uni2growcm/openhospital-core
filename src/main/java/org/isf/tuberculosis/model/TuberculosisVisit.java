@@ -67,46 +67,11 @@ public class TuberculosisVisit extends Auditable<String> {
     @Column(name = "TBV_SIDE_EFFECTS", columnDefinition = "TEXT")
     private String sideEffects;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "TBV_SMEAR_RESULT")
-    private LabResult smearResult;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "TBV_GENEXPERT_RESULT")
-    private LabResult geneXpertResult;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "TBV_GENEXPERT_RIF_RESISTANCE")
-    private ResistanceResult geneXpertRifResistance;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "TBV_CULTURE_RESULT")
-    private LabResult cultureResult;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "TBV_DST_RESULT")
-    private DstResult dstResult;
-
     @Column(name = "TBV_CONVERSION_DATE")
     private LocalDate conversionDate;
 
     @Column(name = "TBV_CHEST_XRAY_FINDINGS")
     private String chestXrayFindings;
-
-    @Column(name = "TBV_ALT")
-    private Double alt;
-
-    @Column(name = "TBV_AST")
-    private Double ast;
-
-    @Column(name = "TBV_CREATININE")
-    private Double creatinine;
-
-    @Column(name = "TBV_HEMOGLOBIN")
-    private Double hemoglobin;
-
-    @Column(name = "TBV_PLATELETS")
-    private Integer platelets;
 
     @Column(name = "TBV_NEXT_APPOINTMENT_DATE")
     private LocalDate nextAppointmentDate;
@@ -183,46 +148,6 @@ public class TuberculosisVisit extends Auditable<String> {
         this.sideEffects = sideEffects;
     }
 
-    public LabResult getSmearResult() {
-        return smearResult;
-    }
-
-    public void setSmearResult(LabResult smearResult) {
-        this.smearResult = smearResult;
-    }
-
-    public LabResult getGeneXpertResult() {
-        return geneXpertResult;
-    }
-
-    public void setGeneXpertResult(LabResult geneXpertResult) {
-        this.geneXpertResult = geneXpertResult;
-    }
-
-    public ResistanceResult getGeneXpertRifResistance() {
-        return geneXpertRifResistance;
-    }
-
-    public void setGeneXpertRifResistance(ResistanceResult geneXpertRifResistance) {
-        this.geneXpertRifResistance = geneXpertRifResistance;
-    }
-
-    public LabResult getCultureResult() {
-        return cultureResult;
-    }
-
-    public void setCultureResult(LabResult cultureResult) {
-        this.cultureResult = cultureResult;
-    }
-
-    public DstResult getDstResult() {
-        return dstResult;
-    }
-
-    public void setDstResult(DstResult dstResult) {
-        this.dstResult = dstResult;
-    }
-
     public LocalDate getConversionDate() {
         return conversionDate;
     }
@@ -237,46 +162,6 @@ public class TuberculosisVisit extends Auditable<String> {
 
     public void setChestXrayFindings(String chestXrayFindings) {
         this.chestXrayFindings = chestXrayFindings;
-    }
-
-    public Double getAlt() {
-        return alt;
-    }
-
-    public void setAlt(Double alt) {
-        this.alt = alt;
-    }
-
-    public Double getAst() {
-        return ast;
-    }
-
-    public void setAst(Double ast) {
-        this.ast = ast;
-    }
-
-    public Double getCreatinine() {
-        return creatinine;
-    }
-
-    public void setCreatinine(Double creatinine) {
-        this.creatinine = creatinine;
-    }
-
-    public Double getHemoglobin() {
-        return hemoglobin;
-    }
-
-    public void setHemoglobin(Double hemoglobin) {
-        this.hemoglobin = hemoglobin;
-    }
-
-    public Integer getPlatelets() {
-        return platelets;
-    }
-
-    public void setPlatelets(Integer platelets) {
-        this.platelets = platelets;
     }
 
     public LocalDate getNextAppointmentDate() {
