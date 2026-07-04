@@ -178,6 +178,12 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 	@Column(name = "ADM_DELETED", columnDefinition = "char(1) default 'N'")
 	private char deleted = 'N';                // flag record deleted ; values are 'Y' OR 'N' default is 'N'
 
+	@Column(name = "ADM_ROOM_NUMBER")
+	private String roomNumber;
+
+	@Column(name = "ADM_BED_NUMBER")
+	private String bedNumber;
+
 	@Transient
 	private volatile int hashCode;
 
@@ -605,6 +611,22 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 
 	public void setYProg(int prog) {
 		this.yProg = prog;
+	}
+
+	public String getRoomNumber() {
+		return roomNumber;
+	}
+
+	public void setRoomNumber(String roomNumber) {
+		this.roomNumber = roomNumber;
+	}
+
+	public String getBedNumber() {
+		return bedNumber;
+	}
+
+	public void setBedNumber(String bedNumber) {
+		this.bedNumber = bedNumber;
 	}
 
 	@Override

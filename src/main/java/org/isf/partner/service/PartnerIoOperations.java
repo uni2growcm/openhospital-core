@@ -120,4 +120,8 @@ public class PartnerIoOperations {
 	public void softDelete(int id) throws OHServiceException {
 		repository.softDelete(id);
 	}
+
+	public boolean patientHasActivePartners(Integer patientCode) throws OHServiceException {
+		return repository.countActivePartnersByPatientCode(patientCode) > 0;
+	}
 }

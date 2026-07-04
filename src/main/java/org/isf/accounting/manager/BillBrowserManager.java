@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 
 import org.isf.accounting.dto.RefundBillItemDto;
 import org.isf.accounting.model.*;
+import org.isf.partner.model.Partner;
 import org.isf.therapy.manager.TherapyManager;
 import org.isf.lab.manager.LabManager;
 import org.isf.operation.manager.OperationRowBrowserManager;
@@ -1097,5 +1098,81 @@ public class BillBrowserManager {
 	 */
 	public void exportSagePaymentsStreaming(File file, LocalDateTime dateFrom, LocalDateTime dateTo) throws IOException, OHServiceException {
 		ioOperations.exportSagePaymentsStreaming(file, dateFrom, dateTo);
+	}
+
+	/**
+	 * Get paginated bills with filters including partner filter.
+	 *
+	 * @param status the bill status to filter (O for open, C for closed, null for all)
+	 * @param dateFrom the start date to filter (inclusive, null for no lower bound)
+	 * @param dateTo the end date to filter (exclusive, null for no upper bound)
+	 * @param patient the patient to filter (null for all)
+	 * @param guarantor the user acting as guarantor to filter (null for all)
+	 * @param partner the partner to filter (null for all)
+	 * @param page the page number to retrieve (0-based)
+	 * @param size the number of items per page
+	 * @return a Page of Bill matching the filters
+	 * @throws OHServiceException when the calls to internal methods fail.
+	 */
+	public Page<Bill> getBillsWithFilters(
+		String status,
+		LocalDateTime dateFrom,
+		LocalDateTime dateTo,
+		Patient patient,
+		User guarantor,
+		Partner partner,
+		int page,
+		int size
+	) throws OHServiceException {
+		Pageable pageable = PageRequest.of(page, size);
+		return ioOperations.getBillsWithFilters(status, dateFrom, dateTo, patient, guarantor, partner, pageable);
+	}
+
+	/**
+	 * Count bills with filters including partner filter.
+	 *
+	 * @param status the bill status to filter (O for open, C for closed, null for all)
+	 * @param dateFrom the start date to filter (inclusive, null for no lower bound)
+	 * @param dateTo the end date to filter (exclusive, null for no upper bound)
+	 * @param patient the patient to filter (null for all)
+	 * @param guarantor the user acting as guarantor to filter (null for all)
+	 * @param partner the partner to filter (null for all)
+	 * @return the number of bills matching the filters
+	 * @throws OHServiceException when the calls to internal methods fail.
+	 */
+	public long countBillsWithFilters(
+		String status,
+		LocalDateTime dateFrom,
+		LocalDateTime dateTo,
+		Patient patient,
+		User guarantor,
+		Partner partner
+	) throws OHServiceException {
+		return ioOperations.countBillsWithFilters(status, dateFrom, dateTo, patient, guarantor, partner);
+	}
+
+	/**
+	 * Get bills by date, patient and partner.
+	 *
+	 * @param dateFrom Start date
+	 * @param dateTo End date
+	 * @param patient Target patient
+	 * @param partner Target partner
+	 * @return List of bills matching the filter, or empty list if no match found
+	 * @throws OHServiceException when the calls to internal methods fail.
+	 */
+	public List<Bill> getBillsByDatePatientAndPartner(
+		LocalDateTime dateFrom,
+		LocalDateTime dateTo,
+		Patient patient,
+		Partner partner
+	) throws OHServiceException {
+		if (dateFrom == null || dateTo == null) {
+			throw new IllegalArgumentException("Date cannot be null");
+		}
+		if (patient == null) {
+			return ioOperations.getBillsByDateAndPartner(dateFrom, dateTo, partner);
+		}
+		return ioOperations.getBillsByDatePatientAndPartner(dateFrom, dateTo, patient, partner);
 	}
 }

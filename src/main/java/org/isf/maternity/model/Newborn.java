@@ -72,6 +72,9 @@ public class Newborn extends Auditable<String> {
 	@Column(name = "NBN_BIRTH_ORDER")
 	private String birthOrder;
 
+	@Column(name = "NBN_COMPLICATION")
+	private String complication;
+
 	@NotNull
 	@Column(name = "NBN_BIRTH_WEIGHT", nullable = false)
 	private Double birthWeight;
@@ -153,6 +156,40 @@ public class Newborn extends Auditable<String> {
 		this.cryTime = cryTime;
 		this.congenitalAnomalies = congenitalAnomalies;
 		this.hivStatus = hivStatus;
+	}
+
+	public Newborn(
+		Patient babyPatient,
+		PregnancyDelivery delivery,
+		NeonatalStatus neonatalStatus,
+		LocalDateTime birthDate,
+		String birthOrder,
+		Double birthWeight,
+		Double birthLength,
+		Double headCircumference,
+		Integer apgarScore1Min,
+		Integer apgarScore5Min,
+		Boolean resuscitationRequired,
+		CryTime cryTime,
+		String congenitalAnomalies,
+		HivStatus hivStatus,
+		String complication
+	) {
+		this.babyPatient = babyPatient;
+		this.delivery = delivery;
+		this.neonatalStatus = neonatalStatus;
+		this.birthDate = birthDate;
+		this.birthOrder = birthOrder;
+		this.birthWeight = birthWeight;
+		this.birthLength = birthLength;
+		this.headCircumference = headCircumference;
+		this.apgarScore1Min = apgarScore1Min;
+		this.apgarScore5Min = apgarScore5Min;
+		this.resuscitationRequired = resuscitationRequired;
+		this.cryTime = cryTime;
+		this.congenitalAnomalies = congenitalAnomalies;
+		this.hivStatus = hivStatus;
+		this.complication = complication;
 	}
 
 	public Integer getId() {
@@ -273,6 +310,14 @@ public class Newborn extends Auditable<String> {
 
 	public void setHivStatus(HivStatus hivStatus) {
 		this.hivStatus = hivStatus;
+	}
+
+	public String getComplication() {
+		return complication;
+	}
+
+	public void setComplication(String complication) {
+		this.complication = complication;
 	}
 
 	public Integer getLock() {

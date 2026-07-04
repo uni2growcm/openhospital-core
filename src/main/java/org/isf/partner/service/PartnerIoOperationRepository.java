@@ -57,4 +57,6 @@ public interface PartnerIoOperationRepository extends JpaRepository<Partner, Int
 	@Query("UPDATE Partner p SET p.active = 0 WHERE p.id = :id")
 	void softDelete(int id);
 
+	@Query("SELECT COUNT(pp) FROM Patient pp JOIN pp.partners pt WHERE pp.code = :patientCode AND pt.active = 1")
+	long countActivePartnersByPatientCode(@Param("patientCode") Integer patientCode);
 }
