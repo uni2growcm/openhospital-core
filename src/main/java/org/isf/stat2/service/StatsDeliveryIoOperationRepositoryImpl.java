@@ -1,3 +1,24 @@
+/*
+ * Open Hospital (www.open-hospital.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ *
+ * Open Hospital is a free and open source software for healthcare data management.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * https://www.gnu.org/licenses/gpl-3.0-standalone.html
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
 package org.isf.stat2.service;
 
 import java.time.LocalDateTime;
@@ -8,7 +29,13 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
 
-import org.isf.maternity.model.*;
+import org.isf.maternity.model.DeliveryMode;
+import org.isf.maternity.model.PerinealIntegrity;
+import org.isf.maternity.model.Newborn;
+import org.isf.maternity.model.CryTime;
+import org.isf.maternity.model.NeonatalStatus;
+import org.isf.maternity.model.HivStatus;
+import org.isf.maternity.model.PregnancyDelivery;
 import org.isf.patient.model.Patient;
 import org.isf.stat2.model.StatsDelivery;
 import org.isf.typology.model.Typology;
@@ -46,11 +73,9 @@ public class StatsDeliveryIoOperationRepositoryImpl implements StatsDeliveryIoOp
 			case "5":
 				return DeliveryMode.C_SECTION_EMERGENCY;
 			default:
-				// Essayer de parser directement (pour compatibilité)
 				try {
 					return DeliveryMode.valueOf(str);
 				} catch (IllegalArgumentException e) {
-					System.err.println("Unknown DeliveryMode: " + str);
 					return null;
 				}
 		}
@@ -93,7 +118,6 @@ public class StatsDeliveryIoOperationRepositoryImpl implements StatsDeliveryIoOp
 				try {
 					return PerinealIntegrity.valueOf(str);
 				} catch (IllegalArgumentException e) {
-					System.err.println("Unknown PerinealIntegrity: " + str);
 					return null;
 				}
 		}
@@ -101,20 +125,13 @@ public class StatsDeliveryIoOperationRepositoryImpl implements StatsDeliveryIoOp
 
 	@Override
 	public Page<StatsDelivery> findDeliveriesStatsByFilters(
-		// ===== PERIOD =====
 		LocalDateTime periodFrom,
 		LocalDateTime periodTo,
-
-		// ===== MÈRE =====
 		Integer motherAgeMin,
 		Integer motherAgeMax,
-
-		// ===== SEX & WEIGHT (Nouveau-né) =====
 		String sex,
 		Double weightMin,
 		Double weightMax,
-
-		// ===== DELIVERY TYPES & RESULTS =====
 		String deliveryType,
 		String deliveryResultType,
 		String deliveryMode,
@@ -123,8 +140,6 @@ public class StatsDeliveryIoOperationRepositoryImpl implements StatsDeliveryIoOp
 		String perinealIntegrity,
 		Boolean placentaComplete,
 		String bloodLossRange,
-
-		// ===== NEWBORN =====
 		String newbornSex,
 		String birthWeightRange,
 		String neonatalStatus,
@@ -134,12 +149,8 @@ public class StatsDeliveryIoOperationRepositoryImpl implements StatsDeliveryIoOp
 		String cryTime,
 		String hivStatus,
 		Boolean congenitalAnomalies,
-
-		// ===== DISEASES & DISCHARGE =====
 		String disease,
 		String dischargeType,
-
-		// ===== PAGINATION =====
 		Pageable pageable
 	) throws OHServiceException {
 
@@ -147,9 +158,6 @@ public class StatsDeliveryIoOperationRepositoryImpl implements StatsDeliveryIoOp
 		StringBuilder conditions = new StringBuilder();
 		List<Object> parameters = new ArrayList<>();
 
-		// ============================================================
-		// 1. JOINTURES DE BASE
-		// ============================================================
 		fromBuilder.append(" FROM oh_patient _mother")
 			.append(" INNER JOIN oh_pregnancy _pregnancy ON _mother.PAT_ID = _pregnancy.PRG_PAT_ID")
 			.append(" INNER JOIN oh_pregnancydelivery _delivery ON _delivery.PRGDLV_PRG_ID = _pregnancy.PRG_ID")
@@ -157,9 +165,6 @@ public class StatsDeliveryIoOperationRepositoryImpl implements StatsDeliveryIoOp
 
 		conditions.append("(_mother.PAT_DELETED = 'N' OR _mother.PAT_DELETED IS NULL)");
 
-		// ============================================================
-		// 2. FILTRE PÉRIODE
-		// ============================================================
 		if (periodFrom != null) {
 			conditions.append(" AND DATE(_delivery.PRGDLV_DATE) >= ?");
 			parameters.add(TimeTools.formatDateTime(periodFrom, YYYY_MM_DD));
@@ -169,9 +174,6 @@ public class StatsDeliveryIoOperationRepositoryImpl implements StatsDeliveryIoOp
 			parameters.add(TimeTools.formatDateTime(periodTo, YYYY_MM_DD));
 		}
 
-		// ============================================================
-		// 3. FILTRE ÂGE DE LA MÈRE
-		// ============================================================
 		if (motherAgeMin != null) {
 			conditions.append(" AND _mother.PAT_AGE >= ?");
 			parameters.add(motherAgeMin);
@@ -181,17 +183,11 @@ public class StatsDeliveryIoOperationRepositoryImpl implements StatsDeliveryIoOp
 			parameters.add(motherAgeMax);
 		}
 
-		// ============================================================
-		// 4. FILTRE SEXE (Nouveau-né)
-		// ============================================================
 		if (sex != null && !sex.isEmpty() && !"Tous".equals(sex) && !"All".equals(sex)) {
 			conditions.append(" AND _newborn.NBN_PAT_ID IN (SELECT PAT_ID FROM oh_patient WHERE PAT_SEX = ?)");
 			parameters.add(sex);
 		}
 
-		// ============================================================
-		// 5. FILTRE POIDS (Nouveau-né)
-		// ============================================================
 		if (weightMin != null) {
 			conditions.append(" AND _newborn.NBN_BIRTH_WEIGHT >= ?");
 			parameters.add(weightMin);
@@ -201,34 +197,22 @@ public class StatsDeliveryIoOperationRepositoryImpl implements StatsDeliveryIoOp
 			parameters.add(weightMax);
 		}
 
-		// ============================================================
-		// 6. FILTRE TYPE D'ACCOUCHEMENT
-		// ============================================================
 		if (deliveryType != null && !deliveryType.isEmpty() && !"Tous".equals(deliveryType) && !"All".equals(deliveryType)) {
-			fromBuilder.append(" INNER JOIN oh_typologies _deliverytype ON _deliverytype.TYP_CODE = _delivery.PRGDLV_TYPE_ID");
-			conditions.append(" AND _deliverytype.TYP_DESC = ?");
+			fromBuilder.append(" INNER JOIN oh_typologies _deliverytype ON _deliverytype.TYPO_CODE = _delivery.PRGDLV_TYPE_ID");
+			conditions.append(" AND _deliverytype.TYPO_DESCRIPTION = ?");
 			parameters.add(deliveryType);
 		}
 
-		// ============================================================
-		// 7. FILTRE RÉSULTAT D'ACCOUCHEMENT
-		// ============================================================
 		if (deliveryResultType != null && !deliveryResultType.isEmpty() && !"Tous".equals(deliveryResultType) && !"All".equals(deliveryResultType)) {
 			conditions.append(" AND _newborn.NBN_NEONATAL_STATUS = ?");
 			parameters.add(deliveryResultType);
 		}
 
-		// ============================================================
-		// 8. FILTRE MODE D'ACCOUCHEMENT
-		// ============================================================
 		if (deliveryMode != null && !deliveryMode.isEmpty() && !"Tous".equals(deliveryMode) && !"All".equals(deliveryMode)) {
 			conditions.append(" AND _delivery.PRGDLV_DELIVERYMODE = ?");
 			parameters.add(deliveryMode);
 		}
 
-		// ============================================================
-		// 9. FILTRE DURÉE DU TRAVAIL
-		// ============================================================
 		if (laborDuration != null && !laborDuration.isEmpty() && !"Tous".equals(laborDuration) && !"All".equals(laborDuration)) {
 			switch (laborDuration) {
 				case "< 6h":
@@ -246,9 +230,6 @@ public class StatsDeliveryIoOperationRepositoryImpl implements StatsDeliveryIoOp
 			}
 		}
 
-		// ============================================================
-		// 10. FILTRE ROM
-		// ============================================================
 		if (romRange != null && !romRange.isEmpty() && !"Tous".equals(romRange) && !"All".equals(romRange)) {
 			if ("< 18h".equals(romRange)) {
 				conditions.append(" AND TIMESTAMPDIFF(HOUR, _delivery.PRGDLV_ROM_DATETIME, _delivery.PRGDLV_DATE) < 18");
@@ -257,25 +238,16 @@ public class StatsDeliveryIoOperationRepositoryImpl implements StatsDeliveryIoOp
 			}
 		}
 
-		// ============================================================
-		// 11. FILTRE INTÉGRITÉ PÉRINÉALE
-		// ============================================================
 		if (perinealIntegrity != null && !perinealIntegrity.isEmpty() && !"Tous".equals(perinealIntegrity) && !"All".equals(perinealIntegrity)) {
 			conditions.append(" AND _delivery.PRGDLV_PERINEAL_INTEGRITY = ?");
 			parameters.add(perinealIntegrity);
 		}
 
-		// ============================================================
-		// 12. FILTRE PLACENTA COMPLET
-		// ============================================================
 		if (placentaComplete != null) {
 			conditions.append(" AND _delivery.PRGDLV_PLACENTA_COMPLETE = ?");
 			parameters.add(placentaComplete ? 1 : 0);
 		}
 
-		// ============================================================
-		// 13. FILTRE PERTE DE SANG
-		// ============================================================
 		if (bloodLossRange != null && !bloodLossRange.isEmpty() && !"Tous".equals(bloodLossRange) && !"All".equals(bloodLossRange)) {
 			switch (bloodLossRange) {
 				case "< 500 ml":
@@ -290,13 +262,6 @@ public class StatsDeliveryIoOperationRepositoryImpl implements StatsDeliveryIoOp
 			}
 		}
 
-		// ============================================================
-		// 14. FILTRE SEXE (Nouveau-né) - déjà traité plus haut
-		// ============================================================
-
-		// ============================================================
-		// 15. FILTRE POIDS NAISSANCE (tranches WHO)
-		// ============================================================
 		if (birthWeightRange != null && !birthWeightRange.isEmpty() && !"Tous".equals(birthWeightRange) && !"All".equals(birthWeightRange)) {
 			switch (birthWeightRange) {
 				case "< 1.5 kg":
@@ -314,17 +279,11 @@ public class StatsDeliveryIoOperationRepositoryImpl implements StatsDeliveryIoOp
 			}
 		}
 
-		// ============================================================
-		// 16. FILTRE STATUT NÉONATAL
-		// ============================================================
 		if (neonatalStatus != null && !neonatalStatus.isEmpty() && !"Tous".equals(neonatalStatus) && !"All".equals(neonatalStatus)) {
 			conditions.append(" AND _newborn.NBN_NEONATAL_STATUS = ?");
 			parameters.add(neonatalStatus);
 		}
 
-		// ============================================================
-		// 17. FILTRE APGAR 1min
-		// ============================================================
 		if (apgar1Range != null && !apgar1Range.isEmpty() && !"Tous".equals(apgar1Range) && !"All".equals(apgar1Range)) {
 			switch (apgar1Range) {
 				case "0-3":
@@ -339,9 +298,6 @@ public class StatsDeliveryIoOperationRepositoryImpl implements StatsDeliveryIoOp
 			}
 		}
 
-		// ============================================================
-		// 18. FILTRE APGAR 5min
-		// ============================================================
 		if (apgar5Range != null && !apgar5Range.isEmpty() && !"Tous".equals(apgar5Range) && !"All".equals(apgar5Range)) {
 			switch (apgar5Range) {
 				case "0-3":
@@ -356,33 +312,21 @@ public class StatsDeliveryIoOperationRepositoryImpl implements StatsDeliveryIoOp
 			}
 		}
 
-		// ============================================================
-		// 19. FILTRE RÉANIMATION
-		// ============================================================
 		if (resuscitationRequired != null) {
 			conditions.append(" AND _newborn.NBN_RESUSCITATION_REQUIRED = ?");
 			parameters.add(resuscitationRequired ? 1 : 0);
 		}
 
-		// ============================================================
-		// 20. FILTRE CRI
-		// ============================================================
 		if (cryTime != null && !cryTime.isEmpty() && !"Tous".equals(cryTime) && !"All".equals(cryTime)) {
 			conditions.append(" AND _newborn.NBN_CRY_TIME = ?");
 			parameters.add(cryTime);
 		}
 
-		// ============================================================
-		// 21. FILTRE VIH
-		// ============================================================
 		if (hivStatus != null && !hivStatus.isEmpty() && !"Tous".equals(hivStatus) && !"All".equals(hivStatus)) {
 			conditions.append(" AND _newborn.NBN_HIV_STATUS = ?");
 			parameters.add(hivStatus);
 		}
 
-		// ============================================================
-		// 22. FILTRE ANOMALIES CONGÉNITALES
-		// ============================================================
 		if (congenitalAnomalies != null) {
 			if (congenitalAnomalies) {
 				conditions.append(" AND (_newborn.NBN_CONGENITAL_ANOMALIES IS NOT NULL AND _newborn.NBN_CONGENITAL_ANOMALIES != '')");
@@ -391,9 +335,6 @@ public class StatsDeliveryIoOperationRepositoryImpl implements StatsDeliveryIoOp
 			}
 		}
 
-		// ============================================================
-		// 23. FILTRE MALADIE
-		// ============================================================
 		if (disease != null && !disease.isEmpty() && !"Tous".equals(disease) && !"All".equals(disease)) {
 			fromBuilder.append(" INNER JOIN oh_admission _patadm ON _mother.PAT_ID = _patadm.ADM_PAT_ID")
 				.append(" INNER JOIN oh_disease _disease ON _patadm.ADM_OUT_DIS_ID_A = _disease.DIS_ID_A")
@@ -403,9 +344,6 @@ public class StatsDeliveryIoOperationRepositoryImpl implements StatsDeliveryIoOp
 			parameters.add(disease);
 		}
 
-		// ============================================================
-		// 24. FILTRE TYPE DE SORTIE
-		// ============================================================
 		if (dischargeType != null && !dischargeType.isEmpty() && !"Tous".equals(dischargeType) && !"All".equals(dischargeType)) {
 			if (disease != null && !disease.isEmpty()) {
 				fromBuilder.append(" INNER JOIN oh_dischargetype _disctype ON _disctype.DIST_ID_A = _patadm.ADM_DIST_ID_A");
@@ -417,9 +355,6 @@ public class StatsDeliveryIoOperationRepositoryImpl implements StatsDeliveryIoOp
 			parameters.add(dischargeType);
 		}
 
-		// ============================================================
-		// 25. CONSTRUCTION DE LA REQUÊTE
-		// ============================================================
 		String from = fromBuilder.toString();
 		String where = " WHERE " + conditions;
 
@@ -452,14 +387,12 @@ public class StatsDeliveryIoOperationRepositoryImpl implements StatsDeliveryIoOp
 		for (Object record : dataQuery.getResultList()) {
 			Object[] row = (Object[]) record;
 
-			// MÈRE
 			Patient mother = new Patient();
 			mother.setCode(((Number) row[0]).intValue());
 			mother.setFirstName((String) row[1]);
 			mother.setSecondName((String) row[2]);
 			mother.setAge(row[3] != null ? ((Number) row[3]).intValue() : 0);
 
-			// NOUVEAU-NÉ
 			Newborn newborn = new Newborn();
 			newborn.setId(((Number) row[4]).intValue());
 			newborn.setBirthWeight(row[5] != null ? ((Number) row[5]).doubleValue() : 0.0);
@@ -481,7 +414,6 @@ public class StatsDeliveryIoOperationRepositoryImpl implements StatsDeliveryIoOp
 				}
 			}
 
-			// ACCOUCHEMENT
 			PregnancyDelivery delivery = new PregnancyDelivery();
 			delivery.setDeliveryMode(parseDeliveryMode(row[9]));
 			delivery.setDeliveryDate(row[10] != null ? ((java.sql.Timestamp) row[10]).toLocalDateTime() : null);
