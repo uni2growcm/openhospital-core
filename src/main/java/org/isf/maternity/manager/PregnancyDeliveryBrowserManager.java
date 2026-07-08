@@ -21,10 +21,18 @@
  */
 package org.isf.maternity.manager;
 
+import org.isf.generaldata.MessageBundle;
 import org.isf.maternity.model.PregnancyDelivery;
 import org.isf.maternity.service.PregnancyDeliveryIoOperation;
+import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHServiceException;
+import org.isf.utils.exception.model.OHExceptionMessage;
 import org.springframework.stereotype.Component;
+
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class PregnancyDeliveryBrowserManager {
@@ -98,5 +106,81 @@ public class PregnancyDeliveryBrowserManager {
 	 */
 	public PregnancyDelivery validateDeliveryExists(Integer pregnancyId) throws OHServiceException {
 		return service.validateDeliveryExists(pregnancyId);
+	}
+
+	/**
+	 * Validates delivery data before saving/updating.
+	 * Checks all business rules for labor onset, ROM, and blood loss.
+	 *
+	 * @param delivery the delivery to validate
+	 * @throws OHServiceException if validation fails
+	 */
+	private void validateDelivery(PregnancyDelivery delivery) throws OHServiceException {
+		List<OHExceptionMessage> errors = new ArrayList<>();
+
+		LocalDateTime deliveryDate = delivery.getDeliveryDate();
+		LocalDateTime laborOnset = delivery.getLaborOnsetDateTime();
+		LocalDateTime rom = delivery.getRuptureMembranesDateTime();
+
+		if (laborOnset != null && deliveryDate != null && laborOnset.isAfter(deliveryDate)) {
+			errors.add(new OHExceptionMessage(
+				MessageBundle.getMessage("angal.maternity.delivery.laboronset.beforedelivery.msg")));
+		}
+
+		if (rom != null && deliveryDate != null && rom.isAfter(deliveryDate)) {
+			errors.add(new OHExceptionMessage(
+				MessageBundle.getMessage("angal.maternity.delivery.rom.beforedelivery.msg")));
+		}
+
+		if (laborOnset != null && rom != null && rom.isBefore(laborOnset)) {
+			errors.add(new OHExceptionMessage(
+				MessageBundle.getMessage("angal.maternity.delivery.rom.afterlaboronset.msg")));
+		}
+
+		if (laborOnset != null && deliveryDate != null) {
+			long hoursBetween = ChronoUnit.HOURS.between(laborOnset, deliveryDate);
+			if (hoursBetween > 72) {
+				errors.add(new OHExceptionMessage(
+					MessageBundle.formatMessage("angal.maternity.delivery.laboronset.toofar.msg", hoursBetween)));
+			}
+		}
+
+		if (rom != null && deliveryDate != null) {
+			long hoursBetween = ChronoUnit.HOURS.between(rom, deliveryDate);
+			if (hoursBetween > 72) {
+				errors.add(new OHExceptionMessage(
+					MessageBundle.formatMessage("angal.maternity.delivery.rom.toofar.msg", hoursBetween)));
+			}
+		}
+
+		if (delivery.getEstimatedBloodLoss() != null && delivery.getEstimatedBloodLoss() < 0) {
+			errors.add(new OHExceptionMessage(
+				MessageBundle.getMessage("angal.maternity.delivery.bloodloss.positive.msg")));
+		}
+
+		if (delivery.getEstimatedBloodLoss() != null && delivery.getEstimatedBloodLoss() > 5000) {
+			errors.add(new OHExceptionMessage(
+				MessageBundle.formatMessage("angal.maternity.delivery.bloodloss.max.msg",
+					delivery.getEstimatedBloodLoss())));
+		}
+
+		if (laborOnset != null && laborOnset.isAfter(java.time.LocalDateTime.now())) {
+			errors.add(new OHExceptionMessage(
+				MessageBundle.getMessage("angal.maternity.delivery.laboronset.future.msg")));
+		}
+
+		if (rom != null && rom.isAfter(java.time.LocalDateTime.now())) {
+			errors.add(new OHExceptionMessage(
+				MessageBundle.getMessage("angal.maternity.delivery.rom.future.msg")));
+		}
+
+		if (deliveryDate != null && deliveryDate.isAfter(java.time.LocalDateTime.now())) {
+			errors.add(new OHExceptionMessage(
+				MessageBundle.getMessage("angal.maternity.delivery.deliverydate.future.msg")));
+		}
+
+		if (!errors.isEmpty()) {
+			throw new OHDataValidationException(errors);
+		}
 	}
 }
