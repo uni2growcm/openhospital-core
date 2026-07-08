@@ -122,6 +122,7 @@ public class SoftwareDataCollector extends AbstractDataCollector {
 			result.put(CollectorsConstants.APP_PAGINATIONPAGESIZE, String.valueOf(GeneralData.PAGINATIONPAGESIZE));
 			result.put(CollectorsConstants.APP_STOCKMVTONBILLSAVE, String.valueOf(GeneralData.STOCKMVTONBILLSAVE));
 			result.put(CollectorsConstants.APP_ALLOWBILLGUARANTOR, String.valueOf(GeneralData.ALLOWBILLGUARANTOR));
+			result.put(CollectorsConstants.APP_ALLOWBILLPARTNER, String.valueOf(GeneralData.ALLOWBILLPARTNER));
 			result.put(CollectorsConstants.APP_HIGHLIGHTEXPIRINGMEDICAL, String.valueOf(GeneralData.HIGHLIGHTEXPIRINGMEDICAL));
 			result.put(CollectorsConstants.APP_HIGHLIGHTEXPIRINGMEDICALDAYS, String.valueOf(GeneralData.HIGHLIGHTEXPIRINGMEDICALDAYS));
 

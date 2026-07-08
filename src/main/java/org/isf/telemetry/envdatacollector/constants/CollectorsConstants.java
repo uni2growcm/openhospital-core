@@ -55,6 +55,7 @@ public interface CollectorsConstants {
 
 	// TEL_OH
 	String APP_ALLOWBILLGUARANTOR = "allowbillguarantor";
+	String APP_ALLOWBILLPARTNER   = "allowbillpartner";
     String APP_STOCKMVTONBILLSAVE = "stockmvtonbillsave";
 	String APP_PAGINATIONPAGESIZE = "paginationpagesize";
 

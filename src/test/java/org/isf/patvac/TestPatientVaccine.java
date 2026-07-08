@@ -37,6 +37,7 @@ public class TestPatientVaccine {
 	private int progr = 10;
 	private LocalDateTime vaccineDate = LocalDateTime.of(1984, Month.AUGUST, 14, 9, 0, 0);
 	private int lock;
+	private String village = "Test Village";
 
 	public PatientVaccine setup(Patient patient, Vaccine vaccine, boolean usingSet) throws OHException {
 		PatientVaccine patientVaccine;
@@ -47,6 +48,7 @@ public class TestPatientVaccine {
 		} else {
 			// Create PatientVaccine with all parameters 
 			patientVaccine = new PatientVaccine(code, progr, vaccineDate, patient, vaccine, lock);
+			patientVaccine.setVillage(village);
 		}
 
 		return patientVaccine;
@@ -59,11 +61,13 @@ public class TestPatientVaccine {
 		patientVaccine.setPatient(patient);
 		patientVaccine.setVaccine(vaccine);
 		patientVaccine.setLock(lock);
+		patientVaccine.setVillage(village);
 	}
 
 	public void check(PatientVaccine patientVaccine) {
 		assertThat(patientVaccine.getLock()).isEqualTo(lock);
 		assertThat(patientVaccine.getProgr()).isEqualTo(progr);
 		assertThat(patientVaccine.getVaccineDate()).isEqualTo(vaccineDate);
+		assertThat(patientVaccine.getVillage()).isEqualTo(village);
 	}
 }

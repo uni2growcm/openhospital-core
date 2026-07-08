@@ -165,4 +165,15 @@ public class PartnerBrowserManager {
 			throw new OHDataValidationException(errors);
 		}
 	}
+
+	/**
+	 * Checks if a patient has any active partners.
+	 *
+	 * @param patientCode the code of the patient to check.
+	 * @return true if the patient has at least one active partner, false otherwise.
+	 * @throws OHServiceException when fails to check.
+	 */
+	public boolean patientHasPartners(Integer patientCode) throws OHServiceException {
+		return ioOperations.patientHasActivePartners(patientCode);
+	}
 }

@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -33,6 +33,8 @@ import org.isf.patvac.service.PatVacIoOperations;
 import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.model.OHExceptionMessage;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -56,6 +58,24 @@ public class PatVacManager {
 	}
 
 	/**
+	 * Returns a page of {@link PatientVaccine}s filtered by vaccine type, vaccine, date range, sex and age.
+	 *
+	 * @param vaccineTypeCode the vaccine type code
+	 * @param vaccineCode the vaccine code
+	 * @param dateFrom the start date
+	 * @param dateTo the end date
+	 * @param sex the patient sex
+	 * @param ageFrom the minimum age
+	 * @param ageTo the maximum age
+	 * @param pageable the pagination information
+	 * @return a page of {@link PatientVaccine}s
+	 * @throws OHServiceException
+	 */
+	public Page<PatientVaccine> getPatientVaccinePage(String vaccineTypeCode, String vaccineCode, LocalDateTime dateFrom,LocalDateTime dateTo, char sex, int ageFrom, int ageTo, Pageable pageable) throws OHServiceException {
+		return ioOperations.getPatientVaccinePage(vaccineTypeCode, vaccineCode, dateFrom, dateTo, sex, ageFrom, ageTo, pageable);
+	}
+
+	/**
 	 * Returns all {@link PatientVaccine}s within {@code dateFrom} and {@code dateTo}.
 	 *
 	 * @param vaccineTypeCode
@@ -71,6 +91,17 @@ public class PatVacManager {
 	public List<PatientVaccine> getPatientVaccine(String vaccineTypeCode, String vaccineCode, LocalDateTime dateFrom, LocalDateTime dateTo, char sex,
 		int ageFrom, int ageTo) throws OHServiceException {
 		return ioOperations.getPatientVaccine(vaccineTypeCode, vaccineCode, dateFrom, dateTo, sex, ageFrom, ageTo);
+	}
+
+	/**
+	 * Returns all {@link PatientVaccine}s associated with the specified patient.
+	 *
+	 * @param patientCode the unique identifier of the patient
+	 * @return the list of {@link PatientVaccine}s for the given patient
+	 * @throws OHServiceException if an error occurs while retrieving the patient vaccines
+	 */
+	public List<PatientVaccine> getPatientVaccineByPatientId(int patientCode) throws OHServiceException {
+		return this.ioOperations.findForPatient(patientCode);
 	}
 
 	/**
@@ -149,5 +180,27 @@ public class PatVacManager {
 		if (!errors.isEmpty()) {
 			throw new OHDataValidationException(errors);
 		}
+	}
+
+	/**
+	 * Returns a page of {@link PatientVaccine}s filtered by vaccine type, vaccine, date range, sex, age,
+	 * patient search and village.
+	 *
+	 * @param vaccineTypeCode the vaccine type code
+	 * @param vaccineCode the vaccine code
+	 * @param dateFrom the start date
+	 * @param dateTo the end date
+	 * @param sex the patient sex
+	 * @param ageFrom the minimum age
+	 * @param ageTo the maximum age
+	 * @param patientSearchText the patient name or code to search
+	 * @param villageText the village to filter
+	 * @param pageable the pagination information
+	 * @return a page of {@link PatientVaccine}s
+	 * @throws OHServiceException
+	 */
+	public Page<PatientVaccine> getPatientVaccinePage(String vaccineTypeCode, String vaccineCode, LocalDateTime dateFrom,
+		LocalDateTime dateTo, char sex, int ageFrom, int ageTo, String patientSearchText, String villageText, Pageable pageable) throws OHServiceException {
+		return ioOperations.getPatientVaccinePage(vaccineTypeCode, vaccineCode, dateFrom, dateTo, sex, ageFrom, ageTo, patientSearchText, villageText, pageable);
 	}
 }
