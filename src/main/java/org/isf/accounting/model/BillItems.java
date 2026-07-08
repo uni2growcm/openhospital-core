@@ -103,6 +103,9 @@ public class BillItems extends Auditable<String> {
 	 */
 	@Transient
 	private String itemDisplayCode;
+
+	@Transient
+	private int refundedQty;
 	
 //	/**
 //	 * Store the item Id that is involved in this bill item (medId, exaId, opeId...)
@@ -136,6 +139,10 @@ public class BillItems extends Auditable<String> {
 		this.itemQuantity = other.itemQuantity;
 		this.itemDisplayCode = other.itemDisplayCode;
 		this.itemId = other.itemId;
+		this.itemGroup = other.itemGroup;
+		this.prescriptionId = other.prescriptionId;
+		this.itemDate = other.itemDate;
+		this.itemAmountBrut = other.itemAmountBrut;
 	}
 
 	public int getId() {
@@ -269,6 +276,14 @@ public class BillItems extends Auditable<String> {
 
 	public void setItemId(String itemId) {
 		this.itemId = itemId;
+	}
+
+	public int getRefundedQty() {
+		return refundedQty;
+	}
+
+	public void setRefundedQty(int refundedQty) {
+		this.refundedQty = refundedQty;
 	}
 	
 	@Override

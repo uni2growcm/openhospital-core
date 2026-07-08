@@ -99,19 +99,18 @@ public class BillBrowserManager {
 	 * For reduced items, the quantity will be the difference.
 	 */
 	private List<BillItems> getDeletedItems(int billID, List<BillItems> updatedItems) throws OHServiceException {
-		List<BillItems> oldItems = this.ioOperations.getItems(billID);
+		List<BillItems> oldItems = this.ioOperations.getGroupItems(billID);
 		if (oldItems == null || oldItems.isEmpty()) return new ArrayList<>();
 
 		if (updatedItems == null) updatedItems = new ArrayList<>();
 
-		Map<Integer, BillItems> newItemsMap = updatedItems.stream()
-			.filter(item -> item.getId() > 0)
-			.collect(Collectors.toMap(BillItems::getId, item -> item));
+		Map<String, BillItems> newItemsMap = updatedItems.stream()
+			.collect(Collectors.toMap(BillItems::getItemDescription, item -> item, (a, b) -> a));
 
 		List<BillItems> removedOrReduced = new ArrayList<>();
 
 		for (BillItems oldItem : oldItems) {
-			BillItems newItem = newItemsMap.get(oldItem.getId());
+			BillItems newItem = newItemsMap.get(oldItem.getItemDescription());
 			if (newItem == null) {
 				removedOrReduced.add(oldItem);
 			} else if (oldItem.getItemQuantity() > newItem.getItemQuantity()) {
@@ -131,28 +130,23 @@ public class BillBrowserManager {
 	 * Returns a list of items that are newly added or have increased quantity.
 	 */
 	private List<BillItems> getNewItems(int billID, List<BillItems> updatedItems) throws OHServiceException {
-		List<BillItems> oldItems = this.ioOperations.getItems(billID);
+		List<BillItems> oldItems = this.ioOperations.getGroupItems(billID);
 		if (updatedItems == null || updatedItems.isEmpty()) return new ArrayList<>();
 
-		Map<Integer, BillItems> oldItemsMap = oldItems != null ? oldItems.stream()
-			.filter(item -> item.getId() > 0)
-			.collect(Collectors.toMap(BillItems::getId, item -> item)) : new HashMap<>();
+		Map<String, Integer> oldQtyByDesc = oldItems != null ? oldItems.stream()
+			.collect(Collectors.toMap(BillItems::getItemDescription, BillItems::getItemQuantity, Integer::sum)) : new HashMap<>();
 
 		List<BillItems> addedOrIncreased = new ArrayList<>();
 
 		for (BillItems updatedItem : updatedItems) {
-			if (updatedItem.getId() == 0) {
-				addedOrIncreased.add(updatedItem);
-			} else {
-				BillItems oldItem = oldItemsMap.get(updatedItem.getId());
-				if (oldItem != null && updatedItem.getItemQuantity() > oldItem.getItemQuantity()) {
-					int diff = updatedItem.getItemQuantity() - oldItem.getItemQuantity();
-					BillItems increasedItem = new BillItems(updatedItem.getId(), updatedItem.getBill(), updatedItem.isPrice(),
-						updatedItem.getPriceID(), updatedItem.getItemDescription(), updatedItem.getItemAmount(), diff);
-					increasedItem.setItemId(updatedItem.getItemId());
-					increasedItem.setItemDisplayCode(updatedItem.getItemDisplayCode());
-					addedOrIncreased.add(increasedItem);
-				}
+			int oldQty = oldQtyByDesc.getOrDefault(updatedItem.getItemDescription(), 0);
+			if (updatedItem.getItemQuantity() > oldQty) {
+				int diff = updatedItem.getItemQuantity() - oldQty;
+				BillItems increasedItem = new BillItems(updatedItem.getId(), updatedItem.getBill(), updatedItem.isPrice(),
+					updatedItem.getPriceID(), updatedItem.getItemDescription(), updatedItem.getItemAmount(), diff);
+				increasedItem.setItemId(updatedItem.getItemId());
+				increasedItem.setItemDisplayCode(updatedItem.getItemDisplayCode());
+				addedOrIncreased.add(increasedItem);
 			}
 		}
 
@@ -209,6 +203,20 @@ public class BillBrowserManager {
 			return new ArrayList<>();
 		}
 		return ioOperations.getItems(billID);
+	}
+
+	public List<BillItems> getGroupItems(int billID) throws OHServiceException {
+		if (billID == 0) {
+			return new ArrayList<>();
+		}
+		return ioOperations.getGroupItems(billID);
+	}
+
+	public List<BillItems> bundleBillItems(int billId) throws OHServiceException {
+		if (billId == 0) {
+			return new ArrayList<>();
+		}
+		return ioOperations.bundleBillItems(billId);
 	}
 
 	public List<Bill> getBills(LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient) throws OHServiceException {
