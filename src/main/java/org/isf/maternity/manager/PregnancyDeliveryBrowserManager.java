@@ -73,6 +73,7 @@ public class PregnancyDeliveryBrowserManager {
 	 * @throws OHServiceException if creation fails
 	 */
 	public PregnancyDelivery newDelivery(PregnancyDelivery delivery) throws OHServiceException {
+		validateDelivery(delivery);
 		return service.newDelivery(delivery);
 	}
 
@@ -84,6 +85,7 @@ public class PregnancyDeliveryBrowserManager {
 	 * @throws OHServiceException if update fails
 	 */
 	public PregnancyDelivery updateDelivery(PregnancyDelivery delivery) throws OHServiceException {
+		validateDelivery(delivery);
 		return service.updateDelivery(delivery);
 	}
 
