@@ -82,7 +82,7 @@ public class TestAdmission {
 			Ward ward,
 			Patient patient,
 			AdmissionType admissionType,
-			List<Disease> complicationDiagnosis,
+			String complication,
 			Operation operation,
 			DischargeType dischargeType,
 			PregnantTreatmentType pregTreatmentType,
@@ -95,12 +95,12 @@ public class TestAdmission {
 
 		if (usingSet) {
 			admission = new Admission();
-			setParameters(admission, ward, patient, admissionType, complicationDiagnosis,
+			setParameters(admission, ward, patient, admissionType, complication,
 				operation, dischargeType, pregTreatmentType, deliveryType, deliveryResult,
 				diagnosisIn, diagnosisOut);
 		} else {
 			admission = new Admission(id, admitted, type, ward, yProg, patient, ADMINDATE, admissionType, FHU,
-					complicationDiagnosis, DISDATE, dischargeType, anamnesis,
+					complication, DISDATE, dischargeType, anamnesis,
 					transUnit, VISITDATE, pregTreatmentType, DELIVERYDATE, deliveryType, deliveryResult, weight,
 					CTRLDATE1, CTRLDATE2, ABORTDATE, userID, deleted, preTreatment, preAssessment, entryReason,
 					alertReceived, referenceSheet, qualifiedAgent, transportation, courseOfAction, nextAppointment,
@@ -117,7 +117,7 @@ public class TestAdmission {
 			Ward ward,
 			Patient patient,
 			AdmissionType admissionType,
-			List<Disease> complicationDiagnosis,
+			String complication,
 			Operation operation,
 			DischargeType dischargeType,
 			PregnantTreatmentType pregTreatmentType,
@@ -136,7 +136,7 @@ public class TestAdmission {
 		admission.setDeliveryResult(deliveryResult);
 		admission.setDeliveryType(deliveryType);
 		admission.setDisDate(DISDATE);
-		admission.setComplicationDiagnosis(complicationDiagnosis);
+		admission.setComplication(complication);
 		admission.setDisType(dischargeType);
 		admission.setFHU(FHU);
 		admission.setAnamnesis(anamnesis);

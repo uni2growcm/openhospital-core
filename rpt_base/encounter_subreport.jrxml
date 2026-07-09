@@ -413,12 +413,19 @@ LIMIT 1]]>
 					</textElement>
 					<textFieldExpression><![CDATA[$R{VaccinationStatus}]]></textFieldExpression>
 				</textField>
-				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<textField textAdjust="ScaleFont" isBlankWhenNull="true">
 					<reportElement x="140" y="0" width="191" height="20" uuid="def956ad-24ce-4ea6-bc68-0337b8637082"/>
 					<textElement>
-						<font size="12"/>
+						<font size="10"/>
 					</textElement>
-					<textFieldExpression><![CDATA[$F{MH_VACC_STATE_PREV}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$F{MH_VACC_STATE_PREV} == null
+? ""
+: $F{MH_VACC_STATE_PREV}
+    .replace("[", "")
+    .replace("]", "")
+    .replace("\"", "")
+    .replace("_", " ")
+    .replace(",", ", ")]]></textFieldExpression>
 				</textField>
 				<textField>
 					<reportElement x="100" y="0" width="40" height="20" uuid="3e684b56-8f3f-43f4-aea9-79400e40cae1"/>
@@ -427,12 +434,19 @@ LIMIT 1]]>
 					</textElement>
 					<textFieldExpression><![CDATA[$R{PEV}]]></textFieldExpression>
 				</textField>
-				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<textField textAdjust="ScaleFont" isBlankWhenNull="true">
 					<reportElement x="400" y="0" width="182" height="20" uuid="6539f81b-646a-43c2-976d-53414d523cd8"/>
 					<textElement>
-						<font size="12"/>
+						<font size="10"/>
 					</textElement>
-					<textFieldExpression><![CDATA[$F{MH_VACC_STATE_NO_PREV}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$F{MH_VACC_STATE_NO_PREV} == null
+? ""
+: $F{MH_VACC_STATE_NO_PREV} 
+    .replace("[", "")
+    .replace("]", "")
+    .replace("\"", "")
+    .replace("_", " ")
+    .replace(",", ", ")]]></textFieldExpression>
 				</textField>
 				<textField>
 					<reportElement x="331" y="0" width="69" height="20" uuid="233d0a0e-a290-4f16-9773-68c79cc21941"/>

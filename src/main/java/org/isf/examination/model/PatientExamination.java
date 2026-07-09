@@ -135,6 +135,18 @@ public class PatientExamination extends Auditable<String> implements Comparable<
 	
 	@Column(name="PEX_PC")
 	private String pex_pc;
+
+	@Column(name="PEX_HEAD_CIRC_AGE")
+	private Double pex_head_circ_age;
+
+	@Column(name="PEX_WEIGHT_AGE")
+	private Double pex_weight_age;
+
+	@Column(name="PEX_HEIGHT_AGE")
+	private Double pex_height_age;
+
+	@Column(name="PEX_BODY_MASS_INDEX_AGE")
+	private Double pex_body_mass_index_age;
 	
 	@Transient
 	private volatile int hashCode;
@@ -236,6 +248,55 @@ public class PatientExamination extends Auditable<String> implements Comparable<
 		this.pex_auscultation = pex_ausc;
 		this.pex_note = pex_note;
 		this.pex_ipt = pex_ipt;
+	}
+
+	public PatientExamination(
+		LocalDateTime pex_date,
+		String examinationType,
+		Patient patient,
+		Integer pex_height,
+		Double pex_weight,
+		Integer pex_ap_min,
+		Integer pex_ap_max,
+		Integer pex_hr,
+		Double pex_temp,
+		Double pex_sat,
+		Integer pex_hgt,
+		Integer pex_diuresis,
+		String pex_diuresis_desc,
+		String pex_bowel_desc,
+		Integer pex_rr,
+		String pex_ausc,
+		String pex_note,
+		String pex_ipt,
+		Double pex_head_circ_age,
+		Double pex_weight_age,
+		Double pex_height_age,
+		Double pex_body_mass_index_age
+	) {
+		super();
+		this.pex_date = TimeTools.truncateToSeconds(pex_date);
+		this.pex_type = examinationType;
+		this.patient = patient;
+		this.pex_height = pex_height;
+		this.pex_weight = pex_weight;
+		this.pex_ap_min = pex_ap_min;
+		this.pex_ap_max = pex_ap_max;
+		this.pex_hr = pex_hr;
+		this.pex_temp = pex_temp;
+		this.pex_sat = pex_sat;
+		this.pex_hgt = pex_hgt;
+		this.pex_diuresis = pex_diuresis;
+		this.pex_diuresis_desc = pex_diuresis_desc;
+		this.pex_bowel_desc = pex_bowel_desc;
+		this.pex_rr= pex_rr;
+		this.pex_auscultation = pex_ausc;
+		this.pex_note = pex_note;
+		this.pex_ipt = pex_ipt;
+		this.pex_head_circ_age = pex_head_circ_age;
+		this.pex_height_age = pex_height_age;
+		this.pex_weight_age = pex_weight_age;
+		this.pex_body_mass_index_age = pex_body_mass_index_age;
 	}
 
 	/**
@@ -519,10 +580,41 @@ public class PatientExamination extends Auditable<String> implements Comparable<
 	public String getPex_pc() {
 		return pex_pc;
 	}
-
 	
 	public void setPex_pc(String pex_pc) {
 		this.pex_pc = pex_pc;
+	}
+
+	public Double getPex_head_circ_age() {
+		return pex_head_circ_age;
+	}
+
+	public void setPex_head_circ_age(Double pex_head_circ_age) {
+		this.pex_head_circ_age = pex_head_circ_age;
+	}
+
+	public Double getPex_weight_age() {
+		return pex_weight_age;
+	}
+
+	public void setPex_weight_age(Double pex_weight_age) {
+		this.pex_weight_age = pex_weight_age;
+	}
+
+	public Double getPex_height_age() {
+		return pex_height_age;
+	}
+
+	public void setPex_height_age(Double pex_height_age) {
+		this.pex_height_age = pex_height_age;
+	}
+
+	public Double getPex_body_mass_index_age() {
+		return pex_body_mass_index_age;
+	}
+
+	public void setPex_body_mass_index_age(Double pex_body_mass_index_age) {
+		this.pex_body_mass_index_age = pex_body_mass_index_age;
 	}
 
 	@Override

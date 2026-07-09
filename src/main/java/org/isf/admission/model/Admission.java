@@ -93,13 +93,8 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 	@Column(name = "ADM_FHU")
 	private String fHU;                        // FromHealthUnit (null)
 
-	@ManyToMany
-	@JoinTable(
-		name = "OH_COMPLICATIONDIAGNOSIS",
-		joinColumns = @JoinColumn(name = "CD_ADM_ID"),
-		inverseJoinColumns = @JoinColumn(name = "CD_DIS_ID_A")
-	)
-	private List<Disease> complicationDiagnosis;
+	@Column(name = "ADM_COMPLICATION")
+	private String complication;
 
 	@ManyToMany
 	@JoinTable(
@@ -273,12 +268,12 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 	 * @param deleted
 	 */
 	public Admission(int id, int admitted, String type, Ward ward, int prog, Patient patient, LocalDateTime admDate,
-					 AdmissionType admType, String fhu,
-					 List<Disease> complicationDiagnosis,
-					 LocalDateTime disDate, DischargeType disType, String anamnesis, Float transUnit, LocalDateTime visitDate,
-					 PregnantTreatmentType pregTreatmentType, LocalDateTime deliveryDate, DeliveryType deliveryType, DeliveryResultType deliveryResult, Float weight,
-					 LocalDateTime ctrlDate1, LocalDateTime ctrlDate2,
-					 LocalDateTime abortDate, String userID, char deleted) {
+					 AdmissionType admType, String fhu, String complication, LocalDateTime disDate,
+					 DischargeType disType, String anamnesis, Float transUnit, LocalDateTime visitDate,
+					 PregnantTreatmentType pregTreatmentType, LocalDateTime deliveryDate, DeliveryType deliveryType,
+					 DeliveryResultType deliveryResult, Float weight, LocalDateTime ctrlDate1, LocalDateTime ctrlDate2,
+					 LocalDateTime abortDate, String userID, char deleted
+	) {
 		super();
 		this.id = id;
 		this.admitted = admitted;
@@ -289,7 +284,7 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 		this.admDate = TimeTools.truncateToSeconds(admDate);
 		this.admissionType = admType;
 		this.fHU = fhu;
-		this.complicationDiagnosis = complicationDiagnosis;
+		this.complication = complication;
 		this.disDate = TimeTools.truncateToSeconds(disDate);
 		this.disType = disType;
 		this.anamnesis = anamnesis;
@@ -319,7 +314,7 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 	 * @param admDate          the admission date and time
 	 * @param admType          the admission type
 	 * @param fhu              the first health unit (if applicable)
-	 * @param complicationDiagnosis      the primary disease at discharge
+	 * @param complication     the primary disease at discharge
 	 * @param disDate          the discharge date and time
 	 * @param disType          the discharge type
 	 * @param anamnesis        anamnesis about the admission
@@ -343,7 +338,7 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 	 * @param qualifiedAgent
 	 */
 	public Admission(int id, int admitted, String type, Ward ward, int prog, Patient patient,
-					 LocalDateTime admDate, AdmissionType admType, String fhu, List<Disease> complicationDiagnosis,
+					 LocalDateTime admDate, AdmissionType admType, String fhu, String complication,
 					 LocalDateTime disDate, DischargeType disType, String anamnesis, Float transUnit,
 					 LocalDateTime visitDate, PregnantTreatmentType pregTreatmentType,
 					 LocalDateTime deliveryDate, DeliveryType deliveryType, DeliveryResultType deliveryResult,
@@ -355,7 +350,7 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 					 String referralReason, String treatmentReceived,
 					 String outcome, String improvementFeedback, String deathPeriod, String othersInformation) {
 
-		this(id, admitted, type, ward, prog, patient, admDate, admType, fhu, complicationDiagnosis,
+		this(id, admitted, type, ward, prog, patient, admDate, admType, fhu, complication,
 			disDate, disType, anamnesis, transUnit, visitDate,
 			pregTreatmentType, deliveryDate, deliveryType, deliveryResult, weight,
 			ctrlDate1, ctrlDate2, abortDate, userID, deleted);
@@ -390,7 +385,7 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 	 * @param admDate          the admission date and time
 	 * @param admType          the admission type
 	 * @param fhu              the first health unit (if applicable)
-	 * @param complicationDiagnosis      the diseases at discharge
+	 * @param complication     the diseases at discharge
 	 * @param disDate          the discharge date and time
 	 * @param disType          the discharge type
 	 * @param anamnesis        anamnesis about the admission
@@ -416,7 +411,7 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 	 * @param diagnosisIn
 	 */
 	public Admission(int id, int admitted, String type, Ward ward, int prog, Patient patient,
-					 LocalDateTime admDate, AdmissionType admType, String fhu, List<Disease> complicationDiagnosis,
+					 LocalDateTime admDate, AdmissionType admType, String fhu, String complication,
 					 LocalDateTime disDate, DischargeType disType, String anamnesis, Float transUnit,
 					 LocalDateTime visitDate, PregnantTreatmentType pregTreatmentType,
 					 LocalDateTime deliveryDate, DeliveryType deliveryType, DeliveryResultType deliveryResult,
@@ -430,7 +425,7 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 					 List<Disease> diagnosisIn, List<Disease> diagnosisOut
 	) {
 
-		this(id, admitted, type, ward, prog, patient, admDate, admType, fhu, complicationDiagnosis,
+		this(id, admitted, type, ward, prog, patient, admDate, admType, fhu, complication,
 			disDate, disType, anamnesis, transUnit, visitDate,
 			pregTreatmentType, deliveryDate, deliveryType, deliveryResult, weight,
 			ctrlDate1, ctrlDate2, abortDate, userID, deleted);
@@ -575,12 +570,12 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 		this.disDate = TimeTools.truncateToSeconds(disDate);
 	}
 
-	public List<Disease> getComplicationDiagnosis() {
-		return complicationDiagnosis;
+	public String getComplication() {
+		return complication;
 	}
 
-	public void setComplicationDiagnosis(List<Disease> complicationDiagnosis) {
-		this.complicationDiagnosis = complicationDiagnosis;
+	public void setComplication(String complication) {
+		this.complication = complication;
 	}
 
 	public DischargeType getDisType() {

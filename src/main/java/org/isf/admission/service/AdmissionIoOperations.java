@@ -402,7 +402,6 @@ public class AdmissionIoOperations {
 	public PagedResponse<Admission> getAdmissionsByAdmissionDates(LocalDateTime dateFrom, LocalDateTime dateTo, Pageable pageable) throws OHServiceException {
 		Page<Admission> pagedResult = repository.findAllWhere_AdmissionDate_Paginated(dateFrom, dateTo, pageable);
 		pagedResult.getContent().forEach(a -> {
-			Hibernate.initialize(a.getComplicationDiagnosis());
 			Hibernate.initialize(a.getDiagnosisIn());
 			Hibernate.initialize(a.getDiagnosisOut());
 		});
@@ -421,7 +420,6 @@ public class AdmissionIoOperations {
 	public PagedResponse<Admission> getAdmissionsByDischargeDates(LocalDateTime dateFrom, LocalDateTime dateTo, Pageable pageable) throws OHServiceException {
 		Page<Admission> pagedResult = repository.findAllWhere_DischargeDate_Paginated(dateFrom, dateTo, pageable);
 		pagedResult.getContent().forEach(a -> {
-			Hibernate.initialize(a.getComplicationDiagnosis());
 			Hibernate.initialize(a.getDiagnosisIn());
 			Hibernate.initialize(a.getDiagnosisOut());
 		});

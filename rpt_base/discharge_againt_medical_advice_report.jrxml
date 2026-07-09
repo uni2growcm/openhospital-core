@@ -51,7 +51,7 @@
 				</image>
 			</frame>
 			<textField>
-				<reportElement x="157" y="60" width="231" height="20" uuid="2069ef3e-5bbd-49f1-acb7-716ce7e57a9c"/>
+				<reportElement x="0" y="60" width="550" height="20" uuid="2069ef3e-5bbd-49f1-acb7-716ce7e57a9c"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="14" isBold="true"/>
 				</textElement>
@@ -65,14 +65,14 @@
 				<text><![CDATA[69374701 / 69374702 / 6937470]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="157" y="80" width="231" height="20" uuid="a6a6ed98-876a-471a-8ce9-59f0438ac2a9"/>
+				<reportElement x="0" y="80" width="550" height="20" uuid="a6a6ed98-876a-471a-8ce9-59f0438ac2a9"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="14" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$R{hospital}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="157" y="100" width="231" height="20" uuid="f67f4cfc-6170-43b7-87da-15acc8bb5556"/>
+				<reportElement x="100" y="100" width="381" height="20" uuid="f67f4cfc-6170-43b7-87da-15acc8bb5556"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="14" isBold="true"/>
 				</textElement>

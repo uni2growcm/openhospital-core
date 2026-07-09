@@ -33,7 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class TestCare {
 
 	private final List<String> TEAM = List.of("admin");
-	private final String OBSERVATION = "Good observation";
+	private final Boolean OBSERVATION = true;
 	private final String PLANNED_CARE = "Planned care";
 	private final String NOTE = "Good treatment";
 	private final LocalDateTime CARE_DATE = LocalDateTime.of(2026, 3, 9, 9, 30);
