@@ -24,6 +24,8 @@ package org.isf.tuberculosis.manager;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.isf.tuberculosis.model.Classification;
+import org.isf.tuberculosis.model.DiseaseLocation;
 import org.isf.tuberculosis.model.TuberculosisTreatment;
 import org.isf.tuberculosis.model.TreatmentStatus;
 import org.isf.tuberculosis.service.TuberculosisTreatmentIoOperations;
@@ -70,12 +72,15 @@ public class TuberculosisTreatmentManager {
     public Page<TuberculosisTreatment> getTreatmentsByFilters(
         Integer patientCode,
         TreatmentStatus status,
+        Classification classification,
+        DiseaseLocation diseaseLocation,
         LocalDate dateFrom,
         LocalDate dateTo,
         LocalDate startDateFrom,
         LocalDate startDateTo,
         Pageable pageable) throws OHServiceException {
         return ioOperations.findTreatmentsByFilters(
-            patientCode, status, dateFrom, dateTo, startDateFrom, startDateTo, pageable);
+            patientCode, status, classification, diseaseLocation,
+            dateFrom, dateTo, startDateFrom, startDateTo, pageable);
     }
 }

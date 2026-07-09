@@ -3,6 +3,8 @@ package org.isf.tuberculosis.service;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.isf.tuberculosis.model.Classification;
+import org.isf.tuberculosis.model.DiseaseLocation;
 import org.isf.tuberculosis.model.TuberculosisTreatment;
 import org.isf.tuberculosis.model.TreatmentStatus;
 import org.isf.utils.db.TranslateOHServiceException;
@@ -52,12 +54,15 @@ public class TuberculosisTreatmentIoOperations {
     public Page<TuberculosisTreatment> findTreatmentsByFilters(
         Integer patientCode,
         TreatmentStatus status,
+        Classification classification,
+        DiseaseLocation diseaseLocation,
         LocalDate dateFrom,
         LocalDate dateTo,
         LocalDate startDateFrom,
         LocalDate startDateTo,
         Pageable pageable) throws OHServiceException {
         return repository.findByFilters(
-            patientCode, status, dateFrom, dateTo, startDateFrom, startDateTo, pageable);
+            patientCode, status, classification, diseaseLocation,
+            dateFrom, dateTo, startDateFrom, startDateTo, pageable);
     }
 }

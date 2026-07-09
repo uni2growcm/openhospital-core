@@ -136,7 +136,7 @@ class TuberculosisTests extends OHCoreTestCase {
 
         Page<TuberculosisTreatment> page = treatmentManager.getTreatmentsByFilters(
             patient.getCode(), TreatmentStatus.ONGOING,
-            dateFrom, dateTo, dateFrom, dateTo, pageable);
+            null, null, dateFrom, dateTo, dateFrom, dateTo, pageable);
 
         assertThat(page.getTotalElements()).isGreaterThanOrEqualTo(1);
     }
