@@ -53,4 +53,5 @@ public interface CountryIoOperationRepository extends JpaRepository<Country, Int
 	List<Country> searchCountries(@Param("keyword") String keyword);
 
 	Optional<Country> findByNameAndActive(String name, int active);
+	Optional<Country> findByPhoneCode(String phoneCode);
 }
