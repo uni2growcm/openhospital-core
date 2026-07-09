@@ -21,24 +21,25 @@
  */
 package org.isf.stat2.service;
 
+import java.time.LocalDateTime;
+
 import org.isf.patient.model.Patient;
+import org.isf.utils.exception.OHServiceException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.isf.stat2.model.DiseaseStat;
 import org.isf.stat2.model.ExamStat;
 import org.isf.stat2.model.OperationStat;
 import org.isf.stat2.model.StatsDelivery;
 import org.isf.stat2.model.VaccineStat;
-import org.isf.utils.exception.OHServiceException;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,6 +55,11 @@ public class StatsIoOperations {
 	private EntityManager entityManager;
 
 	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	private final StatsIoOperationRepositoryCustom repository;
+
+	public StatsIoOperations(StatsIoOperationRepositoryCustom statsIoOperationRepositoryCustom) {
+		this.repository = statsIoOperationRepositoryCustom;
+	}
 
 	/**
 	 * Retrieves a paginated list of patients matching the specified filters.
@@ -1471,5 +1477,82 @@ public class StatsIoOperations {
 		} catch (Exception e) {
 			return null;
 		}
+	}
+
+	/**
+	 * Returns a paginated list of {@link Patient}s matching the pregnancy statistics filters.
+	 */
+	public Page<Patient> getPregnanciesStats(
+		Integer ageFrom,
+		Integer ageTo,
+		LocalDateTime periodFrom,
+		LocalDateTime periodTo,
+		String exam,
+		String examResult,
+		LocalDateTime examPeriodFrom,
+		LocalDateTime examPeriodTo,
+		String vaccine,
+		LocalDateTime vaccinePeriodFrom,
+		LocalDateTime vaccinePeriodTo,
+		String disease,
+		String dischargeType,
+		boolean parameterHeight,
+		boolean parameterWeight,
+		boolean parameterArtPress,
+		boolean parameterCardFreq,
+		boolean parameterTemp,
+		boolean parameterSaturation,
+		boolean parameterRespRate,
+		Double heightMin, Double heightMax,
+		Double weightMin, Double weightMax,
+		Double systolicMin, Double systolicMax,
+		Double diastolicMin, Double diastolicMax,
+		Double cardiacMin, Double cardiacMax,
+		Double tempMin, Double tempMax,
+		Double satMin, Double satMax,
+		Double respMin, Double respMax,
+		String riskLevel,
+		String status,
+		Integer gravidityMin,
+		Integer gravidityMax,
+		Integer parityMin,
+		Integer parityMax,
+		Integer miscarriageMin,
+		Integer miscarriageMax,
+		Integer gestationalAgeMin,
+		Integer gestationalAgeMax,
+		String visitType,
+		Integer visitCountMin,
+		Integer visitCountMax,
+		String maternalWeightRange,
+		String urineProtein,
+		String edema,
+		String fetalPresentation,
+		String systolicBpRange,
+		String diastolicBpRange,
+		int page,
+		int size
+	) throws OHServiceException {
+
+		return repository.findPregnanciesStatsByFilters(
+			ageFrom, ageTo, periodFrom, periodTo,
+			exam, examResult, examPeriodFrom, examPeriodTo,
+			vaccine, vaccinePeriodFrom, vaccinePeriodTo,
+			disease, dischargeType,
+			parameterHeight, parameterWeight, parameterArtPress,
+			parameterCardFreq, parameterTemp, parameterSaturation, parameterRespRate,
+			heightMin, heightMax, weightMin, weightMax, systolicMin, systolicMax, diastolicMin,
+			diastolicMax, cardiacMin, cardiacMax, tempMin, tempMax, satMin, satMax, respMin, respMax,
+			riskLevel, status,
+			gravidityMin, gravidityMax,
+			parityMin, parityMax,
+			miscarriageMin, miscarriageMax,
+			gestationalAgeMin, gestationalAgeMax,
+			visitType, visitCountMin, visitCountMax,
+			maternalWeightRange, urineProtein, edema,
+			fetalPresentation, systolicBpRange, diastolicBpRange,
+			PageRequest.of(page, size)
+		);
+
 	}
 }

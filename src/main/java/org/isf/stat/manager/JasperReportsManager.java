@@ -1330,4 +1330,34 @@ public class JasperReportsManager {
 			throw new OHReportException(e, new OHExceptionMessage( MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
 		}
 	}
+
+	public JasperReportResultDto getGenericReportHIVInfantRegisterPdf(LocalDate fromDate, LocalDate toDate, String statut,
+		String feedingType, Boolean actif, String sexe, String jasperFileName) throws OHServiceException {
+
+		try {
+			HashMap<String, Object> parameters = getHospitalParameters();
+
+			addBundleParameter(RPT_BASE, jasperFileName, parameters);
+
+			parameters.put("fromdate", toDate(fromDate));
+			parameters.put("todate", toDate(toDate));
+			parameters.put("statut", statut);
+			parameters.put("feedingType", feedingType);
+			parameters.put("actif", actif);
+			parameters.put("sexe", sexe);
+
+			String pdfFilename = compilePDFFilename(RPT_BASE, jasperFileName, null, "pdf");
+			JasperReportResultDto result = generateJasperReport(compileJasperFilename(RPT_BASE, jasperFileName), pdfFilename, parameters);
+			JasperExportManager.exportReportToPdfFile(result.getJasperPrint(), pdfFilename);
+
+			return result;
+
+		} catch (Exception e) {
+			LOGGER.error("", e);
+			throw new OHReportException(
+				e,
+				new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG))
+			);
+		}
+	}
 }
