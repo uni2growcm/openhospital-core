@@ -114,6 +114,7 @@ public final class GeneralData extends ConfigurationProperties {
 	public static boolean PARTNERSMODULEENABLED;
 	public static boolean COMMANDMODULEENABLED;
 	public static boolean MATERNITYMODULEENABLED;
+	public static boolean TUBERCULOSISMODULEENABLED;
 
 	public static final boolean DEFAULT_ENABLEMEDICALREFUND = false;
 	public static final int DEFAULT_PAGINATIONPAGESIZE = 100;
@@ -198,6 +199,7 @@ public final class GeneralData extends ConfigurationProperties {
 	private static final boolean DEFAULT_PARTNERSMODULEENABLED = true;
 	private static final boolean DEFAULT_COMMANDMODULEENABLED = true;
 	private static final boolean DEFAULT_MATERNITYMODULEENABLED = true;
+	private static final boolean DEFAULT_TUBERCULOSISMODULEENABLED = true;
 
 	private static GeneralData mySingleData;
 
@@ -283,6 +285,7 @@ public final class GeneralData extends ConfigurationProperties {
 		PARTNERSMODULEENABLED = myGetProperty("PARTNERSMODULEENABLED", DEFAULT_PARTNERSMODULEENABLED);
 		COMMANDMODULEENABLED = myGetProperty("COMMANDMODULEENABLED", DEFAULT_COMMANDMODULEENABLED);
 		MATERNITYMODULEENABLED = myGetProperty("MATERNITYMODULEENABLED", DEFAULT_MATERNITYMODULEENABLED);
+		TUBERCULOSISMODULEENABLED = myGetProperty("TUBERCULOSISMODULEENABLED", DEFAULT_TUBERCULOSISMODULEENABLED);
 
 		STRONGPASSWORD = myGetProperty("STRONGPASSWORD", DEFAULT_STRONGPASSWORD);
 		STRONGLENGTH = myGetProperty("STRONGLENGTH", DEFAULT_STRONGLENGTH);
