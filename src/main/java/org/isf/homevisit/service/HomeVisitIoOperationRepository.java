@@ -52,10 +52,6 @@ public interface HomeVisitIoOperationRepository extends JpaRepository<HomeVisit,
 	                                @Param("endDate") LocalDateTime endDate,
 	                                Pageable pageable);
 
-//	@Modifying
-//	@Query("UPDATE HomeVisit hv SET hv.status = :status WHERE hv.id = :id")
-//	void updateStatus(@Param("id") int id, @Param("status") HomeVisitStatus status);
-
 	@Modifying
 	@Query("UPDATE HomeVisit hv SET hv.active = 0 WHERE hv.id = :id")
 	void softDelete(@Param("id") int id);
