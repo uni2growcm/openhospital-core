@@ -19,32 +19,34 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.isf.typology.model;
+package org.isf.tuberculosis.model;
 
 import org.isf.generaldata.MessageBundle;
 
-public enum Family {
-	DELIVERYTYPE("angal.typology.deliverytype"),
-	VISITTYPE("angal.typology.visittype"),
-	PARTNERTYPE("angal.typology.partnertype"),
-	FAMILYPLANNINGMETHODTYPE("angal.typology.familyplanningmethodtype"),
-	FAMILYPLANNINGVISITTYPE("angal.typology.familyplanningvisittype"),
-	HIVTREATMENTTYPE("angal.typology.hivtreatmenttype"),
-	TUBERCULOSISREGIMEN("angal.typology.tuberculosisregimen"),
-	TUBERCULOSISCONTACT("angal.typology.tuberculosiscontact");
+public enum TreatmentOutcome {
+    CURED("angal.tb.outcome.cured"),
+    COMPLETED("angal.tb.outcome.completed"),
+    FAILED("angal.tb.outcome.failed"),
+    DECEASED("angal.tb.outcome.deceased"),
+    LOST("angal.tb.outcome.lost"),
+    TRANSFERRED("angal.tb.outcome.transferred");
 
-	private final String key;
+    private final String key;
 
-	Family(String key) {
-		this.key = key;
-	}
+    TreatmentOutcome(String key) {
+        this.key = key;
+    }
 
-	public String getMessageKey() {
-		return key;
-	}
+    public String getKey() {
+        return key;
+    }
 
-	@Override
-	public String toString() {
-		return MessageBundle.getMessage(key);
-	}
+    public String getDescription() {
+        return MessageBundle.getMessage(key);
+    }
+
+    @Override
+    public String toString() {
+        return getDescription();
+    }
 }

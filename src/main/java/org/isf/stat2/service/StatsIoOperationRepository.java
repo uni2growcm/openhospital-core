@@ -19,32 +19,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.isf.typology.model;
+package org.isf.stat2.service;
 
-import org.isf.generaldata.MessageBundle;
+import org.springframework.stereotype.Repository;
 
-public enum Family {
-	DELIVERYTYPE("angal.typology.deliverytype"),
-	VISITTYPE("angal.typology.visittype"),
-	PARTNERTYPE("angal.typology.partnertype"),
-	FAMILYPLANNINGMETHODTYPE("angal.typology.familyplanningmethodtype"),
-	FAMILYPLANNINGVISITTYPE("angal.typology.familyplanningvisittype"),
-	HIVTREATMENTTYPE("angal.typology.hivtreatmenttype"),
-	TUBERCULOSISREGIMEN("angal.typology.tuberculosisregimen"),
-	TUBERCULOSISCONTACT("angal.typology.tuberculosiscontact");
+@Repository
+public interface StatsIoOperationRepository extends StatsIoOperationRepositoryCustom {
 
-	private final String key;
-
-	Family(String key) {
-		this.key = key;
-	}
-
-	public String getMessageKey() {
-		return key;
-	}
-
-	@Override
-	public String toString() {
-		return MessageBundle.getMessage(key);
-	}
 }

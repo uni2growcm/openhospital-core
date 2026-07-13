@@ -88,6 +88,17 @@ public class CountryBrowserManager {
 	}
 
 	/**
+	 * Returns the active {@link Country} with the given name, if it exists.
+	 *
+	 * @param phoneCode the name of the country to retrieve.
+	 * @return an {@link Optional} containing the {@link Country} if found and active, or empty otherwise.
+	 * @throws OHServiceException when fails to fetch the country.
+	 */
+	public Optional<Country> getCountryByPhoneCode(String phoneCode) throws OHServiceException {
+		return ioOperations.getCountryByPhoneCode(phoneCode);
+	}
+
+	/**
 	 * Updates an existing {@link Country}.
 	 *
 	 * @param country the country with updated fields.
