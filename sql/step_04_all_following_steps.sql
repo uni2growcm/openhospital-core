@@ -134,4 +134,4 @@ source step_a137_add_cares_table_and_add_care_permission.sql;
 source step_a138_create_table_oh_hospitalizationconsultation.sql;
 source step_a139_create_table_oh_diagnosisout.sql;
 source step_a140_create_table_oh_diagnosisin.sql;
-step_a141_update_table_patientexamation.sql;
+source step_a141_update_table_patientexamation.sql;
