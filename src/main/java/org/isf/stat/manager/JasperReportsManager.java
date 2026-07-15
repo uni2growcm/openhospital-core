@@ -1284,6 +1284,36 @@ public class JasperReportsManager {
 		}
 	}
 
+	public JasperReportResultDto getHomeVisitActivityReportPdf(LocalDate fromDate, LocalDate toDate, String jasperFileName) throws OHServiceException {
+
+		try {
+			HashMap<String, Object> parameters = getHospitalParameters();
+			addBundleParameter(RPT_BASE, jasperFileName, parameters);
+
+			LocalDateTime periodStart = fromDate.atStartOfDay();
+			LocalDateTime periodEnd = toDate.plusDays(1).atStartOfDay();
+
+			DateTimeFormatter labelFormatter = DateTimeFormatter.ofPattern(DD_MM_YYYY, Locale.getDefault());
+			String periodLabel = fromDate.format(labelFormatter) + " - " + toDate.format(labelFormatter);
+
+			parameters.put("PeriodStart", java.sql.Timestamp.valueOf(periodStart));
+			parameters.put("PeriodEnd", java.sql.Timestamp.valueOf(periodEnd));
+			parameters.put("PeriodLabel", periodLabel);
+			parameters.put("TopN", 500);
+
+			DateTimeFormatter fileFormatter = DateTimeFormatter.ofPattern(YYYY_M_MDD);
+			String pdfFilename = compilePDFFilename(RPT_BASE, jasperFileName,
+				Arrays.asList(fromDate.format(fileFormatter), toDate.format(fileFormatter)), "pdf");
+
+			JasperReportResultDto result = generateJasperReport(compileJasperFilename(RPT_BASE, jasperFileName), pdfFilename, parameters);
+			JasperExportManager.exportReportToPdfFile(result.getJasperPrint(), pdfFilename);
+			return result;
+		} catch (Exception e) {
+			LOGGER.error("", e);
+			throw new OHReportException(e, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
+		}
+	}
+
 	public JasperReportResultDto getPregnancyReportPdf(Long pregId) throws OHServiceException {
 
 		try {
@@ -1357,36 +1387,6 @@ public class JasperReportsManager {
 				e,
 				new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG))
 			);
-		}
-	}
-
-	public JasperReportResultDto getHomeVisitActivityReportPdf(LocalDate fromDate, LocalDate toDate, String jasperFileName) throws OHServiceException {
-
-		try {
-			HashMap<String, Object> parameters = getHospitalParameters();
-			addBundleParameter(RPT_BASE, jasperFileName, parameters);
-
-			LocalDateTime periodStart = fromDate.atStartOfDay();
-			LocalDateTime periodEnd = toDate.plusDays(1).atStartOfDay();
-
-			DateTimeFormatter labelFormatter = DateTimeFormatter.ofPattern(DD_MM_YYYY, Locale.getDefault());
-			String periodLabel = fromDate.format(labelFormatter) + " - " + toDate.format(labelFormatter);
-
-			parameters.put("PeriodStart", java.sql.Timestamp.valueOf(periodStart));
-			parameters.put("PeriodEnd", java.sql.Timestamp.valueOf(periodEnd));
-			parameters.put("PeriodLabel", periodLabel);
-			parameters.put("TopN", 500);
-
-			DateTimeFormatter fileFormatter = DateTimeFormatter.ofPattern(YYYY_M_MDD);
-			String pdfFilename = compilePDFFilename(RPT_BASE, jasperFileName,
-				Arrays.asList(fromDate.format(fileFormatter), toDate.format(fileFormatter)), "pdf");
-
-			JasperReportResultDto result = generateJasperReport(compileJasperFilename(RPT_BASE, jasperFileName), pdfFilename, parameters);
-			JasperExportManager.exportReportToPdfFile(result.getJasperPrint(), pdfFilename);
-			return result;
-		} catch (Exception e) {
-			LOGGER.error("", e);
-			throw new OHReportException(e, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
 		}
 	}
 }
