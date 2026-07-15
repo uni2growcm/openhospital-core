@@ -1376,7 +1376,7 @@ public class JasperReportsManager {
 			parameters.put("PeriodStart", java.sql.Timestamp.valueOf(periodStart));
 			parameters.put("PeriodEnd", java.sql.Timestamp.valueOf(periodEnd));
 			parameters.put("PeriodLabel", periodLabel);
-			parameters.put("TopN", 10);
+			parameters.put("TopN", 500);
 
 			DateTimeFormatter fileFormatter = DateTimeFormatter.ofPattern(YYYY_M_MDD);
 			String pdfFilename = compilePDFFilename(RPT_BASE, jasperFileName,
