@@ -23,6 +23,7 @@ package org.isf.visits.manager;
 
 import static java.util.stream.Collectors.toList;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +32,7 @@ import java.util.stream.Collectors;
 
 import org.isf.generaldata.MessageBundle;
 import org.isf.menu.manager.UserBrowsingManager;
+import org.isf.menu.model.User;
 import org.isf.patient.manager.PatientBrowserManager;
 import org.isf.patient.model.Patient;
 import org.isf.sms.manager.SmsManager;
@@ -343,5 +345,28 @@ public class VisitManager {
 	 */
 	public Visit findVisit(int id) throws OHServiceException {
 		return ioOperations.findVisit(id);
+	}
+
+	/**
+	 * Returns the {@link Visit} based on visit date
+	 *
+	 * @param fromDate the Date of start
+	 * @param toDate the end date
+	 * @return the {@link Visit}
+	 */
+	public List<User> getUsersWithAppointments(LocalDate fromDate, LocalDate toDate) throws OHServiceException {
+
+		if (fromDate == null || toDate == null) {
+			return List.of();
+		}
+
+		if (fromDate.isAfter(toDate)) {
+			return List.of();
+		}
+
+		LocalDateTime fromDateTime = fromDate.atStartOfDay();
+		LocalDateTime toDateExclusive = toDate.plusDays(1).atStartOfDay();
+
+		return ioOperations.getUsersWithAppointments(fromDateTime, toDateExclusive);
 	}
 }
