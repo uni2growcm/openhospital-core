@@ -21,8 +21,10 @@
  */
 package org.isf.visits.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
+import org.isf.menu.model.User;
 import org.isf.patient.model.Patient;
 import org.isf.utils.db.TranslateOHServiceException;
 import org.isf.utils.exception.OHServiceException;
@@ -148,4 +150,13 @@ public class VisitsIoOperations {
 		return this.repository.countAllActiveAppointments();
 	}
 
+	/**
+	 * Returns the {@link Visit} based on visit id
+	 *
+	 * @param fromDate the Date of start
+	 * @return the {@link Visit}
+	 */
+	public List<User> getUsersWithAppointments(LocalDateTime fromDate, LocalDateTime toDateExclusive) {
+		return repository.findUsersWithAppointments(fromDate, toDateExclusive);
+	}
 }
