@@ -21,6 +21,7 @@
  */
 package org.isf.typology.manager;
 
+import org.isf.generaldata.GeneralData;
 import org.isf.generaldata.MessageBundle;
 import org.isf.typology.model.Family;
 import org.isf.typology.model.Typology;
@@ -30,6 +31,7 @@ import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.model.OHExceptionMessage;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
@@ -117,7 +119,13 @@ public class TypologyBrowserManager {
 	 */
 	public Page<Typology> searchTypologies(String search, Family family, int page, int size) throws OHServiceException {
 		Pageable pageable = PageRequest.of(page, size);
-		return ioOperations.searchTypologies(search, family, pageable);
+		if (family != null && !isFamilyEnabled(family)) {
+			return new PageImpl<>(List.of(), pageable, 0);
+		}
+		Page<Typology> result = ioOperations.searchTypologies(search, family, pageable);
+		List<Typology> enabledTypologies = result.getContent().stream().filter(typology -> isFamilyEnabled(typology.getFamily())).toList();
+
+		return new PageImpl<>(enabledTypologies, pageable, enabledTypologies.size());
 	}
 
 	/**
@@ -128,6 +136,9 @@ public class TypologyBrowserManager {
 	 * @throws OHServiceException if retrieval fails
 	 */
 	public List<Typology> getTypologies(Family family) throws OHServiceException {
+		if (!isFamilyEnabled(family)) {
+			return List.of();
+		}
 		return ioOperations.getTypologies(family);
 	}
 
@@ -185,5 +196,30 @@ public class TypologyBrowserManager {
 	 */
 	public void deleteTypology(Typology typology) throws OHServiceException {
 		ioOperations.deleteTypology(typology);
+	}
+
+	/**
+	 * display conditioning of typologies.
+	 *
+	 * @param family the family of the {@link Typology}s
+	 */
+	public boolean isFamilyEnabled(Family family) {
+		if (family == null) {
+			return true;
+		}
+
+		return switch (family) {
+			case DELIVERYTYPE -> GeneralData.MATERNITYMODULEENABLED;
+
+			case VISITTYPE -> GeneralData.HOMEVISITMODULEENABLED;
+
+			case PARTNERTYPE -> GeneralData.PARTNERSMODULEENABLED;
+
+			case FAMILYPLANNINGMETHODTYPE, FAMILYPLANNINGVISITTYPE -> GeneralData.MATERNITYMODULEENABLED && GeneralData.FAMILYPLANNINGMODULEENABLED;
+
+			case HIVTREATMENTTYPE -> GeneralData.MATERNITYMODULEENABLED && GeneralData.HIVMODULEENABLED;
+
+			case TUBERCULOSISREGIMEN, TUBERCULOSISCONTACT -> GeneralData.TUBERCULOSISMODULEENABLED;
+		};
 	}
 }
