@@ -360,6 +360,146 @@ WHERE NOT EXISTS (
     WHERE  MNI_ID_A = 'hiv.report'
 );
 
+-- maternity_internal: parent submenu for CPN action items
+INSERT INTO oh_menuitem
+(
+    MNI_ID_A,
+    MNI_BTN_LABEL,
+    MNI_LABEL,
+    MNI_TOOLTIP,
+    MNI_SHORTCUT,
+    MNI_SUBMENU,
+    MNI_CLASS,
+    MNI_IS_SUBMENU,
+    MNI_POSITION
+)
+SELECT
+    'maternity_internal',
+    'angal.maternityinternal.btn',
+    'angal.maternityinternal.btn',
+    'x',
+    'I',
+    'maternity.cpn',
+    '',
+    'Y',
+    4
+FROM DUAL
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM   oh_menuitem
+    WHERE  MNI_ID_A = 'maternity_internal'
+);
+
+-- familyplanning_internal: parent submenu for Family Planning action items
+INSERT INTO oh_menuitem
+(
+    MNI_ID_A,
+    MNI_BTN_LABEL,
+    MNI_LABEL,
+    MNI_TOOLTIP,
+    MNI_SHORTCUT,
+    MNI_SUBMENU,
+    MNI_CLASS,
+    MNI_IS_SUBMENU,
+    MNI_POSITION
+)
+SELECT
+    'familyplanning_internal',
+    'angal.menu.familyplanning',
+    'angal.menu.familyplanning',
+    'x',
+    'P',
+    'maternity.familyplanning',
+    '',
+    'Y',
+    13
+FROM DUAL
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM   oh_menuitem
+    WHERE  MNI_ID_A = 'familyplanning_internal'
+);
+
+-- familyplanning.new
+INSERT INTO oh_menuitem
+(
+    MNI_ID_A, MNI_BTN_LABEL, MNI_LABEL, MNI_TOOLTIP, MNI_SHORTCUT,
+    MNI_SUBMENU, MNI_CLASS, MNI_IS_SUBMENU, MNI_POSITION
+)
+SELECT 'familyplanning.new', 'angal.familyplanning.new.btn', 'angal.familyplanning.new.btn', 'x', '',
+       'familyplanning_internal', '', 'N', 14
+FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM oh_menuitem WHERE MNI_ID_A = 'familyplanning.new');
+
+-- familyplanning.update
+INSERT INTO oh_menuitem
+(
+    MNI_ID_A, MNI_BTN_LABEL, MNI_LABEL, MNI_TOOLTIP, MNI_SHORTCUT,
+    MNI_SUBMENU, MNI_CLASS, MNI_IS_SUBMENU, MNI_POSITION
+)
+SELECT 'familyplanning.update', 'angal.familyplanning.update.btn', 'angal.familyplanning.update.btn', 'x', '',
+       'familyplanning_internal', '', 'N', 15
+FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM oh_menuitem WHERE MNI_ID_A = 'familyplanning.update');
+
+-- familyplanning.delete
+INSERT INTO oh_menuitem
+(
+    MNI_ID_A, MNI_BTN_LABEL, MNI_LABEL, MNI_TOOLTIP, MNI_SHORTCUT,
+    MNI_SUBMENU, MNI_CLASS, MNI_IS_SUBMENU, MNI_POSITION
+)
+SELECT 'familyplanning.delete', 'angal.familyplanning.delete.btn', 'angal.familyplanning.delete.btn', 'x', '',
+       'familyplanning_internal', '', 'N', 16
+FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM oh_menuitem WHERE MNI_ID_A = 'familyplanning.delete');
+
+-- familyplanning.newvisit
+INSERT INTO oh_menuitem
+(
+    MNI_ID_A, MNI_BTN_LABEL, MNI_LABEL, MNI_TOOLTIP, MNI_SHORTCUT,
+    MNI_SUBMENU, MNI_CLASS, MNI_IS_SUBMENU, MNI_POSITION
+)
+SELECT 'familyplanning.newvisit', 'angal.familyplanning.newvisit.btn', 'angal.familyplanning.newvisit.btn', 'x', '',
+       'familyplanning_internal', '', 'N', 17
+FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM oh_menuitem WHERE MNI_ID_A = 'familyplanning.newvisit');
+
+-- familyplanning.updatevisit
+INSERT INTO oh_menuitem
+(
+    MNI_ID_A, MNI_BTN_LABEL, MNI_LABEL, MNI_TOOLTIP, MNI_SHORTCUT,
+    MNI_SUBMENU, MNI_CLASS, MNI_IS_SUBMENU, MNI_POSITION
+)
+SELECT 'familyplanning.updatevisit', 'angal.familyplanning.updatevisit.btn', 'angal.familyplanning.updatevisit.btn', 'x', '',
+       'familyplanning_internal', '', 'N', 18
+FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM oh_menuitem WHERE MNI_ID_A = 'familyplanning.updatevisit');
+
+-- familyplanning.deletevisit
+INSERT INTO oh_menuitem
+(
+    MNI_ID_A, MNI_BTN_LABEL, MNI_LABEL, MNI_TOOLTIP, MNI_SHORTCUT,
+    MNI_SUBMENU, MNI_CLASS, MNI_IS_SUBMENU, MNI_POSITION
+)
+SELECT 'familyplanning.deletevisit', 'angal.familyplanning.deletevisit.btn', 'angal.familyplanning.deletevisit.btn', 'x', '',
+       'familyplanning_internal', '', 'N', 19
+FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM oh_menuitem WHERE MNI_ID_A = 'familyplanning.deletevisit');
+
+-- familyplanning.export
+INSERT INTO oh_menuitem
+(
+    MNI_ID_A, MNI_BTN_LABEL, MNI_LABEL, MNI_TOOLTIP, MNI_SHORTCUT,
+    MNI_SUBMENU, MNI_CLASS, MNI_IS_SUBMENU, MNI_POSITION
+)
+SELECT 'familyplanning.export', 'angal.common.export.btn', 'angal.common.export.btn', 'x', '',
+       'familyplanning_internal', '', 'N', 20
+FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM oh_menuitem WHERE MNI_ID_A = 'familyplanning.export');
+
+-- familyplanning.report
+INSERT INTO oh_menuitem
+(
+    MNI_ID_A, MNI_BTN_LABEL, MNI_LABEL, MNI_TOOLTIP, MNI_SHORTCUT,
+    MNI_SUBMENU, MNI_CLASS, MNI_IS_SUBMENU, MNI_POSITION
+)
+SELECT 'familyplanning.report', 'angal.common.report.btn', 'angal.common.report.btn', 'x', '',
+       'familyplanning_internal', '', 'N', 21
+FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM oh_menuitem WHERE MNI_ID_A = 'familyplanning.report');
+
 INSERT INTO oh_groupmenu
 (
     GM_UG_ID_A,
@@ -697,6 +837,76 @@ WHERE NOT EXISTS (
     WHERE  GM_UG_ID_A  = 'admin'
       AND  GM_MNI_ID_A = 'hiv.report'
 );
+
+-- oh_groupmenu for maternity_internal
+INSERT INTO oh_groupmenu
+(
+    GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE, GM_CREATED_BY, GM_CREATED_DATE, GM_LAST_MODIFIED_BY, GM_LAST_MODIFIED_DATE
+)
+SELECT 'admin', 'maternity_internal', 1, 'admin', NOW(), 'admin', NOW()
+FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM oh_groupmenu WHERE GM_UG_ID_A='admin' AND GM_MNI_ID_A='maternity_internal');
+
+INSERT INTO oh_groupmenu
+(
+    GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE, GM_CREATED_BY, GM_CREATED_DATE, GM_LAST_MODIFIED_BY, GM_LAST_MODIFIED_DATE
+)
+SELECT 'admin', 'familyplanning_internal', 1, 'admin', NOW(), 'admin', NOW()
+FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM oh_groupmenu WHERE GM_UG_ID_A='admin' AND GM_MNI_ID_A='familyplanning_internal');
+INSERT INTO oh_groupmenu
+(
+    GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE, GM_CREATED_BY, GM_CREATED_DATE, GM_LAST_MODIFIED_BY, GM_LAST_MODIFIED_DATE
+)
+SELECT 'admin', 'familyplanning.new', 1, 'admin', NOW(), 'admin', NOW()
+FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM oh_groupmenu WHERE GM_UG_ID_A='admin' AND GM_MNI_ID_A='familyplanning.new');
+
+INSERT INTO oh_groupmenu
+(
+    GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE, GM_CREATED_BY, GM_CREATED_DATE, GM_LAST_MODIFIED_BY, GM_LAST_MODIFIED_DATE
+)
+SELECT 'admin', 'familyplanning.update', 1, 'admin', NOW(), 'admin', NOW()
+FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM oh_groupmenu WHERE GM_UG_ID_A='admin' AND GM_MNI_ID_A='familyplanning.update');
+
+INSERT INTO oh_groupmenu
+(
+    GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE, GM_CREATED_BY, GM_CREATED_DATE, GM_LAST_MODIFIED_BY, GM_LAST_MODIFIED_DATE
+)
+SELECT 'admin', 'familyplanning.delete', 1, 'admin', NOW(), 'admin', NOW()
+FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM oh_groupmenu WHERE GM_UG_ID_A='admin' AND GM_MNI_ID_A='familyplanning.delete');
+
+INSERT INTO oh_groupmenu
+(
+    GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE, GM_CREATED_BY, GM_CREATED_DATE, GM_LAST_MODIFIED_BY, GM_LAST_MODIFIED_DATE
+)
+SELECT 'admin', 'familyplanning.newvisit', 1, 'admin', NOW(), 'admin', NOW()
+FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM oh_groupmenu WHERE GM_UG_ID_A='admin' AND GM_MNI_ID_A='familyplanning.newvisit');
+
+INSERT INTO oh_groupmenu
+(
+    GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE, GM_CREATED_BY, GM_CREATED_DATE, GM_LAST_MODIFIED_BY, GM_LAST_MODIFIED_DATE
+)
+SELECT 'admin', 'familyplanning.updatevisit', 1, 'admin', NOW(), 'admin', NOW()
+FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM oh_groupmenu WHERE GM_UG_ID_A='admin' AND GM_MNI_ID_A='familyplanning.updatevisit');
+
+INSERT INTO oh_groupmenu
+(
+    GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE, GM_CREATED_BY, GM_CREATED_DATE, GM_LAST_MODIFIED_BY, GM_LAST_MODIFIED_DATE
+)
+SELECT 'admin', 'familyplanning.deletevisit', 1, 'admin', NOW(), 'admin', NOW()
+FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM oh_groupmenu WHERE GM_UG_ID_A='admin' AND GM_MNI_ID_A='familyplanning.deletevisit');
+
+INSERT INTO oh_groupmenu
+(
+    GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE, GM_CREATED_BY, GM_CREATED_DATE, GM_LAST_MODIFIED_BY, GM_LAST_MODIFIED_DATE
+)
+SELECT 'admin', 'familyplanning.export', 1, 'admin', NOW(), 'admin', NOW()
+FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM oh_groupmenu WHERE GM_UG_ID_A='admin' AND GM_MNI_ID_A='familyplanning.export');
+
+INSERT INTO oh_groupmenu
+(
+    GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE, GM_CREATED_BY, GM_CREATED_DATE, GM_LAST_MODIFIED_BY, GM_LAST_MODIFIED_DATE
+)
+SELECT 'admin', 'familyplanning.report', 1, 'admin', NOW(), 'admin', NOW()
+FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM oh_groupmenu WHERE GM_UG_ID_A='admin' AND GM_MNI_ID_A='familyplanning.report');
 
 INSERT INTO OH_SETTINGS
 (

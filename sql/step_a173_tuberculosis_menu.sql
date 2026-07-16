@@ -36,7 +36,12 @@ SELECT 'tuberculosis', 'angal.menu.btn.tuberculosis', 'angal.menu.tuberculosis',
        'org.isf.tuberculosis.gui.TuberculosisBrowser', 'N', 14
 FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM oh_menuitem WHERE MNI_ID_A = 'tuberculosis');
 
--- Step 4: Create TB permission items under tuberculosis_internal
+-- Step 4: Create tuberculosis_internal as parent submenu for TB permission items
+INSERT INTO oh_menuitem (MNI_ID_A, MNI_BTN_LABEL, MNI_LABEL, MNI_TOOLTIP, MNI_SHORTCUT, MNI_SUBMENU, MNI_CLASS, MNI_IS_SUBMENU, MNI_POSITION)
+SELECT 'tuberculosis_internal', 'angal.menu.btn.tuberculosis', 'angal.menu.tuberculosis', 'x', 'T', 'tuberculosis', '', 'Y', 1
+FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM oh_menuitem WHERE MNI_ID_A = 'tuberculosis_internal');
+
+-- Step 5: Create TB permission items under tuberculosis_internal
 INSERT INTO oh_menuitem (MNI_ID_A, MNI_BTN_LABEL, MNI_LABEL, MNI_TOOLTIP, MNI_SHORTCUT, MNI_SUBMENU, MNI_CLASS, MNI_IS_SUBMENU, MNI_POSITION)
 SELECT 'tuberculosis.new', 'angal.tb.browser.newtreatment.btn', 'angal.tb.browser.newtreatment.btn', 'x', '', 'tuberculosis_internal', '', 'N', 1
 FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM oh_menuitem WHERE MNI_ID_A = 'tuberculosis.new');
@@ -77,10 +82,14 @@ INSERT INTO oh_menuitem ( MNI_ID_A, MNI_BTN_LABEL, MNI_LABEL, MNI_TOOLTIP, MNI_S
 SELECT 'tuberculosis.report', 'angal.common.report.btn', 'angal.common.report.btn', 'angal.tb.report.tooltip',  'R',  'tuberculosis_internal','',   'N',  10
 FROM DUAL WHERE NOT EXISTS ( SELECT 1 FROM oh_menuitem WHERE MNI_ID_A = 'tuberculosis.report');
 
--- Step 5: Grant admin privileges for tuberculosis menu items
+-- Step 6: Grant admin privileges for tuberculosis menu items
 INSERT INTO oh_groupmenu (GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE, GM_CREATED_BY, GM_CREATED_DATE, GM_LAST_MODIFIED_BY, GM_LAST_MODIFIED_DATE)
 SELECT 'admin', 'tuberculosis', 1, NULL, NULL, NULL, NULL
 FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM oh_groupmenu WHERE GM_UG_ID_A = 'admin' AND GM_MNI_ID_A = 'tuberculosis');
+
+INSERT INTO oh_groupmenu (GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE, GM_CREATED_BY, GM_CREATED_DATE, GM_LAST_MODIFIED_BY, GM_LAST_MODIFIED_DATE)
+SELECT 'admin', 'tuberculosis_internal', 1, NULL, NULL, NULL, NULL
+FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM oh_groupmenu WHERE GM_UG_ID_A = 'admin' AND GM_MNI_ID_A = 'tuberculosis_internal');
 
 INSERT INTO oh_groupmenu (GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE, GM_CREATED_BY, GM_CREATED_DATE, GM_LAST_MODIFIED_BY, GM_LAST_MODIFIED_DATE)
 SELECT 'admin', 'tuberculosis.new', 1, NULL, NULL, NULL, NULL
