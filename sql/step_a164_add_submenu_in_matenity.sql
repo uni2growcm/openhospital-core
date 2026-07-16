@@ -97,7 +97,37 @@ WHERE NOT EXISTS (
     FROM   oh_menuitem
     WHERE  MNI_ID_A = 'maternity.hiv'
 );
-
+ 
+-- hiv_internal: parent submenu for HIV action items
+INSERT INTO oh_menuitem
+(
+    MNI_ID_A,
+    MNI_BTN_LABEL,
+    MNI_LABEL,
+    MNI_TOOLTIP,
+    MNI_SHORTCUT,
+    MNI_SUBMENU,
+    MNI_CLASS,
+    MNI_IS_SUBMENU,
+    MNI_POSITION
+)
+SELECT
+    'hiv_internal',
+    'angal.menu.btn.hivfollowup',
+    'angal.menu.btn.hivfollowup',
+    'x',
+    'H',
+    'maternity.hiv',
+    '',
+    'Y',
+    4
+FROM DUAL
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM   oh_menuitem
+    WHERE  MNI_ID_A = 'hiv_internal'
+);
+ 
 INSERT INTO oh_menuitem
 (
     MNI_ID_A,
@@ -406,6 +436,58 @@ WHERE NOT EXISTS (
     FROM   oh_groupmenu
     WHERE  GM_UG_ID_A  = 'admin'
       AND  GM_MNI_ID_A = 'maternity.hiv'
+);
+
+INSERT INTO oh_groupmenu
+(
+    GM_UG_ID_A,
+    GM_MNI_ID_A,
+    GM_ACTIVE,
+    GM_CREATED_BY,
+    GM_CREATED_DATE,
+    GM_LAST_MODIFIED_BY,
+    GM_LAST_MODIFIED_DATE
+)
+SELECT
+    'admin',
+    'maternity_internal',
+    1,
+    'admin',
+    NOW(),
+    'admin',
+    NOW()
+FROM DUAL
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM   oh_groupmenu
+    WHERE  GM_UG_ID_A  = 'admin'
+      AND  GM_MNI_ID_A = 'maternity_internal'
+);
+
+INSERT INTO oh_groupmenu
+(
+    GM_UG_ID_A,
+    GM_MNI_ID_A,
+    GM_ACTIVE,
+    GM_CREATED_BY,
+    GM_CREATED_DATE,
+    GM_LAST_MODIFIED_BY,
+    GM_LAST_MODIFIED_DATE
+)
+SELECT
+    'admin',
+    'hiv_internal',
+    1,
+    'admin',
+    NOW(),
+    'admin',
+    NOW()
+FROM DUAL
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM   oh_groupmenu
+    WHERE  GM_UG_ID_A  = 'admin'
+      AND  GM_MNI_ID_A = 'hiv_internal'
 );
 
 INSERT INTO oh_groupmenu
