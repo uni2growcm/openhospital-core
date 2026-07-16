@@ -21,8 +21,10 @@
  */
 package org.isf.visits.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
+import org.isf.menu.model.User;
 import org.isf.visits.model.Visit;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -55,4 +57,17 @@ public interface VisitsIoOperationRepository extends JpaRepository<Visit, Intege
 	@Query("select count(v) from Visit v where active=1")
 	long countAllActiveAppointments();
 
+	@Query("""
+    SELECT DISTINCT u
+    FROM Visit v, User u
+    WHERE v.createdBy = u.userName
+      AND v.active = 1
+      AND v.date >= :fromDate
+      AND v.date < :toDateExclusive
+    ORDER BY u.desc, u.userName
+    """)
+	List<User> findUsersWithAppointments(
+		@Param("fromDate") LocalDateTime fromDate,
+		@Param("toDateExclusive") LocalDateTime toDateExclusive
+	);
 }

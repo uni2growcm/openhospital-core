@@ -1337,6 +1337,33 @@ public class JasperReportsManager {
 		}
 	}
 
+	public JasperReportResultDto getGenericReportVisitPdf(LocalDate fromDate, LocalDate toDate, boolean allUsers, List<String> userIds,
+		String jasperFileName) throws OHServiceException {
+
+		try {
+			HashMap<String, Object> parameters = getHospitalParameters();
+			addBundleParameter(RPT_BASE, jasperFileName, parameters);
+
+			parameters.put("fromdate", toDate(fromDate));
+			parameters.put("todate", toDate(toDate));
+
+			parameters.put("allDoctors", allUsers);
+			parameters.put("doctorIds", userIds != null ? userIds : List.of());
+
+			String pdfFilename = compilePDFFilename(RPT_BASE, jasperFileName, null, "pdf");
+
+			JasperReportResultDto result = generateJasperReport(compileJasperFilename(RPT_BASE, jasperFileName), pdfFilename, parameters );
+			JasperExportManager.exportReportToPdfFile(result.getJasperPrint(), pdfFilename);
+
+			return result;
+
+		} catch (Exception e) {
+			LOGGER.error("", e);
+
+			throw new OHReportException(e, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
+		}
+	}
+
 	public JasperReportResultDto getGenericReportFamilyPlanningRegisterPdf(LocalDate fromDate, LocalDate toDate, String statut, String methodCode,
 	                                                                       Boolean actif, String sexe, String jasperFileName) throws OHServiceException {
 
