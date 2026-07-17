@@ -1,6 +1,6 @@
 -- Add menu item for visits report button in AdmissionBrowser
 INSERT INTO oh_menuitem (MNI_ID_A, MNI_BTN_LABEL, MNI_LABEL, MNI_TOOLTIP, MNI_SHORTCUT, MNI_SUBMENU, MNI_CLASS, MNI_IS_SUBMENU, MNI_POSITION)
-SELECT 'btnadmadmvisitsrpt', 'angal.common.report.btn', 'angal.common.report.btn', 'Générer un rapport des rendez-vous', 'R', 'admission', '', 'N', 8
+SELECT 'btnadmadmvisitsrpt', 'angal.common.visit.report.btn', 'angal.common.visit.report.btn', 'Générer un rapport des rendez-vous', 'R', 'admission', '', 'N', 8
 FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM oh_menuitem WHERE MNI_ID_A = 'btnadmadmvisitsrpt');
 
 -- Grant permission to admin group
