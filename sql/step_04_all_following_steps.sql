@@ -139,3 +139,4 @@ source step_a162_add_article_families_feature.sql;
 source step_a165_hiv_module.sql;
 source step_a167_more_diagnosis_opd.sql;
 source step_a172_tuberculosis_module.sql;
+source step_a174_add_visit_report_button.sql;

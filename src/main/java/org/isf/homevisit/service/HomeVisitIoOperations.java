@@ -21,6 +21,7 @@
  */
 package org.isf.homevisit.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.isf.homevisit.model.HomeVisit;
 import org.isf.homevisit.model.HomeVisitStatus;
 import org.isf.patient.model.Patient;
@@ -114,7 +115,16 @@ public class HomeVisitIoOperations {
 	 */
 	@Transactional
 	public void updateStatus(int id, HomeVisitStatus status) throws OHServiceException {
-		repository.updateStatus(id, status);
+		HomeVisit homeVisit = repository.findById(id)
+			.orElseThrow(() -> new EntityNotFoundException("Home visit not found: " + id));
+
+		homeVisit.setStatus(status);
+
+		if (status == HomeVisitStatus.COMPLETED) {
+			homeVisit.setVisitEndDate(LocalDateTime.now());
+		}
+
+		repository.save(homeVisit);
 	}
 
 	/**
