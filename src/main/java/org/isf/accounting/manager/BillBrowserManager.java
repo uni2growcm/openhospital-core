@@ -77,12 +77,13 @@ public class BillBrowserManager {
 	private final TherapyManager therapyManager;
 	private final LabManager labManager;
 	private final OperationRowBrowserManager operationRowManager;
+	private final MovWardBrowserManager movWardBrowserManager;
 
 	public BillBrowserManager(
 		AccountingIoOperations ioOperations, MovWardBrowserManager mvtManager,
 		PriceListManager priceListManager, MedicalBrowsingManager medicalBrowsingManager,
-	    MovStockInsertingManager movStockInsertingManager,  TherapyManager therapyManager,
-	    LabManager labManager, OperationRowBrowserManager operationRowManager
+		MovStockInsertingManager movStockInsertingManager, TherapyManager therapyManager,
+		LabManager labManager, OperationRowBrowserManager operationRowManager, MovWardBrowserManager movWardBrowserManager
 	) {
 		this.ioOperations = ioOperations;
 		this.mvtManager = mvtManager;
@@ -92,6 +93,7 @@ public class BillBrowserManager {
 		this.therapyManager = therapyManager;
 		this.labManager = labManager;
 		this.operationRowManager = operationRowManager;
+		this.movWardBrowserManager = movWardBrowserManager;
 	}
 
 	/**
@@ -250,9 +252,6 @@ public class BillBrowserManager {
 				updateMedicalStock(billItems, billId, false);
 			}
 			markPrescriptionsAsBilled(billItems, newBill);
-			if (GeneralData.STOCKMVTONBILLSAVE) {
-				updateMedicalStock(billItems, newBill.getId(), false);
-			}
 		}
 
 		if (billPayments != null && !billPayments.isEmpty()) {
@@ -424,92 +423,90 @@ public class BillBrowserManager {
 	}
 
 	private void updateMedicalStock(List<BillItems> medicalItems, int billID, boolean isCharge) throws OHServiceException {
-		if (medicalItems == null || medicalItems.isEmpty()) return;
+		if (medicalItems != null && !medicalItems.isEmpty()) {
+			PatientBrowserManager patientManager = (PatientBrowserManager)Context.getApplicationContext().getBean(PatientBrowserManager.class);
+			Bill bill = this.getBill(billID);
+			Ward ward = bill.getWard();
+			if (ward != null) {
+				Patient patient = patientManager.getPatientById(bill.getBillPatient().getCode());
+				List<OHExceptionMessage> validationErrors = new ArrayList();
+				Map<String, BillItems> uniqueItems = new HashMap();
 
-		PatientBrowserManager patientManager = Context.getApplicationContext().getBean(PatientBrowserManager.class);
-		Bill bill = getBill(billID);
-		Ward ward = bill.getWard();
-		if (ward == null) return;
+				for(BillItems item : medicalItems) {
+					String key = item.getItemDescription();
+					if (uniqueItems.containsKey(key)) {
+						BillItems existing = (BillItems)uniqueItems.get(key);
+						existing.setItemQuantity(existing.getItemQuantity() + item.getItemQuantity());
+					} else {
+						uniqueItems.put(key, item);
+					}
+				}
 
-		Patient patient = patientManager.getPatientById(bill.getBillPatient().getCode());
-		List<Price> prices = priceListManager.getPrices();
+				for(BillItems item : uniqueItems.values()) {
+					try {
+						this.addStockMvt(ward, patient, item, isCharge);
+					} catch (OHDataValidationException e) {
+						validationErrors.addAll(e.getMessages());
+					}
+				}
 
-		List<OHExceptionMessage> validationErrors = new ArrayList<>();
-
-		for (BillItems item : medicalItems) {
-			Price price = prices.stream()
-				.filter(p -> p != null && "MED".equals(p.getGroup()) && item.getItemDescription().equals(p.getDesc()))
-				.findFirst()
-				.orElse(null);
-
-			if (price != null) {
-				try {
-					addStockMvt(ward, patient, item, isCharge);
-				} catch (OHDataValidationException e) {
-					validationErrors.addAll(e.getMessages());
+				if (!validationErrors.isEmpty()) {
+					throw new OHDataValidationException(validationErrors);
 				}
 			}
-		}
-
-		if (!validationErrors.isEmpty()) {
-			throw new OHDataValidationException(validationErrors);
 		}
 	}
 
 	private void addStockMvt(Ward ward, Patient patient, BillItems billItem, boolean isCharge) throws OHServiceException {
-		List<OHExceptionMessage> errors = new ArrayList<>();
-		double qty = billItem.getItemQuantity();
-
-		if (isCharge) {
-			qty = -qty;
-		}
-
-		List<MedicalWard> medWards = mvtManager.getMedicalsWard(ward.getCode(), true);
-
-		if (!isCharge && (medWards == null || medWards.isEmpty())) {
-			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.newbill.stocknotavailableforitem") + " : " + billItem.getItemDescription()));
+		List<OHExceptionMessage> errors = new ArrayList();
+		double quantity = (double)Math.abs(billItem.getItemQuantity());
+		Medical medical = (Medical)this.medicalBrowsingManager.getMedicals(billItem.getItemDescription()).stream().filter((med) -> Objects.equals(med.getDescription(), billItem.getItemDescription())).findFirst().orElse((Medical) null);
+		if (medical == null) {
+			String var21 = MessageBundle.getMessage("angal.newbill.stocknotavailableforitem");
+			errors.add(new OHExceptionMessage(var21 + " : " + billItem.getItemDescription()));
 			throw new OHDataValidationException(errors);
-		}
-
-		MedicalWard medicalWard = medWards.stream()
-			.filter(med -> med.getId().getMedical().getDescription().equals(billItem.getItemDescription()))
-			.findFirst()
-			.orElse(null);
-
-		if (!isCharge && medicalWard == null) {
-			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.newbill.stocknotavailableforitem") + " : " + billItem.getItemDescription()));
-			throw new OHDataValidationException(errors);
-		}
-
-		if (!isCharge && medicalWard.getQty() < qty) {
-			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.newbill.qtynotinstock") + " : " + billItem.getItemDescription()));
-			throw new OHDataValidationException(errors);
-		}
-
-		MovementWard mvt = new MovementWard();
-		mvt.setWard(ward);
-		mvt.setPatient(patient);
-		mvt.setDate(TimeTools.getServerDateTime());
-		mvt.setPatient(true);
-		mvt.setQuantity(qty);
-		mvt.setDescription(patient.getName());
-
-		if (isCharge) {
-			Medical medical = medicalBrowsingManager.getMedicals(billItem.getItemDescription())
-				.stream()
-				.filter(med -> Objects.equals(med.getDescription(), billItem.getItemDescription()))
-				.findFirst()
-				.orElse(null);
-			Lot lot = movStockInsertingManager.getLotByMedical(medical, false).stream().findFirst().orElse(null);
-			mvt.setMedical(medical);
-			mvt.setlot(lot);
 		} else {
-			mvt.setMedical(medicalWard.getId().getMedical());
-			mvt.setlot(medicalWard.getLot());
-		}
-		mvt.setUnits("pieces");
+			if (!isCharge) {
+				double totalStock = this.movWardBrowserManager.getTotalWardQuantity(ward.getCode(), medical.getCode());
+				if (totalStock < quantity) {
+					String var20 = MessageBundle.getMessage("angal.newbill.qtynotinstock");
+					errors.add(new OHExceptionMessage(var20 + " : " + billItem.getItemDescription()));
+					throw new OHDataValidationException(errors);
+				}
+			}
 
-		mvtManager.newMovementWard(mvt);
+			List<MedicalWard> medicalWards = this.movWardBrowserManager.getMedicalsWard(ward.getCode(), medical.getCode(), false);
+			medicalWards.sort(Comparator.comparing((mw) -> mw.getLot().getDueDate(), Comparator.nullsLast(Comparator.naturalOrder())));
+			double remainingQuantity = quantity;
+
+			for(MedicalWard medicalWard : medicalWards) {
+				double available = (double)(medicalWard.getIn_quantity() - medicalWard.getOut_quantity());
+				if (!(available <= (double)0.0F)) {
+					double quantityToMove = Math.min(available, remainingQuantity);
+					MovementWard movement = new MovementWard();
+					movement.setWard(ward);
+					movement.setPatient(patient);
+					movement.setDate(TimeTools.getServerDateTime());
+					movement.setPatient(true);
+					movement.setDescription(patient.getName());
+					movement.setMedical(medicalWard.getMedical());
+					movement.setlot(medicalWard.getLot());
+					movement.setQuantity(isCharge ? -quantityToMove : quantityToMove);
+					movement.setUnits("pieces");
+					this.mvtManager.newMovementWard(movement);
+					remainingQuantity -= quantityToMove;
+					if (remainingQuantity <= (double)0.0F) {
+						break;
+					}
+				}
+			}
+
+			if (remainingQuantity > (double)0.0F) {
+				String var10003 = MessageBundle.getMessage("angal.newbill.qtynotinstock");
+				errors.add(new OHExceptionMessage(var10003 + " : " + billItem.getItemDescription()));
+				throw new OHDataValidationException(errors);
+			}
+		}
 	}
 
 	public List<BillItems> getAllBillItems(Bill bill) throws OHServiceException {
