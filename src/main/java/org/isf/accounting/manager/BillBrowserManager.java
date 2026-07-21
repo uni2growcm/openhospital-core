@@ -246,13 +246,10 @@ public class BillBrowserManager {
 
 			ioOperations.newBillItems(newBill, billItems);
 
-//			if (GeneralData.STOCKMVTONBILLSAVE) {
-//				updateMedicalStock(billItems, billId, false);
-//			}
-			markPrescriptionsAsBilled(billItems, newBill);
 			if (GeneralData.STOCKMVTONBILLSAVE) {
-				updateMedicalStock(billItems, newBill.getId(), false);
+				updateMedicalStock(billItems, billId, false);
 			}
+			markPrescriptionsAsBilled(billItems, newBill);
 		}
 
 		if (billPayments != null && !billPayments.isEmpty()) {
