@@ -246,9 +246,9 @@ public class BillBrowserManager {
 
 			ioOperations.newBillItems(newBill, billItems);
 
-			if (GeneralData.STOCKMVTONBILLSAVE) {
-				updateMedicalStock(billItems, billId, false);
-			}
+//			if (GeneralData.STOCKMVTONBILLSAVE) {
+//				updateMedicalStock(billItems, billId, false);
+//			}
 			markPrescriptionsAsBilled(billItems, newBill);
 			if (GeneralData.STOCKMVTONBILLSAVE) {
 				updateMedicalStock(billItems, newBill.getId(), false);
@@ -464,6 +464,7 @@ public class BillBrowserManager {
 			qty = -qty;
 		}
 
+		double applyQty = qty;
 		List<MedicalWard> medWards = mvtManager.getMedicalsWard(ward.getCode(), true);
 
 		if (!isCharge && (medWards == null || medWards.isEmpty())) {
@@ -481,7 +482,16 @@ public class BillBrowserManager {
 			throw new OHDataValidationException(errors);
 		}
 
-		if (!isCharge && medicalWard.getQty() < qty) {
+		List<MedicalWard> matchingMedWards = medWards.stream()
+			.filter(medWard -> medWard != null && medWard.getMedical() != null
+				&& billItem.getItemDescription().equals(medWard.getMedical().getDescription()))
+			.collect(Collectors.toList());
+
+		Double totalQty = matchingMedWards.stream()
+			.mapToDouble(MedicalWard::getQty)
+			.sum();
+
+		if (!isCharge && totalQty < qty) {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.newbill.qtynotinstock") + " : " + billItem.getItemDescription()));
 			throw new OHDataValidationException(errors);
 		}
@@ -504,12 +514,26 @@ public class BillBrowserManager {
 			mvt.setMedical(medical);
 			mvt.setlot(lot);
 		} else {
-			mvt.setMedical(medicalWard.getId().getMedical());
-			mvt.setlot(medicalWard.getLot());
+			for (MedicalWard medWard : matchingMedWards) {
+				if (applyQty > 0) {
+					if (medWard.getQty() >= applyQty) {
+						mvt.setMedical(medWard.getId().getMedical());
+						mvt.setlot(medWard.getLot());
+						mvt.setUnits("pieces");
+						mvtManager.newMovementWard(mvt);
+						return;
+					} else {
+						if (medWard.getQty() > 0) {
+							mvt.setMedical(medicalWard.getId().getMedical());
+							mvt.setlot(medicalWard.getLot());
+							applyQty = applyQty - medWard.getQty();
+							mvt.setUnits("pieces");
+							mvtManager.newMovementWard(mvt);
+						}
+					}
+				}
+			}
 		}
-		mvt.setUnits("pieces");
-
-		mvtManager.newMovementWard(mvt);
 	}
 
 	public List<BillItems> getAllBillItems(Bill bill) throws OHServiceException {
