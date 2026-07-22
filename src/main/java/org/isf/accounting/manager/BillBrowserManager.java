@@ -77,12 +77,13 @@ public class BillBrowserManager {
 	private final TherapyManager therapyManager;
 	private final LabManager labManager;
 	private final OperationRowBrowserManager operationRowManager;
+	private final MovWardBrowserManager movWardBrowserManager;
 
 	public BillBrowserManager(
 		AccountingIoOperations ioOperations, MovWardBrowserManager mvtManager,
 		PriceListManager priceListManager, MedicalBrowsingManager medicalBrowsingManager,
-	    MovStockInsertingManager movStockInsertingManager,  TherapyManager therapyManager,
-	    LabManager labManager, OperationRowBrowserManager operationRowManager
+		MovStockInsertingManager movStockInsertingManager, TherapyManager therapyManager,
+		LabManager labManager, OperationRowBrowserManager operationRowManager, MovWardBrowserManager movWardBrowserManager
 	) {
 		this.ioOperations = ioOperations;
 		this.mvtManager = mvtManager;
@@ -92,6 +93,7 @@ public class BillBrowserManager {
 		this.therapyManager = therapyManager;
 		this.labManager = labManager;
 		this.operationRowManager = operationRowManager;
+		this.movWardBrowserManager = movWardBrowserManager;
 	}
 
 	/**
@@ -484,11 +486,9 @@ public class BillBrowserManager {
 				&& billItem.getItemDescription().equals(medWard.getMedical().getDescription()))
 			.collect(Collectors.toList());
 
-		Double totalQty = matchingMedWards.stream()
-			.mapToDouble(MedicalWard::getQty)
-			.sum();
+		double totalStock = this.movWardBrowserManager.getTotalWardQuantity(ward.getCode(), medicalWard.getId().getMedical().getCode());
 
-		if (!isCharge && totalQty < qty) {
+		if (!isCharge && totalStock < qty) {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.newbill.qtynotinstock") + " : " + billItem.getItemDescription()));
 			throw new OHDataValidationException(errors);
 		}
