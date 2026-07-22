@@ -246,10 +246,10 @@ public class BillBrowserManager {
 
 			ioOperations.newBillItems(newBill, billItems);
 
-			if (GeneralData.STOCKMVTONBILLSAVE) {
-				updateMedicalStock(billItems, billId, false);
-			}
 			markPrescriptionsAsBilled(billItems, newBill);
+			if (GeneralData.STOCKMVTONBILLSAVE) {
+				updateMedicalStock(billItems, newBill.getId(), false);
+			}
 		}
 
 		if (billPayments != null && !billPayments.isEmpty()) {
@@ -516,6 +516,7 @@ public class BillBrowserManager {
 					if (medWard.getQty() >= applyQty) {
 						mvt.setMedical(medWard.getId().getMedical());
 						mvt.setlot(medWard.getLot());
+						mvt.setQuantity(applyQty);
 						mvt.setUnits("pieces");
 						mvtManager.newMovementWard(mvt);
 						return;
@@ -523,6 +524,7 @@ public class BillBrowserManager {
 						if (medWard.getQty() > 0) {
 							mvt.setMedical(medicalWard.getId().getMedical());
 							mvt.setlot(medicalWard.getLot());
+							mvt.setQuantity(medWard.getQty());
 							applyQty = applyQty - medWard.getQty();
 							mvt.setUnits("pieces");
 							mvtManager.newMovementWard(mvt);
@@ -530,7 +532,11 @@ public class BillBrowserManager {
 					}
 				}
 			}
+			return;
 		}
+		mvt.setUnits("pieces");
+
+		mvtManager.newMovementWard(mvt);
 	}
 
 	public List<BillItems> getAllBillItems(Bill bill) throws OHServiceException {
