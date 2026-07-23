@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -62,6 +62,9 @@ public class Patient extends Auditable<String> {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="PAT_ID")
 	private Integer code;
+
+	@Column(name="PAT_LABBOOK_ID", nullable = true)
+	private Integer labBookId;
 
 	@NotNull
 	@Column(name="PAT_FNAME")
@@ -278,6 +281,37 @@ public class Patient extends Auditable<String> {
 		this.taxCode = taxCode;
 		this.maritalStatus = maritalStatus;
 		this.profession = profession;
+	}
+
+	public Patient(int code, String firstName, String secondName, String name, LocalDate birthDate, int age, String agetype, char sex,
+				   String address, String city, String nextKin, String telephone, String note,
+				   String motherName, char mother, String fatherName, char father,
+				   String bloodType, char economicStatus, char parentTogether, String taxCode,
+				   String maritalStatus, String profession, Integer labBookId) { //Changed EduLev with bloodType
+		this.code = code;
+		this.firstName = firstName;
+		this.secondName = secondName;
+		this.name = name;
+		this.birthDate = birthDate;
+		this.age = age;
+		this.agetype = agetype;
+		this.sex = sex;
+		this.address = address;
+		this.city = city;
+		this.nextKin = nextKin;
+		this.telephone = telephone;
+		this.note = note;
+		this.motherName = motherName;
+		this.mother = mother;
+		this.fatherName = fatherName;
+		this.father = father;
+		this.hasInsurance = economicStatus;
+		this.bloodType = bloodType;
+		this.parentTogether = parentTogether;
+		this.taxCode = taxCode;
+		this.maritalStatus = maritalStatus;
+		this.profession = profession;
+		this.labBookId = labBookId;
 	}
 
 	public PatientConsensus getPatientConsensus() {
@@ -505,6 +539,10 @@ public class Patient extends Auditable<String> {
         this.deleted = deleted;
     }
 
+	public Integer getLabBookId() { return this.labBookId; }
+
+	public void setLabBookId(Integer labBookId) { this.labBookId = labBookId; }
+
 	public PatientProfilePhoto getPatientProfilePhoto() {
 		return patientProfilePhoto;
 	}
@@ -613,6 +651,9 @@ public class Patient extends Auditable<String> {
 		if (getTaxCode() != null) {
 			sbName.append(getTaxCode().toLowerCase()).append(' ');
 		}
+		if (labBookId != null) {
+			sbName.append(labBookId).append(' ');
+		}
 		return sbName.toString();
 	}
 
@@ -641,6 +682,10 @@ public class Patient extends Auditable<String> {
 		if (StringUtils.isNotEmpty(taxCode)) {
 			infoBfr.append(i > 0 ? " - " : "");
 			infoBfr.append(taxCode);
+		}
+		if (labBookId != null) {
+			infoBfr.append(i > 0 ? " - " : "");
+			infoBfr.append("LabBook id: ").append(labBookId);
 		}
 		return infoBfr.toString();
 	}
