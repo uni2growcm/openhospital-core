@@ -34,6 +34,7 @@ import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.isf.generaldata.GeneralData;
 import org.isf.patient.model.Patient;
+import org.isf.patient.model.PatientCreatedOrUpdatedEvent;
 import org.isf.patient.model.PatientMergedEvent;
 import org.isf.patient.model.PatientProfilePhoto;
 import org.isf.utils.db.TranslateOHServiceException;
@@ -247,9 +248,12 @@ public class PatientIoOperations {
 	 * @return saved / updated patient
 	 */
 	public Patient savePatient(Patient patient) {
+		boolean isNew = patient.getCode() == null;
 		boolean isLoadProfilePhotoFromDB = LOAD_FROM_DB.equals(GeneralData.PATIENTPHOTOSTORAGE);
 		if (isLoadProfilePhotoFromDB) {
-			return repository.save(patient);
+			Patient saved = repository.save(patient);
+			applicationEventPublisher.publishEvent(new PatientCreatedOrUpdatedEvent(saved, isNew));
+			return saved;
 		}
 		try {
 			PatientProfilePhoto photo = patient.getPatientProfilePhoto();
@@ -261,6 +265,7 @@ public class PatientIoOperations {
 			} else if (this.fileSystemPatientPhotoRepository.exist(GeneralData.PATIENTPHOTOSTORAGE, patient.getCode())) {
 				this.fileSystemPatientPhotoRepository.delete(GeneralData.PATIENTPHOTOSTORAGE, patient.getCode());
 			}
+			applicationEventPublisher.publishEvent(new PatientCreatedOrUpdatedEvent(patientSaved, isNew));
 			return patientSaved;
 		} catch (OHServiceException e) {
 			LOGGER.error("Exception in savePatient method.", e);
@@ -276,7 +281,9 @@ public class PatientIoOperations {
 	 * @throws OHServiceException
 	 */
 	public Patient updatePatient(Patient patient) throws OHServiceException {
-		return repository.save(patient);
+		Patient updated = repository.save(patient);
+		applicationEventPublisher.publishEvent(new PatientCreatedOrUpdatedEvent(updated, false));
+		return updated;
 	}
 
 	/**
