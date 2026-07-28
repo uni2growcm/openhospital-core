@@ -115,3 +115,4 @@ source step_a118_add_radiology_permissions.sql;
 source step_a119_alter_table_examrow_and_laboratoryrow.sql;
 source step_a120_settings.sql;
 source step_a121_add_labbookid_in_table_patient.sql;
+source step_a122_add_column_update_from_in_table_oh_patient.sql;

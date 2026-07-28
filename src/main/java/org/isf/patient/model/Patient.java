@@ -91,7 +91,7 @@ public class Patient extends Auditable<String> {
 
 	@NotNull
 	@Column(name="PAT_SEX")
-	private char sex;
+	private Character sex;
 
 	@Column(name="PAT_ADDR")
 	private String address;
@@ -114,24 +114,24 @@ public class Patient extends Auditable<String> {
 	private String motherName; // mother's name
 
 	@Column(name="PAT_MOTH")
-	private char mother = ' '; // D=dead, A=alive
+	private Character mother = ' '; // D=dead, A=alive
 
 	@NotNull
 	@Column(name="PAT_FATH_NAME")
 	private String fatherName; // father's name
 
 	@Column(name="PAT_FATH")
-	private char father = ' '; // D=dead, A=alive
+	private Character father = ' '; // D=dead, A=alive
 
 	@NotNull
 	@Column(name="PAT_BTYPE")
 	private String bloodType; // (0-/+, A-/+ , B-/+, AB-/+)
 
 	@Column(name="PAT_ESTA")
-	private char hasInsurance = ' '; // Y=Yes, N=no
+	private Character hasInsurance = ' '; // Y=Yes, N=no
 
 	@Column(name="PAT_PTOGE")
-	private char parentTogether = ' '; // parents together: Y or N
+	private Character parentTogether = ' '; // parents together: Y or N
 
 	@Column(name="PAT_TAXCODE")
 	private String taxCode;
@@ -144,7 +144,10 @@ public class Patient extends Auditable<String> {
 
 	@NotNull
 	@Column(name="PAT_DELETED", columnDefinition = "char(1) default 'N'")
-	private char deleted = 'N';
+	private Character deleted = 'N';
+
+	@Column(name="PAT_UPDATE_FROM", columnDefinition = " varchar(20) ")
+	private String updatedFrom;
 
 	/**
 	 * field for "ui"
@@ -225,10 +228,10 @@ public class Patient extends Auditable<String> {
 		this.profession = "";
 	}
 
-	public Patient(String firstName, String secondName, LocalDate birthDate, Integer age, String agetype, char sex,
+	public Patient(String firstName, String secondName, LocalDate birthDate, Integer age, String agetype, Character sex,
 			String address, String city, String nextKin, String telephone,
-			String motherName, char mother, String fatherName, char father,
-			String bloodType, char economicStatus, char parentTogether, String personalCode,
+			String motherName, Character mother, String fatherName, Character father,
+			String bloodType, Character economicStatus, Character parentTogether, String personalCode,
 			String maritalStatus, String profession) { //Changed EduLev with bloodType
 		this.firstName = firstName;
 		this.secondName = secondName;
@@ -253,10 +256,10 @@ public class Patient extends Auditable<String> {
 		this.profession = profession;
 	}
 
-	public Patient(int code, String firstName, String secondName, String name, LocalDate birthDate, Integer age, String agetype, char sex,
+	public Patient(int code, String firstName, String secondName, String name, LocalDate birthDate, Integer age, String agetype, Character sex,
 			String address, String city, String nextKin, String telephone, String note,
-			String motherName, char mother, String fatherName, char father,
-			String bloodType, char economicStatus, char parentTogether, String taxCode,
+			String motherName, Character mother, String fatherName, Character father,
+			String bloodType, Character economicStatus, Character parentTogether, String taxCode,
 			String maritalStatus, String profession) { //Changed EduLev with bloodType
 		this.code = code;
 		this.firstName = firstName;
@@ -418,11 +421,11 @@ public class Patient extends Auditable<String> {
 		this.name = this.firstName + ' ' + this.secondName;
 	}
 
-	public char getSex() {
+	public Character getSex() {
 		return sex;
 	}
 
-	public void setSex(char sex) {
+	public void setSex(Character sex) {
 		this.sex = sex;
 	}
 
@@ -446,35 +449,35 @@ public class Patient extends Auditable<String> {
 		return this.name;
 	}
 
-	public char getHasInsurance() {
+	public Character getHasInsurance() {
 		return hasInsurance;
 	}
 
-	public void setHasInsurance(char hasInsurance) {
+	public void setHasInsurance(Character hasInsurance) {
 		this.hasInsurance = hasInsurance;
 	}
 
-	public char getFather() {
+	public Character getFather() {
 		return father;
 	}
 
-	public void setFather(char father) {
+	public void setFather(Character father) {
 		this.father = father;
 	}
 
-	public char getMother() {
+	public Character getMother() {
 		return mother;
 	}
 
-	public void setMother(char mother) {
+	public void setMother(Character mother) {
 		this.mother = mother;
 	}
 
-	public char getParentTogether() {
+	public Character getParentTogether() {
 		return parentTogether;
 	}
 
-	public void setParentTogether(char parentTogether) {
+	public void setParentTogether(Character parentTogether) {
 		this.parentTogether = parentTogether;
 	}
 
@@ -531,11 +534,11 @@ public class Patient extends Auditable<String> {
 		this.profession = profession;
 	}
 
-    public char getDeleted() {
+    public Character getDeleted() {
         return deleted;
     }
 
-    public void setDeleted(char deleted) {
+    public void setDeleted(Character deleted) {
         this.deleted = deleted;
     }
 
@@ -577,6 +580,14 @@ public class Patient extends Auditable<String> {
 	 */
 	public void setAllergies(String allergies) {
 		this.allergies = allergies;
+	}
+
+	public String getUpdatedFrom() {
+		return this.updatedFrom;
+	}
+
+	public void setUpdatedFrom(String updatedFrom) {
+		this.updatedFrom = updatedFrom;
 	}
 
 	/**
