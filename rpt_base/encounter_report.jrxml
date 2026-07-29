@@ -9,9 +9,10 @@
 	<parameter name="LOGO-BENIN-PATH" class="java.lang.String"/>
 	<parameter name="LOGO-PATH" class="java.lang.String"/>
 	<queryString>
-		<![CDATA[select * from oh_patient p
+		<![CDATA[select p.*, e.*, h.HOS_TELE as HOS_TELE from oh_patient p
 INNER JOIN oh_encounter e
 ON p.PAT_ID = e.ENC_PAT_ID
+CROSS JOIN oh_hospital h
  where p.PAT_ID = $P{patID}
 AND e.ENC_PERFORMED_AT = $P{performedAt}
 AND (e.ENC_CLOSED_AT IS NULL OR e.ENC_CLOSED_AT <= $P{closedAt})]]>
@@ -38,6 +39,7 @@ AND (e.ENC_CLOSED_AT IS NULL OR e.ENC_CLOSED_AT <= $P{closedAt})]]>
 	<field name="PAT_SCHOOLING_LEVEL" class="java.lang.String"/>
 	<field name="PAT_FATHER_SCHOOLING_LEVEL" class="java.lang.String"/>
 	<field name="PAT_MOTHER_SCHOOLING_LEVEL" class="java.lang.String"/>
+	<field name="HOS_TELE" class="java.lang.String"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -158,13 +160,13 @@ AND (e.ENC_CLOSED_AT IS NULL OR e.ENC_CLOSED_AT <= $P{closedAt})]]>
 				</textElement>
 				<textFieldExpression><![CDATA[$R{Hospital}]]></textFieldExpression>
 			</textField>
-			<staticText>
-				<reportElement x="130" y="90" width="290" height="20" uuid="4f36369b-5cc2-4743-a8af-b3b2952757c2"/>
+			<textField textAdjust="ScaleFont">
+				<reportElement x="121" y="90" width="309" height="20" uuid="ab000e14-5a43-4f7e-ba88-65423c2cd680"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="12"/>
+					<font size="11" isBold="true"/>
 				</textElement>
-				<text><![CDATA[69374707 / 69374700 / 69374703]]></text>
-			</staticText>
+				<textFieldExpression><![CDATA[$F{HOS_TELE}]]></textFieldExpression>
+			</textField>
 		</band>
 	</pageHeader>
 	<columnHeader>
@@ -477,7 +479,7 @@ AND (e.ENC_CLOSED_AT IS NULL OR e.ENC_CLOSED_AT <= $P{closedAt})]]>
 						<textFieldExpression><![CDATA[$R{MotherSchoolingLevel}]]></textFieldExpression>
 					</textField>
 					<textField isBlankWhenNull="true">
-						<reportElement x="168" y="0" width="222" height="20" uuid="b3fc0095-234b-47fa-8040-00fa7cbddf13"/>
+						<reportElement x="168" y="0" width="230" height="20" uuid="b3fc0095-234b-47fa-8040-00fa7cbddf13"/>
 						<textElement>
 							<font size="12"/>
 						</textElement>

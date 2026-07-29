@@ -1,27 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.21.5.final using JasperReports Library version 6.21.5-74d586df47b25dbd05bd0957999819196e59934a  -->
+<!-- Created with Jaspersoft Studio version 6.21.2.final using JasperReports Library version 6.21.2-8434a0bd7c3bbc37cbf916f2968d35e4b165821a  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="death_report" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" resourceBundle="death_report" uuid="9888f2b9-c540-4fa8-a768-c1ca4e6aaf84">
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter2.jrdax"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter.jrdax"/>
 	<parameter name="LOGO-PATH" class="java.lang.String"/>
 	<parameter name="LOGO-BENIN-PATH" class="java.lang.String"/>
 	<parameter name="firstDate" class="java.sql.Timestamp"/>
 	<parameter name="secondDate" class="java.sql.Timestamp"/>
 	<queryString language="SQL">
 		<![CDATA[SELECT 
-    COUNT(CASE WHEN ADM_DEATH_PERIOD = 'BEFORE_ADMISSION' THEN 1 END) AS DEATH_BEFORE_ADMISSION,
+    COUNT(CASE WHEN a.ADM_DEATH_PERIOD = 'BEFORE_ADMISSION' THEN 1 END) AS DEATH_BEFORE_ADMISSION,
 
-    COUNT(CASE WHEN ADM_DEATH_PERIOD = 'AFTER_ADMISSION' 
-               AND TIMESTAMPDIFF(HOUR, ADM_DATE_ADM, ADM_DATE_DIS) < 24 THEN 1 END) AS DEATH_LESS_24h,
+    COUNT(CASE WHEN a.ADM_DEATH_PERIOD = 'AFTER_ADMISSION' 
+               AND TIMESTAMPDIFF(HOUR, a.ADM_DATE_ADM, a.ADM_DATE_DIS) < 24 THEN 1 END) AS DEATH_LESS_24h,
 
-    COUNT(CASE WHEN ADM_DEATH_PERIOD = 'AFTER_ADMISSION' 
-               AND TIMESTAMPDIFF(HOUR, ADM_DATE_ADM, ADM_DATE_DIS) >= 24 THEN 1 END) AS DEATH_MORE_24h,
+    COUNT(CASE WHEN a.ADM_DEATH_PERIOD = 'AFTER_ADMISSION' 
+               AND TIMESTAMPDIFF(HOUR, a.ADM_DATE_ADM, a.ADM_DATE_DIS) >= 24 THEN 1 END) AS DEATH_MORE_24h,
 
-    COUNT(CASE WHEN ADM_DEATH_PERIOD IN ('BEFORE_ADMISSION', 'AFTER_ADMISSION') THEN 1 END) AS TOTAL_GENERAL_DEATH
-FROM oh_admission
-WHERE ADM_DELETED = 'N'
-  AND ADM_ACTIVE = 1
-  AND ADM_CREATED_DATE BETWEEN $P{firstDate} AND $P{secondDate};]]>
+    COUNT(CASE WHEN a. ADM_DEATH_PERIOD IN ('BEFORE_ADMISSION', 'AFTER_ADMISSION') THEN 1 END) AS TOTAL_GENERAL_DEATH,
+	h.HOS_TELE
+FROM oh_admission a
+CROSS JOIN oh_hospital h
+WHERE a.ADM_DELETED = 'N'
+  AND a.ADM_ACTIVE = 1
+  AND a.ADM_CREATED_DATE BETWEEN $P{firstDate} AND $P{secondDate};]]>
 	</queryString>
 	<field name="DEATH_BEFORE_ADMISSION" class="java.lang.Long">
 		<property name="com.jaspersoft.studio.field.name" value="DEATH_BEFORE_ADMISSION"/>
@@ -39,6 +41,7 @@ WHERE ADM_DELETED = 'N'
 		<property name="com.jaspersoft.studio.field.name" value="TOTAL_GENERAL_DEATH"/>
 		<property name="com.jaspersoft.studio.field.label" value="TOTAL_GENERAL_DEATH"/>
 	</field>
+	<field name="HOS_TELE" class="java.lang.String"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -118,13 +121,6 @@ WHERE ADM_DELETED = 'N'
 				</textElement>
 				<textFieldExpression><![CDATA[$R{Hospital}]]></textFieldExpression>
 			</textField>
-			<staticText>
-				<reportElement x="130" y="90" width="290" height="20" uuid="df7ad305-d4ee-4436-aac5-d35da35b7417"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="12"/>
-				</textElement>
-				<text><![CDATA[69374707 / 69374700 / 69374703]]></text>
-			</staticText>
 			<textField>
 				<reportElement x="280" y="255" width="200" height="30" uuid="0e96dae8-843b-4e17-b10c-415f682cf412"/>
 				<box padding="1">
@@ -204,6 +200,13 @@ WHERE ADM_DELETED = 'N'
 					<paragraph lineSpacing="Single" lineSpacingSize="1.0"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$R{DeathStatistics}]]></textFieldExpression>
+			</textField>
+			<textField textAdjust="ScaleFont">
+				<reportElement x="121" y="92" width="309" height="20" uuid="6368bc6d-ea7f-4b28-8499-f87a74971299"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{HOS_TELE}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
