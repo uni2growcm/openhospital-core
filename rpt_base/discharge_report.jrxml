@@ -8,15 +8,28 @@
 	<parameter name="LOGO-BENIN-PATH" class="java.lang.String"/>
 	<parameter name="LOGO-PATH" class="java.lang.String"/>
 	<queryString>
-		<![CDATA[SELECT * FROM oh_patient p
+		<![CDATA[SELECT
+    p.*,
+    a.*,
+    GROUP_CONCAT(DISTINCT d.DIS_DESC SEPARATOR ', ') AS diseasesIn,
+    dist.*,
+    h.HOS_TELE
+FROM oh_patient p
 INNER JOIN oh_admission a
-ON p.PAT_ID = a.ADM_PAT_ID
+    ON p.PAT_ID = a.ADM_PAT_ID
+LEFT JOIN oh_indiagnosis i
+    ON i.ID_ADM_ID = a.ADM_ID
 LEFT JOIN oh_disease d
-ON d.DIS_ID_A = a.ADM_IN_DIS_ID_A
+    ON d.DIS_ID_A = i.ID_DIS_ID_A
 LEFT JOIN oh_dischargetype dist
-ON dist.DIST_ID_A = a.ADM_DIST_ID_A
- WHERE p.PAT_ID = $P{patID}
-AND a.ADM_ID = $P{admID}]]>
+    ON dist.DIST_ID_A = a.ADM_DIST_ID_A
+CROSS JOIN oh_hospital h
+WHERE p.PAT_ID = $P{patID}
+  AND a.ADM_ID = $P{admID}
+GROUP BY
+    p.PAT_ID,
+    a.ADM_ID,
+    h.HOS_TELE;]]>
 	</queryString>
 	<field name="PAT_NAME" class="java.lang.String"/>
 	<field name="PAT_MOTH_NAME" class="java.lang.String"/>
@@ -25,12 +38,13 @@ AND a.ADM_ID = $P{admID}]]>
 	<field name="PAT_FATHER_PHONE" class="java.lang.String"/>
 	<field name="PAT_MOTHER_PHONE" class="java.lang.String"/>
 	<field name="DIST_DESC" class="java.lang.String"/>
-	<field name="DIS_DESC" class="java.lang.String"/>
+	<field name="diseasesIn" class="java.lang.String"/>
 	<field name="ADM_DATE_ADM" class="java.sql.Timestamp"/>
 	<field name="ADM_DATE_DIS" class="java.sql.Timestamp"/>
 	<field name="ADM_NEXT_APPOINTMENT" class="java.sql.Timestamp"/>
 	<field name="ADM_NOTE" class="java.lang.String"/>
 	<field name="ADM_TREATMENT_RECEIVED" class="java.lang.String"/>
+	<field name="HOS_TELE" class="java.lang.String"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -110,13 +124,6 @@ AND a.ADM_ID = $P{admID}]]>
 				</textElement>
 				<textFieldExpression><![CDATA[$R{Hospital}]]></textFieldExpression>
 			</textField>
-			<staticText>
-				<reportElement x="130" y="90" width="290" height="20" uuid="4f36369b-5cc2-4743-a8af-b3b2952757c2"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="12"/>
-				</textElement>
-				<text><![CDATA[69374707 / 69374700 / 69374703]]></text>
-			</staticText>
 			<rectangle>
 				<reportElement x="79" y="129" width="401" height="31" backcolor="#633008" uuid="09016d9e-f345-496c-9e0e-1483e6111770"/>
 			</rectangle>
@@ -126,6 +133,13 @@ AND a.ADM_ID = $P{admID}]]>
 					<font fontName="Serif" size="18"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$R{GeneralPediatricsDepartment}]]></textFieldExpression>
+			</textField>
+			<textField textAdjust="ScaleFont">
+				<reportElement x="121" y="92" width="309" height="20" uuid="c2498544-c8ec-41ba-aff2-7b036e01a9db"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{HOS_TELE}]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageHeader>
@@ -262,12 +276,12 @@ AND a.ADM_ID = $P{admID}]]>
 						</textElement>
 						<textFieldExpression><![CDATA[$R{InDiagnosis}]]></textFieldExpression>
 					</textField>
-					<textField isBlankWhenNull="true">
+					<textField textAdjust="ScaleFont" isBlankWhenNull="true">
 						<reportElement x="159" y="0" width="400" height="20" uuid="57635908-c3aa-473e-9db7-5c537b82b74c"/>
 						<textElement>
 							<font size="14"/>
 						</textElement>
-						<textFieldExpression><![CDATA[$F{DIS_DESC}]]></textFieldExpression>
+						<textFieldExpression><![CDATA[$F{diseasesIn}]]></textFieldExpression>
 					</textField>
 				</frame>
 				<frame>

@@ -11,7 +11,8 @@
 		<![CDATA[SELECT
     p.*,
     a.*,
-    GROUP_CONCAT(d.DIS_DESC SEPARATOR ', ') AS diseases
+    GROUP_CONCAT(d.DIS_DESC SEPARATOR ', ') AS diseases,
+    h.HOS_TELE
 FROM oh_patient p
 JOIN oh_admission a
     ON p.PAT_ID = a.ADM_PAT_ID
@@ -19,9 +20,9 @@ LEFT JOIN oh_indiagnosis i
     ON i.ID_ADM_ID = a.ADM_ID
 LEFT JOIN oh_disease d
     ON d.DIS_ID_A = i.ID_DIS_ID_A
-WHERE p.PAT_ID = 45
-  AND a.ADM_ID = 515
-GROUP BY p.PAT_ID, a.ADM_ID]]>
+CROSS JOIN oh_hospital h
+WHERE p.PAT_ID = $P{patID}
+  AND a.ADM_ID = $P{admID};]]>
 	</queryString>
 	<field name="PAT_NAME" class="java.lang.String"/>
 	<field name="PAT_AGE" class="java.lang.Integer"/>
@@ -35,6 +36,7 @@ GROUP BY p.PAT_ID, a.ADM_ID]]>
 	<field name="ADM_TREATMENT_RECEIVED" class="java.lang.String"/>
 	<field name="ADM_OUTCOME" class="java.lang.String"/>
 	<field name="ADM_IMPROVEMENT_FEEDBACK" class="java.lang.String"/>
+	<field name="HOS_TELE" class="java.lang.String"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -114,13 +116,6 @@ GROUP BY p.PAT_ID, a.ADM_ID]]>
 				</textElement>
 				<textFieldExpression><![CDATA[$R{Hospital}]]></textFieldExpression>
 			</textField>
-			<staticText>
-				<reportElement x="130" y="90" width="290" height="20" uuid="4f36369b-5cc2-4743-a8af-b3b2952757c2"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="12"/>
-				</textElement>
-				<text><![CDATA[69374707 / 69374700 / 69374703]]></text>
-			</staticText>
 			<rectangle>
 				<reportElement x="80" y="129" width="401" height="31" backcolor="#633008" uuid="798f98ca-af18-4a4a-9087-dcab49b51b2d"/>
 			</rectangle>
@@ -130,6 +125,13 @@ GROUP BY p.PAT_ID, a.ADM_ID]]>
 					<font fontName="Serif" size="18"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$R{GeneralPediatricsDepartment}]]></textFieldExpression>
+			</textField>
+			<textField textAdjust="ScaleFont">
+				<reportElement x="121" y="90" width="309" height="20" uuid="4fb6e79b-e005-4ac7-9e60-91f74a16c6e0"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{HOS_TELE}]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageHeader>

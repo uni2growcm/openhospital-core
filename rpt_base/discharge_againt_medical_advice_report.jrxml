@@ -16,9 +16,13 @@
 	<parameter name="patientRelationShipName" class="java.lang.String"/>
 	<parameter name="madeOnDate" class="java.util.Date"/>
 	<queryString>
-		<![CDATA[SELECT PAT_NAME FROM oh_patient WHERE PAT_ID = $P{patID}]]>
+		<![CDATA[SELECT p.PAT_NAME,  h.HOS_TELE 
+FROM oh_patient p 
+CROSS JOIN oh_hospital h
+WHERE PAT_ID = $P{patID}]]>
 	</queryString>
 	<field name="PAT_NAME" class="java.lang.String"/>
+	<field name="HOS_TELE" class="java.lang.String"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -51,28 +55,21 @@
 				</image>
 			</frame>
 			<textField>
-				<reportElement x="0" y="60" width="550" height="20" uuid="2069ef3e-5bbd-49f1-acb7-716ce7e57a9c"/>
+				<reportElement x="50" y="60" width="440" height="20" uuid="2069ef3e-5bbd-49f1-acb7-716ce7e57a9c"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="14" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$R{hospitalName}]]></textFieldExpression>
 			</textField>
-			<staticText>
-				<reportElement x="127" y="120" width="290" height="20" uuid="4f36369b-5cc2-4743-a8af-b3b2952757c2"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="12" isBold="true"/>
-				</textElement>
-				<text><![CDATA[69374701 / 69374702 / 6937470]]></text>
-			</staticText>
 			<textField>
-				<reportElement x="0" y="80" width="550" height="20" uuid="a6a6ed98-876a-471a-8ce9-59f0438ac2a9"/>
+				<reportElement x="50" y="80" width="440" height="20" uuid="a6a6ed98-876a-471a-8ce9-59f0438ac2a9"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="14" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$R{hospital}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="100" y="100" width="381" height="20" uuid="f67f4cfc-6170-43b7-87da-15acc8bb5556"/>
+				<reportElement x="50" y="100" width="440" height="20" uuid="f67f4cfc-6170-43b7-87da-15acc8bb5556"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="14" isBold="true"/>
 				</textElement>
@@ -87,6 +84,13 @@
 					<font fontName="Serif" size="18"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$R{GeneralPediatricsDepartment}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="50" y="120" width="440" height="20" uuid="cd303a68-8bef-4fc1-a787-87e85543b04e"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="14" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{HOS_TELE}]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageHeader>
