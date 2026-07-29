@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.21.2.final using JasperReports Library version 6.21.2-8434a0bd7c3bbc37cbf916f2968d35e4b165821a  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="pathology_report" pageWidth="1133" pageHeight="793" orientation="Landscape" columnWidth="1073" leftMargin="30" rightMargin="30" topMargin="20" bottomMargin="20" resourceBundle="pathology_report" whenResourceMissingType="Key" uuid="4b130d5b-2220-460d-8b4b-de69fdbb4e1e">
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="oh_data_adapter"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter.jrdax"/>
 	<import value="net.sf.jasperreports.engine.*"/>
 	<import value="java.util.*"/>
 	<parameter name="fromdate" class="java.util.Date"/>
@@ -20,12 +20,17 @@
             SUM(CASE WHEN w.WRD_IS_OPD = 1 THEN 1 ELSE 0 END) AS CONSULTATIONS,
             SUM(CASE WHEN w.WRD_IS_OPD = 0 THEN 1 ELSE 0 END) AS ADMISSIONS,
             SUM(CASE WHEN w.WRD_IS_OPD = 0 AND a.ADM_DATE_DIS IS NULL THEN 1 ELSE 0 END) AS HOSPITALIZED,
-            SUM(CASE WHEN w.WRD_IS_OPD = 0 AND a.ADM_DATE_DIS IS NOT NULL THEN 1 ELSE 0 END) AS TOTAL_DISCHARGES
+            SUM(CASE WHEN w.WRD_IS_OPD = 0 AND a.ADM_DATE_DIS IS NOT NULL THEN 1 ELSE 0 END) AS TOTAL_DISCHARGES,
+            h.HOS_TELE
         FROM oh_admission a
         INNER JOIN oh_patient p ON a.ADM_PAT_ID = p.PAT_ID
-        LEFT JOIN oh_disease d ON a.ADM_IN_DIS_ID_A = d.DIS_ID_A
+       LEFT JOIN oh_indiagnosis i
+    		ON i.ID_ADM_ID = a.ADM_ID
+		LEFT JOIN oh_disease d
+    		ON d.DIS_ID_A = i.ID_DIS_ID_A
         LEFT JOIN oh_ward w ON a.ADM_WRD_ID_A = w.WRD_ID_A
         LEFT JOIN oh_agetype ag ON COALESCE(p.PAT_AGE, -1) BETWEEN ag.AT_FROM AND ag.AT_TO AND ag.AT_ACTIVE = 1
+        CROSS JOIN oh_hospital h
         WHERE DATE(a.ADM_DATE_ADM) BETWEEN $P{fromdate} AND $P{todate}
           AND COALESCE(a.ADM_DELETED, 0) = 0
           AND COALESCE(p.PAT_DELETED, 0) = 0
@@ -43,6 +48,7 @@
 	<field name="ADMISSIONS" class="java.lang.Long"/>
 	<field name="HOSPITALIZED" class="java.lang.Long"/>
 	<field name="TOTAL_DISCHARGES" class="java.lang.Long"/>
+	<field name="HOS_TELE" class="java.lang.String"/>
 	<variable name="TOTAL_AGE_NEWBORN" class="java.lang.Long" calculation="Sum">
 		<variableExpression><![CDATA[$F{AGE_NEWBORN} == null ? 0L : $F{AGE_NEWBORN}]]></variableExpression>
 	</variable>
@@ -133,13 +139,6 @@
 				<textFieldExpression><![CDATA[$R{Hospital}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="393" y="90" width="290" height="20" uuid="0520776c-4710-4a4e-98a6-c51cab88ebcd"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="12"/>
-				</textElement>
-				<text><![CDATA[69374707 / 69374700 / 69374703]]></text>
-			</staticText>
-			<staticText>
 				<reportElement x="510" y="21" width="57" height="14" uuid="0b818cf4-946c-4608-941b-566709743625"/>
 				<textElement textAlignment="Center">
 					<font fontName="Serif" size="11"/>
@@ -169,6 +168,13 @@
 					<font fontName="Serif" size="14" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$R{PERIOD} + " "  + $R{FROM} + " " + new java.text.SimpleDateFormat("dd/MM/yyyy").format($P{fromdate}) + " " + $R{TO}+ " " + new java.text.SimpleDateFormat("dd/MM/yyyy").format($P{todate})]]></textFieldExpression>
+			</textField>
+			<textField textAdjust="ScaleFont">
+				<reportElement x="336" y="90" width="404" height="20" uuid="a9bcea01-2a1e-4ee2-9d0c-afe0f28e54f2"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{HOS_TELE}]]></textFieldExpression>
 			</textField>
 		</band>
 	</title>

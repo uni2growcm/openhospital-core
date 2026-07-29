@@ -6,28 +6,31 @@
 	<parameter name="admID" class="java.lang.Integer"/>
 	<parameter name="patID" class="java.lang.Integer"/>
 	<queryString language="SQL">
-		<![CDATA[SELECT * FROM oh_patient p
+		<![CDATA[SELECT GROUP_CONCAT(DISTINCT d.DIS_DESC SEPARATOR ', ') AS diseasesOut
+FROM oh_patient p
 INNER JOIN oh_admission a
 ON p.PAT_ID = a.ADM_PAT_ID
+LEFT JOIN oh_outdiagnosis o
+    ON o.OD_ADM_ID = a.ADM_ID
 LEFT JOIN oh_disease d
-ON d.DIS_ID_A = a.ADM_OUT_DIS_ID_A 
+    ON d.DIS_ID_A = o.OD_DIS_ID_A
 LEFT JOIN oh_dischargetype dist
 ON dist.DIST_ID_A = a.ADM_DIST_ID_A
  WHERE p.PAT_ID = $P{patID}
 AND a.ADM_ID = $P{admID}]]>
 	</queryString>
-	<field name="DIS_DESC" class="java.lang.String"/>
+	<field name="diseasesOut" class="java.lang.String"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
 	<detail>
 		<band height="21" splitType="Stretch">
-			<textField>
+			<textField textAdjust="ScaleFont">
 				<reportElement x="-20" y="0" width="591" height="21" uuid="59ebe3c8-ba11-4d25-bdd4-9a17e8008eb5"/>
 				<textElement>
 					<font size="14" isBold="false"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{DIS_DESC}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{diseasesOut}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

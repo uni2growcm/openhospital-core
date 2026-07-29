@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.21.2.final using JasperReports Library version 6.21.2-8434a0bd7c3bbc37cbf916f2968d35e4b165821a  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="discharge_statistics_report" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" resourceBundle="discharge_statistics_report" uuid="15801daf-ab44-4545-89e2-846635be8085">
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="oh_data_adapter"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter.jrdax"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<import value="net.sf.jasperreports.engine.*"/>
 	<import value="java.util.*"/>
 	<parameter name="LOGO-BENIN-PATH" class="java.lang.String"/>
@@ -12,10 +13,12 @@
 		<![CDATA[SELECT
             w.WRD_NAME AS WARD_NAME,
             COALESCE(dt.DIST_DESC, 'Undefined') AS DISCHARGE_TYPE,
-            COUNT(*) AS NUMBER
+            COUNT(*) AS NUMBER,
+            h.HOS_TELE as HOS_TELE
         FROM oh_admission a
         LEFT JOIN oh_ward w ON a.ADM_WRD_ID_A = w.WRD_ID_A
         LEFT JOIN oh_dischargetype dt ON a.ADM_DIST_ID_A = dt.DIST_ID_A AND dt.DIST_ACTIVE = 1
+       CROSS JOIN oh_hospital h
         WHERE
             a.ADM_DATE_DIS IS NOT NULL
             AND DATE(a.ADM_DATE_DIS) BETWEEN $P{fromdate} AND $P{todate}
@@ -28,6 +31,7 @@
 	<field name="WARD_NAME" class="java.lang.String"/>
 	<field name="DISCHARGE_TYPE" class="java.lang.String"/>
 	<field name="NUMBER" class="java.lang.Long"/>
+	<field name="HOS_TELE" class="java.lang.String"/>
 	<variable name="WARD_TOTAL" class="java.lang.Long" resetType="Group" resetGroup="WARD_GROUP" calculation="Sum">
 		<variableExpression><![CDATA[$F{NUMBER} == null ? 0L : $F{NUMBER}]]></variableExpression>
 	</variable>
@@ -145,13 +149,6 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$R{Hospital}]]></textFieldExpression>
 			</textField>
-			<staticText>
-				<reportElement x="130" y="90" width="290" height="20" uuid="4f36369b-5cc2-4743-a8af-b3b2952757c2"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="12"/>
-				</textElement>
-				<text><![CDATA[69374707 / 69374700 / 69374703]]></text>
-			</staticText>
 			<rectangle>
 				<reportElement x="79" y="129" width="401" height="31" backcolor="#633008" uuid="62954333-3376-4db9-a2ad-90f7310ce2d5"/>
 			</rectangle>
@@ -161,6 +158,13 @@
 					<font fontName="Serif" size="18"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$R{GeneralPediatricsDepartment}]]></textFieldExpression>
+			</textField>
+			<textField textAdjust="ScaleFont">
+				<reportElement x="123" y="90" width="309" height="20" uuid="fce14826-7fda-4864-b11a-1f05e3475a61"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{HOS_TELE}]]></textFieldExpression>
 			</textField>
 		</band>
 	</title>

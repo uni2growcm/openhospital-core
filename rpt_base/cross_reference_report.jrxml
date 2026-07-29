@@ -1,20 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.21.2.final using JasperReports Library version 6.21.2-8434a0bd7c3bbc37cbf916f2968d35e4b165821a  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="cross_reference_report" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" resourceBundle="cross_reference_report" uuid="12ced7e6-a735-462f-b176-adcf858645f5">
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="oh_data_adapter"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter.jrdax"/>
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<parameter name="patID" class="java.lang.Integer"/>
 	<parameter name="admID" class="java.lang.Integer"/>
 	<parameter name="LOGO-BENIN-PATH" class="java.lang.String"/>
 	<parameter name="LOGO-PATH" class="java.lang.String"/>
 	<queryString>
-		<![CDATA[SELECT * FROM oh_patient p
+		<![CDATA[SELECT
+    p.*,
+    a.*,
+    GROUP_CONCAT(d.DIS_DESC SEPARATOR ', ') AS diseases,
+    h.HOS_TELE
+FROM oh_patient p
 JOIN oh_admission a
-ON p.PAT_ID = a.ADM_PAT_ID
+    ON p.PAT_ID = a.ADM_PAT_ID
+LEFT JOIN oh_indiagnosis i
+    ON i.ID_ADM_ID = a.ADM_ID
 LEFT JOIN oh_disease d
-ON d.DIS_ID_A = a.ADM_IN_DIS_ID_A
- WHERE p.PAT_ID = $P{patID}
-AND a.ADM_ID = $P{admID}]]>
+    ON d.DIS_ID_A = i.ID_DIS_ID_A
+CROSS JOIN oh_hospital h
+WHERE p.PAT_ID = $P{patID}
+  AND a.ADM_ID = $P{admID};]]>
 	</queryString>
 	<field name="PAT_NAME" class="java.lang.String"/>
 	<field name="PAT_AGE" class="java.lang.Integer"/>
@@ -24,10 +32,11 @@ AND a.ADM_ID = $P{admID}]]>
 	<field name="ADM_REFERRAL_ALERT" class="java.lang.String"/>
 	<field name="ADM_TRANSPORTATION" class="java.lang.String"/>
 	<field name="ADM_REFERRAL_REASON" class="java.lang.String"/>
-	<field name="DIS_DESC" class="java.lang.String"/>
+	<field name="diseases" class="java.lang.String"/>
 	<field name="ADM_TREATMENT_RECEIVED" class="java.lang.String"/>
 	<field name="ADM_OUTCOME" class="java.lang.String"/>
 	<field name="ADM_IMPROVEMENT_FEEDBACK" class="java.lang.String"/>
+	<field name="HOS_TELE" class="java.lang.String"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -107,13 +116,6 @@ AND a.ADM_ID = $P{admID}]]>
 				</textElement>
 				<textFieldExpression><![CDATA[$R{Hospital}]]></textFieldExpression>
 			</textField>
-			<staticText>
-				<reportElement x="130" y="90" width="290" height="20" uuid="4f36369b-5cc2-4743-a8af-b3b2952757c2"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="12"/>
-				</textElement>
-				<text><![CDATA[69374707 / 69374700 / 69374703]]></text>
-			</staticText>
 			<rectangle>
 				<reportElement x="80" y="129" width="401" height="31" backcolor="#633008" uuid="798f98ca-af18-4a4a-9087-dcab49b51b2d"/>
 			</rectangle>
@@ -123,6 +125,13 @@ AND a.ADM_ID = $P{admID}]]>
 					<font fontName="Serif" size="18"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$R{GeneralPediatricsDepartment}]]></textFieldExpression>
+			</textField>
+			<textField textAdjust="ScaleFont">
+				<reportElement x="121" y="90" width="309" height="20" uuid="4fb6e79b-e005-4ac7-9e60-91f74a16c6e0"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{HOS_TELE}]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageHeader>
@@ -287,7 +296,7 @@ AND a.ADM_ID = $P{admID}]]>
 						<textElement>
 							<font size="12"/>
 						</textElement>
-						<textFieldExpression><![CDATA[$F{DIS_DESC}]]></textFieldExpression>
+						<textFieldExpression><![CDATA[$F{diseases}]]></textFieldExpression>
 					</textField>
 				</frame>
 				<frame>

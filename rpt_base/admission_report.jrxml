@@ -29,7 +29,8 @@
     CAST(A.ADM_DATE_ADM AS DATE) AS DATE_ADM,
     W.WRD_NAME AS WARD,
     D.DIS_DESC AS DISEASE, 
-    ATYPE.ADMT_DESC AS ADM_TYPE  
+    ATYPE.ADMT_DESC AS ADM_TYPE ,
+    H.HOS_TELE 
 FROM OH_ADMISSION A
 INNER JOIN OH_PATIENT P 
     ON A.ADM_PAT_ID = P.PAT_ID
@@ -39,6 +40,7 @@ LEFT JOIN OH_DISEASE D
     ON A.ADM_IN_DIS_ID_A = D.DIS_ID_A
 LEFT JOIN OH_ADMISSIONTYPE ATYPE 
     ON A.ADM_ADMT_ID_A_ADM = ATYPE.ADMT_ID_A 
+CROSS JOIN OH_HOSPITAL H
 WHERE CAST(A.ADM_DATE_ADM AS DATE) 
     BETWEEN $P{fromdate}
     AND $P{todate}
@@ -55,6 +57,7 @@ ORDER BY A.ADM_DATE_ADM DESC]]>
 	<field name="WARD" class="java.lang.String"/>
 	<field name="DISEASE" class="java.lang.String"/>
 	<field name="ADM_TYPE" class="java.lang.String"/>
+	<field name="HOS_TELE" class="java.lang.String"/>
 	<variable name="TOTAL" class="java.lang.Long" calculation="Count">
 		<variableExpression><![CDATA[$F{CODE}]]></variableExpression>
 	</variable>
@@ -124,7 +127,7 @@ ORDER BY A.ADM_DATE_ADM DESC]]>
 				<textFieldExpression><![CDATA[$R{BeninRepublic}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="384" y="35" width="309" height="21" uuid="242583fe-6135-4f13-b1fd-c84df048f87f"/>
+				<reportElement x="340" y="35" width="410" height="21" uuid="242583fe-6135-4f13-b1fd-c84df048f87f"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="10" isBold="true"/>
 				</textElement>
@@ -138,19 +141,12 @@ ORDER BY A.ADM_DATE_ADM DESC]]>
 				<text><![CDATA[-----***-----]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="384" y="70" width="309" height="20" uuid="2a63c87f-a0fa-42b4-b22c-f14293f25774"/>
+				<reportElement x="340" y="70" width="410" height="20" uuid="2a63c87f-a0fa-42b4-b22c-f14293f25774"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="11" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$R{Hospital}]]></textFieldExpression>
 			</textField>
-			<staticText>
-				<reportElement x="393" y="90" width="290" height="20" uuid="6fe52667-40d9-42ca-82c1-e545769be600"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="12"/>
-				</textElement>
-				<text><![CDATA[69374707 / 69374700 / 69374703]]></text>
-			</staticText>
 			<frame>
 				<reportElement x="0" y="210" width="569" height="20" uuid="ddf78ffd-1028-48e6-8e3a-6f657ffd5040"/>
 				<textField>
@@ -161,6 +157,13 @@ ORDER BY A.ADM_DATE_ADM DESC]]>
 					<textFieldExpression><![CDATA[$R{Period} + " "  + $R{From} + " " + new java.text.SimpleDateFormat("dd/MM/yyyy").format($P{fromdate}) + " " + $R{To}+ " " + new java.text.SimpleDateFormat("dd/MM/yyyy").format($P{todate})]]></textFieldExpression>
 				</textField>
 			</frame>
+			<textField textAdjust="ScaleFont">
+				<reportElement x="340" y="90" width="410" height="20" uuid="566e150c-342c-41c3-bb9a-1c099660e778"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{HOS_TELE}]]></textFieldExpression>
+			</textField>
 		</band>
 	</title>
 	<pageHeader>
