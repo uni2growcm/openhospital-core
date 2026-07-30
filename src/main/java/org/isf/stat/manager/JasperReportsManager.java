@@ -1235,7 +1235,7 @@ public class JasperReportsManager {
 			String formattedDate = inventoryDateTime.format(formatter);
 			parameters.put("inventoryDate", formattedDate);
 
-			String pdfFilename = compilePDFFilename(RPT_BASE, jasperFileName, Arrays.asList(String.valueOf(inventory.getId())), "pdf ");
+			String pdfFilename = compilePDFFilename(RPT_BASE, jasperFileName, Arrays.asList(String.valueOf(inventory.getId())), "pdf");
 			LOGGER.info("Generated PDF File: {}", pdfFilename);
 
 			JasperReportResultDto result = generateJasperReport(compileJasperFilename(RPT_BASE, jasperFileName), pdfFilename, parameters);
