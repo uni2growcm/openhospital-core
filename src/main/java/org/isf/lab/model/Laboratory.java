@@ -247,6 +247,25 @@ public class Laboratory extends Auditable<String> {
 		this.bill = bill;
 	}
 
+	/**
+	 * Return the bill id linked to this laboratory exam, or {@code 0} if no bill is linked.
+	 *
+	 * @return the bill id ({@code 0} when no bill is associated)
+	 */
+	public int getBillId() {
+		return bill != null ? bill.getId() : 0;
+	}
+
+	/**
+	 * Return the payment status of the linked bill ({@code C} paid, {@code O} open, {@code D} deleted), or
+	 * {@code null} if no bill is linked (i.e. not billed yet).
+	 *
+	 * @return the bill status or {@code null} if not billed
+	 */
+	public String getPaidStatus() {
+		return bill != null ? bill.getStatus() : null;
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof Laboratory laboratory)) {

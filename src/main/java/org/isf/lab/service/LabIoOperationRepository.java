@@ -75,6 +75,27 @@ public interface LabIoOperationRepository extends JpaRepository<Laboratory, Inte
 	@Query("SELECT l FROM Laboratory l WHERE l.patient.code = :patientCode AND (l.bill IS NULL OR l.bill.id = 0)")
 	List<Laboratory> findByPatientCodeAndBillIsNull(@Param("patientCode") int patientCode);
 
+	@Query(value = "select lab from Laboratory lab where lab.labDate >= :dateFrom and lab.labDate <= :dateTo "
+			+ "and (:exam is null or lab.exam.description = :exam) "
+			+ "and (:patient is null or lab.patient = :patient) "
+			+ "and (:paidCode is null "
+			+ "or (:paidCode = '0' and (lab.bill is null or lab.bill.id <= 0)) "
+			+ "or (:paidCode <> '0' and lab.bill.status = :paidCode)) "
+			+ "order by lab.labDate desc")
+	List<Laboratory> findByLabDateBetweenAndExamDescriptionAndPatientCodeAndPaidStatus(@Param("dateFrom") LocalDateTime dateFrom,
+			@Param("dateTo") LocalDateTime dateTo, @Param("exam") String exam, @Param("patient") Patient patient,
+			@Param("paidCode") String paidCode);
+
+	@Query(value = "select count(lab) from Laboratory lab where lab.labDate >= :dateFrom and lab.labDate <= :dateTo "
+			+ "and (:exam is null or lab.exam.description = :exam) "
+			+ "and (:patient is null or lab.patient = :patient) "
+			+ "and (:paidCode is null "
+			+ "or (:paidCode = '0' and (lab.bill is null or lab.bill.id <= 0)) "
+			+ "or (:paidCode <> '0' and lab.bill.status = :paidCode))")
+	long countByLabDateBetweenAndExamDescriptionAndPatientCodeAndPaidStatus(@Param("dateFrom") LocalDateTime dateFrom,
+			@Param("dateTo") LocalDateTime dateTo, @Param("exam") String exam, @Param("patient") Patient patient,
+			@Param("paidCode") String paidCode);
+
 	@Modifying
 	@Query("UPDATE Laboratory l SET l.bill = :bill WHERE l.code = :labId")
 	void updateBillForLaboratory(@Param("labId") int labId, @Param("bill") Bill bill);
