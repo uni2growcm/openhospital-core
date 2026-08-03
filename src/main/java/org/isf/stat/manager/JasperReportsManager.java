@@ -827,6 +827,7 @@ public class JasperReportsManager {
 
 	public JasperReportResultDto getGenericReportDischargeAgainstAdvicePdf(
 		Integer patID,
+		Integer admID,
 		String localisation,
 		String reference,
 		String district,
@@ -844,6 +845,7 @@ public class JasperReportsManager {
 			HashMap<String, Object> parameters = new HashMap();
 			parameters.put("REPORT_LOCALE", locale);
 			parameters.put("patID", patID);
+			parameters.put("admID", admID);
 			parameters.put("localisation", localisation);
 			parameters.put("reference", reference);
 			parameters.put("district", district);

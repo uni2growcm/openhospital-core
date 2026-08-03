@@ -37,6 +37,7 @@ WHERE p.PAT_ID = $P{patID}
 	<field name="ADM_OUTCOME" class="java.lang.String"/>
 	<field name="ADM_IMPROVEMENT_FEEDBACK" class="java.lang.String"/>
 	<field name="HOS_TELE" class="java.lang.String"/>
+	<field name="ADM_ALERT_RECEIVED" class="java.lang.Boolean"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -224,31 +225,31 @@ WHERE p.PAT_ID = $P{patID}
 				<frame>
 					<reportElement x="20" y="20" width="540" height="20" uuid="af58d5e0-28ef-45f6-a621-2a31e708c6a6"/>
 					<textField>
-						<reportElement x="0" y="0" width="90" height="20" uuid="2a7f4151-145e-4d7f-84d7-1913737aaea0"/>
+						<reportElement x="0" y="0" width="60" height="20" uuid="2a7f4151-145e-4d7f-84d7-1913737aaea0"/>
 						<textElement>
 							<font size="12" isBold="true"/>
 						</textElement>
 						<textFieldExpression><![CDATA[$R{alert}]]></textFieldExpression>
 					</textField>
 					<textField textAdjust="ScaleFont" isBlankWhenNull="true">
-						<reportElement x="90" y="0" width="450" height="20" uuid="57635908-c3aa-473e-9db7-5c537b82b74c"/>
+						<reportElement x="60" y="0" width="480" height="20" uuid="57635908-c3aa-473e-9db7-5c537b82b74c"/>
 						<textElement>
 							<font size="12"/>
 						</textElement>
-						<textFieldExpression><![CDATA[$F{ADM_REFERRAL_ALERT}]]></textFieldExpression>
+						<textFieldExpression><![CDATA[$F{ADM_ALERT_RECEIVED} ?  $R{yes} + " - " + $F{ADM_REFERRAL_ALERT}  : $R{no}]]></textFieldExpression>
 					</textField>
 				</frame>
 				<frame>
 					<reportElement x="20" y="40" width="540" height="20" uuid="ee32b163-7f4d-4580-b79c-561c4920fa23"/>
 					<textField>
-						<reportElement x="1" y="0" width="129" height="20" uuid="4d762fd8-5774-4b92-8b37-3d32f84acb38"/>
+						<reportElement x="1" y="0" width="149" height="20" uuid="4d762fd8-5774-4b92-8b37-3d32f84acb38"/>
 						<textElement>
 							<font size="12" isBold="true"/>
 						</textElement>
 						<textFieldExpression><![CDATA[$R{transportation}]]></textFieldExpression>
 					</textField>
 					<textField textAdjust="ScaleFont" isBlankWhenNull="true">
-						<reportElement x="130" y="0" width="410" height="20" uuid="f32c3390-103b-4030-b403-2faa0f8b097a"/>
+						<reportElement x="150" y="0" width="390" height="20" uuid="f32c3390-103b-4030-b403-2faa0f8b097a"/>
 						<textElement>
 							<font size="12"/>
 						</textElement>
@@ -258,14 +259,14 @@ WHERE p.PAT_ID = $P{patID}
 				<frame>
 					<reportElement x="20" y="60" width="540" height="20" uuid="77fcfc2a-6105-4566-8116-daec586542aa"/>
 					<textField>
-						<reportElement x="0" y="0" width="169" height="20" uuid="7f40c34f-425a-4d85-bdea-552e8c881fbd"/>
+						<reportElement x="0" y="0" width="140" height="20" uuid="7f40c34f-425a-4d85-bdea-552e8c881fbd"/>
 						<textElement>
 							<font size="12" isBold="true"/>
 						</textElement>
 						<textFieldExpression><![CDATA[$R{referenceReason}]]></textFieldExpression>
 					</textField>
 					<textField textAdjust="ScaleFont" isBlankWhenNull="true">
-						<reportElement x="169" y="0" width="371" height="20" uuid="10746405-19fa-4b6d-b17c-71d7e17295ba"/>
+						<reportElement x="140" y="0" width="400" height="20" uuid="10746405-19fa-4b6d-b17c-71d7e17295ba"/>
 						<textElement>
 							<font size="12"/>
 						</textElement>
@@ -285,14 +286,14 @@ WHERE p.PAT_ID = $P{patID}
 				<frame>
 					<reportElement x="19" y="0" width="540" height="20" uuid="f7e47de6-88cc-4e44-a381-ef9f74ac8e01"/>
 					<textField>
-						<reportElement x="0" y="0" width="121" height="20" uuid="21451ede-caca-455e-889e-14c4b1cc8cfa"/>
+						<reportElement x="0" y="0" width="90" height="20" uuid="21451ede-caca-455e-889e-14c4b1cc8cfa"/>
 						<textElement>
 							<font size="12" isBold="true"/>
 						</textElement>
 						<textFieldExpression><![CDATA[$R{diagnosis}]]></textFieldExpression>
 					</textField>
 					<textField textAdjust="ScaleFont" isBlankWhenNull="true">
-						<reportElement x="121" y="0" width="419" height="20" uuid="54bbba19-56f5-4c2d-880c-13c7e9745f43"/>
+						<reportElement x="90" y="0" width="450" height="20" uuid="54bbba19-56f5-4c2d-880c-13c7e9745f43"/>
 						<textElement>
 							<font size="12"/>
 						</textElement>

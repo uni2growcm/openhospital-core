@@ -44,7 +44,7 @@ LIMIT 1]]>
 	<field name="MH_OTHR_FAM_PATHO" class="java.lang.String"/>
 	<field name="ADM_PRE_ASSESSMENT" class="java.lang.String"/>
 	<field name="ADM_PRE_TREATMENT" class="java.lang.String"/>
-	<field name="ADM_NOTE" class="java.lang.String"/>
+	<field name="ADM_ANAMNESIS" class="java.lang.String"/>
 	<field name="ADM_DATE_ADM" class="java.sql.Timestamp"/>
 	<field name="ADMT_DESC" class="java.lang.String"/>
 	<field name="ADM_FHU" class="java.lang.String"/>
@@ -108,7 +108,7 @@ LIMIT 1]]>
 					<textElement textAlignment="Justified">
 						<font size="12"/>
 					</textElement>
-					<textFieldExpression><![CDATA[$F{ADM_NOTE}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$F{ADM_ANAMNESIS}]]></textFieldExpression>
 				</textField>
 			</frame>
 			<frame>

@@ -495,8 +495,7 @@ $R{Illiterate}]]></textFieldExpression>
 $F{PAT_MOTHER_SCHOOLING_LEVEL}.equals("Secondary") ? $R{Secondary} : 
 $F{PAT_MOTHER_SCHOOLING_LEVEL}.equals("Primary") ? $R{Primary} : 
 $F{PAT_MOTHER_SCHOOLING_LEVEL}.equals("No schooling") ? $R{Noschooling} : 
-$R{Illiterate}
-]]></textFieldExpression>
+$R{Illiterate}]]></textFieldExpression>
 					</textField>
 				</frame>
 			</frame>

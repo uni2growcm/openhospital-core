@@ -122,6 +122,9 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 	@Column(name = "ADM_NOTE")
 	private String anamnesis;                    // anamnesis (null)
 
+	@Column(name="ADM_ANAMNESIS")
+	private String note;
+
 	@Column(name = "ADM_TRANS")
 	private Float transUnit;                // transfusional unit
 
@@ -250,7 +253,7 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 	 * @param admDate
 	 * @param admType
 	 * @param fhu
-	 * @param complicationDiagnosis
+	 * @param complication
 	 * @param disDate
 	 * @param disType
 	 * @param anamnesis
@@ -422,7 +425,7 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 					 String courseOfAction, LocalDateTime nextAppointment, String referralAlert,
 					 String referralReason, String treatmentReceived,
 					 String outcome, String improvementFeedback, String deathPeriod, String othersInformation,
-					 List<Disease> diagnosisIn, List<Disease> diagnosisOut
+					 List<Disease> diagnosisIn, List<Disease> diagnosisOut, String note
 	) {
 
 		this(id, admitted, type, ward, prog, patient, admDate, admType, fhu, complication,
@@ -448,6 +451,7 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 		this.othersInformation = othersInformation;
 		this.diagnosisIn =	diagnosisIn;
 		this.diagnosisOut = diagnosisOut;
+		this.note = note;
 	}
 
 	public Float getTransUnit() {
@@ -808,6 +812,14 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 
 	public void setOthersInformation(String othersInformation) {
 		this.othersInformation = othersInformation;
+	}
+
+	public String getNote() {
+		return note;
+	}
+
+	public void setNote(String note) {
+		this.note = note;
 	}
 
 	@Override
