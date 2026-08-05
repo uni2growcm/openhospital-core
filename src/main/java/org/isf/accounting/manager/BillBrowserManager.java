@@ -279,22 +279,20 @@ public class BillBrowserManager {
 		Bill updatedBill = ioOperations.updateBill(updateBill);
 		ioOperations.newBillItems(updateBill, billItems);
 
-		if (!billPayments.isEmpty()) {
-			List<BillPayments> paymentsToSave = new ArrayList<>();
-			for (BillPayments payment : billPayments) {
-				BillPayments newPayment = new BillPayments(
-					0,
-					updatedBill,
-					payment.getDate(),
-					payment.getAmount(),
-					payment.getUser()
-				);
-				paymentsToSave.add(newPayment);
-			}
-			ioOperations.newBillPayments(updatedBill, paymentsToSave);
-			List<ItemPayments> itemPayments = computeItemPayments(updatedBill, billItems, paymentsToSave, false);
-			ioOperations.newItemPayments(updatedBill, itemPayments);
+		List<BillPayments> paymentsToSave = new ArrayList<>();
+		for (BillPayments payment : billPayments) {
+			BillPayments newPayment = new BillPayments(
+				0,
+				updatedBill,
+				payment.getDate(),
+				payment.getAmount(),
+				payment.getUser()
+			);
+			paymentsToSave.add(newPayment);
 		}
+		ioOperations.newBillPayments(updatedBill, paymentsToSave);
+		List<ItemPayments> itemPayments = computeItemPayments(updatedBill, billItems, paymentsToSave, false);
+		ioOperations.newItemPayments(updatedBill, itemPayments);
 
 		markPrescriptionsAsBilled(billItems, updatedBill);
 		return updatedBill;
