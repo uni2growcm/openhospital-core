@@ -312,8 +312,28 @@ public class BillBrowserManager {
 		return ioOperations.getUsers();
 	}
 
+	@Transactional(rollbackFor = OHServiceException.class)
+	@TranslateOHServiceException
 	public void deleteBill(Bill deleteBill) throws OHServiceException {
+		if (GeneralData.STOCKMVTONBILLSAVE) {
+			List<BillItems> items = ioOperations.getGroupItems(deleteBill.getId());
+			updateMedicalStock(items, deleteBill.getId(), true);
+		}
+		validateBillDelete(deleteBill);
 		ioOperations.deleteBill(deleteBill);
+	}
+
+	protected void validateBillDelete(Bill bill) throws OHServiceException {
+		List<OHExceptionMessage> errors = new ArrayList<>();
+		
+		List<BillPayments> payments = ioOperations.getPayments(bill.getId());
+		if (!payments.isEmpty()) {
+			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.billbrowser.cannotdelete.billhaspayments.msg")));
+		}
+		
+		if (!errors.isEmpty()) {
+			throw new OHDataValidationException(errors);
+		}
 	}
 
 	public List<Bill> getBills(LocalDateTime dateFrom, LocalDateTime dateTo) throws OHServiceException {
@@ -496,7 +516,10 @@ public class BillBrowserManager {
 		MovementWard mvt = new MovementWard();
 		mvt.setWard(ward);
 		mvt.setPatient(patient);
-		mvt.setDate(TimeTools.getServerDateTime());
+//		mvt.setDate(TimeTools.getServerDateTime());
+		LocalDateTime date = TimeTools.getServerDateTime();
+		System.out.println("SERVER DATE = " + date);
+		mvt.setDate(date);
 		mvt.setPatient(true);
 		mvt.setQuantity(qty);
 		mvt.setDescription(patient.getName());
