@@ -67,6 +67,19 @@ public interface LabIoOperationRepository extends JpaRepository<Laboratory, Inte
 	Page<Laboratory> findByLabDateBetweenAndExamDescriptionAndPatientCodePage(@Param("dateFrom") LocalDateTime dateFrom, @Param("dateTo") LocalDateTime dateTo,
 					@Param("exam") String exam, @Param("patient") Patient patient, Pageable pageable);
 
+	@Query(value = "select lab from Laboratory lab "
+					+ "where (lab.labDate >= :dateFrom and lab.labDate < :dateTo) "
+					+ "and (:exam is null or lab.exam.description = :exam) "
+					+ "and (:patient is null or lab.patient = :patient) "
+					+ "and (:prescriber is null or lab.prescriber = :prescriber) "
+					+ "and (:resultFilter = 'ALL' "
+					+ "or (:resultFilter = 'NON_EMPTY' and lab.result is not null and lab.result <> '') "
+					+ "or (:resultFilter = 'EMPTY' and (lab.result is null or lab.result = ''))) "
+					+ "order by lab.labDate desc")
+	Page<Laboratory> findPageByFilters(@Param("dateFrom") LocalDateTime dateFrom, @Param("dateTo") LocalDateTime dateTo,
+					@Param("exam") String exam, @Param("patient") Patient patient, @Param("prescriber") String prescriber,
+					@Param("resultFilter") String resultFilter, Pageable pageable);
+
 	@Query("select count(l) from Laboratory l where active=1")
 	long countAllActiveLabs();
 

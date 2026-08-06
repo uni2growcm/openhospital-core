@@ -43,6 +43,7 @@ import org.isf.lab.manager.LabManager;
 import org.isf.lab.manager.LabRowManager;
 import org.isf.lab.model.Laboratory;
 import org.isf.lab.model.LaboratoryForPrint;
+import org.isf.lab.model.LaboratoryResultFilter;
 import org.isf.lab.model.LaboratoryRow;
 import org.isf.lab.model.LaboratoryStatus;
 import org.isf.lab.service.LabIoOperationRepository;
@@ -568,6 +569,80 @@ class Tests extends OHCoreTestCase {
 		int pageSize = 10;
 		PagedResponse<Laboratory> laboratories = labManager.getLaboratoryPageable(null, laboratory.getLabDate(), laboratory.getLabDate(), null, pageNo, pageSize);
 		assertThat(laboratories.getData().get(0).getCode()).isEqualTo(laboratory.getCode());
+	}
+
+	@ParameterizedTest(name = "Test with LABEXTENDED={0}")
+	@MethodSource("labExtended")
+	void testMgrGetLaboratoryPageableWithPrescriber(boolean labExtended) throws Exception {
+		GeneralData.LABEXTENDED = labExtended;
+		Integer id = setupTestLaboratoryWithPrescriberAndResult(false, "Dr Smith", "TestResult");
+		Laboratory foundLaboratory = labIoOperationRepository.findById(id).orElse(null);
+		assertThat(foundLaboratory).isNotNull();
+		int pageNo = 0;
+		int pageSize = 10;
+		PagedResponse<Laboratory> laboratories = labManager.getLaboratoryPageable(null, foundLaboratory.getLabDate(), foundLaboratory.getLabDate(),
+			null, "Dr Smith", LaboratoryResultFilter.ALL, pageNo, pageSize);
+		assertThat(laboratories.getData()).hasSize(1);
+		assertThat(laboratories.getData().get(0).getCode()).isEqualTo(foundLaboratory.getCode());
+	}
+
+	@ParameterizedTest(name = "Test with LABEXTENDED={0}")
+	@MethodSource("labExtended")
+	void testMgrGetLaboratoryPageableWithNonMatchingPrescriber(boolean labExtended) throws Exception {
+		GeneralData.LABEXTENDED = labExtended;
+		Integer id = setupTestLaboratoryWithPrescriberAndResult(false, "Dr Smith", "TestResult");
+		Laboratory foundLaboratory = labIoOperationRepository.findById(id).orElse(null);
+		assertThat(foundLaboratory).isNotNull();
+		int pageNo = 0;
+		int pageSize = 10;
+		PagedResponse<Laboratory> laboratories = labManager.getLaboratoryPageable(null, foundLaboratory.getLabDate(), foundLaboratory.getLabDate(),
+			null, "Dr Jones", LaboratoryResultFilter.ALL, pageNo, pageSize);
+		assertThat(laboratories.getData()).isEmpty();
+	}
+
+	@ParameterizedTest(name = "Test with LABEXTENDED={0}")
+	@MethodSource("labExtended")
+	void testMgrGetLaboratoryPageableWithResultFilterNonEmpty(boolean labExtended) throws Exception {
+		GeneralData.LABEXTENDED = labExtended;
+		Integer id = setupTestLaboratoryWithPrescriberAndResult(false, null, "TestResult");
+		Laboratory foundLaboratory = labIoOperationRepository.findById(id).orElse(null);
+		assertThat(foundLaboratory).isNotNull();
+		int pageNo = 0;
+		int pageSize = 10;
+		PagedResponse<Laboratory> laboratories = labManager.getLaboratoryPageable(null, foundLaboratory.getLabDate(), foundLaboratory.getLabDate(),
+			null, null, LaboratoryResultFilter.NON_EMPTY, pageNo, pageSize);
+		assertThat(laboratories.getData()).hasSize(1);
+		assertThat(laboratories.getData().get(0).getCode()).isEqualTo(foundLaboratory.getCode());
+	}
+
+	@ParameterizedTest(name = "Test with LABEXTENDED={0}")
+	@MethodSource("labExtended")
+	void testMgrGetLaboratoryPageableWithResultFilterEmpty(boolean labExtended) throws Exception {
+		GeneralData.LABEXTENDED = labExtended;
+		Integer id = setupTestLaboratoryWithPrescriberAndResult(false, null, "");
+		Laboratory foundLaboratory = labIoOperationRepository.findById(id).orElse(null);
+		assertThat(foundLaboratory).isNotNull();
+		int pageNo = 0;
+		int pageSize = 10;
+		PagedResponse<Laboratory> laboratories = labManager.getLaboratoryPageable(null, foundLaboratory.getLabDate(), foundLaboratory.getLabDate(),
+			null, null, LaboratoryResultFilter.EMPTY, pageNo, pageSize);
+		assertThat(laboratories.getData()).hasSize(1);
+		assertThat(laboratories.getData().get(0).getCode()).isEqualTo(foundLaboratory.getCode());
+	}
+
+	@ParameterizedTest(name = "Test with LABEXTENDED={0}")
+	@MethodSource("labExtended")
+	void testMgrGetLaboratoryPageableWithResultFilterAll(boolean labExtended) throws Exception {
+		GeneralData.LABEXTENDED = labExtended;
+		Integer id = setupTestLaboratoryWithPrescriberAndResult(false, null, "TestResult");
+		Laboratory foundLaboratory = labIoOperationRepository.findById(id).orElse(null);
+		assertThat(foundLaboratory).isNotNull();
+		int pageNo = 0;
+		int pageSize = 10;
+		PagedResponse<Laboratory> laboratories = labManager.getLaboratoryPageable(null, foundLaboratory.getLabDate(), foundLaboratory.getLabDate(),
+			null, null, LaboratoryResultFilter.ALL, pageNo, pageSize);
+		assertThat(laboratories.getData()).hasSize(1);
+		assertThat(laboratories.getData().get(0).getCode()).isEqualTo(foundLaboratory.getCode());
 	}
 
 	@ParameterizedTest(name = "Test with LABEXTENDED={0}")
@@ -1722,6 +1797,24 @@ class Tests extends OHCoreTestCase {
 		Laboratory foundLaboratory = labIoOperationRepository.findById(code).orElse(null);
 		assertThat(foundLaboratory).isNotNull();
 		testLaboratory.check(foundLaboratory);
+	}
+
+	private Integer setupTestLaboratoryWithPrescriberAndResult(boolean usingSet, String prescriber, String result) throws OHException {
+		ExamType examType = testExamType.setup(false);
+		Exam exam = testExam.setup(examType, 1, false);
+		Patient patient = testPatient.setup(false);
+		Laboratory laboratory = testLaboratory.setup(exam, patient, usingSet);
+		if (prescriber != null) {
+			laboratory.setPrescriber(prescriber);
+		}
+		if (result != null) {
+			laboratory.setResult(result);
+		}
+		examTypeIoOperationRepository.saveAndFlush(examType);
+		examIoOperationRepository.saveAndFlush(exam);
+		patientIoOperationRepository.saveAndFlush(patient);
+		labIoOperationRepository.saveAndFlush(laboratory);
+		return laboratory.getCode();
 	}
 
 	private Integer setupTestLaboratoryRow(boolean usingSet) throws OHException {

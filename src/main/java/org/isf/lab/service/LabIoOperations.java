@@ -30,6 +30,7 @@ import java.util.Optional;
 import org.isf.accounting.model.Bill;
 import org.isf.lab.model.Laboratory;
 import org.isf.lab.model.LaboratoryForPrint;
+import org.isf.lab.model.LaboratoryResultFilter;
 import org.isf.lab.model.LaboratoryRow;
 import org.isf.patient.model.Patient;
 import org.isf.utils.db.TranslateOHServiceException;
@@ -386,22 +387,38 @@ public class LabIoOperations {
 
 	public PagedResponse<Laboratory> getLaboratoryPageable(String exam, LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient, int page, int size)
 					throws OHServiceException {
-		Page<Laboratory> laboratories = null;
+		return getLaboratoryPageable(exam, dateFrom, dateTo, patient, null, LaboratoryResultFilter.ALL, page, size);
+	}
+
+	/**
+	 * Return a page of exams ({@link Laboratory}s) between the passed dates and matching the passed exam name, prescriber and result filter.
+	 *
+	 * @param exam - the exam name as {@code String}, {@code null} or empty for no filter
+	 * @param dateFrom - the lower date for the range
+	 * @param dateTo - the highest date for the range
+	 * @param patient - the {@link Patient}, {@code null} for no filter
+	 * @param prescriber - the prescriber name as {@code String}, {@code null} or empty for no filter
+	 * @param resultFilter - the {@link LaboratoryResultFilter}, {@code null} for no filter
+	 * @param page - the page number (0 based)
+	 * @param size - the page size
+	 * @return the page of {@link Laboratory}s
+	 * @throws OHServiceException
+	 */
+	public PagedResponse<Laboratory> getLaboratoryPageable(String exam, LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient, String prescriber,
+					LaboratoryResultFilter resultFilter, int page, int size) throws OHServiceException {
 		LocalDateTime truncatedDateFrom = TimeTools.truncateToSeconds(dateFrom.with(LocalTime.MIN));
 		LocalDateTime truncatedDateTo = TimeTools.truncateToSeconds(dateTo.with(LocalTime.MAX));
-
-		if (exam != null && patient != null) {
-			laboratories = repository.findByLabDateBetweenAndExamDescriptionAndPatientCodePage(truncatedDateFrom, truncatedDateTo, exam, patient, PageRequest.of(page, size));
+		if (exam != null && exam.isEmpty()) {
+			exam = null;
 		}
-		if (exam != null && patient == null) {
-			laboratories = repository.findByLabDateBetweenAndExam_DescriptionOrderByLabDateDescPage(truncatedDateFrom, truncatedDateTo, exam, PageRequest.of(page, size));
+		if (prescriber != null && prescriber.isEmpty()) {
+			prescriber = null;
 		}
-		if (patient != null && exam == null) {
-			laboratories = repository.findByLabDateBetweenAndPatientCodePage(truncatedDateFrom, truncatedDateTo, patient, PageRequest.of(page, size));
+		if (resultFilter == null) {
+			resultFilter = LaboratoryResultFilter.ALL;
 		}
-		if (patient == null && exam == null) {
-			laboratories = repository.findByLabDateBetweenOrderByLabDateDescPage(truncatedDateFrom, truncatedDateTo, PageRequest.of(page, size));
-		}
+		Page<Laboratory> laboratories = repository.findPageByFilters(truncatedDateFrom, truncatedDateTo, exam, patient, prescriber, resultFilter.name(),
+						PageRequest.of(page, size));
 		return setPaginationData(laboratories);
 	}
 
