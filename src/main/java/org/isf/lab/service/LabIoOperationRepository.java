@@ -72,26 +72,26 @@ public interface LabIoOperationRepository extends JpaRepository<Laboratory, Inte
 
 	@Query("select distinct l.prescriber from Laboratory l where l.prescriber is not null and l.prescriber <> ''")
 	List<String> findDistinctPrescribers();
-	@Query("SELECT l FROM Laboratory l WHERE l.patient.code = :patientCode AND (l.bill IS NULL OR l.bill.id = 0)")
+	@Query("SELECT l FROM Laboratory l left join l.bill b WHERE l.patient.code = :patientCode AND (b IS NULL OR b.id = 0)")
 	List<Laboratory> findByPatientCodeAndBillIsNull(@Param("patientCode") int patientCode);
 
-	@Query(value = "select lab from Laboratory lab where lab.labDate >= :dateFrom and lab.labDate <= :dateTo "
+	@Query(value = "select lab from Laboratory lab left join lab.bill b where lab.labDate >= :dateFrom and lab.labDate <= :dateTo "
 			+ "and (:exam is null or lab.exam.description = :exam) "
 			+ "and (:patient is null or lab.patient = :patient) "
 			+ "and (:paidCode is null "
-			+ "or (:paidCode = '0' and (lab.bill is null or lab.bill.id <= 0)) "
-			+ "or (:paidCode <> '0' and lab.bill.status = :paidCode)) "
+			+ "or (:paidCode = '0' and (b is null or b.id <= 0)) "
+			+ "or (:paidCode <> '0' and b.status = :paidCode)) "
 			+ "order by lab.labDate desc")
 	List<Laboratory> findByLabDateBetweenAndExamDescriptionAndPatientCodeAndPaidStatus(@Param("dateFrom") LocalDateTime dateFrom,
 			@Param("dateTo") LocalDateTime dateTo, @Param("exam") String exam, @Param("patient") Patient patient,
 			@Param("paidCode") String paidCode);
 
-	@Query(value = "select count(lab) from Laboratory lab where lab.labDate >= :dateFrom and lab.labDate <= :dateTo "
+	@Query(value = "select count(lab) from Laboratory lab left join lab.bill b where lab.labDate >= :dateFrom and lab.labDate <= :dateTo "
 			+ "and (:exam is null or lab.exam.description = :exam) "
 			+ "and (:patient is null or lab.patient = :patient) "
 			+ "and (:paidCode is null "
-			+ "or (:paidCode = '0' and (lab.bill is null or lab.bill.id <= 0)) "
-			+ "or (:paidCode <> '0' and lab.bill.status = :paidCode))")
+			+ "or (:paidCode = '0' and (b is null or b.id <= 0)) "
+			+ "or (:paidCode <> '0' and b.status = :paidCode))")
 	long countByLabDateBetweenAndExamDescriptionAndPatientCodeAndPaidStatus(@Param("dateFrom") LocalDateTime dateFrom,
 			@Param("dateTo") LocalDateTime dateTo, @Param("exam") String exam, @Param("patient") Patient patient,
 			@Param("paidCode") String paidCode);
