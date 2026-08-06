@@ -198,8 +198,8 @@ public class LabManager {
 	 * @return the list of {@link Laboratory}s. It could be {@code empty}.
 	 * @throws OHServiceException
 	 */
-	public List<Laboratory> getLaboratory(String exam, LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient, String paidCode)
-		throws OHServiceException {
+	public List<Laboratory> getLaboratory(String exam, LocalDateTime dateFrom, LocalDateTime dateTo,
+										  Patient patient, String paidCode) throws OHServiceException {
 		return ioOperations.getLaboratory(exam, dateFrom, dateTo, patient, paidCode);
 	}
 
