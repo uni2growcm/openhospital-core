@@ -72,6 +72,8 @@ public final class GeneralData extends ConfigurationProperties {
 	public static boolean INTERNALVIEWER;
 	public static String DOC_DIR;
 	public static boolean LABMULTIPLEINSERT;
+	public static boolean CREATELABORATORYAUTO;
+	public static boolean CREATELABORATORYAUTOWITHOPENEDBILL;
 	public static boolean INTERNALPHARMACIES;
 	public static boolean MERGEFUNCTION;
 	public static boolean SMSENABLED;
@@ -157,6 +159,8 @@ public final class GeneralData extends ConfigurationProperties {
 	private static final boolean DEFAULT_INTERNALVIEWER = true;
 	private static final String DEFAULT_DOC_DIR = "../doc";
 	private static final boolean DEFAULT_LABMULTIPLEINSERT = false;
+	private static final boolean DEFAULT_CREATELABORATORYAUTO = false;
+	private static final boolean DEFAULT_CREATELABORATORYAUTOWITHOPENEDBILL = false;
 	private static final boolean DEFAULT_INTERNALPHARMACIES = false;
 	private static final boolean DEFAULT_MERGEFUNCTION = false;
 	private static final boolean DEFAULT_SMSENABLED = false;
@@ -248,6 +252,8 @@ public final class GeneralData extends ConfigurationProperties {
 		MATERNITYRESTARTINJUNE = myGetProperty("MATERNITYRESTARTINJUNE", DEFAULT_MATERNITYRESTARTINJUNE);
 		LABEXTENDED = myGetProperty("LABEXTENDED", DEFAULT_LABEXTENDED);
 		LABMULTIPLEINSERT = myGetProperty("LABMULTIPLEINSERT", DEFAULT_LABMULTIPLEINSERT);
+		CREATELABORATORYAUTO = myGetProperty("CREATELABORATORYAUTO", DEFAULT_CREATELABORATORYAUTO);
+		CREATELABORATORYAUTOWITHOPENEDBILL = myGetProperty("CREATELABORATORYAUTOWITHOPENEDBILL", DEFAULT_CREATELABORATORYAUTOWITHOPENEDBILL);
 		INTERNALPHARMACIES = myGetProperty("INTERNALPHARMACIES", DEFAULT_INTERNALPHARMACIES);
 		INTERNALVIEWER = myGetProperty("INTERNALVIEWER", DEFAULT_INTERNALVIEWER);
 		if (!INTERNALVIEWER) {

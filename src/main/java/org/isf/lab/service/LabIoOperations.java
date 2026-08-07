@@ -311,6 +311,54 @@ public class LabIoOperations {
 	}
 
 	/**
+	 * Return a list of exams ({@link Laboratory}s) between specified dates, matching passed exam name, patient and
+	 * paid status. The paid status filters the laboratories by the status of the linked bill:
+	 * {@code "C"} paid, {@code "O"} not paid (open), {@code "0"} not billed, {@code null} no filter.
+	 *
+	 * @param exam - the exam name as {@code String} (or {@code null})
+	 * @param dateFrom - the lower date for the range
+	 * @param dateTo - the highest date for the range
+	 * @param patient - the {@link Patient} to filter (or {@code null})
+	 * @param paidCode - the paid status filter ({@code "C"}, {@code "O"}, {@code "0"} or {@code null})
+	 * @return the list of {@link Laboratory}s 
+	 * @throws OHServiceException
+	 */
+	public List<Laboratory> getLaboratory(String exam, LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient, String paidCode)
+			throws OHServiceException {
+		LocalDateTime truncatedDateFrom = TimeTools.truncateToSeconds(dateFrom.with(LocalTime.MIN));
+		LocalDateTime truncatedDateTo = TimeTools.truncateToSeconds(dateTo.with(LocalTime.MAX));
+		if (exam != null && exam.isEmpty()) {
+			exam = null;
+		}
+		return repository.findByLabDateBetweenAndExamDescriptionAndPatientCodeAndPaidStatus(truncatedDateFrom, truncatedDateTo,
+				exam, patient, paidCode);
+	}
+
+	/**
+	 * Return the number of exams ({@link Laboratory}s) between specified dates, matching passed exam name, patient and
+	 * paid status. The paid status filters the laboratories by the status of the linked bill:
+	 * {@code "C"} paid, {@code "O"} not paid (open), {@code "0"} not billed, {@code null} no filter.
+	 *
+	 * @param exam - the exam name as {@code String} (or {@code null})
+	 * @param dateFrom - the lower date for the range
+	 * @param dateTo - the highest date for the range
+	 * @param patient - the {@link Patient} to filter (or {@code null})
+	 * @param paidCode - the paid status filter ({@code "C"}, {@code "O"}, {@code "0"} or {@code null})
+	 * @return the number of matching {@link Laboratory}s
+	 * @throws OHServiceException
+	 */
+	public long getLaboratoryCount(String exam, LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient, String paidCode)
+			throws OHServiceException {
+		LocalDateTime truncatedDateFrom = TimeTools.truncateToSeconds(dateFrom.with(LocalTime.MIN));
+		LocalDateTime truncatedDateTo = TimeTools.truncateToSeconds(dateTo.with(LocalTime.MAX));
+		if (exam != null && exam.isEmpty()) {
+			exam = null;
+		}
+		return repository.countByLabDateBetweenAndExamDescriptionAndPatientCodeAndPaidStatus(truncatedDateFrom, truncatedDateTo,
+				exam, patient, paidCode);
+	}
+
+	/**
 	 * Update an already existing Laboratory exam {@link Laboratory}.
 	 *
 	 * @param laboratory - the {@link Laboratory} to update
