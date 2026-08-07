@@ -1,0 +1,47 @@
+-- ========================================================================
+-- Exam Blocks module - Complete database setup
+-- ========================================================================
+-- This script creates all tables for the Exam Blocks module:
+--   1. OH_BLOCK       - exam blocks (code + description)
+--   2. OH_BLOCK_EXAM  - association between blocks and exams
+-- ========================================================================
+
+-- ========================================================================
+-- 1. Table: OH_BLOCK
+--    Stores the exam blocks (a group of exams added together in LabNew)
+-- ========================================================================
+
+CREATE TABLE IF NOT EXISTS OH_BLOCK (
+    BLK_ID_A VARCHAR(100) NOT NULL,
+    BLK_DESC VARCHAR(255) NOT NULL,
+
+    BLK_CREATED_BY VARCHAR(50) NOT NULL,
+    BLK_CREATED_DATE DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    BLK_LAST_MODIFIED_BY VARCHAR(50) DEFAULT NULL,
+    BLK_LAST_MODIFIED_DATE DATETIME DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+    BLK_ACTIVE TINYINT(1) DEFAULT 1,
+
+    PRIMARY KEY (BLK_ID_A),
+
+    CONSTRAINT FK_BLOCK_CREATED_BY FOREIGN KEY (BLK_CREATED_BY) REFERENCES OH_USER (US_ID_A),
+    CONSTRAINT FK_BLOCK_LAST_MODIFIED_BY FOREIGN KEY (BLK_LAST_MODIFIED_BY) REFERENCES OH_USER (US_ID_A)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+
+CREATE TABLE IF NOT EXISTS OH_BLOCK_EXAM (
+    BLKEX_ID INT NOT NULL AUTO_INCREMENT,
+    BLKEX_BLK_ID_A VARCHAR(100) NOT NULL,
+    BLKEX_EXA_ID_A VARCHAR(10) NOT NULL,
+
+    BLKEX_CREATED_BY VARCHAR(50) NOT NULL,
+    BLKEX_CREATED_DATE DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    BLKEX_LAST_MODIFIED_BY VARCHAR(50) DEFAULT NULL,
+    BLKEX_LAST_MODIFIED_DATE DATETIME DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+    BLKEX_ACTIVE TINYINT(1) DEFAULT 1,
+
+    PRIMARY KEY (BLKEX_ID),
+
+    CONSTRAINT FK_BLOCK_EXAM_BLOCK FOREIGN KEY (BLKEX_BLK_ID_A) REFERENCES OH_BLOCK (BLK_ID_A),
+    CONSTRAINT FK_BLOCK_EXAM_EXAM FOREIGN KEY (BLKEX_EXA_ID_A) REFERENCES OH_EXAM (EXA_ID_A),
+    CONSTRAINT FK_BLOCK_EXAM_CREATED_BY FOREIGN KEY (BLKEX_CREATED_BY) REFERENCES OH_USER (US_ID_A),
+    CONSTRAINT FK_BLOCK_EXAM_LAST_MODIFIED_BY FOREIGN KEY (BLKEX_LAST_MODIFIED_BY) REFERENCES OH_USER (US_ID_A)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
