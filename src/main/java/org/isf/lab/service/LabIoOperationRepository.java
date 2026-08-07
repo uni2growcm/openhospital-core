@@ -67,6 +67,23 @@ public interface LabIoOperationRepository extends JpaRepository<Laboratory, Inte
 	Page<Laboratory> findByLabDateBetweenAndExamDescriptionAndPatientCodePage(@Param("dateFrom") LocalDateTime dateFrom, @Param("dateTo") LocalDateTime dateTo,
 					@Param("exam") String exam, @Param("patient") Patient patient, Pageable pageable);
 
+	@Query(value = "select lab from Laboratory lab "
+					+ "left join lab.bill b "
+					+ "where (lab.labDate >= :dateFrom and lab.labDate < :dateTo) "
+					+ "and (:exam is null or lab.exam.description = :exam) "
+					+ "and (:patient is null or lab.patient = :patient) "
+					+ "and (:prescriber is null or lab.prescriber = :prescriber) "
+					+ "and (:resultFilter = 'ALL' "
+					+ "or (:resultFilter = 'NON_EMPTY' and lab.result is not null and lab.result <> '') "
+					+ "or (:resultFilter = 'EMPTY' and (lab.result is null or lab.result = ''))) "
+					+ "and (:paidCode is null "
+					+ "or (:paidCode = '0' and (b is null or b.id <= 0)) "
+					+ "or (:paidCode <> '0' and b.status = :paidCode)) "
+					+ "order by lab.labDate desc")
+	Page<Laboratory> findPageByFilters(@Param("dateFrom") LocalDateTime dateFrom, @Param("dateTo") LocalDateTime dateTo,
+					@Param("exam") String exam, @Param("patient") Patient patient, @Param("prescriber") String prescriber,
+					@Param("resultFilter") String resultFilter, @Param("paidCode") String paidCode, Pageable pageable);
+
 	@Query("select count(l) from Laboratory l where active=1")
 	long countAllActiveLabs();
 
