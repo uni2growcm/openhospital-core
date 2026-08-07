@@ -33,6 +33,7 @@ import org.isf.generaldata.GeneralData;
 import org.isf.generaldata.MessageBundle;
 import org.isf.lab.model.Laboratory;
 import org.isf.lab.model.LaboratoryForPrint;
+import org.isf.lab.model.LaboratoryResultFilter;
 import org.isf.lab.model.LaboratoryRow;
 import org.isf.lab.service.LabIoOperations;
 import org.isf.patient.model.Patient;
@@ -183,6 +184,42 @@ public class LabManager {
 	 */
 	public List<Laboratory> getLaboratory(String exam, LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient) throws OHServiceException {
 		return ioOperations.getLaboratory(exam, dateFrom, dateTo, patient);
+	}
+
+	/**
+	 * Return a list of exams ({@link Laboratory}s) between specified dates, matching passed exam name, patient and
+	 * paid status. The paid status filters the laboratories by the status of the linked bill:
+	 * {@code "C"} paid, {@code "O"} not paid (open), {@code "0"} not billed, {@code null} no filter.
+	 *
+	 * @param exam the exam name as {@code String} (or {@code null})
+	 * @param dateFrom the lower date for the range
+	 * @param dateTo the highest date for the range
+	 * @param patient the object patient (or {@code null})
+	 * @param paidCode the paid status filter ({@code "C"}, {@code "O"}, {@code "0"} or {@code null})
+	 * @return the list of {@link Laboratory}s. It could be {@code empty}.
+	 * @throws OHServiceException
+	 */
+	public List<Laboratory> getLaboratory(String exam, LocalDateTime dateFrom, LocalDateTime dateTo,
+										  Patient patient, String paidCode) throws OHServiceException {
+		return ioOperations.getLaboratory(exam, dateFrom, dateTo, patient, paidCode);
+	}
+
+	/**
+	 * Return the number of exams ({@link Laboratory}s) between specified dates, matching passed exam name, patient and
+	 * paid status. The paid status filters the laboratories by the status of the linked bill:
+	 * {@code "C"} paid, {@code "O"} not paid (open), {@code "0"} not billed, {@code null} no filter.
+	 *
+	 * @param exam the exam name as {@code String} (or {@code null})
+	 * @param dateFrom the lower date for the range
+	 * @param dateTo the highest date for the range
+	 * @param patient the object patient (or {@code null})
+	 * @param paidCode the paid status filter ({@code "C"}, {@code "O"}, {@code "0"} or {@code null})
+	 * @return the number of matching {@link Laboratory}s
+	 * @throws OHServiceException
+	 */
+	public long getLaboratoryCount(String exam, LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient, String paidCode)
+		throws OHServiceException {
+		return ioOperations.getLaboratoryCount(exam, dateFrom, dateTo, patient, paidCode);
 	}
 
 	/**
@@ -494,6 +531,45 @@ public class LabManager {
 	public PagedResponse<Laboratory> getLaboratoryPageable(String exam, LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient, int page, int size)
 		throws OHServiceException {
 		return ioOperations.getLaboratoryPageable(exam, dateFrom, dateTo, patient, page, size);
+	}
+
+	/**
+	 * Return a page of exams ({@link Laboratory}s) between the passed dates and matching the passed exam name, prescriber and result filter.
+	 *
+	 * @param exam the exam name as {@code String}, {@code null} or empty for no filter
+	 * @param dateFrom the lower date for the range
+	 * @param dateTo the highest date for the range
+	 * @param patient the {@link Patient}, {@code null} for no filter
+	 * @param prescriber the prescriber name as {@code String}, {@code null} or empty for no filter
+	 * @param resultFilter the {@link LaboratoryResultFilter}, {@code null} for no filter
+	 * @param page the page number (0 based)
+	 * @param size the page size
+	 * @return the page of {@link Laboratory}s. It could be {@code empty}.
+	 * @throws OHServiceException
+	 */
+	public PagedResponse<Laboratory> getLaboratoryPageable(String exam, LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient, String prescriber,
+					LaboratoryResultFilter resultFilter, int page, int size) throws OHServiceException {
+		return getLaboratoryPageable(exam, dateFrom, dateTo, patient, prescriber, resultFilter, null, page, size);
+	}
+
+	/**
+	 * Return a page of exams ({@link Laboratory}s) between the passed dates and matching the passed exam name, prescriber, result filter and paid status.
+	 *
+	 * @param exam the exam name as {@code String}, {@code null} or empty for no filter
+	 * @param dateFrom the lower date for the range
+	 * @param dateTo the highest date for the range
+	 * @param patient the {@link Patient}, {@code null} for no filter
+	 * @param prescriber the prescriber name as {@code String}, {@code null} or empty for no filter
+	 * @param resultFilter the {@link LaboratoryResultFilter}, {@code null} for no filter
+	 * @param paidCode the paid status code ({@code "C"} paid, {@code "O"} not paid, {@code "0"} not billed), {@code null} for no filter
+	 * @param page the page number (0 based)
+	 * @param size the page size
+	 * @return the page of {@link Laboratory}s. It could be {@code empty}.
+	 * @throws OHServiceException
+	 */
+	public PagedResponse<Laboratory> getLaboratoryPageable(String exam, LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient, String prescriber,
+					LaboratoryResultFilter resultFilter, String paidCode, int page, int size) throws OHServiceException {
+		return ioOperations.getLaboratoryPageable(exam, dateFrom, dateTo, patient, prescriber, resultFilter, paidCode, page, size);
 	}
 
 	/**

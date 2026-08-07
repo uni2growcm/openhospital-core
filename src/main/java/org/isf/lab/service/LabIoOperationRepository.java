@@ -67,13 +67,51 @@ public interface LabIoOperationRepository extends JpaRepository<Laboratory, Inte
 	Page<Laboratory> findByLabDateBetweenAndExamDescriptionAndPatientCodePage(@Param("dateFrom") LocalDateTime dateFrom, @Param("dateTo") LocalDateTime dateTo,
 					@Param("exam") String exam, @Param("patient") Patient patient, Pageable pageable);
 
+	@Query(value = "select lab from Laboratory lab "
+					+ "left join lab.bill b "
+					+ "where (lab.labDate >= :dateFrom and lab.labDate < :dateTo) "
+					+ "and (:exam is null or lab.exam.description = :exam) "
+					+ "and (:patient is null or lab.patient = :patient) "
+					+ "and (:prescriber is null or lab.prescriber = :prescriber) "
+					+ "and (:resultFilter = 'ALL' "
+					+ "or (:resultFilter = 'NON_EMPTY' and lab.result is not null and lab.result <> '') "
+					+ "or (:resultFilter = 'EMPTY' and (lab.result is null or lab.result = ''))) "
+					+ "and (:paidCode is null "
+					+ "or (:paidCode = '0' and (b is null or b.id <= 0)) "
+					+ "or (:paidCode <> '0' and b.status = :paidCode)) "
+					+ "order by lab.labDate desc")
+	Page<Laboratory> findPageByFilters(@Param("dateFrom") LocalDateTime dateFrom, @Param("dateTo") LocalDateTime dateTo,
+					@Param("exam") String exam, @Param("patient") Patient patient, @Param("prescriber") String prescriber,
+					@Param("resultFilter") String resultFilter, @Param("paidCode") String paidCode, Pageable pageable);
+
 	@Query("select count(l) from Laboratory l where active=1")
 	long countAllActiveLabs();
 
 	@Query("select distinct l.prescriber from Laboratory l where l.prescriber is not null and l.prescriber <> ''")
 	List<String> findDistinctPrescribers();
-	@Query("SELECT l FROM Laboratory l WHERE l.patient.code = :patientCode AND (l.bill IS NULL OR l.bill.id = 0)")
+	@Query("SELECT l FROM Laboratory l left join l.bill b WHERE l.patient.code = :patientCode AND (b IS NULL OR b.id = 0)")
 	List<Laboratory> findByPatientCodeAndBillIsNull(@Param("patientCode") int patientCode);
+
+	@Query(value = "select lab from Laboratory lab left join lab.bill b where lab.labDate >= :dateFrom and lab.labDate <= :dateTo "
+			+ "and (:exam is null or lab.exam.description = :exam) "
+			+ "and (:patient is null or lab.patient = :patient) "
+			+ "and (:paidCode is null "
+			+ "or (:paidCode = '0' and (b is null or b.id <= 0)) "
+			+ "or (:paidCode <> '0' and b.status = :paidCode)) "
+			+ "order by lab.labDate desc")
+	List<Laboratory> findByLabDateBetweenAndExamDescriptionAndPatientCodeAndPaidStatus(@Param("dateFrom") LocalDateTime dateFrom,
+			@Param("dateTo") LocalDateTime dateTo, @Param("exam") String exam, @Param("patient") Patient patient,
+			@Param("paidCode") String paidCode);
+
+	@Query(value = "select count(lab) from Laboratory lab left join lab.bill b where lab.labDate >= :dateFrom and lab.labDate <= :dateTo "
+			+ "and (:exam is null or lab.exam.description = :exam) "
+			+ "and (:patient is null or lab.patient = :patient) "
+			+ "and (:paidCode is null "
+			+ "or (:paidCode = '0' and (b is null or b.id <= 0)) "
+			+ "or (:paidCode <> '0' and b.status = :paidCode))")
+	long countByLabDateBetweenAndExamDescriptionAndPatientCodeAndPaidStatus(@Param("dateFrom") LocalDateTime dateFrom,
+			@Param("dateTo") LocalDateTime dateTo, @Param("exam") String exam, @Param("patient") Patient patient,
+			@Param("paidCode") String paidCode);
 
 	@Modifying
 	@Query("UPDATE Laboratory l SET l.bill = :bill WHERE l.code = :labId")
