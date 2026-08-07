@@ -514,10 +514,7 @@ public class BillBrowserManager {
 		MovementWard mvt = new MovementWard();
 		mvt.setWard(ward);
 		mvt.setPatient(patient);
-//		mvt.setDate(TimeTools.getServerDateTime());
-		LocalDateTime date = TimeTools.getServerDateTime();
-		System.out.println("SERVER DATE = " + date);
-		mvt.setDate(date);
+		mvt.setDate(TimeTools.getServerDateTime());
 		mvt.setPatient(true);
 		mvt.setQuantity(qty);
 		mvt.setDescription(patient.getName());
