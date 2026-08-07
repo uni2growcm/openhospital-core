@@ -30,7 +30,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface BlockExamIoOperationRepository extends JpaRepository<BlockExam, Integer> {
 
-	List<BlockExam> findByBlock_Code(String code);
+	List<BlockExam> findByBlockCode(String code);
 
-	void deleteByBlock_Code(String code);
+	void deleteByBlockCode(String code);
 }

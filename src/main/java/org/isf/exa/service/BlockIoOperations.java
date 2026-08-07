@@ -108,7 +108,7 @@ public class BlockIoOperations {
 	 * @throws OHServiceException
 	 */
 	public void deleteBlock(String code) throws OHServiceException {
-		blockExamRepository.deleteByBlock_Code(code);
+		blockExamRepository.deleteByBlockCode(code);
 		blockRepository.deleteById(code);
 	}
 
@@ -119,7 +119,7 @@ public class BlockIoOperations {
 	 * @throws OHServiceException
 	 */
 	public List<Exam> getExamWithBlock(String code) throws OHServiceException {
-		return blockExamRepository.findByBlock_Code(code).stream()
+		return blockExamRepository.findByBlockCode(code).stream()
 				.map(BlockExam::getExam)
 				.filter(Objects::nonNull)
 				.toList();
@@ -134,7 +134,7 @@ public class BlockIoOperations {
 	 */
 	@Transactional
 	public void saveExamBlocks(Block block, List<Exam> exams) throws OHServiceException {
-		blockExamRepository.deleteByBlock_Code(block.getCode());
+		blockExamRepository.deleteByBlockCode(block.getCode());
 		if (exams != null && !exams.isEmpty()) {
 			blockExamRepository.saveAll(exams.stream()
 					.map(exam -> new BlockExam(block, exam))

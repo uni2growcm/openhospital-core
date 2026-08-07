@@ -601,7 +601,7 @@ class Tests extends OHCoreTestCase {
 		String code = setupTestBlockExam(false);
 		Block block = blockIoOperationRepository.findById(code).orElse(null);
 		assertThat(block).isNotNull();
-		List<BlockExam> blockExams = blockExamIoOperationRepository.findByBlock_Code(code);
+		List<BlockExam> blockExams = blockExamIoOperationRepository.findByBlockCode(code);
 		assertThat(blockExams).hasSize(1);
 		testBlock.checkBlockExam(blockExams.get(0), block, blockExams.get(0).getExam());
 	}
@@ -611,7 +611,7 @@ class Tests extends OHCoreTestCase {
 		String code = setupTestBlockExam(true);
 		Block block = blockIoOperationRepository.findById(code).orElse(null);
 		assertThat(block).isNotNull();
-		List<BlockExam> blockExams = blockExamIoOperationRepository.findByBlock_Code(code);
+		List<BlockExam> blockExams = blockExamIoOperationRepository.findByBlockCode(code);
 		assertThat(blockExams).hasSize(1);
 		testBlock.checkBlockExam(blockExams.get(0), block, blockExams.get(0).getExam());
 	}
@@ -678,7 +678,7 @@ class Tests extends OHCoreTestCase {
 		String code = setupTestBlockExam(false);
 		blockIoOperation.deleteBlock(code);
 		assertThat(blockIoOperation.isCodePresent(code)).isFalse();
-		assertThat(blockExamIoOperationRepository.findByBlock_Code(code)).isEmpty();
+		assertThat(blockExamIoOperationRepository.findByBlockCode(code)).isEmpty();
 	}
 
 	@Test
@@ -696,7 +696,7 @@ class Tests extends OHCoreTestCase {
 		String code = setupTestBlock(false);
 		Block block = blockIoOperationRepository.findById(code).orElse(null);
 		assertThat(block).isNotNull();
-		assertThat(blockExamIoOperationRepository.findByBlock_Code(code)).isEmpty();
+		assertThat(blockExamIoOperationRepository.findByBlockCode(code)).isEmpty();
 		// associate two exams
 		Exam exam1 = saveExam();
 		Exam exam2 = saveExam();
@@ -781,7 +781,7 @@ class Tests extends OHCoreTestCase {
 		String code = setupTestBlockExam(false);
 		blockBrowsingManager.deleteBlock(code);
 		assertThat(blockBrowsingManager.isCodePresent(code)).isFalse();
-		assertThat(blockExamIoOperationRepository.findByBlock_Code(code)).isEmpty();
+		assertThat(blockExamIoOperationRepository.findByBlockCode(code)).isEmpty();
 	}
 
 	@Test
@@ -870,7 +870,7 @@ class Tests extends OHCoreTestCase {
 		String code = setupTestBlockExam(false);
 		Block block = blockIoOperationRepository.findById(code).orElse(null);
 		assertThat(block).isNotNull();
-		BlockExam blockExam = blockExamIoOperationRepository.findByBlock_Code(code).get(0);
+		BlockExam blockExam = blockExamIoOperationRepository.findByBlockCode(code).get(0);
 		Exam exam = blockExam.getExam();
 		assertThat(exam).isNotNull();
 		BlockExam blockExam2 = new BlockExam(new Block("XXX", "TestDescription"), exam);
