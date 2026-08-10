@@ -78,12 +78,13 @@ public class BillBrowserManager {
 	private final TherapyManager therapyManager;
 	private final LabManager labManager;
 	private final OperationRowBrowserManager operationRowManager;
+	private final MovWardBrowserManager movWardBrowserManager;
 
 	public BillBrowserManager(
 		AccountingIoOperations ioOperations, MovWardBrowserManager mvtManager,
 		PriceListManager priceListManager, MedicalBrowsingManager medicalBrowsingManager,
-	    MovStockInsertingManager movStockInsertingManager,  TherapyManager therapyManager,
-	    LabManager labManager, OperationRowBrowserManager operationRowManager
+		MovStockInsertingManager movStockInsertingManager, TherapyManager therapyManager,
+		LabManager labManager, OperationRowBrowserManager operationRowManager, MovWardBrowserManager movWardBrowserManager
 	) {
 		this.ioOperations = ioOperations;
 		this.mvtManager = mvtManager;
@@ -93,6 +94,7 @@ public class BillBrowserManager {
 		this.therapyManager = therapyManager;
 		this.labManager = labManager;
 		this.operationRowManager = operationRowManager;
+		this.movWardBrowserManager = movWardBrowserManager;
 	}
 
 	/**
@@ -100,19 +102,18 @@ public class BillBrowserManager {
 	 * For reduced items, the quantity will be the difference.
 	 */
 	private List<BillItems> getDeletedItems(int billID, List<BillItems> updatedItems) throws OHServiceException {
-		List<BillItems> oldItems = this.ioOperations.getItems(billID);
+		List<BillItems> oldItems = this.ioOperations.getGroupItems(billID);
 		if (oldItems == null || oldItems.isEmpty()) return new ArrayList<>();
 
 		if (updatedItems == null) updatedItems = new ArrayList<>();
 
-		Map<Integer, BillItems> newItemsMap = updatedItems.stream()
-			.filter(item -> item.getId() > 0)
-			.collect(Collectors.toMap(BillItems::getId, item -> item));
+		Map<String, BillItems> newItemsMap = updatedItems.stream()
+			.collect(Collectors.toMap(BillItems::getItemDescription, item -> item, (a, b) -> a));
 
 		List<BillItems> removedOrReduced = new ArrayList<>();
 
 		for (BillItems oldItem : oldItems) {
-			BillItems newItem = newItemsMap.get(oldItem.getId());
+			BillItems newItem = newItemsMap.get(oldItem.getItemDescription());
 			if (newItem == null) {
 				removedOrReduced.add(oldItem);
 			} else if (oldItem.getItemQuantity() > newItem.getItemQuantity()) {
@@ -132,28 +133,23 @@ public class BillBrowserManager {
 	 * Returns a list of items that are newly added or have increased quantity.
 	 */
 	private List<BillItems> getNewItems(int billID, List<BillItems> updatedItems) throws OHServiceException {
-		List<BillItems> oldItems = this.ioOperations.getItems(billID);
+		List<BillItems> oldItems = this.ioOperations.getGroupItems(billID);
 		if (updatedItems == null || updatedItems.isEmpty()) return new ArrayList<>();
 
-		Map<Integer, BillItems> oldItemsMap = oldItems != null ? oldItems.stream()
-			.filter(item -> item.getId() > 0)
-			.collect(Collectors.toMap(BillItems::getId, item -> item)) : new HashMap<>();
+		Map<String, Integer> oldQtyByDesc = oldItems != null ? oldItems.stream()
+			.collect(Collectors.toMap(BillItems::getItemDescription, BillItems::getItemQuantity, Integer::sum)) : new HashMap<>();
 
 		List<BillItems> addedOrIncreased = new ArrayList<>();
 
 		for (BillItems updatedItem : updatedItems) {
-			if (updatedItem.getId() == 0) {
-				addedOrIncreased.add(updatedItem);
-			} else {
-				BillItems oldItem = oldItemsMap.get(updatedItem.getId());
-				if (oldItem != null && updatedItem.getItemQuantity() > oldItem.getItemQuantity()) {
-					int diff = updatedItem.getItemQuantity() - oldItem.getItemQuantity();
-					BillItems increasedItem = new BillItems(updatedItem.getId(), updatedItem.getBill(), updatedItem.isPrice(),
-						updatedItem.getPriceID(), updatedItem.getItemDescription(), updatedItem.getItemAmount(), diff);
-					increasedItem.setItemId(updatedItem.getItemId());
-					increasedItem.setItemDisplayCode(updatedItem.getItemDisplayCode());
-					addedOrIncreased.add(increasedItem);
-				}
+			int oldQty = oldQtyByDesc.getOrDefault(updatedItem.getItemDescription(), 0);
+			if (updatedItem.getItemQuantity() > oldQty) {
+				int diff = updatedItem.getItemQuantity() - oldQty;
+				BillItems increasedItem = new BillItems(updatedItem.getId(), updatedItem.getBill(), updatedItem.isPrice(),
+					updatedItem.getPriceID(), updatedItem.getItemDescription(), updatedItem.getItemAmount(), diff);
+				increasedItem.setItemId(updatedItem.getItemId());
+				increasedItem.setItemDisplayCode(updatedItem.getItemDisplayCode());
+				addedOrIncreased.add(increasedItem);
 			}
 		}
 
@@ -212,6 +208,20 @@ public class BillBrowserManager {
 		return ioOperations.getItems(billID);
 	}
 
+	public List<BillItems> getGroupItems(int billID) throws OHServiceException {
+		if (billID == 0) {
+			return new ArrayList<>();
+		}
+		return ioOperations.getGroupItems(billID);
+	}
+
+	public List<BillItems> bundleBillItems(int billId) throws OHServiceException {
+		if (billId == 0) {
+			return new ArrayList<>();
+		}
+		return ioOperations.bundleBillItems(billId);
+	}
+
 	public List<Bill> getBills(LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient) throws OHServiceException {
 		return ioOperations.getBillsBetweenDatesWherePatient(dateFrom, dateTo, patient);
 	}
@@ -239,9 +249,6 @@ public class BillBrowserManager {
 
 			ioOperations.newBillItems(newBill, billItems);
 
-			if (GeneralData.STOCKMVTONBILLSAVE) {
-				updateMedicalStock(billItems, billId, false);
-			}
 			markPrescriptionsAsBilled(billItems, newBill);
 			if (GeneralData.STOCKMVTONBILLSAVE) {
 				updateMedicalStock(billItems, newBill.getId(), false);
@@ -273,22 +280,20 @@ public class BillBrowserManager {
 		Bill updatedBill = ioOperations.updateBill(updateBill);
 		ioOperations.newBillItems(updateBill, billItems);
 
-		if (!billPayments.isEmpty()) {
-			List<BillPayments> paymentsToSave = new ArrayList<>();
-			for (BillPayments payment : billPayments) {
-				BillPayments newPayment = new BillPayments(
-					0,
-					updatedBill,
-					payment.getDate(),
-					payment.getAmount(),
-					payment.getUser()
-				);
-				paymentsToSave.add(newPayment);
-			}
-			ioOperations.newBillPayments(updatedBill, paymentsToSave);
-			List<ItemPayments> itemPayments = computeItemPayments(updatedBill, billItems, paymentsToSave, false);
-			ioOperations.newItemPayments(updatedBill, itemPayments);
+		List<BillPayments> paymentsToSave = new ArrayList<>();
+		for (BillPayments payment : billPayments) {
+			BillPayments newPayment = new BillPayments(
+				0,
+				updatedBill,
+				payment.getDate(),
+				payment.getAmount(),
+				payment.getUser()
+			);
+			paymentsToSave.add(newPayment);
 		}
+		ioOperations.newBillPayments(updatedBill, paymentsToSave);
+		List<ItemPayments> itemPayments = computeItemPayments(updatedBill, billItems, paymentsToSave, false);
+		ioOperations.newItemPayments(updatedBill, itemPayments);
 
 		markPrescriptionsAsBilled(billItems, updatedBill);
 		return updatedBill;
@@ -306,8 +311,28 @@ public class BillBrowserManager {
 		return ioOperations.getUsers();
 	}
 
+	@Transactional(rollbackFor = OHServiceException.class)
+	@TranslateOHServiceException
 	public void deleteBill(Bill deleteBill) throws OHServiceException {
+		if (GeneralData.STOCKMVTONBILLSAVE) {
+			List<BillItems> items = ioOperations.getGroupItems(deleteBill.getId());
+			updateMedicalStock(items, deleteBill.getId(), true);
+		}
+		validateBillDelete(deleteBill);
 		ioOperations.deleteBill(deleteBill);
+	}
+
+	protected void validateBillDelete(Bill bill) throws OHServiceException {
+		List<OHExceptionMessage> errors = new ArrayList<>();
+		
+		List<BillPayments> payments = ioOperations.getPayments(bill.getId());
+		if (!payments.isEmpty()) {
+			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.billbrowser.cannotdelete.billhaspayments.msg")));
+		}
+		
+		if (!errors.isEmpty()) {
+			throw new OHDataValidationException(errors);
+		}
 	}
 
 	public List<Bill> getBills(LocalDateTime dateFrom, LocalDateTime dateTo) throws OHServiceException {
@@ -457,6 +482,7 @@ public class BillBrowserManager {
 			qty = -qty;
 		}
 
+		double applyQty = qty;
 		List<MedicalWard> medWards = mvtManager.getMedicalsWard(ward.getCode(), true);
 
 		if (!isCharge && (medWards == null || medWards.isEmpty())) {
@@ -474,7 +500,14 @@ public class BillBrowserManager {
 			throw new OHDataValidationException(errors);
 		}
 
-		if (!isCharge && medicalWard.getQty() < qty) {
+		List<MedicalWard> matchingMedWards = medWards.stream()
+			.filter(medWard -> medWard != null && medWard.getMedical() != null
+				&& billItem.getItemDescription().equals(medWard.getMedical().getDescription()))
+			.collect(Collectors.toList());
+
+		double totalStock = this.movWardBrowserManager.getTotalWardQuantity(ward.getCode(), medicalWard.getId().getMedical().getCode());
+
+		if (!isCharge && totalStock < qty) {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.newbill.qtynotinstock") + " : " + billItem.getItemDescription()));
 			throw new OHDataValidationException(errors);
 		}
@@ -497,8 +530,28 @@ public class BillBrowserManager {
 			mvt.setMedical(medical);
 			mvt.setlot(lot);
 		} else {
-			mvt.setMedical(medicalWard.getId().getMedical());
-			mvt.setlot(medicalWard.getLot());
+			for (MedicalWard medWard : matchingMedWards) {
+				if (applyQty > 0) {
+					if (medWard.getQty() >= applyQty) {
+						mvt.setMedical(medWard.getId().getMedical());
+						mvt.setlot(medWard.getLot());
+						mvt.setQuantity(applyQty);
+						mvt.setUnits("pieces");
+						mvtManager.newMovementWard(mvt);
+						return;
+					} else {
+						if (medWard.getQty() > 0) {
+							mvt.setMedical(medicalWard.getId().getMedical());
+							mvt.setlot(medicalWard.getLot());
+							mvt.setQuantity(medWard.getQty());
+							applyQty = applyQty - medWard.getQty();
+							mvt.setUnits("pieces");
+							mvtManager.newMovementWard(mvt);
+						}
+					}
+				}
+			}
+			return;
 		}
 		mvt.setUnits("pieces");
 

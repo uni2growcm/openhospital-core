@@ -28,7 +28,9 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Stream;
@@ -61,6 +63,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import jakarta.persistence.EntityManager;
+
 @Service
 @Transactional(rollbackFor = OHServiceException.class)
 @TranslateOHServiceException
@@ -72,6 +76,8 @@ public class AccountingIoOperations {
 	private BillItemGroupIoOperationRepository billItemGroupRepository;
 	private BillItemGroupItemIoOperationRepository billItemGroupItemRepository;
 	private AccountingItemPaymentIoOperationRepository itemPaymentRepository;
+
+	private final EntityManager entityManager;
 
 	private TherapyManager therapyManager;
 	private LabManager labManager;
@@ -86,7 +92,8 @@ public class AccountingIoOperations {
 		AccountingItemPaymentIoOperationRepository accountingItemPaymentIoOperationRepository,
 		TherapyManager therapyManager,
 		LabManager labManager,
-		OperationRowBrowserManager operationRowBrowserManager
+		OperationRowBrowserManager operationRowBrowserManager,
+		EntityManager entityManager
 	) {
 		this.billRepository = accountingBillIoOperationRepository;
 		this.billPaymentRepository = accountingBillPaymentIoOperationRepository;
@@ -97,6 +104,7 @@ public class AccountingIoOperations {
 		this.therapyManager = therapyManager;
 		this.labManager = labManager;
 		this.operationRowBrowserManager = operationRowBrowserManager;
+		this.entityManager = entityManager;
 	}
 
 	public List<Bill> getPendingBills(int patID) throws OHServiceException {
@@ -126,6 +134,52 @@ public class AccountingIoOperations {
 			return billItemsRepository.findByBill_idOrderByIdAsc(billID);
 		}
 		return billItemsRepository.findAllByOrderByIdAsc();
+	}
+
+	public List<BillItems> getGroupItems(int billID) throws OHServiceException {
+		List<BillItems> allItems = getItems(billID);
+		Map<String, BillItems> grouped = new LinkedHashMap<>();
+		for (BillItems item : allItems) {
+			String desc = item.getItemDescription();
+			if (grouped.containsKey(desc)) {
+				BillItems existing = grouped.get(desc);
+				existing.setItemQuantity(existing.getItemQuantity() + item.getItemQuantity());
+			} else {
+				grouped.put(desc, new BillItems(item));
+			}
+		}
+		List<BillItems> result = new ArrayList<>();
+		for (BillItems item : grouped.values()) {
+			if (item.getItemQuantity() != 0) {
+				result.add(item);
+			}
+		}
+		return result;
+	}
+
+	public List<BillItems> bundleBillItems(int billId) throws OHServiceException {
+		if (billId == 0) {
+			return new ArrayList<>();
+		}
+		List<BillItems> items = getGroupItems(billId);
+		List<BillItems> refundItems = getRefundedItems(billId);
+
+		Map<String, Integer> refundedQtyByDesc = new LinkedHashMap<>();
+		for (BillItems refundItem : refundItems) {
+			refundedQtyByDesc.merge(refundItem.getItemDescription(), refundItem.getItemQuantity(), Integer::sum);
+		}
+
+		List<BillItems> billItems = new ArrayList<>();
+		for (BillItems item : items) {
+			int refunded = refundedQtyByDesc.getOrDefault(item.getItemDescription(), 0);
+			int realQty = item.getItemQuantity() - refunded;
+			if (realQty != 0) {
+				item.setRefundedQty(refunded);
+				item.setItemQuantity(realQty);
+				billItems.add(item);
+			}
+		}
+		return billItems;
 	}
 
 	public List<BillPayments> getPayments(LocalDateTime dateFrom, LocalDateTime dateTo) throws OHServiceException {
@@ -169,6 +223,11 @@ public class AccountingIoOperations {
 	}
 
 	public void deleteBill(Bill deleteBill) throws OHServiceException {
+		billItemsRepository.deleteWhereId(deleteBill.getId());
+		billPaymentRepository.deleteWhereId(deleteBill.getId());
+		itemPaymentRepository.deleteWhereBillId(deleteBill.getId());
+		entityManager.flush();
+		entityManager.clear();
 		billRepository.deleteById(deleteBill.getId());
 	}
 
