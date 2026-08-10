@@ -62,6 +62,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import jakarta.persistence.EntityManager;
+
 @Service
 @Transactional(rollbackFor = OHServiceException.class)
 @TranslateOHServiceException
@@ -73,6 +75,8 @@ public class AccountingIoOperations {
 	private BillItemGroupIoOperationRepository billItemGroupRepository;
 	private BillItemGroupItemIoOperationRepository billItemGroupItemRepository;
 	private AccountingItemPaymentIoOperationRepository itemPaymentRepository;
+
+	private final EntityManager entityManager;
 
 	private TherapyManager therapyManager;
 	private LabManager labManager;
@@ -87,7 +91,8 @@ public class AccountingIoOperations {
 		AccountingItemPaymentIoOperationRepository accountingItemPaymentIoOperationRepository,
 		TherapyManager therapyManager,
 		LabManager labManager,
-		OperationRowBrowserManager operationRowBrowserManager
+		OperationRowBrowserManager operationRowBrowserManager,
+		EntityManager entityManager
 	) {
 		this.billRepository = accountingBillIoOperationRepository;
 		this.billPaymentRepository = accountingBillPaymentIoOperationRepository;
@@ -98,6 +103,7 @@ public class AccountingIoOperations {
 		this.therapyManager = therapyManager;
 		this.labManager = labManager;
 		this.operationRowBrowserManager = operationRowBrowserManager;
+		this.entityManager = entityManager;
 	}
 
 	public List<Bill> getPendingBills(int patID) throws OHServiceException {
@@ -216,6 +222,11 @@ public class AccountingIoOperations {
 	}
 
 	public void deleteBill(Bill deleteBill) throws OHServiceException {
+		billItemsRepository.deleteWhereId(deleteBill.getId());
+		billPaymentRepository.deleteWhereId(deleteBill.getId());
+		itemPaymentRepository.deleteWhereBillId(deleteBill.getId());
+		entityManager.flush();
+		entityManager.clear();
 		billRepository.deleteById(deleteBill.getId());
 	}
 

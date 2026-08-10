@@ -248,10 +248,10 @@ public class BillBrowserManager {
 
 			ioOperations.newBillItems(newBill, billItems);
 
-			if (GeneralData.STOCKMVTONBILLSAVE) {
-				updateMedicalStock(billItems, billId, false);
-			}
 			markPrescriptionsAsBilled(billItems, newBill);
+			if (GeneralData.STOCKMVTONBILLSAVE) {
+				updateMedicalStock(billItems, newBill.getId(), false);
+			}
 		}
 
 		if (billPayments != null && !billPayments.isEmpty()) {
@@ -279,22 +279,20 @@ public class BillBrowserManager {
 		Bill updatedBill = ioOperations.updateBill(updateBill);
 		ioOperations.newBillItems(updateBill, billItems);
 
-		if (!billPayments.isEmpty()) {
-			List<BillPayments> paymentsToSave = new ArrayList<>();
-			for (BillPayments payment : billPayments) {
-				BillPayments newPayment = new BillPayments(
-					0,
-					updatedBill,
-					payment.getDate(),
-					payment.getAmount(),
-					payment.getUser()
-				);
-				paymentsToSave.add(newPayment);
-			}
-			ioOperations.newBillPayments(updatedBill, paymentsToSave);
-			List<ItemPayments> itemPayments = computeItemPayments(updatedBill, billItems, paymentsToSave, false);
-			ioOperations.newItemPayments(updatedBill, itemPayments);
+		List<BillPayments> paymentsToSave = new ArrayList<>();
+		for (BillPayments payment : billPayments) {
+			BillPayments newPayment = new BillPayments(
+				0,
+				updatedBill,
+				payment.getDate(),
+				payment.getAmount(),
+				payment.getUser()
+			);
+			paymentsToSave.add(newPayment);
 		}
+		ioOperations.newBillPayments(updatedBill, paymentsToSave);
+		List<ItemPayments> itemPayments = computeItemPayments(updatedBill, billItems, paymentsToSave, false);
+		ioOperations.newItemPayments(updatedBill, itemPayments);
 
 		markPrescriptionsAsBilled(billItems, updatedBill);
 		return updatedBill;
@@ -312,8 +310,28 @@ public class BillBrowserManager {
 		return ioOperations.getUsers();
 	}
 
+	@Transactional(rollbackFor = OHServiceException.class)
+	@TranslateOHServiceException
 	public void deleteBill(Bill deleteBill) throws OHServiceException {
+		if (GeneralData.STOCKMVTONBILLSAVE) {
+			List<BillItems> items = ioOperations.getGroupItems(deleteBill.getId());
+			updateMedicalStock(items, deleteBill.getId(), true);
+		}
+		validateBillDelete(deleteBill);
 		ioOperations.deleteBill(deleteBill);
+	}
+
+	protected void validateBillDelete(Bill bill) throws OHServiceException {
+		List<OHExceptionMessage> errors = new ArrayList<>();
+		
+		List<BillPayments> payments = ioOperations.getPayments(bill.getId());
+		if (!payments.isEmpty()) {
+			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.billbrowser.cannotdelete.billhaspayments.msg")));
+		}
+		
+		if (!errors.isEmpty()) {
+			throw new OHDataValidationException(errors);
+		}
 	}
 
 	public List<Bill> getBills(LocalDateTime dateFrom, LocalDateTime dateTo) throws OHServiceException {
@@ -423,90 +441,120 @@ public class BillBrowserManager {
 	}
 
 	private void updateMedicalStock(List<BillItems> medicalItems, int billID, boolean isCharge) throws OHServiceException {
-		if (medicalItems != null && !medicalItems.isEmpty()) {
-			PatientBrowserManager patientManager = (PatientBrowserManager)Context.getApplicationContext().getBean(PatientBrowserManager.class);
-			Bill bill = this.getBill(billID);
-			Ward ward = bill.getWard();
-			if (ward != null) {
-				Patient patient = patientManager.getPatientById(bill.getBillPatient().getCode());
-				List<OHExceptionMessage> validationErrors = new ArrayList();
-				Map<String, BillItems> uniqueItems = new HashMap();
+		if (medicalItems == null || medicalItems.isEmpty()) return;
 
-				for(BillItems item : medicalItems) {
-					String key = item.getItemDescription();
-					if (uniqueItems.containsKey(key)) {
-						BillItems existing = (BillItems)uniqueItems.get(key);
-						existing.setItemQuantity(existing.getItemQuantity() + item.getItemQuantity());
-					} else {
-						uniqueItems.put(key, item);
-					}
-				}
+		PatientBrowserManager patientManager = Context.getApplicationContext().getBean(PatientBrowserManager.class);
+		Bill bill = getBill(billID);
+		Ward ward = bill.getWard();
+		if (ward == null) return;
 
-				for(BillItems item : uniqueItems.values()) {
-					try {
-						this.addStockMvt(ward, patient, item, isCharge);
-					} catch (OHDataValidationException e) {
-						validationErrors.addAll(e.getMessages());
-					}
-				}
+		Patient patient = patientManager.getPatientById(bill.getBillPatient().getCode());
+		List<Price> prices = priceListManager.getPrices();
 
-				if (!validationErrors.isEmpty()) {
-					throw new OHDataValidationException(validationErrors);
+		List<OHExceptionMessage> validationErrors = new ArrayList<>();
+
+		for (BillItems item : medicalItems) {
+			Price price = prices.stream()
+				.filter(p -> p != null && "MED".equals(p.getGroup()) && item.getItemDescription().equals(p.getDesc()))
+				.findFirst()
+				.orElse(null);
+
+			if (price != null) {
+				try {
+					addStockMvt(ward, patient, item, isCharge);
+				} catch (OHDataValidationException e) {
+					validationErrors.addAll(e.getMessages());
 				}
 			}
+		}
+
+		if (!validationErrors.isEmpty()) {
+			throw new OHDataValidationException(validationErrors);
 		}
 	}
 
 	private void addStockMvt(Ward ward, Patient patient, BillItems billItem, boolean isCharge) throws OHServiceException {
-		List<OHExceptionMessage> errors = new ArrayList();
-		double quantity = (double)Math.abs(billItem.getItemQuantity());
-		Medical medical = (Medical)this.medicalBrowsingManager.getMedicals(billItem.getItemDescription()).stream().filter((med) -> Objects.equals(med.getDescription(), billItem.getItemDescription())).findFirst().orElse((Medical) null);
-		if (medical == null) {
-			String var21 = MessageBundle.getMessage("angal.newbill.stocknotavailableforitem");
-			errors.add(new OHExceptionMessage(var21 + " : " + billItem.getItemDescription()));
+		List<OHExceptionMessage> errors = new ArrayList<>();
+		double qty = billItem.getItemQuantity();
+
+		if (isCharge) {
+			qty = -qty;
+		}
+
+		double applyQty = qty;
+		List<MedicalWard> medWards = mvtManager.getMedicalsWard(ward.getCode(), true);
+
+		if (!isCharge && (medWards == null || medWards.isEmpty())) {
+			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.newbill.stocknotavailableforitem") + " : " + billItem.getItemDescription()));
 			throw new OHDataValidationException(errors);
+		}
+
+		MedicalWard medicalWard = medWards.stream()
+			.filter(med -> med.getId().getMedical().getDescription().equals(billItem.getItemDescription()))
+			.findFirst()
+			.orElse(null);
+
+		if (!isCharge && medicalWard == null) {
+			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.newbill.stocknotavailableforitem") + " : " + billItem.getItemDescription()));
+			throw new OHDataValidationException(errors);
+		}
+
+		List<MedicalWard> matchingMedWards = medWards.stream()
+			.filter(medWard -> medWard != null && medWard.getMedical() != null
+				&& billItem.getItemDescription().equals(medWard.getMedical().getDescription()))
+			.collect(Collectors.toList());
+
+		double totalStock = this.movWardBrowserManager.getTotalWardQuantity(ward.getCode(), medicalWard.getId().getMedical().getCode());
+
+		if (!isCharge && totalStock < qty) {
+			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.newbill.qtynotinstock") + " : " + billItem.getItemDescription()));
+			throw new OHDataValidationException(errors);
+		}
+
+		MovementWard mvt = new MovementWard();
+		mvt.setWard(ward);
+		mvt.setPatient(patient);
+		mvt.setDate(TimeTools.getServerDateTime());
+		mvt.setPatient(true);
+		mvt.setQuantity(qty);
+		mvt.setDescription(patient.getName());
+
+		if (isCharge) {
+			Medical medical = medicalBrowsingManager.getMedicals(billItem.getItemDescription())
+				.stream()
+				.filter(med -> Objects.equals(med.getDescription(), billItem.getItemDescription()))
+				.findFirst()
+				.orElse(null);
+			Lot lot = movStockInsertingManager.getLotByMedical(medical, false).stream().findFirst().orElse(null);
+			mvt.setMedical(medical);
+			mvt.setlot(lot);
 		} else {
-			if (!isCharge) {
-				double totalStock = this.movWardBrowserManager.getTotalWardQuantity(ward.getCode(), medical.getCode());
-				if (totalStock < quantity) {
-					String var20 = MessageBundle.getMessage("angal.newbill.qtynotinstock");
-					errors.add(new OHExceptionMessage(var20 + " : " + billItem.getItemDescription()));
-					throw new OHDataValidationException(errors);
-				}
-			}
-
-			List<MedicalWard> medicalWards = this.movWardBrowserManager.getMedicalsWard(ward.getCode(), medical.getCode(), false);
-			medicalWards.sort(Comparator.comparing((mw) -> mw.getLot().getDueDate(), Comparator.nullsLast(Comparator.naturalOrder())));
-			double remainingQuantity = quantity;
-
-			for(MedicalWard medicalWard : medicalWards) {
-				double available = (double)(medicalWard.getIn_quantity() - medicalWard.getOut_quantity());
-				if (!(available <= (double)0.0F)) {
-					double quantityToMove = Math.min(available, remainingQuantity);
-					MovementWard movement = new MovementWard();
-					movement.setWard(ward);
-					movement.setPatient(patient);
-					movement.setDate(TimeTools.getServerDateTime());
-					movement.setPatient(true);
-					movement.setDescription(patient.getName());
-					movement.setMedical(medicalWard.getMedical());
-					movement.setlot(medicalWard.getLot());
-					movement.setQuantity(isCharge ? -quantityToMove : quantityToMove);
-					movement.setUnits("pieces");
-					this.mvtManager.newMovementWard(movement);
-					remainingQuantity -= quantityToMove;
-					if (remainingQuantity <= (double)0.0F) {
-						break;
+			for (MedicalWard medWard : matchingMedWards) {
+				if (applyQty > 0) {
+					if (medWard.getQty() >= applyQty) {
+						mvt.setMedical(medWard.getId().getMedical());
+						mvt.setlot(medWard.getLot());
+						mvt.setQuantity(applyQty);
+						mvt.setUnits("pieces");
+						mvtManager.newMovementWard(mvt);
+						return;
+					} else {
+						if (medWard.getQty() > 0) {
+							mvt.setMedical(medicalWard.getId().getMedical());
+							mvt.setlot(medicalWard.getLot());
+							mvt.setQuantity(medWard.getQty());
+							applyQty = applyQty - medWard.getQty();
+							mvt.setUnits("pieces");
+							mvtManager.newMovementWard(mvt);
+						}
 					}
 				}
 			}
-
-			if (remainingQuantity > (double)0.0F) {
-				String var10003 = MessageBundle.getMessage("angal.newbill.qtynotinstock");
-				errors.add(new OHExceptionMessage(var10003 + " : " + billItem.getItemDescription()));
-				throw new OHDataValidationException(errors);
-			}
+			return;
 		}
+		mvt.setUnits("pieces");
+
+		mvtManager.newMovementWard(mvt);
 	}
 
 	public List<BillItems> getAllBillItems(Bill bill) throws OHServiceException {

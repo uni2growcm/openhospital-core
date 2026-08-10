@@ -752,4 +752,28 @@ class Tests extends OHCoreTestCase {
 		Assertions.assertThat(formatted).contains(String.valueOf(payment.getBill().getId()));
 		Assertions.assertThat(formatted).contains(String.valueOf(payment.getAmount()).replace('.', ','));
 	}
+
+	@Test
+	void testUpdateBillRemovesAllPayments() throws Exception {
+		LocalDateTime today = TimeTools.getNow();
+		Patient patient = testPatient.setup(false);
+		PriceList priceList = testPriceList.setup(false);
+		priceListIoOperationRepository.saveAndFlush(priceList);
+		patientIoOperationRepository.saveAndFlush(patient);
+
+		Bill bill = testBill.setup(priceList, patient, null, false);
+		bill.setDate(today.minusDays(5));
+
+		BillPayments payment = new BillPayments(0, bill, today.minusDays(1), 10.10, "TestUser");
+		List<BillPayments> payments = new ArrayList<>();
+		payments.add(payment);
+
+		Bill savedBill = billBrowserManager.newBill(bill, new ArrayList<>(), payments);
+		assertThat(billBrowserManager.getPayments(savedBill.getId())).hasSize(1);
+
+		billBrowserManager.updateBill(savedBill, new ArrayList<>(), new ArrayList<>());
+
+		assertThat(billBrowserManager.getPayments(savedBill.getId())).isEmpty();
+		assertThat(accountingIoOperation.getItemPayments(savedBill.getId())).isEmpty();
+	}
 }
