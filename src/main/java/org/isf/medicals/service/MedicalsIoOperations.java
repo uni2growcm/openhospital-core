@@ -289,4 +289,25 @@ public class MedicalsIoOperations {
 		return repository.findAllWhereTypeOrderBySmartCodeAndDescription(type);
 	}
 
+	/**
+	 * Computes the next available product code, based on the highest existing
+	 * numeric prod_code + 1. Non-numeric prod_codes are ignored.
+	 *
+	 * @return the next available product code.
+	 * @throws OHServiceException if an error occurs retrieving the medicals.
+	 */
+	public Integer getNextMedicalCode() throws OHServiceException {
+		List<String> prodCodes = repository.findAllProdCodes();
+		int maxCode = 0;
+		for (String prodCode : prodCodes) {
+			try {
+				int numericCode = Integer.parseInt(prodCode);
+				if (numericCode > maxCode) {
+					maxCode = numericCode;
+				}
+			} catch (NumberFormatException e) {
+			}
+		}
+		return maxCode + 1;
+	}
 }
