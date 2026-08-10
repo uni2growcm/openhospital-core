@@ -165,6 +165,36 @@ public class JasperReportsManager {
 		}
 	}
 
+	public JasperReportResultDto getPrescriberListExamPdf(LocalDate fromDate, LocalDate toDate, String exam, Integer resultFilter,
+			String patientCode, String userCode, String prescriberName, String patientName, String paidCode)
+		throws OHServiceException {
+
+		try {
+			HashMap<String, Object> parameters = compileGenericReportFromDateToDateParameters(fromDate, toDate);
+			addBundleParameter(RPT_BASE, "PrescriberListExam", parameters);
+
+			parameters.put("exam", exam != null ? exam : "all"); // real param
+			parameters.put("resultFilter", resultFilter); // real param
+			parameters.put("patientCode", patientCode != null ? patientCode : "all"); // real param
+			parameters.put("userCode", userCode != null ? userCode : "all"); // real param
+			parameters.put("name", prescriberName != null ? prescriberName : ""); // real param
+			parameters.put("patientname", patientName != null ? patientName : ""); // real param
+			parameters.put("paidCode", paidCode != null ? paidCode : "all"); // real param
+			parameters.put("lab_auto_enabled", GeneralData.CREATELABORATORYAUTO ? "yes" : "no"); // real param
+			parameters.put("LOGO_PATH", LOGO); // real param
+
+			String jasperFileName = "PrescriberListExam";
+			String pdfFilename = compilePDFFilename(RPT_BASE, jasperFileName, null, "pdf");
+
+			JasperReportResultDto result = generateJasperReport(compileJasperFilename(RPT_BASE, jasperFileName), pdfFilename, parameters);
+			JasperExportManager.exportReportToPdfFile(result.getJasperPrint(), pdfFilename);
+			return result;
+		} catch (Exception e) {
+			LOGGER.error("", e);
+			throw new OHReportException(e, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
+		}
+	}
+
 	public JasperReportResultDto getGenericReportAdmissionPdf(int admID, int patientID, String jasperFileName) throws OHServiceException {
 
 		try {
