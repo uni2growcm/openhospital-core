@@ -483,7 +483,7 @@ public class BillBrowserManager {
 		}
 
 		double applyQty = qty;
-		List<MedicalWard> medWards = mvtManager.getMedicalsWard(ward.getCode(), true);
+		List<MedicalWard> medWards = mvtManager.getMedicalsWard(ward.getCode(), false);
 
 		if (!isCharge && (medWards == null || medWards.isEmpty())) {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.newbill.stocknotavailableforitem") + " : " + billItem.getItemDescription()));
