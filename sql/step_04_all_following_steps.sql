@@ -132,6 +132,7 @@ source step_a152_add_archive_menuitem.sql;
 source step_a153_create_index_in_medical_stock_ward.sql;
 source step_a155_add_bill_refund_menuitem.sql;
 source step_a156_add_item_payments_table.sql;
+source step_a157_add_variable_price_column.sql;
 source step_a159_maternity_pregnancy_obstetric_history.sql;
 source step_a160_add_command_tables.sql;
 source step_a161_add_admission_diagnosis_out_and_in_table.sql;

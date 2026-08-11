@@ -451,4 +451,17 @@ public class MovWardBrowserManager {
 
 		return ioOperations.getIncomingMovements(wardId, dateFrom, dateTo, page, pageSize);
 	}
+
+	/**
+	 * Gets the paginated {@link MedicalWard}s associated to the specified ward,
+	 * summarized by total quantity (regardless the lot).
+	 *
+	 * @param wardCode the ward id.
+	 * @param medicalCode the code of the medical.
+	 * @return the total ward quantity for the medical
+	 * @throws OHServiceException if an error occurs retrieving the medicals.
+	 */
+	public Double getTotalWardQuantity(String wardCode, int medicalCode) throws OHServiceException {
+		return ioOperations.getTotalWardQuantity(wardCode, medicalCode);
+	}
 }

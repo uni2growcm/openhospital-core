@@ -74,6 +74,10 @@ public class Price extends Auditable<String> {
 	@Column(name="PRC_PRICE")
 	private Double price;
 
+	@NotNull
+	@Column(name="PRC_VARIABLE")
+	private boolean isVariable;
+
 	@Version
 	@Column(name = "PRC_LOCK")
 	private int lock;
@@ -142,6 +146,20 @@ public class Price extends Auditable<String> {
 		this.editable = true;
 	}
 
+	/**
+	 * @param list Parent list
+	 * @param group Item group name
+	 * @param item Item name
+	 * @param desc Item description
+	 * @param price Price
+	 * @param editable Can be edited or not
+	 * @param isVariable if price is variable
+	 */
+	public Price(PriceList list, String group, String item, String desc, Double price, boolean editable, boolean isVariable) {
+		this(list, group, item, desc, price, editable);
+		this.isVariable = isVariable;
+	}
+
 	public int getId() {
 		return id;
 	}
@@ -200,6 +218,14 @@ public class Price extends Auditable<String> {
 
 	public void setEditable(boolean editable) {
 		this.editable = editable;
+	}
+
+	public boolean isVariable() {
+		return isVariable;
+	}
+
+	public void setVariable(boolean variable) {
+		isVariable = variable;
 	}
 
 	public int getLock() { return lock; }

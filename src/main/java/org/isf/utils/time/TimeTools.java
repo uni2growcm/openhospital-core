@@ -349,6 +349,6 @@ public class TimeTools {
 		} catch (SQLException | OHException | DateTimeParseException exception) {
 			LOGGER.error(exception.getMessage(), exception);
 		}
-		return null;
+		return LocalDateTime.now();
 	}
 }
