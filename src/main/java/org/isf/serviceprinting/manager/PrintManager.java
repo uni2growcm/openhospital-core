@@ -75,6 +75,7 @@ public class PrintManager {
 		parameters.put("ospedaleTel", hospital.getTelephone());
 		parameters.put("ospedaleFax", hospital.getFax());
 		parameters.put("ospedaleMail", hospital.getEmail());
+		parameters.put("ospedaleCurrency", hospital.getCurrencyCod());
 
 		JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(toPrint);
 		File jasperFile = new File("rpt_base/" + filename + ".jasper");

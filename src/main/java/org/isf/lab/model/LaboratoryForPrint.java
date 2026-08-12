@@ -32,6 +32,8 @@ public class LaboratoryForPrint {
 	private String result;
 	private Integer code;
 	private String patName;
+	private String prescriber;
+	private String paidStatus;
 
 	public Integer getCode() {
 		return code;
@@ -42,18 +44,22 @@ public class LaboratoryForPrint {
 	}
 
 	public LaboratoryForPrint(Integer aCode, Exam aExam, LocalDateTime aDate, String aResult, String patientName, Integer patCode) {
+		this(aCode, aExam, aDate, aResult, patientName, null, null);
+	}
+
+	public LaboratoryForPrint(Integer aCode, Exam aExam, LocalDateTime aDate, String aResult) {
+		this(aCode, aExam, aDate, aResult, null, null, null);
+	}
+
+	public LaboratoryForPrint(Integer aCode, Exam aExam, LocalDateTime aDate, String aResult, String patientName,
+			String prescriber, String paidStatus) {
 		code = aCode;
 		exam = aExam.getDescription();
 		date = aDate;
 		result = aResult;
 		patName = patientName;
-	}
-
-	public LaboratoryForPrint(Integer aCode, Exam aExam, LocalDateTime aDate, String aResult) {
-		code = aCode;
-		exam = aExam.getDescription();
-		date = aDate;
-		result = aResult;
+		this.prescriber = prescriber;
+		this.paidStatus = paidStatus;
 	}
 
 	public LocalDateTime getDate() {
@@ -82,6 +88,26 @@ public class LaboratoryForPrint {
 
 	public String getPatName() {
 		return patName;
+	}
+
+	public void setPatName(String patName) {
+		this.patName = patName;
+	}
+
+	public String getPrescriber() {
+		return prescriber;
+	}
+
+	public void setPrescriber(String prescriber) {
+		this.prescriber = prescriber;
+	}
+
+	public String getPaidStatus() {
+		return paidStatus;
+	}
+
+	public void setPaidStatus(String paidStatus) {
+		this.paidStatus = paidStatus;
 	}
 
 }
