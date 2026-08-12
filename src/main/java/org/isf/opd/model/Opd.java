@@ -121,6 +121,9 @@ public class Opd extends Auditable<String> {
 	@JoinColumn(name = "OPD_NEXT_VISIT_ID")
 	private Visit nextVisit;
 
+	@Column(name="OPD_MALNUTRI")
+	private boolean malnutri;
+
 	@Version
 	@Column(name="OPD_LOCK")
 	private int lock;
@@ -355,7 +358,15 @@ public class Opd extends Auditable<String> {
 	public void setNextVisit(Visit nextVisit) {
 		this.nextVisit = nextVisit;
 	}
-	
+
+	public boolean isMalnutri() {
+		return malnutri;
+	}
+
+	public void setMalnutri(boolean malnutri) {
+		this.malnutri = malnutri;
+	}
+
 	public boolean isPersisted() {
 		return code > 0;
 	}
