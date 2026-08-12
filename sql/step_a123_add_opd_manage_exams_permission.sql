@@ -22,3 +22,16 @@ VALUES ('btnopdnewtherapy', 'angal.admission.therapy.btn', 'angal.admission.ther
 INSERT INTO OH_GROUPMENU (GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE)
 VALUES ('admin', 'btnopdnewtherapy', 1),
        ('doctor', 'btnopdnewtherapy', 1);
+
+
+--
+-- Add the "Operation" button permission to OpdBrowser, granted by default to admin and doctor,
+-- matching the existing btnopdnewoperation/btnopdeditoperation grants.
+--
+
+INSERT INTO OH_MENUITEM (MNI_ID_A, MNI_BTN_LABEL, MNI_LABEL, MNI_TOOLTIP, MNI_SHORTCUT, MNI_SUBMENU, MNI_CLASS, MNI_IS_SUBMENU, MNI_POSITION)
+VALUES ('opdeope', 'angal.opd.operation', 'angal.opd.operation', 'x', 'O', 'opd', 'none', 'N', 5);
+
+INSERT INTO OH_GROUPMENU (GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE)
+VALUES ('admin', 'opdeope', 1),
+       ('doctor', 'opdeope', 1);
