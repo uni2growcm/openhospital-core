@@ -328,6 +328,23 @@ class Tests extends OHCoreTestCase {
 	}
 
 	@Test
+	void testMgrGetPatientsPageableSkipsCountWhenTotalKnown() throws Exception {
+		for (int idx = 0; idx < 15; idx++) {
+			setupTestPatient(false);
+		}
+
+		// Omitting the known total still returns the correct (freshly counted) total.
+		PagedResponse<Patient> freshCount = patientBrowserManager.getPatientsPageable(0, 10, null);
+		assertThat(freshCount.getData()).hasSize(10);
+		assertThat(freshCount.getPageInfo().getTotalNbOfElements()).isEqualTo(15);
+
+		// Supplying a deliberately wrong known total is trusted as-is, proving the count query was skipped.
+		PagedResponse<Patient> knownTotal = patientBrowserManager.getPatientsPageable(0, 10, 999L);
+		assertThat(knownTotal.getData()).hasSize(10);
+		assertThat(knownTotal.getPageInfo().getTotalNbOfElements()).isEqualTo(999);
+	}
+
+	@Test
 	void testMgrGetPatientsByParams() throws Exception {
 		setupTestPatient(false);
 		Map<String, Object> params = new HashMap<>();
@@ -386,6 +403,50 @@ class Tests extends OHCoreTestCase {
 		Patient foundPatient = patientIoOperation.getPatient(code);
 		List<Patient> patients = patientBrowserManager.getPatientsByOneOfFieldsLike(foundPatient.getTaxCode());
 		testPatient.check(patients.get(0));
+	}
+
+	@Test
+	void testMgrGetPatientsByOneOfFieldsLikePageable() throws Exception {
+		int originalPageSize = GeneralData.PAGESIZE;
+		try {
+			GeneralData.PAGESIZE = 10;
+			for (int idx = 0; idx < 15; idx++) {
+				setupTestPatient(false);
+			}
+
+			// First page, sized per GeneralData.PAGESIZE
+			PagedResponse<Patient> patients = patientBrowserManager.getPatientsByOneOfFieldsLike("TestFirstName", 0);
+			assertThat(patients.getData()).hasSize(10);
+
+			// Second page holds the remainder
+			patients = patientBrowserManager.getPatientsByOneOfFieldsLike("TestFirstName", 1);
+			assertThat(patients.getData()).hasSize(5);
+		} finally {
+			GeneralData.PAGESIZE = originalPageSize;
+		}
+	}
+
+	@Test
+	void testMgrGetPatientsByOneOfFieldsLikePageableSkipsCountWhenTotalKnown() throws Exception {
+		int originalPageSize = GeneralData.PAGESIZE;
+		try {
+			GeneralData.PAGESIZE = 10;
+			for (int idx = 0; idx < 15; idx++) {
+				setupTestPatient(false);
+			}
+
+			// Omitting the known total still returns the correct (freshly counted) total.
+			PagedResponse<Patient> freshCount = patientBrowserManager.getPatientsByOneOfFieldsLike("TestFirstName", 0, null);
+			assertThat(freshCount.getData()).hasSize(10);
+			assertThat(freshCount.getPageInfo().getTotalNbOfElements()).isEqualTo(15);
+
+			// Supplying a deliberately wrong known total is trusted as-is, proving the count query was skipped.
+			PagedResponse<Patient> knownTotal = patientBrowserManager.getPatientsByOneOfFieldsLike("TestFirstName", 0, 999L);
+			assertThat(knownTotal.getData()).hasSize(10);
+			assertThat(knownTotal.getPageInfo().getTotalNbOfElements()).isEqualTo(999);
+		} finally {
+			GeneralData.PAGESIZE = originalPageSize;
+		}
 	}
 
 	@Test

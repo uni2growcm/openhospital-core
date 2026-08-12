@@ -24,9 +24,25 @@ package org.isf.patient.service;
 import java.util.List;
 
 import org.isf.patient.model.Patient;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface PatientIoOperationRepositoryCustom {
 
 	List<Patient> findByFieldsContainingWordsFromLiteral(String regex);
+
+	Page<Patient> findByFieldsContainingWordsFromLiteral(String regex, Pageable pageable);
+
+	/**
+	 * Same as {@link #findByFieldsContainingWordsFromLiteral(String, Pageable)}, but when {@code knownTotalElements}
+	 * is non-null the count query is skipped and the supplied value is used as the page's total element count.
+	 */
+	Page<Patient> findByFieldsContainingWordsFromLiteral(String regex, Pageable pageable, Long knownTotalElements);
+
+	/**
+	 * Returns a page of non-deleted patients ordered by name. When {@code knownTotalElements} is non-null, the
+	 * count query is skipped and the supplied value is used as the page's total element count.
+	 */
+	Page<Patient> findAllNotDeletedOrderByName(char deletedStatus, Pageable pageable, Long knownTotalElements);
 
 }
