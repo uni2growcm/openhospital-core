@@ -116,3 +116,4 @@ source step_a119_alter_table_examrow_and_laboratoryrow.sql;
 source step_a120_settings.sql;
 source step_a121_add_admission_bed_room.sql;
 source step_a122_add_pagination_filter_indexes.sql;
+source step_a123_add_opd_manage_exams_permission.sql;
