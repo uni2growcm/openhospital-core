@@ -210,7 +210,8 @@ public class LabIoOperations {
 							laboratory.getLabDate(),
 							laboratory.getResult(),
 							laboratory.getPatName(),
-							laboratory.getPatient().getCode()));
+							laboratory.getPrescriber(),
+							laboratory.getPaidStatus()));
 		}
 		return pLaboratory;
 	}
@@ -282,7 +283,10 @@ public class LabIoOperations {
 							laboratory.getCode(),
 							laboratory.getExam(),
 							laboratory.getLabDate(),
-							laboratory.getResult()));
+							laboratory.getResult(),
+							laboratory.getPatName(),
+							laboratory.getPrescriber(),
+							laboratory.getPaidStatus()));
 		}
 		return pLaboratory;
 	}
