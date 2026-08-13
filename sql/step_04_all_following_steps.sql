@@ -118,3 +118,4 @@ source step_a121_add_admission_bed_room.sql;
 source step_a122_add_pagination_filter_indexes.sql;
 source step_a123_add_opd_manage_exams_permission.sql;
 source step_a124_add_opd_malnutrition.sql;
+source step_a125_add_opd_disease.sql;
