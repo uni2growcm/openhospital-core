@@ -120,3 +120,4 @@ source step_a123_add_opd_manage_exams_permission.sql;
 source step_a124_add_opd_malnutrition.sql;
 source step_a125_add_opd_disease.sql;
 source step_a126_add_opd_referral_details.sql;
+source step_a127_add_patient_mada_extended_fields.sql;
