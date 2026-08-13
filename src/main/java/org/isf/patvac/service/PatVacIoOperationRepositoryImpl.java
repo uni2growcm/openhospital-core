@@ -27,6 +27,7 @@ import java.util.List;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
@@ -34,16 +35,19 @@ import jakarta.persistence.criteria.Root;
 
 import org.isf.patvac.model.PatientVaccine;
 import org.isf.utils.time.TimeTools;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 public class PatVacIoOperationRepositoryImpl implements PatVacIoOperationRepositoryCustom {
-	
+
 	@PersistenceContext
 	private EntityManager entityManager;
 
-	
-	@SuppressWarnings("unchecked")	
+
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<PatientVaccine> findAllByCodesAndDatesAndSexAndAges(
 			String vaccineTypeCode,
@@ -56,30 +60,95 @@ public class PatVacIoOperationRepositoryImpl implements PatVacIoOperationReposit
 		return this.entityManager.
 				createQuery(getPatientVaccineQuery(vaccineTypeCode, vaccineCode, TimeTools.truncateToSeconds(dateFrom),
 				                                   TimeTools.truncateToSeconds(dateTo), sex, ageFrom, ageTo)).getResultList();
-	}	
+	}
+
+	@Override
+	public Page<PatientVaccine> findAllByCodesAndDatesAndSexAndAgesPageable(
+			String vaccineTypeCode,
+			String vaccineCode,
+			LocalDateTime dateFrom,
+			LocalDateTime dateTo,
+			char sex,
+			int ageFrom,
+			int ageTo,
+			Pageable pageable) {
+		LocalDateTime truncatedDateFrom = TimeTools.truncateToSeconds(dateFrom);
+		LocalDateTime truncatedDateTo = TimeTools.truncateToSeconds(dateTo);
+
+		CriteriaQuery<PatientVaccine> dataQuery = getPatientVaccineQuery(vaccineTypeCode, vaccineCode, truncatedDateFrom, truncatedDateTo, sex, ageFrom,
+				ageTo);
+		TypedQuery<PatientVaccine> typedDataQuery = entityManager.createQuery(dataQuery);
+		typedDataQuery.setFirstResult((int) pageable.getOffset());
+		typedDataQuery.setMaxResults(pageable.getPageSize());
+		List<PatientVaccine> content = typedDataQuery.getResultList();
+
+		long total = countByCodesAndDatesAndSexAndAges(vaccineTypeCode, vaccineCode, truncatedDateFrom, truncatedDateTo, sex, ageFrom, ageTo);
+
+		return new PageImpl<>(content, pageable, total);
+	}
+
+	private long countByCodesAndDatesAndSexAndAges(
+			String vaccineTypeCode,
+			String vaccineCode,
+			LocalDateTime dateFrom,
+			LocalDateTime dateTo,
+			char sex,
+			int ageFrom,
+			int ageTo) {
+		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+		CriteriaQuery<Long> query = cb.createQuery(Long.class);
+		Root<PatientVaccine> pvRoot = query.from(PatientVaccine.class);
+
+		query.select(cb.count(pvRoot));
+		query.where(cb.and(buildPredicates(cb, pvRoot, vaccineTypeCode, vaccineCode, dateFrom, dateTo, sex, ageFrom, ageTo).toArray(new Predicate[0])));
+
+		return entityManager.createQuery(query).getSingleResult();
+	}
 
 	private CriteriaQuery<PatientVaccine> getPatientVaccineQuery(
-			String vaccineTypeCode, 
-			String vaccineCode, 
-			LocalDateTime dateFrom, 
-			LocalDateTime dateTo, 
-			char sex, 
-			int ageFrom, 
+			String vaccineTypeCode,
+			String vaccineCode,
+			LocalDateTime dateFrom,
+			LocalDateTime dateTo,
+			char sex,
+			int ageFrom,
 			int ageTo) {
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		CriteriaQuery<PatientVaccine> query = cb.createQuery(PatientVaccine.class);
 		Root<PatientVaccine> pvRoot = query.from(PatientVaccine.class);
-		List<Predicate> predicates = new ArrayList<>();
+		List<Predicate> predicates = buildPredicates(cb, pvRoot, vaccineTypeCode, vaccineCode, dateFrom, dateTo, sex, ageFrom, ageTo);
 
 		query.select(pvRoot);
+		query.where(cb.and(predicates.toArray(new Predicate[0])));
+		query.orderBy(cb.desc(pvRoot.get("vaccineDate")), cb.asc(pvRoot.get("code")));
+
+		return query;
+	}
+
+	/**
+	 * Builds the shared filter predicates used by both the data query and its matching count query, so
+	 * the two can never drift apart.
+	 */
+	private List<Predicate> buildPredicates(
+			CriteriaBuilder cb,
+			Root<PatientVaccine> pvRoot,
+			String vaccineTypeCode,
+			String vaccineCode,
+			LocalDateTime dateFrom,
+			LocalDateTime dateTo,
+			char sex,
+			int ageFrom,
+			int ageTo) {
+		List<Predicate> predicates = new ArrayList<>();
+
 		if (dateFrom != null) {
 			predicates.add(
-					cb.greaterThanOrEqualTo(pvRoot.<LocalDateTime> get("vaccineDate"), TimeTools.truncateToSeconds(dateFrom))
+					cb.greaterThanOrEqualTo(pvRoot.<LocalDateTime> get("vaccineDate"), dateFrom)
 			);
 		}
 		if (dateTo != null) {
 			predicates.add(
-					cb.lessThanOrEqualTo(pvRoot.<LocalDateTime> get("vaccineDate"), TimeTools.truncateToSeconds(dateTo))
+					cb.lessThanOrEqualTo(pvRoot.<LocalDateTime> get("vaccineDate"), dateTo)
 			);
 		}
 		if (vaccineTypeCode != null) {
@@ -102,10 +171,8 @@ public class PatVacIoOperationRepositoryImpl implements PatVacIoOperationReposit
 				cb.between(pvRoot.join("patient").<Integer>get("age"), ageFrom, ageTo)
 			);
 		}
-		query.where(cb.and(predicates.toArray(new Predicate[0])));
-		query.orderBy(cb.desc(pvRoot.get("vaccineDate")), cb.asc(pvRoot.get("code")));
 
-		return query;
+		return predicates;
 	}
 
 }

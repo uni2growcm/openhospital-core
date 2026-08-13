@@ -83,6 +83,7 @@ public final class GeneralData extends ConfigurationProperties {
 	public static String PATIENTPHOTOSTORAGE;
 	public static Integer SESSIONTIMEOUT;
 	public static String PARAMSURL;
+	public static int PAGESIZE;
 
 	public static boolean STRONGPASSWORD;
 	public static int STRONGLENGTH;
@@ -148,6 +149,7 @@ public final class GeneralData extends ConfigurationProperties {
 	public static final int IMAGE_THUMBNAIL_MAX_WIDTH = 140;
 	public static final int MAX_PROFILE_IMAGE_FILE_SIZE_BYTES = 32768;
 	public static final String DEFAULT_PARAMSURL = "";
+	private static final int DEFAULT_PAGESIZE = 50;
 
 	private static GeneralData mySingleData;
 
@@ -233,6 +235,7 @@ public final class GeneralData extends ConfigurationProperties {
 		PATIENTPHOTOSTORAGE = myGetProperty("PATIENTPHOTOSTORAGE", DEFAULT_PATIENTPHOTOSTORAGE);
 		SESSIONTIMEOUT = myGetProperty("SESSIONTIMEOUT", DEFAULT_SESSIONTIMEOUT);
 		PARAMSURL = myGetProperty("PARAMSURL", DEFAULT_PARAMSURL);
+		PAGESIZE = myGetProperty("PAGESIZE", DEFAULT_PAGESIZE);
 
 		ParamsData.getInstance();
 	}

@@ -33,6 +33,7 @@ import org.isf.patvac.service.PatVacIoOperations;
 import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.model.OHExceptionMessage;
+import org.isf.utils.pagination.PagedResponse;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -71,6 +72,39 @@ public class PatVacManager {
 	public List<PatientVaccine> getPatientVaccine(String vaccineTypeCode, String vaccineCode, LocalDateTime dateFrom, LocalDateTime dateTo, char sex,
 		int ageFrom, int ageTo) throws OHServiceException {
 		return ioOperations.getPatientVaccine(vaccineTypeCode, vaccineCode, dateFrom, dateTo, sex, ageFrom, ageTo);
+	}
+
+	/**
+	 * Returns a page of {@link PatientVaccine}s of today or one week ago.
+	 *
+	 * @param minusOneWeek if {@code true} return the last week
+	 * @param page
+	 * @param size
+	 * @return a {@link PagedResponse} of {@link PatientVaccine}s.
+	 * @throws OHServiceException
+	 */
+	public PagedResponse<PatientVaccine> getPatientVaccinePageable(boolean minusOneWeek, int page, int size) throws OHServiceException {
+		return ioOperations.getPatientVaccinePageable(minusOneWeek, page, size);
+	}
+
+	/**
+	 * Returns a page of {@link PatientVaccine}s within {@code dateFrom} and {@code dateTo}.
+	 *
+	 * @param vaccineTypeCode
+	 * @param vaccineCode
+	 * @param dateFrom
+	 * @param dateTo
+	 * @param sex
+	 * @param ageFrom
+	 * @param ageTo
+	 * @param page
+	 * @param size
+	 * @return a {@link PagedResponse} of {@link PatientVaccine}s.
+	 * @throws OHServiceException
+	 */
+	public PagedResponse<PatientVaccine> getPatientVaccinePageable(String vaccineTypeCode, String vaccineCode, LocalDateTime dateFrom, LocalDateTime dateTo,
+		char sex, int ageFrom, int ageTo, int page, int size) throws OHServiceException {
+		return ioOperations.getPatientVaccinePageable(vaccineTypeCode, vaccineCode, dateFrom, dateTo, sex, ageFrom, ageTo, page, size);
 	}
 
 	/**
