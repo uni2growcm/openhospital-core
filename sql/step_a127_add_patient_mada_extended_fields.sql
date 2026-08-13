@@ -1,6 +1,6 @@
 --
 -- Extended patient demographics and administrative fields ported from oh-mada-gui's
--- PatientInsertExtended: birth place, geographic area, household details, transport, a
+-- PatientInsertExtended: birthplace, geographic area, household details, transport, a
 -- client-required "Blama" field, a country lookup with an inline create dialog, an
 -- employee/head-of-household affiliation link, and a price-list assignment.
 --

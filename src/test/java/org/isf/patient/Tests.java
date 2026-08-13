@@ -45,6 +45,9 @@ import org.isf.patient.model.Patient;
 import org.isf.patient.model.PatientProfilePhoto;
 import org.isf.patient.service.PatientIoOperationRepository;
 import org.isf.patient.service.PatientIoOperations;
+import org.isf.priceslist.TestPriceList;
+import org.isf.priceslist.model.PriceList;
+import org.isf.priceslist.service.PricesListIoOperationRepository;
 import org.isf.utils.exception.OHException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.pagination.PagedResponse;
@@ -60,6 +63,7 @@ class Tests extends OHCoreTestCase {
 
 	private static TestPatient testPatient;
 	private static TestOpd testOpd;
+	private static TestPriceList testPriceList;
 
 	@Autowired
 	PatientIoOperations patientIoOperation;
@@ -67,12 +71,15 @@ class Tests extends OHCoreTestCase {
 	PatientIoOperationRepository patientIoOperationRepository;
 	@Autowired
 	PatientBrowserManager patientBrowserManager;
+	@Autowired
+	PricesListIoOperationRepository priceListIoOperationRepository;
 
 	@BeforeAll
 	static void setUpClass() {
 		GeneralData.PATIENTPHOTOSTORAGE = "DB";
 		testPatient = new TestPatient();
 		testOpd = new TestOpd();
+		testPriceList = new TestPriceList();
 	}
 
 	@BeforeEach
@@ -862,5 +869,19 @@ class Tests extends OHCoreTestCase {
 	private void checkPatientIntoDb(Integer code) throws OHServiceException {
 		Patient foundPatient = patientIoOperation.getPatient(code);
 		testPatient.check(foundPatient);
+	}
+
+	@Test
+	void testPatientPriceList() throws Exception {
+		PriceList priceList = testPriceList.setup(false);
+		priceListIoOperationRepository.saveAndFlush(priceList);
+
+		Patient patient = testPatient.setup(false);
+		patient.setPriceList(priceList);
+		patientIoOperationRepository.saveAndFlush(patient);
+
+		Patient foundPatient = patientIoOperation.getPatient(patient.getCode());
+		assertThat(foundPatient.getPriceList()).isNotNull();
+		assertThat(foundPatient.getPriceList().getId()).isEqualTo(priceList.getId());
 	}
 }
