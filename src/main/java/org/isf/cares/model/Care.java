@@ -48,7 +48,7 @@ public class Care extends Auditable<String> {
 	private List<String> team;
 
 	@Column(name = "CR_OBSERVATION")
-	private String observation;
+	private Boolean observation;
 
 	@Column(name = "CR_PLANNED_CARE")
 	private String plannedCare;
@@ -67,7 +67,7 @@ public class Care extends Auditable<String> {
 	public Care() {
 	}
 
-	public Care(Integer id, List<String> team, String observation, String plannedCare, String notes, LocalDateTime careDate, Patient patient) {
+	public Care(Integer id, List<String> team, Boolean observation, String plannedCare, String notes, LocalDateTime careDate, Patient patient) {
 		this.id = id;
 		this.team = team;
 		this.observation = observation;
@@ -93,11 +93,11 @@ public class Care extends Auditable<String> {
 		this.team = team;
 	}
 
-	public String getObservation() {
+	public Boolean getObservation() {
 		return observation;
 	}
 
-	public void setObservation(String observation) {
+	public void setObservation(Boolean observation) {
 		this.observation = observation;
 	}
 

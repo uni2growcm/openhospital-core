@@ -387,7 +387,7 @@ public class PatientBrowserManager {
 			mergedPatient.setHasInsurance(patient2.getHasInsurance());
 		}
 
-		if (mergedPatient.getParentTogether() == 'U') {
+		if (StringUtils.isEmpty(mergedPatient.getParentTogether())) {
 			mergedPatient.setParentTogether(patient2.getParentTogether());
 		}
 

@@ -73,9 +73,6 @@ public class Disease extends Auditable<String> {
 	@Column(name="DIS_IPD_OUT_INCLUDE")
 	private boolean ipdOutInclude;
 
-	@ManyToMany(mappedBy = "complicationDiagnosis")
-	private List<Admission> admissionsComplication = new ArrayList<>();
-
 	@ManyToMany(mappedBy = "diagnosisIn")
 	private List<Admission> admissionsIn = new ArrayList<>();
 
@@ -115,7 +112,6 @@ public class Disease extends Auditable<String> {
 		this.code = aCode;
 		this.description = aDescription;
 		this.diseaseType = aType;
-		this.admissionsComplication = admissionsComplication;
 		this.admissionsIn = admissionsIn;
 		this.admissionsOut = admissionsOut;
 	}
@@ -174,14 +170,6 @@ public class Disease extends Auditable<String> {
     
     public void setIpdOutInclude(boolean ipdOutInclude) {
 		this.ipdOutInclude = ipdOutInclude;
-	}
-
-	public List<Admission> getAdmissionsComplication() {
-		return admissionsComplication;
-	}
-
-	public void setAdmissionsComplication(List<Admission> admissionsComplication) {
-		this.admissionsComplication = admissionsComplication;
 	}
 
 	@Override

@@ -201,7 +201,7 @@ class TestMergePatient extends OHCoreTestCase {
 		patient1.setFather('U');
 		patient1.setBloodType("0-/+");
 		patient1.setHasInsurance('U');
-		patient1.setParentTogether('U');
+		patient1.setParentTogether("U");
 		patient1.setNote(null);
 		Patient mergedPatient = patientIoOperationRepository.saveAndFlush(patient1);
 		Patient obsoletePatient = patientIoOperationRepository.saveAndFlush(testPatient.setup(false));
@@ -370,7 +370,7 @@ class TestMergePatient extends OHCoreTestCase {
 			Disease diseaseIn = testDisease.setup(diseaseType, false);
 			Disease complicationDiagnosis = testDisease.setup(diseaseType, false);
 			complicationDiagnosis.setCode("888");
-			Admission admission = testAdmission.setup(ward, patient1, admissionType, List.of(complicationDiagnosis),
+			Admission admission = testAdmission.setup(ward, patient1, admissionType, null,
 				null, null, null, null, null, null, null, false);
 
 			wardIoOperationRepository.saveAndFlush(ward);
@@ -403,9 +403,7 @@ class TestMergePatient extends OHCoreTestCase {
 			AdmissionType admissionType = testAdmissionType.setup(false);
 			DiseaseType diseaseType = testDiseaseType.setup(false);
 			Disease diseaseIn = testDisease.setup(diseaseType, false);
-			Disease complicationDiagnosis = testDisease.setup(diseaseType, false);
-			complicationDiagnosis.setCode("888");
-			Admission admission = testAdmission.setup(ward, patient2, admissionType, List.of(complicationDiagnosis),
+			Admission admission = testAdmission.setup(ward, patient2, admissionType, null,
 				null, null, null, null, null, null, null, false);
 
 			wardIoOperationRepository.saveAndFlush(ward);
@@ -413,7 +411,6 @@ class TestMergePatient extends OHCoreTestCase {
 			admissionTypeIoOperationRepository.saveAndFlush(admissionType);
 			diseaseTypeIoOperationRepository.saveAndFlush(diseaseType);
 			diseaseIoOperationRepository.saveAndFlush(diseaseIn);
-			diseaseIoOperationRepository.saveAndFlush(complicationDiagnosis);
 			admissionIoOperationRepository.saveAndFlush(admission);
 
 			patientBrowserManager.mergePatient(mergedPatient, obsoletePatient);

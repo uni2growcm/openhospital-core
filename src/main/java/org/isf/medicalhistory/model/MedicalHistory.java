@@ -172,6 +172,18 @@ public class MedicalHistory extends Auditable<String> implements Comparable<Pati
 	@Column(name = "MH_OTHR_FAM_PATHO")
 	private String otherFamilyPathologies;
 
+	@Column(name = "MH_OTHER_PREGNANCY_SECTION")
+	private String otherPregnancySection;
+
+	@Column(name = "MH_OTHER_VACC_STATE_SECTION")
+	private String otherVaccinationStateSection;
+
+	@Column(name = "MH_COMBINED_BREASTFEEDING")
+	private String combinedBreastfeeding;
+
+	@Column(name = "MH_NOT_APPLICABLE_DEPARASITING")
+	private Boolean noApplicableDeparasitation;
+
 	@Column(name = "MH_PERFORMED_AT")
 	private LocalDateTime performedAt;
 
@@ -258,7 +270,11 @@ public class MedicalHistory extends Auditable<String> implements Comparable<Pati
 		String hemylosis,
 		String otherPersonalPathology,
 		String otherFamilyPathology,
-		LocalDateTime performedAt
+		LocalDateTime performedAt,
+		String otherPregnancySection,
+		String otherVaccinationStateSection,
+		String combinedBreastfeeding,
+		Boolean noApplicableDeparasitation
 	) {
 		this.id = id;
 		this.patient = patient;
@@ -285,6 +301,10 @@ public class MedicalHistory extends Auditable<String> implements Comparable<Pati
 		this.otherPersonalPathologies = otherPersonalPathology;
 		this.otherFamilyPathologies = otherFamilyPathology;
 		this.performedAt = performedAt;
+		this.otherPregnancySection = otherPregnancySection;
+		this.otherVaccinationStateSection = otherVaccinationStateSection;
+		this.combinedBreastfeeding = combinedBreastfeeding;
+		this.noApplicableDeparasitation = noApplicableDeparasitation;
 	}
 
 	public Integer getId() {
@@ -409,6 +429,38 @@ public class MedicalHistory extends Auditable<String> implements Comparable<Pati
 
 	public void setOtherSupplements(String otherSupplements) {
 		this.otherSupplements = otherSupplements;
+	}
+
+	public String getOtherPregnancySection() {
+		return otherPregnancySection;
+	}
+
+	public void setOtherPregnancySection(String otherPregnancySection) {
+		this.otherPregnancySection = otherPregnancySection;
+	}
+
+	public String getOtherVaccinationStateSection() {
+		return otherVaccinationStateSection;
+	}
+
+	public void setOtherVaccinationStateSection(String otherVaccinationStateSection) {
+		this.otherVaccinationStateSection = otherVaccinationStateSection;
+	}
+
+	public String getCombinedBreastfeeding() {
+		return combinedBreastfeeding;
+	}
+
+	public void setCombinedBreastfeeding(String combinedBreastfeeding) {
+		this.combinedBreastfeeding = combinedBreastfeeding;
+	}
+
+	public Boolean getNoApplicableDeparasitation() {
+		return noApplicableDeparasitation;
+	}
+
+	public void setNoApplicableDeparasitation(Boolean noApplicableDeparasitation) {
+		this.noApplicableDeparasitation = noApplicableDeparasitation;
 	}
 
 	public Boolean getTransfusion() {

@@ -34,7 +34,7 @@ public class TestConditioning {
 
 	private static final Boolean ASPIRATION = true;
 	private static final Boolean CPAP = true;
-	private static final Integer MCE = 4;
+	private static final Boolean MCE = true;
 	private static final Boolean VENTILATION = true;
 	private static final Double OXYGEN_DEBIT = 3.0;
 	private static final Double SG_VOLUME = 10.0;
@@ -48,6 +48,8 @@ public class TestConditioning {
 	private static final String MALARIA = "undetermined";
 	private static final Double BLOOD_GLUCOSE_LEVEL = 5.6;
 	private static final Boolean REHEATING = false;
+	private static final String othersRapidScreeningTest = "Others Rapid Screening Test";
+	private static final String cpapDetails = "Cpap Details";
 
 	public Conditioning setup(Patient patient, User user, boolean usingSet) throws OHException {
 		Conditioning conditioning;
@@ -56,7 +58,7 @@ public class TestConditioning {
 			conditioning = new Conditioning();
 			setParameters(conditioning, user, patient);
 		} else {
-			conditioning = new Conditioning(null, user, ASPIRATION, MCE, VENTILATION, OXYGEN_DEBIT, BOLUS_SS_VOLUME, DIAZEPAM_DOSE, SG_VOLUME, SNG_NUMBER, OTHERS, PERFORMED_AT, patient, CPAP, LOCK, MALARIA, BLOOD_GLUCOSE_LEVEL, HIV_TEST, REHEATING);
+			conditioning = new Conditioning(null, user, ASPIRATION, MCE, VENTILATION, OXYGEN_DEBIT, BOLUS_SS_VOLUME, DIAZEPAM_DOSE, SG_VOLUME, SNG_NUMBER, OTHERS, PERFORMED_AT, patient, CPAP, LOCK, MALARIA, BLOOD_GLUCOSE_LEVEL, HIV_TEST, REHEATING, othersRapidScreeningTest, cpapDetails);
 			conditioning.setLock(LOCK);
 		}
 
@@ -80,6 +82,8 @@ public class TestConditioning {
 		conditioning.setBloodGlucoseLevel(BLOOD_GLUCOSE_LEVEL);
 		conditioning.setHivTest(HIV_TEST);
 		conditioning.setLock(LOCK);
+		conditioning.setOthersRapidScreeningTest(othersRapidScreeningTest);
+		conditioning.setCpapDetails(cpapDetails);
 	}
 
 	public void check(Conditioning conditioning) {
@@ -97,6 +101,8 @@ public class TestConditioning {
 		conditioning.setBloodGlucoseLevel(BLOOD_GLUCOSE_LEVEL);
 		conditioning.setHivTest(HIV_TEST);
 		assertThat(conditioning.getLock()).isEqualTo(LOCK);
+		assertThat(conditioning.getOthersRapidScreeningTest()).isEqualTo(othersRapidScreeningTest);
+		assertThat(conditioning.getCpapDetails()).isEqualTo(cpapDetails);
 		assertThat(conditioning.getPatient()).isNotNull();
 		assertThat(conditioning.getPerformedBy()).isNotNull();
 	}

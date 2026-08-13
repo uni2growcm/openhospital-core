@@ -49,7 +49,7 @@ public class TestPatient {
 	private static char father = 'A'; // D=dead, A=alive
 	private static String bloodType = "0-/+"; // (0-/+, A-/+ , B-/+, AB-/+)
 	private static char hasInsurance = 'Y'; // Y=Yes, N=no
-	private static char parentTogether = 'Y'; // parents together: Y or N
+	private static String parentTogether = "Y"; // parents together: Y or N
 	private static String taxCode = "TestTaxCode";
 	private static String maritalStatus = "divorced";
 	private static String profession = "business";

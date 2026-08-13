@@ -101,10 +101,6 @@ public class ConditioningBrowserManager {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("Conditioning most not be null.")));
 		}
 
-		if (conditioning.getMce() != null && conditioning.getMce() < 0) {
-			errors.add(new OHExceptionMessage(MessageBundle.getMessage("mceDuree should be positif.")));
-		}
-
 		if (conditioning.getOxygenDebit() != null && conditioning.getOxygenDebit() < 0) {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("oxygeneDebit should be positif.")));
 		}

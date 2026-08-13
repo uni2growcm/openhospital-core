@@ -293,7 +293,11 @@ AND (e.ENC_CLOSED_AT IS NULL OR e.ENC_CLOSED_AT <= $P{closedAt})]]>
 						<textElement>
 							<font size="12"/>
 						</textElement>
-						<textFieldExpression><![CDATA[$F{PAT_SCHOOLING_LEVEL}]]></textFieldExpression>
+						<textFieldExpression><![CDATA[$F{PAT_SCHOOLING_LEVEL}.equals("Higher education") ? $R{Highereducation} : 
+$F{PAT_SCHOOLING_LEVEL}.equals("Secondary") ? $R{Secondary} : 
+$F{PAT_SCHOOLING_LEVEL}.equals("Primary") ? $R{Primary} : 
+$F{PAT_SCHOOLING_LEVEL}.equals("No schooling") ? $R{Noschooling} : 
+$R{Illiterate}]]></textFieldExpression>
 					</textField>
 				</frame>
 			</frame>
@@ -388,7 +392,11 @@ AND (e.ENC_CLOSED_AT IS NULL OR e.ENC_CLOSED_AT <= $P{closedAt})]]>
 						<textElement>
 							<font size="12"/>
 						</textElement>
-						<textFieldExpression><![CDATA[$F{PAT_FATHER_SCHOOLING_LEVEL}]]></textFieldExpression>
+						<textFieldExpression><![CDATA[$F{PAT_FATHER_SCHOOLING_LEVEL}.equals("Higher education") ? $R{Highereducation} : 
+$F{PAT_FATHER_SCHOOLING_LEVEL}.equals("Secondary") ? $R{Secondary} : 
+$F{PAT_FATHER_SCHOOLING_LEVEL}.equals("Primary") ? $R{Primary} : 
+$F{PAT_FATHER_SCHOOLING_LEVEL}.equals("No schooling") ? $R{Noschooling} : 
+$R{Illiterate}]]></textFieldExpression>
 					</textField>
 				</frame>
 			</frame>
@@ -483,7 +491,11 @@ AND (e.ENC_CLOSED_AT IS NULL OR e.ENC_CLOSED_AT <= $P{closedAt})]]>
 						<textElement>
 							<font size="12"/>
 						</textElement>
-						<textFieldExpression><![CDATA[$F{PAT_MOTHER_SCHOOLING_LEVEL}]]></textFieldExpression>
+						<textFieldExpression><![CDATA[$F{PAT_MOTHER_SCHOOLING_LEVEL}.equals("Higher education") ? $R{Highereducation} : 
+$F{PAT_MOTHER_SCHOOLING_LEVEL}.equals("Secondary") ? $R{Secondary} : 
+$F{PAT_MOTHER_SCHOOLING_LEVEL}.equals("Primary") ? $R{Primary} : 
+$F{PAT_MOTHER_SCHOOLING_LEVEL}.equals("No schooling") ? $R{Noschooling} : 
+$R{Illiterate}]]></textFieldExpression>
 					</textField>
 				</frame>
 			</frame>

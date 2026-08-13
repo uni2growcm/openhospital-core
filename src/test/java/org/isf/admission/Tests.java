@@ -1343,7 +1343,7 @@ class Tests extends OHCoreTestCase {
 //		GeneralData.LANGUAGE = "en";
 //
 //		// Can't duplicate diseases
-//		admission.setComplicationDiagnosis(admission.getDiseaseOut2());
+//		admission.setComplication(admission.getDiseaseOut2());
 //		assertThatThrownBy(() -> admissionBrowserManager.updateAdmission(admission))
 //				.isInstanceOf(OHDataValidationException.class)
 //				.has(
@@ -1362,9 +1362,9 @@ class Tests extends OHCoreTestCase {
 		// Bad progressive id
 		admission.setYProg(-1);
 		LocalDateTime disDate = admission.getDisDate();
-		List<Disease> complicationDiagnosis = admission.getComplicationDiagnosis();
+		String complication = admission.getComplication();
 		admission.setDisDate(null);
-		admission.setComplicationDiagnosis(null);
+		admission.setComplication(null);
 		assertThatThrownBy(() -> admissionBrowserManager.updateAdmission(admission))
 			.isInstanceOf(OHDataValidationException.class)
 			.has(
@@ -1372,7 +1372,7 @@ class Tests extends OHCoreTestCase {
 					e -> ((OHServiceException) e).getMessages().size() == 1, "Expecting single validation error"));
 		admission.setYProg(0);
 		admission.setDisDate(disDate);
-		admission.setComplicationDiagnosis(complicationDiagnosis);
+		admission.setComplication(complication);
 
 		// Admission date future date
 		LocalDateTime admDate = admission.getAdmDate();
@@ -1380,7 +1380,7 @@ class Tests extends OHCoreTestCase {
 		admission.setAdmDate(LocalDateTime.of(9999, 1, 1, 0, 0, 0));
 		admission.setDisDate(null);
 		admission.setDisDate(null);
-		admission.setComplicationDiagnosis(null);
+		admission.setComplication(null);
 		assertThatThrownBy(() -> admissionBrowserManager.updateAdmission(admission))
 			.isInstanceOf(OHDataValidationException.class)
 			.has(
@@ -1388,7 +1388,7 @@ class Tests extends OHCoreTestCase {
 					e -> ((OHServiceException) e).getMessages().size() == 1, "Expecting single validation error"));
 		admission.setAdmDate(admDate);
 		admission.setDisDate(disDate);
-		admission.setComplicationDiagnosis(complicationDiagnosis);
+		admission.setComplication(complication);
 
 		// Discharge date is after today
 		disDate = admission.getDisDate();
@@ -1561,8 +1561,6 @@ class Tests extends OHCoreTestCase {
 		AdmissionType admissionType = testAdmissionType.setup(false);
 		DiseaseType diseaseType = testDiseaseType.setup(false);
 		Disease diseaseIn = testDisease.setup(diseaseType, true, false, false, false);
-		Disease complicationDiagnosis = testDisease.setup(diseaseType, false, true, false, false);
-		complicationDiagnosis.setCode("888");
 		Disease diseaseOut2 = testDisease.setup(diseaseType, false, true, false, false);
 		diseaseOut2.setCode("777");
 		Disease diseaseOut3 = testDisease.setup(diseaseType, false, true, false, false);
@@ -1578,7 +1576,7 @@ class Tests extends OHCoreTestCase {
 		DeliveryType deliveryType = testDeliveryType.setup(false);
 		DeliveryResultType deliveryResult = testDeliveryResultType.setup(false);
 
-		Admission admission = testAdmission.setup(ward, patient, admissionType,  new ArrayList<>(List.of(complicationDiagnosis)), operation, dischargeType, pregTreatmentType,
+		Admission admission = testAdmission.setup(ward, patient, admissionType,  null, operation, dischargeType, pregTreatmentType,
 			deliveryType, deliveryResult,
 			new ArrayList<>(List.of(diagnosisInDisease)), new ArrayList<>(List.of(diagnosisOutDisease)),
 			usingSet);
@@ -1588,7 +1586,6 @@ class Tests extends OHCoreTestCase {
 		admissionTypeIoOperationRepository.saveAndFlush(admissionType);
 		diseaseTypeIoOperationRepository.saveAndFlush(diseaseType);
 		diseaseIoOperationRepository.saveAndFlush(diseaseIn);
-		diseaseIoOperationRepository.saveAndFlush(complicationDiagnosis);
 		diseaseIoOperationRepository.saveAndFlush(diseaseOut2);
 		diseaseIoOperationRepository.saveAndFlush(diseaseOut3);
 		diseaseIoOperationRepository.saveAndFlush(diagnosisInDisease);
@@ -1615,8 +1612,6 @@ class Tests extends OHCoreTestCase {
 		AdmissionType admissionType = testAdmissionType.setup(false);
 		DiseaseType diseaseType = testDiseaseType.setup(false);
 		Disease diseaseIn = testDisease.setup(diseaseType, true, false, false, false);
-		Disease complicationDiagnosis = testDisease.setup(diseaseType, false, true, false, false);
-		complicationDiagnosis.setCode("888");
 		Disease diseaseOut2 = testDisease.setup(diseaseType, false, true, false, false);
 		diseaseOut2.setCode("777");
 		Disease diseaseOut3 = testDisease.setup(diseaseType, false, true, false, false);
@@ -1634,7 +1629,6 @@ class Tests extends OHCoreTestCase {
 
 		ward.setCode("A");
 		diseaseIn.setCode("555");
-		complicationDiagnosis.setCode("889");
 		diseaseOut2.setCode("778");
 		diseaseOut3.setCode("667");
 		operation.setCode("9999");
@@ -1643,7 +1637,6 @@ class Tests extends OHCoreTestCase {
 		admissionTypeIoOperationRepository.saveAndFlush(admissionType);
 		diseaseTypeIoOperationRepository.saveAndFlush(diseaseType);
 		diseaseIoOperationRepository.saveAndFlush(diseaseIn);
-		diseaseIoOperationRepository.saveAndFlush(complicationDiagnosis);
 		diseaseIoOperationRepository.saveAndFlush(diseaseOut2);
 		diseaseIoOperationRepository.saveAndFlush(diseaseOut3);
 		diseaseIoOperationRepository.saveAndFlush(diagnosisInDisease);
@@ -1655,10 +1648,9 @@ class Tests extends OHCoreTestCase {
 		deliveryTypeIoOperationRepository.saveAndFlush(deliveryType);
 		deliveryResultIoOperationRepository.saveAndFlush(deliveryResult);
 
-		return testAdmission.setup(ward, patient, admissionType, new ArrayList<>(List.of(complicationDiagnosis)), operation, dischargeType, pregTreatmentType,
-			deliveryType, deliveryResult,
-			new ArrayList<>(List.of(diagnosisInDisease)), new ArrayList<>(List.of(diagnosisOutDisease)),
-			true);
+		return testAdmission.setup(ward, patient, admissionType, null, operation, dischargeType, pregTreatmentType,
+			deliveryType, deliveryResult, new ArrayList<>(List.of(diagnosisInDisease)), new ArrayList<>(List.of(diagnosisOutDisease)), true
+		);
 	}
 
 }

@@ -15,14 +15,20 @@
 	<parameter name="patientRelationShipType" class="java.lang.String"/>
 	<parameter name="patientRelationShipName" class="java.lang.String"/>
 	<parameter name="madeOnDate" class="java.util.Date"/>
+	<parameter name="admID" class="java.lang.Integer"/>
 	<queryString>
-		<![CDATA[SELECT p.PAT_NAME,  h.HOS_TELE 
+		<![CDATA[SELECT p.PAT_NAME,  h.HOS_TELE , w.WRD_NAME
 FROM oh_patient p 
+LEFT JOIN oh_admission adm
+ON p.PAT_ID = adm.ADM_PAT_ID
+LEFT JOIN oh_ward w
+ON w.WRD_ID_A = adm.ADM_WRD_ID_A
 CROSS JOIN oh_hospital h
-WHERE PAT_ID = $P{patID}]]>
+WHERE p.PAT_ID = $P{patID} AND adm.ADM_ID = $P{admID}]]>
 	</queryString>
 	<field name="PAT_NAME" class="java.lang.String"/>
 	<field name="HOS_TELE" class="java.lang.String"/>
+	<field name="WRD_NAME" class="java.lang.String"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -30,7 +36,7 @@ WHERE PAT_ID = $P{patID}]]>
 		<band splitType="Stretch"/>
 	</title>
 	<pageHeader>
-		<band height="212" splitType="Stretch">
+		<band height="210" splitType="Stretch">
 			<rectangle>
 				<reportElement x="0" y="-1" width="550" height="141" forecolor="#000000" uuid="f54a9b38-dd41-4352-be2a-c1e8ec687b06"/>
 			</rectangle>
@@ -180,87 +186,80 @@ WHERE PAT_ID = $P{patID}]]>
 					<textFieldExpression><![CDATA[$P{reference}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement x="0" y="200" width="270" height="20" uuid="f2f34d35-dd1a-42da-8dca-9bc00beaa6b3"/>
+					<reportElement x="0" y="200" width="230" height="20" uuid="f2f34d35-dd1a-42da-8dca-9bc00beaa6b3"/>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
 						<font size="14" isBold="true"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$R{hospitalisation}]]></textFieldExpression>
 				</textField>
 				<textField textAdjust="ScaleFont">
-					<reportElement x="0" y="220" width="560" height="40" uuid="5a4a7ba6-3eba-4c15-a03d-59811adbd750"/>
+					<reportElement x="0" y="240" width="560" height="40" uuid="5a4a7ba6-3eba-4c15-a03d-59811adbd750"/>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
 						<font size="14" isBold="true"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$R{description1}]]></textFieldExpression>
 				</textField>
 				<textField textAdjust="ScaleFont">
-					<reportElement x="0" y="270" width="560" height="40" uuid="85a4385b-c86e-49f3-b1ac-951e656f3e77"/>
+					<reportElement x="0" y="290" width="560" height="40" uuid="85a4385b-c86e-49f3-b1ac-951e656f3e77"/>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
 						<font size="14" isBold="true"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$R{description2}]]></textFieldExpression>
 				</textField>
 				<textField textAdjust="ScaleFont">
-					<reportElement x="0" y="320" width="560" height="39" uuid="6b2156d3-cf06-40e0-ad3c-39a7faa6a414"/>
+					<reportElement x="0" y="340" width="560" height="40" uuid="6b2156d3-cf06-40e0-ad3c-39a7faa6a414"/>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
 						<font size="14" isBold="true"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$R{description3}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement x="0" y="370" width="130" height="20" uuid="4ff001d9-d73e-43b5-8a6c-6b06da7d1102"/>
+					<reportElement x="0" y="390" width="130" height="20" uuid="4ff001d9-d73e-43b5-8a6c-6b06da7d1102"/>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
 						<font size="14" isBold="true"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$R{madeOn}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement x="0" y="390" width="310" height="20" uuid="b447460b-a7d2-4664-9d2e-db1d47cfd933"/>
+					<reportElement x="0" y="410" width="310" height="20" uuid="b447460b-a7d2-4664-9d2e-db1d47cfd933"/>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
 						<font size="14" isBold="true"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$R{attachment}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement x="130" y="420" width="310" height="20" uuid="b8c7a25b-adda-481f-b9a4-183d9780630b"/>
+					<reportElement x="130" y="440" width="310" height="20" uuid="b8c7a25b-adda-481f-b9a4-183d9780630b"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font size="14" isBold="true"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$R{signature}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement x="0" y="450" width="220" height="20" uuid="e8c5125f-5cba-4bea-b399-6642555183f4"/>
+					<reportElement x="0" y="470" width="220" height="20" uuid="e8c5125f-5cba-4bea-b399-6642555183f4"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font size="14" isBold="true"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$R{dischargeAuthor}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement x="340" y="450" width="220" height="20" uuid="f55e5e9a-a165-4b54-9466-21a52f81f609"/>
+					<reportElement x="340" y="470" width="220" height="20" uuid="f55e5e9a-a165-4b54-9466-21a52f81f609"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font size="14" isBold="true"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$R{witness}]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement x="-1" y="359" width="561" height="11" uuid="581b5ba4-5738-4e9d-932f-cbdb2c9dcfff"/>
+					<reportElement x="-1" y="380" width="561" height="10" uuid="581b5ba4-5738-4e9d-932f-cbdb2c9dcfff"/>
 					<text><![CDATA[]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="0" y="310" width="560" height="10" uuid="fc3c193c-80ea-4483-83a7-6bb4920dfa3f"/>
+					<reportElement x="0" y="330" width="560" height="10" uuid="fc3c193c-80ea-4483-83a7-6bb4920dfa3f"/>
 					<text><![CDATA[]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="0" y="260" width="560" height="10" uuid="11bc54d5-f0c6-4d1a-8550-a37a9fca91ff"/>
+					<reportElement x="0" y="280" width="560" height="10" uuid="11bc54d5-f0c6-4d1a-8550-a37a9fca91ff"/>
 					<text><![CDATA[]]></text>
 				</staticText>
-				<textField>
-					<reportElement x="270" y="200" width="290" height="20" uuid="2f58961f-a7a4-4b83-8773-1bb6e4bd99da"/>
-					<textElement textAlignment="Left" verticalAlignment="Middle">
-						<font size="14" isBold="true"/>
-					</textElement>
-					<textFieldExpression><![CDATA[$P{hospitalisationDate}]]></textFieldExpression>
-				</textField>
 				<textField>
 					<reportElement x="140" y="0" width="341" height="20" uuid="9b7c762d-9c6c-4865-a1e5-98aea4f048e4"/>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
@@ -311,11 +310,32 @@ WHERE PAT_ID = $P{patID}]]>
 					<textFieldExpression><![CDATA[$P{phoneNumber}]]></textFieldExpression>
 				</textField>
 				<textField pattern="dd/MM/yyyy">
-					<reportElement x="130" y="370" width="430" height="20" uuid="9683bd70-9366-409b-9c79-3936342ef036"/>
+					<reportElement x="130" y="390" width="430" height="20" uuid="9683bd70-9366-409b-9c79-3936342ef036"/>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
 						<font size="14" isBold="true"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$P{madeOnDate}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="230" y="200" width="330" height="20" uuid="2fc7bd86-e77e-446c-a0a3-23b94b64ba5d"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font size="14" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{WRD_NAME}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="90" y="220" width="470" height="20" uuid="5f1e6c4a-244d-479e-b4c6-b6d0b0b5fed1"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font size="14" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$P{hospitalisationDate}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="0" y="220" width="90" height="20" uuid="f83fbe82-8c79-4322-b089-f7fb40ce740a"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font size="14" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$R{for}]]></textFieldExpression>
 				</textField>
 			</frame>
 		</band>
