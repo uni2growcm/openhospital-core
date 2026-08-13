@@ -26,10 +26,23 @@ import java.util.List;
 
 import org.isf.admission.model.AdmittedPatient;
 import org.isf.utils.exception.OHServiceException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface AdmissionIoOperationRepositoryCustom {
 
 	List<AdmittedPatient> findPatientAdmissionsBySearchAndDateRanges(String searchTerms, LocalDateTime[] admissionRange, LocalDateTime[] dischargeRange)
+			throws OHServiceException;
+
+	Page<AdmittedPatient> findPatientAdmissionsBySearchAndDateRanges(String searchTerms, LocalDateTime[] admissionRange, LocalDateTime[] dischargeRange,
+			Boolean admitted, List<String> wardCodes, Integer ageFrom, Integer ageTo, Character sex, Pageable pageable) throws OHServiceException;
+
+	/**
+	 * Same as the overload above, but when {@code knownTotalElements} is non-null the count query is skipped and
+	 * the supplied value is used as the page's total element count.
+	 */
+	Page<AdmittedPatient> findPatientAdmissionsBySearchAndDateRanges(String searchTerms, LocalDateTime[] admissionRange, LocalDateTime[] dischargeRange,
+			Boolean admitted, List<String> wardCodes, Integer ageFrom, Integer ageTo, Character sex, Pageable pageable, Long knownTotalElements)
 			throws OHServiceException;
 
 	/**

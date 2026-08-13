@@ -34,6 +34,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
@@ -44,6 +45,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.isf.anamnesis.model.PatientHistory;
 import org.isf.opd.model.Opd;
 import org.isf.patconsensus.model.PatientConsensus;
+import org.isf.priceslist.model.PriceList;
 import org.isf.utils.db.Auditable;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -138,6 +140,37 @@ public class Patient extends Auditable<String> {
 
 	@Column(name="PAT_PROFESSION")
 	private String profession;
+
+	@Column(name="PAT_BIRTH_PLACE")
+	private String birthPlace;
+
+	@Column(name="PAT_GEOGRAPHIC_AREA")
+	private String geographicArea;
+
+	@Column(name="PAT_CHILDREN_NUMBER")
+	private int childrenNumber;
+
+	@Column(name="PAT_PARENT_RESIDENCE")
+	private String parentResidence;
+
+	@Column(name="PAT_TRANSPORT")
+	private String transport;
+
+	@Column(name="PAT_BLAMA")
+	private String blama;
+
+	@Column(name="PAT_COUNTRY")
+	private String country;
+
+	@Column(name="PAT_AFFILIATED_PERSON")
+	private Integer affiliatedPersonId;
+
+	@Column(name="PAT_IS_HEAD_AFFILIATION")
+	private boolean headAffiliation;
+
+	@ManyToOne
+	@JoinColumn(name="PAT_LST_ID")
+	private PriceList priceList;
 
 	@NotNull
 	@Column(name="PAT_DELETED", columnDefinition = "char(1) default 'N'")
@@ -486,6 +519,86 @@ public class Patient extends Auditable<String> {
 
 	public void setProfession(String profession) {
 		this.profession = profession;
+	}
+
+	public String getBirthPlace() {
+		return birthPlace;
+	}
+
+	public void setBirthPlace(String birthPlace) {
+		this.birthPlace = birthPlace;
+	}
+
+	public String getGeographicArea() {
+		return geographicArea;
+	}
+
+	public void setGeographicArea(String geographicArea) {
+		this.geographicArea = geographicArea;
+	}
+
+	public int getChildrenNumber() {
+		return childrenNumber;
+	}
+
+	public void setChildrenNumber(int childrenNumber) {
+		this.childrenNumber = childrenNumber;
+	}
+
+	public String getParentResidence() {
+		return parentResidence;
+	}
+
+	public void setParentResidence(String parentResidence) {
+		this.parentResidence = parentResidence;
+	}
+
+	public String getTransport() {
+		return transport;
+	}
+
+	public void setTransport(String transport) {
+		this.transport = transport;
+	}
+
+	public String getBlama() {
+		return blama;
+	}
+
+	public void setBlama(String blama) {
+		this.blama = blama;
+	}
+
+	public String getCountry() {
+		return country;
+	}
+
+	public void setCountry(String country) {
+		this.country = country;
+	}
+
+	public Integer getAffiliatedPersonId() {
+		return affiliatedPersonId;
+	}
+
+	public void setAffiliatedPersonId(Integer affiliatedPersonId) {
+		this.affiliatedPersonId = affiliatedPersonId;
+	}
+
+	public boolean isHeadAffiliation() {
+		return headAffiliation;
+	}
+
+	public void setHeadAffiliation(boolean headAffiliation) {
+		this.headAffiliation = headAffiliation;
+	}
+
+	public PriceList getPriceList() {
+		return priceList;
+	}
+
+	public void setPriceList(PriceList priceList) {
+		this.priceList = priceList;
 	}
 
     public char getDeleted() {

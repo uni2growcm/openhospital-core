@@ -68,10 +68,12 @@ public final class GeneralData extends ConfigurationProperties {
 	public static boolean TELEMETRYENABLED;
 	public static String VIEWER;
 	public static boolean MAINMENUALWAYSONTOP;
+	public static int PAGESIZE;
 	public static boolean RECEIPTPRINTER;
 	public static boolean VIDEOMODULEENABLED;
 	public static boolean PATIENTVACCINEEXTENDED;
 	public static boolean ENHANCEDSEARCH;
+	public static boolean ENHANCEDDIAGNOSTICINOPDEDIT;
 	public static boolean XMPPMODULEENABLED;
 	public static boolean DICOMMODULEENABLED;
 	public static boolean DICOMTHUMBNAILS;
@@ -126,10 +128,12 @@ public final class GeneralData extends ConfigurationProperties {
 	private static final boolean DEFAULT_SMSENABLED = false;
 	private static final boolean DEFAULT_TELEMETRYENABLED = false;
 	private static final boolean DEFAULT_MAINMENUALWAYSONTOP = false;
+	private static final int DEFAULT_PAGESIZE = 50;
 	private static final boolean DEFAULT_RECEIPTPRINTER = false;
 	private static final boolean DEFAULT_VIDEOMODULEENABLED = false;
 	private static final boolean DEFAULT_PATIENTVACCINEEXTENDED = false;
 	private static final boolean DEFAULT_ENHANCEDSEARCH = false;
+	private static final boolean DEFAULT_ENHANCEDDIAGNOSTICINOPDEDIT = false;
 	private static final boolean DEFAULT_XMPPMODULEENABLED = false;
 	private static final boolean DEFAULT_DICOMMODULEENABLED = false;
 	private static final boolean DEFAULT_DICOMTHUMBNAILS = true;
@@ -196,10 +200,16 @@ public final class GeneralData extends ConfigurationProperties {
 		SMSENABLED = myGetProperty("SMSENABLED", DEFAULT_SMSENABLED);
 		TELEMETRYENABLED = myGetProperty("TELEMETRYENABLED", DEFAULT_TELEMETRYENABLED);
 		MAINMENUALWAYSONTOP = myGetProperty("MAINMENUALWAYSONTOP", DEFAULT_MAINMENUALWAYSONTOP);
+		PAGESIZE = myGetProperty("PAGESIZE", DEFAULT_PAGESIZE);
+		// a page size of zero or less isn't usable; fall back to the default
+		if (PAGESIZE <= 0) {
+			PAGESIZE = DEFAULT_PAGESIZE;
+		}
 		RECEIPTPRINTER = myGetProperty("RECEIPTPRINTER", DEFAULT_RECEIPTPRINTER);
 		VIDEOMODULEENABLED = myGetProperty("VIDEOMODULEENABLED", DEFAULT_VIDEOMODULEENABLED);
 		PATIENTVACCINEEXTENDED = myGetProperty("PATIENTVACCINEEXTENDED", DEFAULT_PATIENTVACCINEEXTENDED);
 		ENHANCEDSEARCH = myGetProperty("ENHANCEDSEARCH", DEFAULT_ENHANCEDSEARCH);
+		ENHANCEDDIAGNOSTICINOPDEDIT = myGetProperty("ENHANCEDDIAGNOSTICINOPDEDIT", DEFAULT_ENHANCEDDIAGNOSTICINOPDEDIT);
 		XMPPMODULEENABLED = myGetProperty("XMPPMODULEENABLED", DEFAULT_XMPPMODULEENABLED);
 		DICOMMODULEENABLED = myGetProperty("DICOMMODULEENABLED", DEFAULT_DICOMMODULEENABLED);
 		DICOMTHUMBNAILS = myGetProperty("DICOMTHUMBNAILS", DEFAULT_DICOMTHUMBNAILS);

@@ -33,6 +33,7 @@ import org.isf.admtype.model.AdmissionType;
 import org.isf.disctype.model.DischargeType;
 import org.isf.disease.manager.DiseaseBrowserManager;
 import org.isf.disease.model.Disease;
+import org.isf.generaldata.GeneralData;
 import org.isf.generaldata.MessageBundle;
 import org.isf.patient.model.Patient;
 import org.isf.utils.exception.OHDataValidationException;
@@ -89,6 +90,38 @@ public class AdmissionBrowserManager {
 	public List<AdmittedPatient> getAdmittedPatients(LocalDateTime[] admissionRange, LocalDateTime[] dischargeRange, String searchTerms)
 		throws OHServiceException {
 		return ioOperations.getAdmittedPatients(searchTerms, admissionRange, dischargeRange);
+	}
+
+	/**
+	 * Returns a page of patients based on the applied filters, sized per {@link GeneralData#PAGESIZE},
+	 * as in {@link #getAdmittedPatients(LocalDateTime[], LocalDateTime[], String)}.
+	 *
+	 * @param admissionRange (two-dimensions array) the patient admission dates range, both {@code null} if no filter have to be applied.
+	 * @param dischargeRange (two-dimensions array) the patient admission dates range, both {@code null} if no filter have to be applied.
+	 * @param searchTerms the search terms to use for filter the patient list, {@code null} if no filter have to be applied.
+	 * @param admitted {@code true} for currently admitted only, {@code false} for not currently admitted only, {@code null} for both.
+	 * @param wardCodes ward codes to filter by, {@code null}/empty for all wards.
+	 * @param ageFrom lower age bound (inclusive), {@code null} for no lower bound.
+	 * @param ageTo upper age bound (inclusive), {@code null} for no upper bound.
+	 * @param sex patient sex to filter by, {@code null} or {@code 'A'} for both.
+	 * @param page the requested page number, zero-based.
+	 * @return a {@link PagedResponse} of {@link AdmittedPatient}s.
+	 * @throws OHServiceException if an error occurs during database request.
+	 */
+	public PagedResponse<AdmittedPatient> getAdmittedPatients(LocalDateTime[] admissionRange, LocalDateTime[] dischargeRange, String searchTerms,
+		Boolean admitted, List<String> wardCodes, Integer ageFrom, Integer ageTo, Character sex, int page) throws OHServiceException {
+		return getAdmittedPatients(admissionRange, dischargeRange, searchTerms, admitted, wardCodes, ageFrom, ageTo, sex, page, null);
+	}
+
+	/**
+	 * Same as the overload above, but when {@code knownTotalElements} is non-null the count query is skipped and
+	 * the supplied value is used as the page's total element count.
+	 */
+	public PagedResponse<AdmittedPatient> getAdmittedPatients(LocalDateTime[] admissionRange, LocalDateTime[] dischargeRange, String searchTerms,
+		Boolean admitted, List<String> wardCodes, Integer ageFrom, Integer ageTo, Character sex, int page, Long knownTotalElements)
+		throws OHServiceException {
+		return ioOperations.getAdmittedPatients(searchTerms, admissionRange, dischargeRange, admitted, wardCodes, ageFrom, ageTo, sex,
+						PageRequest.of(page, GeneralData.PAGESIZE), knownTotalElements);
 	}
 
 	public AdmittedPatient loadAdmittedPatients(int patientId) {

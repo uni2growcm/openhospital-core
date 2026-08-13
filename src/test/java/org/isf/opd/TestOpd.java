@@ -44,6 +44,9 @@ public class TestOpd {
 	private char newPatient = 'N';
 	private String referralFrom = "R";
 	private String referralTo = "R";
+	private String referralFromHospital = "Test Referring Hospital";
+	private String referralToHospital = "Test Receiving Hospital";
+	private String motif = "Test motif";
 	private String userID = "TestUser";
 	private String prescription = "prescription";
 
@@ -64,6 +67,9 @@ public class TestOpd {
 			opd.setNewPatient(newPatient);
 			opd.setReferralFrom(referralFrom);
 			opd.setReferralTo(referralTo);
+			opd.setReferralFromHospital(referralFromHospital);
+			opd.setReferralToHospital(referralToHospital);
+			opd.setMotif(motif);
 			opd.setUserID(userID);
 			opd.setPatient(patient);
 			opd.setDisease2(disease);
@@ -86,6 +92,9 @@ public class TestOpd {
 		opd.setNewPatient(newPatient);
 		opd.setReferralFrom(referralFrom);
 		opd.setReferralTo(referralTo);
+		opd.setReferralFromHospital(referralFromHospital);
+		opd.setReferralToHospital(referralToHospital);
+		opd.setMotif(motif);
 		opd.setUserID(userID);
 		opd.setPatient(patient);
 		opd.setDisease(disease);
@@ -110,6 +119,9 @@ public class TestOpd {
 		assertThat(opd.getNewPatient()).isEqualTo(newPatient);
 		assertThat(opd.getReferralFrom()).isEqualTo(referralFrom);
 		assertThat(opd.getReferralTo()).isEqualTo(referralTo);
+		assertThat(opd.getReferralFromHospital()).isEqualTo(referralFromHospital);
+		assertThat(opd.getReferralToHospital()).isEqualTo(referralToHospital);
+		assertThat(opd.getMotif()).isEqualTo(motif);
 		assertThat(opd.getUserID()).isEqualTo(userID);
 	}
 }

@@ -45,6 +45,9 @@ import org.isf.patient.model.Patient;
 import org.isf.patient.model.PatientProfilePhoto;
 import org.isf.patient.service.PatientIoOperationRepository;
 import org.isf.patient.service.PatientIoOperations;
+import org.isf.priceslist.TestPriceList;
+import org.isf.priceslist.model.PriceList;
+import org.isf.priceslist.service.PricesListIoOperationRepository;
 import org.isf.utils.exception.OHException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.pagination.PagedResponse;
@@ -60,6 +63,7 @@ class Tests extends OHCoreTestCase {
 
 	private static TestPatient testPatient;
 	private static TestOpd testOpd;
+	private static TestPriceList testPriceList;
 
 	@Autowired
 	PatientIoOperations patientIoOperation;
@@ -67,12 +71,15 @@ class Tests extends OHCoreTestCase {
 	PatientIoOperationRepository patientIoOperationRepository;
 	@Autowired
 	PatientBrowserManager patientBrowserManager;
+	@Autowired
+	PricesListIoOperationRepository priceListIoOperationRepository;
 
 	@BeforeAll
 	static void setUpClass() {
 		GeneralData.PATIENTPHOTOSTORAGE = "DB";
 		testPatient = new TestPatient();
 		testOpd = new TestOpd();
+		testPriceList = new TestPriceList();
 	}
 
 	@BeforeEach
@@ -328,6 +335,23 @@ class Tests extends OHCoreTestCase {
 	}
 
 	@Test
+	void testMgrGetPatientsPageableSkipsCountWhenTotalKnown() throws Exception {
+		for (int idx = 0; idx < 15; idx++) {
+			setupTestPatient(false);
+		}
+
+		// Omitting the known total still returns the correct (freshly counted) total.
+		PagedResponse<Patient> freshCount = patientBrowserManager.getPatientsPageable(0, 10, null);
+		assertThat(freshCount.getData()).hasSize(10);
+		assertThat(freshCount.getPageInfo().getTotalNbOfElements()).isEqualTo(15);
+
+		// Supplying a deliberately wrong known total is trusted as-is, proving the count query was skipped.
+		PagedResponse<Patient> knownTotal = patientBrowserManager.getPatientsPageable(0, 10, 999L);
+		assertThat(knownTotal.getData()).hasSize(10);
+		assertThat(knownTotal.getPageInfo().getTotalNbOfElements()).isEqualTo(999);
+	}
+
+	@Test
 	void testMgrGetPatientsByParams() throws Exception {
 		setupTestPatient(false);
 		Map<String, Object> params = new HashMap<>();
@@ -386,6 +410,50 @@ class Tests extends OHCoreTestCase {
 		Patient foundPatient = patientIoOperation.getPatient(code);
 		List<Patient> patients = patientBrowserManager.getPatientsByOneOfFieldsLike(foundPatient.getTaxCode());
 		testPatient.check(patients.get(0));
+	}
+
+	@Test
+	void testMgrGetPatientsByOneOfFieldsLikePageable() throws Exception {
+		int originalPageSize = GeneralData.PAGESIZE;
+		try {
+			GeneralData.PAGESIZE = 10;
+			for (int idx = 0; idx < 15; idx++) {
+				setupTestPatient(false);
+			}
+
+			// First page, sized per GeneralData.PAGESIZE
+			PagedResponse<Patient> patients = patientBrowserManager.getPatientsByOneOfFieldsLike("TestFirstName", 0);
+			assertThat(patients.getData()).hasSize(10);
+
+			// Second page holds the remainder
+			patients = patientBrowserManager.getPatientsByOneOfFieldsLike("TestFirstName", 1);
+			assertThat(patients.getData()).hasSize(5);
+		} finally {
+			GeneralData.PAGESIZE = originalPageSize;
+		}
+	}
+
+	@Test
+	void testMgrGetPatientsByOneOfFieldsLikePageableSkipsCountWhenTotalKnown() throws Exception {
+		int originalPageSize = GeneralData.PAGESIZE;
+		try {
+			GeneralData.PAGESIZE = 10;
+			for (int idx = 0; idx < 15; idx++) {
+				setupTestPatient(false);
+			}
+
+			// Omitting the known total still returns the correct (freshly counted) total.
+			PagedResponse<Patient> freshCount = patientBrowserManager.getPatientsByOneOfFieldsLike("TestFirstName", 0, null);
+			assertThat(freshCount.getData()).hasSize(10);
+			assertThat(freshCount.getPageInfo().getTotalNbOfElements()).isEqualTo(15);
+
+			// Supplying a deliberately wrong known total is trusted as-is, proving the count query was skipped.
+			PagedResponse<Patient> knownTotal = patientBrowserManager.getPatientsByOneOfFieldsLike("TestFirstName", 0, 999L);
+			assertThat(knownTotal.getData()).hasSize(10);
+			assertThat(knownTotal.getPageInfo().getTotalNbOfElements()).isEqualTo(999);
+		} finally {
+			GeneralData.PAGESIZE = originalPageSize;
+		}
 	}
 
 	@Test
@@ -801,5 +869,19 @@ class Tests extends OHCoreTestCase {
 	private void checkPatientIntoDb(Integer code) throws OHServiceException {
 		Patient foundPatient = patientIoOperation.getPatient(code);
 		testPatient.check(foundPatient);
+	}
+
+	@Test
+	void testPatientPriceList() throws Exception {
+		PriceList priceList = testPriceList.setup(false);
+		priceListIoOperationRepository.saveAndFlush(priceList);
+
+		Patient patient = testPatient.setup(false);
+		patient.setPriceList(priceList);
+		patientIoOperationRepository.saveAndFlush(patient);
+
+		Patient foundPatient = patientIoOperation.getPatient(patient.getCode());
+		assertThat(foundPatient.getPriceList()).isNotNull();
+		assertThat(foundPatient.getPriceList().getId()).isEqualTo(priceList.getId());
 	}
 }
