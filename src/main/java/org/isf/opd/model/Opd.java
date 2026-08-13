@@ -109,9 +109,18 @@ public class Opd extends Auditable<String> {
 	
 	@Column(name="OPD_REFERRAL_FROM")
 	private String referralFrom;	//R=referral from another unit; null=no referral from
-	
+
 	@Column(name="OPD_REFERRAL_TO")
-	private String referralTo;		//R=referral to another unit; null=no referral to 
+	private String referralTo;		//R=referral to another unit; null=no referral to
+
+	@Column(name="OPD_REFERRAL_FROM_HOSP")
+	private String referralFromHospital;
+
+	@Column(name="OPD_REFERRAL_TO_HOSP")
+	private String referralToHospital;
+
+	@Column(name="OPD_MOTIF")
+	private String motif;
 
 	@NotNull
 	@Column(name="OPD_USR_ID_A")
@@ -246,7 +255,31 @@ public class Opd extends Auditable<String> {
 	public void setReferralFrom(String referralFrom) {
 		this.referralFrom = referralFrom;
 	}
-	
+
+	public String getReferralFromHospital() {
+		return referralFromHospital;
+	}
+
+	public void setReferralFromHospital(String referralFromHospital) {
+		this.referralFromHospital = referralFromHospital;
+	}
+
+	public String getReferralToHospital() {
+		return referralToHospital;
+	}
+
+	public void setReferralToHospital(String referralToHospital) {
+		this.referralToHospital = referralToHospital;
+	}
+
+	public String getMotif() {
+		return motif;
+	}
+
+	public void setMotif(String motif) {
+		this.motif = motif;
+	}
+
 	public Ward getWard() {
 		return ward;
 	}
