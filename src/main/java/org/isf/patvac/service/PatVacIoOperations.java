@@ -89,7 +89,7 @@ public class PatVacIoOperations {
 			char sex,
 			int ageFrom,
 			int ageTo) throws OHServiceException {
-		return repository.findAllByCodesAndDatesAndSexAndAges(vaccineTypeCode, vaccineCode, TimeTools.truncateToSeconds(dateFrom),
+		return repository.findAllByCodesAndDatesAndSexAndAges(null, vaccineTypeCode, vaccineCode, TimeTools.truncateToSeconds(dateFrom),
 		                                                      TimeTools.truncateToSeconds(dateTo), sex, ageFrom, ageTo);
 	}
 
@@ -115,7 +115,7 @@ public class PatVacIoOperations {
 			timeFrom = timeFrom.minusWeeks(1);
 		}
 
-		return getPatientVaccinePageable(null, null, timeFrom, timeTo, 'A', 0, 0, page, size);
+		return getPatientVaccinePageable(null, null, null, timeFrom, timeTo, 'A', 0, 0, page, size);
 	}
 
 	/**
@@ -135,18 +135,19 @@ public class PatVacIoOperations {
 	 * @throws OHServiceException
 	 */
 	public PagedResponse<PatientVaccine> getPatientVaccinePageable(
-			String vaccineTypeCode,
-			String vaccineCode,
-			LocalDateTime dateFrom,
-			LocalDateTime dateTo,
-			char sex,
-			int ageFrom,
-			int ageTo,
-			int page,
-			int size) throws OHServiceException {
+		Integer patientCode,
+		String vaccineTypeCode,
+		String vaccineCode,
+		LocalDateTime dateFrom,
+		LocalDateTime dateTo,
+		char sex,
+		int ageFrom,
+		int ageTo,
+		int page,
+		int size) throws OHServiceException {
 		Pageable pageable = PageRequest.of(page, size);
-		Page<PatientVaccine> pagedResult = repository.findAllByCodesAndDatesAndSexAndAgesPageable(vaccineTypeCode, vaccineCode,
-				TimeTools.truncateToSeconds(dateFrom), TimeTools.truncateToSeconds(dateTo), sex, ageFrom, ageTo, pageable);
+		Page<PatientVaccine> pagedResult = repository.findAllByCodesAndDatesAndSexAndAgesPageable(patientCode, vaccineTypeCode, vaccineCode,
+			TimeTools.truncateToSeconds(dateFrom), TimeTools.truncateToSeconds(dateTo), sex, ageFrom, ageTo, pageable);
 		return setPaginationData(pagedResult);
 	}
 

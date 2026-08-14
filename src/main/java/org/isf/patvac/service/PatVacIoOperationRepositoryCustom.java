@@ -30,10 +30,9 @@ import org.springframework.data.domain.Pageable;
 
 public interface PatVacIoOperationRepositoryCustom {
 
-	List<PatientVaccine> findAllByCodesAndDatesAndSexAndAges(String vaccineTypeCode, String vaccineCode, LocalDateTime dateFrom, LocalDateTime dateTo, char sex,
-			int ageFrom, int ageTo);
+	List<PatientVaccine> findAllByCodesAndDatesAndSexAndAges(Integer patientCode, String vaccineTypeCode, String vaccineCode, LocalDateTime dateFrom,
+		 	LocalDateTime dateTo, char sex, int ageFrom, int ageTo);
 
-	Page<PatientVaccine> findAllByCodesAndDatesAndSexAndAgesPageable(String vaccineTypeCode, String vaccineCode, LocalDateTime dateFrom, LocalDateTime dateTo,
-			char sex, int ageFrom, int ageTo, Pageable pageable);
-
+	Page<PatientVaccine> findAllByCodesAndDatesAndSexAndAgesPageable(Integer patientCode, String vaccineTypeCode, String vaccineCode, LocalDateTime dateFrom,
+		 	LocalDateTime dateTo, char sex, int ageFrom, int ageTo, Pageable pageable);
 }

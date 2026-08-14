@@ -102,9 +102,9 @@ public class PatVacManager {
 	 * @return a {@link PagedResponse} of {@link PatientVaccine}s.
 	 * @throws OHServiceException
 	 */
-	public PagedResponse<PatientVaccine> getPatientVaccinePageable(String vaccineTypeCode, String vaccineCode, LocalDateTime dateFrom, LocalDateTime dateTo,
-		char sex, int ageFrom, int ageTo, int page, int size) throws OHServiceException {
-		return ioOperations.getPatientVaccinePageable(vaccineTypeCode, vaccineCode, dateFrom, dateTo, sex, ageFrom, ageTo, page, size);
+	public PagedResponse<PatientVaccine> getPatientVaccinePageable(Integer patientCode, String vaccineTypeCode, String vaccineCode, LocalDateTime dateFrom,
+	                                                               LocalDateTime dateTo, char sex, int ageFrom, int ageTo, int page, int size) throws OHServiceException {
+		return ioOperations.getPatientVaccinePageable(patientCode, vaccineTypeCode, vaccineCode, dateFrom, dateTo, sex, ageFrom, ageTo, page, size);
 	}
 
 	/**
