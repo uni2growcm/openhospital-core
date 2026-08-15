@@ -29,7 +29,12 @@ import java.util.Optional;
 import org.isf.patvac.model.PatientVaccine;
 import org.isf.utils.db.TranslateOHServiceException;
 import org.isf.utils.exception.OHServiceException;
+import org.isf.utils.pagination.PagedResponse;
+import org.isf.utils.pagination.PageInfo;
 import org.isf.utils.time.TimeTools;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -84,12 +89,73 @@ public class PatVacIoOperations {
 			char sex,
 			int ageFrom,
 			int ageTo) throws OHServiceException {
-		return repository.findAllByCodesAndDatesAndSexAndAges(vaccineTypeCode, vaccineCode, TimeTools.truncateToSeconds(dateFrom),
+		return repository.findAllByCodesAndDatesAndSexAndAges(null, vaccineTypeCode, vaccineCode, TimeTools.truncateToSeconds(dateFrom),
 		                                                      TimeTools.truncateToSeconds(dateTo), sex, ageFrom, ageTo);
 	}
 
 	public List<PatientVaccine> findForPatient(int patientCode) {
 		return repository.findByPatient_code(patientCode);
+	}
+
+	/**
+	 * Returns a page of {@link PatientVaccine}s of today or one week ago, matching the same filter as
+	 * {@link #getPatientVaccine(boolean)}.
+	 *
+	 * @param minusOneWeek if {@code true} return the last week
+	 * @param page
+	 * @param size
+	 * @return a {@link PagedResponse} of {@link PatientVaccine}s.
+	 * @throws OHServiceException
+	 */
+	public PagedResponse<PatientVaccine> getPatientVaccinePageable(boolean minusOneWeek, int page, int size) throws OHServiceException {
+		LocalDateTime timeTo = TimeTools.getDateToday24();
+		LocalDateTime timeFrom = TimeTools.getDateToday0();
+
+		if (minusOneWeek) {
+			timeFrom = timeFrom.minusWeeks(1);
+		}
+
+		return getPatientVaccinePageable(null, null, null, timeFrom, timeTo, 'A', 0, 0, page, size);
+	}
+
+	/**
+	 * Returns a page of {@link PatientVaccine}s within {@code dateFrom} and {@code dateTo}, matching the
+	 * same filters as {@link #getPatientVaccine(String, String, LocalDateTime, LocalDateTime, char, int, int)}.
+	 *
+	 * @param vaccineTypeCode
+	 * @param vaccineCode
+	 * @param dateFrom
+	 * @param dateTo
+	 * @param sex
+	 * @param ageFrom
+	 * @param ageTo
+	 * @param page
+	 * @param size
+	 * @return a {@link PagedResponse} of {@link PatientVaccine}s.
+	 * @throws OHServiceException
+	 */
+	public PagedResponse<PatientVaccine> getPatientVaccinePageable(
+		Integer patientCode,
+		String vaccineTypeCode,
+		String vaccineCode,
+		LocalDateTime dateFrom,
+		LocalDateTime dateTo,
+		char sex,
+		int ageFrom,
+		int ageTo,
+		int page,
+		int size) throws OHServiceException {
+		Pageable pageable = PageRequest.of(page, size);
+		Page<PatientVaccine> pagedResult = repository.findAllByCodesAndDatesAndSexAndAgesPageable(patientCode, vaccineTypeCode, vaccineCode,
+			TimeTools.truncateToSeconds(dateFrom), TimeTools.truncateToSeconds(dateTo), sex, ageFrom, ageTo, pageable);
+		return setPaginationData(pagedResult);
+	}
+
+	PagedResponse<PatientVaccine> setPaginationData(Page<PatientVaccine> pages) {
+		PagedResponse<PatientVaccine> data = new PagedResponse<>();
+		data.setData(pages.getContent());
+		data.setPageInfo(PageInfo.from(pages));
+		return data;
 	}
 
 	/**

@@ -61,6 +61,9 @@ public class PatientVaccine extends Auditable<String> {
 	@Column(name="PAV_YPROG")
 	private int progr;
 
+	@Column(name="PAV_VILLAGE")
+	private String village;
+
 	@NotNull
 	@Column(name="PAV_DATE")		// SQL type: datetime
 	private LocalDateTime vaccineDate;
@@ -109,6 +112,14 @@ public class PatientVaccine extends Auditable<String> {
 
 	public void setProgr(int progr) {
 		this.progr = progr;
+	}
+
+	public String getVillage() {
+		return village;
+	}
+
+	public void setVillage(String village) {
+		this.village = village;
 	}
 
 	public LocalDateTime getVaccineDate() {
