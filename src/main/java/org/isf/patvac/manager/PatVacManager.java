@@ -34,15 +34,20 @@ import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.model.OHExceptionMessage;
 import org.isf.utils.pagination.PagedResponse;
+import org.isf.vaccinestock.manager.VaccineStockManager;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 public class PatVacManager {
 
 	private final PatVacIoOperations ioOperations;
 
-	public PatVacManager(PatVacIoOperations patVacIoOperations) {
+	private final VaccineStockManager vaccineStockManager;
+
+	public PatVacManager(PatVacIoOperations patVacIoOperations, VaccineStockManager vaccineStockManager) {
 		this.ioOperations = patVacIoOperations;
+		this.vaccineStockManager = vaccineStockManager;
 	}
 
 	/**
@@ -108,15 +113,23 @@ public class PatVacManager {
 	}
 
 	/**
-	 * Inserts a {@link PatientVaccine}.
+	 * Inserts a {@link PatientVaccine}, decrementing the vaccine stock by one dose.
 	 *
 	 * @param patVac the {@link PatientVaccine} to insert
 	 * @return the newly {@link PatientVaccine} object.
-	 * @throws OHServiceException
+	 * @throws OHServiceException if validation fails, or if the vaccine has no stock available -
+	 *             a patient cannot be vaccinated with a product that isn't in stock. Annotated
+	 *             {@code @Transactional} so a stock failure also rolls back the insert below: without
+	 *             it, {@code ioOperations} and {@code vaccineStockManager} would each run in their
+	 *             own separate transaction, and the vaccination would stay saved even though the
+	 *             stock decrement failed.
 	 */
+	@Transactional(rollbackFor = OHServiceException.class)
 	public PatientVaccine newPatientVaccine(PatientVaccine patVac) throws OHServiceException {
 		validatePatientVaccine(patVac);
-		return ioOperations.newPatientVaccine(patVac);
+		PatientVaccine inserted = ioOperations.newPatientVaccine(patVac);
+		vaccineStockManager.dispenseDose(inserted);
+		return inserted;
 	}
 
 	/**
@@ -132,12 +145,17 @@ public class PatVacManager {
 	}
 
 	/**
-	 * Deletes a {@link PatientVaccine}.
+	 * Deletes a {@link PatientVaccine}, reversing its stock decrement.
 	 *
 	 * @param patVac the {@link PatientVaccine} to delete
-	 * @throws OHServiceException
+	 * @throws OHServiceException if the reversal or the delete fails. Annotated
+	 *             {@code @Transactional} for the same cross-bean-transaction reason as
+	 *             {@link #newPatientVaccine(PatientVaccine)} - both calls must succeed or both roll
+	 *             back together.
 	 */
+	@Transactional(rollbackFor = OHServiceException.class)
 	public void deletePatientVaccine(PatientVaccine patVac) throws OHServiceException {
+		vaccineStockManager.cancelAdministration(patVac);
 		ioOperations.deletePatientVaccine(patVac);
 	}
 

@@ -115,3 +115,5 @@ source step_a118_add_radiology_permissions.sql;
 source step_a119_alter_table_examrow_and_laboratoryrow.sql;
 source step_a120_settings.sql;
 source step_a121_add_village_to_patientvaccine.sql;
+source step_a122_add_vaccine_stock_tracking.sql;
+source step_a123_restructure_patientvaccine_menu.sql;
