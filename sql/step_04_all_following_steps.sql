@@ -114,3 +114,6 @@ source step_a117_fix_ward_pharmacy.sql;
 source step_a118_add_radiology_permissions.sql;
 source step_a119_alter_table_examrow_and_laboratoryrow.sql;
 source step_a120_settings.sql;
+source step_a121_add_medical_shape_and_dosing.sql;
+source step_a122_add_article_family.sql;
+source step_a123_add_stock_order.sql;

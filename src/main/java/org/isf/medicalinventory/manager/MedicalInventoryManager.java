@@ -144,6 +144,17 @@ public class MedicalInventoryManager {
 	}
 
 	/**
+	 * Generate the next available reference number for a new {@link MedicalInventory}, dated the given date.
+	 *
+	 * @param date the {@link MedicalInventory} date the reference is generated for.
+	 * @return the generated reference number.
+	 * @throws OHServiceException
+	 */
+	public String generateReference(LocalDateTime date) throws OHServiceException {
+		return ioOperations.generateReference(date);
+	}
+
+	/**
 	 * Return a list of {@link MedicalInventory}s for passed params.
 	 *
 	 * @param status the {@link MedicalInventory} status.
@@ -578,10 +589,13 @@ public class MedicalInventoryManager {
 		// TODO: to explore the possibility to allow charges and discharges with same referenceNumber
 		String chargeReferenceNumber = referenceNumber + "-charge";
 		String dischargeReferenceNumber = referenceNumber + "-discharge";
-		MovementType chargeType = medicalDsrStockMovementTypeBrowserManager.getMovementType(inventory.getChargeType());
-		MovementType dischargeType = medicalDsrStockMovementTypeBrowserManager.getMovementType(inventory.getDischargeType());
-		Supplier supplier = supplierManager.getByID(inventory.getSupplier());
-		Ward ward = wardManager.findWard(inventory.getDestination());
+		// charge type/supplier and discharge type/ward are optional: only resolved (and only required) when a
+		// row actually needs the corresponding movement; newMultipleChargingMovements/newMultipleDischargingMovements
+		// will raise a clear error if one is missing but needed.
+		MovementType chargeType = inventory.getChargeType() == null ? null : medicalDsrStockMovementTypeBrowserManager.getMovementType(inventory.getChargeType());
+		MovementType dischargeType = inventory.getDischargeType() == null ? null : medicalDsrStockMovementTypeBrowserManager.getMovementType(inventory.getDischargeType());
+		Supplier supplier = inventory.getSupplier() == null ? null : supplierManager.getByID(inventory.getSupplier());
+		Ward ward = inventory.getDestination() == null ? null : wardManager.findWard(inventory.getDestination());
 		LocalDateTime inventoryDate = inventory.getInventoryDate();
 		// prepare movements
 		List<Movement> chargeMovements = new ArrayList<>();

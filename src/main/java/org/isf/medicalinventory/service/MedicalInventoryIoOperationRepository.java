@@ -63,4 +63,7 @@ public interface MedicalInventoryIoOperationRepository extends JpaRepository<Med
 	@Query(value = "select count(medinv) from MedicalInventory medinv where medinv.inventoryType = :type")
 	int countByInventoryType(@Param("type") String type);
 
+	@Query(value = "select medinv.inventoryReference from MedicalInventory medinv where medinv.inventoryReference like :pattern")
+	List<String> findAllReferencesWhereReferenceLike(@Param("pattern") String pattern);
+
 }

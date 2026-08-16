@@ -22,6 +22,7 @@
 package org.isf.medicalinventory.service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -93,6 +94,33 @@ public class MedicalInventoryIoOperation {
 			return true;
 		}
 		return false;
+	}
+
+	private static final DateTimeFormatter REFERENCE_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyyMMdd");
+
+	/**
+	 * Generate the next available reference number for the given date, in the form
+	 * {@code yyyyMMdd-NNN}, where {@code NNN} restarts from 1 on each new day.
+	 *
+	 * @param date - the {@link MedicalInventory} date the reference is generated for.
+	 * @return the generated reference number.
+	 * @throws OHServiceException
+	 */
+	public String generateReference(LocalDateTime date) throws OHServiceException {
+		String datePrefix = date.format(REFERENCE_DATE_FORMAT);
+		List<String> existingReferences = repository.findAllReferencesWhereReferenceLike(datePrefix + "-%");
+		int nextSeq = 1;
+		for (String reference : existingReferences) {
+			try {
+				int seq = Integer.parseInt(reference.substring(datePrefix.length() + 1));
+				if (seq >= nextSeq) {
+					nextSeq = seq + 1;
+				}
+			} catch (NumberFormatException e) {
+				// ignore references whose suffix isn't a plain sequence number
+			}
+		}
+		return String.format("%s-%03d", datePrefix, nextSeq);
 	}
 
 	/**
