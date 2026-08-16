@@ -745,22 +745,23 @@ public class MedicalStockIoOperations {
 	}
 
 	private static final DateTimeFormatter REFERENCE_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyyMMdd");
+	private static final String REFERENCE_PREFIX = "MVT";
 
 	/**
 	 * Generate the next available reference number for the given date, in the form
-	 * {@code yyyyMMdd-NNN}, where {@code NNN} restarts from 1 on each new day.
+	 * {@code MVT-yyyyMMdd-NNN}, where {@code NNN} restarts from 1 on each new day.
 	 *
 	 * @param date - the {@link Movement} date the reference is generated for.
 	 * @return the generated reference number.
 	 * @throws OHServiceException
 	 */
 	public String generateReferenceNumber(LocalDateTime date) throws OHServiceException {
-		String datePrefix = date.format(REFERENCE_DATE_FORMAT);
-		List<String> existingRefNos = movRepository.findAllWhereRefNo(datePrefix + "-%");
+		String prefix = REFERENCE_PREFIX + "-" + date.format(REFERENCE_DATE_FORMAT);
+		List<String> existingRefNos = movRepository.findAllWhereRefNo(prefix + "-%");
 		int nextSeq = 1;
 		for (String refNo : existingRefNos) {
 			try {
-				int seq = Integer.parseInt(refNo.substring(datePrefix.length() + 1));
+				int seq = Integer.parseInt(refNo.substring(prefix.length() + 1));
 				if (seq >= nextSeq) {
 					nextSeq = seq + 1;
 				}
@@ -768,7 +769,7 @@ public class MedicalStockIoOperations {
 				// ignore ref numbers whose suffix isn't a plain sequence number
 			}
 		}
-		return String.format("%s-%03d", datePrefix, nextSeq);
+		return String.format("%s-%03d", prefix, nextSeq);
 	}
 
 	/**
