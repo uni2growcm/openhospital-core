@@ -78,6 +78,9 @@ public class Price extends Auditable<String> {
 	@Column(name = "PRC_LOCK")
 	private int lock;
 
+	@Column(name="PRC_VARIABLE")
+	private boolean variable;
+
 	@Transient
 	private boolean editable;
 
@@ -205,6 +208,14 @@ public class Price extends Auditable<String> {
 	public int getLock() { return lock; }
 
 	public void setLock(int lock) { this.lock = lock; }
+
+	public boolean isVariable() {
+		return variable;
+	}
+
+	public void setVariable(boolean variable) {
+		this.variable = variable;
+	}
 
 	@Override
 	public String toString() {
