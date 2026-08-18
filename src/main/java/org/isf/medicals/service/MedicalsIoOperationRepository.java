@@ -97,7 +97,6 @@ public interface MedicalsIoOperationRepository extends JpaRepository<Medical, In
 	@Query(value = "SELECT m FROM Medical m LEFT JOIN FETCH m.lots")
 	Page<Medical> findAllPageable(Pageable pageable);
 
-	//add comment
 	@Query(value = "SELECT m.prod_code FROM Medical m")
 	List<String> findAllProdCodes();
 }
