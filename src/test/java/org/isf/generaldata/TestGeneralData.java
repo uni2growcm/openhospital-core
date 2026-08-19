@@ -55,6 +55,26 @@ class TestGeneralData {
 	}
 
 	@Test
+	void testGetStockMvtOnBillSave() {
+		GeneralData generalData = GeneralData.getGeneralData();
+
+		assertThat(generalData).isNotNull();
+
+		// not set in the test settings.properties, falls back to the documented default (false)
+		assertThat(GeneralData.STOCKMVTONBILLSAVE).isFalse();
+	}
+
+	@Test
+	void testGetDefaultWardInNewBill() {
+		GeneralData generalData = GeneralData.getGeneralData();
+
+		assertThat(generalData).isNotNull();
+
+		// not set in the test settings.properties, falls back to the documented default (empty)
+		assertThat(GeneralData.DEFAULTWARDINNEWBILL).isEmpty();
+	}
+
+	@Test
 	void testReset() {
 		// get them one time
 		GeneralData generalData = GeneralData.getGeneralData();

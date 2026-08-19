@@ -42,6 +42,7 @@ import org.isf.patient.model.Patient;
 import org.isf.priceslist.model.PriceList;
 import org.isf.utils.db.Auditable;
 import org.isf.utils.time.TimeTools;
+import org.isf.ward.model.Ward;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
@@ -109,6 +110,10 @@ public class Bill extends Auditable<String> implements Cloneable, Comparable<Bil
 	@ManyToOne
 	@JoinColumn(name = "BLL_ADM_ID")
 	private Admission admission;
+
+	@ManyToOne
+	@JoinColumn(name = "BLL_WRD_ID_A")
+	private Ward ward;
 
 	@Transient
 	private volatile int hashCode;
@@ -240,6 +245,14 @@ public class Bill extends Auditable<String> implements Cloneable, Comparable<Bil
 
 	public void setAdmission(Admission admission) {
 		this.admission = admission;
+	}
+
+	public Ward getWard() {
+		return ward;
+	}
+
+	public void setWard(Ward ward) {
+		this.ward = ward;
 	}
 
 	public int getLock() { return lock; }

@@ -78,6 +78,8 @@ public final class GeneralData extends ConfigurationProperties {
 	public static boolean DICOMTHUMBNAILS;
 	public static boolean ALLOWPRINTOPENEDBILL;
 	public static boolean ALLOWMULTIPLEOPENEDBILL;
+	public static boolean STOCKMVTONBILLSAVE;
+	public static String DEFAULTWARDINNEWBILL;
 	public static String PATIENTBILLGROUPED;
 	public static String PATIENTBILLSTATEMENT;
 	public static boolean DEBUG;
@@ -137,6 +139,8 @@ public final class GeneralData extends ConfigurationProperties {
 	private static final boolean DEFAULT_DICOMTHUMBNAILS = true;
 	private static final boolean DEFAULT_ALLOWPRINTOPENEDBILL = false;
 	private static final boolean DEFAULT_ALLOWMULTIPLEOPENEDBILL = false;
+	private static final boolean DEFAULT_STOCKMVTONBILLSAVE = false;
+	private static final String DEFAULT_DEFAULTWARDINNEWBILL = "";
 	private static final String DEFAULT_PATIENTBILLGROUPED = "PatientBillGrouped";
 	private static final String DEFAULT_PATIENTBILLSTATEMENT = "PatientBillStatement";
 	private static final boolean DEFAULT_DEBUG = false;
@@ -208,6 +212,8 @@ public final class GeneralData extends ConfigurationProperties {
 		DICOMTHUMBNAILS = myGetProperty("DICOMTHUMBNAILS", DEFAULT_DICOMTHUMBNAILS);
 		ALLOWPRINTOPENEDBILL = myGetProperty("ALLOWPRINTOPENEDBILL", DEFAULT_ALLOWPRINTOPENEDBILL);
 		ALLOWMULTIPLEOPENEDBILL = myGetProperty("ALLOWMULTIPLEOPENEDBILL", DEFAULT_ALLOWMULTIPLEOPENEDBILL);
+		STOCKMVTONBILLSAVE = myGetProperty("STOCKMVTONBILLSAVE", DEFAULT_STOCKMVTONBILLSAVE);
+		DEFAULTWARDINNEWBILL = myGetProperty("DEFAULTWARDINNEWBILL", DEFAULT_DEFAULTWARDINNEWBILL);
 		PATIENTBILLGROUPED = myGetProperty("PATIENTBILLGROUPED", DEFAULT_PATIENTBILLGROUPED);
 		PATIENTBILLSTATEMENT = myGetProperty("PATIENTBILLSTATEMENT", DEFAULT_PATIENTBILLSTATEMENT);
 		DEBUG = myGetProperty("DEBUG", DEFAULT_DEBUG);

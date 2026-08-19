@@ -393,4 +393,14 @@ public class MedicalStockWardIoOperations {
 	public List<MovementWard> getMovementWardByWardMedicalAndLotAfterOrSameDate(String wardCode, int medicalCode, String lotCode, LocalDateTime date) {
 		return movementRepository.findByWardMedicalAndLotAfterOrSameDate(wardCode, medicalCode, lotCode, date);
 	}
+
+	/**
+	 * Get all {@link MovementWard}s tagged with the specified bill id.
+	 *
+	 * @param billId - the bill id.
+	 * @return the retrieved movements.
+	 */
+	public List<MovementWard> getMovementWardByBillId(Integer billId) {
+		return movementRepository.findByBillId(billId);
+	}
 }

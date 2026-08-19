@@ -23,29 +23,51 @@ package org.isf.accounting.manager;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 import org.isf.accounting.model.Bill;
 import org.isf.accounting.model.BillItems;
 import org.isf.accounting.model.BillPayments;
 import org.isf.accounting.service.AccountingIoOperations;
+import org.isf.generaldata.GeneralData;
 import org.isf.generaldata.MessageBundle;
+import org.isf.medicals.manager.MedicalBrowsingManager;
+import org.isf.medicals.model.Medical;
+import org.isf.medicalstockward.manager.MovWardBrowserManager;
+import org.isf.medicalstockward.model.MedicalWard;
+import org.isf.medicalstockward.model.MovementWard;
 import org.isf.patient.model.Patient;
 import org.isf.utils.db.TranslateOHServiceException;
 import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.model.OHExceptionMessage;
 import org.isf.utils.time.TimeTools;
+import org.isf.ward.model.Ward;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
 public class BillBrowserManager {
 
-	private final AccountingIoOperations ioOperations;
+	private static final String MEDICAL_GROUP_CODE = "MED";
 
-	public BillBrowserManager(AccountingIoOperations accountingIoOperations) {
+	private final AccountingIoOperations ioOperations;
+	private final MovWardBrowserManager movWardBrowserManager;
+	private final MedicalBrowsingManager medicalBrowsingManager;
+
+	public BillBrowserManager(
+		AccountingIoOperations accountingIoOperations,
+		MovWardBrowserManager movWardBrowserManager,
+		MedicalBrowsingManager medicalBrowsingManager) {
 		this.ioOperations = accountingIoOperations;
+		this.movWardBrowserManager = movWardBrowserManager;
+		this.medicalBrowsingManager = medicalBrowsingManager;
 	}
 
 	/**
@@ -168,6 +190,9 @@ public class BillBrowserManager {
 		if (!billPayments.isEmpty()) {
 			newBillPayments(billId, billPayments);
 		}
+		if (GeneralData.STOCKMVTONBILLSAVE && newBill.getWard() != null) {
+			createBillStockMovements(newBill, billItems);
+		}
 		return newBill;
 	}
 
@@ -219,6 +244,9 @@ public class BillBrowserManager {
 		List<BillItems> billItems,
 		List<BillPayments> billPayments) throws OHServiceException {
 		validateBill(updateBill, billPayments);
+		if (GeneralData.STOCKMVTONBILLSAVE) {
+			reconcileBillStockMovements(updateBill, billItems);
+		}
 		Bill updatedBill = updateBill(updateBill);
 		newBillItems(updateBill.getId(), billItems);
 		newBillPayments(updateBill.getId(), billPayments);
@@ -274,7 +302,11 @@ public class BillBrowserManager {
 	 * @param deleteBill the bill to delete.
 	 * @throws OHServiceException
 	 */
+	@Transactional(rollbackFor = OHServiceException.class)
 	public void deleteBill(Bill deleteBill) throws OHServiceException {
+		if (GeneralData.STOCKMVTONBILLSAVE) {
+			reverseBillStockMovements(deleteBill.getId());
+		}
 		ioOperations.deleteBill(deleteBill);
 	}
 
@@ -350,7 +382,7 @@ public class BillBrowserManager {
 
 	/**
 	 * Get the bills list with a given billItem
-	 * 
+	 *
 	 * @param dateFrom
 	 * @param dateTo
 	 * @param billItem
@@ -359,5 +391,154 @@ public class BillBrowserManager {
 	 */
 	public List<Bill> getBills(LocalDateTime dateFrom, LocalDateTime dateTo, BillItems billItem) throws OHServiceException {
 		return ioOperations.getBillsBetweenDatesWhereBillItem(dateFrom, dateTo, billItem);
+	}
+
+	/**
+	 * Reverses every ward stock movement currently tagged (via {@link MovementWard#getBillId()}) with
+	 * the specified bill id, restoring the stock they deducted. Called when a bill is deleted, or
+	 * (per-medical, via {@link #reconcileBillStockMovements}) when it's edited.
+	 *
+	 * @param billId the bill id.
+	 * @throws OHServiceException
+	 */
+	private void reverseBillStockMovements(int billId) throws OHServiceException {
+		for (MovementWard movement : movWardBrowserManager.getMovementWardByBillId(billId)) {
+			movWardBrowserManager.reverseMovementWard(movement);
+		}
+	}
+
+	/**
+	 * Reconciles a bill's ward stock movements against its new item list, medical by medical: a
+	 * medical whose total requested quantity and ward are unchanged from what's already tagged to
+	 * this bill is left untouched (no reversal, no new movement, no churn in the ward's movement
+	 * history); any other medical (quantity changed, removed, or ward changed) has its previously
+	 * tagged movements reversed and, if it's still on the bill with quantity &gt; 0, fresh movement(s)
+	 * created for the new quantity. Matching is by medical code (parsed from {@code BillItems.priceID},
+	 * e.g. {@code "MED42"}), not by bill item identity - {@code BillItems} rows have no identity
+	 * stable across saves ({@code AccountingIoOperations.newBillItems} deletes and reinserts every row
+	 * on every save), so aggregating per medical is what's actually reliable to diff.
+	 *
+	 * @param bill the bill being updated (its {@code ward} reflects the value about to be saved).
+	 * @param billItems the bill's new item list (about to be saved).
+	 * @throws OHServiceException
+	 */
+	private void reconcileBillStockMovements(Bill bill, List<BillItems> billItems) throws OHServiceException {
+		Ward newWard = bill.getWard();
+
+		Map<Integer, List<MovementWard>> oldMovementsByMedicalCode = new LinkedHashMap<>();
+		for (MovementWard movement : movWardBrowserManager.getMovementWardByBillId(bill.getId())) {
+			oldMovementsByMedicalCode.computeIfAbsent(movement.getMedical().getCode(), code -> new ArrayList<>()).add(movement);
+		}
+
+		Map<Integer, Integer> newQtyByMedicalCode = newWard != null ? aggregateMedicalQuantities(billItems) : Map.of();
+
+		Set<Integer> medicalCodes = new LinkedHashSet<>();
+		medicalCodes.addAll(oldMovementsByMedicalCode.keySet());
+		medicalCodes.addAll(newQtyByMedicalCode.keySet());
+
+		Map<Integer, Integer> qtyToCreateByMedicalCode = new LinkedHashMap<>();
+		for (Integer medicalCode : medicalCodes) {
+			List<MovementWard> oldMovements = oldMovementsByMedicalCode.getOrDefault(medicalCode, List.of());
+			int oldQty = oldMovements.stream().mapToInt(movement -> movement.getQuantity().intValue()).sum();
+			int newQty = newQtyByMedicalCode.getOrDefault(medicalCode, 0);
+			boolean sameWard = !oldMovements.isEmpty() && sameWard(oldMovements.get(0).getWard(), newWard);
+
+			if (oldQty == newQty && sameWard) {
+				continue; // unchanged - leave the existing movement(s) untouched
+			}
+			for (MovementWard movement : oldMovements) {
+				movWardBrowserManager.reverseMovementWard(movement);
+			}
+			if (newQty > 0) {
+				qtyToCreateByMedicalCode.put(medicalCode, newQty);
+			}
+		}
+
+		createMovementsForMedicals(bill, qtyToCreateByMedicalCode);
+	}
+
+	private static boolean sameWard(Ward a, Ward b) {
+		return a != null && b != null && Objects.equals(a.getCode(), b.getCode());
+	}
+
+	/**
+	 * Sums {@code billItems}' quantities by medical code (parsed from the "MED"-prefixed
+	 * {@code priceID}), so a medical added via more than one bill item is treated as one aggregate
+	 * quantity.
+	 */
+	private Map<Integer, Integer> aggregateMedicalQuantities(List<BillItems> billItems) {
+		Map<Integer, Integer> qtyByMedicalCode = new LinkedHashMap<>();
+		for (BillItems item : billItems) {
+			if (item.getPriceID() != null && item.getPriceID().startsWith(MEDICAL_GROUP_CODE)) {
+				int medicalCode = Integer.parseInt(item.getPriceID().substring(MEDICAL_GROUP_CODE.length()));
+				qtyByMedicalCode.merge(medicalCode, item.getItemQuantity(), Integer::sum);
+			}
+		}
+		return qtyByMedicalCode;
+	}
+
+	/**
+	 * Creates ward stock movements for every medical item in {@code billItems}, deducting from
+	 * {@code bill.getWard()}'s stock (oldest-expiring lot first), tagging each created movement with
+	 * {@code bill.getId()}. Validates that the ward has enough total stock for every medical first,
+	 * throwing {@link OHDataValidationException} (rolling back the whole save) before creating
+	 * anything if not.
+	 *
+	 * @param bill the bill (already persisted, with its final id and ward).
+	 * @param billItems the bill's items.
+	 * @throws OHServiceException
+	 */
+	private void createBillStockMovements(Bill bill, List<BillItems> billItems) throws OHServiceException {
+		createMovementsForMedicals(bill, aggregateMedicalQuantities(billItems));
+	}
+
+	/**
+	 * @param qtyByMedicalCode medical code -&gt; total quantity to deduct from {@code bill.getWard()}'s
+	 * stock and tag as caused by {@code bill}.
+	 */
+	private void createMovementsForMedicals(Bill bill, Map<Integer, Integer> qtyByMedicalCode) throws OHServiceException {
+		if (qtyByMedicalCode.isEmpty()) {
+			return;
+		}
+		Ward ward = bill.getWard();
+
+		List<OHExceptionMessage> shortages = new ArrayList<>();
+		Map<Integer, Medical> medicalsByCode = new LinkedHashMap<>();
+		for (Map.Entry<Integer, Integer> entry : qtyByMedicalCode.entrySet()) {
+			Medical medical = medicalBrowsingManager.getMedical(entry.getKey());
+			medicalsByCode.put(entry.getKey(), medical);
+			int available = movWardBrowserManager.getCurrentQuantityInWard(ward, medical);
+			if (entry.getValue() > available) {
+				shortages.add(new OHExceptionMessage(
+					MessageBundle.formatMessage("angal.newbill.notenoughstockinwardforfmt.msg", medical.getDescription())));
+			}
+		}
+		if (!shortages.isEmpty()) {
+			throw new OHDataValidationException(shortages);
+		}
+
+		for (Map.Entry<Integer, Integer> entry : qtyByMedicalCode.entrySet()) {
+			Medical medical = medicalsByCode.get(entry.getKey());
+			int remainingQty = entry.getValue();
+
+			List<MedicalWard> lots = movWardBrowserManager.getMedicalsWard(ward.getCode(), medical.getCode(), true);
+			lots.sort(Comparator.comparing(medicalWard -> medicalWard.getLot() != null ? medicalWard.getLot().getDueDate() : LocalDateTime.MAX));
+
+			for (MedicalWard medicalWard : lots) {
+				if (remainingQty <= 0) {
+					break;
+				}
+				int lotQty = Math.min(remainingQty, medicalWard.getQty().intValue());
+				if (lotQty <= 0) {
+					continue;
+				}
+				MovementWard movement = new MovementWard(ward, bill.getDate(), bill.isPatient(), bill.getBillPatient(), 0, 0f,
+					MessageBundle.formatMessage("angal.newbill.stockmovementfrombill.fmt.msg", bill.getId()), medical, (double) lotQty, "pieces",
+					medicalWard.getLot());
+				movement.setBillId(bill.getId());
+				movWardBrowserManager.newMovementWard(movement);
+				remainingQty -= lotQty;
+			}
+		}
 	}
 }

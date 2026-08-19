@@ -641,6 +641,45 @@ class Tests extends OHCoreTestCase {
 	}
 
 	@Test
+	void testMgrReverseMovementWard() throws Exception {
+		MedicalType medicalType = testMedicalType.setup(false);
+		Medical medical = testMedical.setup(medicalType, false);
+		Ward ward = testWard.setup(false);
+		Patient patient = testPatient.setup(false);
+		Lot lot = testLot.setup(medical, false);
+
+		medicalTypeIoOperationRepository.saveAndFlush(medicalType);
+		medicalsIoOperationRepository.saveAndFlush(medical);
+		wardIoOperationRepository.saveAndFlush(ward);
+		patientIoOperationRepository.saveAndFlush(patient);
+		lotIoOperationRepository.saveAndFlush(lot);
+
+		// an earlier movement, which will be reversed
+		MovementWard earlierMovement = new MovementWard(ward, TimeTools.getNow().minusDays(1), true, patient, 0, 0f, "earlier", medical, 10.0,
+			"pieces", lot);
+		MovementWard persistedEarlier = movWardBrowserManager.newMovementWard(earlierMovement);
+
+		// a later, unrelated movement, which must be untouched by reversing the earlier one
+		MovementWard laterMovement = new MovementWard(ward, TimeTools.getNow(), true, patient, 0, 0f, "later", medical, 5.0, "pieces", lot);
+		MovementWard persistedLater = movWardBrowserManager.newMovementWard(laterMovement);
+
+		// sanity check: deleteLastMovementWard refuses to delete anything but the ward's most recent movement
+		assertThatThrownBy(() -> movWardBrowserManager.deleteLastMovementWard(persistedEarlier))
+						.isInstanceOf(OHDataValidationException.class);
+
+		MedicalWard medicalWardBeforeReverse = movWardBrowserManager.getMedicalWardByWardMedicalAndLot(ward.getCode(), medical.getCode(), lot.getCode());
+		float outQuantityBeforeReverse = medicalWardBeforeReverse.getOut_quantity();
+
+		movWardBrowserManager.reverseMovementWard(persistedEarlier);
+
+		assertThat(movementWardIoOperationRepository.findById(persistedEarlier.getCode())).isNotPresent();
+		assertThat(movementWardIoOperationRepository.findById(persistedLater.getCode())).isPresent();
+
+		MedicalWard medicalWardAfterReverse = movWardBrowserManager.getMedicalWardByWardMedicalAndLot(ward.getCode(), medical.getCode(), lot.getCode());
+		assertThat((double) medicalWardAfterReverse.getOut_quantity()).isCloseTo((double) (outQuantityBeforeReverse - 10.0f), offset(0.1));
+	}
+
+	@Test
 	void testMgrGetMovementToPatient() throws Exception {
 		MedicalType medicalType = testMedicalType.setup(false);
 		Medical medical = testMedical.setup(medicalType, false);

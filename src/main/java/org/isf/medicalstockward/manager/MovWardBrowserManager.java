@@ -375,4 +375,38 @@ public class MovWardBrowserManager {
 	public MovementWard getLastMovementWard(Ward ward) throws OHServiceException {
 		return ioOperations.getLastMovementWard(ward);
 	}
+
+	/**
+	 * Reverses the specified {@link MovementWard}: restores the quantity it deducted from the origin
+	 * ward's stock and deletes the movement, with no "must be the ward's most recent movement"
+	 * constraint (unlike {@link #deleteLastMovementWard(MovementWard)}).
+	 *
+	 * <p>This is intentionally unconstrained and must only be called for movements reached through a
+	 * known linkage (e.g. {@link MovementWard#getBillId()}) that this same caller is responsible
+	 * for - never on an arbitrary, user-chosen movement, since bypassing the ordering check can
+	 * corrupt stock history if used carelessly. Does not handle ward-to-ward transfers
+	 * ({@code wardTo}/{@code wardFrom}); bill-originated movements never set those.</p>
+	 *
+	 * @param movement the movement ward to reverse.
+	 * @throws OHServiceException
+	 */
+	@Transactional(rollbackFor = OHServiceException.class)
+	public void reverseMovementWard(MovementWard movement) throws OHServiceException {
+		MedicalWard medWard = getMedicalWardByWardMedicalAndLot(movement.getWard().getCode(), movement.getMedical().getCode(),
+			movement.getLot().getCode());
+		float movQty = movement.getQuantity().floatValue();
+		medWard.setOut_quantity(medWard.getOut_quantity() - movQty);
+		ioOperations.updateMedicalWard(medWard);
+		ioOperations.deleteMovementWard(movement);
+	}
+
+	/**
+	 * Gets all the {@link MovementWard}s tagged with the specified bill id.
+	 *
+	 * @param billId the bill id.
+	 * @return the retrieved movements.
+	 */
+	public List<MovementWard> getMovementWardByBillId(Integer billId) {
+		return ioOperations.getMovementWardByBillId(billId);
+	}
 }

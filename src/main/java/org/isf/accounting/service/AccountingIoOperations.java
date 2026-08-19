@@ -206,6 +206,7 @@ public class AccountingIoOperations {
 	 * @throws OHServiceException if an error occurs deleting the bill.
 	 */
 	public void deleteBill(Bill deleteBill) throws OHServiceException {
+		billItemsRepository.deleteWhereId(deleteBill.getId());
 		billRepository.deleteById(deleteBill.getId());
 	}
 
