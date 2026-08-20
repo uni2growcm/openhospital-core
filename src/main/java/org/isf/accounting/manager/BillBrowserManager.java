@@ -37,18 +37,23 @@ import org.isf.accounting.model.BillPayments;
 import org.isf.accounting.service.AccountingIoOperations;
 import org.isf.generaldata.GeneralData;
 import org.isf.generaldata.MessageBundle;
+import org.isf.lab.manager.LabManager;
 import org.isf.medicals.manager.MedicalBrowsingManager;
 import org.isf.medicals.model.Medical;
 import org.isf.medicalstockward.manager.MovWardBrowserManager;
 import org.isf.medicalstockward.model.MedicalWard;
 import org.isf.medicalstockward.model.MovementWard;
+import org.isf.operation.manager.OperationRowBrowserManager;
+import org.isf.operation.model.OperationRow;
 import org.isf.patient.model.Patient;
+import org.isf.therapy.manager.TherapyManager;
 import org.isf.utils.db.TranslateOHServiceException;
 import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.model.OHExceptionMessage;
 import org.isf.utils.time.TimeTools;
 import org.isf.ward.model.Ward;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,18 +61,29 @@ import org.springframework.transaction.annotation.Transactional;
 public class BillBrowserManager {
 
 	private static final String MEDICAL_GROUP_CODE = "MED";
+	private static final String EXAM_GROUP_CODE = "EXA";
+	private static final String OPERATION_GROUP_CODE = "OPE";
 
 	private final AccountingIoOperations ioOperations;
 	private final MovWardBrowserManager movWardBrowserManager;
 	private final MedicalBrowsingManager medicalBrowsingManager;
+	private final TherapyManager therapyManager;
+	private final LabManager labManager;
+	private final OperationRowBrowserManager operationRowManager;
 
 	public BillBrowserManager(
 		AccountingIoOperations accountingIoOperations,
 		MovWardBrowserManager movWardBrowserManager,
-		MedicalBrowsingManager medicalBrowsingManager) {
+		MedicalBrowsingManager medicalBrowsingManager,
+		@Lazy TherapyManager therapyManager,
+		LabManager labManager,
+		OperationRowBrowserManager operationRowManager) {
 		this.ioOperations = accountingIoOperations;
 		this.movWardBrowserManager = movWardBrowserManager;
 		this.medicalBrowsingManager = medicalBrowsingManager;
+		this.therapyManager = therapyManager;
+		this.labManager = labManager;
+		this.operationRowManager = operationRowManager;
 	}
 
 	/**
@@ -127,6 +143,35 @@ public class BillBrowserManager {
 			return new ArrayList<>();
 		}
 		return ioOperations.getItems(billID);
+	}
+
+	/**
+	 * Checks whether the specified patient has at least one outstanding prescription (a Therapy row
+	 * not yet fully billed, a Laboratory row not yet billed, or an OperationRow not yet billed).
+	 *
+	 * @param patient the patient.
+	 * @return {@code true} if at least one outstanding prescription exists.
+	 * @throws OHServiceException
+	 */
+	public boolean hasOutstandingPrescriptions(Patient patient) throws OHServiceException {
+		return !therapyManager.getOutstandingTherapyRows(patient.getCode()).isEmpty()
+			|| !labManager.getOutstandingLaboratory(patient).isEmpty()
+			|| !operationRowManager.getOutstandingOperationRows(patient).isEmpty();
+	}
+
+	/**
+	 * Checks whether the specified prescription source record is already linked to a bill item on a
+	 * different, closed bill for the given patient - used to prevent billing the same prescription
+	 * twice.
+	 *
+	 * @param patientCode the patient's code.
+	 * @param prescriptionId the prescription source record's id.
+	 * @param itemGroup the prescription source's item group ("MED"/"EXA"/"OPE").
+	 * @return {@code true} if already billed on a closed bill.
+	 * @throws OHServiceException
+	 */
+	public boolean isPrescriptionAlreadyBilledAndPaid(int patientCode, int prescriptionId, String itemGroup) throws OHServiceException {
+		return ioOperations.existsBilledOnClosedBill(patientCode, prescriptionId, itemGroup);
 	}
 
 	/**
@@ -193,6 +238,9 @@ public class BillBrowserManager {
 		if (GeneralData.STOCKMVTONBILLSAVE && newBill.getWard() != null) {
 			createBillStockMovements(newBill, billItems);
 		}
+		for (BillItems item : billItems) {
+			markPrescriptionBilled(item, newBill);
+		}
 		return newBill;
 	}
 
@@ -247,6 +295,7 @@ public class BillBrowserManager {
 		if (GeneralData.STOCKMVTONBILLSAVE) {
 			reconcileBillStockMovements(updateBill, billItems);
 		}
+		reconcilePrescriptions(updateBill, billItems);
 		Bill updatedBill = updateBill(updateBill);
 		newBillItems(updateBill.getId(), billItems);
 		newBillPayments(updateBill.getId(), billPayments);
@@ -306,6 +355,9 @@ public class BillBrowserManager {
 	public void deleteBill(Bill deleteBill) throws OHServiceException {
 		if (GeneralData.STOCKMVTONBILLSAVE) {
 			reverseBillStockMovements(deleteBill.getId());
+		}
+		for (BillItems item : getItems(deleteBill.getId())) {
+			reversePrescriptionBilled(item);
 		}
 		ioOperations.deleteBill(deleteBill);
 	}
@@ -459,6 +511,96 @@ public class BillBrowserManager {
 
 	private static boolean sameWard(Ward a, Ward b) {
 		return a != null && b != null && Objects.equals(a.getCode(), b.getCode());
+	}
+
+	/**
+	 * Marks the specified item's prescription source record (Therapy/Laboratory/OperationRow) as
+	 * billed on {@code bill}, to the extent of the item's quantity. No-op if the item isn't linked to
+	 * a prescription ({@link BillItems#getPrescriptionId()} is {@code null}).
+	 */
+	private void markPrescriptionBilled(BillItems item, Bill bill) throws OHServiceException {
+		if (item.getPrescriptionId() == null) {
+			return;
+		}
+		applyPrescriptionMarking(item, bill);
+	}
+
+	/**
+	 * Reverses the billed marking previously applied by {@link #markPrescriptionBilled}. No-op if the
+	 * item isn't linked to a prescription.
+	 */
+	private void reversePrescriptionBilled(BillItems item) throws OHServiceException {
+		if (item.getPrescriptionId() == null) {
+			return;
+		}
+		applyPrescriptionMarking(item, null);
+	}
+
+	/**
+	 * @param bill the bill to tag the source record with, or {@code null} to reverse/untag it.
+	 */
+	private void applyPrescriptionMarking(BillItems item, Bill bill) throws OHServiceException {
+		int prescriptionId = item.getPrescriptionId();
+		String group = item.getItemGroup();
+		if (MEDICAL_GROUP_CODE.equals(group)) {
+			double delta = bill != null ? item.getItemQuantity() : -item.getItemQuantity();
+			therapyManager.updateBougthQuantity(prescriptionId, delta);
+		} else if (EXAM_GROUP_CODE.equals(group)) {
+			labManager.updateBillId(prescriptionId, bill != null ? bill.getId() : null);
+		} else if (OPERATION_GROUP_CODE.equals(group)) {
+			OperationRow row = operationRowManager.getOperationRow(prescriptionId);
+			if (row != null) {
+				row.setBill(bill);
+				operationRowManager.updateOperationRow(row);
+			}
+		}
+	}
+
+	/**
+	 * Reconciles a bill's prescription markings against its new item list, by source record
+	 * ({@code itemGroup} + {@code prescriptionId}): an item unchanged in quantity and presence is left
+	 * untouched; an item no longer present has its source record's marking reversed; a newly-present
+	 * item has its source record marked billed; a therapy item whose quantity changed has its row's
+	 * billed quantity adjusted by the difference directly, rather than reversed and remarked.
+	 *
+	 * @param bill the bill being updated.
+	 * @param billItems the bill's new item list (about to be saved).
+	 * @throws OHServiceException
+	 */
+	private void reconcilePrescriptions(Bill bill, List<BillItems> billItems) throws OHServiceException {
+		Map<String, BillItems> oldByKey = new LinkedHashMap<>();
+		for (BillItems item : getItems(bill.getId())) {
+			if (item.getPrescriptionId() != null) {
+				oldByKey.put(prescriptionKey(item), item);
+			}
+		}
+		Map<String, BillItems> newByKey = new LinkedHashMap<>();
+		for (BillItems item : billItems) {
+			if (item.getPrescriptionId() != null) {
+				newByKey.put(prescriptionKey(item), item);
+			}
+		}
+
+		Set<String> keys = new LinkedHashSet<>();
+		keys.addAll(oldByKey.keySet());
+		keys.addAll(newByKey.keySet());
+
+		for (String key : keys) {
+			BillItems oldItem = oldByKey.get(key);
+			BillItems newItem = newByKey.get(key);
+			if (oldItem == null) {
+				markPrescriptionBilled(newItem, bill);
+			} else if (newItem == null) {
+				reversePrescriptionBilled(oldItem);
+			} else if (oldItem.getItemQuantity() != newItem.getItemQuantity() && MEDICAL_GROUP_CODE.equals(newItem.getItemGroup())) {
+				therapyManager.updateBougthQuantity(newItem.getPrescriptionId(), newItem.getItemQuantity() - oldItem.getItemQuantity());
+			}
+			// else: unchanged (or a same-presence EXA/OPE item, which has no quantity to reconcile) - leave untouched
+		}
+	}
+
+	private static String prescriptionKey(BillItems item) {
+		return item.getItemGroup() + ':' + item.getPrescriptionId();
 	}
 
 	/**

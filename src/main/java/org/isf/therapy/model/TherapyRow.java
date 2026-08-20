@@ -98,8 +98,12 @@ public class TherapyRow extends Auditable<String> {
 	private int notifyInt;
 
 	@NotNull
-	@Column(name="THR_SMS")	
+	@Column(name="THR_SMS")
 	private int smsInt;
+
+	@NotNull
+	@Column(name = "THR_QTY_BOUGTH", columnDefinition = "double default 0")
+	private Double qtyBougth = 0.0;
 
 	@Transient
 	private volatile int hashCode;
@@ -260,6 +264,46 @@ public class TherapyRow extends Auditable<String> {
 
 	public void setSmsInt(int smsInt) {
 		this.smsInt = smsInt;
+	}
+
+	public Double getQtyBougth() {
+		return qtyBougth;
+	}
+
+	public void setQtyBougth(Double qtyBougth) {
+		this.qtyBougth = qtyBougth;
+	}
+
+	/**
+	 * Total quantity prescribed across the whole course: dose per administration ×
+	 * administrations per day × number of dose-days from {@link #getStartDate()} to
+	 * {@link #getEndDate()}, stepping every {@link #getFreqInPeriod()} days - same
+	 * day-stepping as the administration schedule built by TherapyManager.createTherapy,
+	 * but counting the whole course (not just days remaining from today), since this
+	 * feeds billing: an unbilled early day is still owed, regardless of today's date.
+	 */
+	public double getTotalPrescribedQty() {
+		return qty * freqInDay * countDoseDays();
+	}
+
+	private int countDoseDays() {
+		int step = Math.max(1, freqInPeriod); // defensive: a 0/negative period would loop forever
+		LocalDateTime stepDate = TimeTools.truncateToSeconds(startDate);
+		LocalDateTime end = TimeTools.truncateToSeconds(endDate);
+		int count = 1;
+		while (stepDate.isBefore(end)) {
+			stepDate = stepDate.plusDays(step);
+			count++;
+		}
+		return count;
+	}
+
+	/**
+	 * Quantity still available to bill: {@link #getTotalPrescribedQty()} minus
+	 * {@link #getQtyBougth()}, never negative.
+	 */
+	public double getRemainingQty() {
+		return Math.max(0, getTotalPrescribedQty() - qtyBougth);
 	}
 
 	@Override

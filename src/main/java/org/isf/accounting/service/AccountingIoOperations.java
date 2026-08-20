@@ -120,6 +120,20 @@ public class AccountingIoOperations {
 	}
 
 	/**
+	 * Checks whether the specified prescription source record is already linked to a
+	 * {@link BillItems} on a closed bill for the given patient.
+	 *
+	 * @param patientCode the patient's code.
+	 * @param prescriptionId the prescription source record's id.
+	 * @param itemGroup the prescription source's item group ("MED"/"EXA"/"OPE").
+	 * @return {@code true} if already billed on a closed bill.
+	 * @throws OHServiceException
+	 */
+	public boolean existsBilledOnClosedBill(int patientCode, int prescriptionId, String itemGroup) throws OHServiceException {
+		return billItemsRepository.existsBilledOnClosedBill(patientCode, prescriptionId, itemGroup);
+	}
+
+	/**
 	 * Retrieves all the {@link BillPayments} for the specified date range.
 	 * 
 	 * @param dateFrom low endpoint, inclusive, for the date range.

@@ -41,7 +41,16 @@ import org.isf.accounting.service.AccountingBillIoOperationRepository;
 import org.isf.accounting.service.AccountingBillItemsIoOperationRepository;
 import org.isf.accounting.service.AccountingBillPaymentIoOperationRepository;
 import org.isf.accounting.service.AccountingIoOperations;
+import org.isf.exa.TestExam;
+import org.isf.exa.model.Exam;
+import org.isf.exa.service.ExamIoOperationRepository;
+import org.isf.exatype.TestExamType;
+import org.isf.exatype.model.ExamType;
+import org.isf.exatype.service.ExamTypeIoOperationRepository;
 import org.isf.generaldata.GeneralData;
+import org.isf.lab.TestLaboratory;
+import org.isf.lab.model.Laboratory;
+import org.isf.lab.service.LabIoOperationRepository;
 import org.isf.medicals.TestMedical;
 import org.isf.medicals.model.Medical;
 import org.isf.medicals.service.MedicalsIoOperationRepository;
@@ -56,6 +65,15 @@ import org.isf.medicalstockward.service.MovementWardIoOperationRepository;
 import org.isf.medtype.TestMedicalType;
 import org.isf.medtype.model.MedicalType;
 import org.isf.medtype.service.MedicalTypeIoOperationRepository;
+import org.isf.operation.TestOperation;
+import org.isf.operation.TestOperationRow;
+import org.isf.operation.model.Operation;
+import org.isf.operation.model.OperationRow;
+import org.isf.operation.service.OperationIoOperationRepository;
+import org.isf.operation.service.OperationRowIoOperationRepository;
+import org.isf.opetype.TestOperationType;
+import org.isf.opetype.model.OperationType;
+import org.isf.opetype.service.OperationTypeIoOperationRepository;
 import org.isf.patient.TestPatient;
 import org.isf.patient.model.Patient;
 import org.isf.patient.model.PatientMergedEvent;
@@ -63,6 +81,9 @@ import org.isf.patient.service.PatientIoOperationRepository;
 import org.isf.priceslist.TestPriceList;
 import org.isf.priceslist.model.PriceList;
 import org.isf.priceslist.service.PricesListIoOperationRepository;
+import org.isf.therapy.TestTherapy;
+import org.isf.therapy.model.TherapyRow;
+import org.isf.therapy.service.TherapyIoOperationRepository;
 import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHException;
 import org.isf.utils.time.TimeTools;
@@ -87,6 +108,13 @@ class Tests extends OHCoreTestCase {
 	private static TestMedical testMedical;
 	private static TestWard testWard;
 	private static TestLot testLot;
+	private static TestTherapy testTherapy;
+	private static TestExamType testExamType;
+	private static TestExam testExam;
+	private static TestLaboratory testLaboratory;
+	private static TestOperationType testOperationType;
+	private static TestOperation testOperation;
+	private static TestOperationRow testOperationRow;
 
 	@Autowired
 	BillBrowserManager billBrowserManager;
@@ -118,6 +146,20 @@ class Tests extends OHCoreTestCase {
 	WardIoOperationRepository wardIoOperationRepository;
 	@Autowired
 	LotIoOperationRepository lotIoOperationRepository;
+	@Autowired
+	TherapyIoOperationRepository therapyIoOperationRepository;
+	@Autowired
+	ExamTypeIoOperationRepository examTypeIoOperationRepository;
+	@Autowired
+	ExamIoOperationRepository examIoOperationRepository;
+	@Autowired
+	LabIoOperationRepository labIoOperationRepository;
+	@Autowired
+	OperationTypeIoOperationRepository operationTypeIoOperationRepository;
+	@Autowired
+	OperationIoOperationRepository operationIoOperationRepository;
+	@Autowired
+	OperationRowIoOperationRepository operationRowIoOperationRepository;
 	@PersistenceContext
 	EntityManager entityManager;
 
@@ -132,6 +174,13 @@ class Tests extends OHCoreTestCase {
 		testMedical = new TestMedical();
 		testWard = new TestWard();
 		testLot = new TestLot();
+		testTherapy = new TestTherapy();
+		testExamType = new TestExamType();
+		testExam = new TestExam();
+		testLaboratory = new TestLaboratory();
+		testOperationType = new TestOperationType();
+		testOperation = new TestOperation();
+		testOperationRow = new TestOperationRow();
 	}
 
 	@BeforeEach
@@ -1086,6 +1135,280 @@ class Tests extends OHCoreTestCase {
 	}
 
 	@Test
+	void mgrNewBillMarksTherapyLinkedItemBilled() throws Exception {
+		GeneralData.STOCKMVTONBILLSAVE = false;
+
+		Medical medical = setupMedical();
+		Patient patient = testPatient.setup(false);
+		patientIoOperationRepository.saveAndFlush(patient);
+		TherapyRow therapyRow = setupTherapyRow(patient, medical, 10.0);
+		PriceList priceList = testPriceList.setup(false);
+		priceListIoOperationRepository.saveAndFlush(priceList);
+
+		Bill bill = testBill.setup(priceList, patient, null, false);
+
+		BillItems medicalItem = testBillItems.setup(null, false);
+		medicalItem.setPriceID("MED" + medical.getCode());
+		medicalItem.setItemQuantity(6);
+		medicalItem.setItemGroup("MED");
+		medicalItem.setPrescriptionId(therapyRow.getTherapyID());
+		List<BillItems> billItems = new ArrayList<>();
+		billItems.add(medicalItem);
+
+		billBrowserManager.newBill(bill, billItems, new ArrayList<>());
+
+		assertThat(therapyIoOperationRepository.findById(therapyRow.getTherapyID()).orElseThrow().getQtyBougth()).isEqualTo(6.0);
+	}
+
+	@Test
+	void mgrNewBillMarksLaboratoryAndOperationLinkedItemsBilled() throws Exception {
+		GeneralData.STOCKMVTONBILLSAVE = false;
+
+		Patient patient = testPatient.setup(false);
+		patientIoOperationRepository.saveAndFlush(patient);
+		Laboratory laboratory = setupLaboratory(patient);
+		OperationRow operationRow = setupOperationRow();
+		PriceList priceList = testPriceList.setup(false);
+		priceListIoOperationRepository.saveAndFlush(priceList);
+
+		Bill bill = testBill.setup(priceList, patient, null, false);
+
+		BillItems examItem = testBillItems.setup(null, false);
+		examItem.setPriceID("EXA" + laboratory.getExam().getCode());
+		examItem.setItemQuantity(1);
+		examItem.setItemGroup("EXA");
+		examItem.setPrescriptionId(laboratory.getCode());
+
+		BillItems operationItem = testBillItems.setup(null, false);
+		operationItem.setPriceID("OPE" + operationRow.getOperation().getCode());
+		operationItem.setItemQuantity(1);
+		operationItem.setItemGroup("OPE");
+		operationItem.setPrescriptionId(operationRow.getId());
+
+		List<BillItems> billItems = new ArrayList<>();
+		billItems.add(examItem);
+		billItems.add(operationItem);
+
+		Bill savedBill = billBrowserManager.newBill(bill, billItems, new ArrayList<>());
+
+		assertThat(labIoOperationRepository.findById(laboratory.getCode()).orElseThrow().getBillId()).isEqualTo(savedBill.getId());
+		assertThat(operationRowIoOperationRepository.findById(operationRow.getId()).getBill().getId()).isEqualTo(savedBill.getId());
+	}
+
+	@Test
+	void mgrUpdateBillRemovingPrescriptionItemReversesTherapyMarking() throws Exception {
+		GeneralData.STOCKMVTONBILLSAVE = false;
+
+		Medical medical = setupMedical();
+		Patient patient = testPatient.setup(false);
+		patientIoOperationRepository.saveAndFlush(patient);
+		TherapyRow therapyRow = setupTherapyRow(patient, medical, 10.0);
+		PriceList priceList = testPriceList.setup(false);
+		priceListIoOperationRepository.saveAndFlush(priceList);
+
+		Bill bill = testBill.setup(priceList, patient, null, false);
+
+		BillItems medicalItem = testBillItems.setup(null, false);
+		medicalItem.setPriceID("MED" + medical.getCode());
+		medicalItem.setItemQuantity(6);
+		medicalItem.setItemGroup("MED");
+		medicalItem.setPrescriptionId(therapyRow.getTherapyID());
+		List<BillItems> billItems = new ArrayList<>();
+		billItems.add(medicalItem);
+
+		Bill savedBill = billBrowserManager.newBill(bill, billItems, new ArrayList<>());
+		assertThat(therapyIoOperationRepository.findById(therapyRow.getTherapyID()).orElseThrow().getQtyBougth()).isEqualTo(6.0);
+
+		Bill updateBill = accountingBillIoOperationRepository.findById(savedBill.getId()).orElse(null);
+		assertThat(updateBill).isNotNull();
+		billBrowserManager.updateBill(updateBill, new ArrayList<>(), new ArrayList<>());
+
+		assertThat(therapyIoOperationRepository.findById(therapyRow.getTherapyID()).orElseThrow().getQtyBougth()).isEqualTo(0.0);
+	}
+
+	@Test
+	void mgrUpdateBillUnchangedPrescriptionItemLeavesMarkingUntouched() throws Exception {
+		GeneralData.STOCKMVTONBILLSAVE = false;
+
+		Medical medical = setupMedical();
+		Patient patient = testPatient.setup(false);
+		patientIoOperationRepository.saveAndFlush(patient);
+		TherapyRow therapyRow = setupTherapyRow(patient, medical, 10.0);
+		PriceList priceList = testPriceList.setup(false);
+		priceListIoOperationRepository.saveAndFlush(priceList);
+
+		Bill bill = testBill.setup(priceList, patient, null, false);
+
+		BillItems medicalItem = testBillItems.setup(null, false);
+		medicalItem.setPriceID("MED" + medical.getCode());
+		medicalItem.setItemQuantity(6);
+		medicalItem.setItemGroup("MED");
+		medicalItem.setPrescriptionId(therapyRow.getTherapyID());
+		List<BillItems> billItems = new ArrayList<>();
+		billItems.add(medicalItem);
+
+		Bill savedBill = billBrowserManager.newBill(bill, billItems, new ArrayList<>());
+		assertThat(therapyIoOperationRepository.findById(therapyRow.getTherapyID()).orElseThrow().getQtyBougth()).isEqualTo(6.0);
+
+		// when: the bill is re-saved with the exact same prescription-linked item (same quantity)
+		Bill updateBill = accountingBillIoOperationRepository.findById(savedBill.getId()).orElse(null);
+		assertThat(updateBill).isNotNull();
+
+		BillItems sameMedicalItem = testBillItems.setup(null, false);
+		sameMedicalItem.setPriceID("MED" + medical.getCode());
+		sameMedicalItem.setItemQuantity(6);
+		sameMedicalItem.setItemGroup("MED");
+		sameMedicalItem.setPrescriptionId(therapyRow.getTherapyID());
+		List<BillItems> sameBillItems = new ArrayList<>();
+		sameBillItems.add(sameMedicalItem);
+
+		billBrowserManager.updateBill(updateBill, sameBillItems, new ArrayList<>());
+
+		// then: qtyBougth is left exactly as it was (not doubled, not reset)
+		assertThat(therapyIoOperationRepository.findById(therapyRow.getTherapyID()).orElseThrow().getQtyBougth()).isEqualTo(6.0);
+	}
+
+	@Test
+	void mgrUpdateBillChangingTherapyItemQuantityAdjustsQtyBougthByDelta() throws Exception {
+		GeneralData.STOCKMVTONBILLSAVE = false;
+
+		Medical medical = setupMedical();
+		Patient patient = testPatient.setup(false);
+		patientIoOperationRepository.saveAndFlush(patient);
+		TherapyRow therapyRow = setupTherapyRow(patient, medical, 10.0);
+		PriceList priceList = testPriceList.setup(false);
+		priceListIoOperationRepository.saveAndFlush(priceList);
+
+		Bill bill = testBill.setup(priceList, patient, null, false);
+
+		BillItems medicalItem = testBillItems.setup(null, false);
+		medicalItem.setPriceID("MED" + medical.getCode());
+		medicalItem.setItemQuantity(6);
+		medicalItem.setItemGroup("MED");
+		medicalItem.setPrescriptionId(therapyRow.getTherapyID());
+		List<BillItems> billItems = new ArrayList<>();
+		billItems.add(medicalItem);
+
+		Bill savedBill = billBrowserManager.newBill(bill, billItems, new ArrayList<>());
+		assertThat(therapyIoOperationRepository.findById(therapyRow.getTherapyID()).orElseThrow().getQtyBougth()).isEqualTo(6.0);
+
+		Bill updateBill = accountingBillIoOperationRepository.findById(savedBill.getId()).orElse(null);
+		assertThat(updateBill).isNotNull();
+
+		BillItems increasedMedicalItem = testBillItems.setup(null, false);
+		increasedMedicalItem.setPriceID("MED" + medical.getCode());
+		increasedMedicalItem.setItemQuantity(9);
+		increasedMedicalItem.setItemGroup("MED");
+		increasedMedicalItem.setPrescriptionId(therapyRow.getTherapyID());
+		List<BillItems> increasedBillItems = new ArrayList<>();
+		increasedBillItems.add(increasedMedicalItem);
+
+		billBrowserManager.updateBill(updateBill, increasedBillItems, new ArrayList<>());
+
+		// the delta (+3) is applied directly to qtyBougth (6 -> 9), not reversed to 0 and remarked
+		assertThat(therapyIoOperationRepository.findById(therapyRow.getTherapyID()).orElseThrow().getQtyBougth()).isEqualTo(9.0);
+	}
+
+	@Test
+	void mgrDeleteBillReversesAllPrescriptionMarkings() throws Exception {
+		GeneralData.STOCKMVTONBILLSAVE = false;
+
+		Medical medical = setupMedical();
+		Patient patient = testPatient.setup(false);
+		patientIoOperationRepository.saveAndFlush(patient);
+		TherapyRow therapyRow = setupTherapyRow(patient, medical, 10.0);
+		Laboratory laboratory = setupLaboratory(patient);
+		OperationRow operationRow = setupOperationRow();
+		PriceList priceList = testPriceList.setup(false);
+		priceListIoOperationRepository.saveAndFlush(priceList);
+
+		Bill bill = testBill.setup(priceList, patient, null, false);
+
+		BillItems medicalItem = testBillItems.setup(null, false);
+		medicalItem.setPriceID("MED" + medical.getCode());
+		medicalItem.setItemQuantity(6);
+		medicalItem.setItemGroup("MED");
+		medicalItem.setPrescriptionId(therapyRow.getTherapyID());
+
+		BillItems examItem = testBillItems.setup(null, false);
+		examItem.setPriceID("EXA" + laboratory.getExam().getCode());
+		examItem.setItemQuantity(1);
+		examItem.setItemGroup("EXA");
+		examItem.setPrescriptionId(laboratory.getCode());
+
+		BillItems operationItem = testBillItems.setup(null, false);
+		operationItem.setPriceID("OPE" + operationRow.getOperation().getCode());
+		operationItem.setItemQuantity(1);
+		operationItem.setItemGroup("OPE");
+		operationItem.setPrescriptionId(operationRow.getId());
+
+		List<BillItems> billItems = new ArrayList<>();
+		billItems.add(medicalItem);
+		billItems.add(examItem);
+		billItems.add(operationItem);
+
+		Bill savedBill = billBrowserManager.newBill(bill, billItems, new ArrayList<>());
+		assertThat(therapyIoOperationRepository.findById(therapyRow.getTherapyID()).orElseThrow().getQtyBougth()).isEqualTo(6.0);
+		assertThat(labIoOperationRepository.findById(laboratory.getCode()).orElseThrow().getBillId()).isEqualTo(savedBill.getId());
+		assertThat(operationRowIoOperationRepository.findById(operationRow.getId()).getBill()).isNotNull();
+
+		billBrowserManager.deleteBill(savedBill);
+
+		assertThat(therapyIoOperationRepository.findById(therapyRow.getTherapyID()).orElseThrow().getQtyBougth()).isEqualTo(0.0);
+		assertThat(labIoOperationRepository.findById(laboratory.getCode()).orElseThrow().getBillId()).isNull();
+		assertThat(operationRowIoOperationRepository.findById(operationRow.getId()).getBill()).isNull();
+	}
+
+	@Test
+	void mgrIsPrescriptionAlreadyBilledAndPaidTrueOnlyForClosedBill() throws Exception {
+		GeneralData.STOCKMVTONBILLSAVE = false;
+
+		Medical medical = setupMedical();
+		Patient patient = testPatient.setup(false);
+		patientIoOperationRepository.saveAndFlush(patient);
+		TherapyRow therapyRow = setupTherapyRow(patient, medical, 10.0);
+		PriceList priceList = testPriceList.setup(false);
+		priceListIoOperationRepository.saveAndFlush(priceList);
+
+		Bill closedBill = testBill.setup(priceList, patient, null, false);
+		closedBill.setStatus("C");
+		closedBill.setBalance(0.0);
+
+		BillItems medicalItem = testBillItems.setup(null, false);
+		medicalItem.setPriceID("MED" + medical.getCode());
+		medicalItem.setItemQuantity(6);
+		medicalItem.setItemGroup("MED");
+		medicalItem.setPrescriptionId(therapyRow.getTherapyID());
+		List<BillItems> billItems = new ArrayList<>();
+		billItems.add(medicalItem);
+
+		billBrowserManager.newBill(closedBill, billItems, new ArrayList<>());
+
+		assertThat(billBrowserManager.isPrescriptionAlreadyBilledAndPaid(patient.getCode(), therapyRow.getTherapyID(), "MED")).isTrue();
+
+		// a different patient never billed this prescription
+		Patient otherPatient = testPatient.setup(true);
+		patientIoOperationRepository.saveAndFlush(otherPatient);
+		assertThat(billBrowserManager.isPrescriptionAlreadyBilledAndPaid(otherPatient.getCode(), therapyRow.getTherapyID(), "MED")).isFalse();
+
+		// an open bill referencing the same prescription doesn't count as "already billed and paid"
+		TherapyRow otherTherapyRow = setupTherapyRow(patient, medical, 10.0);
+		Bill openBill = testBill.setup(priceList, patient, null, false);
+
+		BillItems openMedicalItem = testBillItems.setup(null, false);
+		openMedicalItem.setPriceID("MED" + medical.getCode());
+		openMedicalItem.setItemQuantity(4);
+		openMedicalItem.setItemGroup("MED");
+		openMedicalItem.setPrescriptionId(otherTherapyRow.getTherapyID());
+		List<BillItems> openBillItems = new ArrayList<>();
+		openBillItems.add(openMedicalItem);
+
+		billBrowserManager.newBill(openBill, openBillItems, new ArrayList<>());
+
+		assertThat(billBrowserManager.isPrescriptionAlreadyBilledAndPaid(patient.getCode(), otherTherapyRow.getTherapyID(), "MED")).isFalse();
+	}
+
+	@Test
 	void mgrGetBillsPayment() throws Exception {
 		int id = setupTestBillPayments(false);
 		BillPayments foundBillPayment = accountingBillPaymentIoOperationRepository.findById(id).orElse(null);
@@ -1327,5 +1650,33 @@ class Tests extends OHCoreTestCase {
 			}
 		}
 		throw new AssertionError("No movement found for lot " + lotCode);
+	}
+
+	private TherapyRow setupTherapyRow(Patient patient, Medical medical, Double qty) throws OHException {
+		TherapyRow therapyRow = testTherapy.setup(patient, medical, false);
+		therapyRow.setQty(qty);
+		therapyRow.setQtyBougth(0.0);
+		therapyIoOperationRepository.saveAndFlush(therapyRow);
+		return therapyRow;
+	}
+
+	private Laboratory setupLaboratory(Patient patient) throws OHException {
+		ExamType examType = testExamType.setup(false);
+		Exam exam = testExam.setup(examType, 1, false);
+		examTypeIoOperationRepository.saveAndFlush(examType);
+		examIoOperationRepository.saveAndFlush(exam);
+		Laboratory laboratory = testLaboratory.setup(exam, patient, false);
+		labIoOperationRepository.saveAndFlush(laboratory);
+		return laboratory;
+	}
+
+	private OperationRow setupOperationRow() throws OHException {
+		OperationType operationType = testOperationType.setup(false);
+		Operation operation = testOperation.setup(operationType, true);
+		operationTypeIoOperationRepository.saveAndFlush(operationType);
+		operationIoOperationRepository.saveAndFlush(operation);
+		OperationRow operationRow = testOperationRow.setup(operation, true);
+		operationRowIoOperationRepository.saveAndFlush(operationRow);
+		return operationRow;
 	}
 }

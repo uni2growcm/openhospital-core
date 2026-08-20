@@ -476,6 +476,67 @@ class Tests extends OHCoreTestCase {
 		assertThat(therapy).hasToString("10.0 of TestDescription - 1 per day");
 	}
 
+	@Test
+	void mgrGetOutstandingTherapyRowsExcludesFullyBilled() throws Exception {
+		MedicalType medicalType = testMedicalType.setup(false);
+		Medical medical = testMedical.setup(medicalType, true);
+		Patient patient = testPatient.setup(false);
+		medicalTypeIoOperationRepository.saveAndFlush(medicalType);
+		medicalsIoOperationRepository.saveAndFlush(medical);
+		patientIoOperationRepository.saveAndFlush(patient);
+
+		TherapyRow outstandingRow = testTherapyRow.setup(patient, medical, false);
+		outstandingRow.setQtyBougth(0.0);
+		therapyIoOperationRepository.saveAndFlush(outstandingRow);
+
+		TherapyRow fullyBilledRow = testTherapyRow.setup(patient, medical, false);
+		fullyBilledRow.setQtyBougth(fullyBilledRow.getTotalPrescribedQty());
+		therapyIoOperationRepository.saveAndFlush(fullyBilledRow);
+
+		List<TherapyRow> outstanding = therapyManager.getOutstandingTherapyRows(patient.getCode());
+
+		assertThat(outstanding).extracting(TherapyRow::getTherapyID).containsExactly(outstandingRow.getTherapyID());
+	}
+
+	@Test
+	void therapyRowRemainingQtyAccountsForFrequencyAndDuration() {
+		// paracetamol, 2 per dose, 3 times a day, for 7 days (a dose-day every day)
+		TherapyRow therapyRow = new TherapyRow();
+		therapyRow.setQty(2.0);
+		therapyRow.setFreqInDay(3);
+		therapyRow.setFreqInPeriod(1);
+		therapyRow.setStartDate(LocalDateTime.of(2026, 1, 1, 0, 0));
+		therapyRow.setEndDate(LocalDateTime.of(2026, 1, 7, 0, 0));
+		therapyRow.setQtyBougth(0.0);
+
+		assertThat(therapyRow.getTotalPrescribedQty()).isEqualTo(42.0);
+		assertThat(therapyRow.getRemainingQty()).isEqualTo(42.0);
+
+		therapyRow.setQtyBougth(2.0);
+		assertThat(therapyRow.getRemainingQty()).isEqualTo(40.0);
+	}
+
+	@Test
+	void therapyRowZeroFreqInPeriodDoesNotLoopForeverAndBehavesLikeOne() {
+		TherapyRow zeroPeriod = new TherapyRow();
+		zeroPeriod.setQty(2.0);
+		zeroPeriod.setFreqInDay(3);
+		zeroPeriod.setFreqInPeriod(0);
+		zeroPeriod.setStartDate(LocalDateTime.of(2026, 1, 1, 0, 0));
+		zeroPeriod.setEndDate(LocalDateTime.of(2026, 1, 7, 0, 0));
+		zeroPeriod.setQtyBougth(0.0);
+
+		TherapyRow onePeriod = new TherapyRow();
+		onePeriod.setQty(2.0);
+		onePeriod.setFreqInDay(3);
+		onePeriod.setFreqInPeriod(1);
+		onePeriod.setStartDate(LocalDateTime.of(2026, 1, 1, 0, 0));
+		onePeriod.setEndDate(LocalDateTime.of(2026, 1, 7, 0, 0));
+		onePeriod.setQtyBougth(0.0);
+
+		assertThat(zeroPeriod.getTotalPrescribedQty()).isEqualTo(onePeriod.getTotalPrescribedQty());
+	}
+
 	private Patient setupTestPatient(boolean usingSet) throws OHException {
 		Patient patient = testPatient.setup(usingSet);
 		patientIoOperationRepository.saveAndFlush(patient);
