@@ -402,22 +402,21 @@ public class MedicalStockIoOperations {
 			return existing;
 		}
 
-		int delta = newQuantity - oldQuantity;
+		int quantityChange = newQuantity - oldQuantity;
 		boolean chargeMovement = existing.getType().getType().contains("+");
 		Medical medical = existing.getMedical();
 
 		if (chargeMovement) {
-			updateMedicalIncomingQuantity(medical.getCode(), delta);
+			updateMedicalIncomingQuantity(medical.getCode(), quantityChange);
 		} else {
-			updateMedicalOutcomingQuantity(medical.getCode(), delta);
+			updateMedicalOutcomingQuantity(medical.getCode(), quantityChange);
 			Ward ward = existing.getWard();
 			if (ward != null) {
-				updateMedicalWardQuantity(ward, medical, delta, existing.getLot());
+				updateMedicalWardQuantity(ward, medical, quantityChange, existing.getLot());
 			}
 		}
 
-		// adjusts the daily balances from the movement date forward
-		updateMedicalStockBalancesFromDate(medical, existing.getDate().toLocalDate(), chargeMovement ? delta : -delta);
+		updateMedicalStockBalancesFromDate(medical, existing.getDate().toLocalDate(), chargeMovement ? quantityChange : -quantityChange);
 
 		existing.setQuantity(newQuantity);
 		return movRepository.save(existing);
