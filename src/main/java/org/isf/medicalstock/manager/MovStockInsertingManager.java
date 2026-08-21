@@ -410,6 +410,45 @@ public class MovStockInsertingManager {
 	}
 
 	/**
+	 * Updates (adjusts) the quantity of an existing {@link Movement}.
+	 *
+	 * @param movement the movement carrying the new quantity.
+	 * @return the {@link Movement} updated.
+	 * @throws OHServiceException if an error occurs during the update.
+	 */
+	@Transactional(rollbackFor = OHServiceException.class)
+	public Movement updateMovement(Movement movement) throws OHServiceException {
+		validateMovementUpdate(movement);
+		return ioOperations.updateMovement(movement);
+	}
+
+	/**
+	 * Verifies that the {@link Movement} can be updated (quantity adjustment).
+	 *
+	 * @param movement the movement to validate.
+	 * @throws OHServiceException if the movement is not valid.
+	 */
+	protected void validateMovementUpdate(Movement movement) throws OHServiceException {
+		List<OHExceptionMessage> errors = new ArrayList<>();
+		if (movement.getCode() == 0) {
+			errors.add(new OHExceptionMessage("The movement code is required."));
+		}
+		if (movement.getQuantity() < 0) {
+			errors.add(new OHExceptionMessage("The quantity must not be negative."));
+		}
+		if (movement.getMedical() == null) {
+			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.medicalstock.chooseamedical.msg")));
+		}
+		if (movement.getType() == null) {
+			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.medicalstock.pleasechooseatype.msg")));
+		}
+
+		if (!errors.isEmpty()) {
+			throw new OHDataValidationException(errors);
+		}
+	}
+
+	/**
 	 * Insert a list of discharging {@link Movement}s
 	 *
 	 * @param movements the list of {@link Movement}s
