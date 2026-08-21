@@ -118,3 +118,4 @@ source step_a121_add_variable_price_column.sql;
 source step_a122_add_billing_ward_stock.sql;
 source step_a123_add_prescription_billing_columns.sql;
 source step_a124_add_reduction_plan.sql;
+source step_a125_add_close_bill_permission.sql;

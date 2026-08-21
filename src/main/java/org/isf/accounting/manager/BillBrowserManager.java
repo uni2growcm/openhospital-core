@@ -314,6 +314,32 @@ public class BillBrowserManager {
 	}
 
 	/**
+	 * Manually closes an open, fully-paid {@link Bill} from the bill browser. Unlike
+	 * {@link #updateBill(Bill, List, List)}, this only changes the bill's status - it does not touch
+	 * items or payments, so it does not reconcile ward stock movements or prescriptions.
+	 *
+	 * @param bill the {@link Bill} to close.
+	 * @return the updated {@link Bill}.
+	 * @throws OHServiceException if the bill isn't open, or has a non-zero balance.
+	 */
+	@Transactional(rollbackFor = OHServiceException.class)
+	@TranslateOHServiceException
+	public Bill closeBill(Bill bill) throws OHServiceException {
+		List<OHExceptionMessage> errors = new ArrayList<>();
+		if (!"O".equals(bill.getStatus())) {
+			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.newbill.onlyopenbillscanbeclosed.msg")));
+		}
+		if (bill.getBalance() != 0) {
+			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.newbill.abillwithanoutstandingbalancecannotbeclosed.msg")));
+		}
+		if (!errors.isEmpty()) {
+			throw new OHDataValidationException(errors);
+		}
+		bill.setStatus("C");
+		return updateBill(bill);
+	}
+
+	/**
 	 * Returns all the pending {@link Bill}s for the specified patient.
 	 * 
 	 * @param patID the patient id.
