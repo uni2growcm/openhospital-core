@@ -78,6 +78,7 @@ public final class GeneralData extends ConfigurationProperties {
 	public static boolean DICOMTHUMBNAILS;
 	public static boolean ALLOWPRINTOPENEDBILL;
 	public static boolean ALLOWMULTIPLEOPENEDBILL;
+	public static boolean ALLOWDELETESAVEDBILLITEM;
 	public static boolean STOCKMVTONBILLSAVE;
 	public static boolean ENABLEREDUCTIONPLAN;
 	public static String DEFAULTWARDINNEWBILL;
@@ -140,6 +141,7 @@ public final class GeneralData extends ConfigurationProperties {
 	private static final boolean DEFAULT_DICOMTHUMBNAILS = true;
 	private static final boolean DEFAULT_ALLOWPRINTOPENEDBILL = false;
 	private static final boolean DEFAULT_ALLOWMULTIPLEOPENEDBILL = false;
+	private static final boolean DEFAULT_ALLOWDELETESAVEDBILLITEM = false;
 	private static final boolean DEFAULT_STOCKMVTONBILLSAVE = false;
 	private static final boolean DEFAULT_ENABLEREDUCTIONPLAN = false;
 	private static final String DEFAULT_DEFAULTWARDINNEWBILL = "";
@@ -214,6 +216,7 @@ public final class GeneralData extends ConfigurationProperties {
 		DICOMTHUMBNAILS = myGetProperty("DICOMTHUMBNAILS", DEFAULT_DICOMTHUMBNAILS);
 		ALLOWPRINTOPENEDBILL = myGetProperty("ALLOWPRINTOPENEDBILL", DEFAULT_ALLOWPRINTOPENEDBILL);
 		ALLOWMULTIPLEOPENEDBILL = myGetProperty("ALLOWMULTIPLEOPENEDBILL", DEFAULT_ALLOWMULTIPLEOPENEDBILL);
+		ALLOWDELETESAVEDBILLITEM = myGetProperty("ALLOWDELETESAVEDBILLITEM", DEFAULT_ALLOWDELETESAVEDBILLITEM);
 		STOCKMVTONBILLSAVE = myGetProperty("STOCKMVTONBILLSAVE", DEFAULT_STOCKMVTONBILLSAVE);
 		ENABLEREDUCTIONPLAN = myGetProperty("ENABLEREDUCTIONPLAN", DEFAULT_ENABLEREDUCTIONPLAN);
 		DEFAULTWARDINNEWBILL = myGetProperty("DEFAULTWARDINNEWBILL", DEFAULT_DEFAULTWARDINNEWBILL);
