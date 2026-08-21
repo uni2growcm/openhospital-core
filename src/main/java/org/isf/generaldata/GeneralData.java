@@ -81,6 +81,8 @@ public final class GeneralData extends ConfigurationProperties {
 	public static boolean ALLOWDELETESAVEDBILLITEM;
 	public static boolean STOCKMVTONBILLSAVE;
 	public static boolean ENABLEREDUCTIONPLAN;
+	public static boolean PARTNERSMODULEENABLED;
+	public static boolean ALLOWBILLGUARANTOR;
 	public static String DEFAULTWARDINNEWBILL;
 	public static String PATIENTBILLGROUPED;
 	public static String PATIENTBILLSTATEMENT;
@@ -144,6 +146,8 @@ public final class GeneralData extends ConfigurationProperties {
 	private static final boolean DEFAULT_ALLOWDELETESAVEDBILLITEM = false;
 	private static final boolean DEFAULT_STOCKMVTONBILLSAVE = false;
 	private static final boolean DEFAULT_ENABLEREDUCTIONPLAN = false;
+	private static final boolean DEFAULT_PARTNERSMODULEENABLED = false;
+	private static final boolean DEFAULT_ALLOWBILLGUARANTOR = false;
 	private static final String DEFAULT_DEFAULTWARDINNEWBILL = "";
 	private static final String DEFAULT_PATIENTBILLGROUPED = "PatientBillGrouped";
 	private static final String DEFAULT_PATIENTBILLSTATEMENT = "PatientBillStatement";
@@ -219,6 +223,8 @@ public final class GeneralData extends ConfigurationProperties {
 		ALLOWDELETESAVEDBILLITEM = myGetProperty("ALLOWDELETESAVEDBILLITEM", DEFAULT_ALLOWDELETESAVEDBILLITEM);
 		STOCKMVTONBILLSAVE = myGetProperty("STOCKMVTONBILLSAVE", DEFAULT_STOCKMVTONBILLSAVE);
 		ENABLEREDUCTIONPLAN = myGetProperty("ENABLEREDUCTIONPLAN", DEFAULT_ENABLEREDUCTIONPLAN);
+		PARTNERSMODULEENABLED = myGetProperty("PARTNERSMODULEENABLED", DEFAULT_PARTNERSMODULEENABLED);
+		ALLOWBILLGUARANTOR = myGetProperty("ALLOWBILLGUARANTOR", DEFAULT_ALLOWBILLGUARANTOR);
 		DEFAULTWARDINNEWBILL = myGetProperty("DEFAULTWARDINNEWBILL", DEFAULT_DEFAULTWARDINNEWBILL);
 		PATIENTBILLGROUPED = myGetProperty("PATIENTBILLGROUPED", DEFAULT_PATIENTBILLGROUPED);
 		PATIENTBILLSTATEMENT = myGetProperty("PATIENTBILLSTATEMENT", DEFAULT_PATIENTBILLSTATEMENT);

@@ -1929,6 +1929,7 @@ INSERT INTO `oh_groupmenu` VALUES (105,'admin','btnbillnew',1,NULL,NULL,NULL,NUL
 INSERT INTO `oh_groupmenu` VALUES (106,'admin','btnbilledit',1,NULL,NULL,NULL,NULL);
 INSERT INTO `oh_groupmenu` VALUES (107,'admin','btnbilldelete',1,NULL,NULL,NULL,NULL);
 INSERT INTO `oh_groupmenu` VALUES (108,'admin','btnbillreport',1,NULL,NULL,NULL,NULL);
+INSERT INTO `oh_groupmenu` VALUES (400,'admin','partners',1,NULL,NULL,NULL,NULL);
 INSERT INTO `oh_groupmenu` VALUES (109,'admin','vaccinetype',1,NULL,NULL,NULL,NULL);
 INSERT INTO `oh_groupmenu` VALUES (110,'admin','patientvaccine',1,NULL,NULL,NULL,NULL);
 INSERT INTO `oh_groupmenu` VALUES (111,'admin','btnpatientvaccinenew',1,NULL,NULL,NULL,NULL);
@@ -4259,6 +4260,7 @@ INSERT INTO `oh_menuitem` VALUES ('operation','angal.menu.btn.operation','angal.
 INSERT INTO `oh_menuitem` VALUES ('operationlist','angal.menu.btn.operationlist','angal.menu.operationlist','x','O','printing','org.isf.stat.gui.OperationsListLauncher','N',3);
 INSERT INTO `oh_menuitem` VALUES ('operationtype','angal.menu.btn.operationtype','angal.menu.operationtype','x','O','types','org.isf.opetype.gui.OperationTypeBrowser','N',8);
 INSERT INTO `oh_menuitem` VALUES ('otherprices','angal.menu.btn.otherprices','angal.menu.otherprices','x','H','types','org.isf.pricesothers.gui.PricesOthersBrowser','N',10);
+INSERT INTO `oh_menuitem` VALUES ('partners','angal.menu.btn.partners','angal.menu.partners','x','P','generaldata','org.isf.partner.gui.PartnerBrowser','N',12);
 INSERT INTO `oh_menuitem` VALUES ('patientvaccine','angal.menu.btn.patientvaccine','angal.menu.patientvaccine','x','V','main','org.isf.patvac.gui.PatVacBrowser','N',5);
 INSERT INTO `oh_menuitem` VALUES ('pharmacy','angal.menu.btn.pharmacy','angal.menu.pharmacy','x','P','main','none','Y',4);
 INSERT INTO `oh_menuitem` VALUES ('pretreatmenttype','angal.menu.btn.pretreatmenttype','angal.menu.pretreatmenttype','x','P','types','org.isf.pregtreattype.gui.PregnantTreatmentTypeBrowser','N',9);
