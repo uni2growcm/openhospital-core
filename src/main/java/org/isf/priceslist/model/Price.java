@@ -92,6 +92,23 @@ public class Price extends Auditable<String> {
 	}
 
 	/**
+	 * Copies the given {@link Price}'s data fields. Used to derive a discounted price (e.g. via a
+	 * reduction plan) without mutating the shared, cached catalog {@link Price} instance.
+	 * @param other the {@link Price} to copy
+	 */
+	public Price(Price other) {
+		super();
+		this.id = other.getId();
+		this.list = other.getList();
+		this.group = other.getGroup();
+		this.item = other.getItem();
+		this.description = other.getDesc();
+		this.price = other.getPrice();
+		this.variable = other.isVariable();
+		this.editable = other.isEditable();
+	}
+
+	/**
 	 * @param list Parent list
 	 * @param group Item group name
 	 * @param item Item name
