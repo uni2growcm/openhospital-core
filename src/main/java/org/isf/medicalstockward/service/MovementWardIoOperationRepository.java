@@ -40,6 +40,8 @@ public interface MovementWardIoOperationRepository extends JpaRepository<Movemen
 
 	List<MovementWard> findByPatient_code(int code);
 
+	List<MovementWard> findByBillId(Integer billId);
+
 	@Query(value = "select movWard from MovementWard movWard where movWard.patient.code = :patId")
 	List<MovementWard> findWardMovementPat(@Param("patId") Integer patId);
 

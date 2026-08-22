@@ -57,6 +57,7 @@ import org.isf.utils.pagination.PagedResponse;
 import org.isf.utils.time.TimeTools;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -1739,6 +1740,46 @@ class Tests extends OHCoreTestCase {
 		assertThat(laboratoryForPrint.getExam()).isEqualTo("examString");
 		laboratoryForPrint.setResult("resultString");
 		assertThat(laboratoryForPrint.getResult()).isEqualTo("resultString");
+	}
+
+	@Test
+	void mgrGetOutstandingLaboratoryExcludesAlreadyBilled() throws Exception {
+		ExamType examType = testExamType.setup(false);
+		Exam exam = testExam.setup(examType, 1, false);
+		Patient patient = testPatient.setup(false);
+		examTypeIoOperationRepository.saveAndFlush(examType);
+		examIoOperationRepository.saveAndFlush(exam);
+		patientIoOperationRepository.saveAndFlush(patient);
+
+		Laboratory outstanding = testLaboratory.setup(exam, patient, false);
+		labIoOperationRepository.saveAndFlush(outstanding);
+
+		Laboratory billed = testLaboratory.setup(exam, patient, false);
+		billed.setBillId(999);
+		labIoOperationRepository.saveAndFlush(billed);
+
+		List<Laboratory> result = labManager.getOutstandingLaboratory(patient);
+
+		assertThat(result).extracting(Laboratory::getCode).containsExactly(outstanding.getCode());
+	}
+
+	@Test
+	void mgrUpdateBillIdTagsAndUntagsLaboratory() throws Exception {
+		ExamType examType = testExamType.setup(false);
+		Exam exam = testExam.setup(examType, 1, false);
+		Patient patient = testPatient.setup(false);
+		examTypeIoOperationRepository.saveAndFlush(examType);
+		examIoOperationRepository.saveAndFlush(exam);
+		patientIoOperationRepository.saveAndFlush(patient);
+
+		Laboratory laboratory = testLaboratory.setup(exam, patient, false);
+		labIoOperationRepository.saveAndFlush(laboratory);
+
+		labManager.updateBillId(laboratory.getCode(), 42);
+		assertThat(labIoOperationRepository.findById(laboratory.getCode()).orElseThrow().getBillId()).isEqualTo(42);
+
+		labManager.updateBillId(laboratory.getCode(), null);
+		assertThat(labIoOperationRepository.findById(laboratory.getCode()).orElseThrow().getBillId()).isNull();
 	}
 
 	private Integer setupTestLaboratory(boolean usingSet) throws OHException {

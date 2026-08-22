@@ -125,6 +125,18 @@ public class PatientIoOperations {
 	}
 
 	/**
+	 * Same as {@link #getPatientsByOneOfFieldsLike(String)}, capped to at most {@code limit} results.
+	 *
+	 * @param keyword - String to search, use {@code null} for full list
+	 * @param limit - maximum number of {@link Patient}s to return
+	 * @return the list of {@link Patient}s (could be empty), never larger than {@code limit}
+	 * @throws OHServiceException
+	 */
+	public List<Patient> getPatientsByOneOfFieldsLike(String keyword, int limit) throws OHServiceException {
+		return repository.findByFieldsContainingWordsFromLiteral(keyword, limit);
+	}
+
+	/**
 	 * Method that gets a {@link Patient}s by his/her ID.
 	 *
 	 * @param code

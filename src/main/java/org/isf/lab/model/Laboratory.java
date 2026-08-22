@@ -100,6 +100,13 @@ public class Laboratory extends Auditable<String> {
 	@Column(name="LAB_STATUS")
 	private String status;
 
+	/**
+	 * Id of the bill this exam was billed on, null if not billed yet. Plain scalar (not a
+	 * {@code @ManyToOne Bill}) so {@code org.isf.lab} doesn't depend on {@code org.isf.accounting}.
+	 */
+	@Column(name="LAB_BLL_ID")
+	private Integer billId;
+
 	@Transient
 	private volatile int hashCode;
 
@@ -205,6 +212,14 @@ public class Laboratory extends Auditable<String> {
 
 	public void setPatName(String patName) {
 		this.patName = patName;
+	}
+
+	public Integer getBillId() {
+		return billId;
+	}
+
+	public void setBillId(Integer billId) {
+		this.billId = billId;
 	}
 
 	public String getSex() {

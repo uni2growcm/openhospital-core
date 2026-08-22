@@ -23,6 +23,8 @@ package org.isf.patient.model;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.HashSet;
+import java.util.Set;
 
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.CascadeType;
@@ -34,6 +36,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
@@ -43,7 +48,9 @@ import jakarta.validation.constraints.NotNull;
 import org.apache.commons.lang3.StringUtils;
 import org.isf.anamnesis.model.PatientHistory;
 import org.isf.opd.model.Opd;
+import org.isf.partner.model.Partner;
 import org.isf.patconsensus.model.PatientConsensus;
+import org.isf.reductionplan.model.ReductionPlan;
 import org.isf.utils.db.Auditable;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -168,6 +175,18 @@ public class Patient extends Auditable<String> {
 	)
 	@JoinColumn(name = "PAT_PROFILE_PHOTO_ID", referencedColumnName = "PAT_PROFILE_PHOTO_ID", nullable = true)
 	private PatientProfilePhoto patientProfilePhoto; // nullable because user can choose to save on file system
+
+	@ManyToOne
+	@JoinColumn(name = "PAT_RP_ID")
+	private ReductionPlan reductionPlan;
+
+	@ManyToMany(fetch = FetchType.EAGER)
+	@JoinTable(
+		name = "OH_PATIENT_PARTNERS",
+		joinColumns = @JoinColumn(name = "PP_PAT_ID", referencedColumnName = "PAT_ID"),
+		inverseJoinColumns = @JoinColumn(name = "PP_PRT_ID", referencedColumnName = "PRT_ID")
+	)
+	private Set<Partner> partners = new HashSet<>();
 
 	@Transient
 	private volatile int hashCode;
@@ -553,6 +572,30 @@ public class Patient extends Auditable<String> {
 			patientProfilePhoto.setPatient(this);
 		}
 		this.patientProfilePhoto = patientProfilePhoto;
+	}
+
+	public ReductionPlan getReductionPlan() {
+		return reductionPlan;
+	}
+
+	public void setReductionPlan(ReductionPlan reductionPlan) {
+		this.reductionPlan = reductionPlan;
+	}
+
+	public Set<Partner> getPartners() {
+		return partners;
+	}
+
+	public void setPartners(Set<Partner> partners) {
+		this.partners = partners;
+	}
+
+	public void addPartner(Partner partner) {
+		partners.add(partner);
+	}
+
+	public void removePartner(Partner partner) {
+		partners.remove(partner);
 	}
 
 	@Override

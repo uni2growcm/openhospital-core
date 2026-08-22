@@ -78,6 +78,9 @@ public class Price extends Auditable<String> {
 	@Column(name = "PRC_LOCK")
 	private int lock;
 
+	@Column(name="PRC_VARIABLE")
+	private boolean variable;
+
 	@Transient
 	private boolean editable;
 
@@ -86,6 +89,23 @@ public class Price extends Auditable<String> {
 
 	public Price() {
 		super();
+	}
+
+	/**
+	 * Copies the given {@link Price}'s data fields. Used to derive a discounted price (e.g. via a
+	 * reduction plan) without mutating the shared, cached catalog {@link Price} instance.
+	 * @param other the {@link Price} to copy
+	 */
+	public Price(Price other) {
+		super();
+		this.id = other.getId();
+		this.list = other.getList();
+		this.group = other.getGroup();
+		this.item = other.getItem();
+		this.description = other.getDesc();
+		this.price = other.getPrice();
+		this.variable = other.isVariable();
+		this.editable = other.isEditable();
 	}
 
 	/**
@@ -205,6 +225,14 @@ public class Price extends Auditable<String> {
 	public int getLock() { return lock; }
 
 	public void setLock(int lock) { this.lock = lock; }
+
+	public boolean isVariable() {
+		return variable;
+	}
+
+	public void setVariable(boolean variable) {
+		this.variable = variable;
+	}
 
 	@Override
 	public String toString() {

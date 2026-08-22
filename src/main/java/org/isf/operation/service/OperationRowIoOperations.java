@@ -63,6 +63,10 @@ public class OperationRowIoOperations {
 		return new ArrayList<>();
 	}
 
+	public OperationRow getOperationRow(int id) throws OHServiceException {
+		return repository.findById(id);
+	}
+
 	public void deleteOperationRow(OperationRow operationRow) throws OHServiceException {
 		OperationRow found = repository.findById(operationRow.getId());
 		if (found != null) {

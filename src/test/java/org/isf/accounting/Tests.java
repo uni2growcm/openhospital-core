@@ -29,6 +29,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+
 import org.isf.OHCoreTestCase;
 import org.isf.accounting.manager.BillBrowserManager;
 import org.isf.accounting.model.Bill;
@@ -38,6 +41,39 @@ import org.isf.accounting.service.AccountingBillIoOperationRepository;
 import org.isf.accounting.service.AccountingBillItemsIoOperationRepository;
 import org.isf.accounting.service.AccountingBillPaymentIoOperationRepository;
 import org.isf.accounting.service.AccountingIoOperations;
+import org.isf.exa.TestExam;
+import org.isf.exa.model.Exam;
+import org.isf.exa.service.ExamIoOperationRepository;
+import org.isf.exatype.TestExamType;
+import org.isf.exatype.model.ExamType;
+import org.isf.exatype.service.ExamTypeIoOperationRepository;
+import org.isf.generaldata.GeneralData;
+import org.isf.lab.TestLaboratory;
+import org.isf.lab.model.Laboratory;
+import org.isf.lab.service.LabIoOperationRepository;
+import org.isf.medicals.TestMedical;
+import org.isf.medicals.model.Medical;
+import org.isf.medicals.service.MedicalsIoOperationRepository;
+import org.isf.medicalstock.TestLot;
+import org.isf.medicalstock.model.Lot;
+import org.isf.medicalstock.service.LotIoOperationRepository;
+import org.isf.medicalstockward.manager.MovWardBrowserManager;
+import org.isf.medicalstockward.model.MedicalWard;
+import org.isf.medicalstockward.model.MovementWard;
+import org.isf.medicalstockward.service.MedicalStockWardIoOperationRepository;
+import org.isf.medicalstockward.service.MovementWardIoOperationRepository;
+import org.isf.medtype.TestMedicalType;
+import org.isf.medtype.model.MedicalType;
+import org.isf.medtype.service.MedicalTypeIoOperationRepository;
+import org.isf.operation.TestOperation;
+import org.isf.operation.TestOperationRow;
+import org.isf.operation.model.Operation;
+import org.isf.operation.model.OperationRow;
+import org.isf.operation.service.OperationIoOperationRepository;
+import org.isf.operation.service.OperationRowIoOperationRepository;
+import org.isf.opetype.TestOperationType;
+import org.isf.opetype.model.OperationType;
+import org.isf.opetype.service.OperationTypeIoOperationRepository;
 import org.isf.patient.TestPatient;
 import org.isf.patient.model.Patient;
 import org.isf.patient.model.PatientMergedEvent;
@@ -45,9 +81,16 @@ import org.isf.patient.service.PatientIoOperationRepository;
 import org.isf.priceslist.TestPriceList;
 import org.isf.priceslist.model.PriceList;
 import org.isf.priceslist.service.PricesListIoOperationRepository;
+import org.isf.therapy.TestTherapy;
+import org.isf.therapy.model.TherapyRow;
+import org.isf.therapy.service.TherapyIoOperationRepository;
 import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHException;
 import org.isf.utils.time.TimeTools;
+import org.isf.ward.TestWard;
+import org.isf.ward.model.Ward;
+import org.isf.ward.service.WardIoOperationRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -61,6 +104,17 @@ class Tests extends OHCoreTestCase {
 	private static TestBillPayments testBillPayments;
 	private static TestPatient testPatient;
 	private static TestPriceList testPriceList;
+	private static TestMedicalType testMedicalType;
+	private static TestMedical testMedical;
+	private static TestWard testWard;
+	private static TestLot testLot;
+	private static TestTherapy testTherapy;
+	private static TestExamType testExamType;
+	private static TestExam testExam;
+	private static TestLaboratory testLaboratory;
+	private static TestOperationType testOperationType;
+	private static TestOperation testOperation;
+	private static TestOperationRow testOperationRow;
 
 	@Autowired
 	BillBrowserManager billBrowserManager;
@@ -78,6 +132,36 @@ class Tests extends OHCoreTestCase {
 	PricesListIoOperationRepository priceListIoOperationRepository;
 	@Autowired
 	PatientIoOperationRepository patientIoOperationRepository;
+	@Autowired
+	MovWardBrowserManager movWardBrowserManager;
+	@Autowired
+	MedicalStockWardIoOperationRepository medicalStockWardIoOperationRepository;
+	@Autowired
+	MovementWardIoOperationRepository movementWardIoOperationRepository;
+	@Autowired
+	MedicalsIoOperationRepository medicalsIoOperationRepository;
+	@Autowired
+	MedicalTypeIoOperationRepository medicalTypeIoOperationRepository;
+	@Autowired
+	WardIoOperationRepository wardIoOperationRepository;
+	@Autowired
+	LotIoOperationRepository lotIoOperationRepository;
+	@Autowired
+	TherapyIoOperationRepository therapyIoOperationRepository;
+	@Autowired
+	ExamTypeIoOperationRepository examTypeIoOperationRepository;
+	@Autowired
+	ExamIoOperationRepository examIoOperationRepository;
+	@Autowired
+	LabIoOperationRepository labIoOperationRepository;
+	@Autowired
+	OperationTypeIoOperationRepository operationTypeIoOperationRepository;
+	@Autowired
+	OperationIoOperationRepository operationIoOperationRepository;
+	@Autowired
+	OperationRowIoOperationRepository operationRowIoOperationRepository;
+	@PersistenceContext
+	EntityManager entityManager;
 
 	@BeforeAll
 	static void setUpClass() {
@@ -86,11 +170,27 @@ class Tests extends OHCoreTestCase {
 		testBillPayments = new TestBillPayments();
 		testPatient = new TestPatient();
 		testPriceList = new TestPriceList();
+		testMedicalType = new TestMedicalType();
+		testMedical = new TestMedical();
+		testWard = new TestWard();
+		testLot = new TestLot();
+		testTherapy = new TestTherapy();
+		testExamType = new TestExamType();
+		testExam = new TestExam();
+		testLaboratory = new TestLaboratory();
+		testOperationType = new TestOperationType();
+		testOperation = new TestOperation();
+		testOperationRow = new TestOperationRow();
 	}
 
 	@BeforeEach
 	void setUp() {
 		cleanH2InMemoryDb();
+	}
+
+	@AfterEach
+	void tearDown() {
+		GeneralData.STOCKMVTONBILLSAVE = false;
 	}
 
 	@Test
@@ -729,6 +829,586 @@ class Tests extends OHCoreTestCase {
 	}
 
 	@Test
+	void mgrNewBillCreatesStockMovementsAcrossLotsFefo() throws Exception {
+		GeneralData.STOCKMVTONBILLSAVE = true;
+
+		Ward ward = setupWard();
+		Medical medical = setupMedical();
+		Lot earlierLot = setupLot(medical, "LOT1", LocalDateTime.of(2025, 1, 1, 0, 0));
+		Lot laterLot = setupLot(medical, "LOT2", LocalDateTime.of(2026, 1, 1, 0, 0));
+		seedWardStock(ward, medical, earlierLot, 5.0f);
+		seedWardStock(ward, medical, laterLot, 10.0f);
+
+		Patient patient = testPatient.setup(false);
+		patientIoOperationRepository.saveAndFlush(patient);
+		PriceList priceList = testPriceList.setup(false);
+		priceListIoOperationRepository.saveAndFlush(priceList);
+
+		Bill bill = testBill.setup(priceList, patient, null, false);
+		bill.setWard(ward);
+
+		BillItems medicalItem = testBillItems.setup(null, false);
+		medicalItem.setPriceID("MED" + medical.getCode());
+		medicalItem.setItemQuantity(8);
+		List<BillItems> billItems = new ArrayList<>();
+		billItems.add(medicalItem);
+
+		Bill savedBill = billBrowserManager.newBill(bill, billItems, new ArrayList<>());
+
+		List<MovementWard> movements = movWardBrowserManager.getMovementWardByBillId(savedBill.getId());
+		assertThat(movements).hasSize(2);
+
+		MovementWard earlierLotMovement = findMovementByLotCode(movements, "LOT1");
+		MovementWard laterLotMovement = findMovementByLotCode(movements, "LOT2");
+		assertThat(earlierLotMovement.getQuantity()).isEqualTo(5.0);
+		assertThat(laterLotMovement.getQuantity()).isEqualTo(3.0);
+
+		// the earlier-expiring lot is consumed first and fully (5), the remainder (3) comes from the later lot
+		assertThat(outQuantityOf(ward, medical, "LOT1")).isEqualTo(5.0f);
+		assertThat(outQuantityOf(ward, medical, "LOT2")).isEqualTo(3.0f);
+	}
+
+	@Test
+	void mgrNewBillWithStockMvtDisabledCreatesNoMovements() throws Exception {
+		GeneralData.STOCKMVTONBILLSAVE = false;
+
+		Ward ward = setupWard();
+		Medical medical = setupMedical();
+		Lot lot = setupLot(medical, "LOT1", LocalDateTime.of(2025, 1, 1, 0, 0));
+		seedWardStock(ward, medical, lot, 10.0f);
+
+		Patient patient = testPatient.setup(false);
+		patientIoOperationRepository.saveAndFlush(patient);
+		PriceList priceList = testPriceList.setup(false);
+		priceListIoOperationRepository.saveAndFlush(priceList);
+
+		Bill bill = testBill.setup(priceList, patient, null, false);
+		bill.setWard(ward);
+
+		BillItems medicalItem = testBillItems.setup(null, false);
+		medicalItem.setPriceID("MED" + medical.getCode());
+		medicalItem.setItemQuantity(3);
+		List<BillItems> billItems = new ArrayList<>();
+		billItems.add(medicalItem);
+
+		Bill savedBill = billBrowserManager.newBill(bill, billItems, new ArrayList<>());
+
+		assertThat(movWardBrowserManager.getMovementWardByBillId(savedBill.getId())).isEmpty();
+		assertThat(outQuantityOf(ward, medical, "LOT1")).isEqualTo(0.0f);
+	}
+
+	@Test
+	void mgrUpdateBillRemovingMedicalItemReversesMovement() throws Exception {
+		GeneralData.STOCKMVTONBILLSAVE = true;
+
+		Ward ward = setupWard();
+		Medical medical = setupMedical();
+		Lot lot = setupLot(medical, "LOT1", LocalDateTime.of(2025, 1, 1, 0, 0));
+		seedWardStock(ward, medical, lot, 10.0f);
+
+		Patient patient = testPatient.setup(false);
+		patientIoOperationRepository.saveAndFlush(patient);
+		PriceList priceList = testPriceList.setup(false);
+		priceListIoOperationRepository.saveAndFlush(priceList);
+
+		Bill bill = testBill.setup(priceList, patient, null, false);
+		bill.setWard(ward);
+
+		BillItems medicalItem = testBillItems.setup(null, false);
+		medicalItem.setPriceID("MED" + medical.getCode());
+		medicalItem.setItemQuantity(4);
+		List<BillItems> billItems = new ArrayList<>();
+		billItems.add(medicalItem);
+
+		Bill savedBill = billBrowserManager.newBill(bill, billItems, new ArrayList<>());
+		assertThat(movWardBrowserManager.getMovementWardByBillId(savedBill.getId())).hasSize(1);
+		assertThat(outQuantityOf(ward, medical, "LOT1")).isEqualTo(4.0f);
+
+		// when: the item is removed on update
+		Bill updateBill = accountingBillIoOperationRepository.findById(savedBill.getId()).orElse(null);
+		assertThat(updateBill).isNotNull();
+		updateBill.setWard(ward);
+		billBrowserManager.updateBill(updateBill, new ArrayList<>(), new ArrayList<>());
+
+		// then: the movement is reversed and stock restored
+		assertThat(movWardBrowserManager.getMovementWardByBillId(savedBill.getId())).isEmpty();
+		assertThat(outQuantityOf(ward, medical, "LOT1")).isEqualTo(0.0f);
+	}
+
+	@Test
+	void mgrUpdateBillAddingMedicalItemCreatesMovement() throws Exception {
+		GeneralData.STOCKMVTONBILLSAVE = true;
+
+		Ward ward = setupWard();
+		Medical medical = setupMedical();
+		Lot lot = setupLot(medical, "LOT1", LocalDateTime.of(2025, 1, 1, 0, 0));
+		seedWardStock(ward, medical, lot, 10.0f);
+
+		Patient patient = testPatient.setup(false);
+		patientIoOperationRepository.saveAndFlush(patient);
+		PriceList priceList = testPriceList.setup(false);
+		priceListIoOperationRepository.saveAndFlush(priceList);
+
+		Bill bill = testBill.setup(priceList, patient, null, false);
+		bill.setWard(ward);
+
+		Bill savedBill = billBrowserManager.newBill(bill, new ArrayList<>(), new ArrayList<>());
+		assertThat(movWardBrowserManager.getMovementWardByBillId(savedBill.getId())).isEmpty();
+
+		Bill updateBill = accountingBillIoOperationRepository.findById(savedBill.getId()).orElse(null);
+		assertThat(updateBill).isNotNull();
+		updateBill.setWard(ward);
+
+		BillItems medicalItem = testBillItems.setup(null, false);
+		medicalItem.setPriceID("MED" + medical.getCode());
+		medicalItem.setItemQuantity(4);
+		List<BillItems> billItems = new ArrayList<>();
+		billItems.add(medicalItem);
+
+		billBrowserManager.updateBill(updateBill, billItems, new ArrayList<>());
+
+		assertThat(movWardBrowserManager.getMovementWardByBillId(savedBill.getId())).hasSize(1);
+		assertThat(outQuantityOf(ward, medical, "LOT1")).isEqualTo(4.0f);
+	}
+
+	@Test
+	void mgrUpdateBillUnchangedMedicalItemLeavesMovementUntouched() throws Exception {
+		GeneralData.STOCKMVTONBILLSAVE = true;
+
+		Ward ward = setupWard();
+		Medical medical = setupMedical();
+		Lot lot = setupLot(medical, "LOT1", LocalDateTime.of(2025, 1, 1, 0, 0));
+		seedWardStock(ward, medical, lot, 10.0f);
+
+		Patient patient = testPatient.setup(false);
+		patientIoOperationRepository.saveAndFlush(patient);
+		PriceList priceList = testPriceList.setup(false);
+		priceListIoOperationRepository.saveAndFlush(priceList);
+
+		Bill bill = testBill.setup(priceList, patient, null, false);
+		bill.setWard(ward);
+
+		BillItems medicalItem = testBillItems.setup(null, false);
+		medicalItem.setPriceID("MED" + medical.getCode());
+		medicalItem.setItemQuantity(4);
+		List<BillItems> billItems = new ArrayList<>();
+		billItems.add(medicalItem);
+
+		Bill savedBill = billBrowserManager.newBill(bill, billItems, new ArrayList<>());
+		List<MovementWard> originalMovements = movWardBrowserManager.getMovementWardByBillId(savedBill.getId());
+		assertThat(originalMovements).hasSize(1);
+		int originalMovementCode = originalMovements.get(0).getCode();
+
+		// when: the bill is re-saved with the exact same medical item (same quantity, same ward)
+		Bill updateBill = accountingBillIoOperationRepository.findById(savedBill.getId()).orElse(null);
+		assertThat(updateBill).isNotNull();
+		updateBill.setWard(ward);
+
+		BillItems sameMedicalItem = testBillItems.setup(null, false);
+		sameMedicalItem.setPriceID("MED" + medical.getCode());
+		sameMedicalItem.setItemQuantity(4);
+		List<BillItems> sameBillItems = new ArrayList<>();
+		sameBillItems.add(sameMedicalItem);
+
+		billBrowserManager.updateBill(updateBill, sameBillItems, new ArrayList<>());
+
+		// then: the exact same movement survives untouched (not reversed and recreated) and stock is
+		// unchanged (would have been double-deducted if the item had been re-charged)
+		List<MovementWard> movementsAfterUpdate = movWardBrowserManager.getMovementWardByBillId(savedBill.getId());
+		assertThat(movementsAfterUpdate).hasSize(1);
+		assertThat(movementsAfterUpdate.get(0).getCode()).isEqualTo(originalMovementCode);
+		assertThat(outQuantityOf(ward, medical, "LOT1")).isEqualTo(4.0f);
+	}
+
+	@Test
+	void mgrUpdateBillWithStockMvtDisabledLeavesExistingMovementsUntouched() throws Exception {
+		GeneralData.STOCKMVTONBILLSAVE = true;
+
+		Ward ward = setupWard();
+		Medical medical = setupMedical();
+		Lot lot = setupLot(medical, "LOT1", LocalDateTime.of(2025, 1, 1, 0, 0));
+		seedWardStock(ward, medical, lot, 10.0f);
+
+		Patient patient = testPatient.setup(false);
+		patientIoOperationRepository.saveAndFlush(patient);
+		PriceList priceList = testPriceList.setup(false);
+		priceListIoOperationRepository.saveAndFlush(priceList);
+
+		Bill bill = testBill.setup(priceList, patient, null, false);
+		bill.setWard(ward);
+
+		BillItems medicalItem = testBillItems.setup(null, false);
+		medicalItem.setPriceID("MED" + medical.getCode());
+		medicalItem.setItemQuantity(4);
+		List<BillItems> billItems = new ArrayList<>();
+		billItems.add(medicalItem);
+
+		Bill savedBill = billBrowserManager.newBill(bill, billItems, new ArrayList<>());
+		assertThat(movWardBrowserManager.getMovementWardByBillId(savedBill.getId())).hasSize(1);
+
+		// when: STOCKMVTONBILLSAVE is turned off before the next save
+		GeneralData.STOCKMVTONBILLSAVE = false;
+		Bill updateBill = accountingBillIoOperationRepository.findById(savedBill.getId()).orElse(null);
+		assertThat(updateBill).isNotNull();
+		updateBill.setWard(ward);
+		billBrowserManager.updateBill(updateBill, billItems, new ArrayList<>());
+
+		// then: no error, and since reconciliation didn't run, the existing movement is untouched
+		// (this flag only gates whether NEW reconciliation/movements happen, not a cleanup of old ones)
+		assertThat(movWardBrowserManager.getMovementWardByBillId(savedBill.getId())).hasSize(1);
+	}
+
+	@Test
+	void mgrDeleteBillReversesLinkedMovements() throws Exception {
+		GeneralData.STOCKMVTONBILLSAVE = true;
+
+		Ward ward = setupWard();
+		Medical medical = setupMedical();
+		Lot lot = setupLot(medical, "LOT1", LocalDateTime.of(2025, 1, 1, 0, 0));
+		seedWardStock(ward, medical, lot, 10.0f);
+
+		Patient patient = testPatient.setup(false);
+		patientIoOperationRepository.saveAndFlush(patient);
+		PriceList priceList = testPriceList.setup(false);
+		priceListIoOperationRepository.saveAndFlush(priceList);
+
+		Bill bill = testBill.setup(priceList, patient, null, false);
+		bill.setWard(ward);
+
+		BillItems medicalItem = testBillItems.setup(null, false);
+		medicalItem.setPriceID("MED" + medical.getCode());
+		medicalItem.setItemQuantity(4);
+		List<BillItems> billItems = new ArrayList<>();
+		billItems.add(medicalItem);
+
+		Bill savedBill = billBrowserManager.newBill(bill, billItems, new ArrayList<>());
+		assertThat(movWardBrowserManager.getMovementWardByBillId(savedBill.getId())).hasSize(1);
+
+		billBrowserManager.deleteBill(savedBill);
+
+		// AccountingIoOperations.deleteBill's bulk BillItems delete clears the persistence context
+		// (@Modifying(clearAutomatically = true)), so the Bill delete that follows lands on a
+		// freshly-reloaded instance and is never flushed by anything afterward. A raw query here
+		// forces Hibernate's auto-flush before the checks below re-read this bill/its movements.
+		Number remainingBillRows = (Number) entityManager.createNativeQuery("SELECT COUNT(*) FROM OH_BILLS WHERE BLL_ID = :billId")
+			.setParameter("billId", savedBill.getId())
+			.getSingleResult();
+		assertThat(remainingBillRows.intValue()).isZero();
+
+		assertThat(movWardBrowserManager.getMovementWardByBillId(savedBill.getId())).isEmpty();
+		assertThat(outQuantityOf(ward, medical, "LOT1")).isEqualTo(0.0f);
+		entityManager.clear();
+		assertThat(accountingBillIoOperationRepository.findById(savedBill.getId())).isEmpty();
+	}
+
+	@Test
+	void mgrNewBillInsufficientStockRollsBackFully() throws Exception {
+		GeneralData.STOCKMVTONBILLSAVE = true;
+
+		Ward ward = setupWard();
+		Medical medical = setupMedical();
+		Lot lot = setupLot(medical, "LOT1", LocalDateTime.of(2025, 1, 1, 0, 0));
+		seedWardStock(ward, medical, lot, 3.0f);
+
+		Patient patient = testPatient.setup(false);
+		patientIoOperationRepository.saveAndFlush(patient);
+		PriceList priceList = testPriceList.setup(false);
+		priceListIoOperationRepository.saveAndFlush(priceList);
+
+		Bill bill = testBill.setup(priceList, patient, null, false);
+		bill.setWard(ward);
+
+		BillItems medicalItem = testBillItems.setup(null, false);
+		medicalItem.setPriceID("MED" + medical.getCode());
+		medicalItem.setItemQuantity(10);
+		List<BillItems> billItems = new ArrayList<>();
+		billItems.add(medicalItem);
+
+		// the whole save is @Transactional(rollbackFor = OHServiceException.class): the shortage is
+		// caught before any movement is created, and Spring rolls back everything else on this
+		// exception (bill/items already flushed in this method call) once the transaction completes -
+		// not observable via a same-transaction read here (this test class's transaction wraps the
+		// whole test method), so this only asserts the failure itself, matching the established
+		// pattern for the pre-existing validation-failure test right above.
+		assertThatThrownBy(() -> billBrowserManager.newBill(bill, billItems, new ArrayList<>()))
+			.isInstanceOf(OHDataValidationException.class);
+	}
+
+	@Test
+	void mgrNewBillMarksTherapyLinkedItemBilled() throws Exception {
+		GeneralData.STOCKMVTONBILLSAVE = false;
+
+		Medical medical = setupMedical();
+		Patient patient = testPatient.setup(false);
+		patientIoOperationRepository.saveAndFlush(patient);
+		TherapyRow therapyRow = setupTherapyRow(patient, medical, 10.0);
+		PriceList priceList = testPriceList.setup(false);
+		priceListIoOperationRepository.saveAndFlush(priceList);
+
+		Bill bill = testBill.setup(priceList, patient, null, false);
+
+		BillItems medicalItem = testBillItems.setup(null, false);
+		medicalItem.setPriceID("MED" + medical.getCode());
+		medicalItem.setItemQuantity(6);
+		medicalItem.setItemGroup("MED");
+		medicalItem.setPrescriptionId(therapyRow.getTherapyID());
+		List<BillItems> billItems = new ArrayList<>();
+		billItems.add(medicalItem);
+
+		billBrowserManager.newBill(bill, billItems, new ArrayList<>());
+
+		assertThat(therapyIoOperationRepository.findById(therapyRow.getTherapyID()).orElseThrow().getQtyBougth()).isEqualTo(6.0);
+	}
+
+	@Test
+	void mgrNewBillMarksLaboratoryAndOperationLinkedItemsBilled() throws Exception {
+		GeneralData.STOCKMVTONBILLSAVE = false;
+
+		Patient patient = testPatient.setup(false);
+		patientIoOperationRepository.saveAndFlush(patient);
+		Laboratory laboratory = setupLaboratory(patient);
+		OperationRow operationRow = setupOperationRow();
+		PriceList priceList = testPriceList.setup(false);
+		priceListIoOperationRepository.saveAndFlush(priceList);
+
+		Bill bill = testBill.setup(priceList, patient, null, false);
+
+		BillItems examItem = testBillItems.setup(null, false);
+		examItem.setPriceID("EXA" + laboratory.getExam().getCode());
+		examItem.setItemQuantity(1);
+		examItem.setItemGroup("EXA");
+		examItem.setPrescriptionId(laboratory.getCode());
+
+		BillItems operationItem = testBillItems.setup(null, false);
+		operationItem.setPriceID("OPE" + operationRow.getOperation().getCode());
+		operationItem.setItemQuantity(1);
+		operationItem.setItemGroup("OPE");
+		operationItem.setPrescriptionId(operationRow.getId());
+
+		List<BillItems> billItems = new ArrayList<>();
+		billItems.add(examItem);
+		billItems.add(operationItem);
+
+		Bill savedBill = billBrowserManager.newBill(bill, billItems, new ArrayList<>());
+
+		assertThat(labIoOperationRepository.findById(laboratory.getCode()).orElseThrow().getBillId()).isEqualTo(savedBill.getId());
+		assertThat(operationRowIoOperationRepository.findById(operationRow.getId()).getBill().getId()).isEqualTo(savedBill.getId());
+	}
+
+	@Test
+	void mgrUpdateBillRemovingPrescriptionItemReversesTherapyMarking() throws Exception {
+		GeneralData.STOCKMVTONBILLSAVE = false;
+
+		Medical medical = setupMedical();
+		Patient patient = testPatient.setup(false);
+		patientIoOperationRepository.saveAndFlush(patient);
+		TherapyRow therapyRow = setupTherapyRow(patient, medical, 10.0);
+		PriceList priceList = testPriceList.setup(false);
+		priceListIoOperationRepository.saveAndFlush(priceList);
+
+		Bill bill = testBill.setup(priceList, patient, null, false);
+
+		BillItems medicalItem = testBillItems.setup(null, false);
+		medicalItem.setPriceID("MED" + medical.getCode());
+		medicalItem.setItemQuantity(6);
+		medicalItem.setItemGroup("MED");
+		medicalItem.setPrescriptionId(therapyRow.getTherapyID());
+		List<BillItems> billItems = new ArrayList<>();
+		billItems.add(medicalItem);
+
+		Bill savedBill = billBrowserManager.newBill(bill, billItems, new ArrayList<>());
+		assertThat(therapyIoOperationRepository.findById(therapyRow.getTherapyID()).orElseThrow().getQtyBougth()).isEqualTo(6.0);
+
+		Bill updateBill = accountingBillIoOperationRepository.findById(savedBill.getId()).orElse(null);
+		assertThat(updateBill).isNotNull();
+		billBrowserManager.updateBill(updateBill, new ArrayList<>(), new ArrayList<>());
+
+		assertThat(therapyIoOperationRepository.findById(therapyRow.getTherapyID()).orElseThrow().getQtyBougth()).isEqualTo(0.0);
+	}
+
+	@Test
+	void mgrUpdateBillUnchangedPrescriptionItemLeavesMarkingUntouched() throws Exception {
+		GeneralData.STOCKMVTONBILLSAVE = false;
+
+		Medical medical = setupMedical();
+		Patient patient = testPatient.setup(false);
+		patientIoOperationRepository.saveAndFlush(patient);
+		TherapyRow therapyRow = setupTherapyRow(patient, medical, 10.0);
+		PriceList priceList = testPriceList.setup(false);
+		priceListIoOperationRepository.saveAndFlush(priceList);
+
+		Bill bill = testBill.setup(priceList, patient, null, false);
+
+		BillItems medicalItem = testBillItems.setup(null, false);
+		medicalItem.setPriceID("MED" + medical.getCode());
+		medicalItem.setItemQuantity(6);
+		medicalItem.setItemGroup("MED");
+		medicalItem.setPrescriptionId(therapyRow.getTherapyID());
+		List<BillItems> billItems = new ArrayList<>();
+		billItems.add(medicalItem);
+
+		Bill savedBill = billBrowserManager.newBill(bill, billItems, new ArrayList<>());
+		assertThat(therapyIoOperationRepository.findById(therapyRow.getTherapyID()).orElseThrow().getQtyBougth()).isEqualTo(6.0);
+
+		// when: the bill is re-saved with the exact same prescription-linked item (same quantity)
+		Bill updateBill = accountingBillIoOperationRepository.findById(savedBill.getId()).orElse(null);
+		assertThat(updateBill).isNotNull();
+
+		BillItems sameMedicalItem = testBillItems.setup(null, false);
+		sameMedicalItem.setPriceID("MED" + medical.getCode());
+		sameMedicalItem.setItemQuantity(6);
+		sameMedicalItem.setItemGroup("MED");
+		sameMedicalItem.setPrescriptionId(therapyRow.getTherapyID());
+		List<BillItems> sameBillItems = new ArrayList<>();
+		sameBillItems.add(sameMedicalItem);
+
+		billBrowserManager.updateBill(updateBill, sameBillItems, new ArrayList<>());
+
+		// then: qtyBougth is left exactly as it was (not doubled, not reset)
+		assertThat(therapyIoOperationRepository.findById(therapyRow.getTherapyID()).orElseThrow().getQtyBougth()).isEqualTo(6.0);
+	}
+
+	@Test
+	void mgrUpdateBillChangingTherapyItemQuantityAdjustsQtyBougthByDelta() throws Exception {
+		GeneralData.STOCKMVTONBILLSAVE = false;
+
+		Medical medical = setupMedical();
+		Patient patient = testPatient.setup(false);
+		patientIoOperationRepository.saveAndFlush(patient);
+		TherapyRow therapyRow = setupTherapyRow(patient, medical, 10.0);
+		PriceList priceList = testPriceList.setup(false);
+		priceListIoOperationRepository.saveAndFlush(priceList);
+
+		Bill bill = testBill.setup(priceList, patient, null, false);
+
+		BillItems medicalItem = testBillItems.setup(null, false);
+		medicalItem.setPriceID("MED" + medical.getCode());
+		medicalItem.setItemQuantity(6);
+		medicalItem.setItemGroup("MED");
+		medicalItem.setPrescriptionId(therapyRow.getTherapyID());
+		List<BillItems> billItems = new ArrayList<>();
+		billItems.add(medicalItem);
+
+		Bill savedBill = billBrowserManager.newBill(bill, billItems, new ArrayList<>());
+		assertThat(therapyIoOperationRepository.findById(therapyRow.getTherapyID()).orElseThrow().getQtyBougth()).isEqualTo(6.0);
+
+		Bill updateBill = accountingBillIoOperationRepository.findById(savedBill.getId()).orElse(null);
+		assertThat(updateBill).isNotNull();
+
+		BillItems increasedMedicalItem = testBillItems.setup(null, false);
+		increasedMedicalItem.setPriceID("MED" + medical.getCode());
+		increasedMedicalItem.setItemQuantity(9);
+		increasedMedicalItem.setItemGroup("MED");
+		increasedMedicalItem.setPrescriptionId(therapyRow.getTherapyID());
+		List<BillItems> increasedBillItems = new ArrayList<>();
+		increasedBillItems.add(increasedMedicalItem);
+
+		billBrowserManager.updateBill(updateBill, increasedBillItems, new ArrayList<>());
+
+		// the delta (+3) is applied directly to qtyBougth (6 -> 9), not reversed to 0 and remarked
+		assertThat(therapyIoOperationRepository.findById(therapyRow.getTherapyID()).orElseThrow().getQtyBougth()).isEqualTo(9.0);
+	}
+
+	@Test
+	void mgrDeleteBillReversesAllPrescriptionMarkings() throws Exception {
+		GeneralData.STOCKMVTONBILLSAVE = false;
+
+		Medical medical = setupMedical();
+		Patient patient = testPatient.setup(false);
+		patientIoOperationRepository.saveAndFlush(patient);
+		TherapyRow therapyRow = setupTherapyRow(patient, medical, 10.0);
+		Laboratory laboratory = setupLaboratory(patient);
+		OperationRow operationRow = setupOperationRow();
+		PriceList priceList = testPriceList.setup(false);
+		priceListIoOperationRepository.saveAndFlush(priceList);
+
+		Bill bill = testBill.setup(priceList, patient, null, false);
+
+		BillItems medicalItem = testBillItems.setup(null, false);
+		medicalItem.setPriceID("MED" + medical.getCode());
+		medicalItem.setItemQuantity(6);
+		medicalItem.setItemGroup("MED");
+		medicalItem.setPrescriptionId(therapyRow.getTherapyID());
+
+		BillItems examItem = testBillItems.setup(null, false);
+		examItem.setPriceID("EXA" + laboratory.getExam().getCode());
+		examItem.setItemQuantity(1);
+		examItem.setItemGroup("EXA");
+		examItem.setPrescriptionId(laboratory.getCode());
+
+		BillItems operationItem = testBillItems.setup(null, false);
+		operationItem.setPriceID("OPE" + operationRow.getOperation().getCode());
+		operationItem.setItemQuantity(1);
+		operationItem.setItemGroup("OPE");
+		operationItem.setPrescriptionId(operationRow.getId());
+
+		List<BillItems> billItems = new ArrayList<>();
+		billItems.add(medicalItem);
+		billItems.add(examItem);
+		billItems.add(operationItem);
+
+		Bill savedBill = billBrowserManager.newBill(bill, billItems, new ArrayList<>());
+		assertThat(therapyIoOperationRepository.findById(therapyRow.getTherapyID()).orElseThrow().getQtyBougth()).isEqualTo(6.0);
+		assertThat(labIoOperationRepository.findById(laboratory.getCode()).orElseThrow().getBillId()).isEqualTo(savedBill.getId());
+		assertThat(operationRowIoOperationRepository.findById(operationRow.getId()).getBill()).isNotNull();
+
+		billBrowserManager.deleteBill(savedBill);
+
+		assertThat(therapyIoOperationRepository.findById(therapyRow.getTherapyID()).orElseThrow().getQtyBougth()).isEqualTo(0.0);
+		assertThat(labIoOperationRepository.findById(laboratory.getCode()).orElseThrow().getBillId()).isNull();
+		assertThat(operationRowIoOperationRepository.findById(operationRow.getId()).getBill()).isNull();
+	}
+
+	@Test
+	void mgrIsPrescriptionAlreadyBilledAndPaidTrueOnlyForClosedBill() throws Exception {
+		GeneralData.STOCKMVTONBILLSAVE = false;
+
+		Medical medical = setupMedical();
+		Patient patient = testPatient.setup(false);
+		patientIoOperationRepository.saveAndFlush(patient);
+		TherapyRow therapyRow = setupTherapyRow(patient, medical, 10.0);
+		PriceList priceList = testPriceList.setup(false);
+		priceListIoOperationRepository.saveAndFlush(priceList);
+
+		Bill closedBill = testBill.setup(priceList, patient, null, false);
+		closedBill.setStatus("C");
+		closedBill.setBalance(0.0);
+
+		BillItems medicalItem = testBillItems.setup(null, false);
+		medicalItem.setPriceID("MED" + medical.getCode());
+		medicalItem.setItemQuantity(6);
+		medicalItem.setItemGroup("MED");
+		medicalItem.setPrescriptionId(therapyRow.getTherapyID());
+		List<BillItems> billItems = new ArrayList<>();
+		billItems.add(medicalItem);
+
+		billBrowserManager.newBill(closedBill, billItems, new ArrayList<>());
+
+		assertThat(billBrowserManager.isPrescriptionAlreadyBilledAndPaid(patient.getCode(), therapyRow.getTherapyID(), "MED")).isTrue();
+
+		// a different patient never billed this prescription
+		Patient otherPatient = testPatient.setup(true);
+		patientIoOperationRepository.saveAndFlush(otherPatient);
+		assertThat(billBrowserManager.isPrescriptionAlreadyBilledAndPaid(otherPatient.getCode(), therapyRow.getTherapyID(), "MED")).isFalse();
+
+		// an open bill referencing the same prescription doesn't count as "already billed and paid"
+		TherapyRow otherTherapyRow = setupTherapyRow(patient, medical, 10.0);
+		Bill openBill = testBill.setup(priceList, patient, null, false);
+
+		BillItems openMedicalItem = testBillItems.setup(null, false);
+		openMedicalItem.setPriceID("MED" + medical.getCode());
+		openMedicalItem.setItemQuantity(4);
+		openMedicalItem.setItemGroup("MED");
+		openMedicalItem.setPrescriptionId(otherTherapyRow.getTherapyID());
+		List<BillItems> openBillItems = new ArrayList<>();
+		openBillItems.add(openMedicalItem);
+
+		billBrowserManager.newBill(openBill, openBillItems, new ArrayList<>());
+
+		assertThat(billBrowserManager.isPrescriptionAlreadyBilledAndPaid(patient.getCode(), otherTherapyRow.getTherapyID(), "MED")).isFalse();
+	}
+
+	@Test
 	void mgrGetBillsPayment() throws Exception {
 		int id = setupTestBillPayments(false);
 		BillPayments foundBillPayment = accountingBillPaymentIoOperationRepository.findById(id).orElse(null);
@@ -922,5 +1602,81 @@ class Tests extends OHCoreTestCase {
 		Patient patient = testPatient.setup(usingSet);
 		patientIoOperationRepository.saveAndFlush(patient);
 		return patient;
+	}
+
+	private Ward setupWard() throws OHException {
+		Ward ward = testWard.setup(false);
+		wardIoOperationRepository.saveAndFlush(ward);
+		return ward;
+	}
+
+	private Medical setupMedical() throws OHException {
+		MedicalType medicalType = testMedicalType.setup(false);
+		Medical medical = testMedical.setup(medicalType, false);
+		medicalTypeIoOperationRepository.saveAndFlush(medicalType);
+		medicalsIoOperationRepository.saveAndFlush(medical);
+		return medical;
+	}
+
+	private Lot setupLot(Medical medical, String code, LocalDateTime dueDate) throws OHException {
+		Lot lot = testLot.setup(medical, false);
+		lot.setCode(code);
+		lot.setDueDate(dueDate);
+		lotIoOperationRepository.saveAndFlush(lot);
+		return lot;
+	}
+
+	private void seedWardStock(Ward ward, Medical medical, Lot lot, float inQuantity) {
+		MedicalWard medicalWard = new MedicalWard(ward, medical, inQuantity, 0.0f, lot);
+		medicalStockWardIoOperationRepository.saveAndFlush(medicalWard);
+	}
+
+	/**
+	 * {@code MedicalStockWardIoOperationRepository.updateOutQuantity(...)}/{@code updateInQuantity(...)}
+	 * are native bulk {@code @Modifying} updates with no {@code clearAutomatically}, so within a
+	 * single (test) transaction Hibernate's first-level cache keeps returning the pre-update
+	 * {@link MedicalWard} instance unless the persistence context is cleared first - forcing a fresh
+	 * read straight from the DB, where the native update already landed.
+	 */
+	private float outQuantityOf(Ward ward, Medical medical, String lotCode) throws Exception {
+		entityManager.clear();
+		return movWardBrowserManager.getMedicalWardByWardMedicalAndLot(ward.getCode(), medical.getCode(), lotCode).getOut_quantity();
+	}
+
+	private MovementWard findMovementByLotCode(List<MovementWard> movements, String lotCode) {
+		for (MovementWard movement : movements) {
+			if (movement.getLot().getCode().equals(lotCode)) {
+				return movement;
+			}
+		}
+		throw new AssertionError("No movement found for lot " + lotCode);
+	}
+
+	private TherapyRow setupTherapyRow(Patient patient, Medical medical, Double qty) throws OHException {
+		TherapyRow therapyRow = testTherapy.setup(patient, medical, false);
+		therapyRow.setQty(qty);
+		therapyRow.setQtyBougth(0.0);
+		therapyIoOperationRepository.saveAndFlush(therapyRow);
+		return therapyRow;
+	}
+
+	private Laboratory setupLaboratory(Patient patient) throws OHException {
+		ExamType examType = testExamType.setup(false);
+		Exam exam = testExam.setup(examType, 1, false);
+		examTypeIoOperationRepository.saveAndFlush(examType);
+		examIoOperationRepository.saveAndFlush(exam);
+		Laboratory laboratory = testLaboratory.setup(exam, patient, false);
+		labIoOperationRepository.saveAndFlush(laboratory);
+		return laboratory;
+	}
+
+	private OperationRow setupOperationRow() throws OHException {
+		OperationType operationType = testOperationType.setup(false);
+		Operation operation = testOperation.setup(operationType, true);
+		operationTypeIoOperationRepository.saveAndFlush(operationType);
+		operationIoOperationRepository.saveAndFlush(operation);
+		OperationRow operationRow = testOperationRow.setup(operation, true);
+		operationRowIoOperationRepository.saveAndFlush(operationRow);
+		return operationRow;
 	}
 }

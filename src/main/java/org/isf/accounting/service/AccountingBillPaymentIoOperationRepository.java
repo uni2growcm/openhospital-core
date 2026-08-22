@@ -21,6 +21,7 @@
  */
 package org.isf.accounting.service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
@@ -60,4 +61,15 @@ public interface AccountingBillPaymentIoOperationRepository extends JpaRepositor
 			"ORDER BY BP.bill, BP.date ASC")
 	List<BillPayments> findByDateAndPatient(@Param("dateFrom") LocalDateTime dateFrom, @Param("dateTo") LocalDateTime dateTo,
 			@Param("patientCode") Integer patientCode);
+
+	/**
+	 * Sums payment amounts in the given date range, optionally narrowed by patient and/or cashier
+	 * username, excluding payments on deleted bills - backs both the overall payments total and the
+	 * per-cashier total (pass {@code username} to narrow to one cashier, or {@code null} for all).
+	 */
+	@Query(value = "SELECT COALESCE(SUM(bp.amount), 0) FROM BillPayments bp WHERE bp.date >= :dateFrom AND bp.date < :dateTo "
+		+ "AND (:patientCode IS NULL OR bp.bill.billPatient.code = :patientCode) "
+		+ "AND (:username IS NULL OR bp.user = :username) AND bp.bill.status != 'D'")
+	BigDecimal sumPayments(@Param("dateFrom") LocalDateTime dateFrom, @Param("dateTo") LocalDateTime dateTo,
+		@Param("patientCode") Integer patientCode, @Param("username") String username);
 }
