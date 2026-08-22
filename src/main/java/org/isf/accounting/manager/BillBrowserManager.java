@@ -21,6 +21,7 @@
  */
 package org.isf.accounting.manager;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -51,9 +52,13 @@ import org.isf.utils.db.TranslateOHServiceException;
 import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.model.OHExceptionMessage;
+import org.isf.utils.pagination.PageInfo;
+import org.isf.utils.pagination.PagedResponse;
 import org.isf.utils.time.TimeTools;
 import org.isf.ward.model.Ward;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -398,6 +403,59 @@ public class BillBrowserManager {
 	 */
 	public List<Bill> getBills(LocalDateTime dateFrom, LocalDateTime dateTo) throws OHServiceException {
 		return ioOperations.getBillsBetweenDates(dateFrom, dateTo);
+	}
+
+	/**
+	 * Fetches one page of {@link Bill}s in the given date range, optionally narrowed by status, patient
+	 * and cashier username (each predicate is skipped when its parameter is {@code null}). Backs
+	 * {@code BillBrowser}'s three tabs (All/Pending/Closed), each simply passing a different status.
+	 *
+	 * @param dateFrom the low date range endpoint, inclusive.
+	 * @param dateTo the high date range endpoint, inclusive.
+	 * @param status the bill status to filter by ("O"/"C"), or {@code null} for the "All" tab.
+	 * @param patientCode the patient to filter by, or {@code null} for any patient.
+	 * @param username the cashier username to filter by, or {@code null} for any cashier.
+	 * @param page the zero-based page index.
+	 * @param size the page size.
+	 * @return a {@link PagedResponse} of {@link Bill}s.
+	 * @throws OHServiceException if an error occurs retrieving the bills.
+	 */
+	public PagedResponse<Bill> getBillsPageable(LocalDateTime dateFrom, LocalDateTime dateTo, String status, Integer patientCode,
+			String username, int page, int size) throws OHServiceException {
+		Page<Bill> pagedResult = ioOperations.getBillsPageable(dateFrom, dateTo, status, patientCode, username, PageRequest.of(page, size));
+		PagedResponse<Bill> response = new PagedResponse<>();
+		response.setData(pagedResult.getContent());
+		response.setPageInfo(PageInfo.from(pagedResult));
+		return response;
+	}
+
+	/**
+	 * Sums the outstanding balance of every non-deleted bill in the given date range, optionally
+	 * narrowed by patient - independent of status/page, for the totals footer.
+	 *
+	 * @param dateFrom the low date range endpoint, inclusive.
+	 * @param dateTo the high date range endpoint, inclusive.
+	 * @param patientCode the patient to filter by, or {@code null} for any patient.
+	 * @return the summed balance.
+	 * @throws OHServiceException if an error occurs computing the sum.
+	 */
+	public BigDecimal getBalanceTotal(LocalDateTime dateFrom, LocalDateTime dateTo, Integer patientCode) throws OHServiceException {
+		return ioOperations.getBalanceTotal(dateFrom, dateTo, patientCode);
+	}
+
+	/**
+	 * Sums payment amounts in the given date range, optionally narrowed by patient and/or cashier
+	 * username, excluding payments on deleted bills.
+	 *
+	 * @param dateFrom the low date range endpoint, inclusive.
+	 * @param dateTo the high date range endpoint, inclusive.
+	 * @param patientCode the patient to filter by, or {@code null} for any patient.
+	 * @param username the cashier username to filter by, or {@code null} for all cashiers.
+	 * @return the summed payment amount.
+	 * @throws OHServiceException if an error occurs computing the sum.
+	 */
+	public BigDecimal getPaymentsTotal(LocalDateTime dateFrom, LocalDateTime dateTo, Integer patientCode, String username) throws OHServiceException {
+		return ioOperations.getPaymentsTotal(dateFrom, dateTo, patientCode, username);
 	}
 
 	/**

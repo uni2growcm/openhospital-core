@@ -21,6 +21,7 @@
  */
 package org.isf.accounting.service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +35,8 @@ import org.isf.patient.model.Patient;
 import org.isf.utils.db.TranslateOHServiceException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.time.TimeTools;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -234,6 +237,55 @@ public class AccountingIoOperations {
 	 */
 	public List<Bill> getBillsBetweenDates(LocalDateTime dateFrom, LocalDateTime dateTo) throws OHServiceException {
 		return billRepository.findByDateBetween(TimeTools.getBeginningOfDay(dateFrom), TimeTools.getBeginningOfNextDay(dateTo));
+	}
+
+	/**
+	 * Fetches one page of {@link Bill}s in the given date range, optionally narrowed by status, patient
+	 * and cashier username (each predicate is skipped when its parameter is {@code null}).
+	 *
+	 * @param dateFrom the low date range endpoint, inclusive.
+	 * @param dateTo the high date range endpoint, inclusive.
+	 * @param status the bill status to filter by, or {@code null} for any status.
+	 * @param patientCode the patient to filter by, or {@code null} for any patient.
+	 * @param username the cashier username to filter by, or {@code null} for any cashier.
+	 * @param pageable the requested page and size.
+	 * @return the requested {@link Page} of {@link Bill}s.
+	 * @throws OHServiceException if an error occurs retrieving the bills.
+	 */
+	public Page<Bill> getBillsPageable(LocalDateTime dateFrom, LocalDateTime dateTo, String status, Integer patientCode,
+			String username, Pageable pageable) throws OHServiceException {
+		return billRepository.findPageable(TimeTools.getBeginningOfDay(dateFrom), TimeTools.getBeginningOfNextDay(dateTo),
+			status, patientCode, username, pageable);
+	}
+
+	/**
+	 * Sums the outstanding balance of every non-deleted {@link Bill} in the given date range, optionally
+	 * narrowed by patient - independent of status/page, this backs the totals footer which reflects the
+	 * whole filtered date range regardless of which page or tab is currently displayed.
+	 *
+	 * @param dateFrom the low date range endpoint, inclusive.
+	 * @param dateTo the high date range endpoint, inclusive.
+	 * @param patientCode the patient to filter by, or {@code null} for any patient.
+	 * @return the summed balance.
+	 * @throws OHServiceException if an error occurs computing the sum.
+	 */
+	public BigDecimal getBalanceTotal(LocalDateTime dateFrom, LocalDateTime dateTo, Integer patientCode) throws OHServiceException {
+		return billRepository.sumBalance(TimeTools.getBeginningOfDay(dateFrom), TimeTools.getBeginningOfNextDay(dateTo), patientCode);
+	}
+
+	/**
+	 * Sums payment amounts in the given date range, optionally narrowed by patient and/or cashier
+	 * username, excluding payments on deleted bills.
+	 *
+	 * @param dateFrom the low date range endpoint, inclusive.
+	 * @param dateTo the high date range endpoint, inclusive.
+	 * @param patientCode the patient to filter by, or {@code null} for any patient.
+	 * @param username the cashier username to filter by, or {@code null} for all cashiers.
+	 * @return the summed payment amount.
+	 * @throws OHServiceException if an error occurs computing the sum.
+	 */
+	public BigDecimal getPaymentsTotal(LocalDateTime dateFrom, LocalDateTime dateTo, Integer patientCode, String username) throws OHServiceException {
+		return billPaymentRepository.sumPayments(TimeTools.getBeginningOfDay(dateFrom), TimeTools.getBeginningOfNextDay(dateTo), patientCode, username);
 	}
 
 	/**
