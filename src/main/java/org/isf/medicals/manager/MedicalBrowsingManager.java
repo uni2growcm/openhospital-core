@@ -294,4 +294,15 @@ public class MedicalBrowsingManager {
 			throw new OHDataValidationException(errors);
 		}
 	}
+
+	/**
+	 * Returns the next available product code, to be used as a suggestion
+	 * when creating a new {@link Medical}.
+	 *
+	 * @return the next available product code.
+	 * @throws OHServiceException
+	 */
+	public Integer getNextMedicalCode() throws OHServiceException {
+		return ioOperations.getNextMedicalCode();
+	}
 }
