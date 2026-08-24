@@ -383,6 +383,70 @@ public class MedicalStockIoOperations {
 	}
 
 	/**
+	 * Updates the quantity of an existing {@link Movement}, adjusting the derived stock quantities
+	 * (medical incoming/outgoing aggregates, daily balances and ward quantities) accordingly.
+	 *
+	 * @param movement the movement carrying the new quantity (its {@code code} identifies the persisted movement).
+	 * @return the updated {@link Movement}.
+	 * @throws OHServiceException if an error occurs during the update.
+	 */
+	public Movement updateMovement(Movement movement) throws OHServiceException {
+		Movement existing = movRepository.findById(movement.getCode()).orElse(null);
+		if (existing == null) {
+			throw new OHServiceException(new OHExceptionMessage("Movement '" + movement.getCode() + "' not found."));
+		}
+
+		int oldQuantity = existing.getQuantity();
+		int newQuantity = movement.getQuantity();
+		if (newQuantity == oldQuantity) {
+			return existing;
+		}
+
+		int quantityChange = newQuantity - oldQuantity;
+		boolean chargeMovement = existing.getType().getType().contains("+");
+		Medical medical = existing.getMedical();
+
+		if (chargeMovement) {
+			updateMedicalIncomingQuantity(medical.getCode(), quantityChange);
+		} else {
+			updateMedicalOutcomingQuantity(medical.getCode(), quantityChange);
+			Ward ward = existing.getWard();
+			if (ward != null) {
+				updateMedicalWardQuantity(ward, medical, quantityChange, existing.getLot());
+			}
+		}
+
+		updateMedicalStockBalancesFromDate(medical, existing.getDate().toLocalDate(), chargeMovement ? quantityChange : -quantityChange);
+
+		existing.setQuantity(newQuantity);
+		return movRepository.save(existing);
+	}
+
+	/**
+	 * Adjusts the {@link MedicalStock} balances of the specified medical from the given date onward.
+	 *
+	 * @param medical the medical whose balances have to be adjusted.
+	 * @param date the date from which the balances must be adjusted.
+	 * @param balanceDelta the quantity to add (remove if negative) to the balances.
+	 * @throws OHServiceException if a balance would become negative.
+	 */
+	private void updateMedicalStockBalancesFromDate(Medical medical, LocalDate date, int balanceDelta) throws OHServiceException {
+		List<MedicalStock> medicalStockList = medicalStockRepository.findByMedicalCodeOrderByBalanceDateDesc(medical.getCode());
+		for (MedicalStock medicalStock : medicalStockList) {
+			if (medicalStock.getBalanceDate().isBefore(date)) {
+				break;
+			}
+			int newBalance = medicalStock.getBalance() + balanceDelta;
+			if (newBalance < 0) {
+				throw new OHServiceException(new OHExceptionMessage(
+					"Medical '" + medical.getDescription() + "' (" + medical.getCode() + ") quantity would become negative."));
+			}
+			medicalStock.setBalance(newBalance);
+			medicalStockRepository.save(medicalStock);
+		}
+	}
+
+	/**
 	 * Updates the incoming quantity for the specified medical.
 	 * 
 	 * @param medicalCode the medical code.
