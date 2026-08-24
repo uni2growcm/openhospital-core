@@ -1,0 +1,643 @@
+/*
+ * Open Hospital (www.open-hospital.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ *
+ * Open Hospital is a free and open source software for healthcare data management.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * https://www.gnu.org/licenses/gpl-3.0-standalone.html
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+package org.isf.maternity;
+
+import org.isf.OHCoreTestCase;
+import org.isf.maternity.manager.*;
+import org.isf.maternity.model.*;
+import org.isf.patient.TestPatient;
+import org.isf.patient.model.Patient;
+import org.isf.patient.service.PatientIoOperationRepository;
+import org.isf.typology.TestTypology;
+import org.isf.typology.manager.TypologyBrowserManager;
+import org.isf.typology.model.Typology;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+class Tests extends OHCoreTestCase {
+
+	private static TestDelivery testDelivery;
+	private static TestVisit testVisit;
+	private static TestTypology testTypology;
+	private static TestNewBorn testNewBorn;
+
+	private static TestPregnancy testPregnancy;
+	private static TestPatient testPatient;
+
+	@Autowired
+	PatientIoOperationRepository patientIoOperationRepository;
+	@Autowired
+	TypologyBrowserManager typologyBrowserManager;
+	@Autowired
+	PregnancyDeliveryBrowserManager deliveryBrowserManager;
+	@Autowired
+	PregnancyVisitBrowserManager pregnancyVisitBrowserManager;
+	@Autowired
+	PregnancyBrowserManager pregnancyBrowserManager;
+	@Autowired
+	NewBornBrowserManager newBornBrowserManager;
+
+	@BeforeAll
+	static void setUpClass() {
+		testDelivery = new TestDelivery();
+		testVisit = new TestVisit();
+		testTypology = new TestTypology();
+		testNewBorn = new TestNewBorn();
+		testPregnancy = new TestPregnancy();
+		testPatient = new TestPatient();
+	}
+
+	@BeforeEach
+	void setUp() {
+		cleanH2InMemoryDb();
+	}
+
+	@Test
+	void testPregnancyCRUD() throws Exception {
+
+		// CREATE PATIENT
+		Patient patient = testPatient.setup(false);
+		patientIoOperationRepository.save(patient);
+
+		// CREATE PREGNANCY
+		Pregnancy pregnancy = testPregnancy.setup(patient, false);
+		pregnancy = pregnancyBrowserManager.newPregnancy(pregnancy);
+
+		assertThat(pregnancy).isNotNull();
+		assertThat(pregnancy.getId()).isNotNull();
+
+		// READ BY PATIENT
+		List<Pregnancy> list =
+			pregnancyBrowserManager.getPregnanciesByPatient(patient.getCode());
+
+		assertThat(list).isNotEmpty();
+		assertThat(list).hasSize(1);
+
+		// UPDATE
+		Pregnancy updated = list.get(0);
+		updated.setRiskLevel(RiskLevel.HIGH);
+		updated = pregnancyBrowserManager.updatePregnancy(updated);
+
+		assertThat(updated.getRiskLevel()).isEqualTo(RiskLevel.HIGH);
+
+		// CHECK ACTIVE PREGNANCY
+		assertThat(
+			pregnancyBrowserManager.hasActivePregnancy(patient.getCode())
+		).isTrue();
+
+		// COUNT BY STATUS (assuming default status like "ONGOING")
+		long count =
+			pregnancyBrowserManager.countPregnanciesByPatientAndStatus(
+				patient.getCode(),
+				updated.getStatus()
+			);
+
+		assertThat(count).isGreaterThan(0);
+
+		// GET LATEST
+		Pregnancy latest =
+			pregnancyBrowserManager.getLatestPregnancyByPatientAndStatus(
+				patient.getCode(),
+				updated.getStatus()
+			);
+
+		assertThat(latest).isNotNull();
+		assertThat(latest.getId()).isEqualTo(updated.getId());
+
+		// CLOSE PREGNANCY
+		Pregnancy closed =
+			pregnancyBrowserManager.closePregnancy(updated.getId(), PregnancyStatus.COMPLETED);
+
+		assertThat(closed.getStatus()).isEqualTo(PregnancyStatus.COMPLETED);
+
+		// AFTER CLOSE → NO ACTIVE PREGNANCY
+		assertThat(
+			pregnancyBrowserManager.hasActivePregnancy(patient.getCode())
+		).isFalse();
+
+		// DELETE
+		pregnancyBrowserManager.deletePregnancy(closed);
+
+		// VERIFY DELETE
+		List<Pregnancy> afterDelete =
+			pregnancyBrowserManager.getPregnanciesByPatient(patient.getCode());
+
+		assertThat(afterDelete).isEmpty();
+	}
+
+	@Test
+	void testSearchPregnancies() throws Exception {
+
+		// ================= SETUP =================
+		Patient patient1 = testPatient.setup(false);
+		patientIoOperationRepository.save(patient1);
+
+		Patient patient2 = testPatient.setup(false);
+		patientIoOperationRepository.save(patient2);
+
+		LocalDateTime now = LocalDateTime.now();
+
+		// Pregnancy 1 (match)
+		Pregnancy p1 = new Pregnancy(patient1, now.minusDays(10), now.minusDays(20));
+		p1.setRiskLevel(RiskLevel.HIGH);
+		p1.setStatus(PregnancyStatus.ONGOING);
+		p1 = pregnancyBrowserManager.newPregnancy(p1);
+
+		// Pregnancy 2 (different risk)
+		Pregnancy p2 = new Pregnancy(patient1, now.minusDays(5), now.minusDays(15));
+		p2.setRiskLevel(RiskLevel.LOW);
+		p2.setStatus(PregnancyStatus.ONGOING);
+		p2 = pregnancyBrowserManager.newPregnancy(p2);
+
+		// Pregnancy 3 (different patient)
+		Pregnancy p3 = new Pregnancy(patient2, now.minusDays(3), now.minusDays(10));
+		p3.setRiskLevel(RiskLevel.HIGH);
+		p3.setStatus(PregnancyStatus.COMPLETED);
+		p3 = pregnancyBrowserManager.newPregnancy(p3);
+
+		// ================= TEST 1: NO FILTER =================
+		Page<Pregnancy> all =
+			pregnancyBrowserManager.searchPregnancies(
+				null, null, null,
+				null, null,
+				null, null,
+				0, 10
+			);
+
+		assertThat(all).isNotNull();
+		assertThat(all.getContent().size()).isGreaterThanOrEqualTo(3);
+
+		// ================= TEST 2: FILTER BY PATIENT =================
+		Page<Pregnancy> byPatient =
+			pregnancyBrowserManager.searchPregnancies(
+				patient1.getCode(),
+				null, null,
+				null, null,
+				null, null,
+				0, 10
+			);
+
+		assertThat(byPatient.getContent())
+			.allMatch(p -> p.getPatient().getCode().equals(patient1.getCode()));
+
+		// ================= TEST 3: FILTER BY STATUS =================
+		Page<Pregnancy> byStatus =
+			pregnancyBrowserManager.searchPregnancies(
+				null,
+				PregnancyStatus.ONGOING,
+				null,
+				null, null,
+				null, null,
+				0, 10
+			);
+
+		assertThat(byStatus.getContent())
+			.allMatch(p -> p.getStatus() == PregnancyStatus.ONGOING);
+
+		// ================= TEST 4: FILTER BY RISK =================
+		Page<Pregnancy> byRisk =
+			pregnancyBrowserManager.searchPregnancies(
+				null,
+				null,
+				RiskLevel.HIGH,
+				null, null,
+				null, null,
+				0, 10
+			);
+
+		assertThat(byRisk.getContent())
+			.allMatch(p -> p.getRiskLevel() == RiskLevel.HIGH);
+
+		// ================= TEST 5: DATE RANGE =================
+		Page<Pregnancy> byDate =
+			pregnancyBrowserManager.searchPregnancies(
+				null,
+				null,
+				null,
+				now.minusDays(7), // from
+				now,              // to
+				null, null,
+				0, 10
+			);
+
+		assertThat(byDate.getContent())
+			.allMatch(p -> p.getDate().isAfter(now.minusDays(7)));
+
+		// ================= TEST 6: LMP RANGE =================
+		Page<Pregnancy> byLmp =
+			pregnancyBrowserManager.searchPregnancies(
+				null,
+				null,
+				null,
+				null, null,
+				now.minusDays(18),
+				now.minusDays(12),
+				0, 10
+			);
+
+		assertThat(byLmp.getContent())
+			.allMatch(p ->
+				p.getLmp().isAfter(now.minusDays(18)) &&
+					p.getLmp().isBefore(now.minusDays(12))
+			);
+
+		// ================= TEST 7: COMBINED FILTER =================
+		Page<Pregnancy> combined =
+			pregnancyBrowserManager.searchPregnancies(
+				patient1.getCode(),
+				PregnancyStatus.ONGOING,
+				RiskLevel.HIGH,
+				null, null,
+				null, null,
+				0, 10
+			);
+
+		assertThat(combined.getContent()).hasSize(1);
+		assertThat(combined.getContent().get(0).getId()).isEqualTo(p1.getId());
+
+		// ================= TEST 8: PAGINATION =================
+		Page<Pregnancy> page1 =
+			pregnancyBrowserManager.searchPregnancies(
+				null, null, null,
+				null, null,
+				null, null,
+				0, 2
+			);
+
+		Page<Pregnancy> page2 =
+			pregnancyBrowserManager.searchPregnancies(
+				null, null, null,
+				null, null,
+				null, null,
+				1, 2
+			);
+
+		assertThat(page1.getContent()).isNotEmpty();
+		assertThat(page2.getContent()).isNotEmpty();
+		assertThat(page1.getContent()).isNotEqualTo(page2.getContent());
+	}
+
+	@Test
+	void testPregnancyDeliveryBrowserManagerFullFlow() throws Exception {
+
+		// ARRANGE
+		Patient patient = testPatient.setup(false);
+		patientIoOperationRepository.save(patient);
+
+		Pregnancy pregnancy = testPregnancy.setup(patient, false);
+		pregnancy = pregnancyBrowserManager.newPregnancy(pregnancy);
+
+		Typology type = testTypology.setupDeliveryType();
+		type = typologyBrowserManager.newTypology(type);
+
+		PregnancyDelivery delivery = testDelivery.setup(pregnancy, type, false);
+
+		// CREATE
+		PregnancyDelivery created = deliveryBrowserManager.newDelivery(delivery);
+		assertThat(created.getId()).isNotNull();
+
+		// GET BY PREGNANCY
+		PregnancyDelivery found =
+			deliveryBrowserManager.getDeliveryByPregnancy(pregnancy.getId());
+
+		assertThat(found).isNotNull();
+		assertThat(found.getId()).isEqualTo(created.getId());
+
+		// HAS DELIVERY (boolean ✔)
+		assertThat(deliveryBrowserManager.hasDelivery(pregnancy.getId())).isTrue();
+
+		// VALIDATE DELIVERY EXISTS (returns entity ✔)
+		PregnancyDelivery validated =
+			deliveryBrowserManager.validateDeliveryExists(pregnancy.getId());
+
+		assertThat(validated).isNotNull();
+		assertThat(validated.getId()).isEqualTo(created.getId());
+
+		// UPDATE
+		validated.setFatherName("Updated Father");
+		PregnancyDelivery updated =
+			deliveryBrowserManager.updateDelivery(validated);
+
+		assertThat(updated.getFatherName()).isEqualTo("Updated Father");
+
+		// DELETE
+		deliveryBrowserManager.deleteDelivery(updated);
+
+		// AFTER DELETE → should NOT exist
+		assertThat(deliveryBrowserManager.hasDelivery(pregnancy.getId())).isFalse();
+
+		PregnancyDelivery afterDelete =
+			deliveryBrowserManager.getDeliveryByPregnancy(pregnancy.getId());
+
+		assertThat(afterDelete).isNull();
+	}
+
+	@Test
+	void testPregnancyVisitBrowserManagerFullFlow() throws Exception {
+
+		// ARRANGE
+		Patient patient = testPatient.setup(false);
+		patientIoOperationRepository.save(patient);
+
+		Pregnancy pregnancy = testPregnancy.setup(patient, false);
+		pregnancy = pregnancyBrowserManager.newPregnancy(pregnancy);
+
+		Typology vt = testTypology.setupVisitType();
+		vt = typologyBrowserManager.newTypology(vt);
+
+		PregnancyVisit visit = testVisit.setup(pregnancy, vt, false);
+
+		// CREATE
+		PregnancyVisit saved = pregnancyVisitBrowserManager.newVisit(visit);
+		assertThat(saved.getId()).isNotNull();
+
+		// GET ALL VISITS
+		List<PregnancyVisit> visits =
+			pregnancyVisitBrowserManager.getVisitsByPregnancy(pregnancy.getId());
+
+		assertThat(visits).hasSize(1);
+
+		// COUNT VISITS
+		long count = pregnancyVisitBrowserManager.countVisits(pregnancy.getId());
+		assertThat(count).isEqualTo(1);
+
+		// HAS VISITS
+		assertThat(pregnancyVisitBrowserManager.hasVisits(pregnancy.getId()))
+			.isTrue();
+
+		// GET LAST VISIT
+		PregnancyVisit last =
+			pregnancyVisitBrowserManager.getLastVisit(pregnancy.getId());
+
+		assertThat(last).isNotNull();
+		assertThat(last.getId()).isEqualTo(saved.getId());
+
+		// UPDATE
+		last.setMaternalWeight(72.5);
+		PregnancyVisit updated =
+			pregnancyVisitBrowserManager.updateVisit(last);
+
+		assertThat(updated.getMaternalWeight()).isEqualTo(72.5);
+
+		// DATE RANGE QUERY
+		List<PregnancyVisit> range =
+			pregnancyVisitBrowserManager.getVisitsByDateRange(
+				pregnancy.getId(),
+				updated.getVisitDate().minusDays(1),
+				updated.getVisitDate().plusDays(1)
+			);
+
+		assertThat(range).isNotEmpty();
+
+		// FILTER QUERY (visitType)
+		List<PregnancyVisit> filtered =
+			pregnancyVisitBrowserManager.getVisitsByFilters(
+				pregnancy.getId(),
+				updated.getVisitDate().minusDays(1),
+				updated.getVisitDate().plusDays(1),
+				vt.getCode()
+			);
+
+		assertThat(filtered).isNotEmpty();
+
+		// PRENATAL VISITS
+		List<PregnancyVisit> prenatal =
+			pregnancyVisitBrowserManager.getPrenatalVisits(
+				pregnancy.getId(),
+				updated.getVisitDate().plusDays(10)
+			);
+
+		assertThat(prenatal).isNotEmpty();
+
+		// POSTNATAL VISITS
+		List<PregnancyVisit> postnatal =
+			pregnancyVisitBrowserManager.getPostnatalVisits(
+				pregnancy.getId(),
+				updated.getVisitDate().minusDays(10)
+			);
+
+		assertThat(postnatal).isNotEmpty();
+
+		// DELETE
+		pregnancyVisitBrowserManager.deleteVisit(updated);
+
+		// AFTER DELETE → should be empty
+		assertThat(pregnancyVisitBrowserManager.hasVisits(pregnancy.getId()))
+			.isFalse();
+
+		assertThat(pregnancyVisitBrowserManager.countVisits(pregnancy.getId()))
+			.isEqualTo(0);
+	}
+
+	@Test
+	void testNewbornBrowserManagerFullFlow() throws Exception {
+
+		// ARRANGE
+		Patient patient = testPatient.setup(false);
+		patientIoOperationRepository.save(patient);
+
+		Pregnancy pregnancy = testPregnancy.setup(patient, false);
+		pregnancy = pregnancyBrowserManager.newPregnancy(pregnancy);
+
+		Typology type = testTypology.setupDeliveryType();
+		type = typologyBrowserManager.newTypology(type);
+
+		PregnancyDelivery delivery = testDelivery.setup(pregnancy, type, false);
+		delivery = deliveryBrowserManager.newDelivery(delivery);
+
+		Patient newbornPatient = testPatient.setup(false);
+		newbornPatient.setFirstName("first name");
+		newbornPatient.setSecondName("second name");
+		newbornPatient.setMotherName(patient.getMotherName());
+
+		Patient savedNewbornPatient = patientIoOperationRepository.save(newbornPatient);
+
+		Newborn newborn = testNewBorn.setup(savedNewbornPatient, delivery, false);
+
+		// CREATE
+		Newborn saved = newBornBrowserManager.newNewborn(newborn);
+		assertThat(saved.getId()).isNotNull();
+
+		// GET BY DELIVERY
+		List<Newborn> list =
+			newBornBrowserManager.getNewbornsByDelivery(delivery.getId());
+
+		assertThat(list).hasSize(1);
+
+		assertThat(newborn.getBabyPatient()).isEqualTo(savedNewbornPatient);
+
+		// COUNT
+		long count =
+			newBornBrowserManager.countNewbornsByDelivery(delivery.getId());
+
+		assertThat(count).isEqualTo(1);
+
+		// UPDATE
+		Newborn toUpdate = list.get(0);
+		toUpdate.getBabyPatient().setMotherName(patient.getMotherName() + "mum");
+
+		Newborn updated =
+			newBornBrowserManager.updateNewborn(toUpdate);
+
+		assertThat(newborn.getBabyPatient().getMotherName()).isEqualTo(patient.getMotherName() + "mum");
+
+		// FIRST BORN (Optional result)
+		assertThat(
+			newBornBrowserManager.getFirstBorn(delivery.getId())
+		).isPresent();
+
+		// FIRST BORN (Optional result)
+		assertThat(
+			newBornBrowserManager.findByPatientCode(savedNewbornPatient.getCode())
+		).isPresent();
+
+		// WEIGHT RANGE QUERY
+		List<Newborn> weightRange =
+			newBornBrowserManager.getNewbornsByWeightRange(2.0, 5.0);
+
+		assertThat(weightRange).isNotNull();
+
+		// LOW BIRTH WEIGHT CHECK
+		boolean lowWeight =
+			newBornBrowserManager.hasLowBirthWeightCases(delivery.getId(), 2.5);
+
+		assertThat(lowWeight).isNotNull();
+
+		// VALIDATION: belongs to delivery
+		Newborn validated =
+			newBornBrowserManager.validateNewbornBelongsToDelivery(
+				updated.getId(),
+				delivery.getId()
+			);
+
+		assertThat(validated).isNotNull();
+		assertThat(validated.getId()).isEqualTo(updated.getId());
+
+		// DELETE
+		newBornBrowserManager.deleteNewborn(updated);
+
+		// AFTER DELETE
+		assertThat(
+			newBornBrowserManager.countNewbornsByDelivery(delivery.getId())
+		).isEqualTo(0);
+	}
+
+	@Test
+	void testObstetricHistoryFieldsCRUD() throws Exception {
+
+		Patient patient = testPatient.setup(false);
+		patientIoOperationRepository.save(patient);
+
+		Pregnancy pregnancy = testPregnancy.setup(patient, false);
+		pregnancy = pregnancyBrowserManager.newPregnancy(pregnancy);
+
+		assertThat(pregnancy).isNotNull();
+		assertThat(pregnancy.getId()).isNotNull();
+
+		assertThat(pregnancy.getGravidity()).isEqualTo(4);
+		assertThat(pregnancy.getParity()).isEqualTo(2);
+		assertThat(pregnancy.getMiscarriages()).isEqualTo(1);
+		assertThat(pregnancy.getTermDeliveries()).isEqualTo(2);
+		assertThat(pregnancy.getPretermDeliveries()).isEqualTo(1);
+		assertThat(pregnancy.getLivingChildren()).isEqualTo(2);
+		assertThat(pregnancy.getStillbirths()).isEqualTo(0);
+		assertThat(pregnancy.getDeceasedChildren()).isEqualTo(0);
+		assertThat(pregnancy.getDesiredChildren()).isEqualTo(4);
+		assertThat(pregnancy.getBreastfeeding()).isEqualTo("Y");
+		assertThat(pregnancy.getLastChildYears()).isEqualTo(2);
+		assertThat(pregnancy.getLastChildMonths()).isEqualTo(3);
+		assertThat(pregnancy.getLastChildWeeks()).isEqualTo(0);
+		assertThat(pregnancy.getLastChildDays()).isEqualTo(0);
+
+		List<Pregnancy> list = pregnancyBrowserManager.getPregnanciesByPatient(patient.getCode());
+		assertThat(list).isNotEmpty();
+		assertThat(list).hasSize(1);
+
+		Pregnancy retrieved = list.get(0);
+		assertThat(retrieved.getGravidity()).isEqualTo(4);
+		assertThat(retrieved.getTermDeliveries()).isEqualTo(2);
+		assertThat(retrieved.getPretermDeliveries()).isEqualTo(1);
+		assertThat(retrieved.getLivingChildren()).isEqualTo(2);
+		assertThat(retrieved.getBreastfeeding()).isEqualTo("Y");
+		assertThat(retrieved.getDesiredChildren()).isEqualTo(4);
+
+		retrieved.setGravidity(5);
+		retrieved.setTermDeliveries(3);
+		retrieved.setPretermDeliveries(1);
+		retrieved.setMiscarriages(1);
+		retrieved.setLivingChildren(4);
+		retrieved.setDesiredChildren(5);
+		retrieved.setBreastfeeding("N");
+		retrieved.setLastChildYears(3);
+		retrieved.setLastChildMonths(6);
+
+		Pregnancy updated = pregnancyBrowserManager.updatePregnancy(retrieved);
+		assertThat(updated.getGravidity()).isEqualTo(5);
+		assertThat(updated.getTermDeliveries()).isEqualTo(3);
+		assertThat(updated.getLivingChildren()).isEqualTo(4);
+		assertThat(updated.getBreastfeeding()).isEqualTo("N");
+		assertThat(updated.getLastChildYears()).isEqualTo(3);
+		assertThat(updated.getLastChildMonths()).isEqualTo(6);
+	}
+
+	@Test
+	void testNullObstetricHistoryValues() throws Exception {
+
+		Patient patient = testPatient.setup(false);
+		patientIoOperationRepository.save(patient);
+
+		Pregnancy pregnancy = new Pregnancy(patient, LocalDateTime.now(), LocalDateTime.now().minusDays(30));
+		pregnancy.setGravidity(null);
+		pregnancy.setTermDeliveries(null);
+		pregnancy.setPretermDeliveries(null);
+		pregnancy.setMiscarriages(null);
+		pregnancy.setLivingChildren(null);
+		pregnancy.setStillbirths(null);
+		pregnancy.setDeceasedChildren(null);
+		pregnancy.setDesiredChildren(null);
+		pregnancy.setBreastfeeding(null);
+		pregnancy.setLastChildYears(null);
+		pregnancy.setLastChildMonths(null);
+		pregnancy.setLastChildWeeks(null);
+		pregnancy.setLastChildDays(null);
+		pregnancy.setRiskLevel(RiskLevel.LOW);
+		pregnancy.setStatus(PregnancyStatus.ONGOING);
+
+		Pregnancy saved = pregnancyBrowserManager.newPregnancy(pregnancy);
+		assertThat(saved).isNotNull();
+		assertThat(saved.getId()).isNotNull();
+
+		assertThat(saved.getGravidity()).isNull();
+		assertThat(saved.getTermDeliveries()).isNull();
+		assertThat(saved.getLivingChildren()).isNull();
+		assertThat(saved.getBreastfeeding()).isNull();
+		assertThat(saved.getLastChildYears()).isNull();
+	}
+}
