@@ -251,6 +251,41 @@ public class JasperReportsManager {
 		}
 	}
 
+	/**
+	 * Generates the family planning register report (CPN module, Phase 4/5) listing every
+	 * {@code FamilyPlanningRecord} whose visit date falls within the given range.
+	 *
+	 * @param dateFrom start of the period (inclusive).
+	 * @param dateTo end of the period (inclusive).
+	 * @param jasperFileName the report file name (without extension), typically {@code "FamilyPlanningRegister"}.
+	 */
+	public JasperReportResultDto getFamilyPlanningRegisterPdf(LocalDateTime dateFrom, LocalDateTime dateTo, String jasperFileName) throws OHServiceException {
+
+		try {
+			if (dateFrom == null) {
+				dateFrom = TimeTools.getNow();
+			}
+			if (dateTo == null) {
+				dateTo = TimeTools.getNow();
+			}
+
+			HashMap<String, Object> parameters = getHospitalParameters();
+			addBundleParameter(RPT_STAT, jasperFileName, parameters);
+
+			parameters.put("fromdate", toDate(dateFrom));
+			parameters.put("todate", toDate(dateTo));
+
+			String pdfFilename = compilePDFFilename(RPT_STAT, jasperFileName, null, "pdf");
+
+			JasperReportResultDto result = generateJasperReport(compileJasperFilename(RPT_STAT, jasperFileName), pdfFilename, parameters);
+			JasperExportManager.exportReportToPdfFile(result.getJasperPrint(), pdfFilename);
+			return result;
+		} catch (Exception e) {
+			LOGGER.error("", e);
+			throw new OHReportException(e, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
+		}
+	}
+
 	public JasperReportResultDto getGenericReportBillZPL(Integer billID, String jasperFileName, boolean show, boolean askForPrint) throws OHServiceException {
 
 		try {
