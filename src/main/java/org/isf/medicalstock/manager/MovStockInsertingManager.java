@@ -24,7 +24,9 @@ package org.isf.medicalstock.manager;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.isf.generaldata.GeneralData;
 import org.isf.generaldata.MessageBundle;
@@ -286,6 +288,31 @@ public class MovStockInsertingManager {
 	}
 
 	/**
+	 * Returns, for every medical, the cost of the last lot received (i.e. its last purchase price).
+	 *
+	 * @return a map associating each medical code with the cost of its most recently received lot.
+	 * @throws OHServiceException
+	 */
+	public Map<Integer, BigDecimal> getLastPricePerMedical() throws OHServiceException {
+		Map<Integer, BigDecimal> result = new HashMap<>();
+		for (Object[] row : ioOperationsLots.findLastCostByMedical()) {
+			result.put((Integer) row[0], (BigDecimal) row[1]);
+		}
+		return result;
+	}
+
+	/**
+	 * Returns, for every medical, the average monthly quantity discharged from the main store
+	 * over the last 3 months.
+	 *
+	 * @return a map associating each medical code with its average monthly discharged quantity.
+	 * @throws OHServiceException
+	 */
+	public Map<Integer, Double> getAverageMonthlyQuantityPerMedical() throws OHServiceException {
+		return ioOperations.getAverageMonthlyDischargeQuantity();
+	}
+
+	/**
 	 * Checks if the provided quantity is under the medical limits.
 	 *
 	 * @param medicalSelected the selected medical.
@@ -318,6 +345,17 @@ public class MovStockInsertingManager {
 	 */
 	public boolean refNoExists(String refNo) throws OHServiceException {
 		return ioOperations.refNoExists(refNo);
+	}
+
+	/**
+	 * Generate the next available reference number for a new {@link Movement}, dated the given date.
+	 *
+	 * @param date the {@link Movement} date the reference is generated for.
+	 * @return the generated reference number.
+	 * @throws OHServiceException
+	 */
+	public String generateReferenceNumber(LocalDateTime date) throws OHServiceException {
+		return ioOperations.generateReferenceNumber(date);
 	}
 
 	/**

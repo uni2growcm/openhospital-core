@@ -51,9 +51,12 @@ import org.isf.hospital.manager.HospitalBrowsingManager;
 import org.isf.hospital.model.Hospital;
 import org.isf.medicalinventory.model.MedicalInventory;
 import org.isf.medicals.model.Medical;
+import org.isf.medicalstock.manager.MovBrowserManager;
+import org.isf.medicalstock.manager.MovStockInsertingManager;
 import org.isf.patient.model.Patient;
 import org.isf.patient.service.PatientIoOperations;
 import org.isf.stat.dto.JasperReportResultDto;
+import org.isf.stat.dto.StockSheetMovementRow;
 import org.isf.utils.db.DbQueryLogger;
 import org.isf.utils.db.UTF8Control;
 import org.isf.utils.excel.ExcelExporter;
@@ -78,6 +81,7 @@ import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.base.JRBaseSubreport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.util.JRLoader;
 
 @Component
@@ -101,10 +105,17 @@ public class JasperReportsManager {
 	
 	private WardBrowserManager wardManager;
 
-	public JasperReportsManager(HospitalBrowsingManager hospitalBrowsingManager, DataSource dataSource, WardBrowserManager wardManager) {
+	private MovBrowserManager movBrowserManager;
+
+	private MovStockInsertingManager movStockInsertingManager;
+
+	public JasperReportsManager(HospitalBrowsingManager hospitalBrowsingManager, DataSource dataSource, WardBrowserManager wardManager,
+					MovBrowserManager movBrowserManager, MovStockInsertingManager movStockInsertingManager) {
 		this.hospitalManager = hospitalBrowsingManager;
 		this.dataSource = dataSource;
 		this.wardManager = wardManager;
+		this.movBrowserManager = movBrowserManager;
+		this.movStockInsertingManager = movStockInsertingManager;
 	}
 
 	public JasperReportResultDto getExamsListPdf() throws OHServiceException {
@@ -671,6 +682,90 @@ public class JasperReportsManager {
 			LOGGER.error("", e);
 			throw new OHReportException(e, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
 		}
+	}
+
+	private static final String STOCK_SHEET_JASPER_FILE = "StockSheet";
+
+	/**
+	 * Generates the "stock sheet" (fiche de stock) report for a single medical: product identification,
+	 * management data (average monthly consumption, max level, safety stock) and the detailed movement
+	 * ledger over the given period, with running balance.
+	 *
+	 * @param medical the medical.
+	 * @param fromDate the start of the period (inclusive).
+	 * @param toDate the end of the period (inclusive).
+	 * @return the generated report.
+	 * @throws OHServiceException
+	 */
+	public JasperReportResultDto getStockSheetReport(Medical medical, LocalDateTime fromDate, LocalDateTime toDate) throws OHServiceException {
+		try {
+			double cmm = movStockInsertingManager.getAverageMonthlyQuantityPerMedical().getOrDefault(medical.getCode(), 0.0);
+			JasperPrint jasperPrint = fillStockSheetReport(medical, fromDate, toDate, cmm);
+
+			String pdfFilename = compilePDFFilename(RPT_BASE, STOCK_SHEET_JASPER_FILE, Arrays.asList(String.valueOf(medical.getCode())), "pdf");
+			JasperExportManager.exportReportToPdfFile(jasperPrint, pdfFilename);
+			return new JasperReportResultDto(jasperPrint, compileJasperFilename(RPT_BASE, STOCK_SHEET_JASPER_FILE), pdfFilename);
+		} catch (Exception e) {
+			LOGGER.error("", e);
+			throw new OHReportException(e, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
+		}
+	}
+
+	/**
+	 * Generates one combined "stock sheet" report with one sheet per medical (e.g. every medical of a
+	 * given category), over the given period.
+	 *
+	 * @param medicals the medicals to include, in the order they should appear in the report.
+	 * @param fromDate the start of the period (inclusive).
+	 * @param toDate the end of the period (inclusive).
+	 * @return the generated report, combining one sheet per medical.
+	 * @throws OHServiceException
+	 */
+	public JasperReportResultDto getStockSheetReportForMedicals(List<Medical> medicals, LocalDateTime fromDate, LocalDateTime toDate) throws OHServiceException {
+		try {
+			Map<Integer, Double> cmmByMedical = movStockInsertingManager.getAverageMonthlyQuantityPerMedical();
+
+			JasperPrint mergedPrint = null;
+			for (Medical medical : medicals) {
+				double cmm = cmmByMedical.getOrDefault(medical.getCode(), 0.0);
+				JasperPrint jasperPrint = fillStockSheetReport(medical, fromDate, toDate, cmm);
+				if (mergedPrint == null) {
+					mergedPrint = jasperPrint;
+				} else {
+					mergedPrint.getPages().addAll(jasperPrint.getPages());
+				}
+			}
+
+			String pdfFilename = compilePDFFilename(RPT_BASE, STOCK_SHEET_JASPER_FILE, null, "pdf");
+			JasperExportManager.exportReportToPdfFile(mergedPrint, pdfFilename);
+			return new JasperReportResultDto(mergedPrint, compileJasperFilename(RPT_BASE, STOCK_SHEET_JASPER_FILE), pdfFilename);
+		} catch (Exception e) {
+			LOGGER.error("", e);
+			throw new OHReportException(e, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
+		}
+	}
+
+	private JasperPrint fillStockSheetReport(Medical medical, LocalDateTime fromDate, LocalDateTime toDate, double cmm) throws Exception {
+		List<StockSheetMovementRow> rows = movBrowserManager.getStockSheetMovements(medical, fromDate, toDate);
+		JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(rows);
+
+		HashMap<String, Object> parameters = getHospitalParameters();
+		addBundleParameter(RPT_BASE, STOCK_SHEET_JASPER_FILE, parameters);
+		parameters.put("fromdate", TimeTools.formatDateTime(fromDate, DD_MM_YYYY));
+		parameters.put("todate", TimeTools.formatDateTime(toDate, DD_MM_YYYY));
+		parameters.put("productName", medical.getDescription());
+		parameters.put("productID", medical.getCode());
+		parameters.put("productMinQuantity", String.valueOf(medical.getMinqty()));
+		parameters.put("cmm", cmm);
+		parameters.put("niveauMax", cmm * 3);
+		parameters.put("stockSecurite", cmm / 2);
+		parameters.put("shape", medical.getShape());
+		parameters.put("dosing", medical.getDosing());
+		parameters.put("conditioning", "");
+
+		File jasperFile = new File(compileJasperFilename(RPT_BASE, STOCK_SHEET_JASPER_FILE));
+		JasperReport jasperReport = (JasperReport) JRLoader.loadObject(jasperFile);
+		return JasperFillManager.fillReport(jasperReport, parameters, dataSource);
 	}
 
 	public JasperReportResultDto getGenericReportPharmaceuticalStockWardPdf(LocalDateTime date, String jasperFileName, Ward ward) throws OHServiceException {

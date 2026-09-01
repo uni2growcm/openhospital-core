@@ -38,6 +38,7 @@ import org.isf.medicalstockward.model.MedicalWard;
 import org.isf.medicalstockward.model.MovementWard;
 import org.isf.medstockmovtype.manager.MedicalDsrStockMovementTypeBrowserManager;
 import org.isf.medstockmovtype.model.MovementType;
+import org.isf.stat.dto.StockSheetMovementRow;
 import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.model.OHExceptionMessage;
@@ -69,6 +70,20 @@ public class MovBrowserManager {
 		this.medicalDsrStockMovTypeManager = medicalDsrStockMovTypeManager;
 		this.movWardBrowserManager = movWardBrowserManager;
 		this.medicalInventoryRowIoOperation = medicalInventoryRowIoOperation;
+	}
+
+	/**
+	 * Builds the movement rows (with running stock balance) for the "stock sheet" report of a medical,
+	 * over the given period.
+	 *
+	 * @param medical the medical.
+	 * @param fromDate the start of the period (inclusive).
+	 * @param toDate the end of the period (inclusive).
+	 * @return the movement rows, in chronological order, with the running balance after each movement.
+	 * @throws OHServiceException
+	 */
+	public List<StockSheetMovementRow> getStockSheetMovements(Medical medical, LocalDateTime fromDate, LocalDateTime toDate) throws OHServiceException {
+		return ioOperations.getStockSheetMovements(medical, fromDate, toDate);
 	}
 
 	/**
