@@ -93,6 +93,7 @@ public class JasperReportsManager {
 	private static final String LOGO = "./rsc/images/logo_report.png";
 
 	private static final String RPT_BASE = "rpt_base";
+	private static final String RPT_STAT = "rpt_stat";
 
 	private HospitalBrowsingManager hospitalManager;
 
@@ -1162,6 +1163,54 @@ public class JasperReportsManager {
 			parameters.put("LOGO_PATH", LOGO);
 			String pdfFilename = compilePDFFilename(RPT_BASE, jasperFileName, Arrays.asList(String.valueOf(patientID)), "pdf");
 			JasperReportResultDto result = generateJasperReport(compileJasperFilename(RPT_BASE, jasperFileName), pdfFilename, parameters);
+			JasperExportManager.exportReportToPdfFile(result.getJasperPrint(), pdfFilename);
+			return result;
+		} catch (Exception e) {
+			LOGGER.error("", e);
+			throw new OHReportException(e, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
+		}
+	}
+
+	/**
+	 * Produce a PDF listing laboratory exams filtered by prescriber, exam, patient, result and paid status
+	 * between the given dates.
+	 *
+	 * @param fromDate the starting date in {@code dd/MM/yyyy} format
+	 * @param toDate the ending date in {@code dd/MM/yyyy} format
+	 * @param exam the exam description or {@code "all"}
+	 * @param resultFilter {@code -1} for all, {@code 0} for empty results, {@code 1} for non-empty results
+	 * @param patientCode the patient code or {@code "all"}
+	 * @param userCode the prescriber name or {@code "all"}
+	 * @param name the prescriber display name
+	 * @param patientname the patient display name
+	 * @param paidCode {@code "all"}, {@code "C"} (paid), {@code "O"} (not paid), {@code "0"} (not charged)
+	 * @return a {@link JasperReportResultDto}
+	 * @throws OHServiceException
+	 */
+	public JasperReportResultDto getLabExamListReportPdf(String fromDate, String toDate, String exam, int resultFilter,
+					String patientCode, String userCode, String name, String patientname, String paidCode) throws OHServiceException {
+		try {
+			HashMap<String, Object> parameters = getHospitalParameters();
+			LocalDateTime fromDateQuery = TimeTools.parseDate(fromDate, DD_MM_YYYY, true);
+			LocalDateTime toDateQuery = TimeTools.parseDate(toDate, DD_MM_YYYY, true);
+			parameters.put("fromdate", toDate(fromDateQuery));
+			parameters.put("todate", toDate(toDateQuery));
+			parameters.put("exam", exam != null ? exam : "all");
+			parameters.put("resultFilter", resultFilter);
+			parameters.put("patientCode", patientCode != null ? patientCode : "all");
+			parameters.put("userCode", userCode != null ? userCode : "all");
+			parameters.put("name", name != null ? name : "");
+			parameters.put("patientname", patientname != null ? patientname : "");
+			parameters.put("paidCode", paidCode != null ? paidCode : "all");
+			parameters.put("title", MessageBundle.getMessage("angal.lab.printexamlist.btn"));
+
+			String jasperFileName = "Prescriber_list_exam";
+			addBundleParameter(RPT_STAT, jasperFileName, parameters);
+
+			String pdfFilename = compilePDFFilename(RPT_STAT, jasperFileName, null, "pdf");
+			String filename = compileJasperFilename(RPT_STAT, jasperFileName);
+
+			JasperReportResultDto result = generateJasperReport(filename, pdfFilename, parameters);
 			JasperExportManager.exportReportToPdfFile(result.getJasperPrint(), pdfFilename);
 			return result;
 		} catch (Exception e) {

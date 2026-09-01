@@ -37,6 +37,7 @@ import jakarta.persistence.Transient;
 import jakarta.persistence.Version;
 import jakarta.validation.constraints.NotNull;
 
+import org.isf.accounting.model.Bill;
 import org.isf.exa.model.Exam;
 import org.isf.patient.model.Patient;
 import org.isf.utils.db.Auditable;
@@ -99,6 +100,13 @@ public class Laboratory extends Auditable<String> {
 	
 	@Column(name="LAB_STATUS")
 	private String status;
+
+	@Column(name="LAB_PRESCRIBER")
+	private String prescriber;
+
+	@ManyToOne
+	@JoinColumn(name="LAB_BLL_ID")
+	private Bill bill;
 
 	@Transient
 	private volatile int hashCode;
@@ -221,6 +229,22 @@ public class Laboratory extends Auditable<String> {
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	public String getPrescriber() {
+		return prescriber;
+	}
+
+	public void setPrescriber(String prescriber) {
+		this.prescriber = prescriber;
+	}
+
+	public Bill getBill() {
+		return bill;
+	}
+
+	public void setBill(Bill bill) {
+		this.bill = bill;
 	}
 
 	@Override
