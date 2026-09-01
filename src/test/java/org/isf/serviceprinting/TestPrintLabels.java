@@ -45,6 +45,7 @@ import org.mockito.MockedStatic;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperPrintManager;
@@ -88,13 +89,18 @@ class TestPrintLabels extends OHCoreTestCase {
 		try (MockedStatic<DbSingleJpaConn> mockedDbSingleJpaConn = mockStatic(DbSingleJpaConn.class);
 			 MockedStatic<JRLoader> mockedJRLoader = mockStatic(JRLoader.class);
 			 MockedStatic<JasperFillManager> mockedJasperFillManager = mockStatic(JasperFillManager.class);
-			 MockedStatic<JasperPrintManager> mockedJasperPrintManager = mockStatic(JasperPrintManager.class)) {
+			 MockedStatic<JasperPrintManager> mockedJasperPrintManager = mockStatic(JasperPrintManager.class);
+			 MockedStatic<JasperExportManager> mockedJasperExportManager = mockStatic(JasperExportManager.class)) {
 			mockedDbSingleJpaConn.when(() -> DbSingleJpaConn.getConnection()).thenReturn(connection);
 			mockedJRLoader.when(() -> JRLoader.loadObject(any(File.class))).thenReturn(jasperReport);
 			mockedJasperFillManager.when(() -> JasperFillManager.fillReport(any(JasperReport.class), any(HashMap.class), any(Connection.class)))
 							.thenReturn(jasperPrint);
 			// returns a void so there is no need for this instruction
 			//mockedJasperPrintManager.when(() -> JasperPrintManager.printReport(jasperPrint, true));
+			// PrintLabels runs with INTERNALVIEWER=false in tests, so it exports to PDF instead of opening the Swing viewer;
+			// without this stub, the real exportReportToPdfFile call fails on the bare JasperPrint mock.
+			mockedJasperExportManager.when(() -> JasperExportManager.exportReportToPdfFile(any(JasperPrint.class), any(String.class)))
+							.thenAnswer(invocation -> null);
 			Integer patId = setupTestPatient(false);
 			new PrintLabels("LabelForSamples", patId);
 		} catch(Exception exception) {

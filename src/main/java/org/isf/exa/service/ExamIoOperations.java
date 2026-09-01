@@ -24,6 +24,7 @@ package org.isf.exa.service;
 import java.util.List;
 import java.util.Objects;
 
+import org.isf.exa.model.Block;
 import org.isf.exa.model.Exam;
 import org.isf.exa.model.ExamRow;
 import org.isf.exatype.model.ExamType;
@@ -44,11 +45,14 @@ public class ExamIoOperations {
 
 	private final ExamTypeIoOperationRepository typeRepository;
 
+	private final BlockIoOperationRepository blockRepository;
+
 	public ExamIoOperations(ExamIoOperationRepository examIoOperationRepository, ExamRowIoOperationRepository examRowIoOperationRepository,
-		ExamTypeIoOperationRepository examTypeIoOperationRepository) {
+		ExamTypeIoOperationRepository examTypeIoOperationRepository, BlockIoOperationRepository blockIoOperationRepository) {
 		this.repository = examIoOperationRepository;
 		this.rowRepository = examRowIoOperationRepository;
 		this.typeRepository = examTypeIoOperationRepository;
+		this.blockRepository = blockIoOperationRepository;
 	}
 
 	/**
@@ -238,5 +242,26 @@ public class ExamIoOperations {
 	 */
 	public Exam findByCode(String code) throws OHServiceException {
 		return repository.findById(code).orElse(null);
+	}
+
+	/**
+	 * Returns the whole list of {@link Block}s.
+	 *
+	 * @return the list of {@link Block}s ascending by description.
+	 * @throws OHServiceException
+	 */
+	public List<Block> getBlocks() throws OHServiceException {
+		return blockRepository.findByOrderByDescriptionAsc();
+	}
+
+	/**
+	 * Returns the list of {@link Exam}s associated to the given block code.
+	 *
+	 * @param blockCode the {@link Block} code
+	 * @return the list of {@link Exam}s linked to the {@link Block}
+	 * @throws OHServiceException
+	 */
+	public List<Exam> getExamWithBlock(String blockCode) throws OHServiceException {
+		return blockRepository.findExamsByBlockCode(blockCode);
 	}
 }
