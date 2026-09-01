@@ -1,0 +1,90 @@
+-- ============================================================
+--  HIV-exposed child follow-up module — CPN, Phase 5/5
+--  Tables: OH_HIVEXPOSEDCHILD, OH_HIVEXPOSEDCHILDVISIT
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS OH_HIVEXPOSEDCHILD (
+    HEC_ID                       INT AUTO_INCREMENT PRIMARY KEY,
+    HEC_MOTHER_PAT_ID            INT          NOT NULL,
+    HEC_PNB_ID                   INT          DEFAULT NULL,
+    HEC_CHILD_NAME                VARCHAR(100) DEFAULT NULL,
+    HEC_DOB                      DATE         NOT NULL,
+    HEC_MOTHER_HIV_STATUS        VARCHAR(255) DEFAULT NULL,
+    HEC_ARV_GIVEN                TINYINT(1)   NOT NULL DEFAULT 0,
+    HEC_ARV_REGIMEN              VARCHAR(100) DEFAULT NULL,
+    HEC_CTX_GIVEN                TINYINT(1)   NOT NULL DEFAULT 0,
+    HEC_FEEDING_MODE             VARCHAR(30)  DEFAULT NULL,
+    HEC_STATUS                   VARCHAR(20)  NOT NULL DEFAULT 'ON_FOLLOWUP',
+    HEC_NOTE                     VARCHAR(255) DEFAULT NULL,
+    HEC_CREATED_BY               VARCHAR(50)  DEFAULT NULL,
+    HEC_CREATED_DATE             DATETIME     DEFAULT CURRENT_TIMESTAMP,
+    HEC_LAST_MODIFIED_BY         VARCHAR(50)  DEFAULT NULL,
+    HEC_LAST_MODIFIED_DATE       DATETIME     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    HEC_ACTIVE                   TINYINT(1)   NOT NULL DEFAULT 1,
+
+    CONSTRAINT FK_HIVEXPOSEDCHILD_MOTHER FOREIGN KEY (HEC_MOTHER_PAT_ID) REFERENCES PATIENT(PAT_ID),
+    CONSTRAINT FK_HIVEXPOSEDCHILD_NEWBORN FOREIGN KEY (HEC_PNB_ID) REFERENCES OH_PREGNANCYNEWBORN(PNB_ID),
+    INDEX IDX_HEC_MOTHER_PAT_ID (HEC_MOTHER_PAT_ID),
+    INDEX IDX_HEC_PNB_ID (HEC_PNB_ID),
+    INDEX IDX_HEC_DOB (HEC_DOB)
+) ENGINE = INNODB DEFAULT CHARACTER SET utf8;
+
+CREATE TABLE IF NOT EXISTS OH_HIVEXPOSEDCHILDVISIT (
+    HECV_ID                      INT AUTO_INCREMENT PRIMARY KEY,
+    HECV_HEC_ID                  INT          NOT NULL,
+    HECV_DATE                    DATE         NOT NULL,
+    HECV_AGE_MONTHS               INT          DEFAULT NULL,
+    HECV_WEIGHT                  FLOAT        DEFAULT NULL,
+    HECV_TEST_TYPE               VARCHAR(20)  DEFAULT NULL,
+    HECV_TEST_RESULT             VARCHAR(20)  DEFAULT NULL,
+    HECV_NEXT_APPOINTMENT        DATE         DEFAULT NULL,
+    HECV_NOTE                    VARCHAR(255) DEFAULT NULL,
+    HECV_CREATED_BY              VARCHAR(50)  DEFAULT NULL,
+    HECV_CREATED_DATE            DATETIME     DEFAULT CURRENT_TIMESTAMP,
+    HECV_LAST_MODIFIED_BY        VARCHAR(50)  DEFAULT NULL,
+    HECV_LAST_MODIFIED_DATE      DATETIME     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    HECV_ACTIVE                  TINYINT(1)   NOT NULL DEFAULT 1,
+
+    CONSTRAINT FK_HIVEXPOSEDCHILDVISIT_CHILD FOREIGN KEY (HECV_HEC_ID) REFERENCES OH_HIVEXPOSEDCHILD(HEC_ID),
+    INDEX IDX_HECV_HEC_ID (HECV_HEC_ID),
+    INDEX IDX_HECV_DATE (HECV_DATE)
+) ENGINE = INNODB DEFAULT CHARACTER SET utf8;
+
+-- ============================================================
+-- ADD HIV-EXPOSED CHILD FOLLOW-UP MENU ITEM
+-- ============================================================
+INSERT INTO oh_menuitem
+(MNI_ID_A, MNI_BTN_LABEL, MNI_LABEL, MNI_TOOLTIP, MNI_SHORTCUT, MNI_SUBMENU, MNI_CLASS, MNI_IS_SUBMENU, MNI_POSITION)
+SELECT
+    'hivchildfollowup',
+    'angal.menu.btn.hivchildfollowup',
+    'angal.menu.hivchildfollowup',
+    'x',
+    'H',
+    'main',
+    'org.isf.hivchildfollowup.gui.HivExposedChildBrowser',
+    'N',
+    11
+FROM DUAL
+WHERE NOT EXISTS (
+    SELECT 1 FROM oh_menuitem WHERE MNI_ID_A = 'hivchildfollowup'
+);
+
+-- =========================
+-- GROUP MENU
+-- =========================
+INSERT INTO oh_groupmenu
+(GM_ID, GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE, GM_CREATED_BY, GM_CREATED_DATE, GM_LAST_MODIFIED_BY, GM_LAST_MODIFIED_DATE)
+SELECT
+    (SELECT COALESCE(MAX(GM_ID), 0) + 1 FROM oh_groupmenu),
+    'admin',
+    'hivchildfollowup',
+    1,
+    NULL,
+    NULL,
+    NULL,
+    NULL
+FROM DUAL
+WHERE NOT EXISTS (
+    SELECT 1 FROM oh_groupmenu WHERE GM_MNI_ID_A = 'hivchildfollowup' AND GM_UG_ID_A = 'admin'
+);
