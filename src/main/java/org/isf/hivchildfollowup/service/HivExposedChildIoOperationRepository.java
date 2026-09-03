@@ -43,7 +43,8 @@ public interface HivExposedChildIoOperationRepository extends JpaRepository<HivE
 	List<HivExposedChild> findAllByOrderByDateOfBirthDesc();
 
 	@Query("""
-		select c from HivExposedChild c
+		select distinct c from HivExposedChild c
+			left join fetch c.visits
 			where (:search is null or :search = ''
 				or lower(c.motherPatient.firstName) like lower(concat('%', :search, '%'))
 				or lower(c.motherPatient.secondName) like lower(concat('%', :search, '%'))

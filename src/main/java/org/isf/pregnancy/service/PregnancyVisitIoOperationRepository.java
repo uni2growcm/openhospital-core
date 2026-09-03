@@ -25,12 +25,16 @@ import java.util.List;
 
 import org.isf.pregnancy.model.PregnancyVisit;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PregnancyVisitIoOperationRepository extends JpaRepository<PregnancyVisit, Integer> {
 
-	List<PregnancyVisit> findByPregnancy_IdOrderByVisitDateAsc(int pregnancyId);
+	@Query("SELECT DISTINCT v FROM PregnancyVisit v LEFT JOIN FETCH v.treatmentTypes WHERE v.pregnancy.id = :pregnancyId ORDER BY v.visitDate ASC")
+	List<PregnancyVisit> findByPregnancy_IdOrderByVisitDateAsc(@Param("pregnancyId") int pregnancyId);
 
-	List<PregnancyVisit> findByPatient_CodeOrderByVisitDateAsc(int patientCode);
+	@Query("SELECT DISTINCT v FROM PregnancyVisit v LEFT JOIN FETCH v.treatmentTypes WHERE v.patient.code = :patientCode ORDER BY v.visitDate ASC")
+	List<PregnancyVisit> findByPatient_CodeOrderByVisitDateAsc(@Param("patientCode") int patientCode);
 }

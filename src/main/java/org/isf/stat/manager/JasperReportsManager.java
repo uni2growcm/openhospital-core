@@ -287,6 +287,78 @@ public class JasperReportsManager {
 	}
 
 	/**
+	 * Generates the CPN (Consultation Prénatale) visit register report listing every
+	 * {@code PregnancyVisit} whose visit date falls within the given range.
+	 *
+	 * @param dateFrom start of the period (inclusive).
+	 * @param dateTo end of the period (inclusive).
+	 * @param jasperFileName the report file name (without extension), typically {@code "CpnRegister"}.
+	 */
+	public JasperReportResultDto getCpnRegisterPdf(LocalDateTime dateFrom, LocalDateTime dateTo, String jasperFileName) throws OHServiceException {
+
+		try {
+			if (dateFrom == null) {
+				dateFrom = TimeTools.getNow();
+			}
+			if (dateTo == null) {
+				dateTo = TimeTools.getNow();
+			}
+
+			HashMap<String, Object> parameters = getHospitalParameters();
+			addBundleParameter(RPT_STAT, jasperFileName, parameters);
+
+			parameters.put("fromdate", toDate(dateFrom));
+			parameters.put("todate", toDate(dateTo));
+
+			String pdfFilename = compilePDFFilename(RPT_STAT, jasperFileName, null, "pdf");
+
+			JasperReportResultDto result = generateJasperReport(compileJasperFilename(RPT_STAT, jasperFileName), pdfFilename, parameters);
+			JasperExportManager.exportReportToPdfFile(result.getJasperPrint(), pdfFilename);
+			return result;
+		} catch (Exception e) {
+			LOGGER.error("", e);
+			throw new OHReportException(e, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
+		}
+	}
+
+	/**
+	 * Generates the delivery register report (CPN module) listing every {@code PregnancyNewborn} (one row
+	 * per child, so twins/triplets/quadruplets each get their own line) whose delivery date falls within
+	 * the given range.
+	 *
+	 * @param dateFrom start of the period (inclusive).
+	 * @param dateTo end of the period (inclusive).
+	 * @param jasperFileName the report file name (without extension), typically {@code "PregnancyDeliveryRegister"}.
+	 */
+	public JasperReportResultDto getPregnancyDeliveryRegisterPdf(LocalDateTime dateFrom, LocalDateTime dateTo, String jasperFileName)
+					throws OHServiceException {
+
+		try {
+			if (dateFrom == null) {
+				dateFrom = TimeTools.getNow();
+			}
+			if (dateTo == null) {
+				dateTo = TimeTools.getNow();
+			}
+
+			HashMap<String, Object> parameters = getHospitalParameters();
+			addBundleParameter(RPT_STAT, jasperFileName, parameters);
+
+			parameters.put("fromdate", toDate(dateFrom));
+			parameters.put("todate", toDate(dateTo));
+
+			String pdfFilename = compilePDFFilename(RPT_STAT, jasperFileName, null, "pdf");
+
+			JasperReportResultDto result = generateJasperReport(compileJasperFilename(RPT_STAT, jasperFileName), pdfFilename, parameters);
+			JasperExportManager.exportReportToPdfFile(result.getJasperPrint(), pdfFilename);
+			return result;
+		} catch (Exception e) {
+			LOGGER.error("", e);
+			throw new OHReportException(e, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
+		}
+	}
+
+	/**
 	 * Generates the HIV-exposed child follow-up register report (CPN module, Phase 5/5) listing every
 	 * {@code HivExposedChild} whose date of birth falls within the given range.
 	 *
