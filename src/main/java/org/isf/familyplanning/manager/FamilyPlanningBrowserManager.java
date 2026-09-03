@@ -25,12 +25,15 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.isf.familyplanning.model.FamilyPlanningMethod;
+import org.isf.familyplanning.model.FamilyPlanningReason;
 import org.isf.familyplanning.model.FamilyPlanningRecord;
 import org.isf.familyplanning.service.FamilyPlanningIoOperations;
 import org.isf.generaldata.MessageBundle;
 import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.model.OHExceptionMessage;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -52,6 +55,15 @@ public class FamilyPlanningBrowserManager {
 	 */
 	public List<FamilyPlanningRecord> getByDateRange(LocalDate dateFrom, LocalDate dateTo) throws OHServiceException {
 		return ioOperations.getByDateRange(dateFrom, dateTo);
+	}
+
+	/**
+	 * Returns a page of {@link FamilyPlanningRecord}s matching the given optional filters, used by the
+	 * browser screen's search/filter/pagination controls.
+	 */
+	public Page<FamilyPlanningRecord> getFiltered(String search, FamilyPlanningMethod method, FamilyPlanningReason reason, LocalDate dateFrom,
+					LocalDate dateTo, int page, int size) throws OHServiceException {
+		return ioOperations.getFiltered(search, method, reason, dateFrom, dateTo, page, size);
 	}
 
 	public FamilyPlanningRecord newRecord(FamilyPlanningRecord record) throws OHServiceException {

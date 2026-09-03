@@ -21,6 +21,7 @@
  */
 package org.isf.pregnancy.manager;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +31,7 @@ import org.isf.pregnancy.service.PregnancyIoOperations;
 import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.model.OHExceptionMessage;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -58,6 +60,15 @@ public class PregnancyBrowserManager {
 	 */
 	public List<Pregnancy> getActivePregnancies() throws OHServiceException {
 		return ioOperations.getActive();
+	}
+
+	/**
+	 * Returns a page of {@link Pregnancy} matching the given optional filters, used by the CPN browser
+	 * screen's search/filter/pagination controls.
+	 */
+	public Page<Pregnancy> getFiltered(String search, Integer active, LocalDate dateFrom, LocalDate dateTo, int page, int size)
+					throws OHServiceException {
+		return ioOperations.getFiltered(search, active, dateFrom, dateTo, page, size);
 	}
 
 	public Pregnancy newPregnancy(Pregnancy pregnancy) throws OHServiceException {

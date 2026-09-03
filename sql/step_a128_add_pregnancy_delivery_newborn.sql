@@ -6,7 +6,7 @@
 
 CREATE TABLE IF NOT EXISTS OH_PREGNANCYDELIVERY (
     PDEL_ID                     INT AUTO_INCREMENT PRIMARY KEY,
-    PDEL_ADM_ID                 INT          NOT NULL,
+    PDEL_ADM_ID                 INT          DEFAULT NULL,
     PDEL_PREG_ID                INT          DEFAULT NULL,
     PDEL_DATE_DEL                DATETIME     DEFAULT NULL,
     PDEL_FATHER_NAME             VARCHAR(100) DEFAULT NULL,

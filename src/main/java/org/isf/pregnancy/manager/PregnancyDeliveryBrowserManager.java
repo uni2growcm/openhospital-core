@@ -23,7 +23,9 @@ package org.isf.pregnancy.manager;
 
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.isf.admission.model.Admission;
 import org.isf.generaldata.MessageBundle;
@@ -53,6 +55,19 @@ public class PregnancyDeliveryBrowserManager {
 		return ioOperations.getByAdmissionId(admissionId);
 	}
 
+	public List<PregnancyDelivery> getByPregnancyId(int pregnancyId) throws OHServiceException {
+		return ioOperations.getByPregnancyId(pregnancyId);
+	}
+
+	/**
+	 * Returns, among the given pregnancy ids, the subset that already has at least one delivery recorded -
+	 * used to flag those pregnancies on the CPN browser without fetching a full {@link PregnancyDelivery} per
+	 * row.
+	 */
+	public Set<Integer> getPregnancyIdsWithDelivery(List<Integer> pregnancyIds) throws OHServiceException {
+		return new HashSet<>(ioOperations.getPregnancyIdsWithDelivery(pregnancyIds));
+	}
+
 	public List<PregnancyDelivery> getByPatientId(int patientCode) throws OHServiceException {
 		return ioOperations.getByPatientId(patientCode);
 	}
@@ -63,6 +78,16 @@ public class PregnancyDeliveryBrowserManager {
 	 */
 	public PregnancyDelivery getCurrentForAdmission(int admissionId) throws OHServiceException {
 		List<PregnancyDelivery> deliveries = getByAdmissionId(admissionId);
+		return deliveries.isEmpty() ? null : deliveries.get(0);
+	}
+
+	/**
+	 * Returns the most recent {@link PregnancyDelivery} recorded for the given pregnancy - typically entered
+	 * from the CPN module without requiring the mother to be hospitalized - or {@code null} if none has been
+	 * entered yet.
+	 */
+	public PregnancyDelivery getCurrentForPregnancy(int pregnancyId) throws OHServiceException {
+		List<PregnancyDelivery> deliveries = getByPregnancyId(pregnancyId);
 		return deliveries.isEmpty() ? null : deliveries.get(0);
 	}
 
@@ -92,8 +117,8 @@ public class PregnancyDeliveryBrowserManager {
 
 	protected void validate(PregnancyDelivery delivery) throws OHServiceException {
 		List<OHExceptionMessage> errors = new ArrayList<>();
-		if (delivery.getAdmission() == null) {
-			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.cpn.pleasesavetheadmissionfirst.msg")));
+		if (delivery.getAdmission() == null && delivery.getPregnancy() == null) {
+			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.cpn.pleasesavethepregnancyfirst.msg")));
 		}
 		if (delivery.getNewborns().size() > PregnancyNewborn.MAX_CHILDREN) {
 			errors.add(new OHExceptionMessage(

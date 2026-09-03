@@ -21,10 +21,15 @@
  */
 package org.isf.pregnancy.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.isf.pregnancy.model.Pregnancy;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -35,4 +40,17 @@ public interface PregnancyIoOperationRepository extends JpaRepository<Pregnancy,
 	List<Pregnancy> findByPatient_CodeAndActive(int patientCode, int active);
 
 	List<Pregnancy> findByActiveOrderByLmpDesc(int active);
+
+	@Query("""
+		select p from Pregnancy p
+			where (:search is null or :search = ''
+				or lower(p.patient.firstName) like lower(concat('%', :search, '%'))
+				or lower(p.patient.secondName) like lower(concat('%', :search, '%')))
+			and (:active is null or p.active = :active)
+			and (:dateFrom is null or p.lmp >= :dateFrom)
+			and (:dateTo is null or p.lmp <= :dateTo)
+			order by p.lmp desc
+		""")
+	Page<Pregnancy> findAllFiltered(@Param("search") String search, @Param("active") Integer active, @Param("dateFrom") LocalDate dateFrom,
+					@Param("dateTo") LocalDate dateTo, Pageable pageable);
 }

@@ -21,12 +21,15 @@
  */
 package org.isf.pregnancy.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 import org.isf.pregnancy.model.Pregnancy;
 import org.isf.utils.db.TranslateOHServiceException;
 import org.isf.utils.exception.OHServiceException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,6 +54,21 @@ public class PregnancyIoOperations {
 
 	public List<Pregnancy> getActive() {
 		return repository.findByActiveOrderByLmpDesc(1);
+	}
+
+	/**
+	 * Returns a page of {@link Pregnancy} matching the given optional filters, most recent LMP first.
+	 *
+	 * @param search free-text search on the patient's first/second name; {@code null}/blank for no filter.
+	 * @param active {@code 1} for active only, {@code 0} for inactive only, {@code null} for either.
+	 * @param dateFrom the earliest LMP date (inclusive); {@code null} for no lower bound.
+	 * @param dateTo the latest LMP date (inclusive); {@code null} for no upper bound.
+	 * @param page the page number (0-based).
+	 * @param size the page size.
+	 * @return the matching page of {@link Pregnancy}.
+	 */
+	public Page<Pregnancy> getFiltered(String search, Integer active, LocalDate dateFrom, LocalDate dateTo, int page, int size) {
+		return repository.findAllFiltered(search, active, dateFrom, dateTo, PageRequest.of(page, size));
 	}
 
 	public Optional<Pregnancy> getById(int id) {

@@ -32,6 +32,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -41,17 +42,20 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
-import jakarta.validation.constraints.NotNull;
 
 import org.isf.admission.model.Admission;
 import org.isf.utils.db.Auditable;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 /**
- * ------------------------------------------ PregnancyDelivery - one delivery event of an {@link Admission}
- * -----------------------------------------
+ * ------------------------------------------ PregnancyDelivery - one delivery event -----------------------------------------
  * Holds the mother-level information of a childbirth (father identification, lochies, counseling given,
  * family planning method chosen at discharge) together with the list of {@link PregnancyNewborn} (1 to 4).
+ * <p>
+ * Linked to a {@link Pregnancy} (recorded from the CPN module, whether or not the mother is hospitalized)
+ * and/or to an {@link Admission} (recorded from a ward admission, e.g. a maternity stay) - at least one of
+ * the two must be set, enforced by {@code PregnancyDeliveryBrowserManager#validate}, not by a database
+ * constraint, since either one alone is a legitimate way to record a delivery.
  */
 @Entity
 @Table(name = "OH_PREGNANCYDELIVERY")
@@ -68,7 +72,6 @@ public class PregnancyDelivery extends Auditable<String> {
 	@Column(name = "PDEL_ID")
 	private int id;
 
-	@NotNull
 	@ManyToOne
 	@JoinColumn(name = "PDEL_ADM_ID")
 	private Admission admission;
@@ -117,7 +120,7 @@ public class PregnancyDelivery extends Auditable<String> {
 	@Column(name = "PDEL_FP_METHOD")
 	private String familyPlanningMethodChosen;
 
-	@OneToMany(mappedBy = "delivery", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "delivery", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
 	@OrderBy("childNumber ASC")
 	private List<PregnancyNewborn> newborns = new ArrayList<>();
 
@@ -130,6 +133,10 @@ public class PregnancyDelivery extends Auditable<String> {
 
 	public PregnancyDelivery(Admission admission) {
 		this.admission = admission;
+	}
+
+	public PregnancyDelivery(Pregnancy pregnancy) {
+		this.pregnancy = pregnancy;
 	}
 
 	public int getId() {

@@ -21,16 +21,19 @@
  */
 package org.isf.hivchildfollowup.manager;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.isf.generaldata.MessageBundle;
 import org.isf.hivchildfollowup.model.HivExposedChild;
+import org.isf.hivchildfollowup.model.HivExposedChildStatus;
 import org.isf.hivchildfollowup.model.HivExposedChildVisit;
 import org.isf.hivchildfollowup.service.HivExposedChildIoOperations;
 import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.model.OHExceptionMessage;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 /**
@@ -53,6 +56,15 @@ public class HivExposedChildBrowserManager {
 
 	public List<HivExposedChild> getAll() throws OHServiceException {
 		return ioOperations.getAll();
+	}
+
+	/**
+	 * Returns a page of {@link HivExposedChild} matching the given optional filters, used by the browser
+	 * screen's search/filter/pagination controls.
+	 */
+	public Page<HivExposedChild> getFiltered(String search, HivExposedChildStatus status, LocalDate dateFrom, LocalDate dateTo, int page, int size)
+					throws OHServiceException {
+		return ioOperations.getFiltered(search, status, dateFrom, dateTo, page, size);
 	}
 
 	public HivExposedChild saveOrUpdate(HivExposedChild child) throws OHServiceException {

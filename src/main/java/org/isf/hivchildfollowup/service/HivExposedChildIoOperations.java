@@ -21,12 +21,16 @@
  */
 package org.isf.hivchildfollowup.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 import org.isf.hivchildfollowup.model.HivExposedChild;
+import org.isf.hivchildfollowup.model.HivExposedChildStatus;
 import org.isf.utils.db.TranslateOHServiceException;
 import org.isf.utils.exception.OHServiceException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,6 +51,22 @@ public class HivExposedChildIoOperations {
 
 	public List<HivExposedChild> getAll() {
 		return repository.findAllByOrderByDateOfBirthDesc();
+	}
+
+	/**
+	 * Returns a page of {@link HivExposedChild} matching the given optional filters, most recent date of
+	 * birth first.
+	 *
+	 * @param search free-text search on the mother's first/second name or the child's name; {@code null}/blank for no filter.
+	 * @param status the follow-up status to filter by; {@code null} for any status.
+	 * @param dateFrom the earliest date of birth (inclusive); {@code null} for no lower bound.
+	 * @param dateTo the latest date of birth (inclusive); {@code null} for no upper bound.
+	 * @param page the page number (0-based).
+	 * @param size the page size.
+	 * @return the matching page of {@link HivExposedChild}.
+	 */
+	public Page<HivExposedChild> getFiltered(String search, HivExposedChildStatus status, LocalDate dateFrom, LocalDate dateTo, int page, int size) {
+		return repository.findAllFiltered(search, status, dateFrom, dateTo, PageRequest.of(page, size));
 	}
 
 	public Optional<HivExposedChild> getById(int id) {

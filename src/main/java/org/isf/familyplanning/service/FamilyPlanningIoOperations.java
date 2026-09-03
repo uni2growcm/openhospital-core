@@ -25,9 +25,13 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import org.isf.familyplanning.model.FamilyPlanningMethod;
+import org.isf.familyplanning.model.FamilyPlanningReason;
 import org.isf.familyplanning.model.FamilyPlanningRecord;
 import org.isf.utils.db.TranslateOHServiceException;
 import org.isf.utils.exception.OHServiceException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,6 +52,24 @@ public class FamilyPlanningIoOperations {
 
 	public List<FamilyPlanningRecord> getByDateRange(LocalDate dateFrom, LocalDate dateTo) {
 		return repository.findByVisitDateBetweenOrderByVisitDateAsc(dateFrom, dateTo);
+	}
+
+	/**
+	 * Returns a page of {@link FamilyPlanningRecord}s matching the given optional filters, most recent
+	 * visit first.
+	 *
+	 * @param search free-text search on the patient's first/second name; {@code null}/blank for no filter.
+	 * @param method the contraceptive method to filter by; {@code null} for any method.
+	 * @param reason the visit reason to filter by; {@code null} for any reason.
+	 * @param dateFrom the earliest visit date (inclusive); {@code null} for no lower bound.
+	 * @param dateTo the latest visit date (inclusive); {@code null} for no upper bound.
+	 * @param page the page number (0-based).
+	 * @param size the page size.
+	 * @return the matching page of {@link FamilyPlanningRecord}s.
+	 */
+	public Page<FamilyPlanningRecord> getFiltered(String search, FamilyPlanningMethod method, FamilyPlanningReason reason, LocalDate dateFrom,
+					LocalDate dateTo, int page, int size) {
+		return repository.findAllFiltered(search, method, reason, dateFrom, dateTo, PageRequest.of(page, size));
 	}
 
 	public Optional<FamilyPlanningRecord> getById(int id) {

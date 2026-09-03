@@ -227,20 +227,20 @@ public class JasperReportsManager {
 	}
 
 	/**
-	 * Generates the birth certificate of declaration document for one newborn (CPN module, Phase 3).
+	 * Generates the birth certificate of declaration document for one delivery (CPN module, Phase 3).
 	 *
-	 * @param newbornId the id of the {@code PregnancyNewborn} to declare.
+	 * @param deliveryId the id of the {@code PregnancyDelivery} to declare.
 	 * @param jasperFileName the report file name (without extension), typically {@code "certificateOfDeclaration"}.
 	 */
-	public JasperReportResultDto getCertificateOfDeclarationPdf(int newbornId, String jasperFileName) throws OHServiceException {
+	public JasperReportResultDto getCertificateOfDeclarationPdf(int deliveryId, String jasperFileName) throws OHServiceException {
 
 		try {
 			HashMap<String, Object> parameters = getHospitalParameters();
 			addBundleParameter(RPT_BASE, jasperFileName, parameters);
 
-			parameters.put("newbornID", newbornId); // real param
+			parameters.put("deliveryID", deliveryId); // real param
 
-			String pdfFilename = compilePDFFilename(RPT_BASE, jasperFileName, Arrays.asList(String.valueOf(newbornId)), "pdf");
+			String pdfFilename = compilePDFFilename(RPT_BASE, jasperFileName, Arrays.asList(String.valueOf(deliveryId)), "pdf");
 
 			JasperReportResultDto result = generateJasperReport(compileJasperFilename(RPT_BASE, jasperFileName), pdfFilename, parameters);
 			JasperExportManager.exportReportToPdfFile(result.getJasperPrint(), pdfFilename);

@@ -25,6 +25,8 @@ import java.util.List;
 
 import org.isf.pregnancy.model.PregnancyDelivery;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -32,5 +34,14 @@ public interface PregnancyDeliveryIoOperationRepository extends JpaRepository<Pr
 
 	List<PregnancyDelivery> findByAdmission_IdOrderByIdDesc(int admissionId);
 
-	List<PregnancyDelivery> findByAdmission_Patient_CodeOrderByIdDesc(int patientCode);
+	List<PregnancyDelivery> findByPregnancy_IdOrderByIdDesc(int pregnancyId);
+
+	@Query("select distinct d.pregnancy.id from PregnancyDelivery d where d.pregnancy.id in :pregnancyIds")
+	List<Integer> findPregnancyIdsWithDelivery(@Param("pregnancyIds") List<Integer> pregnancyIds);
+
+	@Query("select d from PregnancyDelivery d "
+					+ "where (d.admission is not null and d.admission.patient.code = :patientCode) "
+					+ "or (d.pregnancy is not null and d.pregnancy.patient.code = :patientCode) "
+					+ "order by d.id desc")
+	List<PregnancyDelivery> findByPatientCodeOrderByIdDesc(@Param("patientCode") int patientCode);
 }

@@ -120,3 +120,7 @@ source step_a122_add_article_family.sql;
 source step_a124_add_medical_shape_and_dosing.sql;
 source step_a125_add_block_exam_tables.sql;
 source step_a126_add_stock_order.sql;
+source step_a127_add_pregnancy_module.sql;
+source step_a128_add_pregnancy_delivery_newborn.sql;
+source step_a129_add_family_planning_module.sql;
+source step_a130_add_hiv_child_followup_module.sql;

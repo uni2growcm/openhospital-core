@@ -45,8 +45,16 @@ public class PregnancyDeliveryIoOperations {
 		return repository.findByAdmission_IdOrderByIdDesc(admissionId);
 	}
 
+	public List<PregnancyDelivery> getByPregnancyId(int pregnancyId) {
+		return repository.findByPregnancy_IdOrderByIdDesc(pregnancyId);
+	}
+
+	public List<Integer> getPregnancyIdsWithDelivery(List<Integer> pregnancyIds) {
+		return pregnancyIds.isEmpty() ? List.of() : repository.findPregnancyIdsWithDelivery(pregnancyIds);
+	}
+
 	public List<PregnancyDelivery> getByPatientId(int patientCode) {
-		return repository.findByAdmission_Patient_CodeOrderByIdDesc(patientCode);
+		return repository.findByPatientCodeOrderByIdDesc(patientCode);
 	}
 
 	public Optional<PregnancyDelivery> getById(int id) {

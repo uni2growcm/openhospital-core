@@ -24,8 +24,14 @@ package org.isf.familyplanning.service;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.isf.familyplanning.model.FamilyPlanningMethod;
+import org.isf.familyplanning.model.FamilyPlanningReason;
 import org.isf.familyplanning.model.FamilyPlanningRecord;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -34,4 +40,19 @@ public interface FamilyPlanningIoOperationRepository extends JpaRepository<Famil
 	List<FamilyPlanningRecord> findByPatient_CodeOrderByVisitDateDesc(int patientCode);
 
 	List<FamilyPlanningRecord> findByVisitDateBetweenOrderByVisitDateAsc(LocalDate dateFrom, LocalDate dateTo);
+
+	@Query("""
+		select fp from FamilyPlanningRecord fp
+			where (:search is null or :search = ''
+				or lower(fp.patient.firstName) like lower(concat('%', :search, '%'))
+				or lower(fp.patient.secondName) like lower(concat('%', :search, '%')))
+			and (:method is null or fp.method = :method)
+			and (:reason is null or fp.reason = :reason)
+			and (:dateFrom is null or fp.visitDate >= :dateFrom)
+			and (:dateTo is null or fp.visitDate <= :dateTo)
+			order by fp.visitDate desc
+		""")
+	Page<FamilyPlanningRecord> findAllFiltered(@Param("search") String search, @Param("method") FamilyPlanningMethod method,
+					@Param("reason") FamilyPlanningReason reason, @Param("dateFrom") LocalDate dateFrom, @Param("dateTo") LocalDate dateTo,
+					Pageable pageable);
 }
