@@ -1,0 +1,7 @@
+--
+-- Add bed number and room number tracking to admissions
+--
+
+ALTER TABLE OH_ADMISSION
+    ADD COLUMN ADM_BED VARCHAR(50) NULL DEFAULT NULL,
+    ADD COLUMN ADM_ROOM VARCHAR(50) NULL DEFAULT NULL;

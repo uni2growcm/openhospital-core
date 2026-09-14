@@ -9,3 +9,6 @@ logs
 .vscode/
 *.iml
 /.env
+
+openspec
+.opencode

@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2023 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -19,25 +19,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.isf.malnutrition.service;
+package org.isf.opd.service;
 
 import java.util.List;
 
-import org.isf.malnutrition.model.Malnutrition;
+import org.isf.opd.model.OpdDisease;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface MalnutritionIoOperationRepository extends JpaRepository<Malnutrition, Integer> {
+public interface OpdDiseaseIoOperationRepository extends JpaRepository<OpdDisease, Integer> {
 
-	@Query(value = "SELECT m FROM Malnutrition m WHERE m.admission.id = :id ORDER BY m.dateSupp")
-	List<Malnutrition> findAllWhereAdmissionByOrderDate(@Param("id") int admissionID);
-
-	@Query(value = "SELECT m FROM Malnutrition m WHERE m.admission.id = :id ORDER BY m.dateSupp")
-	List<Malnutrition> findAllWhereAdmissionByOrderDateDesc(@Param("id") int admissionID);
-
-	@Query(value = "SELECT m FROM Malnutrition m WHERE m.opd.code = :id ORDER BY m.dateSupp")
-	List<Malnutrition> findAllWhereOpdByOrderDate(@Param("id") int opdCode);
+	@Query("SELECT od FROM OpdDisease od WHERE od.opd.code = :opdCode ORDER BY od.id")
+	List<OpdDisease> findAllByOpdCode(@Param("opdCode") int opdCode);
 }

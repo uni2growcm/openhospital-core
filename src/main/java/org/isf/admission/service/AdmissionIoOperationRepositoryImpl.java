@@ -34,6 +34,9 @@ import org.isf.admission.model.AdmittedPatient;
 import org.isf.patient.model.Patient;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.time.TimeTools;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
@@ -118,6 +121,128 @@ public class AdmissionIoOperationRepositoryImpl implements AdmissionIoOperationR
 
 			return parseResultSet(admittedPatients, nativeQuery);
 		}
+	}
+
+	@Override
+	public Page<AdmittedPatient> findPatientAdmissionsBySearchAndDateRanges(String searchTerms, LocalDateTime[] admissionRange,
+					LocalDateTime[] dischargeRange, Boolean admitted, List<String> wardCodes, Integer ageFrom, Integer ageTo, Character sex,
+					Pageable pageable) throws OHServiceException {
+		return findPatientAdmissionsBySearchAndDateRanges(searchTerms, admissionRange, dischargeRange, admitted, wardCodes, ageFrom, ageTo, sex, pageable,
+						null);
+	}
+
+	@Override
+	public Page<AdmittedPatient> findPatientAdmissionsBySearchAndDateRanges(String searchTerms, LocalDateTime[] admissionRange,
+					LocalDateTime[] dischargeRange, Boolean admitted, List<String> wardCodes, Integer ageFrom, Integer ageTo, Character sex,
+					Pageable pageable, Long knownTotalElements) throws OHServiceException {
+		String[] terms = getTermsToSearch(searchTerms);
+		String extraPredicate = buildExtraPredicate(admitted, wardCodes, ageFrom, ageTo, sex);
+
+		if (terms.length == 1) {
+			try {
+				int code = Integer.parseInt(terms[0]);
+				return pagedQuery(appendPredicate(nativeQueryCode, extraPredicate), "param0", code, pageable, knownTotalElements);
+			} catch (NumberFormatException nfe) {
+				// used to see if the search parameter is a patient code (number)
+			}
+		}
+
+		String paramTerms = like(terms);
+		if ((admissionRange != null && (admissionRange[0] != null || admissionRange[1] != null)) ||
+						(dischargeRange != null && (dischargeRange[0] != null || dischargeRange[1] != null))) {
+			StringBuilder rangePredicate = new StringBuilder("( (ADM_DELETED='N') or (ADM_DELETED is null ) )");
+			if (admissionRange != null) {
+				if (admissionRange[0] != null) {
+					rangePredicate.append(" and ").append("DATE(ADM_DATE_ADM) >= '").append(TimeTools.formatDateTime(admissionRange[0], YYYY_MM_DD))
+									.append('\'');
+				}
+				if (admissionRange[1] != null) {
+					rangePredicate.append(" and ").append("DATE(ADM_DATE_ADM) <= '").append(TimeTools.formatDateTime(admissionRange[1], YYYY_MM_DD))
+									.append('\'');
+				}
+			}
+			if (dischargeRange != null) {
+				if (dischargeRange[0] != null) {
+					rangePredicate.append(" and ").append("DATE(ADM_DATE_DIS) >= '").append(TimeTools.formatDateTime(dischargeRange[0], YYYY_MM_DD))
+									.append('\'');
+				}
+				if (dischargeRange[1] != null) {
+					rangePredicate.append(" and ").append("DATE(ADM_DATE_DIS) <= '").append(TimeTools.formatDateTime(dischargeRange[1], YYYY_MM_DD))
+									.append('\'');
+				}
+			}
+			String sql = appendPredicate(nativeQueryRanges.replace("param1", rangePredicate.toString()), extraPredicate);
+			return pagedQuery(sql, "param0", paramTerms, pageable, knownTotalElements);
+		} else {
+			return pagedQuery(appendPredicate(nativeQueryTerms, extraPredicate), "param0", paramTerms, pageable, knownTotalElements);
+		}
+	}
+
+	/**
+	 * Builds the extra patient-class/ward/age/sex predicate, matching the filter dimensions of
+	 * {@code AdmittedPatientBrowser}'s non-paginated in-memory filter, appended to the base query with AND.
+	 */
+	private String buildExtraPredicate(Boolean admitted, List<String> wardCodes, Integer ageFrom, Integer ageTo, Character sex) {
+		StringBuilder predicate = new StringBuilder();
+		if (admitted != null) {
+			predicate.append(" and a.ADM_ID is ").append(admitted ? "not null" : "null");
+		}
+		if (wardCodes != null) {
+			// Mirrors AdmittedPatientBrowser's in-memory ward filter: it only ever excludes currently-admitted
+			// patients whose ward isn't checked; a not-currently-admitted patient always passes the ward filter.
+			if (wardCodes.isEmpty()) {
+				// No ward checked: no currently-admitted patient can match, only not-currently-admitted ones pass.
+				predicate.append(" and a.ADM_ID is null");
+			} else {
+				String codes = wardCodes.stream().map(code -> "'" + code.replace("'", "''") + "'").collect(java.util.stream.Collectors.joining(","));
+				predicate.append(" and (a.ADM_WRD_ID_A in (").append(codes).append(") or a.ADM_ID is null)");
+			}
+		}
+		if (ageFrom != null) {
+			predicate.append(" and p.PAT_AGE >= ").append(ageFrom);
+		}
+		if (ageTo != null) {
+			predicate.append(" and p.PAT_AGE <= ").append(ageTo);
+		}
+		if (sex != null && sex != 'A') {
+			predicate.append(" and p.PAT_SEX = '").append(sex).append('\'');
+		}
+		return predicate.toString();
+	}
+
+	/**
+	 * Appends the extra predicate right before the trailing {@code order by}, so it applies to
+	 * every branch (code lookup, date-range, unrestricted terms) without duplicating each query string.
+	 */
+	private String appendPredicate(String sql, String extraPredicate) {
+		if (extraPredicate.isEmpty()) {
+			return sql;
+		}
+		int orderByIndex = sql.toLowerCase().lastIndexOf(" order by");
+		if (orderByIndex < 0) {
+			return sql + extraPredicate;
+		}
+		return sql.substring(0, orderByIndex) + extraPredicate + sql.substring(orderByIndex);
+	}
+
+	private Page<AdmittedPatient> pagedQuery(String sql, String paramName, Object paramValue, Pageable pageable, Long knownTotalElements)
+					throws OHServiceException {
+		Query nativeQuery = entityManager.createNativeQuery(sql, "AdmittedPatient");
+		nativeQuery.setParameter(paramName, paramValue);
+		nativeQuery.setFirstResult((int) pageable.getOffset());
+		nativeQuery.setMaxResults(pageable.getPageSize());
+		List<AdmittedPatient> content = parseResultSet(new ArrayList<>(), nativeQuery);
+
+		long total;
+		if (knownTotalElements != null) {
+			total = knownTotalElements;
+		} else {
+			Query countQuery = entityManager.createNativeQuery("SELECT COUNT(*) FROM (" + sql + ") AS cnt");
+			countQuery.setParameter(paramName, paramValue);
+			total = ((Number) countQuery.getSingleResult()).longValue();
+		}
+
+		return new PageImpl<>(content, pageable, total);
 	}
 
 	private List<AdmittedPatient> parseResultSet(List<AdmittedPatient> admittedPatients, Query nativeQuery) throws OHServiceException {

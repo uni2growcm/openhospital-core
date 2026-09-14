@@ -35,6 +35,9 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
 import org.isf.patient.model.Patient;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
@@ -51,9 +54,84 @@ public class PatientIoOperationRepositoryImpl implements PatientIoOperationRepos
 				getResultList();
 	}
 
+	@Override
+	public Page<Patient> findByFieldsContainingWordsFromLiteral(String literal, Pageable pageable) {
+		return findByFieldsContainingWordsFromLiteral(literal, pageable, null);
+	}
+
+	@Override
+	public Page<Patient> findByFieldsContainingWordsFromLiteral(String literal, Pageable pageable, Long knownTotalElements) {
+		String[] words = getWordsToSearchForInPatientsRepository(literal);
+		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+
+		CriteriaQuery<Patient> query = cb.createQuery(Patient.class);
+		Root<Patient> patientRoot = query.from(Patient.class);
+		query.select(patientRoot)
+				.where(buildSearchPredicate(words, cb, patientRoot))
+				.orderBy(cb.desc(patientRoot.get("code")));
+
+		List<Patient> content = entityManager.createQuery(query)
+				.setFirstResult((int) pageable.getOffset())
+				.setMaxResults(pageable.getPageSize())
+				.getResultList();
+
+		long total;
+		if (knownTotalElements != null) {
+			total = knownTotalElements;
+		} else {
+			CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
+			Root<Patient> countRoot = countQuery.from(Patient.class);
+			countQuery.select(cb.count(countRoot)).where(buildSearchPredicate(words, cb, countRoot));
+			total = entityManager.createQuery(countQuery).getSingleResult();
+		}
+
+		return new PageImpl<>(content, pageable, total);
+	}
+
+	@Override
+	public Page<Patient> findAllNotDeletedOrderByName(char deletedStatus, Pageable pageable, Long knownTotalElements) {
+		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+
+		CriteriaQuery<Patient> query = cb.createQuery(Patient.class);
+		Root<Patient> patientRoot = query.from(Patient.class);
+		query.select(patientRoot)
+				.where(buildNotDeletedPredicate(deletedStatus, cb, patientRoot))
+				.orderBy(cb.asc(patientRoot.get("name")));
+
+		List<Patient> content = entityManager.createQuery(query)
+				.setFirstResult((int) pageable.getOffset())
+				.setMaxResults(pageable.getPageSize())
+				.getResultList();
+
+		long total;
+		if (knownTotalElements != null) {
+			total = knownTotalElements;
+		} else {
+			CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
+			Root<Patient> countRoot = countQuery.from(Patient.class);
+			countQuery.select(cb.count(countRoot)).where(buildNotDeletedPredicate(deletedStatus, cb, countRoot));
+			total = entityManager.createQuery(countQuery).getSingleResult();
+		}
+
+		return new PageImpl<>(content, pageable, total);
+	}
+
+	private Predicate buildNotDeletedPredicate(char deletedStatus, CriteriaBuilder cb, Root<Patient> patientRoot) {
+		return cb.or(
+				cb.equal(patientRoot.get("deleted"), deletedStatus),
+				cb.isNull(patientRoot.get("deleted"))
+		);
+	}
+
 	private CriteriaQuery<Patient> buildSearchQuery(String regex) {
 		String[] words = getWordsToSearchForInPatientsRepository(regex);
-		return createQuerySearchingForPatientContainingGivenWordsInHisProperties(words);
+		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+		CriteriaQuery<Patient> query = cb.createQuery(Patient.class);
+		Root<Patient> patientRoot = query.from(Patient.class);
+		query.select(patientRoot)
+				.where(buildSearchPredicate(words, cb, patientRoot))
+				.orderBy(cb.desc(patientRoot.get("code")));
+		return query;
 	}
 
 	private String[] getWordsToSearchForInPatientsRepository(String regex) {
@@ -67,11 +145,7 @@ public class PatientIoOperationRepositoryImpl implements PatientIoOperationRepos
 		return words;
 	}
 
-	private CriteriaQuery<Patient> createQuerySearchingForPatientContainingGivenWordsInHisProperties(String[] words) {
-		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-		CriteriaQuery<Patient> query = cb.createQuery(Patient.class);
-		Root<Patient> patientRoot = query.from(Patient.class);
-		query.select(patientRoot);
+	private Predicate buildSearchPredicate(String[] words, CriteriaBuilder cb, Root<Patient> patientRoot) {
 		List<Predicate> where = new ArrayList<>();
 
 		for (String word : words) {
@@ -83,10 +157,7 @@ public class PatientIoOperationRepositoryImpl implements PatientIoOperationRepos
 				cb.isNull(patientRoot.get("deleted"))
 		));
 
-		query.where(cb.and(where.toArray(new Predicate[0])));
-		query.orderBy(cb.desc(patientRoot.get("code")));
-
-		return query;
+		return cb.and(where.toArray(new Predicate[0]));
 	}
 
 	private Predicate wordExistsInOneOfPatientFields(String word, CriteriaBuilder cb, Root<Patient> root) {

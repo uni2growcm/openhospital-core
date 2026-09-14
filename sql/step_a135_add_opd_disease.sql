@@ -1,0 +1,17 @@
+--
+-- Unbounded per-visit diagnosis list, used when ENHANCEDDIAGNOSTICINOPDEDIT is enabled, alongside the
+-- existing OH_OPD.OPD_DIS_ID_A / _2 / _3 three-slot fields (left untouched).
+--
+
+CREATE TABLE OH_OPD_DISEASE (
+	ODS_ID int(11) NOT NULL AUTO_INCREMENT,
+	ODS_OPD_ID int(11) NOT NULL,
+	ODS_DIS_ID_A varchar(10) NOT NULL,
+	ODS_LOCK int(11) NOT NULL DEFAULT 0,
+	ODS_CREATED_BY varchar(50) DEFAULT NULL,
+	ODS_CREATED_DATE datetime DEFAULT NULL,
+	ODS_LAST_MODIFIED_BY varchar(50) DEFAULT NULL,
+	ODS_LAST_MODIFIED_DATE datetime DEFAULT NULL,
+	ODS_ACTIVE tinyint(1) NOT NULL DEFAULT 1,
+	PRIMARY KEY (ODS_ID)
+) ENGINE=InnoDB;

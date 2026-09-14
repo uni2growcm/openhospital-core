@@ -27,6 +27,7 @@ import java.util.List;
 import org.isf.generaldata.MessageBundle;
 import org.isf.malnutrition.model.Malnutrition;
 import org.isf.malnutrition.service.MalnutritionIoOperation;
+import org.isf.opd.model.Opd;
 import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.model.OHExceptionMessage;
@@ -83,6 +84,17 @@ public class MalnutritionManager {
 	 */
 	public List<Malnutrition> getMalnutrition(String admissionID) throws OHServiceException {
 		return ioOperation.getMalnutritions(admissionID);
+	}
+
+	/**
+	 * Retrieves all the {@link Malnutrition} associated to the given opd visit.
+	 *
+	 * @param opd the opd visit to use as filter.
+	 * @return all the retrieved malnutrition.
+	 * @throws OHServiceException
+	 */
+	public List<Malnutrition> getMalnutritionByOpd(Opd opd) throws OHServiceException {
+		return ioOperation.getMalnutritionsByOpd(opd.getCode());
 	}
 
 	/**
