@@ -131,3 +131,6 @@ source step_a134_add_opd_malnutrition.sql;
 source step_a135_add_opd_disease.sql;
 source step_a136_add_opd_referral_details.sql;
 source step_a137_add_patient_mada_extended_fields.sql;
+source step_a138_add_village_to_patientvaccine.sql;
+source step_a139_add_vaccine_stock_tracking.sql;
+source step_a140_restructure_patientvaccine_menu.sql;

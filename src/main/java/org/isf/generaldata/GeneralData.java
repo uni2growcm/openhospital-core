@@ -243,6 +243,7 @@ public final class GeneralData extends ConfigurationProperties {
 		PATIENTPHOTOSTORAGE = myGetProperty("PATIENTPHOTOSTORAGE", DEFAULT_PATIENTPHOTOSTORAGE);
 		SESSIONTIMEOUT = myGetProperty("SESSIONTIMEOUT", DEFAULT_SESSIONTIMEOUT);
 		PARAMSURL = myGetProperty("PARAMSURL", DEFAULT_PARAMSURL);
+		PAGESIZE = myGetProperty("PAGESIZE", DEFAULT_PAGESIZE);
 
 		ParamsData.getInstance();
 	}

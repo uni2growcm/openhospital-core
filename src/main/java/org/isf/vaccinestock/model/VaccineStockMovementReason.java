@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2023 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -19,20 +19,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.isf.patvac.service;
+package org.isf.vaccinestock.model;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
-import org.isf.patvac.model.PatientVaccine;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
-public interface PatVacIoOperationRepositoryCustom {
-
-	List<PatientVaccine> findAllByCodesAndDatesAndSexAndAges(Integer patientCode, String vaccineTypeCode, String vaccineCode, LocalDateTime dateFrom,
-		 	LocalDateTime dateTo, char sex, int ageFrom, int ageTo);
-
-	Page<PatientVaccine> findAllByCodesAndDatesAndSexAndAgesPageable(Integer patientCode, String vaccineTypeCode, String vaccineCode, LocalDateTime dateFrom,
-		 	LocalDateTime dateTo, char sex, int ageFrom, int ageTo, Pageable pageable);
+/**
+ * Fixed set of reasons a {@link VaccineStockMovement} was created, in lieu of a
+ * dedicated movement-type reference table (the vaccine stock subsystem is
+ * deliberately simpler than {@code org.isf.medstockmovtype}).
+ */
+public enum VaccineStockMovementReason {
+	SUPPLY,
+	MANUAL_DISCHARGE,
+	CORRECTION,
+	ADMINISTRATION,
+	ADMINISTRATION_CANCELLED;
 }
