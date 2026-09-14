@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.isf.accounting.model.Bill;
 import org.isf.lab.model.Laboratory;
 import org.isf.lab.model.LaboratoryForPrint;
 import org.isf.lab.model.LaboratoryRow;
@@ -157,6 +158,107 @@ public class LabIoOperations {
 	 */
 	public List<Laboratory> getLaboratory(Patient aPatient) throws OHServiceException {
 		return repository.findByPatient_CodeOrderByLabDate(aPatient.getCode());
+	}
+
+	/**
+	 * Return a list of exams ({@link Laboratory}s) related to a {@link Patient} that are not yet linked to a bill.
+	 *
+	 * @param patient the {@link Patient}.
+	 * @return the list of {@link Laboratory}s without a bill. It could be {@code empty}.
+	 * @throws OHServiceException
+	 */
+	public List<Laboratory> getLabWithoutBill(Patient patient) throws OHServiceException {
+		if (patient == null) {
+			return new ArrayList<>();
+		}
+		return repository.findByPatient_CodeAndBillIsNullOrderByLabDateDesc(patient.getCode());
+	}
+
+	/**
+	 * Check if the given patient has at least one lab exam not yet linked to a bill.
+	 *
+	 * @param patientCode the patient code
+	 * @return {@code true} if there are unbilled labs, {@code false} otherwise.
+	 * @throws OHServiceException
+	 */
+	public boolean hasLabWithoutBill(Integer patientCode) throws OHServiceException {
+		if (patientCode == null) {
+			return false;
+		}
+		return !repository.findByPatient_CodeAndBillIsNullOrderByLabDateDesc(patientCode).isEmpty();
+	}
+
+	/**
+	 * Link (or unlink) a {@link Laboratory} to a bill.
+	 *
+	 * @param labId the {@link Laboratory} code
+	 * @param billId the bill id, or {@code 0} to unlink
+	 * @throws OHServiceException
+	 */
+	public void updateBillIdLaboratory(int labId, int billId) throws OHServiceException {
+		Laboratory lab = repository.findById(labId).orElse(null);
+		if (lab != null) {
+			if (billId > 0) {
+				Bill bill = new Bill();
+				bill.setId(billId);
+				lab.setBill(bill);
+			} else {
+				lab.setBill(null);
+			}
+			repository.save(lab);
+		}
+	}
+
+	/**
+	 * Return a list of exams ({@link Laboratory}s) between specified dates matching the passed optional filters.
+	 *
+	 * @param exam the exam description; {@code null} for all exams
+	 * @param dateFrom the lower date for the range
+	 * @param dateTo the highest date for the range
+	 * @param resultFilter the result filter: {@code -1} for all, {@code 0} for empty results, {@code 1} for non-empty results
+	 * @param patient the patient; {@code null} for all patients
+	 * @param prescriber the prescriber name; {@code null} for all prescribers
+	 * @param paidCode the paid status code: {@code null} for all, {@code "0"} for not charged,
+	 *            {@code "C"} for paid, {@code "O"} for not paid
+	 * @return the list of {@link Laboratory}s
+	 * @throws OHServiceException
+	 */
+	public List<Laboratory> getLaboratory(String exam, LocalDateTime dateFrom, LocalDateTime dateTo, int resultFilter,
+					Patient patient, String prescriber, String paidCode) throws OHServiceException {
+		LocalDateTime truncatedDateFrom = TimeTools.truncateToSeconds(dateFrom.with(LocalTime.MIN));
+		LocalDateTime truncatedDateTo = TimeTools.truncateToSeconds(dateTo.with(LocalTime.MAX));
+		return repository.findLaboratoryWithFilters(truncatedDateFrom, truncatedDateTo, exam, patient, prescriber, paidCode, resultFilter);
+	}
+
+	/**
+	 * Return the count of exams ({@link Laboratory}s) between specified dates matching the passed optional filters.
+	 *
+	 * @param exam the exam description; {@code null} for all exams
+	 * @param dateFrom the lower date for the range
+	 * @param dateTo the highest date for the range
+	 * @param resultFilter the result filter: {@code -1} for all, {@code 0} for empty results, {@code 1} for non-empty results
+	 * @param patient the patient; {@code null} for all patients
+	 * @param prescriber the prescriber name; {@code null} for all prescribers
+	 * @param paidCode the paid status code: {@code null} for all, {@code "0"} for not charged,
+	 *            {@code "C"} for paid, {@code "O"} for not paid
+	 * @return the count of {@link Laboratory}s
+	 * @throws OHServiceException
+	 */
+	public long getLaboratoryCount(String exam, LocalDateTime dateFrom, LocalDateTime dateTo, int resultFilter,
+					Patient patient, String prescriber, String paidCode) throws OHServiceException {
+		LocalDateTime truncatedDateFrom = TimeTools.truncateToSeconds(dateFrom.with(LocalTime.MIN));
+		LocalDateTime truncatedDateTo = TimeTools.truncateToSeconds(dateTo.with(LocalTime.MAX));
+		return repository.countLaboratoryWithFilters(truncatedDateFrom, truncatedDateTo, exam, patient, prescriber, paidCode, resultFilter);
+	}
+
+	/**
+	 * Return the list of distinct prescribers already registered in the {@link Laboratory}s.
+	 *
+	 * @return the list of distinct prescriber names
+	 * @throws OHServiceException
+	 */
+	public List<String> getPrescriber() throws OHServiceException {
+		return repository.findDistinctPrescribers();
 	}
 
 	/**

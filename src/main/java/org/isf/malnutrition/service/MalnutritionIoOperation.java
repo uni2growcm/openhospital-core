@@ -54,6 +54,16 @@ public class MalnutritionIoOperation {
 	}
 
 	/**
+	 * Returns all the available {@link Malnutrition} for the specified opd id.
+	 * @param opdId the opd id
+	 * @return the retrieved malnutrition.
+	 * @throws OHServiceException if an error occurs retrieving the malnutrition list.
+	 */
+	public List<Malnutrition> getMalnutritionsByOpd(int opdId) throws OHServiceException {
+		return repository.findAllWhereOpdByOrderDate(opdId);
+	}
+
+	/**
 	 * Stores a new {@link Malnutrition}. The malnutrition object is updated with the generated id.
 	 * @param malnutrition the malnutrition to store.
 	 * @return the newly stored new {@link Malnutrition} object.

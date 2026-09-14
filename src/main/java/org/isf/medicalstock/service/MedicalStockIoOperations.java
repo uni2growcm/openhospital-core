@@ -21,11 +21,15 @@
  */
 package org.isf.medicalstock.service;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -41,6 +45,7 @@ import org.isf.medicalstockward.model.MedicalWard;
 import org.isf.medicalstockward.service.MedicalStockWardIoOperationRepository;
 import org.isf.medstockmovtype.model.MovementType;
 import org.isf.medtype.model.MedicalType;
+import org.isf.stat.dto.StockSheetMovementRow;
 import org.isf.utils.db.TranslateOHServiceException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.model.OHExceptionMessage;
@@ -667,12 +672,66 @@ public class MedicalStockIoOperations {
 
 	/**
 	 * Returns the date of the last movement
-	 * 
+	 *
 	 * @return
 	 * @throws OHServiceException
 	 */
 	public LocalDateTime getLastMovementDate() throws OHServiceException {
 		return movRepository.findMaxDate();
+	}
+
+	/**
+	 * Returns, for every medical, the average monthly quantity discharged from the main store
+	 * over the last 3 months.
+	 *
+	 * @return a map associating each medical code with its average monthly discharged quantity.
+	 * @throws OHServiceException
+	 */
+	public Map<Integer, Double> getAverageMonthlyDischargeQuantity() throws OHServiceException {
+		LocalDateTime threeMonthsAgo = TimeTools.getNow().minusMonths(3);
+		Map<Integer, Double> result = new HashMap<>();
+		for (Object[] row : movRepository.findDischargedQuantityByMedicalSince(threeMonthsAgo)) {
+			result.put((Integer) row[0], ((Number) row[1]).doubleValue() / 3.0);
+		}
+		return result;
+	}
+
+	/**
+	 * Builds the movement rows (with running stock balance) for the "stock sheet" report of a medical,
+	 * over the given period. Incoming (charge) movements are attributed to the supplier as origin;
+	 * outgoing (discharge) movements are attributed to the destination ward, when any.
+	 *
+	 * @param medical the medical.
+	 * @param fromDate the start of the period (inclusive).
+	 * @param toDate the end of the period (inclusive).
+	 * @return the movement rows, in chronological order, with the running balance after each movement.
+	 * @throws OHServiceException
+	 */
+	public List<StockSheetMovementRow> getStockSheetMovements(Medical medical, LocalDateTime fromDate, LocalDateTime toDate) throws OHServiceException {
+		List<Movement> movements = movRepository.findByMedicalCodeAndDateBetweenOrderByDate(medical.getCode(), fromDate, toDate);
+		Integer quantityBeforePeriod = movRepository.sumSignedQuantityBeforeDate(medical.getCode(), fromDate);
+
+		List<StockSheetMovementRow> rows = new ArrayList<>();
+		double balance = medical.getInitialqty() + quantityBeforePeriod;
+		for (Movement movement : movements) {
+			boolean isCharge = movement.getType().getType().contains("+");
+			balance += isCharge ? movement.getQuantity() : -movement.getQuantity();
+
+			Lot lot = movement.getLot();
+			String origin = isCharge ? (movement.getSupplier() != null ? movement.getSupplier().getSupName() : null) : "MAGASIN";
+			String destination = isCharge ? "MAGASIN" : (movement.getWard() != null ? movement.getWard().getDescription() : null);
+
+			rows.add(new StockSheetMovementRow(
+							Timestamp.valueOf(movement.getDate()),
+							lot != null ? lot.getCode() : null,
+							origin,
+							lot != null && lot.getDueDate() != null ? java.sql.Date.valueOf(lot.getDueDate().toLocalDate()) : null,
+							isCharge ? movement.getQuantity() : null,
+							isCharge ? null : movement.getQuantity(),
+							destination,
+							balance));
+		}
+		return rows;
 	}
 
 	/**
@@ -683,6 +742,34 @@ public class MedicalStockIoOperations {
 	 */
 	public boolean refNoExists(String refNo) throws OHServiceException {
 		return !movRepository.findAllWhereRefNo(refNo).isEmpty();
+	}
+
+	private static final DateTimeFormatter REFERENCE_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyyMMdd");
+	private static final String REFERENCE_PREFIX = "MVT";
+
+	/**
+	 * Generate the next available reference number for the given date, in the form
+	 * {@code MVT-yyyyMMdd-NNN}, where {@code NNN} restarts from 1 on each new day.
+	 *
+	 * @param date - the {@link Movement} date the reference is generated for.
+	 * @return the generated reference number.
+	 * @throws OHServiceException
+	 */
+	public String generateReferenceNumber(LocalDateTime date) throws OHServiceException {
+		String prefix = REFERENCE_PREFIX + "-" + date.format(REFERENCE_DATE_FORMAT);
+		List<String> existingRefNos = movRepository.findAllWhereRefNo(prefix + "-%");
+		int nextSeq = 1;
+		for (String refNo : existingRefNos) {
+			try {
+				int seq = Integer.parseInt(refNo.substring(prefix.length() + 1));
+				if (seq >= nextSeq) {
+					nextSeq = seq + 1;
+				}
+			} catch (NumberFormatException e) {
+				// ignore ref numbers whose suffix isn't a plain sequence number
+			}
+		}
+		return String.format("%s-%03d", prefix, nextSeq);
 	}
 
 	/**

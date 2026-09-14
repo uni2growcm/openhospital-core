@@ -35,6 +35,7 @@ import jakarta.persistence.Transient;
 import jakarta.persistence.Version;
 import jakarta.validation.constraints.NotNull;
 
+import org.isf.articlefamily.model.ArticleFamily;
 import org.isf.medtype.model.MedicalType;
 import org.isf.utils.db.Auditable;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -71,6 +72,13 @@ public class Medical extends Auditable<String> implements Comparable<Medical>, C
 	@ManyToOne
 	@JoinColumn(name = "MDSR_MDSRT_ID_A")
 	private MedicalType type;
+
+	/**
+	 * Family of the medical
+	 */
+	@ManyToOne
+	@JoinColumn(name = "MDSR_AFM_ID")
+	private ArticleFamily articleFamily;
 
 	/**
 	 * Description of the medical
@@ -125,6 +133,18 @@ public class Medical extends Auditable<String> implements Comparable<Medical>, C
 	@NotNull
 	@Column(name = "MDSR_DELETED", columnDefinition = "char(1) default 'N'")
 	private char deleted = 'N'; // flag record deleted ; values are 'Y' OR 'N' default is 'N'
+
+	/**
+	 * Pharmaceutical shape/form (e.g. tablet, syrup, injection)
+	 */
+	@Column(name = "MDSR_SHAPE")
+	private String shape;
+
+	/**
+	 * Dosing/strength (e.g. 500mg, 5ml)
+	 */
+	@Column(name = "MDSR_DOSING")
+	private String dosing;
 
 	@Transient
 	private volatile int hashCode;
@@ -216,6 +236,14 @@ public class Medical extends Auditable<String> implements Comparable<Medical>, C
 		this.type = type;
 	}
 
+	public ArticleFamily getArticleFamily() {
+		return articleFamily;
+	}
+
+	public void setArticleFamily(ArticleFamily articleFamily) {
+		this.articleFamily = articleFamily;
+	}
+
 	public String getProdCode() {
 		return prod_code;
 	}
@@ -238,6 +266,22 @@ public class Medical extends Auditable<String> implements Comparable<Medical>, C
 
 	public void setDeleted(char deleted) {
 		this.deleted = deleted;
+	}
+
+	public String getShape() {
+		return shape;
+	}
+
+	public void setShape(String shape) {
+		this.shape = shape;
+	}
+
+	public String getDosing() {
+		return dosing;
+	}
+
+	public void setDosing(String dosing) {
+		this.dosing = dosing;
 	}
 
 	@Override

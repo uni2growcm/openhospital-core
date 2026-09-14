@@ -26,10 +26,22 @@ import java.util.List;
 
 import org.isf.opd.model.Opd;
 import org.isf.ward.model.Ward;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface OpdIoOperationRepositoryCustom {
 
 	List<Opd> findAllOpdWhereParams(Ward ward, String diseaseTypeCode, String diseaseCode, LocalDate dateFrom, LocalDate dateTo, int ageFrom, int ageTo, char sex,
 			char newPatient, String user);
+
+	Page<Opd> findAllOpdWhereParams(Ward ward, String diseaseTypeCode, String diseaseCode, LocalDate dateFrom, LocalDate dateTo, int ageFrom, int ageTo, char sex,
+			char newPatient, String user, Pageable pageable);
+
+	/**
+	 * Same as the overload above, but when {@code knownTotalElements} is non-null the count query is skipped and
+	 * the supplied value is used as the page's total element count.
+	 */
+	Page<Opd> findAllOpdWhereParams(Ward ward, String diseaseTypeCode, String diseaseCode, LocalDate dateFrom, LocalDate dateTo, int ageFrom, int ageTo, char sex,
+			char newPatient, String user, Pageable pageable, Long knownTotalElements);
 
 }

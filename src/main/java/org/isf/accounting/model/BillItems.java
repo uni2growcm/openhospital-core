@@ -92,6 +92,9 @@ public class BillItems extends Auditable<String> {
 	 */
 	@Transient
 	private String itemId;
+
+	@Transient
+	private int prescriptionId;
 	
 	
 	public BillItems() {
@@ -200,6 +203,14 @@ public class BillItems extends Auditable<String> {
 
 	public void setItemId(String itemId) {
 		this.itemId = itemId;
+	}
+
+	public int getPrescriptionId() {
+		return prescriptionId;
+	}
+
+	public void setPrescriptionId(int prescriptionId) {
+		this.prescriptionId = prescriptionId;
 	}
 	
 	@Override

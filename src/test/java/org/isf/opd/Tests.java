@@ -34,6 +34,7 @@ import org.isf.OHCoreTestCase;
 import org.isf.disease.TestDisease;
 import org.isf.disease.model.Disease;
 import org.isf.disease.service.DiseaseIoOperationRepository;
+import org.isf.distype.model.DiseaseType;
 import org.isf.distype.TestDiseaseType;
 import org.isf.distype.model.DiseaseType;
 import org.isf.distype.service.DiseaseTypeIoOperationRepository;
@@ -49,6 +50,7 @@ import org.isf.patient.service.PatientIoOperationRepository;
 import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHException;
 import org.isf.utils.exception.OHServiceException;
+import org.isf.utils.pagination.PagedResponse;
 import org.isf.utils.time.TimeTools;
 import org.isf.visits.TestVisit;
 import org.isf.visits.model.Visit;
@@ -58,6 +60,7 @@ import org.isf.ward.model.Ward;
 import org.isf.ward.service.WardIoOperationRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -475,6 +478,90 @@ class Tests extends OHCoreTestCase {
 				foundOpd.getNewPatient(),
 				foundOpd.getUserID());
 		assertThat(opds.get(opds.size() - 1).getCode()).isEqualTo(foundOpd.getCode());
+	}
+
+	@Test
+	void testMgrGetOpdPageable() throws Exception {
+		int originalPageSize = GeneralData.PAGESIZE;
+		try {
+			GeneralData.PAGESIZE = 3;
+
+			// Shared supporting entities (fixed test codes, created once and reused across Opd records
+			// to avoid duplicate-key collisions on Ward, matching the pattern used for admission's equivalent test).
+			DiseaseType diseaseType = testDiseaseType.setup(false);
+			Disease disease = testDisease.setup(diseaseType, false);
+			disease.setCode("199");
+			Ward ward = testWard.setup(false);
+			diseaseTypeIoOperationRepository.saveAndFlush(diseaseType);
+			diseaseIoOperationRepository.saveAndFlush(disease);
+			wardIoOperationRepository.saveAndFlush(ward);
+
+			Opd lastOpd = null;
+			for (int idx = 0; idx < 5; idx++) {
+				Patient patient = testPatient.setup(false);
+				patientIoOperationRepository.saveAndFlush(patient);
+				Visit nextVisit = testVisit.setup(patient, false, ward);
+				visitsIoOperationRepository.saveAndFlush(nextVisit);
+				Opd opd = testOpd.setup(patient, disease, ward, nextVisit, false);
+				lastOpd = opdIoOperationRepository.saveAndFlush(opd);
+			}
+
+			LocalDate day = lastOpd.getDate().toLocalDate();
+
+			// First page, sized per GeneralData.PAGESIZE
+			PagedResponse<Opd> page0 = opdBrowserManager.getOpdPageable(ward, disease.getType().getCode(), disease.getCode(), day, day, 0, 0, 'A', 'A',
+					null, 0);
+			assertThat(page0.getData()).hasSize(3);
+
+			// Second page holds the remainder
+			PagedResponse<Opd> page1 = opdBrowserManager.getOpdPageable(ward, disease.getType().getCode(), disease.getCode(), day, day, 0, 0, 'A', 'A',
+					null, 1);
+			assertThat(page1.getData()).hasSize(2);
+		} finally {
+			GeneralData.PAGESIZE = originalPageSize;
+		}
+	}
+
+	@Test
+	void testMgrGetOpdPageableSkipsCountWhenTotalKnown() throws Exception {
+		int originalPageSize = GeneralData.PAGESIZE;
+		try {
+			GeneralData.PAGESIZE = 3;
+
+			DiseaseType diseaseType = testDiseaseType.setup(false);
+			Disease disease = testDisease.setup(diseaseType, false);
+			disease.setCode("199");
+			Ward ward = testWard.setup(false);
+			diseaseTypeIoOperationRepository.saveAndFlush(diseaseType);
+			diseaseIoOperationRepository.saveAndFlush(disease);
+			wardIoOperationRepository.saveAndFlush(ward);
+
+			Opd lastOpd = null;
+			for (int idx = 0; idx < 5; idx++) {
+				Patient patient = testPatient.setup(false);
+				patientIoOperationRepository.saveAndFlush(patient);
+				Visit nextVisit = testVisit.setup(patient, false, ward);
+				visitsIoOperationRepository.saveAndFlush(nextVisit);
+				Opd opd = testOpd.setup(patient, disease, ward, nextVisit, false);
+				lastOpd = opdIoOperationRepository.saveAndFlush(opd);
+			}
+
+			LocalDate day = lastOpd.getDate().toLocalDate();
+
+			// Omitting the known total still returns the correct (freshly counted) total.
+			PagedResponse<Opd> freshCount = opdBrowserManager.getOpdPageable(ward, disease.getType().getCode(), disease.getCode(), day, day, 0, 0, 'A', 'A',
+					null, 0, null);
+			assertThat(freshCount.getData()).hasSize(3);
+			assertThat(freshCount.getPageInfo().getTotalNbOfElements()).isEqualTo(5);
+
+			// Supplying a deliberately wrong known total is trusted as-is, proving the count query was skipped.
+			PagedResponse<Opd> knownTotal = opdBrowserManager.getOpdPageable(ward, disease.getType().getCode(), disease.getCode(), day, day, 0, 0, 'A', 'A',
+					null, 0, 999L);
+			assertThat(knownTotal.getData()).hasSize(3);
+			assertThat(knownTotal.getPageInfo().getTotalNbOfElements()).isEqualTo(999);
+		} finally {
+			GeneralData.PAGESIZE = originalPageSize;
+		}
 	}
 
 	@ParameterizedTest(name = "Test with OPDEXTENDED={0}")

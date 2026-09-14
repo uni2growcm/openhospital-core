@@ -92,7 +92,15 @@ public class PatientIoOperations {
 	}
 	
 	public PagedResponse<Patient> getPatientsPageable(Pageable pageable) throws OHServiceException {
-		Page<Patient> pagedResult = repository.findAllByDeletedIsNullOrDeletedEqualsOrderByName('N', pageable);
+		return getPatientsPageable(pageable, null);
+	}
+
+	/**
+	 * Same as {@link #getPatientsPageable(Pageable)}, but when {@code knownTotalElements} is non-null the count
+	 * query is skipped and the supplied value is used as the page's total element count.
+	 */
+	public PagedResponse<Patient> getPatientsPageable(Pageable pageable, Long knownTotalElements) throws OHServiceException {
+		Page<Patient> pagedResult = repository.findAllNotDeletedOrderByName('N', pageable, knownTotalElements);
 		return setPaginationData(pagedResult);
 	}
 
@@ -122,6 +130,28 @@ public class PatientIoOperations {
 	 */
 	public List<Patient> getPatientsByOneOfFieldsLike(String keyword) throws OHServiceException {
 		return repository.findByFieldsContainingWordsFromLiteral(keyword);
+	}
+
+	/**
+	 * Method that returns a page of {@link Patient}s not logically deleted, having
+	 * the passed String in one of the fields searched by {@link #getPatientsByOneOfFieldsLike(String)}.
+	 *
+	 * @param keyword - String to search, use {@code null} for full list
+	 * @param pageable - the requested page
+	 * @return a {@link PagedResponse} of {@link Patient}s (could be empty)
+	 * @throws OHServiceException
+	 */
+	public PagedResponse<Patient> getPatientsByOneOfFieldsLike(String keyword, Pageable pageable) throws OHServiceException {
+		return getPatientsByOneOfFieldsLike(keyword, pageable, null);
+	}
+
+	/**
+	 * Same as {@link #getPatientsByOneOfFieldsLike(String, Pageable)}, but when {@code knownTotalElements} is
+	 * non-null the count query is skipped and the supplied value is used as the page's total element count.
+	 */
+	public PagedResponse<Patient> getPatientsByOneOfFieldsLike(String keyword, Pageable pageable, Long knownTotalElements) throws OHServiceException {
+		Page<Patient> pagedResult = repository.findByFieldsContainingWordsFromLiteral(keyword, pageable, knownTotalElements);
+		return setPaginationData(pagedResult);
 	}
 
 	/**
