@@ -24,6 +24,7 @@ package org.isf.exa.manager;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.isf.exa.model.Block;
 import org.isf.exa.model.Exam;
 import org.isf.exa.service.ExamIoOperations;
 import org.isf.exatype.model.ExamType;
@@ -191,5 +192,26 @@ public class ExamBrowsingManager {
 	 */
 	public Exam findByCode(String code) throws OHServiceException {
 		return ioOperations.findByCode(code);
+	}
+
+	/**
+	 * Returns the whole list of {@link Block}s.
+	 *
+	 * @return the list of {@link Block}s.
+	 * @throws OHServiceException
+	 */
+	public List<Block> getBlocks() throws OHServiceException {
+		return ioOperations.getBlocks();
+	}
+
+	/**
+	 * Returns the list of {@link Exam}s associated to the given block code.
+	 *
+	 * @param blockCode the {@link Block} code
+	 * @return the list of {@link Exam}s linked to the {@link Block}.
+	 * @throws OHServiceException
+	 */
+	public List<Exam> getExamWithBlock(String blockCode) throws OHServiceException {
+		return ioOperations.getExamWithBlock(blockCode);
 	}
 }

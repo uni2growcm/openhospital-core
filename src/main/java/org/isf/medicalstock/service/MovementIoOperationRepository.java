@@ -68,4 +68,25 @@ public interface MovementIoOperationRepository extends JpaRepository<Movement, I
 	@Query("select count(m) from Movement m where active=1")
 	long countAllActiveMovements();
 
+	/**
+	 * For every medical, sums the quantity discharged from the main store since the given date.
+	 *
+	 * @param fromDate the start of the period to consider (inclusive).
+	 * @return a list of {@code [medicalCode, dischargedQuantity]} pairs, one per medical with at least one discharge.
+	 */
+	@Query("select m.medical.code, sum(m.quantity) from Movement m where m.type.type like '-%' and m.date >= :fromDate group by m.medical.code")
+	List<Object[]> findDischargedQuantityByMedicalSince(@Param("fromDate") LocalDateTime fromDate);
+
+	/**
+	 * Sums the signed quantity (positive for charge, negative for discharge) of all movements of a medical
+	 * strictly before the given date. Used to compute the opening balance for a "stock sheet" report.
+	 */
+	@Query("select coalesce(sum(case when m.type.type like '+%' then m.quantity else -m.quantity end), 0) " +
+					"from Movement m where m.medical.code = :medicalCode and m.date < :date")
+	Integer sumSignedQuantityBeforeDate(@Param("medicalCode") Integer medicalCode, @Param("date") LocalDateTime date);
+
+	@Query("select m from Movement m where m.medical.code = :medicalCode and m.date between :fromDate and :toDate order by m.date asc, m.code asc")
+	List<Movement> findByMedicalCodeAndDateBetweenOrderByDate(@Param("medicalCode") Integer medicalCode,
+					@Param("fromDate") LocalDateTime fromDate, @Param("toDate") LocalDateTime toDate);
+
 }

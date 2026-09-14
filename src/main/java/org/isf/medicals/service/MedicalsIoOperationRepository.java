@@ -93,5 +93,9 @@ public interface MedicalsIoOperationRepository extends JpaRepository<Medical, In
 
 	@Query(value = "SELECT m FROM Medical m")
 	Page<Medical> findAllPageable(Pageable pageable);
-	
+
+	@Query(value = "SELECT m FROM Medical m WHERE (:type IS NULL OR m.type.description LIKE %:type%) "
+					+ "AND (:deleted IS NULL OR m.deleted = :deleted) ORDER BY m.type.description, m.description")
+	Page<Medical> findAllWhereTypeAndDeletedPageable(@Param("type") String type, @Param("deleted") Character deleted, Pageable pageable);
+
 }
