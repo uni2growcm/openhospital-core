@@ -147,6 +147,32 @@ public class LabManager {
 	}
 
 	/**
+	 * Return a list of exams ({@link Laboratory}s) related to a {@link Patient} that have not been
+	 * billed yet.
+	 *
+	 * @param aPatient the {@link Patient}.
+	 * @return the list of outstanding {@link Laboratory}s. It could be {@code empty}.
+	 * @throws OHServiceException
+	 */
+	public List<Laboratory> getOutstandingLaboratory(Patient aPatient) throws OHServiceException {
+		return getLaboratory(aPatient).stream().filter(lab -> lab.getBill() == null).toList();
+	}
+
+	/**
+	 * Tags the specified {@link Laboratory} exam with the bill that billed it, or clears the tag
+	 * when {@code billId} is {@code 0}.
+	 *
+	 * @param code the {@link Laboratory} code
+	 * @param billId the bill id, or {@code 0} to clear it
+	 * @throws OHServiceException
+	 */
+	@Transactional(rollbackFor = OHServiceException.class)
+	@TranslateOHServiceException
+	public void updateBillId(int code, Integer billId) throws OHServiceException {
+		ioOperations.updateBillId(code, billId);
+	}
+
+	/**
 	 * Return a list of exams ({@link Laboratory}s) related to a {@link Patient} that are not yet linked to a bill.
 	 *
 	 * @param patient the {@link Patient}.

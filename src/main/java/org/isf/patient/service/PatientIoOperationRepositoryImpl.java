@@ -54,6 +54,15 @@ public class PatientIoOperationRepositoryImpl implements PatientIoOperationRepos
 				getResultList();
 	}
 
+@SuppressWarnings("unchecked")
+	@Override
+	public List<Patient> findByFieldsContainingWordsFromLiteral(String literal, int limit) {
+		return this.entityManager.
+				createQuery(buildSearchQuery(literal)).
+				setMaxResults(limit).
+				getResultList();
+	}
+
 	@Override
 	public Page<Patient> findByFieldsContainingWordsFromLiteral(String literal, Pageable pageable) {
 		return findByFieldsContainingWordsFromLiteral(literal, pageable, null);

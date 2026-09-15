@@ -422,6 +422,29 @@ public class LabIoOperations {
 	}
 
 	/**
+	 * Tags the specified {@link Laboratory} exam with the bill that billed it, or clears the tag
+	 * when {@code billId} is {@code null}.
+	 *
+	 * @param code - the {@link Laboratory} code
+	 * @param billId - the bill id, or {@code null} to clear it
+	 * @throws OHServiceException
+	 */
+	public void updateBillId(int code, Integer billId) throws OHServiceException {
+		Laboratory laboratory = repository.findById(code).orElse(null);
+		if (laboratory == null) {
+			return;
+		}
+		if (billId != null) {
+			Bill bill = new Bill();
+			bill.setId(billId);
+			laboratory.setBill(bill);
+		} else {
+			laboratory.setBill(null);
+		}
+		repository.save(laboratory);
+	}
+
+	/**
 	 * Update an already existing Laboratory exam {@link Laboratory} (Procedure One).
 	 * If the old exam was Procedure Two then all its related results are deleted.
 	 *

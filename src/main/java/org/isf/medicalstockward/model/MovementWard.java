@@ -113,6 +113,15 @@ public class MovementWard extends Auditable<String> {
 	@JoinColumn(name = "MMVN_WRD_ID_A_FROM")
 	private Ward wardFrom;
 
+	/**
+	 * Id of the {@code Bill} this movement was created for, when it originates from a bill save
+	 * (see {@code org.isf.accounting.manager.BillBrowserManager}). A plain scalar, not a JPA
+	 * association, so this module doesn't need to depend on the accounting package. {@code null}
+	 * for movements not tied to a bill.
+	 */
+	@Column(name = "MMVN_BLL_ID")
+	private Integer billId;
+
 	public MovementWard() {
 	}
 
@@ -314,6 +323,14 @@ public class MovementWard extends Auditable<String> {
 
 	public void setWardFrom(Ward wardFrom) {
 		this.wardFrom = wardFrom;
+	}
+
+	public Integer getBillId() {
+		return billId;
+	}
+
+	public void setBillId(Integer billId) {
+		this.billId = billId;
 	}
 
 	@Override

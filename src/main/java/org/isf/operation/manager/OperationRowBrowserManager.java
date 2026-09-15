@@ -51,6 +51,10 @@ public class OperationRowBrowserManager {
 		return ioOperations.getOperationRowByOpd(opd);
 	}
 
+	public OperationRow getOperationRow(int id) throws OHServiceException {
+		return ioOperations.getOperationRow(id);
+	}
+
 	public void deleteOperationRow(OperationRow operationRow) throws OHServiceException {
 		ioOperations.deleteOperationRow(operationRow);
 	}
@@ -65,6 +69,18 @@ public class OperationRowBrowserManager {
 
 	public List<OperationRow> getOperationRowByPatientCode(Patient patient) throws OHServiceException {
 		return ioOperations.getOperationRowByPatient(patient);
+	}
+
+	/**
+	 * Return the {@link OperationRow}s for the specified {@link Patient} that have not been billed
+	 * yet.
+	 *
+	 * @param patient the {@link Patient}
+	 * @return the list of outstanding {@link OperationRow}s
+	 * @throws OHServiceException
+	 */
+	public List<OperationRow> getOutstandingOperationRows(Patient patient) throws OHServiceException {
+		return getOperationRowByPatientCode(patient).stream().filter(row -> row.getBill() == null).toList();
 	}
 
 }

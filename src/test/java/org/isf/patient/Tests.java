@@ -126,6 +126,18 @@ class Tests extends OHCoreTestCase {
 	}
 
 	@Test
+	void testIoGetPatientsByOneOfFieldsLikeWithLimit() throws Exception {
+		for (int idx = 0; idx < 15; idx++) {
+			setupTestPatient(false);
+		}
+
+		List<Patient> patients = patientIoOperation.getPatientsByOneOfFieldsLike(null, 10);
+
+		assertThat(patients).hasSize(10);
+		testPatient.check(patients.get(0));
+	}
+
+	@Test
 	void testIoGetPatientsByOneOfFieldsLikeFirstName() throws Exception {
 		// given:
 		Integer code = setupTestPatient(false);

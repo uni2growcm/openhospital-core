@@ -28,6 +28,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.isf.OHCoreTestCase;
+import org.isf.accounting.TestBill;
+import org.isf.accounting.model.Bill;
+import org.isf.accounting.service.AccountingBillIoOperationRepository;
 import org.isf.admission.TestAdmission;
 import org.isf.admission.manager.AdmissionBrowserManager;
 import org.isf.admission.model.Admission;
@@ -69,6 +72,9 @@ import org.isf.opetype.service.OperationTypeIoOperationRepository;
 import org.isf.patient.TestPatient;
 import org.isf.patient.model.Patient;
 import org.isf.patient.service.PatientIoOperationRepository;
+import org.isf.priceslist.TestPriceList;
+import org.isf.priceslist.model.PriceList;
+import org.isf.priceslist.service.PricesListIoOperationRepository;
 import org.isf.pregtreattype.TestPregnantTreatmentType;
 import org.isf.pregtreattype.model.PregnantTreatmentType;
 import org.isf.pregtreattype.service.PregnantTreatmentTypeIoOperationRepository;
@@ -100,6 +106,8 @@ class Tests extends OHCoreTestCase {
 	private static TestPregnantTreatmentType testPregnantTreatmentType;
 	private static TestDeliveryType testDeliveryType;
 	private static TestDeliveryResultType testDeliveryResultType;
+	private static TestBill testBill;
+	private static TestPriceList testPriceList;
 	private static TestOpd testOpd;
 	private static TestVisit testVisit;
 
@@ -145,6 +153,10 @@ class Tests extends OHCoreTestCase {
 	DeliveryResultIoOperationRepository deliveryResultIoOperationRepository;
 	@Autowired
 	OpdIoOperationRepository opdIoOperationRepository;
+	@Autowired
+	AccountingBillIoOperationRepository accountingBillIoOperationRepository;
+	@Autowired
+	PricesListIoOperationRepository priceListIoOperationRepository;
 
 	@BeforeAll
 	static void setUpClass() {
@@ -161,6 +173,8 @@ class Tests extends OHCoreTestCase {
 		testPregnantTreatmentType = new TestPregnantTreatmentType();
 		testDeliveryType = new TestDeliveryType();
 		testDeliveryResultType = new TestDeliveryResultType();
+		testBill = new TestBill();
+		testPriceList = new TestPriceList();
 		testOpd = new TestOpd();
 		testVisit = new TestVisit();
 	}
@@ -1128,6 +1142,66 @@ class Tests extends OHCoreTestCase {
 		operationIoOperationRepository.saveAndFlush(operation);
 		operationRowIoOperationRepository.saveAndFlush(operationRow);
 		return operationRow.getId();
+	}
+
+	@Test
+	void mgrGetOutstandingOperationRowsExcludesAlreadyBilled() throws Exception {
+		OperationType operationType = testOperationType.setup(false);
+		Operation operation = testOperation.setup(operationType, true);
+
+		Ward ward = testWard.setup(false, false);
+		Patient patient = testPatient.setup(false);
+		AdmissionType admissionType = testAdmissionType.setup(false);
+		DiseaseType diseaseType = testDiseaseType.setup(false);
+		Disease diseaseIn = testDisease.setup(diseaseType, false);
+		Disease diseaseOut1 = testDisease.setup(diseaseType, false);
+		diseaseOut1.setCode("888");
+		Disease diseaseOut2 = testDisease.setup(diseaseType, false);
+		diseaseOut2.setCode("777");
+		Disease diseaseOut3 = testDisease.setup(diseaseType, false);
+		diseaseOut3.setCode("666");
+		DischargeType dischargeType = testDischargeType.setup(false);
+		PregnantTreatmentType pregTreatmentType = testPregnantTreatmentType.setup(false);
+		DeliveryType deliveryType = testDeliveryType.setup(false);
+		DeliveryResultType deliveryResult = testDeliveryResultType.setup(false);
+
+		Admission admission = testAdmission.setup(ward, patient, admissionType, diseaseIn, diseaseOut1,
+			diseaseOut2, diseaseOut3, operation, dischargeType, pregTreatmentType,
+			deliveryType, deliveryResult, false);
+
+		PriceList priceList = testPriceList.setup(false);
+		Bill bill = testBill.setup(priceList, patient, null, false);
+
+		operationTypeIoOperationRepository.saveAndFlush(operationType);
+		operationIoOperationRepository.saveAndFlush(operation);
+		wardIoOperationRepository.saveAndFlush(ward);
+		patientIoOperationRepository.saveAndFlush(patient);
+		admissionTypeIoOperationRepository.saveAndFlush(admissionType);
+		diseaseTypeIoOperationRepository.saveAndFlush(diseaseType);
+		diseaseIoOperationRepository.saveAndFlush(diseaseIn);
+		diseaseIoOperationRepository.saveAndFlush(diseaseOut1);
+		diseaseIoOperationRepository.saveAndFlush(diseaseOut2);
+		diseaseIoOperationRepository.saveAndFlush(diseaseOut3);
+		dischargeTypeIoOperationRepository.saveAndFlush(dischargeType);
+		pregnantTreatmentTypeIoOperationRepository.saveAndFlush(pregTreatmentType);
+		deliveryTypeIoOperationRepository.saveAndFlush(deliveryType);
+		deliveryResultIoOperationRepository.saveAndFlush(deliveryResult);
+		admissionIoOperationRepository.saveAndFlush(admission);
+		priceListIoOperationRepository.saveAndFlush(priceList);
+		accountingBillIoOperationRepository.saveAndFlush(bill);
+
+		OperationRow outstandingRow = testOperationRow.setup(operation, true);
+		outstandingRow.setAdmission(admission);
+		operationRowIoOperationRepository.saveAndFlush(outstandingRow);
+
+		OperationRow billedRow = testOperationRow.setup(operation, true);
+		billedRow.setAdmission(admission);
+		billedRow.setBill(bill);
+		operationRowIoOperationRepository.saveAndFlush(billedRow);
+
+		List<OperationRow> outstanding = operationRowBrowserManager.getOutstandingOperationRows(patient);
+
+		assertThat(outstanding).extracting(OperationRow::getId).containsExactly(outstandingRow.getId());
 	}
 
 	private int setupTestOperationRowWithAdmission(boolean usingSet) throws Exception {

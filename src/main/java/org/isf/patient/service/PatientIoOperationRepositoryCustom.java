@@ -31,6 +31,8 @@ public interface PatientIoOperationRepositoryCustom {
 
 	List<Patient> findByFieldsContainingWordsFromLiteral(String regex);
 
+	List<Patient> findByFieldsContainingWordsFromLiteral(String regex, int limit);
+
 	Page<Patient> findByFieldsContainingWordsFromLiteral(String regex, Pageable pageable);
 
 	/**

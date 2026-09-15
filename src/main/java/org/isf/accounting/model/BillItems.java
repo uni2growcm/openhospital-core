@@ -73,7 +73,21 @@ public class BillItems extends Auditable<String> {
 	@NotNull
 	@Column(name="BLI_QTY")
 	private int itemQuantity;
-	
+
+	/**
+	 * Which prescription source this item came from ("MED"/"EXA"/"OPE"), null if not
+	 * from a prescription.
+	 */
+	@Column(name="BLI_ITEM_GROUP")
+	private String itemGroup;
+
+	/**
+	 * Id of the TherapyRow/Laboratory/OperationRow this item was billed from, null if not
+	 * from a prescription.
+	 */
+	@Column(name="BLI_PRESC_ID")
+	private Integer prescriptionId;
+
 	@Transient
 	private volatile int hashCode;
 	
@@ -93,10 +107,6 @@ public class BillItems extends Auditable<String> {
 	@Transient
 	private String itemId;
 
-	@Transient
-	private int prescriptionId;
-	
-	
 	public BillItems() {
 		super();
 	}
@@ -168,7 +178,23 @@ public class BillItems extends Auditable<String> {
 	public void setItemQuantity(int itemQuantity) {
 		this.itemQuantity = itemQuantity;
 	}
-	
+
+	public String getItemGroup() {
+		return itemGroup;
+	}
+
+	public void setItemGroup(String itemGroup) {
+		this.itemGroup = itemGroup;
+	}
+
+	public Integer getPrescriptionId() {
+		return prescriptionId;
+	}
+
+	public void setPrescriptionId(Integer prescriptionId) {
+		this.prescriptionId = prescriptionId;
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
@@ -205,14 +231,6 @@ public class BillItems extends Auditable<String> {
 		this.itemId = itemId;
 	}
 
-	public int getPrescriptionId() {
-		return prescriptionId;
-	}
-
-	public void setPrescriptionId(int prescriptionId) {
-		this.prescriptionId = prescriptionId;
-	}
-	
 	@Override
 	public int hashCode() {
 	    if (this.hashCode == 0) {

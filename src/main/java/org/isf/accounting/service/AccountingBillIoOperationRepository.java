@@ -21,10 +21,13 @@
  */
 package org.isf.accounting.service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
 import org.isf.accounting.model.Bill;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -67,4 +70,28 @@ public interface AccountingBillIoOperationRepository extends JpaRepository<Bill,
 
 	@Query("select count(b) from Bill b where active=1")
 	long countAllActiveBills();
+
+	/**
+	 * Fetches one page of bills in the given date range, optionally narrowed by status, patient and
+	 * cashier - each predicate is skipped when its parameter is {@code null}, so this single query backs
+	 * every filter combination used by {@code BillBrowser}'s three tabs.
+	 */
+	@Query(value = "SELECT b FROM Bill b WHERE b.date >= :dateFrom AND b.date < :dateTo "
+		+ "AND (:status IS NULL OR b.status = :status) "
+		+ "AND (:patientCode IS NULL OR b.billPatient.code = :patientCode) "
+		+ "AND (:username IS NULL OR b.user = :username) "
+		+ "ORDER BY b.date DESC")
+	Page<Bill> findPageable(@Param("dateFrom") LocalDateTime dateFrom, @Param("dateTo") LocalDateTime dateTo,
+		@Param("status") String status, @Param("patientCode") Integer patientCode,
+		@Param("username") String username, Pageable pageable);
+
+	/**
+	 * Sums the outstanding balance of every non-deleted bill in the given date range (optionally
+	 * narrowed by patient), independent of status/page - backs the totals footer, which reflects the
+	 * whole filtered date range regardless of which page or tab is currently displayed.
+	 */
+	@Query(value = "SELECT COALESCE(SUM(b.balance), 0) FROM Bill b WHERE b.date >= :dateFrom AND b.date < :dateTo "
+		+ "AND (:patientCode IS NULL OR b.billPatient.code = :patientCode) AND b.status != 'D'")
+	BigDecimal sumBalance(@Param("dateFrom") LocalDateTime dateFrom, @Param("dateTo") LocalDateTime dateTo,
+		@Param("patientCode") Integer patientCode);
 }
