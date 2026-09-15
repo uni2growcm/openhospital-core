@@ -112,6 +112,39 @@ public class AdmissionIoOperations {
 	}
 
 	/**
+	 * Returns a page of patients with ward in which they are admitted, filtering the list using the passed
+	 * search term and date ranges, as in {@link #getAdmittedPatients(String, LocalDateTime[], LocalDateTime[])}.
+	 *
+	 * @param searchTerms
+	 * @param admissionRange
+	 * @param dischargeRange
+	 * @param admitted {@code true} for currently admitted only, {@code false} for not currently admitted only, {@code null} for both
+	 * @param wardCodes ward codes to filter by, {@code null}/empty for all wards
+	 * @param ageFrom lower age bound (inclusive), {@code null} for no lower bound
+	 * @param ageTo upper age bound (inclusive), {@code null} for no upper bound
+	 * @param sex patient sex to filter by, {@code null} or {@code 'A'} for both
+	 * @param pageable
+	 * @return a {@link PagedResponse} of {@link AdmittedPatient}s
+	 * @throws OHServiceException
+	 */
+	public PagedResponse<AdmittedPatient> getAdmittedPatients(String searchTerms, LocalDateTime[] admissionRange, LocalDateTime[] dischargeRange,
+					Boolean admitted, List<String> wardCodes, Integer ageFrom, Integer ageTo, Character sex, Pageable pageable) throws OHServiceException {
+		return getAdmittedPatients(searchTerms, admissionRange, dischargeRange, admitted, wardCodes, ageFrom, ageTo, sex, pageable, null);
+	}
+
+	/**
+	 * Same as the overload above, but when {@code knownTotalElements} is non-null the count query is skipped and
+	 * the supplied value is used as the page's total element count.
+	 */
+	public PagedResponse<AdmittedPatient> getAdmittedPatients(String searchTerms, LocalDateTime[] admissionRange, LocalDateTime[] dischargeRange,
+					Boolean admitted, List<String> wardCodes, Integer ageFrom, Integer ageTo, Character sex, Pageable pageable, Long knownTotalElements)
+					throws OHServiceException {
+		Page<AdmittedPatient> pagedResult = repository.findPatientAdmissionsBySearchAndDateRanges(searchTerms, admissionRange, dischargeRange, admitted,
+						wardCodes, ageFrom, ageTo, sex, pageable, knownTotalElements);
+		return setAdmittedPatientPaginationData(pagedResult);
+	}
+
+	/**
 	 * Load patient together with the profile photo, or {@code null} if there is no patient with the given id
 	 */
 	public AdmittedPatient loadAdmittedPatient(int patientId) {
@@ -376,6 +409,13 @@ public class AdmissionIoOperations {
 	 */
 	PagedResponse<Admission> setPaginationData(Page<Admission> pages) {
 		PagedResponse<Admission> data = new PagedResponse<>();
+		data.setData(pages.getContent());
+		data.setPageInfo(PageInfo.from(pages));
+		return data;
+	}
+
+	PagedResponse<AdmittedPatient> setAdmittedPatientPaginationData(Page<AdmittedPatient> pages) {
+		PagedResponse<AdmittedPatient> data = new PagedResponse<>();
 		data.setData(pages.getContent());
 		data.setPageInfo(PageInfo.from(pages));
 		return data;

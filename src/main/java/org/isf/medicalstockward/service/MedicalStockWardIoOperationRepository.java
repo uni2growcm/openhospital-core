@@ -49,15 +49,18 @@ public interface MedicalStockWardIoOperationRepository extends JpaRepository<Med
 			"where medWard.id.medical.code=:medical and medWard.id.ward.code=:ward")
 	Double findQuantityInWardWhereMedicalAndWard(@Param("medical") int medical, @Param("ward") String ward);
 
-	@Modifying
+	// clearAutomatically: these are native/bulk updates that bypass the persistence context, so an
+	// already-loaded MedicalWard for the same (ward, medical[, lot]) would otherwise keep showing its
+	// pre-update in/out quantity to any read later in the same transaction (stale first-level cache).
+	@Modifying(clearAutomatically = true, flushAutomatically = true)
 	@Query(value = "UPDATE OH_MEDICALDSRWARD SET MDSRWRD_IN_QTI = MDSRWRD_IN_QTI + :quantity WHERE MDSRWRD_WRD_ID_A = :ward AND MDSRWRD_MDSR_ID = :medical AND MDSRWRD_LT_ID_A = :lot", nativeQuery = true)
 	void updateInQuantity(@Param("quantity") Double quantity, @Param("ward") String ward, @Param("medical") int medical, @Param("lot") String lot);
 
-	@Modifying
+	@Modifying(clearAutomatically = true, flushAutomatically = true)
 	@Query(value = "update MedicalWard set in_quantity=in_quantity+:quantity where id.ward.code=:ward and id.medical.code=:medical")
 	void updateInQuantity(@Param("quantity") Double quantity, @Param("ward") String ward, @Param("medical") int medical);
 
-	@Modifying
+	@Modifying(clearAutomatically = true, flushAutomatically = true)
 	@Query(value = "UPDATE OH_MEDICALDSRWARD SET MDSRWRD_OUT_QTI = MDSRWRD_OUT_QTI + :quantity WHERE MDSRWRD_WRD_ID_A = :ward AND MDSRWRD_MDSR_ID = :medical AND MDSRWRD_LT_ID_A = :lot ", nativeQuery = true)
 	void updateOutQuantity(@Param("quantity") Double quantity, @Param("ward") String ward, @Param("medical") int medical, @Param("lot") String lot);
 
@@ -68,7 +71,7 @@ public interface MedicalStockWardIoOperationRepository extends JpaRepository<Med
 	@Query(value = "SELECT * FROM OH_MEDICALDSRWARD WHERE MDSRWRD_WRD_ID_A = :ward", nativeQuery = true)
 	List<MedicalWard> findAllWhereWard(@Param("ward") char wardId);
 
-	@Modifying
+	@Modifying(clearAutomatically = true, flushAutomatically = true)
 	@Query(value = "update MedicalWard set out_quantity=out_quantity+:quantity where id.ward.code=:ward and id.medical.code=:medical")
 	void updateOutQuantity(@Param("quantity") Double quantity, @Param("ward") String ward, @Param("medical") int medical);
 

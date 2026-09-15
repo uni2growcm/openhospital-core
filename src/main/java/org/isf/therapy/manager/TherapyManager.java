@@ -152,6 +152,37 @@ public class TherapyManager {
 	}
 
 	/**
+	 * Return the {@link TherapyRow}s (therapies) for the specified Patient that still have a
+	 * quantity remaining to bill ({@link TherapyRow#getRemainingQty()} greater than zero).
+	 *
+	 * @param code the Patient ID
+	 * @return the list of outstanding {@link TherapyRow}s
+	 * @throws OHServiceException
+	 */
+	public List<TherapyRow> getOutstandingTherapyRows(int code) throws OHServiceException {
+		return getTherapyRows(code).stream().filter(row -> row.getRemainingQty() > 0).toList();
+	}
+
+	/**
+	 * Increments (or decrements, for a negative {@code quantityDelta}) the billed quantity of the
+	 * specified {@link TherapyRow}, used to track how much of a prescription has been billed.
+	 *
+	 * @param therapyID the {@link TherapyRow} id
+	 * @param quantityDelta the quantity to add to the row's already-billed quantity
+	 * @throws OHServiceException
+	 */
+	@Transactional(rollbackFor = OHServiceException.class)
+	@TranslateOHServiceException
+	public void updateBougthQuantity(int therapyID, double quantityDelta) throws OHServiceException {
+		TherapyRow thRow = ioOperations.getTherapyRow(therapyID);
+		if (thRow == null) {
+			return;
+		}
+		thRow.setQtyBougth(Math.max(0, thRow.getQtyBougth() + quantityDelta));
+		ioOperations.newTherapy(thRow);
+	}
+
+	/**
 	 * Insert a new {@link TherapyRow} (therapy) for related Patient
 	 *
 	 * @param thRow the {@link TherapyRow}s (therapy)

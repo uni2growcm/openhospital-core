@@ -22,7 +22,6 @@
 package org.isf.typology;
 
 import org.isf.OHCoreTestCase;
-import org.isf.maternity.model.*;
 import org.isf.typology.manager.TypologyBrowserManager;
 import org.isf.typology.model.Family;
 import org.isf.typology.model.Typology;

@@ -27,6 +27,7 @@ import java.time.LocalDate;
 import java.util.Calendar;
 
 import org.isf.patconsensus.model.PatientConsensus;
+import org.isf.patient.model.GeographicArea;
 import org.isf.patient.model.Patient;
 import org.isf.patient.model.PatientProfilePhoto;
 import org.isf.utils.exception.OHException;
@@ -55,6 +56,15 @@ public class TestPatient {
 	private static String profession = "business";
 	private String anamnesis = "anamnesis";
 	private String allergies = "allergies";
+	private static String birthPlace = "TestBirthPlace";
+	private static String geographicArea = GeographicArea.INSIDE_AREA.getCode();
+	private static int childrenNumber = 3;
+	private static String parentResidence = "TestParentResidence";
+	private static String transport = "TestTransport";
+	private static String blama = "TestBlama";
+	private static String country = "TestCountry";
+	private static Integer affiliatedPersonId = 42;
+	private static boolean headAffiliation = true;
 	//private static Blob photo;
 	//private static Image photoImage;
 
@@ -76,6 +86,15 @@ public class TestPatient {
 			patient.setPatientConsensus(new PatientConsensus(true, false, patient));
 			patient.setAllergies(allergies);
 			patient.setAnamnesis(anamnesis);
+			patient.setBirthPlace(birthPlace);
+			patient.setGeographicArea(geographicArea);
+			patient.setChildrenNumber(childrenNumber);
+			patient.setParentResidence(parentResidence);
+			patient.setTransport(transport);
+			patient.setBlama(blama);
+			patient.setCountry(country);
+			patient.setAffiliatedPersonId(affiliatedPersonId);
+			patient.setHeadAffiliation(headAffiliation);
 
 		}
 
@@ -105,6 +124,15 @@ public class TestPatient {
 		patient.setProfession(profession);
 		patient.setAllergies(allergies);
 		patient.setAnamnesis(anamnesis);
+		patient.setBirthPlace(birthPlace);
+		patient.setGeographicArea(geographicArea);
+		patient.setChildrenNumber(childrenNumber);
+		patient.setParentResidence(parentResidence);
+		patient.setTransport(transport);
+		patient.setBlama(blama);
+		patient.setCountry(country);
+		patient.setAffiliatedPersonId(affiliatedPersonId);
+		patient.setHeadAffiliation(headAffiliation);
 	}
 
 	public void check(Patient patient) {
@@ -129,5 +157,14 @@ public class TestPatient {
 		assertThat(patient.getProfession()).isEqualTo(profession);
 		assertThat(patient.getAllergies()).isEqualTo(allergies);
 		assertThat(patient.getAnamnesis()).isEqualTo(anamnesis);
+		assertThat(patient.getBirthPlace()).isEqualTo(birthPlace);
+		assertThat(patient.getGeographicArea()).isEqualTo(geographicArea);
+		assertThat(patient.getChildrenNumber()).isEqualTo(childrenNumber);
+		assertThat(patient.getParentResidence()).isEqualTo(parentResidence);
+		assertThat(patient.getTransport()).isEqualTo(transport);
+		assertThat(patient.getBlama()).isEqualTo(blama);
+		assertThat(patient.getCountry()).isEqualTo(country);
+		assertThat(patient.getAffiliatedPersonId()).isEqualTo(affiliatedPersonId);
+		assertThat(patient.isHeadAffiliation()).isEqualTo(headAffiliation);
 	}
 }

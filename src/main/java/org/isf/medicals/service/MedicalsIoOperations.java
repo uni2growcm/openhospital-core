@@ -130,6 +130,21 @@ public class MedicalsIoOperations {
 	}
 
 	/**
+	 * Returns the medicals pageable, optionally filtered by type and active/disabled status.
+	 *
+	 * @param type the medical type description to filter by, or {@code null} for all types.
+	 * @param deleted {@code 'N'} for active only, {@code 'Y'} for disabled only, or {@code null} for both.
+	 * @param page the page number.
+	 * @param size the page size.
+	 * @return the list of {@link Medical}s pageable. It could be {@code empty}.
+	 * @throws OHServiceException
+	 */
+	public Page<Medical> getMedicalsPageable(String type, Character deleted, int page, int size) throws OHServiceException {
+		Pageable pageable = PageRequest.of(page, size);
+		return repository.findAllWhereTypeAndDeletedPageable(type, deleted, pageable);
+	}
+
+	/**
 	 * Retrieves the stored {@link Medical}s based on the specified filter criteria.
 	 * @param description the medical description or {@code null}
 	 * @param type the medical type or {@code null}

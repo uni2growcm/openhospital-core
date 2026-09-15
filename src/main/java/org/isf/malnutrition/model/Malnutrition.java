@@ -38,6 +38,7 @@ import jakarta.persistence.Version;
 import jakarta.validation.constraints.NotNull;
 
 import org.isf.admission.model.Admission;
+import org.isf.opd.model.Opd;
 import org.isf.utils.db.Auditable;
 import org.isf.utils.time.TimeTools;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -73,6 +74,10 @@ public class Malnutrition extends Auditable<String> {
 	@ManyToOne
 	@JoinColumn(name="MLN_ADM_ID")
 	private Admission admission;
+
+	@ManyToOne
+	@JoinColumn(name="MLN_OPD_ID")
+	private Opd opd;
 
 	@NotNull
 	@Column(name="MLN_HEIGHT")
@@ -123,6 +128,14 @@ public class Malnutrition extends Auditable<String> {
 
 	public void setAdmission(Admission admission) {
 		this.admission = admission;
+	}
+
+	public Opd getOpd() {
+		return opd;
+	}
+
+	public void setOpd(Opd opd) {
+		this.opd = opd;
 	}
 
 	public void setDateSupp(LocalDateTime aDateSupp) {

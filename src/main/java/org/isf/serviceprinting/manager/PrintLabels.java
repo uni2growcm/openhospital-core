@@ -24,8 +24,10 @@ package org.isf.serviceprinting.manager;
 import java.io.File;
 import java.sql.Connection;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
+import org.isf.generaldata.GeneralData;
 import org.isf.utils.db.DbSingleJpaConn;
 import org.isf.utils.exception.OHException;
 
@@ -35,6 +37,7 @@ import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperPrintManager;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.util.JRLoader;
+import net.sf.jasperreports.view.JasperViewer;
 
 public class PrintLabels {
 	public PrintLabels(String filename, Integer patId) throws OHException, JRException {
@@ -52,6 +55,17 @@ public class PrintLabels {
 		Connection conn = DbSingleJpaConn.getConnection();
 		JasperReport jasperReport = (JasperReport) JRLoader.loadObject(jasperFile);
 		JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, conn);
-		JasperPrintManager.printReport(jasperPrint, true);
+		if (GeneralData.INTERNALVIEWER) {
+			JasperViewer.viewReport(jasperPrint, false, new Locale(GeneralData.LANGUAGE));
+		} else {
+			String pdfFile = "rpt_base/PDF/" + filename + ".pdf";
+			net.sf.jasperreports.engine.JasperExportManager.exportReportToPdfFile(jasperPrint, pdfFile);
+			try {
+				Runtime rt = Runtime.getRuntime();
+				rt.exec(GeneralData.VIEWER + ' ' + pdfFile);
+			} catch (Exception exception) {
+				exception.printStackTrace();
+			}
+		}
 	}
 }

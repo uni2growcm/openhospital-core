@@ -68,10 +68,12 @@ public final class GeneralData extends ConfigurationProperties {
 	public static boolean TELEMETRYENABLED;
 	public static String VIEWER;
 	public static boolean MAINMENUALWAYSONTOP;
+	public static int PAGESIZE;
 	public static boolean RECEIPTPRINTER;
 	public static boolean VIDEOMODULEENABLED;
 	public static boolean PATIENTVACCINEEXTENDED;
 	public static boolean ENHANCEDSEARCH;
+	public static boolean ENHANCEDDIAGNOSTICINOPDEDIT;
 	public static boolean XMPPMODULEENABLED;
 	public static boolean DICOMMODULEENABLED;
 	public static boolean DICOMTHUMBNAILS;
@@ -84,6 +86,11 @@ public final class GeneralData extends ConfigurationProperties {
 	public static boolean CREATELABORATORYAUTO;
 	public static boolean ALLOWPRINTOPENEDBILL;
 	public static boolean ALLOWMULTIPLEOPENEDBILL;
+	public static boolean ALLOWDELETESAVEDBILLITEM;
+	public static boolean STOCKMVTONBILLSAVE;
+	public static boolean ENABLEREDUCTIONPLAN;
+	public static boolean ALLOWBILLGUARANTOR;
+	public static String DEFAULTWARDINNEWBILL;
 	public static String PATIENTBILLGROUPED;
 	public static String PATIENTBILLSTATEMENT;
 	public static boolean DEBUG;
@@ -133,10 +140,12 @@ public final class GeneralData extends ConfigurationProperties {
 	private static final boolean DEFAULT_SMSENABLED = false;
 	private static final boolean DEFAULT_TELEMETRYENABLED = false;
 	private static final boolean DEFAULT_MAINMENUALWAYSONTOP = false;
+	private static final int DEFAULT_PAGESIZE = 50;
 	private static final boolean DEFAULT_RECEIPTPRINTER = false;
 	private static final boolean DEFAULT_VIDEOMODULEENABLED = false;
 	private static final boolean DEFAULT_PATIENTVACCINEEXTENDED = false;
 	private static final boolean DEFAULT_ENHANCEDSEARCH = false;
+	private static final boolean DEFAULT_ENHANCEDDIAGNOSTICINOPDEDIT = false;
 	private static final boolean DEFAULT_XMPPMODULEENABLED = false;
 	private static final boolean DEFAULT_DICOMMODULEENABLED = false;
 	private static final boolean DEFAULT_DICOMTHUMBNAILS = true;
@@ -145,10 +154,15 @@ public final class GeneralData extends ConfigurationProperties {
 	private static final boolean DEFAULT_HIVMODULEENABLED = true;
 	private static final boolean DEFAULT_FAMILYPLANNINGMODULEENABLED = true;
 	private static final boolean DEFAULT_HOMEVISITMODULEENABLED = true;
-	private static final boolean DEFAULT_PARTNERSMODULEENABLED = true;
 	private static final boolean DEFAULT_CREATELABORATORYAUTO = false;
 	private static final boolean DEFAULT_ALLOWPRINTOPENEDBILL = false;
 	private static final boolean DEFAULT_ALLOWMULTIPLEOPENEDBILL = false;
+	private static final boolean DEFAULT_ALLOWDELETESAVEDBILLITEM = false;
+	private static final boolean DEFAULT_STOCKMVTONBILLSAVE = false;
+	private static final boolean DEFAULT_ENABLEREDUCTIONPLAN = false;
+	private static final boolean DEFAULT_PARTNERSMODULEENABLED = false;
+	private static final boolean DEFAULT_ALLOWBILLGUARANTOR = false;
+	private static final String DEFAULT_DEFAULTWARDINNEWBILL = "";
 	private static final String DEFAULT_PATIENTBILLGROUPED = "PatientBillGrouped";
 	private static final String DEFAULT_PATIENTBILLSTATEMENT = "PatientBillStatement";
 	private static final boolean DEFAULT_DEBUG = false;
@@ -210,10 +224,16 @@ public final class GeneralData extends ConfigurationProperties {
 		SMSENABLED = myGetProperty("SMSENABLED", DEFAULT_SMSENABLED);
 		TELEMETRYENABLED = myGetProperty("TELEMETRYENABLED", DEFAULT_TELEMETRYENABLED);
 		MAINMENUALWAYSONTOP = myGetProperty("MAINMENUALWAYSONTOP", DEFAULT_MAINMENUALWAYSONTOP);
+		PAGESIZE = myGetProperty("PAGESIZE", DEFAULT_PAGESIZE);
+		// a page size of zero or less isn't usable; fall back to the default
+		if (PAGESIZE <= 0) {
+			PAGESIZE = DEFAULT_PAGESIZE;
+		}
 		RECEIPTPRINTER = myGetProperty("RECEIPTPRINTER", DEFAULT_RECEIPTPRINTER);
 		VIDEOMODULEENABLED = myGetProperty("VIDEOMODULEENABLED", DEFAULT_VIDEOMODULEENABLED);
 		PATIENTVACCINEEXTENDED = myGetProperty("PATIENTVACCINEEXTENDED", DEFAULT_PATIENTVACCINEEXTENDED);
 		ENHANCEDSEARCH = myGetProperty("ENHANCEDSEARCH", DEFAULT_ENHANCEDSEARCH);
+		ENHANCEDDIAGNOSTICINOPDEDIT = myGetProperty("ENHANCEDDIAGNOSTICINOPDEDIT", DEFAULT_ENHANCEDDIAGNOSTICINOPDEDIT);
 		XMPPMODULEENABLED = myGetProperty("XMPPMODULEENABLED", DEFAULT_XMPPMODULEENABLED);
 		DICOMMODULEENABLED = myGetProperty("DICOMMODULEENABLED", DEFAULT_DICOMMODULEENABLED);
 		DICOMTHUMBNAILS = myGetProperty("DICOMTHUMBNAILS", DEFAULT_DICOMTHUMBNAILS);
@@ -226,6 +246,11 @@ public final class GeneralData extends ConfigurationProperties {
 		CREATELABORATORYAUTO = myGetProperty("CREATELABORATORYAUTO", DEFAULT_CREATELABORATORYAUTO);
 		ALLOWPRINTOPENEDBILL = myGetProperty("ALLOWPRINTOPENEDBILL", DEFAULT_ALLOWPRINTOPENEDBILL);
 		ALLOWMULTIPLEOPENEDBILL = myGetProperty("ALLOWMULTIPLEOPENEDBILL", DEFAULT_ALLOWMULTIPLEOPENEDBILL);
+		ALLOWDELETESAVEDBILLITEM = myGetProperty("ALLOWDELETESAVEDBILLITEM", DEFAULT_ALLOWDELETESAVEDBILLITEM);
+		STOCKMVTONBILLSAVE = myGetProperty("STOCKMVTONBILLSAVE", DEFAULT_STOCKMVTONBILLSAVE);
+		ENABLEREDUCTIONPLAN = myGetProperty("ENABLEREDUCTIONPLAN", DEFAULT_ENABLEREDUCTIONPLAN);
+		ALLOWBILLGUARANTOR = myGetProperty("ALLOWBILLGUARANTOR", DEFAULT_ALLOWBILLGUARANTOR);
+		DEFAULTWARDINNEWBILL = myGetProperty("DEFAULTWARDINNEWBILL", DEFAULT_DEFAULTWARDINNEWBILL);
 		PATIENTBILLGROUPED = myGetProperty("PATIENTBILLGROUPED", DEFAULT_PATIENTBILLGROUPED);
 		PATIENTBILLSTATEMENT = myGetProperty("PATIENTBILLSTATEMENT", DEFAULT_PATIENTBILLSTATEMENT);
 		DEBUG = myGetProperty("DEBUG", DEFAULT_DEBUG);
@@ -254,6 +279,7 @@ public final class GeneralData extends ConfigurationProperties {
 		PATIENTPHOTOSTORAGE = myGetProperty("PATIENTPHOTOSTORAGE", DEFAULT_PATIENTPHOTOSTORAGE);
 		SESSIONTIMEOUT = myGetProperty("SESSIONTIMEOUT", DEFAULT_SESSIONTIMEOUT);
 		PARAMSURL = myGetProperty("PARAMSURL", DEFAULT_PARAMSURL);
+		PAGESIZE = myGetProperty("PAGESIZE", DEFAULT_PAGESIZE);
 
 		ParamsData.getInstance();
 	}

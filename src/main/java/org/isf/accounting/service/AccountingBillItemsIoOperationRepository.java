@@ -40,8 +40,18 @@ public interface AccountingBillItemsIoOperationRepository extends JpaRepository<
 	@Query("select b from BillItems b group by b.itemDescription")
 	List<BillItems> findAllGroupByDescription();
 
-	@Modifying
+	// clearAutomatically: this bulk delete bypasses the persistence context, so any already-loaded
+	// BillItems for this bill (e.g. still managed from an earlier read in the same transaction) would
+	// otherwise remain as stale managed entities - if a parent Bill is then removed in the same flush,
+	// Hibernate's cascade check on that stale entity's `bill` association throws
+	// "references an unsaved transient instance" (a known bulk-delete + first-level-cache pitfall).
+	@Modifying(clearAutomatically = true, flushAutomatically = true)
 	@Query(value = "delete from BillItems b where b.bill.id = :billId")
 	void deleteWhereId(@Param("billId") Integer billId);
+
+	@Query("select count(b) > 0 from BillItems b where b.bill.billPatient.code = :patientCode "
+		+ "and b.prescriptionId = :prescriptionId and b.itemGroup = :itemGroup and b.bill.status = 'C'")
+	boolean existsBilledOnClosedBill(@Param("patientCode") int patientCode, @Param("prescriptionId") int prescriptionId,
+		@Param("itemGroup") String itemGroup);
 
 }

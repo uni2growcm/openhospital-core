@@ -36,15 +36,18 @@ import jakarta.persistence.criteria.Root;
 
 import org.isf.opd.model.Opd;
 import org.isf.ward.model.Ward;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 public class OpdIoOperationRepositoryImpl implements OpdIoOperationRepositoryCustom {
-	
+
 	@PersistenceContext
 	private EntityManager entityManager;
 
-	@SuppressWarnings("unchecked")	
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<Opd> findAllOpdWhereParams(
 			Ward ward,
@@ -58,15 +61,71 @@ public class OpdIoOperationRepositoryImpl implements OpdIoOperationRepositoryCus
 			char newPatient,
 			String user) {
 		return getOpdQuery(ward, diseaseTypeCode, diseaseCode, dateFrom, dateTo, ageFrom, ageTo, sex, newPatient, user).getResultList();
-	}	
+	}
 
-	private TypedQuery<Opd> getOpdQuery(
-			Ward ward, 
+	@Override
+	public Page<Opd> findAllOpdWhereParams(
+			Ward ward,
 			String diseaseTypeCode,
 			String diseaseCode,
 			LocalDate dateFrom,
 			LocalDate dateTo,
-			int ageFrom, 
+			int ageFrom,
+			int ageTo,
+			char sex,
+			char newPatient,
+			String user,
+			Pageable pageable) {
+		return findAllOpdWhereParams(ward, diseaseTypeCode, diseaseCode, dateFrom, dateTo, ageFrom, ageTo, sex, newPatient, user, pageable, null);
+	}
+
+	@Override
+	public Page<Opd> findAllOpdWhereParams(
+			Ward ward,
+			String diseaseTypeCode,
+			String diseaseCode,
+			LocalDate dateFrom,
+			LocalDate dateTo,
+			int ageFrom,
+			int ageTo,
+			char sex,
+			char newPatient,
+			String user,
+			Pageable pageable,
+			Long knownTotalElements) {
+		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+
+		CriteriaQuery<Opd> query = cb.createQuery(Opd.class);
+		Root<Opd> opd = query.from(Opd.class);
+		query.select(opd)
+				.where(buildOpdPredicates(cb, opd, ward, diseaseTypeCode, diseaseCode, dateFrom, dateTo, ageFrom, ageTo, sex, newPatient, user));
+
+		List<Opd> content = entityManager.createQuery(query)
+				.setFirstResult((int) pageable.getOffset())
+				.setMaxResults(pageable.getPageSize())
+				.getResultList();
+
+		long total;
+		if (knownTotalElements != null) {
+			total = knownTotalElements;
+		} else {
+			CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
+			Root<Opd> countRoot = countQuery.from(Opd.class);
+			countQuery.select(cb.count(countRoot))
+					.where(buildOpdPredicates(cb, countRoot, ward, diseaseTypeCode, diseaseCode, dateFrom, dateTo, ageFrom, ageTo, sex, newPatient, user));
+			total = entityManager.createQuery(countQuery).getSingleResult();
+		}
+
+		return new PageImpl<>(content, pageable, total);
+	}
+
+	private TypedQuery<Opd> getOpdQuery(
+			Ward ward,
+			String diseaseTypeCode,
+			String diseaseCode,
+			LocalDate dateFrom,
+			LocalDate dateTo,
+			int ageFrom,
 			int ageTo,
 			char sex,
 			char newPatient,
@@ -74,9 +133,27 @@ public class OpdIoOperationRepositoryImpl implements OpdIoOperationRepositoryCus
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		CriteriaQuery<Opd> query = cb.createQuery(Opd.class);
 		Root<Opd> opd = query.from(Opd.class);
+		query.select(opd)
+				.where(buildOpdPredicates(cb, opd, ward, diseaseTypeCode, diseaseCode, dateFrom, dateTo, ageFrom, ageTo, sex, newPatient, user));
+
+		return entityManager.createQuery(query);
+	}
+
+	private Predicate buildOpdPredicates(
+			CriteriaBuilder cb,
+			Root<Opd> opd,
+			Ward ward,
+			String diseaseTypeCode,
+			String diseaseCode,
+			LocalDate dateFrom,
+			LocalDate dateTo,
+			int ageFrom,
+			int ageTo,
+			char sex,
+			char newPatient,
+			String user) {
 		List<Predicate> predicates = new ArrayList<>();
 
-		query.select(opd);
 		if (ward != null) {
 			predicates.add(
 					cb.equal(opd.join("ward").get("code"), ward.getCode())
@@ -115,9 +192,8 @@ public class OpdIoOperationRepositoryImpl implements OpdIoOperationRepositoryCus
 		predicates.add(
 				cb.between(opd.<LocalDateTime>get("date"), dateFrom.atStartOfDay(), dateTo.plusDays(1).atStartOfDay())
 		);
-		query.where(cb.and(predicates.toArray(new Predicate[0])));
 
-		return entityManager.createQuery(query);
+		return cb.and(predicates.toArray(new Predicate[0]));
 	}
 
 }

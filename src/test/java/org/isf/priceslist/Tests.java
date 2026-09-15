@@ -455,6 +455,23 @@ class Tests extends OHCoreTestCase {
 		assertThat(price.isPrice()).isTrue();
 		price.setItem("");
 		assertThat(price.isPrice()).isFalse();
+
+		assertThat(price.isVariable()).isFalse();
+		price.setVariable(true);
+		assertThat(price.isVariable()).isTrue();
+	}
+
+	@Test
+	void testPriceVariableRoundTrip() throws Exception {
+		PriceList priceList = testPriceList.setup(true);
+		priceListIoOperationRepository.saveAndFlush(priceList);
+		Price price = testPrice.setup(priceList, false);
+		price.setVariable(true);
+		priceIoOperationRepository.saveAndFlush(price);
+
+		Price foundPrice = priceIoOperationRepository.findById(price.getId()).orElse(null);
+		assertThat(foundPrice).isNotNull();
+		assertThat(foundPrice.isVariable()).isTrue();
 	}
 
 	@Test

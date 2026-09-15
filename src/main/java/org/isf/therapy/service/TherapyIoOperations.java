@@ -67,6 +67,17 @@ public class TherapyIoOperations {
 	}
 
 	/**
+	 * Return the {@link TherapyRow} with the specified id, or {@code null} if not found.
+	 *
+	 * @param therapyID - the therapy id
+	 * @return the {@link TherapyRow}
+	 * @throws OHServiceException
+	 */
+	public TherapyRow getTherapyRow(int therapyID) throws OHServiceException {
+		return repository.findById(therapyID).orElse(null);
+	}
+
+	/**
 	 * Delete all {@link TherapyRow}s (therapies) for specified {@link Patient}.
 	 *
 	 * @param patient - the {@link Patient}

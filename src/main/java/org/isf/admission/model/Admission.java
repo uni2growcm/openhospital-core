@@ -131,6 +131,12 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 	@Column(name = "ADM_NOTE")
 	private String note;                    // free notes (null)
 
+	@Column(name = "ADM_BED")
+	private String bed;                    // bed number (null)
+
+	@Column(name = "ADM_ROOM")
+	private String room;                    // room number (null)
+
 	@Column(name = "ADM_TRANS")
 	private Float transUnit;                // transfusional unit
 
@@ -423,6 +429,22 @@ public class Admission extends Auditable<String> implements Comparable<Admission
 
 	public void setNote(String note) {
 		this.note = note;
+	}
+
+	public String getBed() {
+		return bed;
+	}
+
+	public void setBed(String bed) {
+		this.bed = bed;
+	}
+
+	public String getRoom() {
+		return room;
+	}
+
+	public void setRoom(String room) {
+		this.room = room;
 	}
 
 	public Patient getPatient() {

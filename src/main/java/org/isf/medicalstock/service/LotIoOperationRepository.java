@@ -59,4 +59,14 @@ public interface LotIoOperationRepository extends JpaRepository<Lot, String> {
 	@Query("SELECT w.id.lot.code, COALESCE(SUM(w.in_quantity - w.out_quantity), 0.0) " +
 					"FROM MedicalWard w WHERE w.id.lot.code IN :lotCodes GROUP BY w.id.lot.code")
 	List<Object[]> getWardsTotalQuantities(@Param("lotCodes") List<String> lotCodes);
+
+	/**
+	 * For every medical, returns the cost of the lot with the most recent preparation date
+	 * (i.e. the price of the last stock entry).
+	 *
+	 * @return a list of {@code [medicalCode, cost]} pairs, one per medical.
+	 */
+	@Query("select l.medical.code, l.cost from Lot l where l.preparationDate = " +
+					"(select max(l2.preparationDate) from Lot l2 where l2.medical.code = l.medical.code)")
+	List<Object[]> findLastCostByMedical();
 }

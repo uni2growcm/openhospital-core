@@ -26,6 +26,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assumptions.assumeThat;
 
 import java.lang.reflect.Method;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
@@ -38,6 +39,8 @@ import org.isf.exatype.TestExamType;
 import org.isf.exatype.model.ExamType;
 import org.isf.exatype.service.ExamTypeIoOperationRepository;
 import org.isf.generaldata.GeneralData;
+import org.isf.accounting.model.Bill;
+import org.isf.accounting.service.AccountingBillIoOperationRepository;
 import org.isf.lab.manager.LabManager;
 import org.isf.lab.manager.LabRowManager;
 import org.isf.lab.model.Laboratory;
@@ -57,6 +60,7 @@ import org.isf.utils.pagination.PagedResponse;
 import org.isf.utils.time.TimeTools;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -88,6 +92,8 @@ class Tests extends OHCoreTestCase {
 	ExamTypeIoOperationRepository examTypeIoOperationRepository;
 	@Autowired
 	PatientIoOperationRepository patientIoOperationRepository;
+	@Autowired
+	AccountingBillIoOperationRepository billIoOperationRepository;
 	@Autowired
 	private ApplicationEventPublisher applicationEventPublisher;
 
@@ -1739,6 +1745,54 @@ class Tests extends OHCoreTestCase {
 		assertThat(laboratoryForPrint.getExam()).isEqualTo("examString");
 		laboratoryForPrint.setResult("resultString");
 		assertThat(laboratoryForPrint.getResult()).isEqualTo("resultString");
+	}
+
+	@Test
+	void mgrGetOutstandingLaboratoryExcludesAlreadyBilled() throws Exception {
+		ExamType examType = testExamType.setup(false);
+		Exam exam = testExam.setup(examType, 1, false);
+		Patient patient = testPatient.setup(false);
+		examTypeIoOperationRepository.saveAndFlush(examType);
+		examIoOperationRepository.saveAndFlush(exam);
+		patientIoOperationRepository.saveAndFlush(patient);
+
+		Bill bill = new Bill();
+		bill.setDate(LocalDateTime.now());
+		bill.setUpdate(LocalDateTime.now());
+		bill.setIsPatient(true);
+		bill.setBillPatient(patient);
+		bill.setUser("TestUser");
+		bill = billIoOperationRepository.saveAndFlush(bill);
+
+		Laboratory outstanding = testLaboratory.setup(exam, patient, false);
+		labIoOperationRepository.saveAndFlush(outstanding);
+
+		Laboratory billed = testLaboratory.setup(exam, patient, false);
+		billed.setBill(bill);
+		labIoOperationRepository.saveAndFlush(billed);
+
+		List<Laboratory> result = labManager.getOutstandingLaboratory(patient);
+
+		assertThat(result).extracting(Laboratory::getCode).containsExactly(outstanding.getCode());
+	}
+
+	@Test
+	void mgrUpdateBillIdTagsAndUntagsLaboratory() throws Exception {
+		ExamType examType = testExamType.setup(false);
+		Exam exam = testExam.setup(examType, 1, false);
+		Patient patient = testPatient.setup(false);
+		examTypeIoOperationRepository.saveAndFlush(examType);
+		examIoOperationRepository.saveAndFlush(exam);
+		patientIoOperationRepository.saveAndFlush(patient);
+
+		Laboratory laboratory = testLaboratory.setup(exam, patient, false);
+		labIoOperationRepository.saveAndFlush(laboratory);
+
+		labManager.updateBillId(laboratory.getCode(), 42);
+		assertThat(labIoOperationRepository.findById(laboratory.getCode()).orElseThrow().getBill().getId()).isEqualTo(42);
+
+		labManager.updateBillId(laboratory.getCode(), null);
+		assertThat(labIoOperationRepository.findById(laboratory.getCode()).orElseThrow().getBill()).isNull();
 	}
 
 	private Integer setupTestLaboratory(boolean usingSet) throws OHException {

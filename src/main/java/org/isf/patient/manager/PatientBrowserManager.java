@@ -31,6 +31,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.isf.accounting.manager.BillBrowserManager;
 import org.isf.accounting.model.Bill;
 import org.isf.admission.manager.AdmissionBrowserManager;
+import org.isf.generaldata.GeneralData;
 import org.isf.generaldata.MessageBundle;
 import org.isf.patient.model.Patient;
 import org.isf.patient.model.PatientProfilePhoto;
@@ -96,6 +97,14 @@ public class PatientBrowserManager {
 	
 	public PagedResponse<Patient> getPatientsPageable(int page, int size) throws OHServiceException {
 		return ioOperations.getPatientsPageable(PageRequest.of(page, size));
+	}
+
+	/**
+	 * Same as {@link #getPatientsPageable(int, int)}, but when {@code knownTotalElements} is non-null the count
+	 * query is skipped and the supplied value is used as the page's total element count.
+	 */
+	public PagedResponse<Patient> getPatientsPageable(int page, int size, Long knownTotalElements) throws OHServiceException {
+		return ioOperations.getPatientsPageable(PageRequest.of(page, size), knownTotalElements);
 	}
 
 	/**
@@ -292,6 +301,29 @@ public class PatientBrowserManager {
 	 */
 	public List<Patient> getPatientsByOneOfFieldsLike(String keyword) throws OHServiceException {
 		return ioOperations.getPatientsByOneOfFieldsLike(keyword);
+	}
+
+	/**
+	 * Method that returns a page of {@link Patient}s having the passed String in one of the
+	 * fields searched by {@link #getPatientsByOneOfFieldsLike(String)}, sized per {@link GeneralData#PAGESIZE}.
+	 *
+	 * @param keyword
+	 *            - String to search, {@code null} for full list
+	 * @param page
+	 *            - the requested page number, zero-based
+	 * @return a {@link PagedResponse} of {@link Patient}s (could be empty)
+	 * @throws OHServiceException
+	 */
+	public PagedResponse<Patient> getPatientsByOneOfFieldsLike(String keyword, int page) throws OHServiceException {
+		return ioOperations.getPatientsByOneOfFieldsLike(keyword, PageRequest.of(page, GeneralData.PAGESIZE));
+	}
+
+	/**
+	 * Same as {@link #getPatientsByOneOfFieldsLike(String, int)}, but when {@code knownTotalElements} is non-null
+	 * the count query is skipped and the supplied value is used as the page's total element count.
+	 */
+	public PagedResponse<Patient> getPatientsByOneOfFieldsLike(String keyword, int page, Long knownTotalElements) throws OHServiceException {
+		return ioOperations.getPatientsByOneOfFieldsLike(keyword, PageRequest.of(page, GeneralData.PAGESIZE), knownTotalElements);
 	}
 
 	public PatientProfilePhoto retrievePatientProfilePhoto(Patient patient) throws OHServiceException {

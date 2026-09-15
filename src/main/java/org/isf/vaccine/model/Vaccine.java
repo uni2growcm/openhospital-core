@@ -59,6 +59,9 @@ public class Vaccine extends Auditable<String> {
 	@JoinColumn(name="VAC_VACT_ID_A")
     private VaccineType vaccineType;
 
+	@Column(name="VAC_MIN_STOCK_QTY")
+	private Integer minQuantity;
+
 	@Version
 	@Column(name="VAC_LOCK")
     private Integer lock;
@@ -101,7 +104,15 @@ public class Vaccine extends Auditable<String> {
     public void setVaccineType(VaccineType aVaccineType) {
         this.vaccineType = aVaccineType;
     }
-    
+
+    public Integer getMinQuantity() {
+        return this.minQuantity;
+    }
+
+    public void setMinQuantity(Integer aMinQuantity) {
+        this.minQuantity = aMinQuantity;
+    }
+
     public Integer getLock() {
         return this.lock;
     }
