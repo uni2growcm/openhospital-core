@@ -80,10 +80,13 @@ import org.isf.ward.model.Ward;
 import org.isf.ward.service.WardIoOperationRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 class Tests extends OHCoreTestCase {
@@ -269,6 +272,221 @@ class Tests extends OHCoreTestCase {
 
 		// then:
 		assertThat(patients.get(0).getAdmission().getId()).isEqualTo(foundAdmission.getId());
+	}
+
+	@Test
+	void testMgrGetAdmittedPatientsByOneOfFieldsLikePageable() throws Exception {
+		int originalPageSize = GeneralData.PAGESIZE;
+		try {
+			GeneralData.PAGESIZE = 3;
+
+			// Shared supporting entities (fixed test codes, so created once and reused across admissions
+			// to avoid duplicate-key collisions - unlike Patient, these test fixtures don't auto-generate codes).
+			Ward ward = testWard.setup(false, false);
+			AdmissionType admissionType = testAdmissionType.setup(false);
+			DiseaseType diseaseType = testDiseaseType.setup(false);
+			Disease diseaseIn = testDisease.setup(diseaseType, true, false, false, false);
+			Disease diseaseOut1 = testDisease.setup(diseaseType, false, true, false, false);
+			diseaseOut1.setCode("888");
+			Disease diseaseOut2 = testDisease.setup(diseaseType, false, true, false, false);
+			diseaseOut2.setCode("777");
+			Disease diseaseOut3 = testDisease.setup(diseaseType, false, true, false, false);
+			diseaseOut3.setCode("666");
+			OperationType operationType = testOperationType.setup(false);
+			Operation operation = testOperation.setup(operationType, false);
+			DischargeType dischargeType = testDischargeType.setup(false);
+			PregnantTreatmentType pregTreatmentType = testPregnantTreatmentType.setup(false);
+			DeliveryType deliveryType = testDeliveryType.setup(false);
+			DeliveryResultType deliveryResult = testDeliveryResultType.setup(false);
+
+			wardIoOperationRepository.saveAndFlush(ward);
+			admissionTypeIoOperationRepository.saveAndFlush(admissionType);
+			diseaseTypeIoOperationRepository.saveAndFlush(diseaseType);
+			diseaseIoOperationRepository.saveAndFlush(diseaseIn);
+			diseaseIoOperationRepository.saveAndFlush(diseaseOut1);
+			diseaseIoOperationRepository.saveAndFlush(diseaseOut2);
+			diseaseIoOperationRepository.saveAndFlush(diseaseOut3);
+			operationTypeIoOperationRepository.saveAndFlush(operationType);
+			operationIoOperationRepository.saveAndFlush(operation);
+			dischargeTypeIoOperationRepository.saveAndFlush(dischargeType);
+			pregnantTreatmentTypeIoOperationRepository.saveAndFlush(pregTreatmentType);
+			deliveryTypeIoOperationRepository.saveAndFlush(deliveryType);
+			deliveryResultIoOperationRepository.saveAndFlush(deliveryResult);
+
+			for (int idx = 0; idx < 5; idx++) {
+				Patient patient = testPatient.setup(false);
+				patientIoOperationRepository.saveAndFlush(patient);
+				Admission admission = testAdmission.setup(ward, patient, admissionType, diseaseIn, diseaseOut1,
+					diseaseOut2, diseaseOut3, operation, dischargeType, pregTreatmentType,
+					deliveryType, deliveryResult, false);
+				admissionIoOperation.newAdmission(admission);
+			}
+
+			// First page, sized per GeneralData.PAGESIZE
+			PagedResponse<AdmittedPatient> patients = admissionBrowserManager.getAdmittedPatients(null, null, "TestFirstName", null, null, null, null, null, 0);
+			assertThat(patients.getData()).hasSize(3);
+
+			// Second page holds the remainder
+			patients = admissionBrowserManager.getAdmittedPatients(null, null, "TestFirstName", null, null, null, null, null, 1);
+			assertThat(patients.getData()).hasSize(2);
+		} finally {
+			GeneralData.PAGESIZE = originalPageSize;
+		}
+	}
+
+	@Test
+	void testMgrGetAdmittedPatientsByOneOfFieldsLikePageableWithClassWardAgeSexFilters() throws Exception {
+		int originalPageSize = GeneralData.PAGESIZE;
+		GeneralData.PAGESIZE = 50;
+		try {
+		// Shared supporting entities (fixed test codes, so created once and reused).
+		Ward wardOne = testWard.setup(false, false);
+		Ward wardTwo = testWard.setup(true, false);
+		wardTwo.setCode("Z2");
+		AdmissionType admissionType = testAdmissionType.setup(false);
+		DiseaseType diseaseType = testDiseaseType.setup(false);
+		Disease diseaseIn = testDisease.setup(diseaseType, true, false, false, false);
+		Disease diseaseOut1 = testDisease.setup(diseaseType, false, true, false, false);
+		diseaseOut1.setCode("888");
+		Disease diseaseOut2 = testDisease.setup(diseaseType, false, true, false, false);
+		diseaseOut2.setCode("777");
+		Disease diseaseOut3 = testDisease.setup(diseaseType, false, true, false, false);
+		diseaseOut3.setCode("666");
+		OperationType operationType = testOperationType.setup(false);
+		Operation operation = testOperation.setup(operationType, false);
+		DischargeType dischargeType = testDischargeType.setup(false);
+		PregnantTreatmentType pregTreatmentType = testPregnantTreatmentType.setup(false);
+		DeliveryType deliveryType = testDeliveryType.setup(false);
+		DeliveryResultType deliveryResult = testDeliveryResultType.setup(false);
+
+		wardIoOperationRepository.saveAndFlush(wardOne);
+		wardIoOperationRepository.saveAndFlush(wardTwo);
+		admissionTypeIoOperationRepository.saveAndFlush(admissionType);
+		diseaseTypeIoOperationRepository.saveAndFlush(diseaseType);
+		diseaseIoOperationRepository.saveAndFlush(diseaseIn);
+		diseaseIoOperationRepository.saveAndFlush(diseaseOut1);
+		diseaseIoOperationRepository.saveAndFlush(diseaseOut2);
+		diseaseIoOperationRepository.saveAndFlush(diseaseOut3);
+		operationTypeIoOperationRepository.saveAndFlush(operationType);
+		operationIoOperationRepository.saveAndFlush(operation);
+		dischargeTypeIoOperationRepository.saveAndFlush(dischargeType);
+		pregnantTreatmentTypeIoOperationRepository.saveAndFlush(pregTreatmentType);
+		deliveryTypeIoOperationRepository.saveAndFlush(deliveryType);
+		deliveryResultIoOperationRepository.saveAndFlush(deliveryResult);
+
+		// Patient admitted in wardOne, female, default age (31).
+		Patient femaleInWardOne = testPatient.setup(false);
+		patientIoOperationRepository.saveAndFlush(femaleInWardOne);
+		Admission admissionOne = testAdmission.setup(wardOne, femaleInWardOne, admissionType, diseaseIn, diseaseOut1, diseaseOut2, diseaseOut3, operation,
+			dischargeType, pregTreatmentType, deliveryType, deliveryResult, false);
+		admissionIoOperation.newAdmission(admissionOne);
+
+		// Patient admitted in wardTwo, male, older.
+		Patient maleInWardTwo = testPatient.setup(false);
+		maleInWardTwo.setSex('M');
+		maleInWardTwo.setAge(60);
+		patientIoOperationRepository.saveAndFlush(maleInWardTwo);
+		Admission admissionTwo = testAdmission.setup(wardTwo, maleInWardTwo, admissionType, diseaseIn, diseaseOut1, diseaseOut2, diseaseOut3, operation,
+			dischargeType, pregTreatmentType, deliveryType, deliveryResult, false);
+		admissionIoOperation.newAdmission(admissionTwo);
+
+		// Patient not currently admitted at all.
+		Patient notAdmitted = testPatient.setup(false);
+		patientIoOperationRepository.saveAndFlush(notAdmitted);
+
+		// Class filter: admitted only excludes the not-admitted patient.
+		PagedResponse<AdmittedPatient> admittedOnly = admissionBrowserManager.getAdmittedPatients(null, null, "TestFirstName", true, null, null, null, null,
+			0);
+		assertThat(admittedOnly.getData()).hasSize(2);
+
+		// Class filter: not-admitted only returns just that patient.
+		PagedResponse<AdmittedPatient> notAdmittedOnly = admissionBrowserManager.getAdmittedPatients(null, null, "TestFirstName", false, null, null, null,
+			null, 0);
+		assertThat(notAdmittedOnly.getData()).hasSize(1);
+		assertThat(notAdmittedOnly.getData().get(0).getPatient().getCode()).isEqualTo(notAdmitted.getCode());
+
+		// Ward filter (class=all): the patient admitted in wardTwo, plus the not-admitted patient
+		// (ward filtering never excludes a not-currently-admitted patient, matching the in-memory GUI filter).
+		PagedResponse<AdmittedPatient> wardTwoOnly = admissionBrowserManager.getAdmittedPatients(null, null, "TestFirstName", null,
+			List.of("Z2"), null, null, null, 0);
+		assertThat(wardTwoOnly.getData()).extracting(ap -> ap.getPatient().getCode())
+			.containsExactlyInAnyOrder(maleInWardTwo.getCode(), notAdmitted.getCode());
+
+		// Ward filter combined with admitted=true: only the patient admitted in wardTwo.
+		PagedResponse<AdmittedPatient> admittedInWardTwoOnly = admissionBrowserManager.getAdmittedPatients(null, null, "TestFirstName", true,
+			List.of("Z2"), null, null, null, 0);
+		assertThat(admittedInWardTwoOnly.getData()).hasSize(1);
+		assertThat(admittedInWardTwoOnly.getData().get(0).getPatient().getCode()).isEqualTo(maleInWardTwo.getCode());
+
+		// Age + sex filter: only the older male.
+		PagedResponse<AdmittedPatient> olderMales = admissionBrowserManager.getAdmittedPatients(null, null, "TestFirstName", true, null, 50, null, 'M', 0);
+		assertThat(olderMales.getData()).hasSize(1);
+		assertThat(olderMales.getData().get(0).getPatient().getCode()).isEqualTo(maleInWardTwo.getCode());
+		} finally {
+			GeneralData.PAGESIZE = originalPageSize;
+		}
+	}
+
+	@Test
+	void testMgrGetAdmittedPatientsByOneOfFieldsLikePageableSkipsCountWhenTotalKnown() throws Exception {
+		int originalPageSize = GeneralData.PAGESIZE;
+		try {
+			GeneralData.PAGESIZE = 3;
+
+			Ward ward = testWard.setup(false, false);
+			AdmissionType admissionType = testAdmissionType.setup(false);
+			DiseaseType diseaseType = testDiseaseType.setup(false);
+			Disease diseaseIn = testDisease.setup(diseaseType, true, false, false, false);
+			Disease diseaseOut1 = testDisease.setup(diseaseType, false, true, false, false);
+			diseaseOut1.setCode("888");
+			Disease diseaseOut2 = testDisease.setup(diseaseType, false, true, false, false);
+			diseaseOut2.setCode("777");
+			Disease diseaseOut3 = testDisease.setup(diseaseType, false, true, false, false);
+			diseaseOut3.setCode("666");
+			OperationType operationType = testOperationType.setup(false);
+			Operation operation = testOperation.setup(operationType, false);
+			DischargeType dischargeType = testDischargeType.setup(false);
+			PregnantTreatmentType pregTreatmentType = testPregnantTreatmentType.setup(false);
+			DeliveryType deliveryType = testDeliveryType.setup(false);
+			DeliveryResultType deliveryResult = testDeliveryResultType.setup(false);
+
+			wardIoOperationRepository.saveAndFlush(ward);
+			admissionTypeIoOperationRepository.saveAndFlush(admissionType);
+			diseaseTypeIoOperationRepository.saveAndFlush(diseaseType);
+			diseaseIoOperationRepository.saveAndFlush(diseaseIn);
+			diseaseIoOperationRepository.saveAndFlush(diseaseOut1);
+			diseaseIoOperationRepository.saveAndFlush(diseaseOut2);
+			diseaseIoOperationRepository.saveAndFlush(diseaseOut3);
+			operationTypeIoOperationRepository.saveAndFlush(operationType);
+			operationIoOperationRepository.saveAndFlush(operation);
+			dischargeTypeIoOperationRepository.saveAndFlush(dischargeType);
+			pregnantTreatmentTypeIoOperationRepository.saveAndFlush(pregTreatmentType);
+			deliveryTypeIoOperationRepository.saveAndFlush(deliveryType);
+			deliveryResultIoOperationRepository.saveAndFlush(deliveryResult);
+
+			for (int idx = 0; idx < 5; idx++) {
+				Patient patient = testPatient.setup(false);
+				patientIoOperationRepository.saveAndFlush(patient);
+				Admission admission = testAdmission.setup(ward, patient, admissionType, diseaseIn, diseaseOut1,
+					diseaseOut2, diseaseOut3, operation, dischargeType, pregTreatmentType,
+					deliveryType, deliveryResult, false);
+				admissionIoOperation.newAdmission(admission);
+			}
+
+			// Omitting the known total still returns the correct (freshly counted) total.
+			PagedResponse<AdmittedPatient> freshCount = admissionBrowserManager.getAdmittedPatients(null, null, "TestFirstName", null, null, null, null,
+				null, 0, null);
+			assertThat(freshCount.getData()).hasSize(3);
+			assertThat(freshCount.getPageInfo().getTotalNbOfElements()).isEqualTo(5);
+
+			// Supplying a deliberately wrong known total is trusted as-is, proving the count query was skipped.
+			PagedResponse<AdmittedPatient> knownTotal = admissionBrowserManager.getAdmittedPatients(null, null, "TestFirstName", null, null, null, null,
+				null, 0, 999L);
+			assertThat(knownTotal.getData()).hasSize(3);
+			assertThat(knownTotal.getPageInfo().getTotalNbOfElements()).isEqualTo(999);
+		} finally {
+			GeneralData.PAGESIZE = originalPageSize;
+		}
 	}
 
 	@ParameterizedTest(name = "Test with MATERNITYRESTARTINJUNE={0}")
@@ -1594,6 +1812,20 @@ class Tests extends OHCoreTestCase {
 		@Override
 		public List<AdmittedPatient> findPatientAdmissionsBySearchAndDateRanges(String searchTerms, LocalDateTime[] admissionRange,
 			LocalDateTime[] dischargeRange) throws OHServiceException {
+			return null;
+		}
+
+		@Override
+		public Page<AdmittedPatient> findPatientAdmissionsBySearchAndDateRanges(String searchTerms, LocalDateTime[] admissionRange,
+			LocalDateTime[] dischargeRange, Boolean admitted, List<String> wardCodes, Integer ageFrom, Integer ageTo, Character sex, Pageable pageable)
+			throws OHServiceException {
+			return null;
+		}
+
+		@Override
+		public Page<AdmittedPatient> findPatientAdmissionsBySearchAndDateRanges(String searchTerms, LocalDateTime[] admissionRange,
+			LocalDateTime[] dischargeRange, Boolean admitted, List<String> wardCodes, Integer ageFrom, Integer ageTo, Character sex, Pageable pageable,
+			Long knownTotalElements) throws OHServiceException {
 			return null;
 		}
 	}

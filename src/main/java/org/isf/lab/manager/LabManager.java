@@ -155,21 +155,54 @@ public class LabManager {
 	 * @throws OHServiceException
 	 */
 	public List<Laboratory> getOutstandingLaboratory(Patient aPatient) throws OHServiceException {
-		return getLaboratory(aPatient).stream().filter(lab -> lab.getBillId() == null).toList();
+		return getLaboratory(aPatient).stream().filter(lab -> lab.getBill() == null).toList();
 	}
 
 	/**
 	 * Tags the specified {@link Laboratory} exam with the bill that billed it, or clears the tag
-	 * when {@code billId} is {@code null}.
+	 * when {@code billId} is {@code 0}.
 	 *
 	 * @param code the {@link Laboratory} code
-	 * @param billId the bill id, or {@code null} to clear it
+	 * @param billId the bill id, or {@code 0} to clear it
 	 * @throws OHServiceException
 	 */
 	@Transactional(rollbackFor = OHServiceException.class)
 	@TranslateOHServiceException
 	public void updateBillId(int code, Integer billId) throws OHServiceException {
 		ioOperations.updateBillId(code, billId);
+	}
+
+	/**
+	 * Return a list of exams ({@link Laboratory}s) related to a {@link Patient} that are not yet linked to a bill.
+	 *
+	 * @param patient the {@link Patient}.
+	 * @return the list of {@link Laboratory}s without a bill. It could be {@code empty}.
+	 * @throws OHServiceException
+	 */
+	public List<Laboratory> getLabWithoutBill(Patient patient) throws OHServiceException {
+		return ioOperations.getLabWithoutBill(patient);
+	}
+
+	/**
+	 * Check if the given patient has at least one lab exam not yet linked to a bill.
+	 *
+	 * @param patientCode the patient code
+	 * @return {@code true} if there are unbilled labs, {@code false} otherwise.
+	 * @throws OHServiceException
+	 */
+	public boolean hasLabWithoutBill(Integer patientCode) throws OHServiceException {
+		return ioOperations.hasLabWithoutBill(patientCode);
+	}
+
+	/**
+	 * Link (or unlink) a {@link Laboratory} to a bill.
+	 *
+	 * @param labId the {@link Laboratory} code
+	 * @param billId the bill id, or {@code 0} to unlink
+	 * @throws OHServiceException
+	 */
+	public void updateBillIdLaboratory(int labId, int billId) throws OHServiceException {
+		ioOperations.updateBillIdLaboratory(labId, billId);
 	}
 
 	/**
@@ -197,6 +230,54 @@ public class LabManager {
 	 */
 	public List<Laboratory> getLaboratory(String exam, LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient) throws OHServiceException {
 		return ioOperations.getLaboratory(exam, dateFrom, dateTo, patient);
+	}
+
+	/**
+	 * Return a list of exams ({@link Laboratory}s) between specified dates matching the passed optional filters.
+	 *
+	 * @param exam the exam description; {@code null} for all exams
+	 * @param dateFrom the lower date for the range
+	 * @param dateTo the highest date for the range
+	 * @param resultFilter the result filter: {@code -1} for all, {@code 0} for empty results, {@code 1} for non-empty results
+	 * @param patient the patient; {@code null} for all patients
+	 * @param prescriber the prescriber name; {@code null} for all prescribers
+	 * @param paidCode the paid status code: {@code null} for all, {@code "0"} for not charged,
+	 *            {@code "C"} for paid, {@code "O"} for not paid
+	 * @return the list of {@link Laboratory}s. It could be {@code empty}.
+	 * @throws OHServiceException
+	 */
+	public List<Laboratory> getLaboratory(String exam, LocalDateTime dateFrom, LocalDateTime dateTo, int resultFilter,
+					Patient patient, String prescriber, String paidCode) throws OHServiceException {
+		return ioOperations.getLaboratory(exam, dateFrom, dateTo, resultFilter, patient, prescriber, paidCode);
+	}
+
+	/**
+	 * Return the count of exams ({@link Laboratory}s) between specified dates matching the passed optional filters.
+	 *
+	 * @param exam the exam description; {@code null} for all exams
+	 * @param dateFrom the lower date for the range
+	 * @param dateTo the highest date for the range
+	 * @param resultFilter the result filter: {@code -1} for all, {@code 0} for empty results, {@code 1} for non-empty results
+	 * @param patient the patient; {@code null} for all patients
+	 * @param prescriber the prescriber name; {@code null} for all prescribers
+	 * @param paidCode the paid status code: {@code null} for all, {@code "0"} for not charged,
+	 *            {@code "C"} for paid, {@code "O"} for not paid
+	 * @return the count of {@link Laboratory}s. It could be {@code 0}.
+	 * @throws OHServiceException
+	 */
+	public long getLaboratoryCount(String exam, LocalDateTime dateFrom, LocalDateTime dateTo, int resultFilter,
+					Patient patient, String prescriber, String paidCode) throws OHServiceException {
+		return ioOperations.getLaboratoryCount(exam, dateFrom, dateTo, resultFilter, patient, prescriber, paidCode);
+	}
+
+	/**
+	 * Return the list of distinct prescribers already registered in the {@link Laboratory}s.
+	 *
+	 * @return the list of distinct prescriber names. It could be {@code empty}.
+	 * @throws OHServiceException
+	 */
+	public List<String> getPrescriber() throws OHServiceException {
+		return ioOperations.getPrescriber();
 	}
 
 	/**

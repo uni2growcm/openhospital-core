@@ -1191,7 +1191,7 @@ class Tests extends OHCoreTestCase {
 
 		Bill savedBill = billBrowserManager.newBill(bill, billItems, new ArrayList<>());
 
-		assertThat(labIoOperationRepository.findById(laboratory.getCode()).orElseThrow().getBillId()).isEqualTo(savedBill.getId());
+		assertThat(labIoOperationRepository.findById(laboratory.getCode()).orElseThrow().getBill().getId()).isEqualTo(savedBill.getId());
 		assertThat(operationRowIoOperationRepository.findById(operationRow.getId()).getBill().getId()).isEqualTo(savedBill.getId());
 	}
 
@@ -1349,13 +1349,13 @@ class Tests extends OHCoreTestCase {
 
 		Bill savedBill = billBrowserManager.newBill(bill, billItems, new ArrayList<>());
 		assertThat(therapyIoOperationRepository.findById(therapyRow.getTherapyID()).orElseThrow().getQtyBougth()).isEqualTo(6.0);
-		assertThat(labIoOperationRepository.findById(laboratory.getCode()).orElseThrow().getBillId()).isEqualTo(savedBill.getId());
+		assertThat(labIoOperationRepository.findById(laboratory.getCode()).orElseThrow().getBill().getId()).isEqualTo(savedBill.getId());
 		assertThat(operationRowIoOperationRepository.findById(operationRow.getId()).getBill()).isNotNull();
 
 		billBrowserManager.deleteBill(savedBill);
 
 		assertThat(therapyIoOperationRepository.findById(therapyRow.getTherapyID()).orElseThrow().getQtyBougth()).isEqualTo(0.0);
-		assertThat(labIoOperationRepository.findById(laboratory.getCode()).orElseThrow().getBillId()).isNull();
+		assertThat(labIoOperationRepository.findById(laboratory.getCode()).orElseThrow().getBill()).isNull();
 		assertThat(operationRowIoOperationRepository.findById(operationRow.getId()).getBill()).isNull();
 	}
 

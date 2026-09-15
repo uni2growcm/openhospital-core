@@ -42,6 +42,8 @@ import org.isf.utils.time.TimeTools;
 import org.isf.vaccine.TestVaccine;
 import org.isf.vaccine.model.Vaccine;
 import org.isf.vaccine.service.VaccineIoOperationRepository;
+import org.isf.vaccinestock.manager.VaccineStockManager;
+import org.isf.vaccinestock.model.VaccineLot;
 import org.isf.vactype.TestVaccineType;
 import org.isf.vactype.model.VaccineType;
 import org.isf.vactype.service.VaccineTypeIoOperationRepository;
@@ -73,6 +75,8 @@ class Tests extends OHCoreTestCase {
 	PatVacIoOperationRepository patVacIoOperationRepository;
 	@Autowired
 	ApplicationEventPublisher applicationEventPublisher;
+	@Autowired
+	VaccineStockManager vaccineStockManager;
 
 	@BeforeAll
 	static void setUpClass() {
@@ -341,6 +345,9 @@ class Tests extends OHCoreTestCase {
 		patientIoOperationRepository.saveAndFlush(patient);
 		vaccineTypeIoOperationRepository.saveAndFlush(vaccineType);
 		vaccineIoOperationRepository.saveAndFlush(vaccine);
+		// A patient cannot be vaccinated with a product that isn't in stock - charge one dose first.
+		LocalDateTime now = TimeTools.getNow();
+		vaccineStockManager.newCharge(vaccine, new VaccineLot(vaccine, "LOT1", now, now.plusMonths(6)), 1, now, null);
 		PatientVaccine patientVaccine = testPatientVaccine.setup(patient, vaccine, true);
 		PatientVaccine result = patVacManager.newPatientVaccine(patientVaccine);
 		assertThat(result).isNotNull();

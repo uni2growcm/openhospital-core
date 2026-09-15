@@ -106,8 +106,7 @@ public class BillItems extends Auditable<String> {
 	 */
 	@Transient
 	private String itemId;
-	
-	
+
 	public BillItems() {
 		super();
 	}
@@ -231,7 +230,7 @@ public class BillItems extends Auditable<String> {
 	public void setItemId(String itemId) {
 		this.itemId = itemId;
 	}
-	
+
 	@Override
 	public int hashCode() {
 	    if (this.hashCode == 0) {

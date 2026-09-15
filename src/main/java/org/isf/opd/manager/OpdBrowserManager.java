@@ -295,13 +295,23 @@ public class OpdBrowserManager {
 	 * @param ageTo
 	 * @param sex
 	 * @param newPatient
+	 * @param user
 	 * @param page
-	 * @param size
 	 * @return the list of {@link Opd}s associated to specified patient ID. the whole list of {@link Opd}s if {@code 0} is passed.
 	 * @throws OHServiceException
 	 */
 	public PagedResponse<Opd> getOpdPageable(Ward ward, String diseaseTypeCode, String diseaseCode, LocalDate dateFrom, LocalDate dateTo, int ageFrom,
-		int ageTo, char sex, char newPatient, int page, int size) throws OHServiceException {
-		return ioOperations.getOpdListPageable(ward, diseaseTypeCode, diseaseCode, dateFrom, dateTo, ageFrom, ageTo, sex, newPatient, null, page, size);
+		int ageTo, char sex, char newPatient, String user, int page) throws OHServiceException {
+		return getOpdPageable(ward, diseaseTypeCode, diseaseCode, dateFrom, dateTo, ageFrom, ageTo, sex, newPatient, user, page, null);
+	}
+
+	/**
+	 * Same as the overload above, but when {@code knownTotalElements} is non-null the count query is skipped and
+	 * the supplied value is used as the page's total element count.
+	 */
+	public PagedResponse<Opd> getOpdPageable(Ward ward, String diseaseTypeCode, String diseaseCode, LocalDate dateFrom, LocalDate dateTo, int ageFrom,
+		int ageTo, char sex, char newPatient, String user, int page, Long knownTotalElements) throws OHServiceException {
+		return ioOperations.getOpdListPageable(ward, diseaseTypeCode, diseaseCode, dateFrom, dateTo, ageFrom, ageTo, sex, newPatient, user, page,
+			GeneralData.PAGESIZE, knownTotalElements);
 	}
 }
