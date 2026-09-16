@@ -405,4 +405,61 @@ public class StatsManager {
 		return (int) count;
 	}
 
+	/**
+	 * Retrieves a paginated list of pregnant patients matching the applied filters,
+	 * following the OH-538 pregnancy module schema.
+	 *
+	 * @param ageFrom                minimum patient age, null for no lower bound
+	 * @param ageTo                  maximum patient age, null for no upper bound
+	 * @param periodFrom             visit start date, null for no start
+	 * @param periodTo               visit end date, null for no end
+	 * @param visitType              visit type (PregnancyVisit.PRENATAL / POSTNATAL), null for no filter
+	 * @param visitCountMin          minimum number of visits, null for no lower bound
+	 * @param visitCountMax          maximum number of visits, null for no upper bound
+	 * @param examParameterCode      CPN exam parameter code, null for no filter
+	 * @param examParameterValue     CPN exam parameter outcome value, null for no filter
+	 * @param examResult             laboratory exam result, null for no filter
+	 * @param examPeriodFrom         laboratory exam start date, null for no start
+	 * @param examPeriodTo           laboratory exam end date, null for no end
+	 * @param vaccine                vaccine description, null for no filter
+	 * @param vaccinePeriodFrom      vaccination start date, null for no start
+	 * @param vaccinePeriodTo        vaccination end date, null for no end
+	 * @param disease                disease description, null for no filter
+	 * @param dischargeType          discharge type description, null for no filter
+	 * @param nPregnanciesMin        minimum gravidity, null for no lower bound
+	 * @param nPregnanciesMax        maximum gravidity, null for no upper bound
+	 * @param nAbortionsMin          minimum abortions, null for no lower bound
+	 * @param nAbortionsMax          maximum abortions, null for no upper bound
+	 * @param gestationalAgeMinWeeks minimum gestational age in weeks, null for no lower bound
+	 * @param gestationalAgeMaxWeeks maximum gestational age in weeks, null for no upper bound
+	 * @param startIndex             starting position for pagination
+	 * @param limit                  number of records per page
+	 * @return                       list of patients
+	 * @throws OHServiceException    if a database error occurs
+	 */
+	public List<Patient> getPregnanciesStats(
+		Integer ageFrom, Integer ageTo, String periodFrom, String periodTo,
+		Integer visitType, Integer visitCountMin, Integer visitCountMax,
+		String examParameterCode, String examParameterValue,
+		String examResult, String examPeriodFrom, String examPeriodTo,
+		String vaccine, String vaccinePeriodFrom, String vaccinePeriodTo,
+		String disease, String dischargeType,
+		Integer nPregnanciesMin, Integer nPregnanciesMax,
+		Integer nAbortionsMin, Integer nAbortionsMax,
+		Integer gestationalAgeMinWeeks, Integer gestationalAgeMaxWeeks,
+		int startIndex, int limit) throws OHServiceException {
+
+		Page<Patient> page = statsIoOperations.getPregnanciesStats(ageFrom, ageTo, periodFrom, periodTo,
+			visitType, visitCountMin, visitCountMax,
+			examParameterCode, examParameterValue,
+			examResult, examPeriodFrom, examPeriodTo,
+			vaccine, vaccinePeriodFrom, vaccinePeriodTo,
+			disease, dischargeType,
+			nPregnanciesMin, nPregnanciesMax,
+			nAbortionsMin, nAbortionsMax,
+			gestationalAgeMinWeeks, gestationalAgeMaxWeeks,
+			startIndex, limit);
+		return page.getContent();
+	}
+
 }

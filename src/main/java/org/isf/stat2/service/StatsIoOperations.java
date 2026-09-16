@@ -21,6 +21,7 @@
  */
 package org.isf.stat2.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import org.isf.patient.model.Patient;
@@ -1130,6 +1131,201 @@ public class StatsIoOperations {
 	/**
 	 * Converts a string to LocalDateTime
 	 */
+	/**
+	 * Retrieves a paginated list of pregnant patients matching the applied filters,
+	 * following the OH-538 pregnancy module schema (Pregnancy + PregnancyVisit +
+	 * PregnancyExamResult).
+	 *
+	 * @param ageFrom                minimum patient age, null for no lower bound
+	 * @param ageTo                  maximum patient age, null for no upper bound
+	 * @param periodFrom             visit start date, null for no start
+	 * @param periodTo               visit end date, null for no end
+	 * @param visitType              visit type (PregnancyVisit.PRENATAL / POSTNATAL), null for no filter
+	 * @param visitCountMin          minimum number of visits, null for no lower bound
+	 * @param visitCountMax          maximum number of visits, null for no upper bound
+	 * @param examParameterCode      CPN exam parameter code (OH_PREGNANCYEXAM), null for no filter
+	 * @param examParameterValue     CPN exam parameter outcome value, null for no filter
+	 * @param examResult             laboratory exam result, null for no filter
+	 * @param examPeriodFrom         laboratory exam start date, null for no start
+	 * @param examPeriodTo           laboratory exam end date, null for no end
+	 * @param vaccine                vaccine description, null for no filter
+	 * @param vaccinePeriodFrom      vaccination start date, null for no start
+	 * @param vaccinePeriodTo        vaccination end date, null for no end
+	 * @param disease                disease description, null for no filter
+	 * @param dischargeType          discharge type description, null for no filter
+	 * @param nPregnanciesMin        minimum gravidity (number of pregnancies), null for no lower bound
+	 * @param nPregnanciesMax        maximum gravidity, null for no upper bound
+	 * @param nAbortionsMin          minimum number of abortions/miscarriages, null for no lower bound
+	 * @param nAbortionsMax          maximum number of abortions/miscarriages, null for no upper bound
+	 * @param gestationalAgeMinWeeks minimum gestational age in weeks (from LMP), null for no lower bound
+	 * @param gestationalAgeMaxWeeks maximum gestational age in weeks (from LMP), null for no upper bound
+	 * @param startIndex             starting position for pagination
+	 * @param limit                  number of items per page
+	 * @return                       paginated list of patients
+	 * @throws OHServiceException    if a database error occurs
+	 */
+	public Page<Patient> getPregnanciesStats(
+		Integer ageFrom, Integer ageTo, String periodFrom, String periodTo,
+		Integer visitType, Integer visitCountMin, Integer visitCountMax,
+		String examParameterCode, String examParameterValue,
+		String examResult, String examPeriodFrom, String examPeriodTo,
+		String vaccine, String vaccinePeriodFrom, String vaccinePeriodTo,
+		String disease, String dischargeType,
+		Integer nPregnanciesMin, Integer nPregnanciesMax,
+		Integer nAbortionsMin, Integer nAbortionsMax,
+		Integer gestationalAgeMinWeeks, Integer gestationalAgeMaxWeeks,
+		int startIndex, int limit) throws OHServiceException {
+
+		StringBuilder sqlSelect = new StringBuilder();
+		sqlSelect.append("SELECT DISTINCT p FROM Patient p ");
+		sqlSelect.append("INNER JOIN Pregnancy pg ON pg.patient = p ");
+		sqlSelect.append("INNER JOIN PregnancyVisit pv ON pv.pregnancy = pg ");
+
+		StringBuilder sqlWhere = new StringBuilder();
+		sqlWhere.append("WHERE (p.deleted = 'N' OR p.deleted IS NULL) ");
+		Map<String, Object> parameters = new HashMap<>();
+
+		if (ageFrom != null && ageFrom > 0) {
+			sqlWhere.append("AND p.age >= :ageFrom ");
+			parameters.put("ageFrom", ageFrom);
+		}
+		if (ageTo != null && ageTo > 0) {
+			sqlWhere.append("AND p.age <= :ageTo ");
+			parameters.put("ageTo", ageTo);
+		}
+
+		if (periodFrom != null && !periodFrom.isEmpty()) {
+			sqlWhere.append("AND pv.visitDate >= :periodFrom ");
+			parameters.put("periodFrom", parseDate(periodFrom));
+		}
+		if (periodTo != null && !periodTo.isEmpty()) {
+			sqlWhere.append("AND pv.visitDate <= :periodTo ");
+			parameters.put("periodTo", parseDate(periodTo));
+		}
+
+		if (visitType != null) {
+			sqlWhere.append("AND pv.visitType = :visitType ");
+			parameters.put("visitType", visitType);
+		}
+
+		if (visitCountMin != null) {
+			sqlWhere.append("AND (SELECT COUNT(pvc) FROM PregnancyVisit pvc WHERE pvc.pregnancy = pg) >= :visitCountMin ");
+			parameters.put("visitCountMin", visitCountMin);
+		}
+		if (visitCountMax != null) {
+			sqlWhere.append("AND (SELECT COUNT(pvc2) FROM PregnancyVisit pvc2 WHERE pvc2.pregnancy = pg) <= :visitCountMax ");
+			parameters.put("visitCountMax", visitCountMax);
+		}
+
+		if (examParameterCode != null && !examParameterCode.isEmpty()) {
+			sqlSelect.append("INNER JOIN PregnancyExamResult per ON per.pregnancyVisit = pv ");
+			sqlSelect.append("INNER JOIN per.examParameter pep ");
+			sqlWhere.append("AND pep.code = :pepCode ");
+			parameters.put("pepCode", examParameterCode);
+			if (examParameterValue != null && !examParameterValue.isEmpty()) {
+				sqlWhere.append("AND per.outcome = :pepValue ");
+				parameters.put("pepValue", examParameterValue);
+			}
+		}
+
+		if (examResult != null && !examResult.isEmpty()) {
+			sqlSelect.append("INNER JOIN Laboratory l ON l.patient = p ");
+			sqlSelect.append("INNER JOIN Exam e ON l.exam = e ");
+			sqlWhere.append("AND e.description = :exam ");
+			parameters.put("exam", examResult);
+			if (examPeriodFrom != null && !examPeriodFrom.isEmpty()) {
+				sqlWhere.append("AND l.labDate >= :examPeriodFrom ");
+				parameters.put("examPeriodFrom", parseDate(examPeriodFrom));
+			}
+			if (examPeriodTo != null && !examPeriodTo.isEmpty()) {
+				sqlWhere.append("AND l.labDate <= :examPeriodTo ");
+				parameters.put("examPeriodTo", parseDate(examPeriodTo));
+			}
+		}
+
+		if (vaccine != null && !vaccine.isEmpty()) {
+			sqlSelect.append("INNER JOIN PatientVaccine pvac ON pvac.patient = p ");
+			sqlSelect.append("INNER JOIN Vaccine v ON pvac.vaccine = v ");
+			sqlWhere.append("AND v.description = :vaccine ");
+			parameters.put("vaccine", vaccine);
+
+			if (vaccinePeriodFrom != null && !vaccinePeriodFrom.isEmpty()) {
+				sqlWhere.append("AND pvac.vaccineDate >= :vaccinePeriodFrom ");
+				parameters.put("vaccinePeriodFrom", parseDate(vaccinePeriodFrom));
+			}
+			if (vaccinePeriodTo != null && !vaccinePeriodTo.isEmpty()) {
+				sqlWhere.append("AND pvac.vaccineDate <= :vaccinePeriodTo ");
+				parameters.put("vaccinePeriodTo", parseDate(vaccinePeriodTo));
+			}
+		}
+
+		if (disease != null && !disease.isEmpty()) {
+			sqlSelect.append("INNER JOIN Admission a ON a.patient = p ");
+			sqlSelect.append("INNER JOIN Disease d ON (a.diseaseOut1 = d OR a.diseaseOut2 = d OR a.diseaseOut3 = d) ");
+			sqlWhere.append("AND d.description = :disease ");
+			parameters.put("disease", disease);
+		}
+
+		if (dischargeType != null && !dischargeType.isEmpty()) {
+			if (disease == null || disease.isEmpty()) {
+				sqlSelect.append("INNER JOIN Admission a ON a.patient = p ");
+			}
+			sqlSelect.append("INNER JOIN DischargeType dt ON a.disType = dt ");
+			sqlWhere.append("AND dt.description = :dischargeType ");
+			parameters.put("dischargeType", dischargeType);
+		}
+
+		if (nPregnanciesMin != null) {
+			sqlWhere.append("AND pg.nPregnancies >= :nPregnanciesMin ");
+			parameters.put("nPregnanciesMin", nPregnanciesMin);
+		}
+		if (nPregnanciesMax != null) {
+			sqlWhere.append("AND pg.nPregnancies <= :nPregnanciesMax ");
+			parameters.put("nPregnanciesMax", nPregnanciesMax);
+		}
+
+		if (nAbortionsMin != null) {
+			sqlWhere.append("AND pg.nAbortions >= :nAbortionsMin ");
+			parameters.put("nAbortionsMin", nAbortionsMin);
+		}
+		if (nAbortionsMax != null) {
+			sqlWhere.append("AND pg.nAbortions <= :nAbortionsMax ");
+			parameters.put("nAbortionsMax", nAbortionsMax);
+		}
+
+		if (gestationalAgeMinWeeks != null) {
+			sqlWhere.append("AND pg.lmp IS NOT NULL AND pg.lmp <= :lmpMax ");
+			parameters.put("lmpMax", LocalDate.now().minusWeeks(gestationalAgeMinWeeks));
+		}
+		if (gestationalAgeMaxWeeks != null) {
+			sqlWhere.append("AND pg.lmp >= :lmpMin ");
+			parameters.put("lmpMin", LocalDate.now().minusWeeks(gestationalAgeMaxWeeks));
+		}
+
+		String sql = sqlSelect.toString() + sqlWhere.toString();
+
+		Pageable pageable = PageRequest.of(startIndex / limit, limit);
+
+		Query query = entityManager.createQuery(sql);
+		for (Map.Entry<String, Object> entry : parameters.entrySet()) {
+			query.setParameter(entry.getKey(), entry.getValue());
+		}
+		query.setFirstResult((int) pageable.getOffset());
+		query.setMaxResults(pageable.getPageSize());
+
+		@SuppressWarnings("unchecked")
+		List<Patient> patients = query.getResultList();
+
+		String countSql = "SELECT COUNT(DISTINCT p) " + sql.substring(sql.indexOf("FROM"));
+		Query countQuery = entityManager.createQuery(countSql);
+		for (Map.Entry<String, Object> entry : parameters.entrySet()) {
+			countQuery.setParameter(entry.getKey(), entry.getValue());
+		}
+		long total = (long) countQuery.getSingleResult();
+
+		return new PageImpl<>(patients, pageable, total);
+	}
+
 	private LocalDateTime parseDate(String dateStr) {
 		if (dateStr == null || dateStr.isEmpty()) {
 			return null;
