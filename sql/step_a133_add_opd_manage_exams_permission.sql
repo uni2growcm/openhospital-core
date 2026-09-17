@@ -4,12 +4,13 @@
 --
 
 INSERT INTO OH_MENUITEM (MNI_ID_A, MNI_BTN_LABEL, MNI_LABEL, MNI_TOOLTIP, MNI_SHORTCUT, MNI_SUBMENU, MNI_CLASS, MNI_IS_SUBMENU, MNI_POSITION)
-VALUES ('opdexam', 'angal.opd.manageexams.btn', 'angal.opd.manageexams.btn', 'x', 'X', 'opd', 'none', 'N', 3);
+SELECT 'opdexam', 'angal.opd.manageexams.btn', 'angal.opd.manageexams.btn', 'x', 'X', 'opd', 'none', 'N', 3
+FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM OH_MENUITEM WHERE MNI_ID_A = 'opdexam');
 
 INSERT INTO OH_GROUPMENU (GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE)
-VALUES ('admin', 'opdexam', 1),
-       ('doctor', 'opdexam', 1),
-       ('laboratorist', 'opdexam', 1);
+SELECT g.ug, 'opdexam', 1
+FROM (SELECT 'admin' AS ug UNION SELECT 'doctor' UNION SELECT 'laboratorist') g
+WHERE NOT EXISTS (SELECT 1 FROM OH_GROUPMENU WHERE GM_UG_ID_A = g.ug AND GM_MNI_ID_A = 'opdexam');
 
 --
 -- Add the "Therapy" button permission to OpdBrowser, granted by default to admin and doctor,
@@ -17,12 +18,13 @@ VALUES ('admin', 'opdexam', 1),
 --
 
 INSERT INTO OH_MENUITEM (MNI_ID_A, MNI_BTN_LABEL, MNI_LABEL, MNI_TOOLTIP, MNI_SHORTCUT, MNI_SUBMENU, MNI_CLASS, MNI_IS_SUBMENU, MNI_POSITION)
-VALUES ('btnopdnewtherapy', 'angal.admission.therapy.btn', 'angal.admission.therapy.btn', 'x', 'T', 'opd', 'none', 'N', 4);
+SELECT 'btnopdnewtherapy', 'angal.admission.therapy.btn', 'angal.admission.therapy.btn', 'x', 'T', 'opd', 'none', 'N', 4
+FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM OH_MENUITEM WHERE MNI_ID_A = 'btnopdnewtherapy');
 
 INSERT INTO OH_GROUPMENU (GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE)
-VALUES ('admin', 'btnopdnewtherapy', 1),
-       ('doctor', 'btnopdnewtherapy', 1);
-
+SELECT g.ug, 'btnopdnewtherapy', 1
+FROM (SELECT 'admin' AS ug UNION SELECT 'doctor') g
+WHERE NOT EXISTS (SELECT 1 FROM OH_GROUPMENU WHERE GM_UG_ID_A = g.ug AND GM_MNI_ID_A = 'btnopdnewtherapy');
 
 --
 -- Add the "Operation" button permission to OpdBrowser, granted by default to admin and doctor,
@@ -30,8 +32,10 @@ VALUES ('admin', 'btnopdnewtherapy', 1),
 --
 
 INSERT INTO OH_MENUITEM (MNI_ID_A, MNI_BTN_LABEL, MNI_LABEL, MNI_TOOLTIP, MNI_SHORTCUT, MNI_SUBMENU, MNI_CLASS, MNI_IS_SUBMENU, MNI_POSITION)
-VALUES ('opdeope', 'angal.opd.operation', 'angal.opd.operation', 'x', 'O', 'opd', 'none', 'N', 5);
+SELECT 'opdeope', 'angal.opd.operation', 'angal.opd.operation', 'x', 'O', 'opd', 'none', 'N', 5
+FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM OH_MENUITEM WHERE MNI_ID_A = 'opdeope');
 
 INSERT INTO OH_GROUPMENU (GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE)
-VALUES ('admin', 'opdeope', 1),
-       ('doctor', 'opdeope', 1);
+SELECT g.ug, 'opdeope', 1
+FROM (SELECT 'admin' AS ug UNION SELECT 'doctor') g
+WHERE NOT EXISTS (SELECT 1 FROM OH_GROUPMENU WHERE GM_UG_ID_A = g.ug AND GM_MNI_ID_A = 'opdeope');
