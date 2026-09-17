@@ -8,3 +8,5 @@ source step_03_dump_dicomtype_data_en.sql;
 source delete_all_data.sql;
 -- load demo data
 source load_demo_data.sql;
+-- reapply steps a121-a152 AFTER the demo dump (it DROP/CREATEs 64 tables)
+source step_04b_all_following_steps_b.sql;
