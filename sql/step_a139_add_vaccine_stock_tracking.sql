@@ -42,10 +42,22 @@ CREATE TABLE OH_VACCINESTOCKMOVEMENT (
 	INDEX (VSM_PAV_ID)
 ) ENGINE = INNODB DEFAULT CHARACTER SET utf8;
 
-INSERT INTO OH_MENUITEM (MNI_ID_A, MNI_BTN_LABEL, MNI_LABEL, MNI_TOOLTIP, MNI_SHORTCUT, MNI_SUBMENU, MNI_CLASS, MNI_IS_SUBMENU, MNI_POSITION) VALUES ('vaccinestock','angal.menu.btn.vaccinestock','angal.menu.vaccinestock','x','K','main','org.isf.vaccinestock.gui.VaccineStockBrowser','N',13);
-INSERT INTO OH_MENUITEM (MNI_ID_A, MNI_BTN_LABEL, MNI_LABEL, MNI_TOOLTIP, MNI_SHORTCUT, MNI_SUBMENU, MNI_CLASS, MNI_IS_SUBMENU, MNI_POSITION) VALUES ('btnvaccinestockcharge','angal.vaccinestock.charge','angal.vaccinestock.charge','x','C','vaccinestock','none','N',0);
-INSERT INTO OH_MENUITEM (MNI_ID_A, MNI_BTN_LABEL, MNI_LABEL, MNI_TOOLTIP, MNI_SHORTCUT, MNI_SUBMENU, MNI_CLASS, MNI_IS_SUBMENU, MNI_POSITION) VALUES ('btnvaccinestockdischarge','angal.vaccinestock.discharge','angal.vaccinestock.discharge','x','D','vaccinestock','none','N',1);
+INSERT INTO OH_MENUITEM (MNI_ID_A, MNI_BTN_LABEL, MNI_LABEL, MNI_TOOLTIP, MNI_SHORTCUT, MNI_SUBMENU, MNI_CLASS, MNI_IS_SUBMENU, MNI_POSITION)
+SELECT 'vaccinestock','angal.menu.btn.vaccinestock','angal.menu.vaccinestock','x','K','main','org.isf.vaccinestock.gui.VaccineStockBrowser','N',13
+FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM OH_MENUITEM WHERE MNI_ID_A = 'vaccinestock');
+INSERT INTO OH_MENUITEM (MNI_ID_A, MNI_BTN_LABEL, MNI_LABEL, MNI_TOOLTIP, MNI_SHORTCUT, MNI_SUBMENU, MNI_CLASS, MNI_IS_SUBMENU, MNI_POSITION)
+SELECT 'btnvaccinestockcharge','angal.vaccinestock.charge','angal.vaccinestock.charge','x','C','vaccinestock','none','N',0
+FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM OH_MENUITEM WHERE MNI_ID_A = 'btnvaccinestockcharge');
+INSERT INTO OH_MENUITEM (MNI_ID_A, MNI_BTN_LABEL, MNI_LABEL, MNI_TOOLTIP, MNI_SHORTCUT, MNI_SUBMENU, MNI_CLASS, MNI_IS_SUBMENU, MNI_POSITION)
+SELECT 'btnvaccinestockdischarge','angal.vaccinestock.discharge','angal.vaccinestock.discharge','x','D','vaccinestock','none','N',1
+FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM OH_MENUITEM WHERE MNI_ID_A = 'btnvaccinestockdischarge');
 
-INSERT INTO OH_GROUPMENU (GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE) VALUE ('admin','vaccinestock', 1);
-INSERT INTO OH_GROUPMENU (GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE) VALUE ('admin','btnvaccinestockcharge', 1);
-INSERT INTO OH_GROUPMENU (GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE) VALUE ('admin','btnvaccinestockdischarge', 1);
+INSERT INTO OH_GROUPMENU (GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE)
+SELECT 'admin','vaccinestock', 1 FROM DUAL
+WHERE NOT EXISTS (SELECT 1 FROM OH_GROUPMENU WHERE GM_UG_ID_A = 'admin' AND GM_MNI_ID_A = 'vaccinestock');
+INSERT INTO OH_GROUPMENU (GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE)
+SELECT 'admin','btnvaccinestockcharge', 1 FROM DUAL
+WHERE NOT EXISTS (SELECT 1 FROM OH_GROUPMENU WHERE GM_UG_ID_A = 'admin' AND GM_MNI_ID_A = 'btnvaccinestockcharge');
+INSERT INTO OH_GROUPMENU (GM_UG_ID_A, GM_MNI_ID_A, GM_ACTIVE)
+SELECT 'admin','btnvaccinestockdischarge', 1 FROM DUAL
+WHERE NOT EXISTS (SELECT 1 FROM OH_GROUPMENU WHERE GM_UG_ID_A = 'admin' AND GM_MNI_ID_A = 'btnvaccinestockdischarge');
