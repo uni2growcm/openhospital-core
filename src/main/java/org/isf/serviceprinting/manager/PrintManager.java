@@ -66,7 +66,10 @@ public class PrintManager {
 	}
 	
 	public void print(String filename, List<?> toPrint, int action) throws OHServiceException {
-		
+		print(filename, toPrint, null, action);
+	}
+
+	public void print(String filename, List<?> toPrint, Map<String, Object> extraParameters, int action) throws OHServiceException {
 		Map<String, Object> parameters = new HashMap<>();
 		Hospital hospital = hospitalManager.getHospital();
 		parameters.put("ospedaleNome", hospital.getDescription());
@@ -76,6 +79,9 @@ public class PrintManager {
 		parameters.put("ospedaleFax", hospital.getFax());
 		parameters.put("ospedaleMail", hospital.getEmail());
 		parameters.put("ospedaleCurrency", hospital.getCurrencyCod());
+		if (extraParameters != null) {
+			parameters.putAll(extraParameters);
+		}
 
 		JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(toPrint);
 		File jasperFile = new File("rpt_base/" + filename + ".jasper");
