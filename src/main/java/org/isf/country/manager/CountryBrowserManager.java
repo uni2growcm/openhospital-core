@@ -157,4 +157,48 @@ public class CountryBrowserManager {
 	public boolean isCodeUnique(String isoCode, Integer excludeId) throws OHServiceException {
 		return ioOperations.isCodeUnique(isoCode, excludeId);
 	}
+
+	/**
+	 * Returns the active {@link Country} with the given phone code, if it exists.
+	 *
+	 * @param phoneCode the phone code of the country.
+	 * @return an {@link Optional} containing the active country if found, or empty otherwise.
+	 * @throws OHServiceException when fails to fetch the country.
+	 */
+	public Optional<Country> getActiveCountryByPhoneCode(String phoneCode) throws OHServiceException {
+		return ioOperations.getActiveCountryByPhoneCode(phoneCode);
+	}
+
+	/**
+	 * Returns any archived (inactive) {@link Country} with the given ISO code.
+	 *
+	 * @param isoCode the ISO code of the country.
+	 * @return an {@link Optional} containing the archived country if found.
+	 * @throws OHServiceException when fails to fetch the country.
+	 */
+	public Optional<Country> getArchivedCountryByIsoCode(String isoCode) throws OHServiceException {
+		return ioOperations.getArchivedCountryByIsoCode(isoCode);
+	}
+
+	/**
+	 * Returns any archived (inactive) {@link Country} with the given name.
+	 *
+	 * @param name the name of the country.
+	 * @return an {@link Optional} containing the archived country if found.
+	 * @throws OHServiceException when fails to fetch the country.
+	 */
+	public Optional<Country> getArchivedCountryByName(String name) throws OHServiceException {
+		return ioOperations.getArchivedCountryByName(name);
+	}
+
+	/**
+	 * Saves a country, or reactivates it if an inactive record already exists with the same ISO code or name.
+	 *
+	 * @param country the country to save or reactivate.
+	 * @return the saved/reactivated {@link Country}.
+	 * @throws OHServiceException when fails to save or reactivate.
+	 */
+	public Country saveOrReactivateCountry(Country country) throws OHServiceException {
+		return ioOperations.saveOrReactivateCountry(country);
+	}
 }

@@ -563,4 +563,112 @@ class Tests extends OHCoreTestCase {
 
 		assertThat(updated.getActive()).isEqualTo(1);
 	}
+
+	@Test
+	void testIoGetActiveCountryByPhoneCode() throws Exception {
+		setupTestCountry(false);
+
+		Optional<Country> result = countryIoOperations.getActiveCountryByPhoneCode("+237");
+		assertThat(result).isPresent();
+		assertThat(result.get().getIsoCode()).isEqualTo("CM");
+
+		Country deleted = new Country("GA", "+241", "Gabon");
+		deleted.setActive(0);
+		countryIoOperationRepository.saveAndFlush(deleted);
+
+		Optional<Country> deletedResult = countryIoOperations.getActiveCountryByPhoneCode("+241");
+		assertThat(deletedResult).isEmpty();
+	}
+
+	@Test
+	void testIoGetArchivedCountryByIsoCode() throws Exception {
+		Country deleted = new Country("GA", "+241", "Gabon");
+		deleted.setActive(0);
+		countryIoOperationRepository.saveAndFlush(deleted);
+
+		Optional<Country> result = countryIoOperations.getArchivedCountryByIsoCode("GA");
+		assertThat(result).isPresent();
+		assertThat(result.get().getName()).isEqualTo("Gabon");
+
+		setupTestCountry(false);
+		Optional<Country> activeResult = countryIoOperations.getArchivedCountryByIsoCode("CM");
+		assertThat(activeResult).isEmpty();
+	}
+
+	@Test
+	void testIoGetArchivedCountryByName() throws Exception {
+		Country deleted = new Country("GA", "+241", "Gabon");
+		deleted.setActive(0);
+		countryIoOperationRepository.saveAndFlush(deleted);
+
+		Optional<Country> result = countryIoOperations.getArchivedCountryByName("Gabon");
+		assertThat(result).isPresent();
+		assertThat(result.get().getIsoCode()).isEqualTo("GA");
+
+		setupTestCountry(false);
+		Optional<Country> activeResult = countryIoOperations.getArchivedCountryByName("Cameroon");
+		assertThat(activeResult).isEmpty();
+	}
+
+	@Test
+	void testIoSaveOrReactivateCountry_reactivatesArchived() throws Exception {
+		Country deleted = new Country("GA", "+241", "Gabon");
+		deleted.setActive(0);
+		countryIoOperationRepository.saveAndFlush(deleted);
+		int originalId = deleted.getId();
+
+		Country newCountry = new Country("GA", "+241", "Gabon Updated");
+		Country reactivated = countryIoOperations.saveOrReactivateCountry(newCountry);
+
+		assertThat(reactivated.getId()).isEqualTo(originalId);
+		assertThat(reactivated.getActive()).isEqualTo(1);
+		assertThat(reactivated.getName()).isEqualTo("Gabon Updated");
+
+		Country inDb = countryIoOperationRepository.findById(originalId).orElse(null);
+		assertThat(inDb).isNotNull();
+		assertThat(inDb.getActive()).isEqualTo(1);
+	}
+
+	@Test
+	void testMgrGetActiveCountryByPhoneCode() throws Exception {
+		setupTestCountry(false);
+
+		Optional<Country> result = countryBrowserManager.getActiveCountryByPhoneCode("+237");
+		assertThat(result).isPresent();
+		assertThat(result.get().getIsoCode()).isEqualTo("CM");
+	}
+
+	@Test
+	void testMgrGetArchivedCountryByIsoCode() throws Exception {
+		Country deleted = new Country("GA", "+241", "Gabon");
+		deleted.setActive(0);
+		countryIoOperationRepository.saveAndFlush(deleted);
+
+		Optional<Country> result = countryBrowserManager.getArchivedCountryByIsoCode("GA");
+		assertThat(result).isPresent();
+		assertThat(result.get().getName()).isEqualTo("Gabon");
+	}
+
+	@Test
+	void testMgrGetArchivedCountryByName() throws Exception {
+		Country deleted = new Country("GA", "+241", "Gabon");
+		deleted.setActive(0);
+		countryIoOperationRepository.saveAndFlush(deleted);
+
+		Optional<Country> result = countryBrowserManager.getArchivedCountryByName("Gabon");
+		assertThat(result).isPresent();
+	}
+
+	@Test
+	void testMgrSaveOrReactivateCountry() throws Exception {
+		Country deleted = new Country("GA", "+241", "Gabon");
+		deleted.setActive(0);
+		countryIoOperationRepository.saveAndFlush(deleted);
+
+		Country newCountry = new Country("GA", "+241", "Gabon");
+		Country reactivated = countryBrowserManager.saveOrReactivateCountry(newCountry);
+
+		assertThat(reactivated.getId()).isEqualTo(deleted.getId());
+		assertThat(reactivated.getActive()).isEqualTo(1);
+	}
 }
