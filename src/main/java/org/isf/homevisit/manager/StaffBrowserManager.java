@@ -28,6 +28,8 @@ import org.isf.generaldata.MessageBundle;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.model.OHExceptionMessage;
+import org.isf.utils.pagination.PagedResponse;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -74,6 +76,18 @@ public class StaffBrowserManager {
 	 */
 	public List<Staff> searchStaff(String keyword) throws OHServiceException {
 		return ioOperations.search(keyword);
+	}
+
+	/**
+	 * Returns active staff members page by page, optionally filtered by keyword (name, profession, position, phone)
+	 * @param page zero-based page index
+	 * @param size page size
+	 * @param keyword optional search keyword
+	 * @return the requested page of active staff
+	 * @throws OHServiceException
+	 */
+	public PagedResponse<Staff> getStaffPageable(int page, int size, String keyword) throws OHServiceException {
+		return ioOperations.getStaffPageable(PageRequest.of(page, size), keyword);
 	}
 
 	/**
