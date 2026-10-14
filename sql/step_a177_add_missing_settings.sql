@@ -26,6 +26,11 @@ INSERT INTO `OH_SETTINGS` (`SETT_ID`, `SETT_CODE`, `SETT_VALUE_TYPE`, `SETT_VALU
 -- Pharmacy settings
 (NULL, 'HIGHLIGHTEXPIRINGMEDICAL', 'bool', NULL, 'FALSE', 'FALSE', 'Highlight expiring medicals in stock list', 'admin', NULL, NOW(), NULL, 1, 1, 'pharmacy'),
 (NULL, 'HIGHLIGHTEXPIRINGMEDICALDAYS', 'number', NULL, '30', '30', 'Number of days before expiration date to highlight medicals', 'admin', NULL, NOW(), NULL, 1, 1, 'pharmacy'),
+(NULL, 'REFERENCE_AUTOMATIC', 'bool', NULL, 'FALSE', 'FALSE', 'Enable automatic stock reference generation', 'admin', NULL, NOW(), NULL, 1, 1, 'pharmacy'),
+(NULL, 'REFERENCE_PREFIX_CHARGE', 'text', NULL, 'REF+', 'REF+', 'Prefix used for stock charge (inflow) reference codes', 'admin', NULL, NOW(), NULL, 1, 1, 'pharmacy'),
+(NULL, 'REFERENCE_PREFIX_DISCHARGE', 'text', NULL, 'REF-', 'REF-', 'Prefix used for stock discharge (outflow) reference codes', 'admin', NULL, NOW(), NULL, 1, 1, 'pharmacy'),
+(NULL, 'REFERENCE_PREFIX_INVENTORY', 'text', NULL, 'INV', 'INV', 'Prefix used for stock inventory reference codes', 'admin', NULL, NOW(), NULL, 1, 1, 'pharmacy'),
+(NULL, 'REFERENCE_TIMESTAMP_FORMAT', 'text', NULL, 'yyyyMMdd''T''HHmmss', 'yyyyMMdd''T''HHmmss', 'Timestamp format used in automatic stock reference generation', 'admin', NULL, NOW(), NULL, 1, 1, 'pharmacy'),
 
 -- Reports settings
 (NULL, 'PHARMACEUTICALSTOCKNOZERO', 'text', NULL, 'PharmaceuticalStock_ver4_1', 'PharmaceuticalStock_ver4_1', 'File name for pharmaceutical stock report excluding zero stock', 'admin', NULL, NOW(), NULL, 1, 1, 'reports'),
@@ -34,10 +39,5 @@ INSERT INTO `OH_SETTINGS` (`SETT_ID`, `SETT_CODE`, `SETT_VALUE_TYPE`, `SETT_VALU
 (NULL, 'PATIENTARCHIVEBILLSTATEMENT', 'text', NULL, 'PatientArchiveBillStatement', 'PatientArchiveBillStatement', 'File name for patient archive bills statement report', 'admin', NULL, NOW(), NULL, 1, 1, 'reports'),
 
 -- General settings
-(NULL, 'PAGINATIONPAGESIZE', 'number', NULL, '100', '100', 'Default page size for paginated tables', 'admin', NULL, NOW(), NULL, 1, 1, 'general'),
-(NULL, 'REFERENCE_AUTOMATIC', 'bool', NULL, 'FALSE', 'FALSE', 'Enable automatic stock reference generation', 'admin', NULL, NOW(), NULL, 1, 1, 'general'),
-(NULL, 'REFERENCE_PREFIX_CHARGE', 'text', NULL, 'REF+', 'REF+', 'Prefix used for stock charge (inflow) reference codes', 'admin', NULL, NOW(), NULL, 1, 1, 'general'),
-(NULL, 'REFERENCE_PREFIX_DISCHARGE', 'text', NULL, 'REF-', 'REF-', 'Prefix used for stock discharge (outflow) reference codes', 'admin', NULL, NOW(), NULL, 1, 1, 'general'),
-(NULL, 'REFERENCE_PREFIX_INVENTORY', 'text', NULL, 'INV', 'INV', 'Prefix used for stock inventory reference codes', 'admin', NULL, NOW(), NULL, 1, 1, 'general'),
-(NULL, 'REFERENCE_TIMESTAMP_FORMAT', 'text', NULL, 'yyyyMMdd''T''HHmmss', 'yyyyMMdd''T''HHmmss', 'Timestamp format used in automatic stock reference generation', 'admin', NULL, NOW(), NULL, 1, 1, 'general')
+(NULL, 'PAGINATIONPAGESIZE', 'number', NULL, '100', '100', 'Default page size for paginated tables', 'admin', NULL, NOW(), NULL, 1, 1, 'general')
 ON DUPLICATE KEY UPDATE `SETT_CODE` = VALUES(`SETT_CODE`);
