@@ -47,4 +47,16 @@ public enum Family {
 	public String toString() {
 		return MessageBundle.getMessage(key);
 	}
+
+	public static Family fromString(String value) {
+		if (value == null || value.trim().isEmpty()) {
+			return null;
+		}
+		for (Family family : values()) {
+			if (family.name().equalsIgnoreCase(value.trim()) || family.key.equalsIgnoreCase(value.trim())) {
+				return family;
+			}
+		}
+		return null;
+	}
 }
