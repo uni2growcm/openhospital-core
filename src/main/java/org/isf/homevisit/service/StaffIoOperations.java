@@ -79,9 +79,9 @@ public class StaffIoOperations {
 	 * @param pageable page and size
 	 * @param keyword optional search keyword
 	 * @return the requested page of active staff
-	 * @throws OHServiceException
+	 * @throws OHServiceException when fails to fetch list
 	 */
-	public PagedResponse<Staff> getStaffPageable(Pageable pageable, String keyword) throws OHServiceException {
+	public PagedResponse<Staff> getStaff(Pageable pageable, String keyword) throws OHServiceException {
 		Page<Staff> pagedResult = (keyword == null || keyword.trim().isEmpty())
 			? repository.findByActive(1, pageable)
 			: repository.searchActive(keyword.trim(), pageable);

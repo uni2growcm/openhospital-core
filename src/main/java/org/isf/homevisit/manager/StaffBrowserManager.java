@@ -34,7 +34,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Component
 public class StaffBrowserManager {
@@ -86,8 +85,8 @@ public class StaffBrowserManager {
 	 * @return the requested page of active staff
 	 * @throws OHServiceException
 	 */
-	public PagedResponse<Staff> getStaffPageable(int page, int size, String keyword) throws OHServiceException {
-		return ioOperations.getStaffPageable(PageRequest.of(page, size), keyword);
+	public PagedResponse<Staff> getStaff(String keyword, int page, int size) throws OHServiceException {
+		return ioOperations.getStaff(PageRequest.of(page, size), keyword);
 	}
 
 	/**
