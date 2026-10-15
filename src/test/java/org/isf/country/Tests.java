@@ -34,10 +34,12 @@ import org.isf.country.model.Country;
 import org.isf.country.service.CountryIoOperationRepository;
 import org.isf.country.service.CountryIoOperations;
 import org.isf.utils.exception.OHException;
+import org.isf.utils.pagination.PagedResponse;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -670,5 +672,37 @@ class Tests extends OHCoreTestCase {
 
 		assertThat(reactivated.getId()).isEqualTo(deleted.getId());
 		assertThat(reactivated.getActive()).isEqualTo(1);
+	}
+
+	@Test
+	void testMgrGetCountriesPaged() throws Exception {
+		Country c1 = new Country("AA", "+100", "Country A");
+		Country c2 = new Country("BB", "+200", "Country B");
+		Country c3 = new Country("CC", "+300", "Country C");
+		countryIoOperationRepository.saveAndFlush(c1);
+		countryIoOperationRepository.saveAndFlush(c2);
+		countryIoOperationRepository.saveAndFlush(c3);
+
+		PagedResponse<Country> page0 = countryBrowserManager.getCountries(0, 2);
+		assertThat(page0.getData()).hasSize(2);
+		assertThat(page0.getPageInfo().getTotalNbOfElements()).isEqualTo(3);
+		assertThat(page0.getPageInfo().getTotalPages()).isEqualTo(2);
+
+		PagedResponse<Country> page1 = countryBrowserManager.getCountries(1, 2);
+		assertThat(page1.getData()).hasSize(1);
+	}
+
+	@Test
+	void testMgrGetCountriesPagedWithSearch() throws Exception {
+		Country c1 = new Country("AA", "+100", "Country A");
+		Country c2 = new Country("BB", "+200", "Country B");
+		Country c3 = new Country("CC", "+300", "Other C");
+		countryIoOperationRepository.saveAndFlush(c1);
+		countryIoOperationRepository.saveAndFlush(c2);
+		countryIoOperationRepository.saveAndFlush(c3);
+
+		PagedResponse<Country> paged = countryBrowserManager.getCountries("Country", 0, 10);
+		assertThat(paged.getData()).hasSize(2);
+		assertThat(paged.getPageInfo().getTotalNbOfElements()).isEqualTo(2);
 	}
 }

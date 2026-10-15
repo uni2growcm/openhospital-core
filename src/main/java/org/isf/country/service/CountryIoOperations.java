@@ -23,6 +23,10 @@ package org.isf.country.service;
 
 import org.isf.country.model.Country;
 import org.isf.utils.exception.OHServiceException;
+import org.isf.utils.pagination.PageInfo;
+import org.isf.utils.pagination.PagedResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -160,6 +164,28 @@ public class CountryIoOperations {
 			return getAllCountries();
 		}
 		return repository.searchCountries(keyword.trim());
+	}
+
+	/**
+	 * Returns active {@link Country}s page by page, optionally filtered by keyword (name, ISO code, phone code).
+	 *
+	 * @param pageable pagination parameters.
+	 * @param keyword  optional search keyword.
+	 * @return the requested page of active countries.
+	 * @throws OHServiceException when fails to fetch countries.
+	 */
+	public PagedResponse<Country> getCountries(Pageable pageable, String keyword) throws OHServiceException {
+		Page<Country> pagedResult = (keyword == null || keyword.trim().isEmpty())
+			? repository.findByActiveOrderByNameAsc(1, pageable)
+			: repository.searchCountries(keyword.trim(), pageable);
+		return setPaginationData(pagedResult);
+	}
+
+	private PagedResponse<Country> setPaginationData(Page<Country> pages) {
+		PagedResponse<Country> data = new PagedResponse<>();
+		data.setData(pages.getContent());
+		data.setPageInfo(PageInfo.from(pages));
+		return data;
 	}
 
 	/**

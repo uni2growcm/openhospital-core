@@ -26,6 +26,8 @@ import org.isf.country.model.Country;
 import org.isf.country.service.CountryIoOperations;
 import org.isf.generaldata.MessageBundle;
 import org.isf.utils.exception.OHServiceException;
+import org.isf.utils.pagination.PagedResponse;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -48,6 +50,31 @@ public class CountryBrowserManager {
 	 */
 	public List<Country> getCountries() throws OHServiceException {
 		return ioOperations.getAllCountries();
+	}
+
+	/**
+	 * Returns active {@link Country}s page by page, optionally filtered by keyword.
+	 *
+	 * @param keyword search keyword; may be {@code null} or empty.
+	 * @param page    zero-based page index.
+	 * @param size    page size.
+	 * @return the requested page of active countries.
+	 * @throws OHServiceException when fails to fetch countries.
+	 */
+	public PagedResponse<Country> getCountries(String keyword, int page, int size) throws OHServiceException {
+		return ioOperations.getCountries(PageRequest.of(page, size), keyword);
+	}
+
+	/**
+	 * Returns active {@link Country}s page by page.
+	 *
+	 * @param page zero-based page index.
+	 * @param size page size.
+	 * @return the requested page of active countries.
+	 * @throws OHServiceException when fails to fetch countries.
+	 */
+	public PagedResponse<Country> getCountries(int page, int size) throws OHServiceException {
+		return getCountries(null, page, size);
 	}
 
 	/**
