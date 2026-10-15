@@ -22,6 +22,8 @@
 package org.isf.homevisit.service;
 
 import org.isf.homevisit.model.Staff;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -44,6 +46,17 @@ public interface StaffIoOperationRepository extends JpaRepository<Staff, Integer
 		" LOWER(s.position) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
 		" LOWER(s.phone) LIKE LOWER(CONCAT('%', :keyword, '%')))")
 	List<Staff> searchActive(@Param("keyword") String keyword);
+
+	Page<Staff> findByActive(Integer active, Pageable pageable);
+
+	@Query("SELECT s FROM Staff s WHERE s.active = 1 AND " +
+		"(CONCAT('', s.code) LIKE CONCAT('%', :keyword, '%') OR " +
+		" LOWER(s.firstName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+		" LOWER(s.lastName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+		" LOWER(s.profession) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+		" LOWER(s.position) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+		" LOWER(s.phone) LIKE LOWER(CONCAT('%', :keyword, '%')))")
+	Page<Staff> searchActive(@Param("keyword") String keyword, Pageable pageable);
 
 	@Modifying
 	@Query("UPDATE Staff s SET s.active = 0 WHERE s.code = :code")
