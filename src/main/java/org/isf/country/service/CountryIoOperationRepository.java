@@ -55,17 +55,6 @@ public interface CountryIoOperationRepository extends JpaRepository<Country, Int
 	""")
 	List<Country> searchCountries(@Param("keyword") String keyword);
 
-	@Query("""
-		SELECT c FROM Country c
-			WHERE c.active = 1 AND (
-				LOWER(c.name)    LIKE LOWER(CONCAT('%', :keyword, '%')) OR
-				LOWER(c.isoCode) LIKE LOWER(CONCAT('%', :keyword, '%')) OR
-				c.phoneCode      LIKE CONCAT('%', :keyword, '%')
-			)
-		ORDER BY c.name ASC
-	""")
-	Page<Country> searchCountries(@Param("keyword") String keyword, Pageable pageable);
-
 	Optional<Country> findByNameAndActive(String name, int active);
 	Optional<Country> findByPhoneCode(String phoneCode);
 

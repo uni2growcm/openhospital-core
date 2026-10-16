@@ -167,17 +167,14 @@ public class CountryIoOperations {
 	}
 
 	/**
-	 * Returns active {@link Country}s page by page, optionally filtered by keyword (name, ISO code, phone code).
+	 * Returns active {@link Country}s page by page.
 	 *
 	 * @param pageable pagination parameters.
-	 * @param keyword  optional search keyword.
 	 * @return the requested page of active countries.
 	 * @throws OHServiceException when fails to fetch countries.
 	 */
-	public PagedResponse<Country> getCountries(Pageable pageable, String keyword) throws OHServiceException {
-		Page<Country> pagedResult = (keyword == null || keyword.trim().isEmpty())
-			? repository.findByActiveOrderByNameAsc(1, pageable)
-			: repository.searchCountries(keyword.trim(), pageable);
+	public PagedResponse<Country> getCountries(Pageable pageable) throws OHServiceException {
+		Page<Country> pagedResult = repository.findByActiveOrderByNameAsc(1, pageable);
 		return setPaginationData(pagedResult);
 	}
 

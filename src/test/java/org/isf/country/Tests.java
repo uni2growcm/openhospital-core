@@ -691,18 +691,4 @@ class Tests extends OHCoreTestCase {
 		PagedResponse<Country> page1 = countryBrowserManager.getCountries(1, 2);
 		assertThat(page1.getData()).hasSize(1);
 	}
-
-	@Test
-	void testMgrGetCountriesPagedWithSearch() throws Exception {
-		Country c1 = new Country("AA", "+100", "Country A");
-		Country c2 = new Country("BB", "+200", "Country B");
-		Country c3 = new Country("CC", "+300", "Other C");
-		countryIoOperationRepository.saveAndFlush(c1);
-		countryIoOperationRepository.saveAndFlush(c2);
-		countryIoOperationRepository.saveAndFlush(c3);
-
-		PagedResponse<Country> paged = countryBrowserManager.getCountries("Country", 0, 10);
-		assertThat(paged.getData()).hasSize(2);
-		assertThat(paged.getPageInfo().getTotalNbOfElements()).isEqualTo(2);
-	}
 }
