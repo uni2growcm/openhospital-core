@@ -332,6 +332,10 @@ public class Bill extends Auditable<String> implements Cloneable, Comparable<Bil
 		this.admission = admission;
 	}
 
+	public Integer getAdmissionId() {
+		return admission != null ? admission.getId() : null;
+	}
+
 	public int getLock() { return lock; }
 
 	public void setLock(int lock) { this.lock = lock; }
