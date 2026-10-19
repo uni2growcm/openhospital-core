@@ -317,4 +317,13 @@ public class WardBrowserManager {
 		return ioOperations.findWard(code);
 	}
 
+	/**
+	 * Retrieve all stored {@link Ward}s with isPharmacy = {@code true}
+	 *
+	 * @return the list of pharmacy wards
+	 * @throws OHServiceException if an error occurs retrieving the wards
+	 */
+	public List<Ward> getPharmacyWards() throws OHServiceException {
+		return ioOperations.getPharmacyWards();
+	}
 }
