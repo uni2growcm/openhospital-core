@@ -23,6 +23,10 @@ package org.isf.country.service;
 
 import org.isf.country.model.Country;
 import org.isf.utils.exception.OHServiceException;
+import org.isf.utils.pagination.PageInfo;
+import org.isf.utils.pagination.PagedResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -160,5 +164,84 @@ public class CountryIoOperations {
 			return getAllCountries();
 		}
 		return repository.searchCountries(keyword.trim());
+	}
+
+	/**
+	 * Returns active {@link Country}s page by page.
+	 *
+	 * @param pageable pagination parameters.
+	 * @return the requested page of active countries.
+	 * @throws OHServiceException when fails to fetch countries.
+	 */
+	public PagedResponse<Country> getCountries(Pageable pageable) throws OHServiceException {
+		Page<Country> pagedResult = repository.findByActiveOrderByNameAsc(1, pageable);
+		return setPaginationData(pagedResult);
+	}
+
+	private PagedResponse<Country> setPaginationData(Page<Country> pages) {
+		PagedResponse<Country> data = new PagedResponse<>();
+		data.setData(pages.getContent());
+		data.setPageInfo(PageInfo.from(pages));
+		return data;
+	}
+
+	/**
+	 * Returns the active {@link Country} with the given phoneCode, if it exists.
+	 *
+	 * @param phoneCode the phone code of the country to retrieve.
+	 * @return an {@link Optional} containing the {@link Country} if found and active, or empty otherwise.
+	 * @throws OHServiceException when fails to fetch the country.
+	 */
+	public Optional<Country> getActiveCountryByPhoneCode(String phoneCode) throws OHServiceException {
+		return repository.findByPhoneCodeAndActive(phoneCode, 1);
+	}
+
+	/**
+	 * Returns any archived (inactive) {@link Country} with the given ISO code.
+	 *
+	 * @param isoCode the ISO code of the country.
+	 * @return an {@link Optional} containing the archived country if found.
+	 * @throws OHServiceException when fails to fetch the country.
+	 */
+	public Optional<Country> getArchivedCountryByIsoCode(String isoCode) throws OHServiceException {
+		return repository.findByIsoCodeAndActive(isoCode, 0);
+	}
+
+	/**
+	 * Returns any archived (inactive) {@link Country} with the given name.
+	 *
+	 * @param name the name of the country.
+	 * @return an {@link Optional} containing the archived country if found.
+	 * @throws OHServiceException when fails to fetch the country.
+	 */
+	public Optional<Country> getArchivedCountryByName(String name) throws OHServiceException {
+		return repository.findByNameAndActive(name, 0);
+	}
+
+	/**
+	 * Saves a country, or reactivates it if an inactive record already exists with the same ISO code or name.
+	 *
+	 * @param country the country to save or reactivate.
+	 * @return the saved/reactivated {@link Country}.
+	 * @throws OHServiceException when fails to save or reactivate.
+	 */
+	public Country saveOrReactivateCountry(Country country) throws OHServiceException {
+		Optional<Country> archivedIso = repository.findByIsoCodeAndActive(country.getIsoCode(), 0);
+		Country target = archivedIso.orElse(null);
+
+		if (target == null && country.getName() != null) {
+			Optional<Country> archivedName = repository.findByNameAndActive(country.getName(), 0);
+			target = archivedName.orElse(null);
+		}
+
+		if (target != null) {
+			target.setIsoCode(country.getIsoCode());
+			target.setName(country.getName());
+			target.setPhoneCode(country.getPhoneCode());
+			target.setActive(1);
+			return repository.save(target);
+		}
+
+		return repository.save(country);
 	}
 }

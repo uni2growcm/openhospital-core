@@ -144,3 +144,4 @@ source step_a174_add_visit_report_button.sql;
 source step_a175_lab_paid_status.sql;
 source step_a176_block_exam.sql;
 source step_a177_add_article_families_permissions.sql;
+source step_a177_add_missing_settings.sql;
