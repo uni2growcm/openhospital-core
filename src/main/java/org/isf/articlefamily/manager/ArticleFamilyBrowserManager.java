@@ -157,4 +157,26 @@ public class ArticleFamilyBrowserManager {
 	public long getActiveCount() throws OHServiceException {
 		return ioOperations.getActiveCount();
 	}
+
+	/**
+	 * Returns any archived (inactive) {@link ArticleFamily} with the given code.
+	 *
+	 * @param code the code of the article family.
+	 * @return an {@link Optional} containing the archived article family if found.
+	 * @throws OHServiceException when fails to fetch the article family.
+	 */
+	public Optional<ArticleFamily> getArchivedArticleFamilyByCode(String code) throws OHServiceException {
+		return ioOperations.getArchivedArticleFamilyByCode(code);
+	}
+
+	/**
+	 * Saves an article family, or reactivates it if an inactive record already exists with the same code.
+	 *
+	 * @param articleFamily the article family to save or reactivate.
+	 * @return the saved/reactivated {@link ArticleFamily}.
+	 * @throws OHServiceException when fails to save or reactivate.
+	 */
+	public ArticleFamily saveOrReactivateArticleFamily(ArticleFamily articleFamily) throws OHServiceException {
+		return ioOperations.saveOrReactivateArticleFamily(articleFamily);
+	}
 }
