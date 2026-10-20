@@ -46,7 +46,9 @@ CREATE TABLE OH_DEATH (
 UPDATE OH_MENUITEM SET MNI_POSITION=12 WHERE MNI_ID_A="generaldata";
 UPDATE OH_MENUITEM SET MNI_POSITION=13 WHERE MNI_ID_A="help";
 
---Add mortuary in the main menu
-INSERT INTO `oh_menuitem` (`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`) VALUES ('mortuary', 'angal.menu.btn.mortuary', 'angal.menu.mortuary', 'x', 'U', 'main', 'org.isf.mortuary.gui.MortuaryBrowser','N', 11);
+-- Add mortuary in the main menu
+INSERT INTO `oh_menuitem`
+(`MNI_ID_A`, `MNI_BTN_LABEL`, `MNI_LABEL`, `MNI_TOOLTIP`, `MNI_SHORTCUT`, `MNI_SUBMENU`, `MNI_CLASS`, `MNI_IS_SUBMENU`, `MNI_POSITION`)
+VALUES    ('mortuary', 'angal.menu.btn.mortuary', 'angal.menu.mortuary', 'x', 'U', 'main', 'org.isf.mortuary.gui.MortuaryBrowser', 'N', 11);
 
 INSERT INTO `oh_groupmenu` (`GM_ID`, `GM_UG_ID_A`, `GM_MNI_ID_A`, `GM_ACTIVE`, `GM_CREATED_BY`, `GM_CREATED_DATE`, `GM_LAST_MODIFIED_BY`, `GM_LAST_MODIFIED_DATE`) VALUES (350,'admin','mortuary',1,NULL,NULL,NULL,NULL);
