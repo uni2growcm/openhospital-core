@@ -249,10 +249,16 @@ public class AccountingIoOperations {
 
 	public List<BillPayments> getPaymentsBetweenDatesWherePatient(LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient)
 		throws OHServiceException {
+		if (patient == null) {
+			return getPayments(dateFrom, dateTo);
+		}
 		return billPaymentRepository.findByDateAndPatient(TimeTools.getBeginningOfDay(dateFrom), TimeTools.getBeginningOfNextDay(dateTo), patient.getCode());
 	}
 
 	public List<Bill> getBillsBetweenDatesWherePatient(LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient) throws OHServiceException {
+		if (patient == null) {
+			return getBillsBetweenDates(dateFrom, dateTo);
+		}
 		return billRepository.findByDateAndPatient(TimeTools.getBeginningOfDay(dateFrom), TimeTools.getBeginningOfNextDay(dateTo), patient.getCode());
 	}
 
