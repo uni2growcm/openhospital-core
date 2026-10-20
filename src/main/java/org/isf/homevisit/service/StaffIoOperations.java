@@ -23,6 +23,10 @@ package org.isf.homevisit.service;
 
 import org.isf.homevisit.model.Staff;
 import org.isf.utils.exception.OHServiceException;
+import org.isf.utils.pagination.PageInfo;
+import org.isf.utils.pagination.PagedResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -68,6 +72,27 @@ public class StaffIoOperations {
 			return getAllActive();
 		}
 		return repository.searchActive(keyword.trim());
+	}
+
+	/**
+	 * Returns active staff members page by page, optionally filtered by keyword (name, profession, position, phone)
+	 * @param pageable page and size
+	 * @param keyword optional search keyword
+	 * @return the requested page of active staff
+	 * @throws OHServiceException when fails to fetch list
+	 */
+	public PagedResponse<Staff> getStaff(Pageable pageable, String keyword) throws OHServiceException {
+		Page<Staff> pagedResult = (keyword == null || keyword.trim().isEmpty())
+			? repository.findByActive(1, pageable)
+			: repository.searchActive(keyword.trim(), pageable);
+		return setPaginationData(pagedResult);
+	}
+
+	private PagedResponse<Staff> setPaginationData(Page<Staff> pages) {
+		PagedResponse<Staff> data = new PagedResponse<>();
+		data.setData(pages.getContent());
+		data.setPageInfo(PageInfo.from(pages));
+		return data;
 	}
 
 	/**
