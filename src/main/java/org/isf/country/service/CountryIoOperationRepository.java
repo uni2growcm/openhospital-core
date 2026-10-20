@@ -23,6 +23,8 @@
 package org.isf.country.service;
 
 import org.isf.country.model.Country;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -35,6 +37,7 @@ public interface CountryIoOperationRepository extends JpaRepository<Country, Int
 
 	Optional<Country> findByIsoCodeAndActive(String isoCode, int active);
 	List<Country> findAllByActiveOrderByNameAsc(int active);
+	Page<Country> findByActiveOrderByNameAsc(int active, Pageable pageable);
 	Optional<Country> findByIdAndActive(int id, int active);
 
 	@Modifying(clearAutomatically = true)
@@ -54,4 +57,6 @@ public interface CountryIoOperationRepository extends JpaRepository<Country, Int
 
 	Optional<Country> findByNameAndActive(String name, int active);
 	Optional<Country> findByPhoneCode(String phoneCode);
+
+	Optional<Country> findByPhoneCodeAndActive(String phoneCode, int active);
 }

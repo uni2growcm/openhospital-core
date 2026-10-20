@@ -28,3 +28,5 @@ source step_a171_admission_update_form.sql;
 source step_a173_tuberculosis_menu.sql;
 source step_a178_add_staff_permissions.sql;
 source step_a179_add_reduction_plans_permissions.sql;
+source step_a180_add_countries_permissions.sql;
+source step_a181_add_article_families_permissions.sql;
