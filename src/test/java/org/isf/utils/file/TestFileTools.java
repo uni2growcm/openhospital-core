@@ -25,6 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.File;
+import java.net.URISyntaxException;
 import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;
@@ -592,6 +593,10 @@ class TestFileTools {
 	}
 
 	private File getFile(String fileName) {
-		return new File(getClass().getResource(fileName).getFile());
+		try {
+			return new File(getClass().getResource(fileName).toURI());
+		} catch (URISyntaxException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }

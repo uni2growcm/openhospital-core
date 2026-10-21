@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -943,7 +944,7 @@ class Tests extends OHCoreTestCase {
 		Patient patient = testPatient.setup(true);
 		PatientProfilePhoto patientProfilePhoto = new PatientProfilePhoto();
 
-		File file = new File(getClass().getResource("patient.jpg").getFile());
+		File file = new File(getClass().getResource("patient.jpg").toURI());
 		byte[] bytes = Files.readAllBytes(file.toPath());
 		patientProfilePhoto.setPhoto(bytes);
 		assertThat(patientProfilePhoto.getPhotoAsImage()).isNotNull();
@@ -996,11 +997,11 @@ class Tests extends OHCoreTestCase {
 		return patient.getCode();
 	}
 	
-	private Integer setupTestPatientWithPhoto(boolean usingSet) throws OHException, IOException {
+	private Integer setupTestPatientWithPhoto(boolean usingSet) throws OHException, IOException, URISyntaxException {
 		Patient patient = testPatient.setup(usingSet);
 		PatientProfilePhoto patientProfilePhoto = new PatientProfilePhoto();
 
-		File file = new File(getClass().getResource("patient.jpg").getFile());
+		File file = new File(getClass().getResource("patient.jpg").toURI());
 		byte[] bytes = Files.readAllBytes(file.toPath());
 		patientProfilePhoto.setPhoto(bytes);
 		patient.setPatientProfilePhoto(patientProfilePhoto);
