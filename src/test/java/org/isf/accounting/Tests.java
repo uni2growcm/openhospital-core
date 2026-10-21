@@ -296,6 +296,43 @@ class Tests extends OHCoreTestCase {
 	}
 
 	@Test
+	void testIoGetPaymentsPageable() throws Exception {
+		int id = setupTestBillPayments(false);
+		BillPayments foundBillPayment = accountingBillPaymentIoOperationRepository.findById(id).orElse(null);
+		Assertions.assertThat(foundBillPayment).isNotNull();
+		LocalDateTime dateFrom = foundBillPayment.getDate().minusYears(1);
+		LocalDateTime dateTo = TimeTools.getNow();
+
+		org.isf.utils.pagination.PagedResponse<BillPayments> firstPage =
+			accountingIoOperation.getPaymentsPageable(dateFrom, dateTo, null, null, org.springframework.data.domain.PageRequest.of(0, 1));
+		Assertions.assertThat(firstPage.getData()).hasSize(1);
+		Assertions.assertThat(firstPage.getPageInfo().getTotalNbOfElements()).isGreaterThanOrEqualTo(1);
+
+		org.isf.utils.pagination.PagedResponse<BillPayments> filteredByPatient =
+			accountingIoOperation.getPaymentsPageable(dateFrom, dateTo, foundBillPayment.getBill().getBillPatient().getCode(), null,
+				org.springframework.data.domain.PageRequest.of(0, 10));
+		Assertions.assertThat(filteredByPatient.getData()).contains(foundBillPayment);
+
+		org.isf.utils.pagination.PagedResponse<BillPayments> filteredByOtherUser =
+			accountingIoOperation.getPaymentsPageable(dateFrom, dateTo, null, "someone-else",
+				org.springframework.data.domain.PageRequest.of(0, 10));
+		Assertions.assertThat(filteredByOtherUser.getData()).doesNotContain(foundBillPayment);
+	}
+
+	@Test
+	void testMgrGetPaymentsPageable() throws Exception {
+		int id = setupTestBillPayments(false);
+		BillPayments foundBillPayment = accountingBillPaymentIoOperationRepository.findById(id).orElse(null);
+		Assertions.assertThat(foundBillPayment).isNotNull();
+		LocalDateTime dateFrom = foundBillPayment.getDate().minusYears(1);
+		LocalDateTime dateTo = TimeTools.getNow();
+
+		org.isf.utils.pagination.PagedResponse<BillPayments> page =
+			billBrowserManager.getPaymentsPageable(dateFrom, dateTo, foundBillPayment.getBill().getBillPatient(), foundBillPayment.getUser(), 0, 10);
+		Assertions.assertThat(page.getData()).contains(foundBillPayment);
+	}
+
+	@Test
 	void testIoGetPaymentsBillId() throws Exception {
 		int id = setupTestBillPayments(false);
 		BillPayments foundBillPayment = accountingBillPaymentIoOperationRepository.findById(id).orElse(null);
