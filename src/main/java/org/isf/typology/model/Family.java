@@ -23,6 +23,9 @@ package org.isf.typology.model;
 
 import org.isf.generaldata.MessageBundle;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 public enum Family {
 	DELIVERYTYPE("angal.typology.deliverytype"),
 	VISITTYPE("angal.typology.visittype"),
@@ -43,8 +46,30 @@ public enum Family {
 		return key;
 	}
 
+	@JsonValue
+	public String toJson() {
+		return name();
+	}
+
 	@Override
 	public String toString() {
 		return MessageBundle.getMessage(key);
+	}
+
+	@JsonCreator
+	public static Family fromJson(String value) {
+		return fromString(value);
+	}
+
+	public static Family fromString(String value) {
+		if (value == null || value.trim().isEmpty()) {
+			return null;
+		}
+		for (Family family : values()) {
+			if (family.name().equalsIgnoreCase(value.trim()) || family.key.equalsIgnoreCase(value.trim())) {
+				return family;
+			}
+		}
+		return null;
 	}
 }
