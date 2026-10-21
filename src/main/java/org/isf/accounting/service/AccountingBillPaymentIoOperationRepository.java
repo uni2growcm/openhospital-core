@@ -30,6 +30,8 @@ import org.isf.accounting.model.Bill;
 import org.isf.accounting.model.BillPayments;
 import org.isf.menu.model.User;
 import org.isf.orthanc.model.Patient;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -105,4 +107,16 @@ public interface AccountingBillPaymentIoOperationRepository extends JpaRepositor
 
 	@Query("SELECT bp FROM BillPayments bp WHERE bp.date >= :dateFrom AND bp.date < :dateTo ORDER BY bp.date")
 	Stream<BillPayments> streamPaymentsForSage(@Param("dateFrom") LocalDateTime dateFrom, @Param("dateTo") LocalDateTime dateTo);
+
+	@Query("SELECT bp FROM BillPayments bp WHERE " +
+		"bp.date >= :dateFrom AND bp.date < :dateTo AND " +
+		"(:patientCode IS NULL OR bp.bill.billPatient.code = :patientCode) AND " +
+		"(:user IS NULL OR bp.user = :user) " +
+		"ORDER BY bp.date DESC")
+	Page<BillPayments> findByDateAndOptionalPatientPaginated(
+		@Param("dateFrom") LocalDateTime dateFrom,
+		@Param("dateTo") LocalDateTime dateTo,
+		@Param("patientCode") Integer patientCode,
+		@Param("user") String user,
+		Pageable pageable);
 }

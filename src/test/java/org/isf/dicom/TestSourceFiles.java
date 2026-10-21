@@ -28,6 +28,7 @@ import static org.assertj.core.api.Assertions.within;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.lang.reflect.Method;
+import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -256,6 +257,10 @@ public class TestSourceFiles extends OHCoreTestCase {
 	}
 
 	private File getFile(String fileName) {
-		return new File(getClass().getResource(fileName).getFile());
+		try {
+			return new File(getClass().getResource(fileName).toURI());
+		} catch (URISyntaxException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }

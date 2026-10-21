@@ -56,6 +56,8 @@ import org.isf.utils.db.TranslateOHServiceException;
 import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.model.OHExceptionMessage;
+import org.isf.utils.pagination.PageInfo;
+import org.isf.utils.pagination.PagedResponse;
 import org.isf.utils.time.TimeTools;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -184,6 +186,15 @@ public class AccountingIoOperations {
 
 	public List<BillPayments> getPayments(LocalDateTime dateFrom, LocalDateTime dateTo) throws OHServiceException {
 		return billPaymentRepository.findByDateBetweenOrderByIdAscDateAsc(TimeTools.getBeginningOfDay(dateFrom), TimeTools.getBeginningOfNextDay(dateTo));
+	}
+
+	public PagedResponse<BillPayments> getPaymentsPageable(LocalDateTime dateFrom, LocalDateTime dateTo, Integer patientCode, String user, Pageable pageable) throws OHServiceException {
+		Page<BillPayments> pagedResult = billPaymentRepository.findByDateAndOptionalPatientPaginated(
+			TimeTools.getBeginningOfDay(dateFrom), TimeTools.getBeginningOfNextDay(dateTo), patientCode, user, pageable);
+		PagedResponse<BillPayments> data = new PagedResponse<>();
+		data.setData(pagedResult.getContent());
+		data.setPageInfo(PageInfo.from(pagedResult));
+		return data;
 	}
 
 	public List<BillPayments> getPayments(int billID) throws OHServiceException {

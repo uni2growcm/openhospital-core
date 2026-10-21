@@ -57,6 +57,7 @@ import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.model.OHExceptionMessage;
 import org.isf.utils.exception.model.OHSeverityLevel;
+import org.isf.utils.pagination.PagedResponse;
 import org.isf.utils.time.TimeTools;
 import org.isf.ward.model.Ward;
 import org.springframework.data.domain.Page;
@@ -348,6 +349,12 @@ public class BillBrowserManager {
 
 	public List<BillPayments> getPayments(LocalDateTime dateFrom, LocalDateTime dateTo) throws OHServiceException {
 		return ioOperations.getPayments(dateFrom, dateTo);
+	}
+
+	public PagedResponse<BillPayments> getPaymentsPageable(LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient, String user, int page, int size) throws OHServiceException {
+		Pageable pageable = PageRequest.of(page, size);
+		Integer patientCode = patient != null ? patient.getCode() : null;
+		return ioOperations.getPaymentsPageable(dateFrom, dateTo, patientCode, user, pageable);
 	}
 
 	public List<BillPayments> getPayments(List<Bill> billArray) throws OHServiceException {
