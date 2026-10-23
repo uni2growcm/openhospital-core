@@ -24,6 +24,7 @@ package org.isf.stat.manager;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -936,6 +937,55 @@ public class JasperReportsManager {
 		}
 	}
 
+	/**
+	 * Maps, for reports whose Excel export needs translated column headers, each SQL column name to the
+	 * resource bundle key holding its translated label. The Excel export runs the report's raw SQL query
+	 * directly (it does not go through JasperReports' fill/resource-bundle mechanism like the PDF export
+	 * does), so without this mapping the Excel headers would just be the raw SQL column/alias names.
+	 */
+	private static final Map<String, Map<String, String>> EXCEL_COLUMN_LABEL_KEYS = Map.of(
+		"OH004_IncomesAllByPriceCodes_1", Map.of(
+			"BLI_ITEM_GROUP", "group",
+			"BLI_ITEM_DESC", "designation",
+			"QTY", "soldquantity",
+			"REFUNDED_QTY", "refundedquantity",
+			"AMOUNT", "soldamount",
+			"REFUNDED_AMOUNT", "refundedamount",
+			"BLI_ITEM_TYPE", "type"
+		)
+	);
+
+	/**
+	 * Builds the translated column headers for {@code jasperFileName}'s Excel export, using the report's
+	 * own resource bundle (same one used for the PDF export) and the current locale.
+	 *
+	 * @return the translated headers, or {@code null} if the report has no known column mapping or no resource bundle for the current locale
+	 */
+	private String[] translateExcelColumnHeaders(String jasperFileName, ResultSet resultSet) throws SQLException {
+		Map<String, String> columnLabelKeys = EXCEL_COLUMN_LABEL_KEYS.get(jasperFileName);
+		if (columnLabelKeys == null) {
+			return null;
+		}
+
+		ResourceBundle resourceBundle;
+		try {
+			resourceBundle = ResourceBundle.getBundle(jasperFileName, Locale.getDefault(), new UTF8Control());
+		} catch (MissingResourceException e) {
+			LOGGER.error(">> no resource bundle for language '{}' found for report {}", GeneralData.LANGUAGE, jasperFileName);
+			return null;
+		}
+
+		ResultSetMetaData rsmd = resultSet.getMetaData();
+		int colCount = rsmd.getColumnCount();
+		String[] headers = new String[colCount];
+		for (int i = 0; i < colCount; i++) {
+			String columnName = rsmd.getColumnName(i + 1);
+			String labelKey = columnLabelKeys.get(columnName);
+			headers[i] = labelKey != null ? resourceBundle.getString(labelKey) : columnName;
+		}
+		return headers;
+	}
+
 	public void getGenericReportFromDateToDateExcel(LocalDate fromDate, LocalDate toDate, String jasperFileFolder, String jasperFileName, String exportFilename,
 		String state, String state2) throws OHServiceException {
 
@@ -955,12 +1005,14 @@ public class JasperReportsManager {
 			DbQueryLogger dbQuery = new DbQueryLogger();
 			ResultSet resultSet = dbQuery.getData(queryString, true);
 
+			String[] headers = translateExcelColumnHeaders(jasperFileName, resultSet);
+
 			File exportFile = new File(exportFilename);
 			ExcelExporter xlsExport = new ExcelExporter();
 			if (exportFile.getName().endsWith(".xls")) {
-				xlsExport.exportResultsetToExcelOLD(resultSet, exportFile);
+				xlsExport.exportResultsetToExcelOLD(resultSet, exportFile, headers);
 			} else {
-				xlsExport.exportResultsetToExcel(resultSet, exportFile);
+				xlsExport.exportResultsetToExcel(resultSet, exportFile, headers);
 			}
 		} catch (Exception exception) {
 			throw new OHReportException(exception, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
