@@ -399,6 +399,21 @@ public class ExcelExporter {
 	 * @throws OHException
 	 */
 	public void exportResultsetToExcel(ResultSet resultSet, File exportFile) throws IOException, OHException {
+		exportResultsetToExcel(resultSet, exportFile, null);
+	}
+
+	/**
+	 * Export a {@link ResultSet} to Excel using Apache POI library, translating column headers when a matching entry
+	 * is found in {@code headerTranslations} (lookup by column name, case-insensitive). Columns without a match keep
+	 * their raw SQL column name.
+	 *
+	 * @param resultSet
+	 * @param exportFile
+	 * @param headerTranslations - map of SQL column name (any case) to the translated header label; may be {@code null}
+	 * @throws IOException
+	 * @throws OHException
+	 */
+	public void exportResultsetToExcel(ResultSet resultSet, File exportFile, Map<String, String> headerTranslations) throws IOException, OHException {
 		try (FileOutputStream fileStream = new FileOutputStream(exportFile)) {
 
 			workbook = new XSSFWorkbook();
@@ -414,7 +429,9 @@ public class ExcelExporter {
 				int colCount = rsmd.getColumnCount();
 				for (int i = 0; i < colCount; i++) {
 					Cell cell = headers.createCell((short) i);
-					RichTextString value = createHelper.createRichTextString(rsmd.getColumnName(i + 1));
+					String columnName = rsmd.getColumnName(i + 1);
+					String headerLabel = headerTranslations != null ? headerTranslations.get(columnName.toUpperCase()) : null;
+					RichTextString value = createHelper.createRichTextString(headerLabel != null ? headerLabel : columnName);
 					cell.setCellStyle(headerStyle);
 					cell.setCellValue(value);
 				}
@@ -585,6 +602,21 @@ public class ExcelExporter {
 	 * @throws OHException
 	 */
 	public void exportResultsetToExcelOLD(ResultSet resultSet, File exportFile) throws IOException, OHException {
+		exportResultsetToExcelOLD(resultSet, exportFile, null);
+	}
+
+	/**
+	 * Export a {@link ResultSet} to Excel 97-2003 using Apache POI library, translating column headers when a
+	 * matching entry is found in {@code headerTranslations} (lookup by column name, case-insensitive). Columns
+	 * without a match keep their raw SQL column name.
+	 *
+	 * @param resultSet
+	 * @param exportFile
+	 * @param headerTranslations - map of SQL column name (any case) to the translated header label; may be {@code null}
+	 * @throws IOException
+	 * @throws OHException
+	 */
+	public void exportResultsetToExcelOLD(ResultSet resultSet, File exportFile, Map<String, String> headerTranslations) throws IOException, OHException {
 		try (FileOutputStream fileStream = new FileOutputStream(exportFile)) {
 
 			workbook = new HSSFWorkbook();
@@ -598,7 +630,9 @@ public class ExcelExporter {
 				int colCount = rsmd.getColumnCount();
 				for (int i = 0; i < colCount; i++) {
 					HSSFCell cell = headers.createCell((short) i);
-					HSSFRichTextString value = new HSSFRichTextString(rsmd.getColumnName(i + 1));
+					String columnName = rsmd.getColumnName(i + 1);
+					String headerLabel = headerTranslations != null ? headerTranslations.get(columnName.toUpperCase()) : null;
+					HSSFRichTextString value = new HSSFRichTextString(headerLabel != null ? headerLabel : columnName);
 					cell.setCellStyle(headerStyle);
 					cell.setCellValue(value);
 				}
