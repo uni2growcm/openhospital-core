@@ -920,20 +920,61 @@ public class JasperReportsManager {
 
 			queryString = queryString.replace("$P{fromdate}", "'" + java.sql.Date.valueOf(fromDate) + '\'');
 			queryString = queryString.replace("$P{todate}", "'" + java.sql.Date.valueOf(toDate) + '\'');
+			queryString = substituteRemainingReportParameters(jasperReport, queryString);
 
 			DbQueryLogger dbQuery = new DbQueryLogger();
 			ResultSet resultSet = dbQuery.getData(queryString, true);
 
+			Map<String, String> headerTranslations = buildExcelHeaderTranslations(jasperFileName);
+
 			File exportFile = new File(exportFilename);
 			ExcelExporter xlsExport = new ExcelExporter();
 			if (exportFile.getName().endsWith(".xls")) {
-				xlsExport.exportResultsetToExcelOLD(resultSet, exportFile);
+				xlsExport.exportResultsetToExcelOLD(resultSet, exportFile, headerTranslations);
 			} else {
-				xlsExport.exportResultsetToExcel(resultSet, exportFile);
+				xlsExport.exportResultsetToExcel(resultSet, exportFile, headerTranslations);
 			}
 		} catch (Exception exception) {
 			throw new OHReportException(exception, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
 		}
+	}
+
+	/**
+	 * Some report queries reference additional string parameters besides {@code fromdate}/{@code todate} (e.g.
+	 * {@code state}, {@code state2}). The Excel export path runs the query directly against the database instead of
+	 * through the Jasper fill engine, so those tokens are never resolved and must be substituted here using each
+	 * parameter's default value, or the generated SQL is left with literal {@code $P{...}} tokens and fails.
+	 */
+	private String substituteRemainingReportParameters(JasperReport jasperReport, String queryString) {
+		String result = queryString;
+		for (JRParameter parameter : jasperReport.getParameters()) {
+			if (parameter.isSystemDefined() || parameter.getDefaultValueExpression() == null) {
+				continue;
+			}
+			String token = "$P{" + parameter.getName() + "}";
+			if (result.contains(token)) {
+				result = result.replace(token, parameter.getDefaultValueExpression().getText());
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Builds a SQL-column-name-to-translated-label lookup for the Excel export headers, using the report's own
+	 * resource bundle. Only columns whose lowercase name matches a bundle key get translated; every other column
+	 * keeps its raw SQL name, so reports with no matching keys are unaffected.
+	 */
+	private Map<String, String> buildExcelHeaderTranslations(String jasperFileName) {
+		Map<String, String> translations = new HashMap<>();
+		try {
+			ResourceBundle resourceBundle = ResourceBundle.getBundle(jasperFileName, Locale.getDefault(), new UTF8Control());
+			for (String key : resourceBundle.keySet()) {
+				translations.put(key.toUpperCase(), resourceBundle.getString(key));
+			}
+		} catch (MissingResourceException e) {
+			LOGGER.error(">> no resource bundle for language '{}' found for report {}", GeneralData.LANGUAGE, jasperFileName);
+		}
+		return translations;
 	}
 
 	public void getGenericReportFromDateToDateExcel(String fromDate, String toDate, String jasperFileFolder, String jasperFileName, String exportFilename)
