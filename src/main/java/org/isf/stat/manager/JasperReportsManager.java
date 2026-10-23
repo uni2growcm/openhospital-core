@@ -936,6 +936,37 @@ public class JasperReportsManager {
 		}
 	}
 
+	public void getGenericReportFromDateToDateExcel(LocalDate fromDate, LocalDate toDate, String jasperFileFolder, String jasperFileName, String exportFilename,
+		String state, String state2) throws OHServiceException {
+
+		try {
+			String filename = compileJasperFilename(jasperFileFolder, jasperFileName);
+			File jasperFile = new File(filename);
+
+			JasperReport jasperReport = (JasperReport) JRLoader.loadObject(jasperFile);
+			JRQuery query = jasperReport.getMainDataset().getQuery();
+			String queryString = query.getText();
+
+			queryString = queryString.replace("$P{fromdate}", "'" + java.sql.Date.valueOf(fromDate) + '\'');
+			queryString = queryString.replace("$P{todate}", "'" + java.sql.Date.valueOf(toDate) + '\'');
+			queryString = queryString.replace("$P{state}", "'" + state + "'");
+			queryString = queryString.replace("$P{state2}", "'" + state2 + "'");
+
+			DbQueryLogger dbQuery = new DbQueryLogger();
+			ResultSet resultSet = dbQuery.getData(queryString, true);
+
+			File exportFile = new File(exportFilename);
+			ExcelExporter xlsExport = new ExcelExporter();
+			if (exportFile.getName().endsWith(".xls")) {
+				xlsExport.exportResultsetToExcelOLD(resultSet, exportFile);
+			} else {
+				xlsExport.exportResultsetToExcel(resultSet, exportFile);
+			}
+		} catch (Exception exception) {
+			throw new OHReportException(exception, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
+		}
+	}
+
 	public void getGenericReportFromDateToDateExcel(String fromDate, String toDate, String jasperFileFolder, String jasperFileName, String exportFilename)
 		throws OHServiceException {
 
@@ -1083,6 +1114,9 @@ public class JasperReportsManager {
 
 		parameters.put("fromdate", toDate(fromDate)); // real param
 		parameters.put("todate", toDate(toDate)); // real param
+
+		DateTimeFormatter periodLabelFormatter = DateTimeFormatter.ofPattern(DD_MM_YYYY, Locale.getDefault());
+		parameters.put("PeriodLabel", fromDate.format(periodLabelFormatter) + " - " + toDate.format(periodLabelFormatter));
 		return parameters;
 	}
 
