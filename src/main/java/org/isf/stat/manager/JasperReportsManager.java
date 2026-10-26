@@ -1036,6 +1036,88 @@ public class JasperReportsManager {
 		}
 	}
 
+	public JasperReportResultDto getGenericReportWeekWardPdf(String fromDate, String toDate, String wardId, String wardName, String status, String statusLabel, String periodLabel, String jasperFileFolder, String jasperFileName)
+		throws OHServiceException {
+
+		try {
+			Map<String, Object> parameters = compileGenericReportWeekWardParameters(fromDate, toDate, wardId, wardName, status, statusLabel, periodLabel, jasperFileFolder, jasperFileName);
+			String pdfFilename = compilePDFFilename(jasperFileFolder, jasperFileName, Arrays.asList(fromDate, toDate, wardId != null ? wardId : "ALL", status != null ? status : "ALL"), "pdf");
+
+			JasperReportResultDto result = generateJasperReport(compileJasperFilename(jasperFileFolder, jasperFileName), pdfFilename, parameters);
+			JasperExportManager.exportReportToPdfFile(result.getJasperPrint(), pdfFilename);
+			return result;
+		} catch (Exception e) {
+			LOGGER.error("", e);
+			throw new OHReportException(e, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
+		}
+	}
+
+	public void getGenericReportWeekWardExcel(String fromDate, String toDate, String wardId, String wardName, String status, String statusLabel, String periodLabel, String jasperFileFolder, String jasperFileName, String exportFilename)
+		throws OHServiceException {
+
+		try {
+			File jasperFile = new File(compileJasperFilename(jasperFileFolder, jasperFileName));
+			JasperReport jasperReport = (JasperReport) JRLoader.loadObject(jasperFile);
+			JRQuery query = jasperReport.getMainDataset().getQuery();
+			String queryString = query.getText();
+			queryString = queryString.replace("$P{fromdate}", "'" + fromDate + "'");
+			queryString = queryString.replace("$P{todate}", "'" + toDate + "'");
+			queryString = queryString.replace("$P{ward_id}", "'" + (wardId != null ? wardId : "ALL") + "'");
+			queryString = queryString.replace("$P{status}", "'" + (status != null ? status : "ALL") + "'");
+
+			DbQueryLogger dbQuery = new DbQueryLogger();
+			ResultSet resultSet = dbQuery.getData(queryString, true);
+
+			File exportFile = new File(exportFilename);
+			ExcelExporter xlsExport = new ExcelExporter();
+
+			ResourceBundle bundle = null;
+			try {
+				bundle = ResourceBundle.getBundle(jasperFileName, Locale.getDefault(), new UTF8Control());
+			} catch (Exception e) {
+				LOGGER.warn("Could not load bundle for {}", jasperFileName);
+			}
+
+			String hospitalName = "";
+			try {
+				Hospital hosp = hospitalManager.getHospital();
+				if (hosp != null) {
+					hospitalName = hosp.getDescription();
+				}
+			} catch (Exception e) {
+				LOGGER.warn("Could not get hospital description", e);
+			}
+
+			if ("OH004_IncomesAllByPriceCodes_3_week".equalsIgnoreCase(jasperFileName)) {
+				xlsExport.exportIncomesAllByPriceCodesWeekToExcel(resultSet, exportFile, periodLabel, wardName, statusLabel, hospitalName, bundle);
+			} else {
+				if (exportFile.getName().endsWith(".xls")) {
+					xlsExport.exportResultsetToExcelOLD(resultSet, exportFile);
+				} else {
+					xlsExport.exportResultsetToExcel(resultSet, exportFile);
+				}
+			}
+		} catch (Exception e) {
+			LOGGER.error("", e);
+			throw new OHReportException(e, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
+		}
+	}
+
+	private Map<String, Object> compileGenericReportWeekWardParameters(String fromDate, String toDate, String wardId, String wardName, String status, String statusLabel, String periodLabel, String jasperFileFolder, String jasperFileName)
+		throws OHServiceException {
+		HashMap<String, Object> parameters = getHospitalParameters();
+		addBundleParameter(jasperFileFolder, jasperFileName, parameters);
+
+		parameters.put("fromdate", fromDate);
+		parameters.put("todate", toDate);
+		parameters.put("ward_id", wardId != null ? wardId : "ALL");
+		parameters.put("ward_name", wardName != null ? wardName : "");
+		parameters.put("status", status != null ? status : "ALL");
+		parameters.put("status_label", statusLabel != null ? statusLabel : "");
+		parameters.put("PeriodLabel", periodLabel != null ? periodLabel : "");
+		return parameters;
+	}
+
 	private HashMap<String, Object> compileGenericReportUserInDateParameters(String fromDate, String toDate, String aUser) throws OHServiceException {
 		HashMap<String, Object> parameters = getHospitalParameters();
 
