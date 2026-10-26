@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2024 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -37,7 +37,7 @@ public class DbJpaUtil {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DbJpaUtil.class);
 
-	private static EntityManagerFactory entityManagerFactory = Context.getApplicationContext().getBean("entityManagerFactory", EntityManagerFactory.class);
+	private static EntityManagerFactory entityManagerFactory;
 	private static EntityManager entityManager;
 
 	/**
@@ -51,11 +51,19 @@ public class DbJpaUtil {
      */
 	public void open() throws OHException {
 		try {
-			entityManager = entityManagerFactory.createEntityManager();
+			if (entityManagerFactory == null && Context.getApplicationContext() != null) {
+				entityManagerFactory = Context.getApplicationContext().getBean("entityManagerFactory", EntityManagerFactory.class);
+			}
+			entityManager = entityManagerFactory != null ? entityManagerFactory.createEntityManager() : null;
 		} catch (IllegalStateException illegalStateException) {
 			LOGGER.error("IllegalStateException", illegalStateException);
 			throw new OHException(MessageBundle.getMessage("angal.sql.problemsoccurredwiththesqlinstruction.msg"), illegalStateException);
 		}
+	}
+
+	public static void reset() {
+		entityManager = null;
+		entityManagerFactory = null;
 	}
 
     /**
