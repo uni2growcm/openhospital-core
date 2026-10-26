@@ -711,14 +711,14 @@ public class ExcelExporter {
 		throws OHException, IOException {
 
 		boolean isXlsx = exportFile.getName().toLowerCase().endsWith(".xlsx");
-		try (Workbook workbook = isXlsx ? new XSSFWorkbook() : new HSSFWorkbook();
-			 FileOutputStream fileStream = new FileOutputStream(exportFile)) {
+		this.workbook = isXlsx ? new XSSFWorkbook() : new HSSFWorkbook();
+		try (FileOutputStream fileStream = new FileOutputStream(exportFile)) {
 
-			CreationHelper createHelper = workbook.getCreationHelper();
-			Sheet worksheet = workbook.createSheet();
+			this.createHelper = this.workbook.getCreationHelper();
+			Sheet worksheet = this.workbook.createSheet();
 			initStyles();
 
-			Font dataFont = workbook.createFont();
+			Font dataFont = this.workbook.createFont();
 			dataFont.setFontHeightInPoints((short) 9);
 
 			CellStyle cellDayStyle = workbook.createCellStyle();
@@ -842,6 +842,13 @@ public class ExcelExporter {
 
 			workbook.write(fileStream);
 			fileStream.flush();
+		} finally {
+			if (this.workbook != null) {
+				try {
+					this.workbook.close();
+				} catch (IOException ignored) {
+				}
+			}
 		}
 	}
 
