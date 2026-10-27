@@ -1419,10 +1419,10 @@ public class JasperReportsManager {
 		try {
 			List<BillItemReportBean> beans = buildSalesByProductAndServicePerYear(year, state, state2, ward);
 
-			Map<String, Object> parameters = getHospitalParameters();
+			HashMap<String, Object> parameters = getHospitalParameters();
 			parameters.put("code_title", "angal.stat.incomesallbypricecodes_3_title");
 			parameters.put("year", String.valueOf(year));
-			parameters.put(JRParameter.REPORT_RESOURCE_BUNDLE, MessageBundle.getBundle());
+			addBundleParameter(RPT_STAT, SALES_BY_PRODUCT_SERVICE_PER_YEAR_FILENAME, parameters);
 
 			String pdfFilename = compilePDFFilename(RPT_STAT, SALES_BY_PRODUCT_SERVICE_PER_YEAR_FILENAME, Arrays.asList(String.valueOf(year)), "pdf");
 			String jasperFilename = compileJasperFilename(RPT_STAT, SALES_BY_PRODUCT_SERVICE_PER_YEAR_FILENAME);
