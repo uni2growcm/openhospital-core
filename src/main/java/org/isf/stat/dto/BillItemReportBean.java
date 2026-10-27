@@ -578,5 +578,4 @@ public class BillItemReportBean implements Serializable {
 	public void setREFUNDED_TOTAL_YEAR_AMOUNT(Double totalYearAmount) {
 		REFUNDED_TOTAL_YEAR_AMOUNT = totalYearAmount;
 	}
-
 }
