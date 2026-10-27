@@ -786,6 +786,8 @@ public class ExcelExporter {
 
 			int rowIndex = 1;
 			String currentGroup = null;
+			double grandTotalAmount = 0.0;
+			String[] days = {"MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"};
 
 			try {
 				while (resultSet.next()) {
@@ -812,24 +814,53 @@ public class ExcelExporter {
 					descCell.setCellStyle(cellDescStyle);
 
 					for (int d = 0; d < 7; d++) {
-						double qty = resultSet.getDouble(3 + d * 2);
-						double amount = resultSet.getDouble(4 + d * 2);
+						double qv = getDoubleColumn(resultSet, "COUNT_" + days[d], 3 + d * 4);
+						double qr = getDoubleColumn(resultSet, "REFUNDED_COUNT_" + days[d], 4 + d * 4);
+						double mv = getDoubleColumn(resultSet, "AMOUNT_" + days[d], 5 + d * 4);
 
 						Cell dayCell = row.createCell(d + 1);
-						String cellText = formatCellText(qty, amount);
+						String cellText = formatCellText(qv, qr, mv);
 						dayCell.setCellValue(createHelper.createRichTextString(cellText));
 						dayCell.setCellStyle(cellDayStyle);
 					}
 
-					double totalQty = resultSet.getDouble(17);
-					double totalAmount = resultSet.getDouble(18);
+					double totalQv = getDoubleColumn(resultSet, "TOTAL_WEEK_COUNT", 31);
+					double totalQr = getDoubleColumn(resultSet, "REFUNDED_TOTAL_WEEK_COUNT", 32);
+					double totalMv = getDoubleColumn(resultSet, "TOTAL_WEEK_AMOUNT", 33);
+					double refundedTotalMv = getDoubleColumn(resultSet, "REFUNDED_TOTAL_WEEK_AMOUNT", 34);
+
 					Cell totalCell = row.createCell(8);
-					String totalText = formatCellText(totalQty, totalAmount);
+					String totalText = formatCellText(totalQv, totalQr, totalMv);
 					totalCell.setCellValue(createHelper.createRichTextString(totalText));
 					totalCell.setCellStyle(cellDayStyle);
 
+					grandTotalAmount += (totalMv - refundedTotalMv);
+
 					rowIndex++;
 				}
+
+				// Summary row
+				CellStyle totalLabelStyle = workbook.createCellStyle();
+				totalLabelStyle.setFont(colHeaderFont);
+				totalLabelStyle.setAlignment(HorizontalAlignment.RIGHT);
+				totalLabelStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+
+				CellStyle totalValStyle = workbook.createCellStyle();
+				totalValStyle.setFont(colHeaderFont);
+				totalValStyle.setAlignment(HorizontalAlignment.RIGHT);
+				totalValStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+				totalValStyle.setBorderTop(BorderStyle.THIN);
+				totalValStyle.setBorderBottom(BorderStyle.DOUBLE);
+
+				Row grandTotalRow = worksheet.createRow(rowIndex);
+				grandTotalRow.setHeightInPoints(22);
+				Cell labelCell = grandTotalRow.createCell(7);
+				labelCell.setCellValue(createHelper.createRichTextString(getBundleString(bundle, "angal.stat.total", "Total") + " :"));
+				labelCell.setCellStyle(totalLabelStyle);
+
+				Cell grandTotalCell = grandTotalRow.createCell(8);
+				grandTotalCell.setCellValue(createHelper.createRichTextString(new DecimalFormat("#,##0").format(grandTotalAmount)));
+				grandTotalCell.setCellStyle(totalValStyle);
 			} catch (SQLException e) {
 				throw new OHException(e.getMessage(), e);
 			}
@@ -837,7 +868,7 @@ public class ExcelExporter {
 			for (int c = 0; c < 9; c++) {
 				worksheet.autoSizeColumn(c);
 				int currentWidth = worksheet.getColumnWidth(c);
-				worksheet.setColumnWidth(c, Math.max(currentWidth + 1024, c == 0 ? 7000 : 3500));
+				worksheet.setColumnWidth(c, Math.max(currentWidth + 1024, c == 0 ? 7000 : 5000));
 			}
 
 			workbook.write(fileStream);
@@ -852,9 +883,23 @@ public class ExcelExporter {
 		}
 	}
 
-	private String formatCellText(double qty, double amount) {
-		DecimalFormat df = new DecimalFormat("#,##0.##");
-		return df.format(qty) + "\n" + df.format(amount);
+	private double getDoubleColumn(ResultSet rs, String colName, int fallbackIndex) {
+		try {
+			return rs.getDouble(colName);
+		} catch (SQLException e) {
+			if (fallbackIndex > 0) {
+				try {
+					return rs.getDouble(fallbackIndex);
+				} catch (SQLException ignored) {
+				}
+			}
+			return 0.0;
+		}
+	}
+
+	private String formatCellText(double qv, double qr, double mv) {
+		DecimalFormat df = new DecimalFormat("#,##0");
+		return "Qv: " + df.format(qv) + " | QR: " + df.format(qr) + "\nMV: " + df.format(mv);
 	}
 
 	private String translateItemType(String group, ResourceBundle bundle) {
