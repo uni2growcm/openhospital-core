@@ -28,7 +28,11 @@ import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.HashMap;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import javax.sql.DataSource;
 
@@ -47,6 +51,8 @@ import org.mockito.MockedStatic;
 import org.mockito.MockitoAnnotations;
 import org.mockito.stubbing.Answer;
 
+import net.sf.jasperreports.engine.JRBand;
+import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
@@ -69,6 +75,12 @@ class Tests extends OHCoreTestCase {
 	JasperPrint jasperPrint;
 	@Mock
 	Connection connection;
+	@Mock
+	PreparedStatement preparedStatement;
+	@Mock
+	ResultSet resultSet;
+	@Mock
+	ResourceBundle resourceBundle;
 	@Mock
 	WardBrowserManager wardBrowserManager;
 
@@ -168,6 +180,42 @@ class Tests extends OHCoreTestCase {
 			assertThat(jasperReportResultDto).isNotNull();
 			assertThat(jasperReportResultDto.getFilename()).containsAnyOf("rpt_base/PDF/operationslist.pdf", "rpt_base\\PDF\\operationslist.pdf");
 			assertThat(jasperReportResultDto.getJasperFile()).containsAnyOf("rpt_base/operationslist.jasper", "rpt_base\\operationslist.jasper");
+		}
+	}
+
+	@Test
+	void testGetSalesByProductAndServicePerYearPdf() throws Exception {
+		try (MockedStatic<JRLoader> mockedJRLoader = mockStatic(JRLoader.class);
+						MockedStatic<JasperFillManager> mockedJasperFillManager = mockStatic(JasperFillManager.class);
+						MockedStatic<JasperExportManager> mockedJasperExportManager = mockStatic(JasperExportManager.class);
+						MockedStatic<ResourceBundle> mockedResourceBundle = mockStatic(ResourceBundle.class)) {
+			JasperReportsManager jasperReportsManager = new JasperReportsManager(hospitalBrowsingManager, dataSource, wardBrowserManager);
+
+			when(hospitalBrowsingManager.getHospital()).thenReturn(hospital);
+			when(hospital.getDescription()).thenReturn("Description");
+
+			when(dataSource.getConnection()).thenReturn(connection);
+			when(connection.prepareStatement(any(String.class))).thenReturn(preparedStatement);
+			when(preparedStatement.executeQuery()).thenReturn(resultSet);
+			when(resultSet.next()).thenReturn(false);
+
+			// OH004_IncomesAllByPriceCodes_3's resource bundle lives in the gui module, not on OH-core's classpath
+			mockedResourceBundle.when(() -> ResourceBundle.getBundle(any(String.class), any(Locale.class), any(ResourceBundle.Control.class)))
+							.thenReturn(resourceBundle);
+
+			mockedJRLoader.when(() -> JRLoader.loadObject(any(File.class))).thenReturn(jasperReport);
+			when(jasperReport.getAllBands()).thenReturn(new JRBand[0]); // report has no subreports
+			mockedJasperFillManager.when(() -> JasperFillManager.fillReport(any(JasperReport.class), any(HashMap.class), any(JRDataSource.class)))
+							.thenReturn(jasperPrint);
+			mockedJasperExportManager.when(() -> JasperExportManager.exportReportToPdfFile(any(JasperPrint.class), any(String.class)))
+							.thenAnswer((Answer<Void>) invocation -> null);
+
+			JasperReportResultDto jasperReportResultDto = jasperReportsManager.getSalesByProductAndServicePerYearPdf(2026, "O", "C", "ALL");
+			assertThat(jasperReportResultDto).isNotNull();
+			assertThat(jasperReportResultDto.getFilename())
+							.containsAnyOf("rpt_stat/PDF/OH004_IncomesAllByPriceCodes_3_2026.pdf", "rpt_stat\\PDF\\OH004_IncomesAllByPriceCodes_3_2026.pdf");
+			assertThat(jasperReportResultDto.getJasperFile())
+							.containsAnyOf("rpt_stat/OH004_IncomesAllByPriceCodes_3.jasper", "rpt_stat\\OH004_IncomesAllByPriceCodes_3.jasper");
 		}
 	}
 }
