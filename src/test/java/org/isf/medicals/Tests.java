@@ -59,10 +59,10 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.isf.articlefamily.model.ArticleFamily;
+import org.isf.articlefamily.service.ArticleFamilyIoOperationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Page;
-import java.util.ArrayList;
 
 class Tests extends OHCoreTestCase {
 
@@ -92,6 +92,8 @@ class Tests extends OHCoreTestCase {
 	LotIoOperationRepository lotIoOperationRepository;
 	@Autowired
 	SupplierIoOperationRepository supplierIoOperationRepository;
+	@Autowired
+	ArticleFamilyIoOperationRepository articleFamilyIoOperationRepository;
 
 	@BeforeAll
 	static void setUpClass() {
@@ -700,7 +702,7 @@ class Tests extends OHCoreTestCase {
 		List<Medical> savedMedicals = generateMedicals(10, true, 2);
 
 		Page<Medical> firstPage = medicalBrowsingManager.getMedicalsByTypeAndDescription(
-			savedMedicals.get(0).getType().getDescription(), null, 'N', false, 0, 3
+			savedMedicals.get(0).getType().getCode(), null, 'N', false, 0, 3
 		);
 
 		assertThat(firstPage.getTotalElements()).isEqualTo(8);
@@ -708,7 +710,7 @@ class Tests extends OHCoreTestCase {
 		assertThat(firstPage.getContent().get(0).getProdCode()).isEqualTo("prod_code2");
 
 		Page<Medical> lastPage = medicalBrowsingManager.getMedicalsByTypeAndDescription(
-			savedMedicals.get(0).getType().getDescription(), null, 'N', false, 2, 3
+			savedMedicals.get(0).getType().getCode(), null, 'N', false, 2, 3
 		);
 
 		assertThat(lastPage.getContent().size()).isEqualTo(2);
@@ -750,7 +752,7 @@ class Tests extends OHCoreTestCase {
 		List<Medical> savedMedicals = generateMedicals(8, true, 2);
 
 		Page<Medical> medicals = medicalBrowsingManager.getMedicalsByTypeAndDescription(
-			savedMedicals.get(0).getType().getDescription(), null, null, false, 0, 8
+			savedMedicals.get(0).getType().getCode(), null, null, false, 0, 8
 		);
 
 		assertThat(medicals.getTotalElements()).isEqualTo(8);
@@ -761,6 +763,103 @@ class Tests extends OHCoreTestCase {
 
 		assertThat(deletedCount).isEqualTo(2);
 		assertThat(notDeletedCount).isEqualTo(6);
+	}
+
+	@Test
+	@DisplayName("Should filter medicals by type code even when code differs from description")
+	void testMgrGetMedicalsByTypeTypeCodeFilter() throws Exception {
+		MedicalType typeChemical = new MedicalType("K", "Chemical");
+		medicalTypeIoOperationRepository.saveAndFlush(typeChemical);
+
+		MedicalType typeDrugs = new MedicalType("D", "Drugs");
+		medicalTypeIoOperationRepository.saveAndFlush(typeDrugs);
+
+		Medical medChemical = new Medical(0, typeChemical, "CH01", "Alcohol 70%", 1, 10, 50, 5);
+		medChemical.setCode(null);
+		medChemical.setDeleted('N');
+		medicalsIoOperationRepository.saveAndFlush(medChemical);
+
+		Medical medDrug = new Medical(0, typeDrugs, "DR01", "Paracetamol", 1, 10, 100, 20);
+		medDrug.setCode(null);
+		medDrug.setDeleted('N');
+		medicalsIoOperationRepository.saveAndFlush(medDrug);
+
+		Page<Medical> chemPage = medicalBrowsingManager.getMedicalsByTypeAndDescription("K", null, 'N', false, 0, 10);
+		assertThat(chemPage.getTotalElements()).isEqualTo(1);
+		assertThat(chemPage.getContent().get(0).getProdCode()).isEqualTo("CH01");
+		assertThat(chemPage.getContent().get(0).getType().getCode()).isEqualTo("K");
+
+		Page<Medical> drugPage = medicalBrowsingManager.getMedicalsByTypeAndDescription("D", null, 'N', false, 0, 10);
+		assertThat(drugPage.getTotalElements()).isEqualTo(1);
+		assertThat(drugPage.getContent().get(0).getProdCode()).isEqualTo("DR01");
+		assertThat(drugPage.getContent().get(0).getType().getCode()).isEqualTo("D");
+
+		Page<Medical> allPage = medicalBrowsingManager.getMedicalsByTypeAndDescription(null, null, 'N', false, 0, 10);
+		assertThat(allPage.getTotalElements()).isEqualTo(2);
+
+		Page<Medical> allPageEmpty = medicalBrowsingManager.getMedicalsByTypeAndDescription("", null, 'N', false, 0, 10);
+		assertThat(allPageEmpty.getTotalElements()).isEqualTo(2);
+	}
+
+	@Test
+	@DisplayName("Should filter medicals by type code, description, article family, and deleted status")
+	void testMgrGetMedicalsByTypeDescriptionFamilyAndDeleted() throws Exception {
+		MedicalType typeChemical = new MedicalType("K", "Chemical");
+		medicalTypeIoOperationRepository.saveAndFlush(typeChemical);
+
+		MedicalType typeDrugs = new MedicalType("D", "Drugs");
+		medicalTypeIoOperationRepository.saveAndFlush(typeDrugs);
+
+		ArticleFamily family1 = new ArticleFamily();
+		family1.setCode("FAM1");
+		family1.setDescription("Family 1");
+		articleFamilyIoOperationRepository.saveAndFlush(family1);
+
+		ArticleFamily family2 = new ArticleFamily();
+		family2.setCode("FAM2");
+		family2.setDescription("Family 2");
+		articleFamilyIoOperationRepository.saveAndFlush(family2);
+
+		Medical m1 = new Medical(0, typeChemical, "CH01", "Alcohol 70%", 1, 10, 50, 5);
+		m1.setCode(null);
+		m1.setDeleted('N');
+		m1.setArticleFamily(family1);
+		medicalsIoOperationRepository.saveAndFlush(m1);
+
+		Medical m2 = new Medical(0, typeChemical, "CH02", "Ether", 1, 10, 50, 5);
+		m2.setCode(null);
+		m2.setDeleted('N');
+		m2.setArticleFamily(family2);
+		medicalsIoOperationRepository.saveAndFlush(m2);
+
+		Medical m3 = new Medical(0, typeDrugs, "DR01", "Paracetamol", 1, 10, 100, 20);
+		m3.setCode(null);
+		m3.setDeleted('N');
+		m3.setArticleFamily(family1);
+		medicalsIoOperationRepository.saveAndFlush(m3);
+
+		Page<Medical> res = medicalBrowsingManager.getMedicalsByTypeDescriptionFamilyAndDeleted(
+			"K", "", family1, 'N', false, 0, 10
+		);
+		assertThat(res.getTotalElements()).isEqualTo(1);
+		assertThat(res.getContent().get(0).getProdCode()).isEqualTo("CH01");
+
+		res = medicalBrowsingManager.getMedicalsByTypeDescriptionFamilyAndDeleted(
+			"K", "", family2, 'N', false, 0, 10
+		);
+		assertThat(res.getTotalElements()).isEqualTo(1);
+		assertThat(res.getContent().get(0).getProdCode()).isEqualTo("CH02");
+
+		res = medicalBrowsingManager.getMedicalsByTypeDescriptionFamilyAndDeleted(
+			"K", "", null, 'N', false, 0, 10
+		);
+		assertThat(res.getTotalElements()).isEqualTo(2);
+
+		res = medicalBrowsingManager.getMedicalsByTypeDescriptionFamilyAndDeleted(
+			null, "Ether", null, 'N', false, 0, 10
+		);
+		assertThat(res.getTotalElements()).isEqualTo(1);
+		assertThat(res.getContent().get(0).getProdCode()).isEqualTo("CH02");
 	}
 
 	/**
