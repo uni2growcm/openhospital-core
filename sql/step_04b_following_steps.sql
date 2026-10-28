@@ -26,3 +26,4 @@ source step_a169_description_village.sql;
 source step_a170_add_home_visit_feature.sql;
 source step_a171_admission_update_form.sql;
 source step_a173_tuberculosis_menu.sql;
+source step_a182_add_lab_new_exam_button_menuitem.sql;
