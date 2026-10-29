@@ -143,4 +143,3 @@ source step_a172_tuberculosis_module.sql;
 source step_a174_add_visit_report_button.sql;
 source step_a175_lab_paid_status.sql;
 source step_a176_block_exam.sql;
-source step_a177_alter_pregnancyvisit_drop_unique_index.sql;
