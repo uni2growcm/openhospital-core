@@ -55,11 +55,6 @@ class TestDbQueryLogger {
 		closeable = MockitoAnnotations.openMocks(this);
 		Context.setApplicationContext(applicationContextMock);
 		when(applicationContextMock.getBean("entityManagerFactory", EntityManagerFactory.class)).thenReturn(entityManagerFactoryMock);
-		// DbSingleJpaConn and DbJpaUtil cache a connection/EntityManagerFactory/EntityManager in static
-		// fields (DbJpaUtil's EntityManagerFactory is even captured once at class-load time from
-		// Context.getApplicationContext()). Other tests running earlier in the same JVM may have already
-		// populated these with real, live instances, which would short-circuit the mocks set up above.
-		// Reset them so this test is isolated regardless of execution order.
 		Field connectionField = DbSingleJpaConn.class.getDeclaredField("connection");
 		connectionField.setAccessible(true);
 		connectionField.set(null, null);
