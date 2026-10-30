@@ -41,6 +41,7 @@ class TestDbSingleJpaConn {
 
 	@Mock
 	EntityManagerFactory entityManagerFactoryMock;
+	
 	@Mock
 	ApplicationContext applicationContextMock;
 
