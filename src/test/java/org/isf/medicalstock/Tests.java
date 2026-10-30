@@ -23,6 +23,7 @@ package org.isf.medicalstock;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.within;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.lang.reflect.InvocationTargetException;
@@ -33,6 +34,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -867,6 +869,49 @@ class Tests extends OHCoreTestCase {
 		assertThat(foundMovement).isNotNull();
 		assertThat(movStockInsertingManager.refNoExists(foundMovement.getRefNo())).isTrue();
 		assertThat(movStockInsertingManager.refNoExists("notThere")).isFalse();
+	}
+
+	@Test
+	void testGetAverageCostPricesByMedicals() throws Exception {
+		int code = setupTestMovement(false);
+		Movement foundMovement = movementIoOperationRepository.findById(code).orElse(null);
+		assertThat(foundMovement).isNotNull();
+
+		Map<Integer, Double> avgCosts = movStockInsertingManager.getAverageCostPricesByMedicals(List.of(foundMovement.getMedical().getCode()));
+		assertThat(avgCosts).containsKey(foundMovement.getMedical().getCode());
+		assertThat(avgCosts.get(foundMovement.getMedical().getCode())).isCloseTo(10.10, within(0.01));
+
+		assertThat(movStockInsertingManager.getAverageCostPricesByMedicals(new ArrayList<>())).isEmpty();
+
+		assertThat(movStockInsertingManager.getAverageCostPricesByMedicals(null)).isEmpty();
+
+		Map<Integer, Double> nonExistent = movStockInsertingManager.getAverageCostPricesByMedicals(List.of(-999));
+		assertThat(nonExistent).isEmpty();
+	}
+
+	@Test
+	void testGetTotalStockValue() throws Exception {
+		int code = setupTestMovement(false);
+		Movement foundMovement = movementIoOperationRepository.findById(code).orElse(null);
+		assertThat(foundMovement).isNotNull();
+
+		Medical medical = foundMovement.getMedical();
+		Double totalValue = movStockInsertingManager.getTotalStockValue(
+				medical.getType().getCode(),
+				null,
+				'N',
+				medical.getDescription()
+		);
+		assertThat(totalValue).isNotNull();
+		assertThat(totalValue).isCloseTo(102.01, within(0.1));
+
+		Double zeroValue = movStockInsertingManager.getTotalStockValue(
+				medical.getType().getCode(),
+				null,
+				'N',
+				"NonExistentDescriptionXYZ"
+		);
+		assertThat(zeroValue).isEqualTo(0.0);
 	}
 
 	@ParameterizedTest(name = "Test with AUTOMATICLOT_IN={0}, AUTOMATICLOT_OUT={1}, AUTOMATICLOTWARD_TOWARD={2}")
