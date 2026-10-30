@@ -33,6 +33,7 @@ import org.isf.menu.model.User;
 import org.isf.menu.model.UserGroup;
 import org.isf.menu.service.UserGroupIoOperationRepository;
 import org.isf.menu.service.UserIoOperationRepository;
+import org.isf.utils.db.BCrypt;
 import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHException;
 import org.isf.utils.time.TimeTools;
@@ -64,6 +65,18 @@ class TestUserBrowsingManager extends OHCoreTestCase {
 		GeneralData.STRONGPASSWORD = true;
 		GeneralData.PASSWORDTRIES = 3;
 		cleanH2InMemoryDb();
+	}
+
+	@Test
+	void isPasswordCorrect() {
+		User user = new User();
+		user.setUserName("john");
+		user.setPasswd(BCrypt.hashpw("secret", BCrypt.gensalt()));
+
+		assertThat(userBrowsingManager.isPasswordCorrect(user, "secret")).isTrue();
+		assertThat(userBrowsingManager.isPasswordCorrect(user, "wrong")).isFalse();
+		assertThat(userBrowsingManager.isPasswordCorrect(user, null)).isFalse();
+		assertThat(userBrowsingManager.isPasswordCorrect(null, "secret")).isFalse();
 	}
 
 	@Test
