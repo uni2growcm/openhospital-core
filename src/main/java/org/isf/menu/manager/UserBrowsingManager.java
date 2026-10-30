@@ -34,6 +34,7 @@ import org.isf.menu.model.UserMenuItem;
 import org.isf.menu.service.MenuIoOperations;
 import org.isf.permissions.model.Permission;
 import org.isf.sessionaudit.model.UserSession;
+import org.isf.utils.db.BCrypt;
 import org.isf.utils.exception.OHDataIntegrityViolationException;
 import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHServiceException;
@@ -436,6 +437,24 @@ public class UserBrowsingManager {
 		}
 
 		return ioOperations.updateUserGroup(userGroup, permissions);
+	}
+
+	/**
+	 * Checks whether the given password matches the stored password of the specified {@link User}.
+	 *
+	 * @param user the {@link User} whose password should be checked
+	 * @param password the plain-text password to verify
+	 * @return {@code true} if the password matches, {@code false} otherwise
+	 */
+	public boolean isPasswordCorrect(User user, String password) {
+		if (user == null || password == null || user.getPasswd() == null) {
+			return false;
+		}
+		try {
+			return BCrypt.checkpw(password, user.getPasswd());
+		} catch (IllegalArgumentException e) {
+			return false;
+		}
 	}
 
 	/**
