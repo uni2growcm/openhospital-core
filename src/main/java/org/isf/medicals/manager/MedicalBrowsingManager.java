@@ -299,7 +299,7 @@ public class MedicalBrowsingManager {
 	 * Retrieves a paginated list of medical records filtered by type, description, and deleted status,
 	 * with an option to sort the results either alphabetically by description or by production code.
 	 *
-	 * @param type The type of medical items to filter by. Can be {@code null} to ignore this filter.
+	 * @param type The type code of medical items to filter by. Can be {@code null} or empty to ignore this filter.
 	 * @param description The description of medical items to filter by. Can be {@code null} to ignore this filter.
 	 * @param deleted The deletion status of medical items to filter by. If {@code null}, this filter is ignored.
 	 *  Use {@code 'Y'} for deleted records and {@code 'N'} for active records.
