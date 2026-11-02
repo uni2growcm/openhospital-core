@@ -29,6 +29,7 @@ import static org.mockito.Mockito.when;
 import java.io.File;
 import java.sql.Connection;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.sql.DataSource;
 
@@ -36,6 +37,8 @@ import org.isf.OHCoreTestCase;
 import org.isf.hospital.manager.HospitalBrowsingManager;
 import org.isf.hospital.model.Hospital;
 import org.isf.stat.dto.JasperReportResultDto;
+import org.isf.stat.dto.StatisticReportDto;
+import org.isf.stat.dto.StatisticReportDto.ParameterType;
 import org.isf.stat.manager.JasperReportsManager;
 import org.isf.ward.manager.WardBrowserManager;
 import org.junit.jupiter.api.AfterEach;
@@ -169,5 +172,44 @@ class Tests extends OHCoreTestCase {
 			assertThat(jasperReportResultDto.getFilename()).containsAnyOf("rpt_base/PDF/operationslist.pdf", "rpt_base\\PDF\\operationslist.pdf");
 			assertThat(jasperReportResultDto.getJasperFile()).containsAnyOf("rpt_base/operationslist.jasper", "rpt_base\\operationslist.jasper");
 		}
+	}
+
+	@Test
+	void testGetStatisticReports() {
+		JasperReportsManager jasperReportsManager = new JasperReportsManager(hospitalBrowsingManager, dataSource, wardBrowserManager);
+
+		List<StatisticReportDto> reports = jasperReportsManager.getStatisticReports("en");
+		assertThat(reports).isNotEmpty();
+		assertThat(reports).allSatisfy(report -> {
+			assertThat(report.getFolder()).isIn(JasperReportsManager.STATISTIC_REPORT_FOLDERS);
+			assertThat(report.getTitle()).isNotBlank();
+		});
+		assertThat(reports).anySatisfy(report -> {
+			assertThat(report.getFolder()).isEqualTo(JasperReportsManager.RPT_STAT);
+			assertThat(report.getFileName()).isEqualTo("OH001_RegisteredPatients");
+			assertThat(report.getTitle()).isEqualTo("OH001 - Registered Patients");
+		});
+	}
+
+	@Test
+	void testGetStatisticReport() {
+		JasperReportsManager jasperReportsManager = new JasperReportsManager(hospitalBrowsingManager, dataSource, wardBrowserManager);
+
+		StatisticReportDto registeredPatients = jasperReportsManager.getStatisticReport(JasperReportsManager.RPT_STAT, "OH001_RegisteredPatients", "en");
+		assertThat(registeredPatients).isNotNull();
+		assertThat(registeredPatients.getParameterType()).isEqualTo(ParameterType.DATE_RANGE);
+
+		StatisticReportDto referrals = jasperReportsManager.getStatisticReport(JasperReportsManager.RPT_EXTRA, "hmis105_opd_referrals", "en");
+		assertThat(referrals).isNotNull();
+		assertThat(referrals.getParameterType()).isEqualTo(ParameterType.MONTH_YEAR);
+	}
+
+	@Test
+	void testGetStatisticReportRejectsUnknownReports() {
+		JasperReportsManager jasperReportsManager = new JasperReportsManager(hospitalBrowsingManager, dataSource, wardBrowserManager);
+
+		assertThat(jasperReportsManager.getStatisticReport("rpt_base", "examslist", "en")).isNull();
+		assertThat(jasperReportsManager.getStatisticReport(JasperReportsManager.RPT_STAT, "../rpt_base/examslist", "en")).isNull();
+		assertThat(jasperReportsManager.getStatisticReport(JasperReportsManager.RPT_STAT, "doesNotExist", "en")).isNull();
 	}
 }

@@ -22,6 +22,15 @@
 package org.isf.stat.manager;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.Reader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -31,7 +40,9 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -39,9 +50,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import javax.sql.DataSource;
 
@@ -54,6 +67,8 @@ import org.isf.medicals.model.Medical;
 import org.isf.patient.model.Patient;
 import org.isf.patient.service.PatientIoOperations;
 import org.isf.stat.dto.JasperReportResultDto;
+import org.isf.stat.dto.StatisticReportDto;
+import org.isf.stat.dto.StatisticReportDto.ParameterType;
 import org.isf.utils.db.DbQueryLogger;
 import org.isf.utils.db.UTF8Control;
 import org.isf.utils.excel.ExcelExporter;
@@ -93,6 +108,17 @@ public class JasperReportsManager {
 	private static final String LOGO = "./rsc/images/logo_report.png";
 
 	private static final String RPT_BASE = "rpt_base";
+
+	public static final String RPT_STAT = "rpt_stat";
+
+	public static final String RPT_EXTRA = "rpt_extra";
+
+	/** Folders scanned to build the list of statistic reports (same as the "Reports" launcher of the GUI). */
+	public static final List<String> STATISTIC_REPORT_FOLDERS = List.of(RPT_STAT, RPT_EXTRA);
+
+	private static final String JASPER_EXTENSION = ".jasper";
+
+	private static final String REPORT_TITLE_KEY = "jTitle";
 
 	private HospitalBrowsingManager hospitalManager;
 
@@ -968,7 +994,7 @@ public class JasperReportsManager {
 		 * Jasper Report seems failing to decode resource bundles in UTF-8 encoding. For this reason we pass also the resource for the specific report read with
 		 * UTF8Control()
 		 */
-		addReportBundleParameter(JRParameter.REPORT_RESOURCE_BUNDLE, jasperFileName, parameters);
+		addReportBundleParameter(JRParameter.REPORT_RESOURCE_BUNDLE, jasperFileFolder, jasperFileName, parameters);
 
 		/*
 		 * Jasper Reports may contain subreports and we should pass also those. The parent report must contain parameters like:
@@ -1012,7 +1038,7 @@ public class JasperReportsManager {
 					if (matcher.find()) {
 						String subreportName = matcher.group(1).split("\\.")[0];
 						LOGGER.debug("found a subreport: {}", subreportName);
-						addReportBundleParameter("SUBREPORT_RESOURCE_BUNDLE_" + index, subreportName, parameters);
+						addReportBundleParameter("SUBREPORT_RESOURCE_BUNDLE_" + index, jasperFileFolder, subreportName, parameters);
 					} else {
 						LOGGER.error(">> unexpected subreport expression {}", expression);
 					}
@@ -1030,16 +1056,42 @@ public class JasperReportsManager {
 		return patientPhotoFile;
 	}
 
-	private void addReportBundleParameter(String jasperParameter, String jasperFileName, Map<String, Object> parameters) {
+	private void addReportBundleParameter(String jasperParameter, String jasperFileFolder, String jasperFileName, Map<String, Object> parameters) {
+		/*
+		 * Bundles are searched in the report folder first, so the reports work even when the folder is not part of the classpath (e.g. the REST API), then
+		 * in the classpath (e.g. the GUI).
+		 */
+		ClassLoader reportClassLoader = getReportFolderClassLoader(jasperFileFolder);
 		try {
-			ResourceBundle resourceBundle = ResourceBundle.getBundle(jasperFileName, Locale.getDefault(), new UTF8Control());
+			ResourceBundle resourceBundle = ResourceBundle.getBundle(jasperFileName, Locale.getDefault(), reportClassLoader, new UTF8Control());
 			parameters.put(jasperParameter, resourceBundle);
 
 		} catch (MissingResourceException e) {
 			LOGGER.error(">> no resource bundle for language '{}' found for report {}", GeneralData.LANGUAGE, jasperFileName);
 			LOGGER.info(">> switch to default language '{}'", Locale.getDefault());
-			parameters.put(jasperParameter, ResourceBundle.getBundle(jasperFileName, Locale.getDefault()));
+			try {
+				parameters.put(jasperParameter, ResourceBundle.getBundle(jasperFileName, Locale.getDefault(), reportClassLoader));
+			} catch (MissingResourceException missingResourceException) {
+				LOGGER.error(">> no resource bundle at all found for report {}", jasperFileName);
+			}
 			parameters.put(JRParameter.REPORT_LOCALE, Locale.getDefault());
+		}
+	}
+
+	private ClassLoader getReportFolderClassLoader(String jasperFileFolder) {
+		ClassLoader parent = Thread.currentThread().getContextClassLoader();
+		if (parent == null) {
+			parent = JasperReportsManager.class.getClassLoader();
+		}
+		if (jasperFileFolder == null) {
+			return parent;
+		}
+		try {
+			URL folderUrl = Paths.get(jasperFileFolder).toAbsolutePath().toUri().toURL();
+			return new URLClassLoader(new URL[] { folderUrl }, parent);
+		} catch (MalformedURLException e) {
+			LOGGER.warn("Unable to use report folder {} to load resource bundles", jasperFileFolder);
+			return parent;
 		}
 	}
 
@@ -1047,10 +1099,126 @@ public class JasperReportsManager {
 					throws JRException, SQLException {
 		File jasperFile = new File(jasperFilename);
 		final JasperReport jasperReport = (JasperReport) JRLoader.loadObject(jasperFile);
-		Connection connection = dataSource.getConnection();
-		JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, connection);
-		connection.close();
+		createParentDirectory(filename);
+		JasperPrint jasperPrint;
+		try (Connection connection = dataSource.getConnection()) {
+			jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, connection);
+		}
 		return new JasperReportResultDto(jasperPrint, jasperFilename, filename);
+	}
+
+	private static void createParentDirectory(String filename) {
+		if (filename == null) {
+			return;
+		}
+		File parent = new File(filename).getAbsoluteFile().getParentFile();
+		if (parent != null && !parent.exists() && !parent.mkdirs()) {
+			LOGGER.warn("Unable to create output directory {}", parent);
+		}
+	}
+
+	/**
+	 * Lists the statistic reports available in {@link #STATISTIC_REPORT_FOLDERS}, with the title translated in the requested language (property
+	 * {@code jTitle} of {@code <report>_<language>.properties}, falling back on {@code <report>.properties}). Reports without title are ignored, as in the
+	 * GUI report launcher.
+	 *
+	 * @param language the language used for titles (e.g. "en", "fr"); if {@code null} {@link GeneralData#LANGUAGE} is used
+	 * @return the reports sorted by title
+	 */
+	public List<StatisticReportDto> getStatisticReports(String language) {
+		String lang = language != null && !language.isBlank() ? language : GeneralData.LANGUAGE;
+		List<StatisticReportDto> reports = new ArrayList<>();
+		for (String folder : STATISTIC_REPORT_FOLDERS) {
+			Path folderPath = Paths.get(folder);
+			if (!Files.isDirectory(folderPath)) {
+				LOGGER.warn("Report folder {} not found", folderPath.toAbsolutePath());
+				continue;
+			}
+			try (Stream<Path> files = Files.list(folderPath)) {
+				files.filter(Files::isRegularFile)
+					.filter(path -> path.getFileName().toString().endsWith(JASPER_EXTENSION))
+					.forEach(path -> {
+						String fileName = path.getFileName().toString().replace(JASPER_EXTENSION, "");
+						String title = getReportTitle(folder, fileName, lang);
+						if (title == null) {
+							return;
+						}
+						try {
+							reports.add(describeStatisticReport(folder, fileName, title));
+						} catch (JRException e) {
+							LOGGER.error("Unable to load report {}", path, e);
+						}
+					});
+			} catch (IOException e) {
+				LOGGER.error("Unable to list reports in folder {}", folderPath.toAbsolutePath(), e);
+			}
+		}
+		reports.sort(Comparator.comparing(StatisticReportDto::getTitle, String.CASE_INSENSITIVE_ORDER));
+		return reports;
+	}
+
+	/**
+	 * Returns the description of one statistic report.
+	 *
+	 * @param folder one of {@link #STATISTIC_REPORT_FOLDERS}
+	 * @param fileName the report file name without extension
+	 * @param language the language used for the title
+	 * @return the report description or {@code null} if the folder is not allowed or the report does not exist
+	 */
+	public StatisticReportDto getStatisticReport(String folder, String fileName, String language) {
+		if (!STATISTIC_REPORT_FOLDERS.contains(folder) || fileName == null || !fileName.matches("[A-Za-z0-9_\\-]+")) {
+			return null;
+		}
+		if (!new File(compileJasperFilename(folder, fileName)).isFile()) {
+			return null;
+		}
+		String lang = language != null && !language.isBlank() ? language : GeneralData.LANGUAGE;
+		String title = getReportTitle(folder, fileName, lang);
+		try {
+			return describeStatisticReport(folder, fileName, title != null ? title : fileName);
+		} catch (JRException e) {
+			LOGGER.error("Unable to load report {}/{}", folder, fileName, e);
+			return null;
+		}
+	}
+
+	private StatisticReportDto describeStatisticReport(String folder, String fileName, String title) throws JRException {
+		JasperReport jasperReport = (JasperReport) JRLoader.loadObject(new File(compileJasperFilename(folder, fileName)));
+		List<JRParameter> userParameters = Arrays.stream(jasperReport.getParameters())
+			.filter(parameter -> !parameter.isSystemDefined() && parameter.isForPrompting())
+			.toList();
+		boolean hasDates = userParameters.stream().anyMatch(parameter -> "fromdate".equals(parameter.getName()) || "todate".equals(parameter.getName()));
+		boolean hasMonthYear = userParameters.stream().anyMatch(parameter -> "month".equals(parameter.getName()) || "year".equals(parameter.getName()));
+
+		ParameterType parameterType = ParameterType.NONE;
+		if (hasDates) {
+			parameterType = ParameterType.DATE_RANGE;
+		} else if (hasMonthYear) {
+			parameterType = ParameterType.MONTH_YEAR;
+		}
+		return new StatisticReportDto(folder, fileName, title, parameterType);
+	}
+
+	private static String getReportTitle(String folder, String fileName, String language) {
+		String title = readReportProperty(Paths.get(folder, fileName + '_' + language + ".properties"), REPORT_TITLE_KEY);
+		if (title == null || title.isBlank()) {
+			title = readReportProperty(Paths.get(folder, fileName + ".properties"), REPORT_TITLE_KEY);
+		}
+		return title == null || title.isBlank() ? null : title.trim();
+	}
+
+	private static String readReportProperty(Path propertiesFile, String key) {
+		if (!Files.isRegularFile(propertiesFile)) {
+			return null;
+		}
+		Properties properties = new Properties();
+		try (Reader reader = Files.newBufferedReader(propertiesFile, StandardCharsets.UTF_8)) {
+			properties.load(reader);
+		} catch (IOException e) {
+			LOGGER.error("Unable to read {}", propertiesFile, e);
+			return null;
+		}
+		return properties.getProperty(key);
 	}
 
 	private String compileJasperFilename(String folderName, String jasperFileName) {
@@ -1121,7 +1289,7 @@ public class JasperReportsManager {
 			String formattedDate = inventoryDateTime.format(formatter);
 			parameters.put("inventoryDate", formattedDate);
 
-			String pdfFilename = compilePDFFilename(RPT_BASE, jasperFileName, Arrays.asList(String.valueOf(inventory.getId())), "pdf ");
+			String pdfFilename = compilePDFFilename(RPT_BASE, jasperFileName, Arrays.asList(String.valueOf(inventory.getId())), "pdf");
 			LOGGER.info("Generated PDF File: {}", pdfFilename);
 
 			JasperReportResultDto result = generateJasperReport(compileJasperFilename(RPT_BASE, jasperFileName), pdfFilename, parameters);
