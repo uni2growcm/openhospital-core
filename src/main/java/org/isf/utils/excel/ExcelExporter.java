@@ -44,6 +44,8 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.Map;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 import java.util.Set;
 
 import javax.swing.JFileChooser;
@@ -401,6 +403,10 @@ public class ExcelExporter {
 	 * @throws OHException
 	 */
 	public void exportResultsetToExcel(ResultSet resultSet, File exportFile) throws IOException, OHException {
+		exportResultsetToExcel(resultSet, exportFile, null);
+	}
+
+	public void exportResultsetToExcel(ResultSet resultSet, File exportFile, ResourceBundle headerBundle) throws IOException, OHException {
 		try (FileOutputStream fileStream = new FileOutputStream(exportFile)) {
 
 			workbook = new XSSFWorkbook();
@@ -416,7 +422,7 @@ public class ExcelExporter {
 				int colCount = rsmd.getColumnCount();
 				for (int i = 0; i < colCount; i++) {
 					Cell cell = headers.createCell((short) i);
-					RichTextString value = createHelper.createRichTextString(rsmd.getColumnName(i + 1));
+					RichTextString value = createHelper.createRichTextString(resolveHeaderLabel(headerBundle, rsmd.getColumnName(i + 1)));
 					cell.setCellStyle(headerStyle);
 					cell.setCellValue(value);
 				}
@@ -598,6 +604,10 @@ public class ExcelExporter {
 	 * @throws OHException
 	 */
 	public void exportResultsetToExcelOLD(ResultSet resultSet, File exportFile) throws IOException, OHException {
+		exportResultsetToExcelOLD(resultSet, exportFile, null);
+	}
+
+	public void exportResultsetToExcelOLD(ResultSet resultSet, File exportFile, ResourceBundle headerBundle) throws IOException, OHException {
 		try (FileOutputStream fileStream = new FileOutputStream(exportFile)) {
 
 			workbook = new HSSFWorkbook();
@@ -611,7 +621,7 @@ public class ExcelExporter {
 				int colCount = rsmd.getColumnCount();
 				for (int i = 0; i < colCount; i++) {
 					HSSFCell cell = headers.createCell((short) i);
-					HSSFRichTextString value = new HSSFRichTextString(rsmd.getColumnName(i + 1));
+					HSSFRichTextString value = new HSSFRichTextString(resolveHeaderLabel(headerBundle, rsmd.getColumnName(i + 1)));
 					cell.setCellStyle(headerStyle);
 					cell.setCellValue(value);
 				}
@@ -721,6 +731,25 @@ public class ExcelExporter {
 				HSSFRichTextString val = new HSSFRichTextString(value.toString());
 				cell.setCellValue(val);
 			}
+		}
+	}
+
+	/**
+	 * Translates a SQL column name into a header label using the report's resource bundle, mirroring the
+	 * {@code $R{key}} lookup used in the jrxml column headers. Falls back to the raw column name when no
+	 * bundle is supplied or the key is not found.
+	 *
+	 * @param headerBundle the report resource bundle, or {@code null}
+	 * @param columnName the SQL column name (alias) as returned by the result set metadata
+	 */
+	private String resolveHeaderLabel(ResourceBundle headerBundle, String columnName) {
+		if (headerBundle == null) {
+			return columnName;
+		}
+		try {
+			return headerBundle.getString(columnName.toLowerCase());
+		} catch (MissingResourceException e) {
+			return columnName;
 		}
 	}
 

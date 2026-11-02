@@ -576,10 +576,11 @@ public class JasperReportsManager {
 
 			File exportFile = new File(exportFilename);
 			ExcelExporter xlsExport = new ExcelExporter();
+			ResourceBundle headerBundle = loadExcelHeaderResourceBundle(jasperFileName);
 			if (exportFile.getName().endsWith(".xls")) {
-				xlsExport.exportResultsetToExcelOLD(resultSet, exportFile);
+				xlsExport.exportResultsetToExcelOLD(resultSet, exportFile, headerBundle);
 			} else {
-				xlsExport.exportResultsetToExcel(resultSet, exportFile);
+				xlsExport.exportResultsetToExcel(resultSet, exportFile, headerBundle);
 			}
 		} catch (Exception e) {
 			LOGGER.error("", e);
@@ -629,10 +630,11 @@ public class JasperReportsManager {
 
 			File exportFile = new File(exportFilename);
 			ExcelExporter xlsExport = new ExcelExporter();
+			ResourceBundle headerBundle = loadExcelHeaderResourceBundle(jasperFileName);
 			if (exportFile.getName().endsWith(".xls")) {
-				xlsExport.exportResultsetToExcelOLD(resultSet, exportFile);
+				xlsExport.exportResultsetToExcelOLD(resultSet, exportFile, headerBundle);
 			} else {
-				xlsExport.exportResultsetToExcel(resultSet, exportFile);
+				xlsExport.exportResultsetToExcel(resultSet, exportFile, headerBundle);
 			}
 		} catch (Exception e) {
 			LOGGER.error("", e);
@@ -748,10 +750,11 @@ public class JasperReportsManager {
 
 			File exportFile = new File(exportFileName);
 			ExcelExporter xlsExport = new ExcelExporter();
+			ResourceBundle headerBundle = loadExcelHeaderResourceBundle(jasperFileName);
 			if (exportFile.getName().endsWith(".xls")) {
-				xlsExport.exportResultsetToExcelOLD(resultSet, exportFile);
+				xlsExport.exportResultsetToExcelOLD(resultSet, exportFile, headerBundle);
 			} else {
-				xlsExport.exportResultsetToExcel(resultSet, exportFile);
+				xlsExport.exportResultsetToExcel(resultSet, exportFile, headerBundle);
 			}
 
 		} catch (Exception e) {
@@ -926,10 +929,11 @@ public class JasperReportsManager {
 
 			File exportFile = new File(exportFilename);
 			ExcelExporter xlsExport = new ExcelExporter();
+			ResourceBundle headerBundle = loadExcelHeaderResourceBundle(jasperFileName);
 			if (exportFile.getName().endsWith(".xls")) {
-				xlsExport.exportResultsetToExcelOLD(resultSet, exportFile);
+				xlsExport.exportResultsetToExcelOLD(resultSet, exportFile, headerBundle);
 			} else {
-				xlsExport.exportResultsetToExcel(resultSet, exportFile);
+				xlsExport.exportResultsetToExcel(resultSet, exportFile, headerBundle);
 			}
 		} catch (Exception exception) {
 			throw new OHReportException(exception, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
@@ -956,10 +960,11 @@ public class JasperReportsManager {
 
 			File exportFile = new File(exportFilename);
 			ExcelExporter xlsExport = new ExcelExporter();
+			ResourceBundle headerBundle = loadExcelHeaderResourceBundle(jasperFileName);
 			if (exportFile.getName().endsWith(".xls")) {
-				xlsExport.exportResultsetToExcelOLD(resultSet, exportFile);
+				xlsExport.exportResultsetToExcelOLD(resultSet, exportFile, headerBundle);
 			} else {
-				xlsExport.exportResultsetToExcel(resultSet, exportFile);
+				xlsExport.exportResultsetToExcel(resultSet, exportFile, headerBundle);
 			}
 		} catch (Exception exception) {
 			throw new OHReportException(exception, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
@@ -984,10 +989,11 @@ public class JasperReportsManager {
 
 			File exportFile = new File(exportFilename);
 			ExcelExporter xlsExport = new ExcelExporter();
+			ResourceBundle headerBundle = loadExcelHeaderResourceBundle(jasperFileName);
 			if (exportFile.getName().endsWith(".xls")) {
-				xlsExport.exportResultsetToExcelOLD(resultSet, exportFile);
+				xlsExport.exportResultsetToExcelOLD(resultSet, exportFile, headerBundle);
 			} else {
-				xlsExport.exportResultsetToExcel(resultSet, exportFile);
+				xlsExport.exportResultsetToExcel(resultSet, exportFile, headerBundle);
 			}
 		} catch (Exception exception) {
 			throw new OHReportException(exception, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
@@ -1025,10 +1031,11 @@ public class JasperReportsManager {
 
 			File exportFile = new File(exportFilename);
 			ExcelExporter xlsExport = new ExcelExporter();
+			ResourceBundle headerBundle = loadExcelHeaderResourceBundle(jasperFileName);
 			if (exportFile.getName().endsWith(".xls")) {
-				xlsExport.exportResultsetToExcelOLD(resultSet, exportFile);
+				xlsExport.exportResultsetToExcelOLD(resultSet, exportFile, headerBundle);
 			} else {
-				xlsExport.exportResultsetToExcel(resultSet, exportFile);
+				xlsExport.exportResultsetToExcel(resultSet, exportFile, headerBundle);
 			}
 		} catch (Exception e) {
 			LOGGER.error("", e);
@@ -1172,6 +1179,25 @@ public class JasperReportsManager {
 			LOGGER.debug("PATIENT_PHOTO = {}", patientPhotoFile);
 		}
 		return patientPhotoFile;
+	}
+
+	/**
+	 * Loads the report's own resource bundle (the same one used for {@code $R{key}} column header
+	 * expressions in the jrxml) so that raw Excel exports (built directly from the SQL {@link ResultSet},
+	 * bypassing Jasper's fill/render pipeline) can translate column aliases into the same header labels
+	 * shown in the PDF version, instead of the aliases themselves.
+	 */
+	private ResourceBundle loadExcelHeaderResourceBundle(String jasperFileName) {
+		try {
+			return ResourceBundle.getBundle(jasperFileName, Locale.getDefault(), new UTF8Control());
+		} catch (MissingResourceException e) {
+			try {
+				return ResourceBundle.getBundle(jasperFileName, Locale.getDefault());
+			} catch (MissingResourceException e2) {
+				LOGGER.error(">> no resource bundle found for report {}, Excel column headers will use raw column names", jasperFileName);
+				return null;
+			}
+		}
 	}
 
 	private void addReportBundleParameter(String jasperParameter, String jasperFileName, Map<String, Object> parameters) {
