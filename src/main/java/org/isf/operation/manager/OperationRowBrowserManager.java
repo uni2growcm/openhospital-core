@@ -21,6 +21,7 @@
  */
 package org.isf.operation.manager;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.isf.accounting.model.Bill;
@@ -67,6 +68,19 @@ public class OperationRowBrowserManager {
 
 	public List<OperationRow> getOperationRowByPatientCode(Patient patient) throws OHServiceException {
 		return ioOperations.getOperationRowByPatient(patient);
+	}
+
+	/**
+	 * Count {@link OperationRow}s performed in a date range, filtered by the linked {@link org.isf.operation.model.Operation}'s major/minor flag.
+	 *
+	 * @param dateFrom the lower bound of the date range
+	 * @param dateTo the upper bound of the date range
+	 * @param major 1 for major operations, 0 for minor operations
+	 * @return the number of matching {@link OperationRow}s
+	 * @throws OHServiceException
+	 */
+	public long countOperationRows(LocalDateTime dateFrom, LocalDateTime dateTo, Integer major) throws OHServiceException {
+		return ioOperations.countByOpDateBetweenAndOperationMajor(dateFrom, dateTo, major);
 	}
 
 	/**

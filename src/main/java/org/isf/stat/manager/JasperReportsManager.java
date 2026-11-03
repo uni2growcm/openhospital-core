@@ -26,6 +26,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -46,15 +47,22 @@ import java.util.regex.Pattern;
 import javax.sql.DataSource;
 
 import org.hibernate.loader.ast.spi.Loadable;
+import org.isf.admission.manager.AdmissionBrowserManager;
+import org.isf.admission.model.Admission;
 import org.isf.generaldata.GeneralData;
 import org.isf.generaldata.MessageBundle;
 import org.isf.hospital.manager.HospitalBrowsingManager;
 import org.isf.hospital.model.Hospital;
+import org.isf.lab.manager.LabManager;
 import org.isf.medicalinventory.model.MedicalInventory;
 import org.isf.medicals.model.Medical;
+import org.isf.opd.manager.OpdBrowserManager;
+import org.isf.operation.manager.OperationRowBrowserManager;
 import org.isf.patient.model.Patient;
 import org.isf.patient.service.PatientIoOperations;
+import org.isf.patvac.manager.PatVacManager;
 import org.isf.stat.dto.JasperReportResultDto;
+import org.isf.stat2.manager.StatsDeliveryManager;
 import org.isf.utils.db.DbQueryLogger;
 import org.isf.utils.db.UTF8Control;
 import org.isf.utils.excel.ExcelExporter;
@@ -62,10 +70,13 @@ import org.isf.utils.exception.OHReportException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.model.OHExceptionMessage;
 import org.isf.utils.time.TimeTools;
+import org.isf.vaccine.manager.VaccineBrowserManager;
+import org.isf.vaccine.model.Vaccine;
 import org.isf.ward.manager.WardBrowserManager;
 import org.isf.ward.model.Ward;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
 import net.sf.jasperreports.engine.JRBand;
@@ -101,10 +112,34 @@ public class JasperReportsManager {
 
 	private WardBrowserManager wardManager;
 
-	public JasperReportsManager(HospitalBrowsingManager hospitalBrowsingManager, DataSource dataSource, WardBrowserManager wardManager) {
+	private OpdBrowserManager opdManager;
+
+	private AdmissionBrowserManager admissionManager;
+
+	private StatsDeliveryManager statsDeliveryManager;
+
+	private LabManager labManager;
+
+	private OperationRowBrowserManager operationRowManager;
+
+	private PatVacManager patVacManager;
+
+	private VaccineBrowserManager vaccineManager;
+
+	public JasperReportsManager(HospitalBrowsingManager hospitalBrowsingManager, DataSource dataSource, WardBrowserManager wardManager,
+					OpdBrowserManager opdManager, AdmissionBrowserManager admissionManager, StatsDeliveryManager statsDeliveryManager,
+					LabManager labManager, OperationRowBrowserManager operationRowManager, PatVacManager patVacManager,
+					VaccineBrowserManager vaccineManager) {
 		this.hospitalManager = hospitalBrowsingManager;
 		this.dataSource = dataSource;
 		this.wardManager = wardManager;
+		this.opdManager = opdManager;
+		this.admissionManager = admissionManager;
+		this.statsDeliveryManager = statsDeliveryManager;
+		this.labManager = labManager;
+		this.operationRowManager = operationRowManager;
+		this.patVacManager = patVacManager;
+		this.vaccineManager = vaccineManager;
 	}
 
 	public JasperReportResultDto getExamsListPdf() throws OHServiceException {
@@ -1034,6 +1069,126 @@ public class JasperReportsManager {
 			LOGGER.error("", e);
 			throw new OHReportException(e, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
 		}
+	}
+
+	/**
+	 * Build and fill the yearly "Activity Summary" report ({@code synthesisActivities}). Unlike most reports in this class, the
+	 * jrxml has no {@code <queryString>} of its own: every indicator is computed here in Java from the relevant managers and
+	 * passed in as a plain parameter, then {@link #generateJasperReport(String, String, Map)} fills exactly one detail-band
+	 * record (JasperReports' behaviour when a report has no query).
+	 * <p>
+	 * MVP scope: only indicators backed by a stable field (a flag or a date) are computed with certainty. The lab/vaccine
+	 * breakdowns below are best-effort, matching free-text exam/vaccine catalog descriptions by keyword (case-insensitive
+	 * "contains") — they degrade to 0 rather than fail when nothing matches, but are inherently install-dependent. Deaths,
+	 * malaria, referrals/counter-referrals, CPN/CPS and PTME are intentionally left out of this MVP: they would need an
+	 * install-specific coded convention (disease code, discharge-type code) that cannot be safely assumed.
+	 *
+	 * @param year the year to summarize
+	 * @param jasperFileFolder the folder containing the report (e.g. "rpt_stat")
+	 * @param jasperFileName the report file name (without extension)
+	 * @return the filled report, ready to be exported/displayed
+	 * @throws OHServiceException
+	 */
+	public JasperReportResultDto getSynthesisActivitiesPdf(Integer year, String jasperFileFolder, String jasperFileName) throws OHServiceException {
+		try {
+			Map<String, Object> parameters = compileSynthesisActivitiesParameters(year, jasperFileFolder, jasperFileName);
+			String pdfFilename = compilePDFFilename(jasperFileFolder, jasperFileName, Arrays.asList(String.valueOf(year)), "pdf");
+
+			JasperReportResultDto result = generateJasperReport(compileJasperFilename(jasperFileFolder, jasperFileName), pdfFilename, parameters);
+			JasperExportManager.exportReportToPdfFile(result.getJasperPrint(), pdfFilename);
+			return result;
+		} catch (Exception e) {
+			LOGGER.error("", e);
+			throw new OHReportException(e, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
+		}
+	}
+
+	private Map<String, Object> compileSynthesisActivitiesParameters(Integer year, String jasperFileFolder, String jasperFileName)
+		throws OHServiceException {
+		HashMap<String, Object> parameters = getHospitalParameters();
+		addBundleParameter(jasperFileFolder, jasperFileName, parameters);
+		parameters.put("year", String.valueOf(year));
+
+		LocalDate dateFromDate = LocalDate.of(year, 1, 1);
+		LocalDate dateToDate = LocalDate.of(year, 12, 31);
+		LocalDateTime dateFrom = dateFromDate.atStartOfDay();
+		LocalDateTime dateTo = dateToDate.atTime(23, 59, 59);
+
+		// OPD consultations (NC/AC), backed by the stable Opd.newPatient flag
+		long opdNew = opdManager.countTotalOpds(null, null, null, dateFromDate, dateToDate, 0, 200, ' ', 'N', null);
+		long opdOld = opdManager.countTotalOpds(null, null, null, dateFromDate, dateToDate, 0, 200, ' ', 'R', null);
+		parameters.put("opdNew", opdNew);
+		parameters.put("opdOld", opdOld);
+		parameters.put("opdTotal", opdNew + opdOld);
+
+		// Admissions, average length of stay, total beds
+		List<Admission> admissions = admissionManager.getAdmissionsByAdmissionDate(dateFrom, dateTo);
+		List<Admission> dischargedAdmissions = admissions.stream().filter(a -> a.getDisDate() != null).toList();
+		double avgLengthOfStay = dischargedAdmissions.isEmpty() ? 0.0
+						: dischargedAdmissions.stream().mapToLong(a -> Duration.between(a.getAdmDate(), a.getDisDate()).toDays()).average().orElse(0.0);
+		int totalBeds = wardManager.getWards().stream().mapToInt(w -> w.getBeds() == null ? 0 : w.getBeds()).sum();
+		parameters.put("admissionsCount", (long) admissions.size());
+		parameters.put("avgLengthOfStay", avgLengthOfStay);
+		parameters.put("totalBeds", totalBeds);
+
+		// Deliveries
+		long deliveriesCount = statsDeliveryManager.getDeliveriesStats(dateFrom, dateTo,
+						null, null, null, null, null, // motherAge*, sex, weight*
+						null, null, null, null, null, null, // deliveryType, deliveryResultType, deliveryMode, laborDuration, romRange, perinealIntegrity
+						null, null, null, null, null, // placentaComplete, bloodLossRange, newbornSex, birthWeightRange, neonatalStatus
+						null, null, null, null, null, null, // apgar1Range, apgar5Range, resuscitationRequired, cryTime, hivStatus, congenitalAnomalies
+						null, null, // disease, dischargeType
+						0, 1).getTotalElements();
+		parameters.put("deliveriesCount", deliveriesCount);
+
+		// Laboratory: total exams, plus best-effort TBC/HIV positive counts (catalog-dependent, see method doc)
+		long labTotal = labManager.getLaboratoryCount(null, dateFrom, dateTo, null, null);
+		long labTbcPositive = labManager.getLaboratoryCountByExamAndResult(dateFrom, dateTo, "TBC", "posit");
+		long labHivPositive = labManager.getLaboratoryCountByExamAndResult(dateFrom, dateTo, "HIV", "posit");
+		parameters.put("labTotal", labTotal);
+		parameters.put("labTbcPositive", labTbcPositive);
+		parameters.put("labHivPositive", labHivPositive);
+
+		// Operations, backed by the stable Operation.major flag
+		long operationsMinor = operationRowManager.countOperationRows(dateFrom, dateTo, 0);
+		long operationsMajor = operationRowManager.countOperationRows(dateFrom, dateTo, 1);
+		parameters.put("operationsMinor", operationsMinor);
+		parameters.put("operationsMajor", operationsMajor);
+		parameters.put("operationsTotal", operationsMinor + operationsMajor);
+
+		// PEV vaccinations, best-effort (catalog-dependent, see method doc)
+		parameters.put("vaccineBcg", countVaccinationsByKeywordGroups(dateFrom, dateTo, List.<String[]>of(new String[] { "bcg" })));
+		parameters.put("vaccinePolio3", countVaccinationsByKeywordGroups(dateFrom, dateTo, List.<String[]>of(new String[] { "polio", "3" })));
+		parameters.put("vaccineDtc3", countVaccinationsByKeywordGroups(dateFrom, dateTo,
+						List.<String[]>of(new String[] { "dtc", "3" }, new String[] { "dtp", "3" })));
+		parameters.put("vaccineVar", countVaccinationsByKeywordGroups(dateFrom, dateTo,
+						List.<String[]>of(new String[] { "var" }, new String[] { "rougeole" }, new String[] { "measles" })));
+		parameters.put("vaccineVat2", countVaccinationsByKeywordGroups(dateFrom, dateTo, List.<String[]>of(new String[] { "vat" })));
+
+		return parameters;
+	}
+
+	/**
+	 * Sum, over all {@link Vaccine}s whose description matches (case-insensitive "contains") at least one of the given keyword
+	 * groups (a vaccine matches a group if its description contains every keyword in that group), the number of
+	 * {@link org.isf.patvac.model.PatientVaccine} administered in the given date range.
+	 */
+	private long countVaccinationsByKeywordGroups(LocalDateTime dateFrom, LocalDateTime dateTo, List<String[]> keywordGroups) throws OHServiceException {
+		long total = 0;
+		for (Vaccine vaccine : vaccineManager.getVaccine()) {
+			String description = vaccine.getDescription();
+			if (description == null) {
+				continue;
+			}
+			String lowerDescription = description.toLowerCase(Locale.ROOT);
+			boolean matches = keywordGroups.stream()
+							.anyMatch(group -> Arrays.stream(group).allMatch(keyword -> lowerDescription.contains(keyword.toLowerCase(Locale.ROOT))));
+			if (matches) {
+				total += patVacManager.getPatientVaccinePage(null, vaccine.getCode(), dateFrom, dateTo, ' ', 0, 200, PageRequest.of(0, 1))
+								.getTotalElements();
+			}
+		}
+		return total;
 	}
 
 	private HashMap<String, Object> compileGenericReportUserInDateParameters(String fromDate, String toDate, String aUser) throws OHServiceException {
