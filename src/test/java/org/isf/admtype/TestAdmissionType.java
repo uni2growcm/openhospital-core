@@ -32,6 +32,7 @@ public class TestAdmissionType {
 	private String description = "TestDescription";
 
 	public AdmissionType setup(boolean usingSet) throws OHException {
+
 		AdmissionType admissionType;
 
 		if (usingSet) {
