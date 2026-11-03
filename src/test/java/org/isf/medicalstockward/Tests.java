@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2024 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -468,6 +468,15 @@ class Tests extends OHCoreTestCase {
 		List<MedicalWard> medicalWards = medicalStockWardIoOperations.getMedicalsWardTotalQuantity("X");
 		assertThat(medicalWards).hasSize(1);
 		assertThat(medicalWards.get(0).getWard().getCode()).isEqualTo("X");
+	}
+
+	@Test
+	void testGetTotalWardStockValue() throws Exception {
+		Double zeroValue = movWardBrowserManager.getTotalWardStockValue("NON_EXISTENT_WARD");
+		assertThat(zeroValue).isEqualTo(0.0);
+
+		Double nullValue = movWardBrowserManager.getTotalWardStockValue(null);
+		assertThat(nullValue).isEqualTo(0.0);
 	}
 
 	@Test
