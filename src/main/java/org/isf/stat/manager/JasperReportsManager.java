@@ -1394,6 +1394,33 @@ public class JasperReportsManager {
 		}
 	}
 
+	/**
+	 * Generates the list of the patients associated with partners, grouped by partner, with the reduction plans
+	 * of each partner the patients currently benefit from.
+	 *
+	 * @param partnerId the partner to print; {@code null} for all partners.
+	 * @param reductionPlanId only the patients benefiting from this reduction plan; {@code null} for no filter.
+	 * @param jasperFileName the report name.
+	 * @return the generated report.
+	 * @throws OHServiceException when the report cannot be generated.
+	 */
+	public JasperReportResultDto getPatientsByPartnerPdf(Integer partnerId, Integer reductionPlanId, String jasperFileName) throws OHServiceException {
+		try {
+			HashMap<String, Object> parameters = getHospitalParameters();
+			addBundleParameter(RPT_BASE, jasperFileName, parameters);
+			parameters.put("partnerId", partnerId);
+			parameters.put("reductionPlanId", reductionPlanId);
+
+			String pdfFilename = compilePDFFilename(RPT_BASE, jasperFileName, null, "pdf");
+			JasperReportResultDto result = generateJasperReport(compileJasperFilename(RPT_BASE, jasperFileName), pdfFilename, parameters);
+			JasperExportManager.exportReportToPdfFile(result.getJasperPrint(), pdfFilename);
+			return result;
+		} catch (Exception e) {
+			LOGGER.error("", e);
+			throw new OHReportException(e, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
+		}
+	}
+
 	public JasperReportResultDto getGenericReportFamilyPlanningRegisterPdf(LocalDate fromDate, LocalDate toDate, String statut, String methodCode,
 	                                                                       Boolean actif, String sexe, String jasperFileName) throws OHServiceException {
 

@@ -121,6 +121,48 @@ public class PartnerIoOperations {
 		repository.softDelete(id);
 	}
 
+	/**
+	 * Method that returns all active {@link Partner}s ordered by priority
+	 * (the most prioritary partner first).
+	 *
+	 * @return the list of active {@link Partner}s
+	 * @throws OHServiceException if an error occurs while retrieving data
+	 */
+	public List<Partner> getAllByPriority() throws OHServiceException {
+		return repository.findByActiveTrueOrderByPriorityAsc();
+	}
+
+	/**
+	 * @return the highest priority rank currently used (0 if there is no partner)
+	 * @throws OHServiceException if an error occurs while retrieving data
+	 */
+	public int getMaxPriority() throws OHServiceException {
+		return repository.findMaxPriority();
+	}
+
+	/**
+	 * Method that saves all the given {@link Partner}s.
+	 *
+	 * @param partners the partners to save
+	 * @return the saved partners
+	 * @throws OHServiceException if an error occurs while saving data
+	 */
+	@Transactional
+	public List<Partner> saveAll(List<Partner> partners) throws OHServiceException {
+		return repository.saveAll(partners);
+	}
+
+	/**
+	 * Method that returns the active {@link Partner}s associated with a patient.
+	 *
+	 * @param patientCode the patient code
+	 * @return the list of active {@link Partner}s of the patient
+	 * @throws OHServiceException if an error occurs while retrieving data
+	 */
+	public List<Partner> getActivePartnersByPatientCode(Integer patientCode) throws OHServiceException {
+		return repository.findActivePartnersByPatientCode(patientCode);
+	}
+
 	public boolean patientHasActivePartners(Integer patientCode) throws OHServiceException {
 		return repository.countActivePartnersByPatientCode(patientCode) > 0;
 	}

@@ -118,6 +118,11 @@ public class Vaccine extends Auditable<String> {
 				&& getVaccineType().equals(((Vaccine) anObject).getVaccineType()));
 	}
 
+	@Override
+	public int hashCode() {
+		return code == null ? 0 : code.hashCode();
+	}
+
 	public String print() {
 		return "Vaccine code =." + getCode() + ". description =." + getDescription() + '.';
 	}

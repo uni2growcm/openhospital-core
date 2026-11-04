@@ -33,4 +33,6 @@ public interface ReductionPlanIoOperationRepository extends JpaRepository<Reduct
 	List<ReductionPlan> findByDescriptionAndDeleted(String description, boolean deleted);
 	List<ReductionPlan> findByDeleted(boolean deleted);
 	ReductionPlan findByIdAndDeleted(int id, boolean deleted);
+	List<ReductionPlan> findByDeletedAndPartnerIsNull(boolean deleted);
+	List<ReductionPlan> findByDeletedAndPartner_Code(boolean deleted, Integer partnerCode);
 }

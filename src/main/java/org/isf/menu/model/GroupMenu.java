@@ -29,7 +29,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 
 import org.isf.utils.db.Auditable;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -54,9 +53,6 @@ public class GroupMenu extends Auditable<String> {
 
 	@Column(name = "GM_MNI_ID_A")
 	private String menuItem;
-
-	@Transient
-	private volatile int hashCode;
 
 	public GroupMenu() {
 	}
@@ -106,6 +102,11 @@ public class GroupMenu extends Auditable<String> {
 						&& getUserGroup().equalsIgnoreCase(((GroupMenu) anObject).getUserGroup())
 						&& getMenuItem().equals(((GroupMenu) anObject).getMenuItem())
 						&& getActive() == ((GroupMenu) anObject).getActive());
+	}
+
+	@Override
+	public int hashCode() {
+		return code == null ? 0 : code.hashCode();
 	}
 
 }
