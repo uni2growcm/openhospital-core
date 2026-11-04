@@ -1665,7 +1665,7 @@ class Tests extends OHCoreTestCase {
 			LocalDateTime admissionDateFrom, LocalDateTime admissionDateTo,
 			LocalDateTime dischargeDateFrom, LocalDateTime dischargeDateTo,
 			Integer ageFrom, Integer ageTo, Character sex, Integer country, Integer partner,
-			Pageable pageable) throws OHServiceException {
+			Integer reductionPlan, Pageable pageable) throws OHServiceException {
 			return Page.empty(pageable);
 		}
 	}

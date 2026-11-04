@@ -31,7 +31,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 import jakarta.persistence.Version;
 import jakarta.validation.constraints.NotNull;
 
@@ -79,9 +78,6 @@ public class Operation extends Auditable<String> {
 	@Version
 	@Column(name = "OPE_LOCK")
 	private Integer lock;
-
-	@Transient
-	private volatile int hashCode;
 
 	public Operation() {
 		super();
@@ -173,20 +169,8 @@ public class Operation extends Auditable<String> {
 
 	@Override
 	public int hashCode() {
-		if (this.hashCode == 0) {
-			final int m = 23;
-			int c = 133;
-
-			c = m * c + ((code == null) ? 0 : code.hashCode());
-			c = m * c + ((description == null) ? 0 : description.hashCode());
-			c = m * c + ((type == null) ? 0 : type.hashCode());
-			c = m * c + ((opeFor == null) ? 0 : opeFor.hashCode());
-			c = m * c + ((major == null) ? 0 : major);
-			c = m * c + ((lock == null) ? 0 : lock);
-
-			this.hashCode = c;
-		}
-		return this.hashCode;
+		// only fields compared by equals() (description is compared ignoring case, lock is not compared)
+		return code == null ? 0 : code.hashCode();
 	}
 
 	@Override
