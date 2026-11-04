@@ -39,6 +39,8 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.Map;
@@ -430,6 +432,11 @@ public class ExcelExporter {
 					}
 					index++;
 				}
+
+				for (int j = 0; j < colCount; j++) {
+					worksheet.autoSizeColumn(j);
+				}
+
 				workbook.write(fileStream);
 				fileStream.flush();
 			} catch (FileNotFoundException e) {
@@ -504,6 +511,12 @@ public class ExcelExporter {
 				cell.setCellValue(val);
 			} else if (value instanceof Date) {
 				Timestamp val = new Timestamp(((Date) value).getTime());
+				cell.setCellStyle(dateStyle);
+				cell.setCellValue(val);
+			} else if (value instanceof LocalDateTime val) {
+				cell.setCellStyle(dateTimeStyle);
+				cell.setCellValue(val);
+			} else if (value instanceof LocalDate val) {
 				cell.setCellStyle(dateStyle);
 				cell.setCellValue(val);
 			} else if (value instanceof BigDecimal val) {
@@ -614,6 +627,11 @@ public class ExcelExporter {
 					}
 					index++;
 				}
+
+				for (int j = 0; j < colCount; j++) {
+					worksheet.autoSizeColumn(j);
+				}
+
 				workbook.write(fileStream);
 				fileStream.flush();
 			} catch (SQLException e) {
@@ -685,6 +703,12 @@ public class ExcelExporter {
 				cell.setCellValue(val);
 			} else if (value instanceof Date) {
 				Timestamp val = new Timestamp(((Date) value).getTime());
+				cell.setCellStyle(dateStyle);
+				cell.setCellValue(val);
+			} else if (value instanceof LocalDateTime val) {
+				cell.setCellStyle(dateTimeStyle);
+				cell.setCellValue(val);
+			} else if (value instanceof LocalDate val) {
 				cell.setCellStyle(dateStyle);
 				cell.setCellValue(val);
 			} else if (value instanceof BigDecimal val) {
