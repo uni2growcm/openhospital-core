@@ -371,6 +371,19 @@ public class MovStockInsertingManager {
 	}
 
 	/**
+	 * ajust the quantity of the specified {@link Movement}.
+	 *
+	 * @param movementId id of the movement stored.
+	 * @param newQuantity the new quantity to use.
+	 * @return returns the stored {@link Movement} object.
+	 * @throws OHServiceException if an error occurs storing the movement.
+	 */
+	@Transactional(rollbackFor = OHServiceException.class)
+	public Movement adjustQuantity(int movementId, int newQuantity) throws OHServiceException {
+		return ioOperations.adjustQuantity(movementId,  newQuantity);
+	}
+
+	/**
 	 * Retrieves the {@link Lot}.
 	 * 
 	 * @param lotCode the lot code.

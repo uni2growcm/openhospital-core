@@ -23,6 +23,7 @@ package org.isf.medicalstock.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.isf.medicalstock.model.Lot;
 import org.isf.medicalstock.model.Movement;
@@ -55,6 +56,8 @@ public interface MovementIoOperationRepository extends JpaRepository<Movement, I
 	List<Movement> findAllByRefNo(@Param("refNo") String refNo);
 
 	List<Movement> findByLot(Lot lot);
+
+	Optional<Movement> findByCode(Integer integer);
 
 	@Query(value = "select max(mov.date) from Movement mov")
 	LocalDateTime findMaxDate();
