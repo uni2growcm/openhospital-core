@@ -1261,11 +1261,16 @@ public class JasperReportsManager {
 	 * item code matches the code of an {@code OH_OPERATION}; the operation's type is then used to
 	 * filter by {@code operationTypeCode} ({@code "ALL"} to not filter by type), and the bill
 	 * status is filtered by {@code state}/{@code state2} (same value twice when a single status is
-	 * wanted).
+	 * wanted). Refund bills always have {@code BLL_STATUS = "C"} regardless of their parent bill's
+	 * actual status (see {@code BillRefund}), so the status filter is evaluated against the parent
+	 * bill's status whenever the item belongs to a refund (child) bill. When {@code balanceZero} is
+	 * not {@code null}, pending ("O") bills are further restricted to those whose balance is zero
+	 * ({@code true}) or non-zero ({@code false}).
 	 */
-	private List<IncomesPerSurgeryActReportBean> buildIncomesPerSurgeryActPerYear(int year, String state, String state2, String operationTypeCode)
-			throws SQLException {
-		String query = "SELECT groupe, description, quantity, refunded_quantity, amount, refunded_amount FROM ( "
+	private List<IncomesPerSurgeryActReportBean> buildIncomesPerSurgeryActPerYear(int year, String state, String state2, String operationTypeCode,
+			Boolean balanceZero) throws SQLException {
+		StringBuilder queryBuilder = new StringBuilder(
+				"SELECT groupe, description, quantity, refunded_quantity, amount, refunded_amount FROM ( "
 				+ "SELECT bli.BLI_ITEM_GROUP AS groupe, "
 				+ "bli.BLI_ITEM_DESC AS description, "
 				+ "SUM(IF(bl.BLL_PARENT_ID IS NULL, bli.BLI_QTY, 0)) AS quantity, "
@@ -1274,12 +1279,19 @@ public class JasperReportsManager {
 				+ "SUM(IF(bl.BLL_PARENT_ID IS NOT NULL, (bli.BLI_QTY * bli.BLI_ITEM_AMOUNT), 0)) AS refunded_amount "
 				+ "FROM OH_BILLITEMS bli "
 				+ "JOIN OH_BILLS bl ON bli.BLI_ID_BILL = bl.BLL_ID "
+				+ "LEFT JOIN OH_BILLS parent ON bl.BLL_PARENT_ID = parent.BLL_ID "
 				+ "JOIN OH_OPERATION op ON op.OPE_ID_A = bli.BLI_ITEM_ID "
-				+ "WHERE (bl.BLL_STATUS = ? OR bl.BLL_STATUS = ?) "
+				+ "WHERE (COALESCE(parent.BLL_STATUS, bl.BLL_STATUS) = ? OR COALESCE(parent.BLL_STATUS, bl.BLL_STATUS) = ?) "
 				+ "AND (op.OPE_OCL_ID_A = ? OR ? = 'ALL') "
-				+ "AND DATE(bli.BLI_DATE) BETWEEN ? AND ? "
-				+ "GROUP BY description "
-				+ ") source_table ORDER BY groupe, description";
+				+ "AND DATE(bli.BLI_DATE) BETWEEN ? AND ? ");
+		if (balanceZero != null) {
+			queryBuilder.append(balanceZero
+					? "AND COALESCE(parent.BLL_BALANCE, bl.BLL_BALANCE) = 0 "
+					: "AND COALESCE(parent.BLL_BALANCE, bl.BLL_BALANCE) <> 0 ");
+		}
+		queryBuilder.append("GROUP BY description ")
+				.append(") source_table ORDER BY groupe, description");
+		String query = queryBuilder.toString();
 
 		Map<String, IncomesPerSurgeryActReportBean> items = new HashMap<>();
 		List<IncomesPerSurgeryActReportBean> orderedItems = new ArrayList<>();
@@ -1420,10 +1432,10 @@ public class JasperReportsManager {
 		}
 	}
 
-	public JasperReportResultDto getIncomesPerSurgeryActPdf(int year, String state, String state2, String operationTypeCode, String operationTypeLabel)
-			throws OHServiceException {
+	public JasperReportResultDto getIncomesPerSurgeryActPdf(int year, String state, String state2, String operationTypeCode, String operationTypeLabel,
+			Boolean balanceZero) throws OHServiceException {
 		try {
-			List<IncomesPerSurgeryActReportBean> beans = buildIncomesPerSurgeryActPerYear(year, state, state2, operationTypeCode);
+			List<IncomesPerSurgeryActReportBean> beans = buildIncomesPerSurgeryActPerYear(year, state, state2, operationTypeCode, balanceZero);
 
 			HashMap<String, Object> parameters = getHospitalParameters();
 			parameters.put("code_title", "angal.stat.incomesallbypricecodes_3_surgery_title");
@@ -1431,7 +1443,8 @@ public class JasperReportsManager {
 			parameters.put("operationType", operationTypeLabel);
 			addBundleParameter(RPT_STAT, INCOMES_PER_SURGERY_ACT_FILENAME, parameters);
 
-			String pdfFilename = compilePDFFilename(RPT_STAT, INCOMES_PER_SURGERY_ACT_FILENAME, Arrays.asList(String.valueOf(year)), "pdf");
+			String pdfFilename = compilePDFFilename(RPT_STAT, INCOMES_PER_SURGERY_ACT_FILENAME,
+					Arrays.asList(String.valueOf(year), state, state2, operationTypeCode, String.valueOf(balanceZero)), "pdf");
 			String jasperFilename = compileJasperFilename(RPT_STAT, INCOMES_PER_SURGERY_ACT_FILENAME);
 
 			JasperReport jasperReport = (JasperReport) JRLoader.loadObject(new File(jasperFilename));
@@ -1444,10 +1457,10 @@ public class JasperReportsManager {
 		}
 	}
 
-	public void getIncomesPerSurgeryActExcel(int year, String state, String state2, String operationTypeCode, String operationTypeLabel,
+	public void getIncomesPerSurgeryActExcel(int year, String state, String state2, String operationTypeCode, String operationTypeLabel, Boolean balanceZero,
 			String exportFilename) throws OHServiceException {
 		try {
-			List<IncomesPerSurgeryActReportBean> beans = buildIncomesPerSurgeryActPerYear(year, state, state2, operationTypeCode);
+			List<IncomesPerSurgeryActReportBean> beans = buildIncomesPerSurgeryActPerYear(year, state, state2, operationTypeCode, balanceZero);
 
 			String[] columns = { "BLI_ITEM_GROUP", "BLI_ITEM_DESC",
 					"COUNT_JANUARY", "REFUNDED_COUNT_JANUARY", "AMOUNT_JANUARY", "REFUNDED_AMOUNT_JANUARY",
