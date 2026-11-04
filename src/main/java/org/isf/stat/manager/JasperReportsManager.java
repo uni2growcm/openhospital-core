@@ -51,6 +51,11 @@ import org.isf.admission.manager.AdmissionBrowserManager;
 import org.isf.admission.model.Admission;
 import org.isf.generaldata.GeneralData;
 import org.isf.generaldata.MessageBundle;
+import org.isf.hiv.manager.HIVInfantManager;
+import org.isf.hiv.manager.HIVVisitManager;
+import org.isf.hiv.model.HIVVisit.PCRResult;
+import org.isf.homevisit.manager.HomeVisitBrowserManager;
+import org.isf.homevisit.model.HomeVisitStatus;
 import org.isf.hospital.manager.HospitalBrowsingManager;
 import org.isf.hospital.model.Hospital;
 import org.isf.lab.manager.LabManager;
@@ -63,6 +68,8 @@ import org.isf.patient.service.PatientIoOperations;
 import org.isf.patvac.manager.PatVacManager;
 import org.isf.stat.dto.JasperReportResultDto;
 import org.isf.stat2.manager.StatsDeliveryManager;
+import org.isf.tuberculosis.manager.TuberculosisTreatmentManager;
+import org.isf.tuberculosis.model.Classification;
 import org.isf.utils.db.DbQueryLogger;
 import org.isf.utils.db.UTF8Control;
 import org.isf.utils.excel.ExcelExporter;
@@ -126,10 +133,19 @@ public class JasperReportsManager {
 
 	private VaccineBrowserManager vaccineManager;
 
+	private TuberculosisTreatmentManager tuberculosisTreatmentManager;
+
+	private HIVInfantManager hivInfantManager;
+
+	private HIVVisitManager hivVisitManager;
+
+	private HomeVisitBrowserManager homeVisitManager;
+
 	public JasperReportsManager(HospitalBrowsingManager hospitalBrowsingManager, DataSource dataSource, WardBrowserManager wardManager,
 					OpdBrowserManager opdManager, AdmissionBrowserManager admissionManager, StatsDeliveryManager statsDeliveryManager,
 					LabManager labManager, OperationRowBrowserManager operationRowManager, PatVacManager patVacManager,
-					VaccineBrowserManager vaccineManager) {
+					VaccineBrowserManager vaccineManager, TuberculosisTreatmentManager tuberculosisTreatmentManager,
+					HIVInfantManager hivInfantManager, HIVVisitManager hivVisitManager, HomeVisitBrowserManager homeVisitManager) {
 		this.hospitalManager = hospitalBrowsingManager;
 		this.dataSource = dataSource;
 		this.wardManager = wardManager;
@@ -138,6 +154,10 @@ public class JasperReportsManager {
 		this.statsDeliveryManager = statsDeliveryManager;
 		this.labManager = labManager;
 		this.operationRowManager = operationRowManager;
+		this.tuberculosisTreatmentManager = tuberculosisTreatmentManager;
+		this.hivInfantManager = hivInfantManager;
+		this.hivVisitManager = hivVisitManager;
+		this.homeVisitManager = homeVisitManager;
 		this.patVacManager = patVacManager;
 		this.vaccineManager = vaccineManager;
 	}
@@ -1115,8 +1135,8 @@ public class JasperReportsManager {
 		LocalDateTime dateTo = dateToDate.atTime(23, 59, 59);
 
 		// OPD consultations (NC/AC), backed by the stable Opd.newPatient flag
-		long opdNew = opdManager.countTotalOpds(null, null, null, dateFromDate, dateToDate, 0, 200, ' ', 'N', null);
-		long opdOld = opdManager.countTotalOpds(null, null, null, dateFromDate, dateToDate, 0, 200, ' ', 'R', null);
+		long opdNew = opdManager.countTotalOpds(null, null, null, dateFromDate, dateToDate, 0, 0, 'A', 'N', null);
+		long opdOld = opdManager.countTotalOpds(null, null, null, dateFromDate, dateToDate, 0, 0, 'A', 'R', null);
 		parameters.put("opdNew", opdNew);
 		parameters.put("opdOld", opdOld);
 		parameters.put("opdTotal", opdNew + opdOld);
@@ -1141,13 +1161,44 @@ public class JasperReportsManager {
 						0, 1).getTotalElements();
 		parameters.put("deliveriesCount", deliveriesCount);
 
-		// Laboratory: total exams, plus best-effort TBC/HIV positive counts (catalog-dependent, see method doc)
+		// Laboratory: total exams performed
 		long labTotal = labManager.getLaboratoryCount(null, dateFrom, dateTo, null, null);
-		long labTbcPositive = labManager.getLaboratoryCountByExamAndResult(dateFrom, dateTo, "TBC", "posit");
-		long labHivPositive = labManager.getLaboratoryCountByExamAndResult(dateFrom, dateTo, "HIV", "posit");
 		parameters.put("labTotal", labTotal);
-		parameters.put("labTbcPositive", labTbcPositive);
-		parameters.put("labHivPositive", labHivPositive);
+
+		// Tuberculosis, backed by the structured TuberculosisTreatment module (registrationDate + classification enum)
+		long tbTotal = tuberculosisTreatmentManager.getTreatmentsByFilters(null, null, null, null, dateFromDate, dateToDate, null, null,
+						PageRequest.of(0, 1)).getTotalElements();
+		long tbNew = tuberculosisTreatmentManager.getTreatmentsByFilters(null, null, Classification.NEW, null, dateFromDate, dateToDate, null, null,
+						PageRequest.of(0, 1)).getTotalElements();
+		parameters.put("tbTotal", tbTotal);
+		parameters.put("tbNew", tbNew);
+
+		// HIV/PMTCT, backed by the structured hiv module (HIVInfant.registrationDate, HIVVisit.pcrResult enum)
+		long hivInfantsFollowed = hivInfantManager.getInfantsByFilters(null, null, null, dateFromDate, dateToDate, null, null, PageRequest.of(0, 1))
+						.getTotalElements();
+		long hivPcrNegative = hivVisitManager.countByVisitDateBetweenAndPcrResult(dateFrom, dateTo, PCRResult.NEGATIVE);
+		long hivPcrPositive = hivVisitManager.countByVisitDateBetweenAndPcrResult(dateFrom, dateTo, PCRResult.POSITIVE);
+		parameters.put("hivInfantsFollowed", hivInfantsFollowed);
+		parameters.put("hivPcrNegative", hivPcrNegative);
+		parameters.put("hivPcrPositive", hivPcrPositive);
+
+		// Deaths and outgoing referrals, backed by Admission.disType.code ("D"/"B" in OH's shipped default dataset)
+		long deathsCount = admissionManager.countByDisDateBetweenAndDisTypeCode(dateFrom, dateTo, "D");
+		long referralsOutCount = admissionManager.countByDisDateBetweenAndDisTypeCode(dateFrom, dateTo, "B");
+		parameters.put("deathsCount", deathsCount);
+		parameters.put("referralsOutCount", referralsOutCount);
+
+		// Malaria, best-effort via the default ICD-10 code range (catalog-dependent, see method doc)
+		long malariaCount = opdManager.countOpdByDateBetweenAndDiseaseCodeIn(dateFrom, dateTo, List.of("B50", "B51", "B52", "B53", "B54"));
+		parameters.put("malariaCount", malariaCount);
+
+		// Home visits (new in 1.15 vs. the older reference version), backed by the structured HomeVisitStatus enum
+		long homeVisitsTotal = homeVisitManager.getHomeVisitsWithFilters(null, null, dateFrom, dateTo, null, null, null, null, 0, 1)
+						.getTotalElements();
+		long homeVisitsCompleted = homeVisitManager.getHomeVisitsWithFilters(null, HomeVisitStatus.COMPLETED, dateFrom, dateTo, null, null, null, null, 0, 1)
+						.getTotalElements();
+		parameters.put("homeVisitsTotal", homeVisitsTotal);
+		parameters.put("homeVisitsCompleted", homeVisitsCompleted);
 
 		// Operations, backed by the stable Operation.major flag
 		long operationsMinor = operationRowManager.countOperationRows(dateFrom, dateTo, 0);
@@ -1184,7 +1235,7 @@ public class JasperReportsManager {
 			boolean matches = keywordGroups.stream()
 							.anyMatch(group -> Arrays.stream(group).allMatch(keyword -> lowerDescription.contains(keyword.toLowerCase(Locale.ROOT))));
 			if (matches) {
-				total += patVacManager.getPatientVaccinePage(null, vaccine.getCode(), dateFrom, dateTo, ' ', 0, 200, PageRequest.of(0, 1))
+				total += patVacManager.getPatientVaccinePage(null, vaccine.getCode(), dateFrom, dateTo, 'A', 0, 0, PageRequest.of(0, 1))
 								.getTotalElements();
 			}
 		}

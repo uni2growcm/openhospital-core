@@ -334,6 +334,20 @@ public class OpdIoOperations {
 	}
 
 	/**
+	 * Count distinct {@link Opd} visits within a date range that have at least one active {@link DiagnosisEntry} whose
+	 * {@link org.isf.disease.model.Disease} code is in the given list (e.g. matching an ICD-10 code range).
+	 *
+	 * @param dateFrom the lower bound of the date range
+	 * @param dateTo the upper bound of the date range
+	 * @param diseaseCodes the disease codes to match
+	 * @return the number of matching visits
+	 * @throws OHServiceException
+	 */
+	public long countOpdByDateBetweenAndDiseaseCodeIn(LocalDateTime dateFrom, LocalDateTime dateTo, List<String> diseaseCodes) throws OHServiceException {
+		return repository.countDistinctOpdByDateBetweenAndDiseaseCodeIn(dateFrom, dateTo, diseaseCodes);
+	}
+
+	/**
 	 * Returns the total number of {@link Opd}s with specified Progressive in Year number
 	 *
 	 * @param code - the OPD code

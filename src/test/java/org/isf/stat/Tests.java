@@ -105,7 +105,7 @@ class Tests extends OHCoreTestCase {
 						MockedStatic<JasperFillManager> mockedJasperFillManager = mockStatic(JasperFillManager.class);
 						MockedStatic<JasperExportManager> mockedJasperExportManager = mockStatic(JasperExportManager.class)) {
 			JasperReportsManager jasperReportsManager = new JasperReportsManager(hospitalBrowsingManager, dataSource, wardBrowserManager,
-							null, null, null, null, null, null, null);
+							null, null, null, null, null, null, null, null, null, null, null);
 
 			when(hospitalBrowsingManager.getHospital()).thenReturn(hospital);
 			when(hospital.getDescription()).thenReturn("Description");
@@ -130,7 +130,7 @@ class Tests extends OHCoreTestCase {
 						MockedStatic<JasperFillManager> mockedJasperFillManager = mockStatic(JasperFillManager.class);
 						MockedStatic<JasperExportManager> mockedJasperExportManager = mockStatic(JasperExportManager.class)) {
 			JasperReportsManager jasperReportsManager = new JasperReportsManager(hospitalBrowsingManager, dataSource, wardBrowserManager,
-							null, null, null, null, null, null, null);
+							null, null, null, null, null, null, null, null, null, null, null);
 
 			when(hospitalBrowsingManager.getHospital()).thenReturn(hospital);
 			when(hospital.getDescription()).thenReturn("Description");
@@ -155,7 +155,7 @@ class Tests extends OHCoreTestCase {
 						MockedStatic<JasperFillManager> mockedJasperFillManager = mockStatic(JasperFillManager.class);
 						MockedStatic<JasperExportManager> mockedJasperExportManager = mockStatic(JasperExportManager.class)) {
 			JasperReportsManager jasperReportsManager = new JasperReportsManager(hospitalBrowsingManager, dataSource, wardBrowserManager,
-							null, null, null, null, null, null, null);
+							null, null, null, null, null, null, null, null, null, null, null);
 
 			when(hospitalBrowsingManager.getHospital()).thenReturn(hospital);
 			when(hospital.getDescription()).thenReturn("Description");
