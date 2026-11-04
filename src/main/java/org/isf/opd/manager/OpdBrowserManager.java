@@ -22,6 +22,7 @@
 package org.isf.opd.manager;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -355,6 +356,20 @@ public class OpdBrowserManager {
 	 * @return the total number of {@link Opd}s
 	 * @throws OHServiceException when fails to count fetched OPDs
 	 */
+	/**
+	 * Count distinct OPD visits within a date range that have at least one active diagnosis entry whose disease code is in the
+	 * given list.
+	 *
+	 * @param dateFrom the lower bound of the date range
+	 * @param dateTo the upper bound of the date range
+	 * @param diseaseCodes the disease codes to match
+	 * @return the number of matching visits
+	 * @throws OHServiceException
+	 */
+	public long countOpdByDateBetweenAndDiseaseCodeIn(LocalDateTime dateFrom, LocalDateTime dateTo, List<String> diseaseCodes) throws OHServiceException {
+		return ioOperations.countOpdByDateBetweenAndDiseaseCodeIn(dateFrom, dateTo, diseaseCodes);
+	}
+
 	public long countTotalOpds(Ward ward, String diseaseTypeCode, String diseaseCode, LocalDate dateFrom, LocalDate dateTo, int ageFrom, int ageTo, char sex, char newPatient, String user) throws OHServiceException {
 		if (ward == null && diseaseTypeCode == null && diseaseCode == null && dateFrom == null && dateTo == null &&
 			ageFrom == 0 && ageTo == 0 && sex == '\0' && newPatient == '\0' && user == null) {
