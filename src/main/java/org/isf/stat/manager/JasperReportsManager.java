@@ -56,6 +56,7 @@ import org.isf.hiv.manager.HIVVisitManager;
 import org.isf.hiv.model.HIVVisit.PCRResult;
 import org.isf.homevisit.manager.HomeVisitBrowserManager;
 import org.isf.homevisit.model.HomeVisitStatus;
+import org.isf.maternity.manager.PregnancyBrowserManager;
 import org.isf.hospital.manager.HospitalBrowsingManager;
 import org.isf.hospital.model.Hospital;
 import org.isf.lab.manager.LabManager;
@@ -141,11 +142,14 @@ public class JasperReportsManager {
 
 	private HomeVisitBrowserManager homeVisitManager;
 
+	private PregnancyBrowserManager pregnancyManager;
+
 	public JasperReportsManager(HospitalBrowsingManager hospitalBrowsingManager, DataSource dataSource, WardBrowserManager wardManager,
 					OpdBrowserManager opdManager, AdmissionBrowserManager admissionManager, StatsDeliveryManager statsDeliveryManager,
 					LabManager labManager, OperationRowBrowserManager operationRowManager, PatVacManager patVacManager,
 					VaccineBrowserManager vaccineManager, TuberculosisTreatmentManager tuberculosisTreatmentManager,
-					HIVInfantManager hivInfantManager, HIVVisitManager hivVisitManager, HomeVisitBrowserManager homeVisitManager) {
+					HIVInfantManager hivInfantManager, HIVVisitManager hivVisitManager, HomeVisitBrowserManager homeVisitManager,
+					PregnancyBrowserManager pregnancyManager) {
 		this.hospitalManager = hospitalBrowsingManager;
 		this.dataSource = dataSource;
 		this.wardManager = wardManager;
@@ -158,6 +162,7 @@ public class JasperReportsManager {
 		this.hivInfantManager = hivInfantManager;
 		this.hivVisitManager = hivVisitManager;
 		this.homeVisitManager = homeVisitManager;
+		this.pregnancyManager = pregnancyManager;
 		this.patVacManager = patVacManager;
 		this.vaccineManager = vaccineManager;
 	}
@@ -1151,7 +1156,8 @@ public class JasperReportsManager {
 		parameters.put("avgLengthOfStay", avgLengthOfStay);
 		parameters.put("totalBeds", totalBeds);
 
-		// Deliveries
+		// Pregnancies registered, and deliveries
+		long pregnanciesCount = pregnancyManager.getPregnanciesByDateRange(dateFrom, dateTo, 0, 1).getTotalElements();
 		long deliveriesCount = statsDeliveryManager.getDeliveriesStats(dateFrom, dateTo,
 						null, null, null, null, null, // motherAge*, sex, weight*
 						null, null, null, null, null, null, // deliveryType, deliveryResultType, deliveryMode, laborDuration, romRange, perinealIntegrity
@@ -1159,6 +1165,7 @@ public class JasperReportsManager {
 						null, null, null, null, null, null, // apgar1Range, apgar5Range, resuscitationRequired, cryTime, hivStatus, congenitalAnomalies
 						null, null, // disease, dischargeType
 						0, 1).getTotalElements();
+		parameters.put("pregnanciesCount", pregnanciesCount);
 		parameters.put("deliveriesCount", deliveriesCount);
 
 		// Laboratory: total exams performed
@@ -1192,13 +1199,22 @@ public class JasperReportsManager {
 		long malariaCount = opdManager.countOpdByDateBetweenAndDiseaseCodeIn(dateFrom, dateTo, List.of("B50", "B51", "B52", "B53", "B54"));
 		parameters.put("malariaCount", malariaCount);
 
-		// Home visits (new in 1.15 vs. the older reference version), backed by the structured HomeVisitStatus enum
+		// Home visits (new in 1.15 vs. the older reference version), broken down by the structured HomeVisitStatus enum
 		long homeVisitsTotal = homeVisitManager.getHomeVisitsWithFilters(null, null, dateFrom, dateTo, null, null, null, null, 0, 1)
+						.getTotalElements();
+		long homeVisitsPlanned = homeVisitManager.getHomeVisitsWithFilters(null, HomeVisitStatus.PLANNED, dateFrom, dateTo, null, null, null, null, 0, 1)
 						.getTotalElements();
 		long homeVisitsCompleted = homeVisitManager.getHomeVisitsWithFilters(null, HomeVisitStatus.COMPLETED, dateFrom, dateTo, null, null, null, null, 0, 1)
 						.getTotalElements();
+		long homeVisitsCancelled = homeVisitManager.getHomeVisitsWithFilters(null, HomeVisitStatus.CANCELLED, dateFrom, dateTo, null, null, null, null, 0, 1)
+						.getTotalElements();
+		long homeVisitsPostponed = homeVisitManager.getHomeVisitsWithFilters(null, HomeVisitStatus.POSTPONED, dateFrom, dateTo, null, null, null, null, 0, 1)
+						.getTotalElements();
 		parameters.put("homeVisitsTotal", homeVisitsTotal);
+		parameters.put("homeVisitsPlanned", homeVisitsPlanned);
 		parameters.put("homeVisitsCompleted", homeVisitsCompleted);
+		parameters.put("homeVisitsCancelled", homeVisitsCancelled);
+		parameters.put("homeVisitsPostponed", homeVisitsPostponed);
 
 		// Operations, backed by the stable Operation.major flag
 		long operationsMinor = operationRowManager.countOperationRows(dateFrom, dateTo, 0);
