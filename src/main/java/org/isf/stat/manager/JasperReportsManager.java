@@ -22,18 +22,23 @@
 package org.isf.stat.manager;
 
 import java.io.File;
+import java.lang.reflect.Method;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -54,6 +59,7 @@ import org.isf.medicalinventory.model.MedicalInventory;
 import org.isf.medicals.model.Medical;
 import org.isf.patient.model.Patient;
 import org.isf.patient.service.PatientIoOperations;
+import org.isf.stat.dto.IncomesPerSurgeryActReportBean;
 import org.isf.stat.dto.JasperReportResultDto;
 import org.isf.utils.db.DbQueryLogger;
 import org.isf.utils.db.UTF8Control;
@@ -79,6 +85,7 @@ import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.base.JRBaseSubreport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.util.JRLoader;
 
 @Component
@@ -94,6 +101,8 @@ public class JasperReportsManager {
 	private static final String LOGO = "./rsc/images/logo_report.png";
 
 	private static final String RPT_BASE = "rpt_base";
+	private static final String RPT_STAT = "rpt_stat";
+	private static final String INCOMES_PER_SURGERY_ACT_FILENAME = "OH004_IncomesAllByPriceCodes_3_Surgery";
 
 	private HospitalBrowsingManager hospitalManager;
 
@@ -1244,6 +1253,249 @@ public class JasperReportsManager {
 
 	private static Date toDate(LocalDate localDate) {
 		return Optional.ofNullable(localDate).map(t -> Date.from(t.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant())).orElse(null);
+	}
+
+	/**
+	 * Builds, for every surgical act billed during {@code year}, the monthly (and yearly)
+	 * performed/refunded quantity and amount. A bill item is considered a surgical act when its
+	 * item code matches the code of an {@code OH_OPERATION}; the operation's type is then used to
+	 * filter by {@code operationTypeCode} ({@code "ALL"} to not filter by type), and the bill
+	 * status is filtered by {@code state}/{@code state2} (same value twice when a single status is
+	 * wanted). Refund bills always have {@code BLL_STATUS = "C"} regardless of their parent bill's
+	 * actual status (see {@code BillRefund}), so the status filter is evaluated against the parent
+	 * bill's status whenever the item belongs to a refund (child) bill. When {@code balanceZero} is
+	 * not {@code null}, pending ("O") bills are further restricted to those whose balance is zero
+	 * ({@code true}) or non-zero ({@code false}).
+	 */
+	private List<IncomesPerSurgeryActReportBean> buildIncomesPerSurgeryActPerYear(int year, String state, String state2, String operationTypeCode,
+			Boolean balanceZero) throws SQLException {
+		StringBuilder queryBuilder = new StringBuilder(
+				"SELECT groupe, description, quantity, refunded_quantity, amount, refunded_amount FROM ( "
+				+ "SELECT bli.BLI_ITEM_GROUP AS groupe, "
+				+ "bli.BLI_ITEM_DESC AS description, "
+				+ "SUM(IF(bl.BLL_PARENT_ID IS NULL, bli.BLI_QTY, 0)) AS quantity, "
+				+ "SUM(IF(bl.BLL_PARENT_ID IS NOT NULL, bli.BLI_QTY, 0)) AS refunded_quantity, "
+				+ "SUM(IF(bl.BLL_PARENT_ID IS NULL, (bli.BLI_QTY * bli.BLI_ITEM_AMOUNT), 0)) AS amount, "
+				+ "SUM(IF(bl.BLL_PARENT_ID IS NOT NULL, (bli.BLI_QTY * bli.BLI_ITEM_AMOUNT), 0)) AS refunded_amount "
+				+ "FROM OH_BILLITEMS bli "
+				+ "JOIN OH_BILLS bl ON bli.BLI_ID_BILL = bl.BLL_ID "
+				+ "LEFT JOIN OH_BILLS parent ON bl.BLL_PARENT_ID = parent.BLL_ID "
+				+ "JOIN OH_OPERATION op ON op.OPE_ID_A = bli.BLI_ITEM_ID "
+				+ "WHERE (COALESCE(parent.BLL_STATUS, bl.BLL_STATUS) = ? OR COALESCE(parent.BLL_STATUS, bl.BLL_STATUS) = ?) "
+				+ "AND (op.OPE_OCL_ID_A = ? OR ? = 'ALL') "
+				+ "AND DATE(bli.BLI_DATE) BETWEEN ? AND ? ");
+		if (balanceZero != null) {
+			queryBuilder.append(balanceZero
+					? "AND COALESCE(parent.BLL_BALANCE, bl.BLL_BALANCE) = 0 "
+					: "AND COALESCE(parent.BLL_BALANCE, bl.BLL_BALANCE) <> 0 ");
+		}
+		queryBuilder.append("GROUP BY description ")
+				.append(") source_table ORDER BY groupe, description");
+		String query = queryBuilder.toString();
+
+		Map<String, IncomesPerSurgeryActReportBean> items = new HashMap<>();
+		List<IncomesPerSurgeryActReportBean> orderedItems = new ArrayList<>();
+
+		try (Connection connection = dataSource.getConnection()) {
+			for (int monthIndex = 0; monthIndex <= 12; monthIndex++) {
+				LocalDate from;
+				LocalDate to;
+				if (monthIndex == 12) {
+					from = LocalDate.of(year, 1, 1);
+					to = LocalDate.of(year, 12, 31);
+				} else {
+					YearMonth yearMonth = YearMonth.of(year, monthIndex + 1);
+					from = yearMonth.atDay(1);
+					to = yearMonth.atEndOfMonth();
+				}
+
+				try (PreparedStatement statement = connection.prepareStatement(query)) {
+					statement.setString(1, state);
+					statement.setString(2, state2);
+					statement.setString(3, operationTypeCode);
+					statement.setString(4, operationTypeCode);
+					statement.setObject(5, from);
+					statement.setObject(6, to);
+
+					try (ResultSet resultSet = statement.executeQuery()) {
+						while (resultSet.next()) {
+							String description = resultSet.getString("description");
+							String group = resultSet.getString("groupe") == null ? "" : resultSet.getString("groupe");
+							IncomesPerSurgeryActReportBean bean = items.get(description);
+							if (bean == null) {
+								bean = new IncomesPerSurgeryActReportBean();
+								bean.setBLI_ITEM_DESC(description);
+								bean.setBLI_ITEM_GROUP(group);
+								items.put(description, bean);
+								orderedItems.add(bean);
+							}
+
+							double quantity = resultSet.getDouble("quantity");
+							double refundedQuantity = resultSet.getDouble("refunded_quantity");
+							double amount = resultSet.getDouble("amount");
+							double refundedAmount = resultSet.getDouble("refunded_amount");
+
+							if (monthIndex == 12) {
+								bean.setTOTAL_YEAR_COUNT(quantity);
+								bean.setTOTAL_YEAR_AMOUNT(amount);
+								bean.setREFUNDED_TOTAL_YEAR_COUNT(refundedQuantity);
+								bean.setREFUNDED_TOTAL_YEAR_AMOUNT(refundedAmount);
+							} else {
+								applyMonthValues(bean, monthIndex, quantity, refundedQuantity, amount, refundedAmount);
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return orderedItems;
+	}
+
+	private void applyMonthValues(IncomesPerSurgeryActReportBean bean, int monthIndex, double quantity, double refundedQuantity, double amount,
+			double refundedAmount) {
+		switch (monthIndex) {
+			case 0:
+				bean.setCOUNT_JANUARY(quantity);
+				bean.setREFUNDED_COUNT_JANUARY(refundedQuantity);
+				bean.setAMOUNT_JANUARY(amount);
+				bean.setREFUNDED_AMOUNT_JANUARY(refundedAmount);
+				break;
+			case 1:
+				bean.setCOUNT_FEBRUARY(quantity);
+				bean.setREFUNDED_COUNT_FEBRUARY(refundedQuantity);
+				bean.setAMOUNT_FEBRUARY(amount);
+				bean.setREFUNDED_AMOUNT_FEBRUARY(refundedAmount);
+				break;
+			case 2:
+				bean.setCOUNT_MARCH(quantity);
+				bean.setREFUNDED_COUNT_MARCH(refundedQuantity);
+				bean.setAMOUNT_MARCH(amount);
+				bean.setREFUNDED_AMOUNT_MARCH(refundedAmount);
+				break;
+			case 3:
+				bean.setCOUNT_APRIL(quantity);
+				bean.setREFUNDED_COUNT_APRIL(refundedQuantity);
+				bean.setAMOUNT_APRIL(amount);
+				bean.setREFUNDED_AMOUNT_APRIL(refundedAmount);
+				break;
+			case 4:
+				bean.setCOUNT_MAY(quantity);
+				bean.setREFUNDED_COUNT_MAY(refundedQuantity);
+				bean.setAMOUNT_MAY(amount);
+				bean.setREFUNDED_AMOUNT_MAY(refundedAmount);
+				break;
+			case 5:
+				bean.setCOUNT_JUNE(quantity);
+				bean.setREFUNDED_COUNT_JUNE(refundedQuantity);
+				bean.setAMOUNT_JUNE(amount);
+				bean.setREFUNDED_AMOUNT_JUNE(refundedAmount);
+				break;
+			case 6:
+				bean.setCOUNT_JULY(quantity);
+				bean.setREFUNDED_COUNT_JULY(refundedQuantity);
+				bean.setAMOUNT_JULY(amount);
+				bean.setREFUNDED_AMOUNT_JULY(refundedAmount);
+				break;
+			case 7:
+				bean.setCOUNT_AUGUST(quantity);
+				bean.setREFUNDED_COUNT_AUGUST(refundedQuantity);
+				bean.setAMOUNT_AUGUST(amount);
+				bean.setREFUNDED_AMOUNT_AUGUST(refundedAmount);
+				break;
+			case 8:
+				bean.setCOUNT_SEPTEMBER(quantity);
+				bean.setREFUNDED_COUNT_SEPTEMBER(refundedQuantity);
+				bean.setAMOUNT_SEPTEMBER(amount);
+				bean.setREFUNDED_AMOUNT_SEPTEMBER(refundedAmount);
+				break;
+			case 9:
+				bean.setCOUNT_OCTOBER(quantity);
+				bean.setREFUNDED_COUNT_OCTOBER(refundedQuantity);
+				bean.setAMOUNT_OCTOBER(amount);
+				bean.setREFUNDED_AMOUNT_OCTOBER(refundedAmount);
+				break;
+			case 10:
+				bean.setCOUNT_NOVEMBER(quantity);
+				bean.setREFUNDED_COUNT_NOVEMBER(refundedQuantity);
+				bean.setAMOUNT_NOVEMBER(amount);
+				bean.setREFUNDED_AMOUNT_NOVEMBER(refundedAmount);
+				break;
+			case 11:
+				bean.setCOUNT_DECEMBER(quantity);
+				bean.setREFUNDED_COUNT_DECEMBER(refundedQuantity);
+				bean.setAMOUNT_DECEMBER(amount);
+				bean.setREFUNDED_AMOUNT_DECEMBER(refundedAmount);
+				break;
+			default:
+				break;
+		}
+	}
+
+	public JasperReportResultDto getIncomesPerSurgeryActPdf(int year, String state, String state2, String operationTypeCode, String operationTypeLabel,
+			Boolean balanceZero) throws OHServiceException {
+		try {
+			List<IncomesPerSurgeryActReportBean> beans = buildIncomesPerSurgeryActPerYear(year, state, state2, operationTypeCode, balanceZero);
+
+			HashMap<String, Object> parameters = getHospitalParameters();
+			parameters.put("code_title", "angal.stat.incomesallbypricecodes_3_surgery_title");
+			parameters.put("year", String.valueOf(year));
+			parameters.put("operationType", operationTypeLabel);
+			addBundleParameter(RPT_STAT, INCOMES_PER_SURGERY_ACT_FILENAME, parameters);
+
+			String pdfFilename = compilePDFFilename(RPT_STAT, INCOMES_PER_SURGERY_ACT_FILENAME,
+					Arrays.asList(String.valueOf(year), state, state2, operationTypeCode, String.valueOf(balanceZero)), "pdf");
+			String jasperFilename = compileJasperFilename(RPT_STAT, INCOMES_PER_SURGERY_ACT_FILENAME);
+
+			JasperReport jasperReport = (JasperReport) JRLoader.loadObject(new File(jasperFilename));
+			JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, new JRBeanCollectionDataSource(beans));
+			JasperExportManager.exportReportToPdfFile(jasperPrint, pdfFilename);
+			return new JasperReportResultDto(jasperPrint, jasperFilename, pdfFilename);
+		} catch (Exception e) {
+			LOGGER.error("", e);
+			throw new OHReportException(e, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
+		}
+	}
+
+	public void getIncomesPerSurgeryActExcel(int year, String state, String state2, String operationTypeCode, String operationTypeLabel, Boolean balanceZero,
+			String exportFilename) throws OHServiceException {
+		try {
+			List<IncomesPerSurgeryActReportBean> beans = buildIncomesPerSurgeryActPerYear(year, state, state2, operationTypeCode, balanceZero);
+
+			String[] columns = { "BLI_ITEM_GROUP", "BLI_ITEM_DESC",
+					"COUNT_JANUARY", "REFUNDED_COUNT_JANUARY", "AMOUNT_JANUARY", "REFUNDED_AMOUNT_JANUARY",
+					"COUNT_FEBRUARY", "REFUNDED_COUNT_FEBRUARY", "AMOUNT_FEBRUARY", "REFUNDED_AMOUNT_FEBRUARY",
+					"COUNT_MARCH", "REFUNDED_COUNT_MARCH", "AMOUNT_MARCH", "REFUNDED_AMOUNT_MARCH",
+					"COUNT_APRIL", "REFUNDED_COUNT_APRIL", "AMOUNT_APRIL", "REFUNDED_AMOUNT_APRIL",
+					"COUNT_MAY", "REFUNDED_COUNT_MAY", "AMOUNT_MAY", "REFUNDED_AMOUNT_MAY",
+					"COUNT_JUNE", "REFUNDED_COUNT_JUNE", "AMOUNT_JUNE", "REFUNDED_AMOUNT_JUNE",
+					"COUNT_JULY", "REFUNDED_COUNT_JULY", "AMOUNT_JULY", "REFUNDED_AMOUNT_JULY",
+					"COUNT_AUGUST", "REFUNDED_COUNT_AUGUST", "AMOUNT_AUGUST", "REFUNDED_AMOUNT_AUGUST",
+					"COUNT_SEPTEMBER", "REFUNDED_COUNT_SEPTEMBER", "AMOUNT_SEPTEMBER", "REFUNDED_AMOUNT_SEPTEMBER",
+					"COUNT_OCTOBER", "REFUNDED_COUNT_OCTOBER", "AMOUNT_OCTOBER", "REFUNDED_AMOUNT_OCTOBER",
+					"COUNT_NOVEMBER", "REFUNDED_COUNT_NOVEMBER", "AMOUNT_NOVEMBER", "REFUNDED_AMOUNT_NOVEMBER",
+					"COUNT_DECEMBER", "REFUNDED_COUNT_DECEMBER", "AMOUNT_DECEMBER", "REFUNDED_AMOUNT_DECEMBER",
+					"TOTAL_YEAR_COUNT", "REFUNDED_TOTAL_YEAR_COUNT", "TOTAL_YEAR_AMOUNT", "REFUNDED_TOTAL_YEAR_AMOUNT" };
+
+			List<Map<String, Object>> rows = new ArrayList<>();
+			for (IncomesPerSurgeryActReportBean bean : beans) {
+				Map<String, Object> row = new LinkedHashMap<>();
+				for (String column : columns) {
+					try {
+						Method getter = bean.getClass().getMethod("get" + column);
+						row.put(column, getter.invoke(bean));
+					} catch (ReflectiveOperationException e) {
+						LOGGER.error("", e);
+					}
+				}
+				rows.add(row);
+			}
+
+			new ExcelExporter().exportDataToExcel(rows, new File(exportFilename));
+		} catch (Exception e) {
+			LOGGER.error("", e);
+			throw new OHReportException(e, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
+		}
 	}
 
 	public JasperReportResultDto getInventoryReportPdf(MedicalInventory inventory, String jasperFileName, int printRealQty) throws OHServiceException {
