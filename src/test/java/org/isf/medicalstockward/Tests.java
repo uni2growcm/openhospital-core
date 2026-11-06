@@ -25,6 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.data.Offset.offset;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +36,7 @@ import org.isf.medicals.TestMedical;
 import org.isf.medicals.model.Medical;
 import org.isf.medicals.service.MedicalsIoOperationRepository;
 import org.isf.medicalstock.TestLot;
+import org.isf.medicalstock.TestMovement;
 import org.isf.medicalstock.model.Lot;
 import org.isf.medicalstock.model.Movement;
 import org.isf.medicalstock.service.LotIoOperationRepository;
@@ -86,6 +88,7 @@ class Tests extends OHCoreTestCase {
 	private static TestMovementType testMovementType;
 	private static TestSupplier testSupplier;
 	private static TestLot testLot;
+	private static TestMovement testMovement;
 
 	@Autowired
 	MedicalStockWardIoOperations medicalStockWardIoOperations;
@@ -125,6 +128,7 @@ class Tests extends OHCoreTestCase {
 		testMovementType = new TestMovementType();
 		testSupplier = new TestSupplier();
 		testLot = new TestLot();
+		testMovement = new TestMovement();
 	}
 
 	@BeforeEach
@@ -477,6 +481,52 @@ class Tests extends OHCoreTestCase {
 
 		Double nullValue = movWardBrowserManager.getTotalWardStockValue(null);
 		assertThat(nullValue).isEqualTo(0.0);
+
+		Double blankValue = movWardBrowserManager.getTotalWardStockValue("   ");
+		assertThat(blankValue).isEqualTo(0.0);
+
+		MedicalType medicalType = testMedicalType.setup(false);
+		medicalTypeIoOperationRepository.saveAndFlush(medicalType);
+
+		Medical medical = testMedical.setup(medicalType, false);
+		medicalsIoOperationRepository.saveAndFlush(medical);
+
+		Ward ward = testWard.setup(false);
+		wardIoOperationRepository.saveAndFlush(ward);
+
+		Lot lot1 = testLot.setup(medical, false);
+		lot1.setCode("LOT1");
+		lot1.setCost(new BigDecimal("10.0"));
+		lotIoOperationRepository.saveAndFlush(lot1);
+
+		Lot lot2 = testLot.setup(medical, false);
+		lot2.setCode("LOT2");
+		lot2.setCost(new BigDecimal("20.0"));
+		lotIoOperationRepository.saveAndFlush(lot2);
+
+		MovementType movementType = testMovementType.setup(false);
+		movementType.setType("+");
+		medicalDsrStockMovementTypeIoOperationRepository.saveAndFlush(movementType);
+
+		Supplier supplier = testSupplier.setup(false);
+		supplierIoOperationRepository.saveAndFlush(supplier);
+
+		Movement movement1 = testMovement.setup(medical, movementType, ward, lot1, supplier, false);
+		movement1.setQuantity(10);
+		movementIoOperationRepository.saveAndFlush(movement1);
+
+		Movement movement2 = testMovement.setup(medical, movementType, ward, lot2, supplier, false);
+		movement2.setQuantity(10);
+		movementIoOperationRepository.saveAndFlush(movement2);
+
+		MedicalWard medicalWard = testMedicalWard.setup(medical, ward, lot1, false);
+		medicalWard.setIn_quantity(15);
+		medicalWard.setOut_quantity(5);
+		medicalStockWardIoOperationRepository.saveAndFlush(medicalWard);
+
+		Double totalValue = movWardBrowserManager.getTotalWardStockValue(ward.getCode());
+
+		assertThat(totalValue).isEqualTo(150.0);
 	}
 
 	@Test
