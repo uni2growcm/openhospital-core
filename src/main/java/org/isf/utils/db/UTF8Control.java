@@ -27,7 +27,6 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.PropertyResourceBundle;
@@ -70,8 +69,22 @@ public class UTF8Control extends Control {
         return bundle;
     }
 
+	/**
+	 * Use the language of the requested locale (e.g. the {@code Accept-Language} of a REST request), then the base bundle (English).
+	 * Falls back to {@link GeneralData#LANGUAGE} only when no locale is given.
+	 */
 	@Override
 	public List<Locale> getCandidateLocales(String baseName, Locale locale) {
-		return Collections.singletonList(new Locale(GeneralData.LANGUAGE));
+		String language = locale == null || locale.getLanguage().isEmpty() ? GeneralData.LANGUAGE : locale.getLanguage();
+		return List.of(new Locale(language), Locale.ROOT);
+	}
+
+	/**
+	 * No fallback to the JVM default locale: when the requested language has no bundle, the base bundle (English) is used
+	 * instead of, for instance, the French one on a server running in French.
+	 */
+	@Override
+	public Locale getFallbackLocale(String baseName, Locale locale) {
+		return null;
 	}
 }

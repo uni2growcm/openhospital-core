@@ -80,6 +80,7 @@ import org.isf.ward.manager.WardBrowserManager;
 import org.isf.ward.model.Ward;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
 
 import net.sf.jasperreports.engine.JRBand;
@@ -631,6 +632,11 @@ public class JasperReportsManager {
 
 			HashMap<String, Object> parameters = getHospitalParameters();
 			addBundleParameter(RPT_BASE, jasperFileName, parameters);
+			/*
+			 * The "_multi" ledgers include ProductLedger(Ward).jasper as subreport and default SUBREPORT_DIR to "./", which only works when the working
+			 * directory is rpt_base: point it to the report folder.
+			 */
+			parameters.put("SUBREPORT_DIR", RPT_BASE + File.separator);
 
 			parameters.put("fromdate", toDate(dateFrom));
 			parameters.put("todate", toDate(dateTo));
@@ -988,7 +994,7 @@ public class JasperReportsManager {
 		 * Some reports use pre-formatted dates, that need to be localized as well (days, months, etc...) For this reason we pass the same Locale used in the
 		 * application (otherwise it would use the Locale used on the user client machine)
 		 */
-		parameters.put(JRParameter.REPORT_LOCALE, Locale.getDefault());
+		parameters.put(JRParameter.REPORT_LOCALE, getReportLocale());
 
 		/*
 		 * Jasper Report seems failing to decode resource bundles in UTF-8 encoding. For this reason we pass also the resource for the specific report read with
@@ -1013,6 +1019,14 @@ public class JasperReportsManager {
 			LOGGER.error(">> error loading subreport bundle, default will be used");
 			LOGGER.error(e.getMessage());
 		}
+	}
+
+	/**
+	 * Locale used to translate the reports: the one of the current request when available (e.g. the {@code Accept-Language} header sent to the REST
+	 * API), otherwise the application default locale (e.g. in the GUI).
+	 */
+	private static Locale getReportLocale() {
+		return LocaleContextHolder.getLocale();
 	}
 
 	private void addSubReportsBundleParameters(String jasperFileFolder, String jasperFileName, Map<String, Object> parameters) throws JRException {
@@ -1063,18 +1077,18 @@ public class JasperReportsManager {
 		 */
 		ClassLoader reportClassLoader = getReportFolderClassLoader(jasperFileFolder);
 		try {
-			ResourceBundle resourceBundle = ResourceBundle.getBundle(jasperFileName, Locale.getDefault(), reportClassLoader, new UTF8Control());
+			ResourceBundle resourceBundle = ResourceBundle.getBundle(jasperFileName, getReportLocale(), reportClassLoader, new UTF8Control());
 			parameters.put(jasperParameter, resourceBundle);
 
 		} catch (MissingResourceException e) {
 			LOGGER.error(">> no resource bundle for language '{}' found for report {}", GeneralData.LANGUAGE, jasperFileName);
-			LOGGER.info(">> switch to default language '{}'", Locale.getDefault());
+			LOGGER.info(">> switch to default language '{}'", getReportLocale());
 			try {
-				parameters.put(jasperParameter, ResourceBundle.getBundle(jasperFileName, Locale.getDefault(), reportClassLoader));
+				parameters.put(jasperParameter, ResourceBundle.getBundle(jasperFileName, getReportLocale(), reportClassLoader));
 			} catch (MissingResourceException missingResourceException) {
 				LOGGER.error(">> no resource bundle at all found for report {}", jasperFileName);
 			}
-			parameters.put(JRParameter.REPORT_LOCALE, Locale.getDefault());
+			parameters.put(JRParameter.REPORT_LOCALE, getReportLocale());
 		}
 	}
 
