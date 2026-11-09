@@ -127,4 +127,9 @@ public interface OpdIoOperationRepository extends JpaRepository<Opd, Integer>, O
 	@Transactional
 	@Query("UPDATE DiagnosisEntry d SET d.active = false WHERE d.opd.code = :opdId")
 	void softDeleteDiagnosesByOpdId(@Param("opdId") int opdId);
+
+	@Query("select count(distinct d.opd) from DiagnosisEntry d where d.opd.date >= :dateFrom and d.opd.date <= :dateTo "
+			+ "and d.disease.code in :codes and d.active = true")
+	long countDistinctOpdByDateBetweenAndDiseaseCodeIn(@Param("dateFrom") LocalDateTime dateFrom, @Param("dateTo") LocalDateTime dateTo,
+					@Param("codes") List<String> codes);
 }

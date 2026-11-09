@@ -25,6 +25,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.isf.hiv.model.HIVVisit;
+import org.isf.hiv.model.HIVVisit.PCRResult;
 import org.isf.hiv.service.HIVVisitIoOperations;
 import org.isf.utils.exception.OHServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -118,5 +119,18 @@ public class HIVVisitManager {
 		LocalDateTime dateFrom,
 		LocalDateTime dateTo) throws OHServiceException {
 		return ioOperations.findVisitsByInfantIdAndDateRange(infantId, dateFrom, dateTo);
+	}
+
+	/**
+	 * Count HIV follow-up visits within a date range whose PCR result matches the given value.
+	 *
+	 * @param dateFrom the start date for the range
+	 * @param dateTo the end date for the range
+	 * @param pcrResult the PCR result to match
+	 * @return the number of matching visits
+	 * @throws OHServiceException if an error occurs during the search
+	 */
+	public long countByVisitDateBetweenAndPcrResult(LocalDateTime dateFrom, LocalDateTime dateTo, PCRResult pcrResult) throws OHServiceException {
+		return ioOperations.countByVisitDateBetweenAndPcrResult(dateFrom, dateTo, pcrResult);
 	}
 }

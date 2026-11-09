@@ -223,6 +223,22 @@ public class LabManager {
 	}
 
 	/**
+	 * Return the number of exams ({@link Laboratory}s) between specified dates whose exam description and result both contain
+	 * (case-insensitive) the given keywords.
+	 *
+	 * @param dateFrom the lower date for the range
+	 * @param dateTo the highest date for the range
+	 * @param examKeyword a substring to match (case-insensitive) against the exam description
+	 * @param resultKeyword a substring to match (case-insensitive) against the result
+	 * @return the number of matching {@link Laboratory}s
+	 * @throws OHServiceException
+	 */
+	public long getLaboratoryCountByExamAndResult(LocalDateTime dateFrom, LocalDateTime dateTo, String examKeyword, String resultKeyword)
+		throws OHServiceException {
+		return ioOperations.getLaboratoryCountByExamAndResult(dateFrom, dateTo, examKeyword, resultKeyword);
+	}
+
+	/**
 	 * Return a list of exams suitable for printing ({@link LaboratoryForPrint}s) between specified dates and matching passed exam name. If a lab has multiple
 	 * results, these are concatenated and added to the result string.
 	 *
