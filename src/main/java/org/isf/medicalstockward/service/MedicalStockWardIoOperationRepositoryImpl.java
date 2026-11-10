@@ -29,6 +29,7 @@ import java.util.List;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Order;
@@ -360,5 +361,39 @@ public class MedicalStockWardIoOperationRepositoryImpl implements MedicalStockWa
 		}
 
 		return new PageImpl<>(result, pageable, total);
+	}
+
+	@Override
+	public Double getTotalWardStockValue(String wardId) {
+		if (wardId == null || wardId.isBlank()) {
+			return 0.0;
+		}
+		String sql = """
+				SELECT COALESCE(SUM(ward_stock.qty * avg_table.avg_cost), 0.0)
+				FROM (
+				    SELECT mw.MDSRWRD_MDSR_ID AS med_id, SUM(mw.MDSRWRD_IN_QTI - mw.MDSRWRD_OUT_QTI) AS qty
+				    FROM OH_MEDICALDSRWARD mw
+				    WHERE mw.MDSRWRD_WRD_ID_A = :wardId
+				    GROUP BY mw.MDSRWRD_MDSR_ID
+				    HAVING SUM(mw.MDSRWRD_IN_QTI - mw.MDSRWRD_OUT_QTI) > 0
+				) ward_stock
+				JOIN (
+				    SELECT m.MMV_MDSR_ID AS med_id, (SUM(m.MMV_QTY * l.LT_COST) / NULLIF(SUM(m.MMV_QTY), 0)) AS avg_cost
+				    FROM OH_MEDICALDSRSTOCKMOV m
+				    JOIN OH_MEDICALDSRLOT l ON m.MMV_LT_ID_A = l.LT_ID_A
+				    JOIN OH_MEDICALDSRSTOCKMOVTYPE t ON m.MMV_MMVT_ID_A = t.MMVT_ID_A
+				    WHERE t.MMVT_TYPE = '+'
+				      AND l.LT_COST IS NOT NULL AND l.LT_COST > 0
+				    GROUP BY m.MMV_MDSR_ID
+				) avg_table ON ward_stock.med_id = avg_table.med_id
+				""";
+		Query query = entityManager.createNativeQuery(sql);
+		query.setParameter("wardId", wardId);
+
+		Object result = query.getSingleResult();
+		if (result instanceof Number) {
+			return ((Number) result).doubleValue();
+		}
+		return 0.0;
 	}
 }

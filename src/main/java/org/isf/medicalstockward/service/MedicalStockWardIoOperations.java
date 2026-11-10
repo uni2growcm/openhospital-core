@@ -514,4 +514,15 @@ public class MedicalStockWardIoOperations {
 	public Double getTotalWardQuantity(String wardCode, int medicalCode) throws OHServiceException {
 		return repository.getTotalWardQuantity(wardCode, medicalCode);
 	}
+
+	/**
+	 * Gets the total value of all medicals currently in stock in the specified ward.
+	 *
+	 * @param wardId the ward code.
+	 * @return the total value of the ward stock.
+	 * @throws OHServiceException if an error occurs.
+	 */
+	public Double getTotalWardStockValue(String wardId) throws OHServiceException {
+		return repository.getTotalWardStockValue(wardId);
+	}
 }
