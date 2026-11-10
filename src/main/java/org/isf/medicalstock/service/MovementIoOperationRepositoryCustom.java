@@ -23,6 +23,7 @@ package org.isf.medicalstock.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 import org.isf.medicalstock.model.Movement;
 import org.isf.medicalstock.service.MedicalStockIoOperations.MovementOrder;
@@ -51,5 +52,9 @@ public interface MovementIoOperationRepositoryCustom {
 
 	List<Integer> findMovementForPrint(String medicalDescription, String medicalTypeCode, String wardId,
 			String movType, LocalDateTime movFrom, LocalDateTime movTo, String lotCode, MovementOrder order);
+
+	Map<Integer, Double> getAverageCostPricesByMedicalCodes(List<Integer> medicalCodes);
+
+	Double getTotalStockValue(String type, Integer familyId, Character deleted, String description);
 
 }
