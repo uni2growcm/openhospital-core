@@ -67,6 +67,7 @@ public final class GeneralData extends ConfigurationProperties {
 	public static String PHARMACEUTICALSTOCKLOT;
 	public static String PHARMACEUTICALAMC;
 	public static boolean PATIENTEXTENDED;
+	public static boolean BLAMAFIELDENABLED;
 	public static boolean OPDEXTENDED;
 	public static boolean MATERNITYRESTARTINJUNE;
 	public static boolean LABEXTENDED;
@@ -156,6 +157,7 @@ public final class GeneralData extends ConfigurationProperties {
 	private static final String DEFAULT_PHARMACEUTICALSTOCKLOT = "PharmaceuticalStock_ver5"; // TODO: verify if really used
 	private static final String DEFAULT_PHARMACEUTICALAMC = "PharmaceuticalAMC";
 	private static final boolean DEFAULT_PATIENTEXTENDED = false;
+	private static final boolean DEFAULT_BLAMAFIELDENABLED = true;
 	private static final boolean DEFAULT_OPDEXTENDED = false;
 	private static final boolean DEFAULT_MATERNITYRESTARTINJUNE = false;
 	private static final boolean DEFAULT_LABEXTENDED = false;
@@ -253,6 +255,7 @@ public final class GeneralData extends ConfigurationProperties {
 		PHARMACEUTICALSTOCKLOT = myGetProperty("PHARMACEUTICALSTOCKLOT", DEFAULT_PHARMACEUTICALSTOCKLOT);
 		PHARMACEUTICALAMC = myGetProperty("PHARMACEUTICALAMC", DEFAULT_PHARMACEUTICALAMC);
 		PATIENTEXTENDED = myGetProperty("PATIENTEXTENDED", DEFAULT_PATIENTEXTENDED);
+		BLAMAFIELDENABLED = myGetProperty("BLAMAFIELDENABLED", DEFAULT_BLAMAFIELDENABLED);
 		OPDEXTENDED = myGetProperty("OPDEXTENDED", DEFAULT_OPDEXTENDED);
 		MATERNITYRESTARTINJUNE = myGetProperty("MATERNITYRESTARTINJUNE", DEFAULT_MATERNITYRESTARTINJUNE);
 		LABEXTENDED = myGetProperty("LABEXTENDED", DEFAULT_LABEXTENDED);
