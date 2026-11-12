@@ -127,7 +127,50 @@ public class PartnerBrowserManager {
 	 */
 	public Partner savePartner(Partner partner) throws OHServiceException {
 		validatePartner(partner);
+		if (partner.getCode() == null || partner.getPriority() == null || partner.getPriority() <= 0) {
+			partner.setPriority(ioOperations.getMaxPriority() + 1);
+		}
 		return ioOperations.save(partner);
+	}
+
+	/**
+	 * Returns all active {@link Partner}s ordered by priority, the most prioritary first.
+	 *
+	 * @return the list of active {@link Partner}s ordered by priority.
+	 * @throws OHServiceException when fails to fetch the partners.
+	 */
+	public List<Partner> getPartnersByPriority() throws OHServiceException {
+		return ioOperations.getAllByPriority();
+	}
+
+	/**
+	 * Defines the priority order of the partners: the first partner of the list becomes the
+	 * most prioritary one (priority 1), the second one gets priority 2 and so on.
+	 *
+	 * @param orderedPartners the partners, from the most prioritary to the least prioritary.
+	 * @return the saved partners.
+	 * @throws OHServiceException when fails to save the partners.
+	 */
+	public List<Partner> updatePriorities(List<Partner> orderedPartners) throws OHServiceException {
+		List<Partner> toSave = new ArrayList<>();
+		int rank = 1;
+		for (Partner partner : orderedPartners) {
+			Partner current = getPartner(partner.getCode());
+			current.setPriority(rank++);
+			toSave.add(current);
+		}
+		return ioOperations.saveAll(toSave);
+	}
+
+	/**
+	 * Returns the active {@link Partner}s associated with the given patient.
+	 *
+	 * @param patientCode the patient code.
+	 * @return the list of active partners of the patient.
+	 * @throws OHServiceException when fails to fetch the partners.
+	 */
+	public List<Partner> getPatientPartners(Integer patientCode) throws OHServiceException {
+		return ioOperations.getActivePartnersByPatientCode(patientCode);
 	}
 
 	/**

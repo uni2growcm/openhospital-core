@@ -33,7 +33,6 @@ import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Transient;
 import jakarta.persistence.Version;
 import jakarta.validation.constraints.NotNull;
 import org.isf.patient.model.Patient;
@@ -83,15 +82,15 @@ public class Partner extends Auditable<String> {
 	@Column(name = "PRT_NOTES", columnDefinition = "TEXT")
 	private String notes;
 
+	@Column(name = "PRT_PRIORITY", nullable = false)
+	private Integer priority = 0;
+
 	@Version
 	@Column(name = "PRT_LOCK")
 	private Integer lock;
 
 	@ManyToMany(mappedBy = "partners", fetch = FetchType.LAZY)
 	private Set<Patient> patients = new HashSet<>();
-
-	@Transient
-	private volatile int hashCode;
 
 	public Partner() {
 		super();
@@ -184,6 +183,14 @@ public class Partner extends Auditable<String> {
 		this.notes = notes;
 	}
 
+	public Integer getPriority() {
+		return priority;
+	}
+
+	public void setPriority(Integer priority) {
+		this.priority = priority;
+	}
+
 	public Integer getLock() {
 		return lock;
 	}
@@ -201,13 +208,7 @@ public class Partner extends Auditable<String> {
 
 	@Override
 	public int hashCode() {
-		if (this.hashCode == 0) {
-			final int m = 23;
-			int c = 133;
-			c = m * c + (code == null ? 0 : code);
-			this.hashCode = c;
-		}
-		return this.hashCode;
+		return 23 * 133 + (code == null ? 0 : code);
 	}
 
 	@Override
