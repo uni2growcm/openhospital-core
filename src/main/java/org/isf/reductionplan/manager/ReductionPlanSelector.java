@@ -83,25 +83,21 @@ public class ReductionPlanSelector {
 		if (candidates == null || candidates.isEmpty()) {
 			return null;
 		}
-		// 1. the highest or the lowest rate
 		List<AppliedReduction> remaining = keepExtreme(candidates, AppliedReduction::rate, policy.highestRateFirst());
 		if (remaining.size() == 1) {
 			return remaining.get(0);
 		}
 
-		// 2. partner plans or hospital plans
 		List<AppliedReduction> partnerPlans = remaining.stream().filter(r -> !r.reductionPlan().isHospitalPlan()).toList();
 		List<AppliedReduction> hospitalPlans = remaining.stream().filter(r -> r.reductionPlan().isHospitalPlan()).toList();
 		boolean usePartnerPlans = policy.partnerFirst() ? !partnerPlans.isEmpty() : hospitalPlans.isEmpty();
 
 		if (usePartnerPlans) {
-			// 3. the most or the least prioritary partner
 			remaining = keepExtreme(partnerPlans, ReductionPlanSelector::partnerPriority, !policy.mostPrioritaryPartnerFirst());
 		} else {
 			remaining = hospitalPlans;
 		}
 
-		// 4. still equal: random choice
 		return remaining.size() == 1 ? remaining.get(0) : remaining.get(random.nextInt(remaining.size()));
 	}
 

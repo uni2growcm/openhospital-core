@@ -169,7 +169,6 @@ public class Operation extends Auditable<String> {
 
 	@Override
 	public int hashCode() {
-		// only fields compared by equals() (description is compared ignoring case, lock is not compared)
 		return code == null ? 0 : code.hashCode();
 	}
 

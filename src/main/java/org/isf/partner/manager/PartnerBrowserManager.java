@@ -128,7 +128,6 @@ public class PartnerBrowserManager {
 	public Partner savePartner(Partner partner) throws OHServiceException {
 		validatePartner(partner);
 		if (partner.getCode() == null || partner.getPriority() == null || partner.getPriority() <= 0) {
-			// a new partner is the least prioritary one: by default the first partner added is the most prioritary
 			partner.setPriority(ioOperations.getMaxPriority() + 1);
 		}
 		return ioOperations.save(partner);

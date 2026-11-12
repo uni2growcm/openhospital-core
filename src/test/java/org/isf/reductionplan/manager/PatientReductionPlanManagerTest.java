@@ -157,7 +157,6 @@ class PatientReductionPlanManagerTest extends OHCoreTestCase {
 		assertThat(price.getPrice()).isEqualTo(100.0);
 	}
 
-	/* ---------------------------- assignments -------------------------- */
 
 	@Test
 	void assignAndReplaceHospitalPlans() throws Exception {
@@ -181,11 +180,9 @@ class PatientReductionPlanManagerTest extends OHCoreTestCase {
 		manager.setPatientHospitalPlans(patient1, List.of(plan));
 		manager.setPatientHospitalPlans(patient1, List.of());
 
-		// the place is not released when the plan is removed from the patient
 		assertThatThrownBy(() -> manager.setPatientHospitalPlans(patient2, List.of(plan))).isInstanceOf(OHDataValidationException.class);
 		assertThat(manager.getAssignableHospitalPlans(patient2.getCode())).isEmpty();
 
-		// but the patient that already used it can get it back
 		assertThat(manager.getAssignableHospitalPlans(patient1.getCode())).containsExactly(plan);
 		manager.setPatientHospitalPlans(patient1, List.of(plan));
 		assertThat(manager.getPatientHospitalPlans(patient1.getCode())).containsExactly(plan);
@@ -218,7 +215,6 @@ class PatientReductionPlanManagerTest extends OHCoreTestCase {
 		patient.addPartner(partner);
 		patientRepository.saveAndFlush(patient);
 
-		// a hospital plan cannot be assigned as a partner plan
 		assertThatThrownBy(() -> manager.setPatientPartnerPlans(patient, partner, List.of(hospitalPlan)))
 			.isInstanceOf(OHDataValidationException.class);
 
@@ -227,7 +223,6 @@ class PatientReductionPlanManagerTest extends OHCoreTestCase {
 		assertThat(manager.getPatientPartnerPlans(patient.getCode(), partner.getCode())).containsExactly(partnerPlan);
 		assertThat(manager.getApplicableReductionPlans(patient.getCode(), null)).containsExactly(partnerPlan);
 
-		// the partner plans do not apply anymore once the partner is removed from the patient
 		patient.removePartner(partner);
 		patientRepository.saveAndFlush(patient);
 		assertThat(manager.getApplicableReductionPlans(patient.getCode(), null)).isEmpty();
@@ -249,7 +244,6 @@ class PatientReductionPlanManagerTest extends OHCoreTestCase {
 		assertThat(partnerBrowserManager.getPartner(second.getCode()).getPriority()).isEqualTo(1);
 	}
 
-	/* ------------------------------ helpers ----------------------------- */
 
 	private Patient savePatient() throws Exception {
 		return patientRepository.saveAndFlush(new TestPatient().setup(false));
