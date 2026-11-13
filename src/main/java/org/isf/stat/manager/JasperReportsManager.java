@@ -1175,12 +1175,18 @@ public class JasperReportsManager {
 	}
 
 	private String getPatientPhotoFile(String patID) {
-		String patientPhotoFile = null;
 		if (!PatientIoOperations.LOAD_FROM_DB.equals(GeneralData.PATIENTPHOTOSTORAGE)) {
-			patientPhotoFile = GeneralData.PATIENTPHOTOSTORAGE + File.separatorChar + patID + ".png";
-			LOGGER.debug("PATIENT_PHOTO = {}", patientPhotoFile);
+			String patientPhotoFile = GeneralData.PATIENTPHOTOSTORAGE + File.separatorChar + patID + ".png";
+			if (new File(patientPhotoFile).exists()) {
+				LOGGER.debug("PATIENT_PHOTO = {}", patientPhotoFile);
+				return patientPhotoFile;
+			}
 		}
-		return patientPhotoFile;
+		File defaultPhoto = new File("rsc/images/nophoto.png");
+		if (defaultPhoto.exists()) {
+			return defaultPhoto.getPath();
+		}
+		return "rsc/images/nophoto.png";
 	}
 
 	private void addReportBundleParameter(String jasperParameter, String jasperFileName, Map<String, Object> parameters) {
