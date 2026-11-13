@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -474,6 +474,57 @@ class Tests extends OHCoreTestCase {
 		LocalDateTime[] dates = { TimeTools.getNow(), TimeTools.getNow() };
 		Therapy therapy = new Therapy(1, patient.getCode(), dates, medical, 10.0, "", 1, "TestNote", true, true);
 		assertThat(therapy).hasToString("10.0 of TestDescription - 1 per day");
+	}
+
+	@Test
+	void testTherapyHourlyToString() throws Exception {
+		MedicalType medicalType = testMedicalType.setup(false);
+		Medical medical = testMedical.setup(medicalType, false);
+		Patient patient = testPatient.setup(false);
+		medicalTypeIoOperationRepository.saveAndFlush(medicalType);
+		medicalsIoOperationRepository.saveAndFlush(medical);
+		patientIoOperationRepository.saveAndFlush(patient);
+
+		LocalDateTime[] dates = { TimeTools.getNow(), TimeTools.getNow() };
+		Therapy therapy = new Therapy(1, patient.getCode(), dates, medical, 10.0, "", 12, 2, "TestNote", true, true);
+		assertThat(therapy).hasToString("10.0 of TestDescription - every 2 hour(s)");
+	}
+
+	@Test
+	void testTherapyHourlyCalculations() {
+		LocalDateTime start = LocalDateTime.of(2026, 11, 1, 0, 0, 0);
+		LocalDateTime end = LocalDateTime.of(2026, 11, 3, 0, 0, 0);
+		double total = therapyManager.calculateTotalPrescribedQuantity(start, end, 1, 12, 2, 1.0);
+		assertThat(total).isEqualTo(36.0);
+
+		double total4h = therapyManager.calculateTotalPrescribedQuantity(start, end, 1, 6, 4, 2.5);
+		assertThat(total4h).isEqualTo(45.0);
+	}
+
+	@Test
+	void testTherapyHourlyPersistence() throws Exception {
+		MedicalType medicalType = testMedicalType.setup(false);
+		medicalTypeIoOperationRepository.saveAndFlush(medicalType);
+		Medical medical = testMedical.setup(medicalType, true);
+		medicalsIoOperationRepository.saveAndFlush(medical);
+		Patient patient = testPatient.setup(false);
+		patientIoOperationRepository.saveAndFlush(patient);
+
+		LocalDateTime start = TimeTools.getDateToday0();
+		LocalDateTime end = start.plusDays(2);
+		TherapyRow therapyRow = new TherapyRow(0, patient, start, end, medical, 1.0, 0, 12, 1, 2, "Hourly note", false, false);
+		TherapyRow saved = therapyIoOperation.newTherapy(therapyRow);
+
+		assertThat(saved.getTherapyID()).isPositive();
+		assertThat(saved.getFreqInHour()).isEqualTo(2);
+
+		TherapyRow found = therapyIoOperationRepository.findById(saved.getTherapyID()).orElse(null);
+		assertThat(found).isNotNull();
+		assertThat(found.getFreqInHour()).isEqualTo(2);
+
+		Therapy therapy = therapyManager.createTherapy(found);
+		assertThat(therapy.getFreqInHour()).isEqualTo(2);
+		assertThat(therapy.toString()).contains("every 2 hour(s)");
 	}
 
 	private Patient setupTestPatient(boolean usingSet) throws OHException {
