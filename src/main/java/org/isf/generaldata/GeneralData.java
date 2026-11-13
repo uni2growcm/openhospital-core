@@ -48,6 +48,7 @@ public final class GeneralData extends ConfigurationProperties {
 	public static boolean AUTOMATICLOT_IN;
 	public static boolean AUTOMATICLOT_OUT;
 	public static boolean AUTOMATICLOTWARD_TOWARD;
+	public static boolean STOCKDISCHARGE_PATIENT;
 	public static boolean LOTWITHCOST;
 	public static String PATIENTSHEET;
 	public static String VISITSHEET;
@@ -137,6 +138,7 @@ public final class GeneralData extends ConfigurationProperties {
 	private static final boolean DEFAULT_AUTOMATICLOT_IN = true;
 	private static final boolean DEFAULT_AUTOMATICLOT_OUT = true;
 	private static final boolean DEFAULT_AUTOMATICLOTWARD_TOWARD = true;
+	private static final boolean DEFAULT_STOCKDISCHARGE_PATIENT = true;
 	private static final boolean DEFAULT_LOTWITHCOST = false;
 	private static final String DEFAULT_PATIENTSHEET = "patient_clinical_sheet";
 	private static final String DEFAULT_VISITSHEET = "WardVisits";
@@ -234,6 +236,7 @@ public final class GeneralData extends ConfigurationProperties {
 		HIGHLIGHTEXPIRINGMEDICALDAYS = myGetProperty("HIGHLIGHTEXPIRINGMEDICALDAYS", DEFAULT_HIGHLIGHTEXPIRINGMEDICALDAYS);
 		AUTOMATICLOT_OUT = myGetProperty("AUTOMATICLOT_OUT", DEFAULT_AUTOMATICLOT_OUT);
 		AUTOMATICLOTWARD_TOWARD = myGetProperty("AUTOMATICLOTWARD_TOWARD", DEFAULT_AUTOMATICLOTWARD_TOWARD);
+		STOCKDISCHARGE_PATIENT = myGetProperty("STOCKDISCHARGE_PATIENT", DEFAULT_STOCKDISCHARGE_PATIENT);
 		LOTWITHCOST = myGetProperty("LOTWITHCOST", DEFAULT_LOTWITHCOST);
 		PATIENTSHEET = myGetProperty("PATIENTSHEET", DEFAULT_PATIENTSHEET);
 		VISITSHEET = myGetProperty("VISITSHEET", DEFAULT_VISITSHEET);
