@@ -28,4 +28,5 @@ source step_a171_admission_update_form.sql;
 source step_a173_tuberculosis_menu.sql;
 source step_a177_add_lab_new_exam_button_menuitem.sql;
 source step_a178_alter_pregnancyvisit_drop_unique_index.sql;
-source step_a179_add_hourly_frequency_column_to_therapies.sql;
+source step_a179_add_variable_price_column.sql;
+source step_a180_add_hourly_frequency_column_to_therapies.sql;

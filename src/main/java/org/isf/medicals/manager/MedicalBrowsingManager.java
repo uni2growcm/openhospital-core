@@ -217,6 +217,9 @@ public class MedicalBrowsingManager {
 	 */
 	private List<OHExceptionMessage> validateMedicalCommon(Medical medical) {
 		List<OHExceptionMessage> errors = new ArrayList<>();
+		if (medical.getProdCode() == null || medical.getProdCode().trim().isEmpty()) {
+			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.common.pleaseinsertacode.msg")));
+		}
 		if (medical.getMinqty() < 0) {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.medicals.minquantitycannotbelessthan0.msg")));
 		}
@@ -268,7 +271,7 @@ public class MedicalBrowsingManager {
 		List<OHExceptionMessage> errors = new ArrayList<>(validateMedicalCommon(medical));
 
 		//check existing data
-		boolean productCodeExists = !medical.getProdCode().isEmpty() && ioOperations.productCodeExists(medical, update);
+		boolean productCodeExists = medical.getProdCode() != null && !medical.getProdCode().trim().isEmpty() && ioOperations.productCodeExists(medical, update);
 		boolean medicalExists = ioOperations.medicalExists(medical, update);
 		List<Medical> similarMedicals = ioOperations.medicalCheck(medical, update);
 
