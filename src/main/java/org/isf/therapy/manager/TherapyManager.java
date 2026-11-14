@@ -76,7 +76,7 @@ public class TherapyManager {
 	 */
 	public Therapy createTherapy(TherapyRow th) throws OHServiceException {
 		return createTherapy(th.getTherapyID(), th.getPatient().getCode(), th.getMedical(), th.getQty(), th.getStartDate(), th.getEndDate(),
-			th.getFreqInPeriod(), th.getFreqInDay(), th.getNote(), th.isNotify(), th.isSms());
+			th.getFreqInPeriod(), th.getFreqInDay(), th.getFreqInHour(), th.getNote(), th.isNotify(), th.isSms());
 	}
 
 	/**
@@ -98,6 +98,12 @@ public class TherapyManager {
 	private Therapy createTherapy(int therapyID, int patID, Integer medId, Double qty,
 	                              LocalDateTime startDate, LocalDateTime endDate, int freqInPeriod,
 	                              int freqInDay, String note, boolean notify, boolean sms) throws OHServiceException {
+		return createTherapy(therapyID, patID, medId, qty, startDate, endDate, freqInPeriod, freqInDay, 0, note, notify, sms);
+	}
+
+	private Therapy createTherapy(int therapyID, int patID, Integer medId, Double qty,
+	                              LocalDateTime startDate, LocalDateTime endDate, int freqInPeriod,
+	                              int freqInDay, int freqInHour, String note, boolean notify, boolean sms) throws OHServiceException {
 
 		List<LocalDateTime> datesArray = new ArrayList<>();
 
@@ -119,7 +125,7 @@ public class TherapyManager {
 		}
 
 		Medical med = medManager.getMedical(medId);
-		return new Therapy(therapyID, patID, dates, med, qty, "", freqInDay, note, notify, sms);
+		return new Therapy(therapyID, patID, dates, med, qty, "", freqInDay, freqInHour, note, notify, sms);
 	}
 
 	/**
@@ -218,7 +224,11 @@ public class TherapyManager {
 		StringBuilder sb = new StringBuilder(MessageBundle.getMessage("angal.common.reminder.txt").toUpperCase()).append(": ");
 		sb.append(th.getMedical().toString()).append(" - ");
 		sb.append(th.getQty()).append(th.getUnits()).append(" - ");
-		sb.append(th.getFreqInDay()).append("pd");
+		if (th.getFreqInHour() > 0) {
+			sb.append("q").append(th.getFreqInHour()).append("h");
+		} else {
+			sb.append(th.getFreqInDay()).append("pd");
+		}
 		if (note != null && !note.isEmpty()) {
 			sb.append(" - ").append(note);
 		}
@@ -262,7 +272,7 @@ public class TherapyManager {
 
 			// CALCULATING NEEDINGS
 			Double qty = th.getQty();
-			int freq = th.getFreqInDay();
+			double dosesPerDay = th.getFreqInHour() > 0 ? (24.0 / th.getFreqInHour()) : th.getFreqInDay();
 			LocalDateTime todayDate = TimeTools.getDateToday0();
 
 			int dayCount = 0;
@@ -274,7 +284,7 @@ public class TherapyManager {
 
 			if (dayCount != 0) {
 
-				neededQty = qty * freq * dayCount;
+				neededQty = qty * dosesPerDay * dayCount;
 
 				// CALCULATING STOCK QUANTITIES
 				Medical med = medArray.get(medArray.indexOf(th.getMedical()));
@@ -310,8 +320,13 @@ public class TherapyManager {
 	 */
 	public TherapyRow newTherapy(int therapyID, int patID, LocalDateTime startDate, LocalDateTime endDate, Medical medical, Double qty, int unitID,
 	                             int freqInDay, int freqInPeriod, String note, boolean notify, boolean sms) throws OHServiceException {
+		return newTherapy(therapyID, patID, startDate, endDate, medical, qty, unitID, freqInDay, freqInPeriod, 0, note, notify, sms);
+	}
+
+	public TherapyRow newTherapy(int therapyID, int patID, LocalDateTime startDate, LocalDateTime endDate, Medical medical, Double qty, int unitID,
+	                             int freqInDay, int freqInPeriod, int freqInHour, String note, boolean notify, boolean sms) throws OHServiceException {
 		Patient patient = patientManager.getPatientById(patID);
-		TherapyRow thRow = new TherapyRow(therapyID, patient, startDate, endDate, medical, qty, unitID, freqInDay, freqInPeriod, note, notify, sms);
+		TherapyRow thRow = new TherapyRow(therapyID, patient, startDate, endDate, medical, qty, unitID, freqInDay, freqInPeriod, freqInHour, note, notify, sms);
 		return newTherapy(thRow);
 	}
 
@@ -335,8 +350,13 @@ public class TherapyManager {
 	 */
 	public TherapyRow getTherapyRow(int therapyID, int patID, LocalDateTime startDate, LocalDateTime endDate, Medical medical, Double qty, int unitID,
 	                                int freqInDay, int freqInPeriod, String note, boolean notify, boolean sms) throws OHServiceException {
+		return getTherapyRow(therapyID, patID, startDate, endDate, medical, qty, unitID, freqInDay, freqInPeriod, 0, note, notify, sms);
+	}
+
+	public TherapyRow getTherapyRow(int therapyID, int patID, LocalDateTime startDate, LocalDateTime endDate, Medical medical, Double qty, int unitID,
+	                                int freqInDay, int freqInPeriod, int freqInHour, String note, boolean notify, boolean sms) throws OHServiceException {
 		Patient patient = patientManager.getPatientById(patID);
-		return new TherapyRow(therapyID, patient, startDate, endDate, medical, qty, unitID, freqInDay, freqInPeriod, note, notify, sms);
+		return new TherapyRow(therapyID, patient, startDate, endDate, medical, qty, unitID, freqInDay, freqInPeriod, freqInHour, note, notify, sms);
 	}
 
 	/**
@@ -384,7 +404,7 @@ public class TherapyManager {
 
 	/**
 	 * Calculates the total prescribed quantity for a therapy.
-	 * Formula: effectiveDays * freqInDay * qty
+	 * Formula: effectiveDays * freqInDay * qty (or effectiveDays * (24 / freqInHour) * qty)
 	 * where effectiveDays = (endDate - startDate + freqInPeriod - 1) / freqInPeriod
 	 *
 	 * @param startDate the therapy start date
@@ -396,8 +416,14 @@ public class TherapyManager {
 	 */
 	public double calculateTotalPrescribedQuantity(LocalDateTime startDate, LocalDateTime endDate,
 			int freqInPeriod, int freqInDay, double qty) {
+		return calculateTotalPrescribedQuantity(startDate, endDate, freqInPeriod, freqInDay, 0, qty);
+	}
+
+	public double calculateTotalPrescribedQuantity(LocalDateTime startDate, LocalDateTime endDate,
+			int freqInPeriod, int freqInDay, int freqInHour, double qty) {
 		long totalDays = calculateEffectiveDays(startDate, endDate, freqInPeriod);
-		return totalDays * freqInDay * qty;
+		double dosesPerDay = (freqInHour > 0) ? (24.0 / freqInHour) : freqInDay;
+		return totalDays * dosesPerDay * qty;
 	}
 
 	/**
@@ -428,6 +454,7 @@ public class TherapyManager {
 				therapy.getEndDate(),
 				therapy.getFreqInPeriod(),
 				therapy.getFreqInDay(),
+				therapy.getFreqInHour(),
 				therapy.getQty()
 		);
 		Double alreadyBilled = therapy.getQtyBougth() != null ? therapy.getQtyBougth() : 0.0;
@@ -490,6 +517,7 @@ public class TherapyManager {
 			oldTherapy.getUnitID(),
 			oldTherapy.getFreqInDay(),
 			oldTherapy.getFreqInPeriod(),
+			oldTherapy.getFreqInHour(),
 			oldTherapy.getNote(),
 			oldTherapy.isNotify(),
 			oldTherapy.isSms()

@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2024 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -38,6 +38,7 @@ public class TestTherapy {
 	private int unitID = 10;
 	private int freqInDay = 11;
 	private int freqInPeriod = 12;
+	private int freqInHour = 0;
 	private String note = "TestNote";
 	private boolean notify;
 	private boolean sms = true;
@@ -51,7 +52,7 @@ public class TestTherapy {
 		} else {
 			// Create TherapyRow with all parameters 
 			therapyRow = new TherapyRow(0, patient, startDate, endDate,
-					medical, qty, unitID, freqInDay, freqInPeriod, note, notify, sms);
+					medical, qty, unitID, freqInDay, freqInPeriod, freqInHour, note, notify, sms);
 		}
 
 		return therapyRow;
@@ -61,6 +62,7 @@ public class TestTherapy {
 		therapyRow.setEndDate(endDate);
 		therapyRow.setFreqInDay(freqInDay);
 		therapyRow.setFreqInPeriod(freqInPeriod);
+		therapyRow.setFreqInHour(freqInHour);
 		therapyRow.setMedical(medical);
 		therapyRow.setNote(note);
 		therapyRow.setNotify(notify);
@@ -75,6 +77,7 @@ public class TestTherapy {
 		assertThat(therapyRow.getEndDate()).isEqualTo(endDate);
 		assertThat(therapyRow.getFreqInDay()).isEqualTo(freqInDay);
 		assertThat(therapyRow.getFreqInPeriod()).isEqualTo(freqInPeriod);
+		assertThat(therapyRow.getFreqInHour()).isEqualTo(freqInHour);
 		assertThat(therapyRow.getNote()).isEqualTo(note);
 		assertThat(therapyRow.isNotify()).isEqualTo(notify);
 		assertThat(therapyRow.getQty()).isEqualTo(qty);

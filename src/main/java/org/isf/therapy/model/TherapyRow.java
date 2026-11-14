@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -105,6 +105,9 @@ public class TherapyRow extends Auditable<String> {
 	@Column(name="THR_QTY_BOUGTH", columnDefinition = "DOUBLE default 0")
 	private Double qtyBougth = 0.0;
 
+	@Column(name="THR_FREQINHOUR", columnDefinition = "INT default 0")
+	private Integer freqInHour = 0;
+
 	@Transient
 	private volatile int hashCode;
 	
@@ -141,9 +144,18 @@ public class TherapyRow extends Auditable<String> {
 		this.unitID = unitID;
 		this.freqInDay = freqInDay;
 		this.freqInPeriod = freqInPeriod;
+		this.freqInHour = 0;
 		this.note = note;
 		this.notifyInt = notify ? 1 : 0;
 		this.smsInt = sms ? 1 : 0;
+	}
+
+	public TherapyRow(int therapyID, Patient patient,
+			LocalDateTime startDate, LocalDateTime endDate,
+			Medical medical, Double qty, int unitID, int freqInDay,
+			int freqInPeriod, int freqInHour, String note, boolean notify, boolean sms) {
+		this(therapyID, patient, startDate, endDate, medical, qty, unitID, freqInDay, freqInPeriod, note, notify, sms);
+		this.freqInHour = freqInHour;
 	}
 
 	public int getTherapyID() {
@@ -216,6 +228,14 @@ public class TherapyRow extends Auditable<String> {
 
 	public void setFreqInPeriod(int freqInPeriod) {
 		this.freqInPeriod = freqInPeriod;
+	}
+
+	public int getFreqInHour() {
+		return freqInHour != null ? freqInHour : 0;
+	}
+
+	public void setFreqInHour(int freqInHour) {
+		this.freqInHour = freqInHour;
 	}
 
 	public String getNote() {

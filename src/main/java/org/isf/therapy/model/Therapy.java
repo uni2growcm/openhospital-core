@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2023 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -39,6 +39,7 @@ public class Therapy {
 	private Double qty;
 	private String units;
 	private int freqInDay;
+	private int freqInHour;
 	private String note;
 	private boolean notify;
 	private boolean sms;
@@ -70,9 +71,17 @@ public class Therapy {
 		this.qty = qty;
 		this.units = units;
 		this.freqInDay = freqInDay;
+		this.freqInHour = 0;
 		this.note = note;
 		this.notify = notify;
 		this.sms = sms;
+	}
+
+	public Therapy(int therapyID, int patID, LocalDateTime[] dates,
+			Medical medical, Double qty, String units, int freqInDay,
+			int freqInHour, String note, boolean notify, boolean sms) {
+		this(therapyID, patID, dates, medical, qty, units, freqInDay, note, notify, sms);
+		this.freqInHour = freqInHour;
 	}
 	
 	public int getTherapyID() {
@@ -105,6 +114,14 @@ public class Therapy {
 
 	public void setFreqInDay(int freq) {
 		this.freqInDay = freq;
+	}
+
+	public int getFreqInHour() {
+		return freqInHour;
+	}
+
+	public void setFreqInHour(int freqInHour) {
+		this.freqInHour = freqInHour;
 	}
 
 	public Medical getMedical() {
@@ -157,6 +174,9 @@ public class Therapy {
 	
 	@Override
 	public String toString() {
+		if (this.freqInHour > 0) {
+			return qty + this.units + " of " + medical.toString() + " - every " + this.freqInHour + " hour(s)";
+		}
 		return qty + this.units + " of " + medical.toString() + " - " + this.freqInDay + " per day";
 	}
 }
