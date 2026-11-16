@@ -119,6 +119,17 @@ public interface AccountingBillIoOperationRepository extends JpaRepository<Bill,
 		@Param("patient") Patient patient,
 		@Param("guarantor") User guarantor);
 
+	@Query("SELECT COALESCE(SUM(b.balance), 0) FROM Bill b WHERE b.status = 'O' AND b.active = 1 "
+		+ "AND b.guarantor.userName = :userName AND b.id <> :excludedBillId")
+	double sumOpenBalanceByGuarantor(@Param("userName") String userName, @Param("excludedBillId") int excludedBillId);
+
+	@Query("SELECT b.guarantor.userName, COALESCE(SUM(b.balance), 0) FROM Bill b WHERE b.status = 'O' AND b.active = 1 "
+		+ "AND b.guarantor IS NOT NULL GROUP BY b.guarantor.userName")
+	List<Object[]> sumOpenBalanceGroupByGuarantor();
+
+	@Query("SELECT u.guarantorQuota FROM User u WHERE u.userName = :userName")
+	Double findGuarantorQuota(@Param("userName") String userName);
+
 	@Query("SELECT COALESCE(SUM(b.balance), 0) FROM Bill b WHERE " +
 		"(:status IS NULL OR b.status = :status) AND " +
 		"(:dateFrom IS NULL OR b.date >= :dateFrom) AND " +

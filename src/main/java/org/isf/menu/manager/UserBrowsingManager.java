@@ -163,6 +163,21 @@ public class UserBrowsingManager {
 	}
 
 	/**
+	 * Updates the guarantor quota of an existing {@link User} in the DB.
+	 *
+	 * @param user the {@link User} to update
+	 * @return the {@link User} that has been updated
+	 * @throws OHServiceException When the quota is negative or failed to update it
+	 */
+	public User updateGuarantorQuota(User user) throws OHServiceException {
+		Double quota = user.getGuarantorQuota();
+		if (quota != null && quota < 0) {
+			throw new OHDataValidationException(new OHExceptionMessage(MessageBundle.getMessage("angal.userbrowser.guarantorquotamustbepositive.msg")));
+		}
+		return ioOperations.updateGuarantorQuota(user);
+	}
+
+	/**
 	 * Updates the password of an existing {@link User} in the DB.
 	 * 
 	 * @param user the {@link User} to update

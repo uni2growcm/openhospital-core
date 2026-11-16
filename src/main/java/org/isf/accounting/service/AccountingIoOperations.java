@@ -819,6 +819,43 @@ public class AccountingIoOperations {
 	}
 
 	/**
+	 * Sum of the outstanding balances of the open bills guaranteed by a user
+	 *
+	 * @param userName the guarantor's user name
+	 * @param excludedBillId a bill to exclude from the sum (the one being edited), 0 for none
+	 * @return the sum of the outstanding balances
+	 * @throws OHServiceException
+	 */
+	public double sumOpenBalanceByGuarantor(String userName, int excludedBillId) throws OHServiceException {
+		return billRepository.sumOpenBalanceByGuarantor(userName, excludedBillId);
+	}
+
+	/**
+	 * Sum of the outstanding balances of the open bills, grouped by guarantor
+	 *
+	 * @return a map guarantor user name -> used amount (guarantors without open balance are absent)
+	 * @throws OHServiceException
+	 */
+	public Map<String, Double> sumOpenBalanceGroupByGuarantor() throws OHServiceException {
+		Map<String, Double> result = new LinkedHashMap<>();
+		for (Object[] row : billRepository.sumOpenBalanceGroupByGuarantor()) {
+			result.put((String) row[0], ((Number) row[1]).doubleValue());
+		}
+		return result;
+	}
+
+	/**
+	 * Get the quota stored for a guarantor
+	 *
+	 * @param userName the guarantor's user name
+	 * @return the quota, {@code null} if not set
+	 * @throws OHServiceException
+	 */
+	public Double getGuarantorQuota(String userName) throws OHServiceException {
+		return billRepository.findGuarantorQuota(userName);
+	}
+
+	/**
 	 * Sum of bill balances filtered by status, date range, patient and guarantor
 	 *
 	 * @param status the bill status to filter
