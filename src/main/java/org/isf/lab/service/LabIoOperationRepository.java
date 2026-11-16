@@ -78,7 +78,7 @@ public interface LabIoOperationRepository extends JpaRepository<Laboratory, Inte
 					+ "or (:resultFilter = 'EMPTY' and (lab.result is null or lab.result = ''))) "
 					+ "and (:paidCode is null "
 					+ "or (:paidCode = '0' and (b is null or b.id <= 0)) "
-					+ "or (:paidCode = 'N' and b is not null and b.status = 'O' and not exists (select bpn.id from BillPayments bpn where bpn.bill = b)) or (:paidCode = 'P' and b is not null and b.status = 'O' and b.balance > 0 and exists (select bp.id from BillPayments bp where bp.bill = b)) or (:paidCode = 'C' and b is not null and (b.status = 'C' or b.balance <= 0))) "
+					+ "or (:paidCode = 'N' and b is not null and b.status = 'O' and not exists (select bpn.id from BillPayments bpn where bpn.bill = b)) or (:paidCode = 'P' and b is not null and b.status = 'O' and b.balance > 0 and exists (select bp.id from BillPayments bp where bp.bill = b)) or (:paidCode = 'O' and b is not null and b.status = 'O') or (:paidCode = 'C' and b is not null and (b.status = 'C' or b.balance <= 0))) "
 					+ "order by lab.labDate desc")
 	Page<Laboratory> findPageByFilters(@Param("dateFrom") LocalDateTime dateFrom, @Param("dateTo") LocalDateTime dateTo,
 					@Param("exam") String exam, @Param("patient") Patient patient, @Param("prescriber") String prescriber,
@@ -97,7 +97,7 @@ public interface LabIoOperationRepository extends JpaRepository<Laboratory, Inte
 			+ "and (:patient is null or lab.patient = :patient) "
 			+ "and (:paidCode is null "
 			+ "or (:paidCode = '0' and (b is null or b.id <= 0)) "
-			+ "or (:paidCode = 'N' and b is not null and b.status = 'O' and not exists (select bpn.id from BillPayments bpn where bpn.bill = b)) or (:paidCode = 'P' and b is not null and b.status = 'O' and b.balance > 0 and exists (select bp.id from BillPayments bp where bp.bill = b)) or (:paidCode = 'C' and b is not null and (b.status = 'C' or b.balance <= 0))) "
+			+ "or (:paidCode = 'N' and b is not null and b.status = 'O' and not exists (select bpn.id from BillPayments bpn where bpn.bill = b)) or (:paidCode = 'P' and b is not null and b.status = 'O' and b.balance > 0 and exists (select bp.id from BillPayments bp where bp.bill = b)) or (:paidCode = 'O' and b is not null and b.status = 'O') or (:paidCode = 'C' and b is not null and (b.status = 'C' or b.balance <= 0))) "
 			+ "order by lab.labDate desc")
 	List<Laboratory> findByLabDateBetweenAndExamDescriptionAndPatientCodeAndPaidStatus(@Param("dateFrom") LocalDateTime dateFrom,
 			@Param("dateTo") LocalDateTime dateTo, @Param("exam") String exam, @Param("patient") Patient patient,
@@ -108,7 +108,7 @@ public interface LabIoOperationRepository extends JpaRepository<Laboratory, Inte
 			+ "and (:patient is null or lab.patient = :patient) "
 			+ "and (:paidCode is null "
 			+ "or (:paidCode = '0' and (b is null or b.id <= 0)) "
-			+ "or (:paidCode = 'N' and b is not null and b.status = 'O' and not exists (select bpn.id from BillPayments bpn where bpn.bill = b)) or (:paidCode = 'P' and b is not null and b.status = 'O' and b.balance > 0 and exists (select bp.id from BillPayments bp where bp.bill = b)) or (:paidCode = 'C' and b is not null and (b.status = 'C' or b.balance <= 0)))")
+			+ "or (:paidCode = 'N' and b is not null and b.status = 'O' and not exists (select bpn.id from BillPayments bpn where bpn.bill = b)) or (:paidCode = 'P' and b is not null and b.status = 'O' and b.balance > 0 and exists (select bp.id from BillPayments bp where bp.bill = b)) or (:paidCode = 'O' and b is not null and b.status = 'O') or (:paidCode = 'C' and b is not null and (b.status = 'C' or b.balance <= 0)))")
 	long countByLabDateBetweenAndExamDescriptionAndPatientCodeAndPaidStatus(@Param("dateFrom") LocalDateTime dateFrom,
 			@Param("dateTo") LocalDateTime dateTo, @Param("exam") String exam, @Param("patient") Patient patient,
 			@Param("paidCode") String paidCode);
