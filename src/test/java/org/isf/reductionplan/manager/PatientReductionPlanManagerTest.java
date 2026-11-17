@@ -57,6 +57,9 @@ class PatientReductionPlanManagerTest extends OHCoreTestCase {
 	PatientReductionPlanManager manager;
 
 	@Autowired
+	ReductionPlanManager reductionPlanManager;
+
+	@Autowired
 	PartnerBrowserManager partnerBrowserManager;
 
 	@Autowired
@@ -169,6 +172,25 @@ class PatientReductionPlanManagerTest extends OHCoreTestCase {
 
 		manager.setPatientHospitalPlans(patient, List.of(p2));
 		assertThat(manager.getPatientHospitalPlans(patient.getCode())).containsExactly(p2);
+	}
+
+	@Test
+	void assignableHospitalPlansExcludePartnerPlans() throws Exception {
+		Partner partner = partnerBrowserManager.savePartner(new TestPartner().setup(false, partnerType));
+		ReductionPlan hospitalPlan = savePlan("hospital", null, 10, null);
+		savePlan("partner", partner, 10, null);
+
+		assertThat(manager.getAssignableHospitalPlans(null)).containsExactly(hospitalPlan);
+	}
+
+	@Test
+	void getsAllPlansForSpecificPartner() throws Exception {
+		Partner partner = partnerBrowserManager.savePartner(new TestPartner().setup(false, partnerType));
+		Partner otherPartner = partnerBrowserManager.savePartner(new TestPartner().setup(false, partnerType));
+		ReductionPlan partnerPlan = savePlan("partner", partner, 10, null);
+		savePlan("other partner", otherPartner, 10, null);
+
+		assertThat(reductionPlanManager.getPartnerPlans(partner.getCode())).containsExactly(partnerPlan);
 	}
 
 	@Test

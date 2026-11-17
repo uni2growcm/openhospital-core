@@ -114,7 +114,9 @@ public class PatientReductionPlanManager {
 	 * @throws OHServiceException if an error occurs while retrieving data
 	 */
 	public List<ReductionPlan> getAssignableHospitalPlans(Integer patientCode) throws OHServiceException {
-		return filterAssignable(reductionPlanIoOperations.getHospitalPlans(), patientCode);
+		return filterAssignable(reductionPlanIoOperations.getHospitalPlans(), patientCode).stream()
+			.filter(ReductionPlan::isHospitalPlan)
+			.toList();
 	}
 
 	/**
