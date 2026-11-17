@@ -282,14 +282,16 @@ public class BillBrowserManager {
 
 		List<BillPayments> paymentsToSave = new ArrayList<>();
 		for (BillPayments payment : billPayments) {
-			BillPayments newPayment = new BillPayments(
-				0,
+			// keep the existing payment id so that it can be updated instead of recreated
+			BillPayments paymentToSave = new BillPayments(
+				payment.getId(),
 				updatedBill,
 				payment.getDate(),
 				payment.getAmount(),
 				payment.getUser()
 			);
-			paymentsToSave.add(newPayment);
+			paymentToSave.setActive(payment.getActive());
+			paymentsToSave.add(paymentToSave);
 		}
 		ioOperations.newBillPayments(updatedBill, paymentsToSave);
 		List<ItemPayments> itemPayments = computeItemPayments(updatedBill, billItems, paymentsToSave, false);
