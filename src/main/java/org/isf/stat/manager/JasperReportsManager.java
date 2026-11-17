@@ -482,6 +482,12 @@ public class JasperReportsManager {
 			parameters.put("Opd", parametersString.contains("Opd"));
 			parameters.put("Laboratory", parametersString.contains("Laboratory"));
 			parameters.put("Operations", parametersString.contains("Operations"));
+			parameters.put("Vaccines", parametersString.contains("Vaccines"));
+			parameters.put("HomeVisit", parametersString.contains("HomeVisit"));
+			parameters.put("Tuberculosis", parametersString.contains("Tuberculosis"));
+			parameters.put("Maternity", parametersString.contains("Maternity"));
+			parameters.put("FamilyPlanning", parametersString.contains("FamilyPlanning"));
+			parameters.put("HIV", parametersString.contains("HIV"));
 			parameters.put("Date_from", dateFromQuery);
 			parameters.put("Date_to", dateToQuery);
 
