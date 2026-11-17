@@ -963,7 +963,7 @@ public class JasperReportsManager {
 		}
 	}
 
-	static String replaceGenericDateReportParameters(String queryString, String dateFromQuery, String dateToQuery) {
+	public static String replaceGenericDateReportParameters(String queryString, String dateFromQuery, String dateToQuery) {
 		return queryString
 						.replace("$P{fromdate}", '\'' + dateFromQuery + '\'')
 						.replace("$P{todate}", '\'' + dateToQuery + '\'')
