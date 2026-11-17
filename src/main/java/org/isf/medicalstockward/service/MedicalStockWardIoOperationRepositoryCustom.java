@@ -50,4 +50,6 @@ public interface MedicalStockWardIoOperationRepositoryCustom {
 	Page<Movement> findIncomingMovements(String wardId,
 	                                     LocalDateTime dateFrom, LocalDateTime dateTo,
 	                                     Pageable pageable);
+
+	Double getTotalWardStockValue(String wardId);
 }
