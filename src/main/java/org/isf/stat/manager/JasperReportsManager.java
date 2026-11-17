@@ -916,10 +916,8 @@ public class JasperReportsManager {
 
 			JasperReport jasperReport = (JasperReport) JRLoader.loadObject(jasperFile);
 			JRQuery query = jasperReport.getMainDataset().getQuery();
-			String queryString = query.getText();
-
-			queryString = queryString.replace("$P{fromdate}", "'" + java.sql.Date.valueOf(fromDate) + '\'');
-			queryString = queryString.replace("$P{todate}", "'" + java.sql.Date.valueOf(toDate) + '\'');
+			String queryString = replaceGenericDateReportParameters(
+							query.getText(), java.sql.Date.valueOf(fromDate).toString(), java.sql.Date.valueOf(toDate).toString());
 
 			DbQueryLogger dbQuery = new DbQueryLogger();
 			ResultSet resultSet = dbQuery.getData(queryString, true);
@@ -948,8 +946,7 @@ public class JasperReportsManager {
 			String dateFromQuery = TimeTools.formatDateTime(TimeTools.getDate(fromDate, DD_MM_YYYY), YYYY_MM_DD);
 			String dateToQuery = TimeTools.formatDateTime(TimeTools.getDate(toDate, DD_MM_YYYY), YYYY_MM_DD);
 
-			queryString = queryString.replace("$P{fromdate}", '\'' + dateFromQuery + '\'');
-			queryString = queryString.replace("$P{todate}", '\'' + dateToQuery + '\'');
+			queryString = replaceGenericDateReportParameters(queryString, dateFromQuery, dateToQuery);
 
 			DbQueryLogger dbQuery = new DbQueryLogger();
 			ResultSet resultSet = dbQuery.getData(queryString, true);
@@ -964,6 +961,14 @@ public class JasperReportsManager {
 		} catch (Exception exception) {
 			throw new OHReportException(exception, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
 		}
+	}
+
+	static String replaceGenericDateReportParameters(String queryString, String dateFromQuery, String dateToQuery) {
+		return queryString
+						.replace("$P{fromdate}", '\'' + dateFromQuery + '\'')
+						.replace("$P{todate}", '\'' + dateToQuery + '\'')
+						.replace("$P{state}", "'C'")
+						.replace("$P{state2}", "'Nothing'");
 	}
 
 	public void getGenericReportFromDateToDateExcel(LocalDate fromDate, LocalDate toDate, String reductionPlan, String jasperFileFolder, String jasperFileName, String exportFilename)
