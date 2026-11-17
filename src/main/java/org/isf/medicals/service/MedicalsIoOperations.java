@@ -289,7 +289,7 @@ public class MedicalsIoOperations {
 	/**
 	 * Retrieves a paginated list of medical records filtered by type, description, and deletion status.
 	 *
-	 * @param type The keyword to match medical type. If {@code null}, an empty string is used to include all types.
+	 * @param type The medical type code. If {@code null} or empty, all types are included.
 	 * @param description The keyword to match medical description. If {@code null}, an empty string is used to include all descriptions.
 	 * @param deleted The deletion status to filter records by:
 	 * - If {@code 'Y'}, only deleted records are retrieved.
