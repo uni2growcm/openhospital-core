@@ -21,6 +21,7 @@
  */
 package org.isf.operation.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -106,6 +107,18 @@ public class OperationRowIoOperations {
 	 */
 	public long countAllActiveOperations() {
 		return this.repository.countAllActiveOperations();
+	}
+
+	/**
+	 * Count {@link OperationRow}s performed in a date range, filtered by the linked {@link org.isf.operation.model.Operation}'s major/minor flag.
+	 *
+	 * @param dateFrom the lower bound of the date range
+	 * @param dateTo the upper bound of the date range
+	 * @param major 1 for major operations, 0 for minor operations
+	 * @return the number of matching {@link OperationRow}s
+	 */
+	public long countByOpDateBetweenAndOperationMajor(LocalDateTime dateFrom, LocalDateTime dateTo, Integer major) {
+		return this.repository.countByOpDateBetweenAndOperationMajor(dateFrom, dateTo, major);
 	}
 
 	/**

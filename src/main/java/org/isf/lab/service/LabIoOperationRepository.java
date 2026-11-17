@@ -116,4 +116,10 @@ public interface LabIoOperationRepository extends JpaRepository<Laboratory, Inte
 	@Modifying
 	@Query("UPDATE Laboratory l SET l.bill = :bill WHERE l.code = :labId")
 	void updateBillForLaboratory(@Param("labId") int labId, @Param("bill") Bill bill);
+
+	@Query(value = "select count(lab) from Laboratory lab where lab.labDate >= :dateFrom and lab.labDate <= :dateTo "
+			+ "and lower(lab.exam.description) like lower(concat('%', :examKeyword, '%')) "
+			+ "and lower(lab.result) like lower(concat('%', :resultKeyword, '%'))")
+	long countByLabDateBetweenAndExamDescriptionContainingAndResultContaining(@Param("dateFrom") LocalDateTime dateFrom,
+			@Param("dateTo") LocalDateTime dateTo, @Param("examKeyword") String examKeyword, @Param("resultKeyword") String resultKeyword);
 }

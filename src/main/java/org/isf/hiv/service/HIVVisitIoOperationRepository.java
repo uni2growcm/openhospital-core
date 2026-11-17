@@ -25,6 +25,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.isf.hiv.model.HIVVisit;
+import org.isf.hiv.model.HIVVisit.PCRResult;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -46,4 +47,6 @@ public interface HIVVisitIoOperationRepository extends JpaRepository<HIVVisit, I
 		@Param("infantId") Integer infantId,
 		@Param("dateFrom") LocalDateTime dateFrom,
 		@Param("dateTo") LocalDateTime dateTo);
+
+	long countByVisitDateBetweenAndPcrResult(LocalDateTime dateFrom, LocalDateTime dateTo, PCRResult pcrResult);
 }
