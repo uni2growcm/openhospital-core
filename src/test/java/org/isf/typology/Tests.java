@@ -22,6 +22,7 @@
 package org.isf.typology;
 
 import org.isf.OHCoreTestCase;
+import org.isf.generaldata.GeneralData;
 import org.isf.maternity.model.*;
 import org.isf.typology.manager.TypologyBrowserManager;
 import org.isf.typology.model.Family;
@@ -50,6 +51,7 @@ public class Tests extends OHCoreTestCase {
 		@BeforeEach
 		void setUp() {
 			cleanH2InMemoryDb();
+			GeneralData.initialize();
 		}
 
 		@Test

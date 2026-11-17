@@ -34,6 +34,7 @@ class TestGeneralData {
 		assertThat(generalData).isNotNull();
 		
 		assertThat(GeneralData.LANGUAGE).isEqualTo("es");
+		assertThat(GeneralData.BLAMAFIELDENABLED).isFalse();
 	}
 
 	@Test

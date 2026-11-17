@@ -514,8 +514,11 @@ public class JasperReportsManager {
 			}
 
 			LocalDateTime date = TimeTools.getNow();
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern(E_D_MMMM_YYYY);
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern(E_D_MMMM_YYYY, Locale.getDefault());
 			String todayReport = formatter.format(date);
+			if (todayReport != null && !todayReport.isEmpty()) {
+				todayReport = Character.toUpperCase(todayReport.charAt(0)) + todayReport.substring(1);
+			}
 			formatter = DateTimeFormatter.ofPattern(YYYY_M_MDD);
 			String todayFile = formatter.format(date);
 			parameters.put("Date", todayReport);
@@ -651,8 +654,11 @@ public class JasperReportsManager {
 			if (date == null) {
 				date = TimeTools.getNow();
 			}
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern(E_D_MMMM_YYYY);
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern(E_D_MMMM_YYYY, Locale.getDefault());
 			String dateReport = formatter.format(date);
+			if (dateReport != null && !dateReport.isEmpty()) {
+				dateReport = Character.toUpperCase(dateReport.charAt(0)) + dateReport.substring(1);
+			}
 			formatter = DateTimeFormatter.ofPattern(YYYY_MM_DD);
 			String dateQuery = formatter.format(date);
 			formatter = DateTimeFormatter.ofPattern(YYYY_M_MDD);
@@ -770,7 +776,10 @@ public class JasperReportsManager {
 			if (date == null) {
 				date = TimeTools.getNow();
 			}
-			String dateReport = date.format(DateTimeFormatter.ofPattern(E_D_MMMM_YYYY));
+			String dateReport = date.format(DateTimeFormatter.ofPattern(E_D_MMMM_YYYY, Locale.getDefault()));
+			if (dateReport != null && !dateReport.isEmpty()) {
+				dateReport = Character.toUpperCase(dateReport.charAt(0)) + dateReport.substring(1);
+			}
 			String dateQuery = date.format(DateTimeFormatter.ofPattern(YYYY_MM_DD));
 			String dateFile = date.format(DateTimeFormatter.ofPattern(YYYY_M_MDD));
 
@@ -1252,12 +1261,18 @@ public class JasperReportsManager {
 	}
 
 	private String getPatientPhotoFile(String patID) {
-		String patientPhotoFile = null;
 		if (!PatientIoOperations.LOAD_FROM_DB.equals(GeneralData.PATIENTPHOTOSTORAGE)) {
-			patientPhotoFile = GeneralData.PATIENTPHOTOSTORAGE + File.separatorChar + patID + ".png";
-			LOGGER.debug("PATIENT_PHOTO = {}", patientPhotoFile);
+			String patientPhotoFile = GeneralData.PATIENTPHOTOSTORAGE + File.separatorChar + patID + ".png";
+			if (new File(patientPhotoFile).exists()) {
+				LOGGER.debug("PATIENT_PHOTO = {}", patientPhotoFile);
+				return patientPhotoFile;
+			}
 		}
-		return patientPhotoFile;
+		File defaultPhoto = new File("rsc/images/nophoto.png");
+		if (defaultPhoto.exists()) {
+			return defaultPhoto.getPath();
+		}
+		return "rsc/images/nophoto.png";
 	}
 
 	private void addReportBundleParameter(String jasperParameter, String jasperFileName, Map<String, Object> parameters) {
