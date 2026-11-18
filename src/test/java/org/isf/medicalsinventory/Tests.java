@@ -22,10 +22,9 @@
 package org.isf.medicalsinventory;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
@@ -56,7 +55,9 @@ import org.isf.medicalstock.service.MedicalStockIoOperationRepository;
 import org.isf.medicalstock.service.MedicalStockIoOperations;
 import org.isf.medicalstock.service.MovementIoOperationRepository;
 import org.isf.medicalstockward.TestMovementWard;
+import org.isf.medicalstockward.model.MedicalWard;
 import org.isf.medicalstockward.model.MovementWard;
+import org.isf.medicalstockward.service.MedicalStockWardIoOperationRepository;
 import org.isf.medicalstockward.service.MedicalStockWardIoOperations;
 import org.isf.medicalstockward.service.MovementWardIoOperationRepository;
 import org.isf.medstockmovtype.model.MovementType;
@@ -153,6 +154,9 @@ class Tests extends OHCoreTestCase {
 	
 	@Autowired
 	MovementIoOperationRepository movementIoOperationRepository;
+
+	@Autowired
+	MedicalStockWardIoOperationRepository medicalStockWardIoOperationRepository;
 
 	static Stream<Arguments> automaticlot() {
 		return Stream.of(Arguments.of(true, true, false),
@@ -836,120 +840,124 @@ class Tests extends OHCoreTestCase {
 	}
 
 	@Test
-	void testValidateMedicalWardInventoryRow_shouldThrowFourErrors() {
-		Throwable throwable = catchThrowable(() -> {
-			// Initialize data and create movements
-			Ward ward = testWard.setup(false);
-			wardIoOperationRepository.saveAndFlush(ward);
-			MovementType chargeType = new MovementType("inventory+", "Inventory+", "+", "non-operational");
-			MovementType dischargeType = new MovementType("inventory-", "Inventory-", "-", "non-operational");
-			Ward destination = new Ward("INV", "ward inventory", null, null, null, 8, 1, 1, false, false);
-			chargeType = medicalDsrStockMovementTypeIoOperationRepository.saveAndFlush(chargeType);
-			dischargeType = medicalDsrStockMovementTypeIoOperationRepository.saveAndFlush(dischargeType);
-			destination = wardIoOperationRepository.saveAndFlush(destination);
-			MedicalInventory inventory = testMedicalWardInventory.setup(ward, false);
-			inventory.setId(null);
-			inventory.setInventoryDate(inventory.getInventoryDate().minusDays(1));
-			inventory = medIvnIoOperationRepository.saveAndFlush(inventory);
-			MedicalType medicalType = testMedicalType.setup(false);
-			Medical medical = testMedical.setup(medicalType, false);
-			Lot lotOne = testLot.setup(medical, false);
-			Supplier supplier = testSupplier.setup(false);
-			supplier = supplierIoOperationRepository.saveAndFlush(supplier);
-			Movement initialMovement = testMovement.setup(medical, chargeType, ward, lotOne, supplier, false);
-			initialMovement.setQuantity(200);
-			MedicalStock initialMedicalStock = testMedicalStock.setup(initialMovement);
-			Movement firstMovement = testMovement.setup(medical, dischargeType, ward, lotOne, null, false);
-			firstMovement.setQuantity(100);
-			MedicalStock firstmedicalStock = testMedicalStock.setup(firstMovement);
-			Lot lotTwo = testLot.setup(medical, false);
-			lotTwo.setCode("LOT-002");
-			MovementWard wardMovement = testMovementWard.setup(ward, null, medical, ward, destination, lotTwo, false);
-			wardMovement.setQuantity(100.0);
-			Lot lotThree = testLot.setup(medical, false);
-			lotThree.setCode("LOT-003");
-			medicalTypeIoOperationRepository.saveAndFlush(medicalType);
-			medical = medicalsIoOperationRepository.saveAndFlush(medical);
-			lotOne = lotIoOperationRepository.saveAndFlush(lotOne);
-			lotTwo = lotIoOperationRepository.saveAndFlush(lotTwo);
-			lotThree = lotIoOperationRepository.saveAndFlush(lotThree);
-			Movement movement = medicalStockIoOperation.newMovement(initialMovement);
-			movement = medicalStockIoOperation.newMovement(movement);
-			// Create inventory and inventory rows
-			inventory = medIvnIoOperationRepository.saveAndFlush(inventory);
-			MedicalInventoryRow medicalInventoryRowOne = testMedicalInventoryRow.setup(inventory, medical, lotOne, false);
-			medicalInventoryRowOne.setRealqty(60);
-			MedicalInventoryRow medicalInventoryRowTwo = testMedicalInventoryRow.setup(inventory, medical, lotTwo, false);
-			medicalInventoryRowTwo.setId(null);
-			medicalInventoryRowTwo.setRealqty(30);
-			MedicalInventoryRow medicalInventoryRowThree = testMedicalInventoryRow.setup(inventory, medical, lotThree, false);
-			medicalInventoryRowThree.setId(null);
-			medicalInventoryRowIoOperationRepository.saveAndFlush(medicalInventoryRowOne);
-			medicalInventoryRowIoOperationRepository.saveAndFlush(medicalInventoryRowTwo);
-			medicalInventoryRowIoOperationRepository.saveAndFlush(medicalInventoryRowThree);
-			firstMovement = medicalStockIoOperation.newMovement(firstMovement);
-			medicalStockIoOperationRepository.saveAndFlush(firstmedicalStock);
-			movementWardIoOperationRepository.saveAndFlush(wardMovement);
-			int inventoryId = inventory.getId();
-			List<MedicalInventoryRow> medicalInventoryRows = medicalInventoryRowManager.getMedicalInventoryRowByInventoryId(inventoryId);
-			assertThat(medicalInventoryRows).isNotEmpty();
-			assertThat(medicalInventoryRows).hasSize(3);
+	void testValidateMedicalWardInventoryRow_movementsAfterInventoryDoNotBlock() throws Exception {
+		Ward ward = wardIoOperationRepository.saveAndFlush(testWard.setup(false));
+		MedicalType medicalType = medicalTypeIoOperationRepository.saveAndFlush(testMedicalType.setup(false));
+		Medical medical = medicalsIoOperationRepository.saveAndFlush(testMedical.setup(medicalType, false));
+		Lot lot = lotIoOperationRepository.saveAndFlush(testLot.setup(medical, false));
+		// ward stock when counting: 100, counted 95 (-5)
+		MedicalWard medicalWard = medicalStockWardIoOperationRepository.saveAndFlush(new MedicalWard(ward, medical, 100, 0, lot));
+		MedicalInventory inventory = testMedicalWardInventory.setup(ward, false);
+		inventory.setId(null);
+		inventory = medIvnIoOperationRepository.saveAndFlush(inventory);
+		MedicalInventoryRow row = testMedicalInventoryRow.setup(inventory, medical, lot, false);
+		row.setTheoreticQty(100);
+		row.setRealqty(95);
+		medicalInventoryRowIoOperationRepository.saveAndFlush(row);
+		// 20 units consumed in the ward after the count: stock is now 80
+		medicalWard.setOut_quantity(20);
+		medicalStockWardIoOperationRepository.saveAndFlush(medicalWard);
 
-			// test case 1: Create movement from the main to the ward to add quantity for existing lot in the ward
-			firstMovement.setQuantity(100);
-			firstMovement.setDate(TimeTools.getNow().truncatedTo(ChronoUnit.MINUTES));
-			firstmedicalStock = testMedicalStock.setup(firstMovement);
-			medicalStockIoOperation.newMovement(firstMovement);
-			medicalStockIoOperationRepository.saveAndFlush(firstmedicalStock);
+		List<MedicalInventoryRow> rows = medicalInventoryRowManager.getMedicalInventoryRowByInventoryId(inventory.getId());
+		// validation does not throw anymore and does not modify the rows
+		medicalInventoryManager.validateMedicalWardInventoryRow(inventory, rows, false);
+		assertThat(rows.get(0).getTheoreticQty()).isEqualTo(100);
+		assertThat(rows.get(0).getRealQty()).isEqualTo(95);
 
-			// test case 2: Create movement from the main to the ward to add new lot
-			Lot lotfour = testLot.setup(medical, false);
-			lotfour.setCode("LOT-004");
-			lotfour = lotIoOperationRepository.save(lotfour);
-			Movement secondMovement = testMovement.setup(medical, dischargeType, ward, lotfour, null, false);
-			secondMovement.setQuantity(50);
-			secondMovement.setDate(TimeTools.getNow().truncatedTo(ChronoUnit.MINUTES));
-			MedicalStock secondMedicalStock = testMedicalStock.setup(secondMovement);
-			medicalStockIoOperation.newMovement(secondMovement);
-			medicalStockIoOperationRepository.saveAndFlush(secondMedicalStock);
+		// actualization keeps the counted difference: 80 / 75 (-5)
+		medicalInventoryManager.actualizeMedicalWardInventoryRow(inventory, false);
+		rows = medicalInventoryRowManager.getMedicalInventoryRowByInventoryId(inventory.getId());
+		assertThat(rows).hasSize(1);
+		assertThat(rows.get(0).getTheoreticQty()).isEqualTo(80);
+		assertThat(rows.get(0).getRealQty()).isEqualTo(75);
+	}
 
-			// test case 3: Create movement from the main to the ward to add new medical
-			Medical secondMedical = testMedical.setup(medicalType, false);
-			secondMedical.setProdCode("TP2");
-			secondMedical.setDescription("test description");
-			secondMedical = medicalsIoOperationRepository.save(secondMedical);
-			Lot lotFive = testLot.setup(secondMedical, false);
-			lotFive.setCode("LOT-005");
-			lotFive = lotIoOperationRepository.save(lotFive);
-			initialMovement = testMovement.setup(secondMedical, chargeType, ward, lotFive, supplier, false);
-			initialMovement.setQuantity(200);
-			initialMedicalStock = testMedicalStock.setup(initialMovement);
-			medicalStockIoOperation.newMovement(initialMovement);
-			medicalStockIoOperationRepository.saveAndFlush(initialMedicalStock);
-			Movement thirdMovement = testMovement.setup(secondMedical, dischargeType, ward, lotFive, null, false);
-			thirdMovement.setDate(TimeTools.getNow().truncatedTo(ChronoUnit.MINUTES));
-			MedicalStock thirdMedicalStock = testMedicalStock.setup(thirdMovement);
-			thirdMovement = medicalStockIoOperation.newMovement(thirdMovement);
-			medicalStockIoOperationRepository.saveAndFlush(thirdMedicalStock);
-			
-			// test case 4: Create movement on main store with one medical which is on the inventory
-			Lot lotSix = testLot.setup(secondMedical, false);
-			lotSix.setCode("LOT-006");
-			Movement lastMovement = testMovement.setup(medical, chargeType, null, lotSix, supplier, false);
-			lastMovement.setDate(TimeTools.getNow().truncatedTo(ChronoUnit.MINUTES));
-			MedicalStock medicalStock = testMedicalStock.setup(lastMovement);
-			lotSix = lotIoOperationRepository.saveAndFlush(lotSix);
-			lastMovement = movementIoOperationRepository.saveAndFlush(lastMovement);
-			medicalStock = medicalStockIoOperationRepository.saveAndFlush(medicalStock);
+	@Test
+	void testValidateMedicalWardInventoryRow_shouldThrowWhenCountedDifferenceCannotBeApplied() throws Exception {
+		Ward ward = wardIoOperationRepository.saveAndFlush(testWard.setup(false));
+		MedicalType medicalType = medicalTypeIoOperationRepository.saveAndFlush(testMedicalType.setup(false));
+		Medical medical = medicalsIoOperationRepository.saveAndFlush(testMedical.setup(medicalType, false));
+		Lot lot = lotIoOperationRepository.saveAndFlush(testLot.setup(medical, false));
+		// ward stock when counting: 100, counted 95 (-5); then 98 consumed: stock 2 < 5
+		medicalStockWardIoOperationRepository.saveAndFlush(new MedicalWard(ward, medical, 100, 98, lot));
+		MedicalInventory inventory = testMedicalWardInventory.setup(ward, false);
+		inventory.setId(null);
+		inventory = medIvnIoOperationRepository.saveAndFlush(inventory);
+		MedicalInventoryRow row = testMedicalInventoryRow.setup(inventory, medical, lot, false);
+		row.setTheoreticQty(100);
+		row.setRealqty(95);
+		medicalInventoryRowIoOperationRepository.saveAndFlush(row);
+		List<MedicalInventoryRow> rows = medicalInventoryRowManager.getMedicalInventoryRowByInventoryId(inventory.getId());
 
-			// test validate medical ward inventory row
-			medicalInventoryManager.validateMedicalWardInventoryRow(inventory, medicalInventoryRows, true); // TODO: to test also allMedicals=false
-		});
-		// Test if exception is OHDataValidationException instance
-		assertThat(throwable).isInstanceOf(OHDataValidationException.class);
-		
-		// Test if size of message list is equal to 4
-		assertThat(((OHDataValidationException) throwable).getMessages().size()).isEqualTo(4);
+		MedicalInventory finalInventory = inventory;
+		assertThatThrownBy(() -> medicalInventoryManager.validateMedicalWardInventoryRow(finalInventory, rows, false))
+			.isInstanceOf(OHDataValidationException.class);
+		assertThatThrownBy(() -> medicalInventoryManager.actualizeMedicalWardInventoryRow(finalInventory, false))
+			.isInstanceOf(OHDataValidationException.class);
+		// nothing has been modified
+		List<MedicalInventoryRow> rowsAfter = medicalInventoryRowManager.getMedicalInventoryRowByInventoryId(inventory.getId());
+		assertThat(rowsAfter.get(0).getTheoreticQty()).isEqualTo(100);
+		assertThat(rowsAfter.get(0).getRealQty()).isEqualTo(95);
+	}
+
+	@ParameterizedTest(name = "Test with AUTOMATICLOT_IN={0}, AUTOMATICLOT_OUT={1}, AUTOMATICLOTWARD_TOWARD={2}")
+	@MethodSource("automaticlot")
+	void testConfirmMedicalInventoryKeepsCountedDifferenceAfterNewMovements(boolean in, boolean out, boolean toward) throws Exception {
+		setGeneralData(in, out, toward);
+		Ward ward = wardIoOperationRepository.saveAndFlush(testWard.setup(false));
+		MovementType chargeType = medicalDsrStockMovementTypeIoOperationRepository
+			.saveAndFlush(new MovementType("inventory+", "Inventory+", "+", "non-operational"));
+		MovementType dischargeType = medicalDsrStockMovementTypeIoOperationRepository
+			.saveAndFlush(new MovementType("inventory-", "Inventory-", "-", "non-operational"));
+		Supplier supplier = supplierIoOperationRepository.saveAndFlush(testSupplier.setup(false));
+		MedicalType medicalType = medicalTypeIoOperationRepository.saveAndFlush(testMedicalType.setup(false));
+		Medical medical = medicalsIoOperationRepository.saveAndFlush(testMedical.setup(medicalType, false));
+		// two lots: the oldest one would be chosen first by AUTOMATICLOT_OUT, the adjustment must go on the counted lot
+		Lot otherLot = testLot.setup(medical, false);
+		otherLot.setCode("LOT-OTHER");
+		otherLot.setDueDate(otherLot.getDueDate().minusDays(10));
+		otherLot = lotIoOperationRepository.saveAndFlush(otherLot);
+		Lot countedLot = testLot.setup(medical, false);
+		countedLot.setCode("LOT-COUNTED");
+		countedLot = lotIoOperationRepository.saveAndFlush(countedLot);
+		LocalDateTime start = TimeTools.getNow().minusHours(2);
+		Movement chargeOther = testMovement.setup(medical, chargeType, null, otherLot, supplier, false);
+		chargeOther.setQuantity(50);
+		chargeOther.setDate(start);
+		medicalStockIoOperation.newMovement(chargeOther);
+		Movement chargeCounted = testMovement.setup(medical, chargeType, null, countedLot, supplier, false);
+		chargeCounted.setQuantity(100);
+		chargeCounted.setDate(start);
+		medicalStockIoOperation.newMovement(chargeCounted);
+
+		// inventory: counted lot theoretic 100, real 95 (-5)
+		MedicalInventory inventory = testMedicalInventory.setup(ward, false);
+		inventory.setDischargeType(dischargeType.getCode());
+		inventory.setInventoryDate(start.plusMinutes(10));
+		inventory = medicalInventoryIoOperation.newMedicalInventory(inventory);
+		MedicalInventoryRow row = testMedicalInventoryRow.setup(inventory, medical, countedLot, false);
+		row.setTheoreticQty(100);
+		row.setRealqty(95);
+		medicalInventoryRowIoOperationRepository.saveAndFlush(row);
+
+		// 20 units discharged after the count: stock of the counted lot is now 80
+		Movement discharge = testMovement.setup(medical, dischargeType, ward, countedLot, null, false);
+		discharge.setQuantity(20);
+		discharge.setDate(start.plusMinutes(30));
+		medicalStockIoOperation.newMovement(discharge);
+
+		List<MedicalInventoryRow> rows = medicalInventoryRowManager.getMedicalInventoryRowByInventoryId(inventory.getId());
+		medicalInventoryManager.validateMedicalInventoryRow(inventory, rows, false);
+		List<Movement> movements = medicalInventoryManager.confirmMedicalInventoryRow(inventory, rows, false);
+
+		// only the counted difference (-5) is applied, on the counted lot
+		assertThat(movements).hasSize(1);
+		assertThat(movements.get(0).getQuantity()).isEqualTo(5);
+		assertThat(movements.get(0).getLot().getCode()).isEqualTo("LOT-COUNTED");
+		rows = medicalInventoryRowManager.getMedicalInventoryRowByInventoryId(inventory.getId());
+		assertThat(rows.get(0).getTheoreticQty()).isEqualTo(80);
+		assertThat(rows.get(0).getRealQty()).isEqualTo(75);
+		assertThat(medicalInventoryIoOperation.getInventoryById(inventory.getId()).getStatus()).isEqualTo(InventoryStatus.done.toString());
 	}
 
 	@Test
@@ -1080,6 +1088,9 @@ class Tests extends OHCoreTestCase {
 		medicalInventoryRowTwo.setRealqty(30);
 		medicalInventoryRowTwo.setTheoreticQty(20);
 		medicalInventoryRowIoOperationRepository.saveAndFlush(medicalInventoryRowTwo);
+		// current ward stock of both lots is 20 (same as the theoretic quantities)
+		medicalStockWardIoOperationRepository.saveAndFlush(new MedicalWard(ward, medical, 20, 0, lotOne));
+		medicalStockWardIoOperationRepository.saveAndFlush(new MedicalWard(ward, medical, 20, 0, lotTwo));
 		int inventoryId = inventory.getId();
 		List<MedicalInventoryRow> medicalInventoryRows = medicalInventoryRowManager.getMedicalInventoryRowByInventoryId(inventoryId);
 		assertThat(medicalInventoryRows).isNotEmpty();

@@ -191,8 +191,8 @@ public class MovStockInsertingManager {
 			 * 
 			 * AUTOMATICLOT_OUT=yes, no check: the quantity will be split automatically between available lots
 			 */
-			if (!isAutomaticLotOut()) {
-
+			if (!isAutomaticLotOut() || isForInventory) {
+				// inventory adjustments always target the counted lot, even with AUTOMATICLOT_OUT=yes
 				if (movement.getType() != null && !isCharge && movement.getQuantity() > lot.getMainStoreQuantity()) {
 					errors.add(new OHExceptionMessage(MessageBundle.formatMessage("angal.medicalstock.movementquantityisgreaterthanthequantityof.fmt.msg",
 						movement.getQuantity(), lot.getMainStoreQuantity())));
@@ -551,7 +551,8 @@ public class MovStockInsertingManager {
 	 */
 	private List<Movement> prepareDischargingMovement(Movement movement, boolean checkReference, boolean isForInventory) throws OHServiceException {
 		validateMovement(movement, checkReference, isForInventory);
-		if (isAutomaticLotOut()) {
+		// inventory adjustments must be applied to the counted lot, never split automatically between lots
+		if (isAutomaticLotOut() && !isForInventory) {
 			return ioOperations.newAutomaticDischargingMovement(movement);
 		} else {
 			List<Movement> dischargeMovement = new ArrayList<>();
