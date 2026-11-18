@@ -37,6 +37,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
@@ -54,15 +55,22 @@ import org.apache.poi.hssf.usermodel.HSSFRichTextString;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.RichTextString;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.util.CellRangeAddress;
+import java.util.ResourceBundle;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.isf.generaldata.MessageBundle;
 import org.isf.utils.exception.OHException;
@@ -698,6 +706,189 @@ public class ExcelExporter {
 				cell.setCellValue(val);
 			}
 		}
+	}
+
+	public void exportIncomesAllByPriceCodesToExcel(ResultSet resultSet, File exportFile, Integer year, String wardName, String hospitalName, ResourceBundle bundle)
+		throws IOException, OHException {
+
+		boolean isXls = exportFile.getName().toLowerCase().endsWith(".xls");
+		try (FileOutputStream fileStream = new FileOutputStream(exportFile)) {
+			workbook = isXls ? new HSSFWorkbook() : new XSSFWorkbook();
+			createHelper = workbook.getCreationHelper();
+
+			Sheet worksheet = workbook.createSheet();
+			initStyles();
+
+			Font dataFont = workbook.createFont();
+			dataFont.setFontHeightInPoints((short) 9);
+
+			CellStyle cellMonthStyle = workbook.createCellStyle();
+			cellMonthStyle.setFont(dataFont);
+			cellMonthStyle.setWrapText(true);
+			cellMonthStyle.setAlignment(HorizontalAlignment.RIGHT);
+			cellMonthStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+			cellMonthStyle.setBorderTop(BorderStyle.THIN);
+			cellMonthStyle.setBorderBottom(BorderStyle.THIN);
+			cellMonthStyle.setBorderLeft(BorderStyle.THIN);
+			cellMonthStyle.setBorderRight(BorderStyle.THIN);
+
+			CellStyle cellDescStyle = workbook.createCellStyle();
+			cellDescStyle.setFont(dataFont);
+			cellDescStyle.setAlignment(HorizontalAlignment.LEFT);
+			cellDescStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+			cellDescStyle.setBorderTop(BorderStyle.THIN);
+			cellDescStyle.setBorderBottom(BorderStyle.THIN);
+			cellDescStyle.setBorderLeft(BorderStyle.THIN);
+			cellDescStyle.setBorderRight(BorderStyle.THIN);
+
+			CellStyle groupStyle = workbook.createCellStyle();
+			Font groupFont = workbook.createFont();
+			groupFont.setBold(true);
+			groupFont.setFontHeightInPoints((short) 10);
+			groupStyle.setFont(groupFont);
+			groupStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+
+			CellStyle colHeaderStyle = workbook.createCellStyle();
+			Font colHeaderFont = workbook.createFont();
+			colHeaderFont.setFontHeightInPoints((short) 9);
+			colHeaderFont.setBold(true);
+			colHeaderStyle.setFont(colHeaderFont);
+			colHeaderStyle.setAlignment(HorizontalAlignment.CENTER);
+			colHeaderStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+			colHeaderStyle.setBorderTop(BorderStyle.THIN);
+			colHeaderStyle.setBorderBottom(BorderStyle.THIN);
+			colHeaderStyle.setBorderLeft(BorderStyle.THIN);
+			colHeaderStyle.setBorderRight(BorderStyle.THIN);
+			colHeaderStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+			colHeaderStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
+			Row headers = worksheet.createRow(0);
+			headers.setHeightInPoints(22);
+
+			String[] translatedHeaders = {
+				getBundleString(bundle, "angal.stat.designation", "Désignation"),
+				getBundleString(bundle, "angal.stat.january", "Janvier"),
+				getBundleString(bundle, "angal.stat.february", "Février"),
+				getBundleString(bundle, "angal.stat.march", "Mars"),
+				getBundleString(bundle, "angal.stat.april", "Avril"),
+				getBundleString(bundle, "angal.stat.may", "Mai"),
+				getBundleString(bundle, "angal.stat.june", "Juin"),
+				getBundleString(bundle, "angal.stat.july", "Juillet"),
+				getBundleString(bundle, "angal.stat.august", "Août"),
+				getBundleString(bundle, "angal.stat.september", "Septembre"),
+				getBundleString(bundle, "angal.stat.october", "Octobre"),
+				getBundleString(bundle, "angal.stat.november", "Novembre"),
+				getBundleString(bundle, "angal.stat.december", "Décembre"),
+				getBundleString(bundle, "angal.stat.total", "Total")
+			};
+
+			int colCount = translatedHeaders.length;
+			for (int i = 0; i < colCount; i++) {
+				Cell cell = headers.createCell((short) i);
+				RichTextString value = createHelper.createRichTextString(translatedHeaders[i]);
+				cell.setCellStyle(colHeaderStyle);
+				cell.setCellValue(value);
+			}
+
+			int rowIndex = 1;
+			String currentGroup = null;
+
+			try {
+				while (resultSet.next()) {
+					String group = resultSet.getString("BLI_ITEM_GROUP");
+					String groupKey = group != null ? group.trim() : "";
+
+					if (currentGroup == null || !currentGroup.equalsIgnoreCase(groupKey)) {
+						currentGroup = groupKey;
+						Row groupRow = worksheet.createRow(rowIndex);
+						groupRow.setHeightInPoints(20);
+						Cell groupCell = groupRow.createCell(0);
+						String groupTitle = translateItemType(currentGroup, bundle);
+						groupCell.setCellValue(createHelper.createRichTextString(groupTitle));
+						groupCell.setCellStyle(groupStyle);
+						rowIndex++;
+					}
+
+					Row row = worksheet.createRow(rowIndex);
+					row.setHeightInPoints(28);
+
+					String desc = resultSet.getString("BLI_ITEM_DESC");
+					Cell descCell = row.createCell(0);
+					descCell.setCellValue(createHelper.createRichTextString(desc != null ? desc : ""));
+					descCell.setCellStyle(cellDescStyle);
+
+					for (int m = 0; m < 12; m++) {
+						double qty = resultSet.getDouble(3 + m * 2);
+						double amount = resultSet.getDouble(4 + m * 2);
+
+						Cell monthCell = row.createCell(m + 1);
+						String cellText = formatCellText(qty, amount);
+						monthCell.setCellValue(createHelper.createRichTextString(cellText));
+						monthCell.setCellStyle(cellMonthStyle);
+					}
+
+					double totalQty = resultSet.getDouble(27);
+					double totalAmount = resultSet.getDouble(28);
+					Cell totalCell = row.createCell(13);
+					String totalText = formatCellText(totalQty, totalAmount);
+					totalCell.setCellValue(createHelper.createRichTextString(totalText));
+					totalCell.setCellStyle(cellMonthStyle);
+
+					rowIndex++;
+				}
+			} catch (SQLException e) {
+				throw new OHException(e.getMessage(), e);
+			}
+
+			for (int c = 0; c < 14; c++) {
+				worksheet.autoSizeColumn(c);
+				int currentWidth = worksheet.getColumnWidth(c);
+				worksheet.setColumnWidth(c, Math.max(currentWidth + 1024, c == 0 ? 7000 : 3500));
+			}
+
+			workbook.write(fileStream);
+			fileStream.flush();
+		}
+	}
+
+	private String formatCellText(double qty, double amount) {
+		DecimalFormat df = new DecimalFormat("#,##0.##");
+		return df.format(qty) + "\n" + df.format(amount);
+	}
+
+	private String translateItemType(String group, ResourceBundle bundle) {
+		if (group == null || group.trim().isEmpty()) {
+			return getBundleString(bundle, "angal.priceslist.notype", "Sans catégorie");
+		}
+		switch (group.toUpperCase()) {
+			case "MED":
+				return getBundleString(bundle, "angal.priceslist.medicals", "Produits médicaux");
+			case "EXA":
+				return getBundleString(bundle, "angal.priceslist.exams", "Examens");
+			case "OPE":
+				return getBundleString(bundle, "angal.priceslist.operations", "Opérations");
+			case "OTH":
+				return getBundleString(bundle, "angal.priceslist.others", "Autres");
+			default:
+				return getBundleString(bundle, "angal.priceslist.notype", "Sans catégorie");
+		}
+	}
+
+	private String getBundleString(ResourceBundle bundle, String key, String defaultVal) {
+		if (bundle != null && bundle.containsKey(key)) {
+			try {
+				return bundle.getString(key);
+			} catch (Exception ignored) {
+			}
+		}
+		try {
+			String val = MessageBundle.getMessage(key);
+			if (val != null && !val.equals(key)) {
+				return val;
+			}
+		} catch (Exception ignored) {
+		}
+		return defaultVal;
 	}
 
 	public static JFileChooser getJFileChooserExcel(File defaultFilename) {

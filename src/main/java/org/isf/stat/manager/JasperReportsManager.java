@@ -1036,6 +1036,88 @@ public class JasperReportsManager {
 		}
 	}
 
+	public JasperReportResultDto getGenericReportYearWardPdf(Integer year, String wardId, String wardName, String jasperFileFolder, String jasperFileName)
+		throws OHServiceException {
+
+		try {
+			Map<String, Object> parameters = compileGenericReportYearWardParameters(year, wardId, wardName, jasperFileFolder, jasperFileName);
+			String pdfFilename = compilePDFFilename(jasperFileFolder, jasperFileName, Arrays.asList(String.valueOf(year), wardId != null ? wardId : "ALL"), "pdf");
+
+			JasperReportResultDto result = generateJasperReport(compileJasperFilename(jasperFileFolder, jasperFileName), pdfFilename, parameters);
+			JasperExportManager.exportReportToPdfFile(result.getJasperPrint(), pdfFilename);
+			return result;
+		} catch (Exception e) {
+			LOGGER.error("", e);
+			throw new OHReportException(e, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
+		}
+	}
+
+	public void getGenericReportYearWardExcel(Integer year, String wardId, String jasperFileFolder, String jasperFileName, String exportFilename)
+		throws OHServiceException {
+		getGenericReportYearWardExcel(year, wardId, null, jasperFileFolder, jasperFileName, exportFilename);
+	}
+
+	public void getGenericReportYearWardExcel(Integer year, String wardId, String wardName, String jasperFileFolder, String jasperFileName, String exportFilename)
+		throws OHServiceException {
+
+		try {
+			File jasperFile = new File(compileJasperFilename(jasperFileFolder, jasperFileName));
+			JasperReport jasperReport = (JasperReport) JRLoader.loadObject(jasperFile);
+			JRQuery query = jasperReport.getMainDataset().getQuery();
+			String queryString = query.getText();
+			queryString = queryString.replace("$P{year}", String.valueOf(year));
+			queryString = queryString.replace("$P{ward_id}", "'" + (wardId != null ? wardId : "ALL") + "'");
+
+			DbQueryLogger dbQuery = new DbQueryLogger();
+			ResultSet resultSet = dbQuery.getData(queryString, true);
+
+			File exportFile = new File(exportFilename);
+			ExcelExporter xlsExport = new ExcelExporter();
+
+			ResourceBundle bundle = null;
+			try {
+				bundle = ResourceBundle.getBundle(jasperFileName, Locale.getDefault(), new UTF8Control());
+			} catch (Exception e) {
+				LOGGER.warn("Could not load bundle for {}", jasperFileName);
+			}
+
+			String hospitalName = "";
+			try {
+				Hospital hosp = hospitalManager.getHospital();
+				if (hosp != null) {
+					hospitalName = hosp.getDescription();
+				}
+			} catch (Exception e) {
+				LOGGER.warn("Could not get hospital description", e);
+			}
+
+			if ("OH004_IncomesAllByPriceCodes_3".equalsIgnoreCase(jasperFileName)) {
+				xlsExport.exportIncomesAllByPriceCodesToExcel(resultSet, exportFile, year, wardName, hospitalName, bundle);
+			} else {
+				if (exportFile.getName().endsWith(".xls")) {
+					xlsExport.exportResultsetToExcelOLD(resultSet, exportFile);
+				} else {
+					xlsExport.exportResultsetToExcel(resultSet, exportFile);
+				}
+			}
+		} catch (Exception e) {
+			LOGGER.error("", e);
+			throw new OHReportException(e, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
+		}
+	}
+
+	private Map<String, Object> compileGenericReportYearWardParameters(Integer year, String wardId, String wardName, String jasperFileFolder, String jasperFileName)
+		throws OHServiceException {
+		HashMap<String, Object> parameters = getHospitalParameters();
+		addBundleParameter(jasperFileFolder, jasperFileName, parameters);
+
+		parameters.put("year", year);
+		parameters.put("ward_id", wardId != null ? wardId : "ALL");
+		parameters.put("ward_name", wardName != null ? wardName : "");
+		parameters.put("PeriodLabel", String.valueOf(year));
+		return parameters;
+	}
+
 	private HashMap<String, Object> compileGenericReportUserInDateParameters(String fromDate, String toDate, String aUser) throws OHServiceException {
 		HashMap<String, Object> parameters = getHospitalParameters();
 
