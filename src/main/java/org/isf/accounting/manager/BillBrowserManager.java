@@ -204,7 +204,8 @@ public class BillBrowserManager {
 
 	/**
 	 * Get the quota applicable to a guarantor: the single quota shared by all guarantors when
-	 * {@code BILLGUARANTORSINGLEQUOTA} is enabled, otherwise the quota specific to the guarantor.
+	 * {@code BILLGUARANTORSINGLEQUOTA} is enabled, otherwise the quota specific to the guarantor, falling back to
+	 * {@code BILLGUARANTORQUOTA} as default quota when the guarantor has no specific quota.
 	 *
 	 * @param guarantor the guarantor
 	 * @return the quota, or {@code null} when the guarantor has no limit
@@ -214,10 +215,11 @@ public class BillBrowserManager {
 		if (guarantor == null) {
 			return null;
 		}
-		Double quota = GeneralData.BILLGUARANTORSINGLEQUOTA
-			? Double.valueOf(GeneralData.BILLGUARANTORQUOTA)
-			: ioOperations.getGuarantorQuota(guarantor.getUserName());
-		return quota != null && quota > 0 ? quota : null;
+		Double quota = GeneralData.BILLGUARANTORSINGLEQUOTA ? null : ioOperations.getGuarantorQuota(guarantor.getUserName());
+		if (quota == null || quota <= 0) {
+			quota = GeneralData.BILLGUARANTORQUOTA;
+		}
+		return quota > 0 ? quota : null;
 	}
 
 	/**

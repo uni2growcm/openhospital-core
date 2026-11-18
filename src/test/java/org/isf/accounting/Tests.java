@@ -863,8 +863,27 @@ class Tests extends OHCoreTestCase {
 	}
 
 	@Test
-	void testGuarantorWithoutQuotaIsUnlimited() throws Exception {
+	void testGuarantorWithoutQuotaUsesDefaultQuota() throws Exception {
 		withGuarantorSettings(false, 10, () -> {
+			User guarantor = setupGuarantor(null);
+			assertThat(billBrowserManager.getGuarantorQuota(guarantor)).isEqualTo(10.0);
+			assertThatThrownBy(() -> billBrowserManager.newBill(newGuaranteedBill(guarantor, 1000), new ArrayList<>(), new ArrayList<>()))
+				.isInstanceOf(OHDataValidationException.class);
+		});
+	}
+
+	@Test
+	void testGuarantorSpecificQuotaOverridesDefaultQuota() throws Exception {
+		withGuarantorSettings(false, 10, () -> {
+			User guarantor = setupGuarantor(1000.0);
+			assertThat(billBrowserManager.getGuarantorQuota(guarantor)).isEqualTo(1000.0);
+			billBrowserManager.newBill(newGuaranteedBill(guarantor, 500), new ArrayList<>(), new ArrayList<>());
+		});
+	}
+
+	@Test
+	void testGuarantorWithoutQuotaAndNoDefaultIsUnlimited() throws Exception {
+		withGuarantorSettings(false, 0, () -> {
 			User guarantor = setupGuarantor(null);
 			assertThat(billBrowserManager.getGuarantorQuota(guarantor)).isNull();
 			billBrowserManager.newBill(newGuaranteedBill(guarantor, 1000), new ArrayList<>(), new ArrayList<>());
