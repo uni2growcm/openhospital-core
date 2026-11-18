@@ -363,6 +363,26 @@ public class LabIoOperations {
 	}
 
 	/**
+	 * Return the number of exams ({@link Laboratory}s) between specified dates whose exam description and result both contain
+	 * (case-insensitive) the given keywords. Used for best-effort, catalog-dependent indicators (e.g. counting positive results
+	 * for a given exam family by matching on its description, since there is no stable coded identifier for exam "families").
+	 *
+	 * @param dateFrom - the lower date for the range
+	 * @param dateTo - the highest date for the range
+	 * @param examKeyword - a substring to match (case-insensitive) against the exam description
+	 * @param resultKeyword - a substring to match (case-insensitive) against the result
+	 * @return the number of matching {@link Laboratory}s
+	 * @throws OHServiceException
+	 */
+	public long getLaboratoryCountByExamAndResult(LocalDateTime dateFrom, LocalDateTime dateTo, String examKeyword, String resultKeyword)
+			throws OHServiceException {
+		LocalDateTime truncatedDateFrom = TimeTools.truncateToSeconds(dateFrom.with(LocalTime.MIN));
+		LocalDateTime truncatedDateTo = TimeTools.truncateToSeconds(dateTo.with(LocalTime.MAX));
+		return repository.countByLabDateBetweenAndExamDescriptionContainingAndResultContaining(truncatedDateFrom, truncatedDateTo,
+				examKeyword, resultKeyword);
+	}
+
+	/**
 	 * Update an already existing Laboratory exam {@link Laboratory}.
 	 *
 	 * @param laboratory - the {@link Laboratory} to update
