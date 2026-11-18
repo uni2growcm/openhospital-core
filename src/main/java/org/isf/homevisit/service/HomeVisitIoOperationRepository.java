@@ -41,6 +41,9 @@ public interface HomeVisitIoOperationRepository extends JpaRepository<HomeVisit,
 	@Query("SELECT hv FROM HomeVisit hv WHERE hv.active = 1 ORDER BY hv.visitStartDate DESC")
 	Page<HomeVisit> findAllActive(Pageable pageable);
 
+	@Query("SELECT hv FROM HomeVisit hv WHERE hv.patient.code = :patientCode AND hv.active = 1 ORDER BY hv.visitStartDate DESC")
+	List<HomeVisit> findByPatientCode(@Param("patientCode") Integer patientCode);
+
 	List<HomeVisit> findByPatientAndActive(Patient patient, int active);
 
 	@Query("SELECT hv FROM HomeVisit hv WHERE hv.active = 1 AND hv.status = :status ORDER BY hv.visitStartDate DESC")

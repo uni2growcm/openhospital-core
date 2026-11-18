@@ -42,7 +42,7 @@ public interface AccountingBillPaymentIoOperationRepository extends JpaRepositor
 	@Query(value = "select distinct bp.user FROM BillPayments bp ORDER BY bp.user asc")
 	List<String> findUserDistinctByOrderByUserAsc();
 
-	@Query(value = "SELECT BP FROM BillPayments BP where BP.date >= :start and BP.date < :end ORDER BY BP.id")
+	@Query(value = "SELECT BP FROM BillPayments BP where BP.active = 1 and BP.date >= :start and BP.date < :end ORDER BY BP.id")
 	List<BillPayments> findByDateBetweenOrderByIdAscDateAsc(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
 	List<BillPayments> findAllByBillIn(Collection<Bill> bills);
@@ -50,7 +50,7 @@ public interface AccountingBillPaymentIoOperationRepository extends JpaRepositor
 	@Query(value = "SELECT BP FROM BillPayments BP ORDER BY BP.bill, BP.date ASC")
 	List<BillPayments> findAllByOrderByBillAndDate();
 
-	@Query(value = "SELECT BP FROM BillPayments BP WHERE BP.bill.id = :billId ORDER BY BP.bill, BP.date ASC")
+	@Query(value = "SELECT BP FROM BillPayments BP WHERE BP.bill.id = :billId AND BP.active = 1 ORDER BY BP.bill, BP.date ASC")
 	List<BillPayments> findAllWherBillIdByOrderByBillAndDate(@Param("billId") Integer billId);
 
 	@Modifying
@@ -58,6 +58,7 @@ public interface AccountingBillPaymentIoOperationRepository extends JpaRepositor
 	void deleteWhereId(@Param("billId") Integer billId);
 
 	@Query(value = "SELECT BP FROM BillPayments BP WHERE " +
+			"BP.active = 1 and " +
 			"BP.bill.billPatient.code = :patientCode and " +
 			"DATE(BP.date) between DATE(:dateFrom) and DATE(:dateTo) " +
 			"ORDER BY BP.bill, BP.date ASC")
@@ -76,6 +77,7 @@ public interface AccountingBillPaymentIoOperationRepository extends JpaRepositor
 
 	@Query("SELECT COALESCE(SUM(bp.amount), 0) FROM BillPayments bp WHERE " +
 		"bp.bill.status != 'D' AND " +
+		"bp.active = 1 AND " +
 		"(:dateFrom IS NULL OR bp.date >= :dateFrom) AND " +
 		"(:dateTo IS NULL OR bp.date < :dateTo) AND " +
 		"(:patient IS NULL OR bp.bill.billPatient = :patient) AND " +
@@ -88,6 +90,7 @@ public interface AccountingBillPaymentIoOperationRepository extends JpaRepositor
 
 	@Query("SELECT COALESCE(SUM(bp.amount), 0) FROM BillPayments bp WHERE " +
 		"bp.bill.status != 'D' AND " +
+		"bp.active = 1 AND " +
 		"bp.user = :username AND " +
 		"(:dateFrom IS NULL OR bp.date >= :dateFrom) AND " +
 		"(:dateTo IS NULL OR bp.date < :dateTo) AND " +
@@ -100,9 +103,9 @@ public interface AccountingBillPaymentIoOperationRepository extends JpaRepositor
 		org.isf.patient.model.Patient patient,
 		org.isf.menu.model.User guarantor);
 
-	@Query("SELECT bp FROM BillPayments bp WHERE bp.date >= :dateFrom AND bp.date < :dateTo ORDER BY bp.date")
+	@Query("SELECT bp FROM BillPayments bp WHERE bp.active = 1 AND bp.date >= :dateFrom AND bp.date < :dateTo ORDER BY bp.date")
 	List<BillPayments> findPaymentsForSage(@Param("dateFrom") LocalDateTime dateFrom, @Param("dateTo") LocalDateTime dateTo);
 
-	@Query("SELECT bp FROM BillPayments bp WHERE bp.date >= :dateFrom AND bp.date < :dateTo ORDER BY bp.date")
+	@Query("SELECT bp FROM BillPayments bp WHERE bp.active = 1 AND bp.date >= :dateFrom AND bp.date < :dateTo ORDER BY bp.date")
 	Stream<BillPayments> streamPaymentsForSage(@Param("dateFrom") LocalDateTime dateFrom, @Param("dateTo") LocalDateTime dateTo);
 }

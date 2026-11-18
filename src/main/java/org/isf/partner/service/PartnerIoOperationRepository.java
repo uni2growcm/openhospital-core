@@ -57,6 +57,15 @@ public interface PartnerIoOperationRepository extends JpaRepository<Partner, Int
 	@Query("UPDATE Partner p SET p.active = 0 WHERE p.id = :id")
 	void softDelete(int id);
 
+	@Query("SELECT p FROM Partner p WHERE p.active = 1 ORDER BY p.priority ASC, p.code ASC")
+	List<Partner> findByActiveTrueOrderByPriorityAsc();
+
+	@Query("SELECT COALESCE(MAX(p.priority), 0) FROM Partner p")
+	int findMaxPriority();
+
+	@Query("SELECT pt FROM Patient pp JOIN pp.partners pt WHERE pp.code = :patientCode AND pt.active = 1")
+	List<Partner> findActivePartnersByPatientCode(@Param("patientCode") Integer patientCode);
+
 	@Query("SELECT COUNT(pp) FROM Patient pp JOIN pp.partners pt WHERE pp.code = :patientCode AND pt.active = 1")
 	long countActivePartnersByPatientCode(@Param("patientCode") Integer patientCode);
 }

@@ -56,9 +56,6 @@ public class Typology extends Auditable<String> {
 	@Column(name = "TYPO_FAMILY", nullable = false, length = 255)
 	private Family family;
 
-	@Transient
-	private volatile int hashCode;
-
 	public Typology() {
 		super();
 	}
@@ -102,13 +99,7 @@ public class Typology extends Auditable<String> {
 
 	@Override
 	public int hashCode() {
-		if (this.hashCode == 0) {
-			final int m = 23;
-			int c = 133;
-			c = m * c + code.hashCode();
-			this.hashCode = c;
-		}
-		return this.hashCode;
+		return code == null ? 0 : code.hashCode();
 	}
 
 	@Override
