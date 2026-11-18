@@ -48,6 +48,7 @@ public final class GeneralData extends ConfigurationProperties {
 	public static boolean AUTOMATICLOT_IN;
 	public static boolean AUTOMATICLOT_OUT;
 	public static boolean AUTOMATICLOTWARD_TOWARD;
+	public static boolean STOCKDISCHARGETOPATIENT;
 	public static boolean LOTWITHCOST;
 	public static String PATIENTSHEET;
 	public static String VISITSHEET;
@@ -67,6 +68,7 @@ public final class GeneralData extends ConfigurationProperties {
 	public static String PHARMACEUTICALSTOCKLOT;
 	public static String PHARMACEUTICALAMC;
 	public static boolean PATIENTEXTENDED;
+	public static boolean BLAMAFIELDENABLED;
 	public static boolean OPDEXTENDED;
 	public static boolean MATERNITYRESTARTINJUNE;
 	public static boolean LABEXTENDED;
@@ -138,6 +140,7 @@ public final class GeneralData extends ConfigurationProperties {
 	private static final boolean DEFAULT_AUTOMATICLOT_IN = true;
 	private static final boolean DEFAULT_AUTOMATICLOT_OUT = true;
 	private static final boolean DEFAULT_AUTOMATICLOTWARD_TOWARD = true;
+	private static final boolean DEFAULT_STOCKDISCHARGETOPATIENT = true;
 	private static final boolean DEFAULT_LOTWITHCOST = false;
 	private static final String DEFAULT_PATIENTSHEET = "patient_clinical_sheet";
 	private static final String DEFAULT_VISITSHEET = "WardVisits";
@@ -157,6 +160,7 @@ public final class GeneralData extends ConfigurationProperties {
 	private static final String DEFAULT_PHARMACEUTICALSTOCKLOT = "PharmaceuticalStock_ver5"; // TODO: verify if really used
 	private static final String DEFAULT_PHARMACEUTICALAMC = "PharmaceuticalAMC";
 	private static final boolean DEFAULT_PATIENTEXTENDED = false;
+	private static final boolean DEFAULT_BLAMAFIELDENABLED = true;
 	private static final boolean DEFAULT_OPDEXTENDED = false;
 	private static final boolean DEFAULT_MATERNITYRESTARTINJUNE = false;
 	private static final boolean DEFAULT_LABEXTENDED = false;
@@ -236,6 +240,7 @@ public final class GeneralData extends ConfigurationProperties {
 		HIGHLIGHTEXPIRINGMEDICALDAYS = myGetProperty("HIGHLIGHTEXPIRINGMEDICALDAYS", DEFAULT_HIGHLIGHTEXPIRINGMEDICALDAYS);
 		AUTOMATICLOT_OUT = myGetProperty("AUTOMATICLOT_OUT", DEFAULT_AUTOMATICLOT_OUT);
 		AUTOMATICLOTWARD_TOWARD = myGetProperty("AUTOMATICLOTWARD_TOWARD", DEFAULT_AUTOMATICLOTWARD_TOWARD);
+		STOCKDISCHARGETOPATIENT = myGetProperty("STOCKDISCHARGETOPATIENT", DEFAULT_STOCKDISCHARGETOPATIENT);
 		LOTWITHCOST = myGetProperty("LOTWITHCOST", DEFAULT_LOTWITHCOST);
 		PATIENTSHEET = myGetProperty("PATIENTSHEET", DEFAULT_PATIENTSHEET);
 		VISITSHEET = myGetProperty("VISITSHEET", DEFAULT_VISITSHEET);
@@ -255,6 +260,7 @@ public final class GeneralData extends ConfigurationProperties {
 		PHARMACEUTICALSTOCKLOT = myGetProperty("PHARMACEUTICALSTOCKLOT", DEFAULT_PHARMACEUTICALSTOCKLOT);
 		PHARMACEUTICALAMC = myGetProperty("PHARMACEUTICALAMC", DEFAULT_PHARMACEUTICALAMC);
 		PATIENTEXTENDED = myGetProperty("PATIENTEXTENDED", DEFAULT_PATIENTEXTENDED);
+		BLAMAFIELDENABLED = myGetProperty("BLAMAFIELDENABLED", DEFAULT_BLAMAFIELDENABLED);
 		OPDEXTENDED = myGetProperty("OPDEXTENDED", DEFAULT_OPDEXTENDED);
 		MATERNITYRESTARTINJUNE = myGetProperty("MATERNITYRESTARTINJUNE", DEFAULT_MATERNITYRESTARTINJUNE);
 		LABEXTENDED = myGetProperty("LABEXTENDED", DEFAULT_LABEXTENDED);

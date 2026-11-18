@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 import org.isf.OHCoreTestCase;
+import org.isf.generaldata.MessageBundle;
 import org.isf.medicals.manager.MedicalBrowsingManager;
 import org.isf.medicals.model.Medical;
 import org.isf.medicals.service.MedicalsIoOperationRepository;
@@ -433,6 +434,18 @@ class Tests extends OHCoreTestCase {
 		Medical medical = testMedical.setup(medicalType, true);
 		assertThat(medicalBrowsingManager.newMedical(medical, false)).isNotNull();
 		checkMedicalIntoDb(medical.getCode());
+	}
+
+	@Test
+	void testMgrNewMedicalWithoutCode() throws Exception {
+		MedicalType medicalType = testMedicalType.setup(false);
+		medicalTypeIoOperationRepository.saveAndFlush(medicalType);
+		Medical medical = testMedical.setup(medicalType, true);
+		medical.setProdCode("");
+		assertThatThrownBy(() -> medicalBrowsingManager.newMedical(medical))
+				.isInstanceOf(OHDataValidationException.class)
+				.extracting(e -> ((OHDataValidationException) e).getMessages().get(0).getMessage())
+				.isEqualTo(MessageBundle.getMessage("angal.common.pleaseinsertacode.msg"));
 	}
 
 	@Test
