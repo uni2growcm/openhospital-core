@@ -32,6 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -61,7 +62,10 @@ public class HomeVisitIoOperations {
 	 * @throws OHServiceException
 	 */
 	public List<HomeVisit> getByPatient(Patient patient) throws OHServiceException {
-		return repository.findByPatientAndActive(patient, 1);
+		if (patient == null) {
+			return Collections.emptyList();
+		}
+		return repository.findByPatientCode(patient.getCode());
 	}
 
 	/**
