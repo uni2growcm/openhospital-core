@@ -78,6 +78,25 @@ public class ReductionPlanIoOperations {
 	}
 
 	/**
+	 * Get the hospital reduction plans (plans without partner)
+	 * @return The list of {@link ReductionPlan}s
+	 * @throws OHServiceException When failed to get the reduction plans
+	 */
+	public List<ReductionPlan> getHospitalPlans() throws OHServiceException {
+		return reductionPlanRepository.findByDeletedAndPartnerIsNull(false);
+	}
+
+	/**
+	 * Get the reduction plans of a partner
+	 * @param partnerCode the partner code
+	 * @return The list of {@link ReductionPlan}s
+	 * @throws OHServiceException When failed to get the reduction plans
+	 */
+	public List<ReductionPlan> getPartnerPlans(Integer partnerCode) throws OHServiceException {
+		return reductionPlanRepository.findByDeletedAndPartner_Code(false, partnerCode);
+	}
+
+	/**
 	 * Get a {@link ReductionPlan} by ID
 	 * @param id {@link ReductionPlan}'s ID
 	 * @return a {@link ReductionPlan}
@@ -103,6 +122,14 @@ public class ReductionPlanIoOperations {
 	 */
 	public List<OHExceptionMessage> validateReductionPlan(ReductionPlan reductionPlan) {
 		List<OHExceptionMessage> errors = new ArrayList<>();
+
+		if (reductionPlan.getValidityValue() != null
+			&& (reductionPlan.getValidityValue() <= 0 || reductionPlan.getValidityUnit() == null)) {
+			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.reductionplan.invalidvalidityperiod.msg")));
+		}
+		if (reductionPlan.getMaxPatients() != null && reductionPlan.getMaxPatients() <= 0) {
+			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.reductionplan.invalidmaxpatients.msg")));
+		}
 
 		if (reductionPlan.getExamReductions() != null && !reductionPlan.getExamReductions().isEmpty()) {
 			Set<Exam> duplicates = reductionPlan.getExamReductions().stream()

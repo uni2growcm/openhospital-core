@@ -25,6 +25,7 @@ package org.isf.reductionplan.model;
 import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,10 +33,14 @@ import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -43,6 +48,7 @@ import jakarta.persistence.Transient;
 import jakarta.persistence.Version;
 import jakarta.validation.constraints.NotNull;
 
+import org.isf.partner.model.Partner;
 import org.isf.utils.db.Auditable;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -82,6 +88,29 @@ public class ReductionPlan extends Auditable<String> implements Serializable {
 
 	@Column(name = "RP_DELETED")
 	private boolean deleted = false;
+
+	/**
+	 * The partner owning this plan, {@code null} for an hospital plan.
+	 */
+	@ManyToOne
+	@JoinColumn(name = "RP_PRT_ID")
+	private Partner partner;
+
+	/**
+	 * Validity period of the plan, counted from its creation date ({@code null} = no limit).
+	 */
+	@Column(name = "RP_VALIDITY_VALUE")
+	private Integer validityValue;
+
+	@Enumerated(EnumType.STRING)
+	@Column(name = "RP_VALIDITY_UNIT", length = 10)
+	private ValidityUnit validityUnit;
+
+	/**
+	 * Maximum number of patients the plan can ever be assigned to ({@code null} = no limit).
+	 */
+	@Column(name = "RP_MAX_PATIENTS")
+	private Integer maxPatients;
 
 	@Version
 	@Column(name = "RP_LOCK")
@@ -227,6 +256,71 @@ public class ReductionPlan extends Auditable<String> implements Serializable {
 		this.lock = lock;
 	}
 
+	public Partner getPartner() {
+		return partner;
+	}
+
+	public void setPartner(Partner partner) {
+		this.partner = partner;
+	}
+
+	/**
+	 * @return {@code true} if the plan belongs to the hospital (no partner)
+	 */
+	public boolean isHospitalPlan() {
+		return partner == null;
+	}
+
+	public Integer getValidityValue() {
+		return validityValue;
+	}
+
+	public void setValidityValue(Integer validityValue) {
+		this.validityValue = validityValue;
+	}
+
+	public ValidityUnit getValidityUnit() {
+		return validityUnit;
+	}
+
+	public void setValidityUnit(ValidityUnit validityUnit) {
+		this.validityUnit = validityUnit;
+	}
+
+	public Integer getMaxPatients() {
+		return maxPatients;
+	}
+
+	public void setMaxPatients(Integer maxPatients) {
+		this.maxPatients = maxPatients;
+	}
+
+	/**
+	 * @return {@code true} if a validity period is defined for this plan
+	 */
+	public boolean hasValidityPeriod() {
+		return validityValue != null && validityValue > 0 && validityUnit != null;
+	}
+
+	/**
+	 * @return the date after which the plan does not apply anymore, {@code null} if it never expires
+	 */
+	public LocalDateTime getExpirationDate() {
+		if (!hasValidityPeriod() || getCreatedDate() == null) {
+			return null;
+		}
+		return validityUnit.addTo(getCreatedDate(), validityValue);
+	}
+
+	/**
+	 * @param date the reference date
+	 * @return {@code true} if the plan is expired at the given date
+	 */
+	public boolean isExpiredAt(LocalDateTime date) {
+		LocalDateTime expirationDate = getExpirationDate();
+		return expirationDate != null && date != null && date.isAfter(expirationDate);
+	}
+
 	public List<ExamReduction> getExamReductions() {
 		return examReductions;
 	}
@@ -273,5 +367,10 @@ public class ReductionPlan extends Auditable<String> implements Serializable {
 			return false;
 		}
 		return (id == reductionplan.getId());
+	}
+
+	@Override
+	public int hashCode() {
+		return Integer.hashCode(id);
 	}
 }
