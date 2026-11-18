@@ -28,6 +28,8 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -197,24 +199,97 @@ public class AccountingIoOperations {
 		return billRepository.save(newBill);
 	}
 
+	/**
+	 * Saves the items of a bill using a soft delete strategy: existing items are updated in place,
+	 * new ones are inserted and the ones that are no longer part of the given list are flagged as
+	 * inactive (active = 0) instead of being physically removed.
+	 */
 	public void newBillItems(Bill bill, List<BillItems> billItems) throws OHServiceException {
-		billItemsRepository.deleteWhereId(bill.getId());
-		for (BillItems item : billItems) {
-			item.setBill(bill);
-			item.setId(0);
-			if (item.getItemDate() == null) {
-				item.setItemDate(LocalDateTime.now());
+		Map<Integer, BillItems> existingById = new HashMap<>();
+		for (BillItems existing : billItemsRepository.findByBillIdOrderByItemDateAsc(bill.getId())) {
+			if (existing.getActive() == 1) {
+				existingById.put(existing.getId(), existing);
 			}
-			billItemsRepository.save(item);
+		}
+
+		Set<Integer> savedIds = new HashSet<>();
+		for (BillItems item : billItems) {
+			BillItems existing = item.getId() > 0 ? existingById.get(item.getId()) : null;
+			if (existing != null) {
+				existing.setBill(bill);
+				existing.setPrice(item.isPrice());
+				existing.setPriceID(item.getPriceID());
+				existing.setItemDescription(item.getItemDescription());
+				existing.setItemAmount(item.getItemAmount());
+				existing.setItemAmountBrut(item.getItemAmountBrut());
+				existing.setItemQuantity(item.getItemQuantity());
+				existing.setItemId(item.getItemId());
+				existing.setItemGroup(item.getItemGroup());
+				existing.setPrescriptionId(item.getPrescriptionId());
+				if (item.getItemDate() != null) {
+					existing.setItemDate(item.getItemDate());
+				}
+				existing.setActive(1);
+				billItemsRepository.save(existing);
+				savedIds.add(existing.getId());
+			} else {
+				item.setBill(bill);
+				item.setId(0);
+				if (item.getItemDate() == null) {
+					item.setItemDate(LocalDateTime.now());
+				}
+				item.setActive(1);
+				billItemsRepository.save(item);
+				savedIds.add(item.getId());
+			}
+		}
+
+		for (BillItems removed : existingById.values()) {
+			if (!savedIds.contains(removed.getId())) {
+				removed.setActive(0);
+				billItemsRepository.save(removed);
+			}
 		}
 	}
 
+	/**
+	 * Saves the payments of a bill using a soft delete strategy: existing payments are updated in place,
+	 * new ones are inserted and the ones that are no longer part of the given list are flagged as
+	 * inactive (active = 0) instead of being physically removed.
+	 */
 	public void newBillPayments(Bill bill, List<BillPayments> payItems) throws OHServiceException {
-		billPaymentRepository.deleteWhereId(bill.getId());
+		Map<Integer, BillPayments> existingById = new HashMap<>();
+		for (BillPayments existing : billPaymentRepository.findByBillIdOrderByDateAsc(bill.getId())) {
+			if (existing.getActive() == 1) {
+				existingById.put(existing.getId(), existing);
+			}
+		}
+
+		Set<Integer> savedIds = new HashSet<>();
 		for (BillPayments payment : payItems) {
-			payment.setBill(bill);
-			payment.setId(0);
-			billPaymentRepository.save(payment);
+			BillPayments existing = payment.getId() > 0 ? existingById.get(payment.getId()) : null;
+			if (existing != null) {
+				existing.setBill(bill);
+				existing.setDate(payment.getDate());
+				existing.setAmount(payment.getAmount());
+				existing.setUser(payment.getUser());
+				existing.setActive(1);
+				billPaymentRepository.save(existing);
+				savedIds.add(existing.getId());
+			} else {
+				payment.setBill(bill);
+				payment.setId(0);
+				payment.setActive(1);
+				billPaymentRepository.save(payment);
+				savedIds.add(payment.getId());
+			}
+		}
+
+		for (BillPayments removed : existingById.values()) {
+			if (!savedIds.contains(removed.getId())) {
+				removed.setActive(0);
+				billPaymentRepository.save(removed);
+			}
 		}
 	}
 
@@ -244,7 +319,17 @@ public class AccountingIoOperations {
 	}
 
 	public List<BillPayments> getPayments(List<Bill> bills) throws OHServiceException {
-		return billPaymentRepository.findAllByBillIn(bills);
+		return filterActivePayments(billPaymentRepository.findAllByBillIn(bills));
+	}
+
+	private List<BillPayments> filterActivePayments(List<BillPayments> payments) {
+		List<BillPayments> activePayments = new ArrayList<>();
+		for (BillPayments payment : payments) {
+			if (payment.getActive() == 1) {
+				activePayments.add(payment);
+			}
+		}
+		return activePayments;
 	}
 
 	public List<BillPayments> getPaymentsBetweenDatesWherePatient(LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient)
@@ -340,15 +425,15 @@ public class AccountingIoOperations {
 	}
 
 	public List<BillPayments> getPaymentsByDatesPatientAndGuarantor(LocalDateTime dateFrom, LocalDateTime dateTo, Patient patient, User guarantor) throws OHServiceException {
-		return billPaymentRepository.findByDateBetweenAndBillBillPatientCodeAndBillGuarantorUserNameOrderByBillAscDateAsc(
+		return filterActivePayments(billPaymentRepository.findByDateBetweenAndBillBillPatientCodeAndBillGuarantorUserNameOrderByBillAscDateAsc(
 			TimeTools.getBeginningOfDay(dateFrom), TimeTools.getBeginningOfNextDay(dateTo),
-			patient.getCode(), guarantor.getUserName());
+			patient.getCode(), guarantor.getUserName()));
 	}
 
 	public List<BillPayments> getPaymentsByDatesAndGuarantor(LocalDateTime dateFrom, LocalDateTime dateTo, User guarantor) throws OHServiceException {
-		return billPaymentRepository.findByDateBetweenAndBillGuarantorUserNameOrderByBillAscDateAsc(
+		return filterActivePayments(billPaymentRepository.findByDateBetweenAndBillGuarantorUserNameOrderByBillAscDateAsc(
 			TimeTools.getBeginningOfDay(dateFrom), TimeTools.getBeginningOfNextDay(dateTo),
-			guarantor.getUserName());
+			guarantor.getUserName()));
 	}
 
 	public List<Bill> getBillsByGuarantor(List<BillPayments> payments, User guarantor) throws OHServiceException {
@@ -374,7 +459,13 @@ public class AccountingIoOperations {
 	 * Each item's quantity represents how many units were refunded in that particular refund bill.
 	 */
 	public List<BillItems> getRefundedItems(int billId) throws OHServiceException {
-		return billItemsRepository.findByBillParentIdOrderByItemDateAsc(billId);
+		List<BillItems> refundedItems = new ArrayList<>();
+		for (BillItems refundItem : billItemsRepository.findByBillParentIdOrderByItemDateAsc(billId)) {
+			if (refundItem.getActive() == 1) {
+				refundedItems.add(refundItem);
+			}
+		}
+		return refundedItems;
 	}
 
 	/**

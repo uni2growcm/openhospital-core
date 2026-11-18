@@ -57,6 +57,7 @@ public interface CollectorsConstants {
 	String APP_ALLOWBILLGUARANTOR = "allowbillguarantor";
 	String APP_ALLOWBILLPARTNER   = "allowbillpartner";
     String APP_STOCKMVTONBILLSAVE = "stockmvtonbillsave";
+	String APP_STOCKDISCHARGETOPATIENT = "stockdischargetopatient";
 	String APP_PAGINATIONPAGESIZE = "paginationpagesize";
 
 	String APP_HIGHLIGHTEXPIRINGMEDICAL = "highlightexpiringmedical";

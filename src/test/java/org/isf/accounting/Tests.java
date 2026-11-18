@@ -435,7 +435,19 @@ class Tests extends OHCoreTestCase {
 		List<BillItems> persisted = accountingIoOperation.getItems(bill.getId());
 		Assertions.assertThat(persisted).hasSize(2);
 		Assertions.assertThat(persisted).extracting(i -> i.getBill().getId()).containsOnly(bill.getId());
-		Assertions.assertThat(persisted).extracting(BillItems::getId).doesNotContain(existingId);
+		Assertions.assertThat(persisted).extracting(BillItems::getId).contains(existingId);
+
+		// items that are no longer part of the bill are flagged as inactive instead of being deleted
+		List<BillItems> remainingItems = new ArrayList<>();
+		remainingItems.add(newItemFromGui);
+		accountingIoOperation.newBillItems(bill, remainingItems);
+
+		Assertions.assertThat(accountingIoOperation.getItems(bill.getId()))
+				.extracting(BillItems::getId).doesNotContain(existingId);
+		Assertions.assertThat(accountingIoOperation.getAllBillItems(bill))
+				.filteredOn(i -> i.getId() == existingId)
+				.singleElement()
+				.extracting(BillItems::getActive).isEqualTo(0);
 	}
 
 	@Test
@@ -463,7 +475,19 @@ class Tests extends OHCoreTestCase {
 		List<BillPayments> persisted = accountingIoOperation.getPayments(bill.getId());
 		Assertions.assertThat(persisted).hasSize(2);
 		Assertions.assertThat(persisted).extracting(p -> p.getBill().getId()).containsOnly(bill.getId());
-		Assertions.assertThat(persisted).extracting(BillPayments::getId).doesNotContain(existingId);
+		Assertions.assertThat(persisted).extracting(BillPayments::getId).contains(existingId);
+
+		// payments that are no longer part of the bill are flagged as inactive instead of being deleted
+		List<BillPayments> remainingPayments = new ArrayList<>();
+		remainingPayments.add(newPayment);
+		accountingIoOperation.newBillPayments(bill, remainingPayments);
+
+		Assertions.assertThat(accountingIoOperation.getPayments(bill.getId()))
+				.extracting(BillPayments::getId).doesNotContain(existingId);
+		Assertions.assertThat(accountingIoOperation.getAllBillPayments(bill))
+				.filteredOn(p -> p.getId() == existingId)
+				.singleElement()
+				.extracting(BillPayments::getActive).isEqualTo(0);
 	}
 
 	@Test
