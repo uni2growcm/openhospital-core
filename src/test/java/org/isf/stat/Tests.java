@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -116,7 +116,8 @@ class Tests extends OHCoreTestCase {
 		try (MockedStatic<JRLoader> mockedJRLoader = mockStatic(JRLoader.class);
 						MockedStatic<JasperFillManager> mockedJasperFillManager = mockStatic(JasperFillManager.class);
 						MockedStatic<JasperExportManager> mockedJasperExportManager = mockStatic(JasperExportManager.class)) {
-			JasperReportsManager jasperReportsManager = new JasperReportsManager(hospitalBrowsingManager, dataSource, wardBrowserManager);
+			JasperReportsManager jasperReportsManager = new JasperReportsManager(hospitalBrowsingManager, dataSource, wardBrowserManager,
+							null, null, null, null, null, null, null, null, null, null, null, null);
 
 			when(hospitalBrowsingManager.getHospital()).thenReturn(hospital);
 			when(hospital.getDescription()).thenReturn("Description");
@@ -140,7 +141,8 @@ class Tests extends OHCoreTestCase {
 		try (MockedStatic<JRLoader> mockedJRLoader = mockStatic(JRLoader.class);
 						MockedStatic<JasperFillManager> mockedJasperFillManager = mockStatic(JasperFillManager.class);
 						MockedStatic<JasperExportManager> mockedJasperExportManager = mockStatic(JasperExportManager.class)) {
-			JasperReportsManager jasperReportsManager = new JasperReportsManager(hospitalBrowsingManager, dataSource, wardBrowserManager);
+			JasperReportsManager jasperReportsManager = new JasperReportsManager(hospitalBrowsingManager, dataSource, wardBrowserManager,
+							null, null, null, null, null, null, null, null, null, null, null, null);
 
 			when(hospitalBrowsingManager.getHospital()).thenReturn(hospital);
 			when(hospital.getDescription()).thenReturn("Description");
@@ -164,7 +166,8 @@ class Tests extends OHCoreTestCase {
 		try (MockedStatic<JRLoader> mockedJRLoader = mockStatic(JRLoader.class);
 						MockedStatic<JasperFillManager> mockedJasperFillManager = mockStatic(JasperFillManager.class);
 						MockedStatic<JasperExportManager> mockedJasperExportManager = mockStatic(JasperExportManager.class)) {
-			JasperReportsManager jasperReportsManager = new JasperReportsManager(hospitalBrowsingManager, dataSource, wardBrowserManager);
+			JasperReportsManager jasperReportsManager = new JasperReportsManager(hospitalBrowsingManager, dataSource, wardBrowserManager,
+							null, null, null, null, null, null, null, null, null, null, null, null);
 
 			when(hospitalBrowsingManager.getHospital()).thenReturn(hospital);
 			when(hospital.getDescription()).thenReturn("Description");

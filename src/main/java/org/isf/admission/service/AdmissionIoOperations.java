@@ -350,6 +350,19 @@ public class AdmissionIoOperations {
 	}
 
 	/**
+	 * Count discharges within a date range whose {@link org.isf.disctype.model.DischargeType} has the given code.
+	 *
+	 * @param dateFrom the lower bound of the date range
+	 * @param dateTo the upper bound of the date range
+	 * @param disTypeCode the discharge type code to match (e.g. "D" for deaths, "B" for referrals, per OH's shipped default dataset)
+	 * @return the number of matching discharges
+	 * @throws OHServiceException
+	 */
+	public long countByDisDateBetweenAndDisTypeCode(LocalDateTime dateFrom, LocalDateTime dateTo, String disTypeCode) throws OHServiceException {
+		return repository.countByDisDateBetweenAndDisTypeCode(dateFrom, dateTo, disTypeCode);
+	}
+
+	/**
 	 * Returns the list of Admissions by page
 	 * @param dateFrom
 	 * @param dateTo
@@ -431,6 +444,7 @@ public class AdmissionIoOperations {
 	 * @param sex               - the patient sex to filter by ({@code 'M'} or {@code 'F'}); may be {@code null}.
 	 * @param country           - the country to filter patients by; may be {@code null} to disable this filter.
 	 * @param partnerId         - the partner id to filter patients by; may be {@code null} to disable this filter.
+	 * @param reductionPlanId   - the reduction plan id to filter patients by; may be {@code null} to disable this filter.
 	 * @param pageable          - the pagination and sorting information.
 	 * @return a {@link Page} of {@link AdmittedPatient}s matching the given filters.
 	 * @throws OHServiceException when fails to fetch the admitted patients.
@@ -448,12 +462,13 @@ public class AdmissionIoOperations {
 		Character sex,
 		Integer country,
 		Integer partnerId,
+		Integer reductionPlanId,
 		Pageable pageable) throws OHServiceException {
 		return repository.findPatientAdmissionsByFilters(
 			searchTerms, admissionStatus, wardCodes,
 			admissionDateFrom, admissionDateTo,
 			dischargeDateFrom, dischargeDateTo,
-			ageFrom, ageTo, sex, country, partnerId, pageable
+			ageFrom, ageTo, sex, country, partnerId, reductionPlanId, pageable
 		);
 	}
 }

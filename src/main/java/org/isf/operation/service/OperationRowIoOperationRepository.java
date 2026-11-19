@@ -21,6 +21,7 @@
  */
 package org.isf.operation.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import feign.Param;
@@ -52,6 +53,10 @@ public interface OperationRowIoOperationRepository extends JpaRepository<Operati
 
 	@Query("select count(o) from OperationRow o where active=1")
 	long countAllActiveOperations();
+
+	@Query("select count(o) from OperationRow o where o.opDate between :dateFrom and :dateTo and o.operation.major = :major")
+	long countByOpDateBetweenAndOperationMajor(@Param("dateFrom") LocalDateTime dateFrom, @Param("dateTo") LocalDateTime dateTo,
+					@Param("major") Integer major);
 
 	@Query("""
 		SELECT o

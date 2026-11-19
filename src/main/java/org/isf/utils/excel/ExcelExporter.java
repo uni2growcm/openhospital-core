@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -399,6 +399,19 @@ public class ExcelExporter {
 	 * @throws OHException
 	 */
 	public void exportResultsetToExcel(ResultSet resultSet, File exportFile) throws IOException, OHException {
+		exportResultsetToExcel(resultSet, exportFile, null);
+	}
+
+	/**
+	 * Export a {@link ResultSet} to Excel using Apache POI library, with custom column headers
+	 *
+	 * @param resultSet
+	 * @param exportFile
+	 * @param headers - the column headers to use, in column order; if {@code null} or shorter than the column count, the result set's own column names are used as a fallback
+	 * @throws IOException
+	 * @throws OHException
+	 */
+	public void exportResultsetToExcel(ResultSet resultSet, File exportFile, String[] headers) throws IOException, OHException {
 		try (FileOutputStream fileStream = new FileOutputStream(exportFile)) {
 
 			workbook = new XSSFWorkbook();
@@ -407,14 +420,15 @@ public class ExcelExporter {
 			Sheet worksheet = workbook.createSheet();
 			initStyles();
 
-			Row headers = worksheet.createRow((short) 0);
+			Row headerRow = worksheet.createRow((short) 0);
 			try {
 				ResultSetMetaData rsmd = resultSet.getMetaData();
 
 				int colCount = rsmd.getColumnCount();
 				for (int i = 0; i < colCount; i++) {
-					Cell cell = headers.createCell((short) i);
-					RichTextString value = createHelper.createRichTextString(rsmd.getColumnName(i + 1));
+					Cell cell = headerRow.createCell((short) i);
+					String headerText = headers != null && i < headers.length && headers[i] != null ? headers[i] : rsmd.getColumnName(i + 1);
+					RichTextString value = createHelper.createRichTextString(headerText);
 					cell.setCellStyle(headerStyle);
 					cell.setCellValue(value);
 				}
@@ -585,20 +599,34 @@ public class ExcelExporter {
 	 * @throws OHException
 	 */
 	public void exportResultsetToExcelOLD(ResultSet resultSet, File exportFile) throws IOException, OHException {
+		exportResultsetToExcelOLD(resultSet, exportFile, null);
+	}
+
+	/**
+	 * Export a {@link ResultSet} to Excel 97-2003 using Apache POI library, with custom column headers
+	 *
+	 * @param resultSet
+	 * @param exportFile
+	 * @param headers - the column headers to use, in column order; if {@code null} or shorter than the column count, the result set's own column names are used as a fallback
+	 * @throws IOException
+	 * @throws OHException
+	 */
+	public void exportResultsetToExcelOLD(ResultSet resultSet, File exportFile, String[] headers) throws IOException, OHException {
 		try (FileOutputStream fileStream = new FileOutputStream(exportFile)) {
 
 			workbook = new HSSFWorkbook();
 			HSSFSheet worksheet = (HSSFSheet) workbook.createSheet();
 			initStyles();
 
-			HSSFRow headers = worksheet.createRow((short) 0);
+			HSSFRow headerRow = worksheet.createRow((short) 0);
 			try {
 				ResultSetMetaData rsmd = resultSet.getMetaData();
 
 				int colCount = rsmd.getColumnCount();
 				for (int i = 0; i < colCount; i++) {
-					HSSFCell cell = headers.createCell((short) i);
-					HSSFRichTextString value = new HSSFRichTextString(rsmd.getColumnName(i + 1));
+					HSSFCell cell = headerRow.createCell((short) i);
+					String headerText = headers != null && i < headers.length && headers[i] != null ? headers[i] : rsmd.getColumnName(i + 1);
+					HSSFRichTextString value = new HSSFRichTextString(headerText);
 					cell.setCellStyle(headerStyle);
 					cell.setCellValue(value);
 				}

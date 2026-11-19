@@ -23,10 +23,14 @@ package org.isf.medicalstock.service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -356,5 +360,80 @@ public class MovementIoOperationRepositoryImpl implements MovementIoOperationRep
 		}
 
 		return predicates;
+	}
+
+	@Override
+	public Map<Integer, Double> getAverageCostPricesByMedicalCodes(List<Integer> medicalCodes) {
+		if (medicalCodes == null || medicalCodes.isEmpty()) {
+			return Collections.emptyMap();
+		}
+		String sql = "SELECT m.MMV_MDSR_ID AS med_id, " +
+				"(SUM(m.MMV_QTY * l.LT_COST) / NULLIF(SUM(m.MMV_QTY), 0)) AS avg_cost " +
+				"FROM OH_MEDICALDSRSTOCKMOV m " +
+				"JOIN OH_MEDICALDSRLOT l ON m.MMV_LT_ID_A = l.LT_ID_A " +
+				"JOIN OH_MEDICALDSRSTOCKMOVTYPE t ON m.MMV_MMVT_ID_A = t.MMVT_ID_A " +
+				"WHERE t.MMVT_TYPE = '+' " +
+				"  AND l.LT_COST IS NOT NULL AND l.LT_COST > 0 " +
+				"  AND m.MMV_MDSR_ID IN (:medicalCodes) " +
+				"GROUP BY m.MMV_MDSR_ID";
+		Query query = entityManager.createNativeQuery(sql);
+		query.setParameter("medicalCodes", medicalCodes);
+
+		List<?> rows = query.getResultList();
+		Map<Integer, Double> result = new HashMap<>();
+		for (Object rowObj : rows) {
+			if (rowObj instanceof Object[] row && row[0] != null && row[1] != null) {
+				Integer medId = ((Number) row[0]).intValue();
+				Double avgCost = ((Number) row[1]).doubleValue();
+				result.put(medId, avgCost);
+			}
+		}
+		return result;
+	}
+
+	@Override
+	public Double getTotalStockValue(String type, Integer familyId, Character deleted, String description) {
+		StringBuilder sql = new StringBuilder();
+		sql.append("SELECT COALESCE(SUM((md.MDSR_INI_STOCK_QTI + md.MDSR_IN_QTI - md.MDSR_OUT_QTI) * avg_table.avg_cost), 0.0) ")
+		   .append("FROM OH_MEDICALDSR md ")
+		   .append("JOIN (")
+		   .append("    SELECT m.MMV_MDSR_ID AS med_id, (SUM(m.MMV_QTY * l.LT_COST) / NULLIF(SUM(m.MMV_QTY), 0)) AS avg_cost ")
+		   .append("    FROM OH_MEDICALDSRSTOCKMOV m ")
+		   .append("    JOIN OH_MEDICALDSRLOT l ON m.MMV_LT_ID_A = l.LT_ID_A ")
+		   .append("    JOIN OH_MEDICALDSRSTOCKMOVTYPE t ON m.MMV_MMVT_ID_A = t.MMVT_ID_A ")
+		   .append("    WHERE t.MMVT_TYPE = '+' ")
+		   .append("      AND l.LT_COST IS NOT NULL AND l.LT_COST > 0 ")
+		   .append("    GROUP BY m.MMV_MDSR_ID")
+		   .append(") avg_table ON md.MDSR_ID = avg_table.med_id ")
+		   .append("WHERE (md.MDSR_INI_STOCK_QTI + md.MDSR_IN_QTI - md.MDSR_OUT_QTI) > 0 ");
+
+		Map<String, Object> params = new HashMap<>();
+		if (type != null && !type.isBlank()) {
+			sql.append(" AND md.MDSR_MDSRT_ID_A = :type ");
+			params.put("type", type);
+		}
+		if (familyId != null) {
+			sql.append(" AND md.MDSR_AFM_ID = :familyId ");
+			params.put("familyId", familyId);
+		}
+		if (deleted != null) {
+			sql.append(" AND md.MDSR_DELETED = :deleted ");
+			params.put("deleted", String.valueOf(deleted));
+		}
+		if (description != null && !description.isBlank()) {
+			sql.append(" AND (LOWER(md.MDSR_DESC) LIKE :desc OR LOWER(md.MDSR_CODE) LIKE :desc) ");
+			params.put("desc", "%" + description.trim().toLowerCase() + "%");
+		}
+
+		Query query = entityManager.createNativeQuery(sql.toString());
+		for (Map.Entry<String, Object> entry : params.entrySet()) {
+			query.setParameter(entry.getKey(), entry.getValue());
+		}
+
+		Object result = query.getSingleResult();
+		if (result instanceof Number) {
+			return ((Number) result).doubleValue();
+		}
+		return 0.0;
 	}
 }

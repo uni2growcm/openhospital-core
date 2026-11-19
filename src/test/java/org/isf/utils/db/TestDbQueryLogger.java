@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2024 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -24,6 +24,8 @@ package org.isf.utils.db;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
+
+import java.lang.reflect.Field;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -49,10 +51,19 @@ class TestDbQueryLogger {
 	private AutoCloseable closeable;
 
 	@BeforeEach
-	void setUp() {
+	void setUp() throws Exception {
 		closeable = MockitoAnnotations.openMocks(this);
 		Context.setApplicationContext(applicationContextMock);
 		when(applicationContextMock.getBean("entityManagerFactory", EntityManagerFactory.class)).thenReturn(entityManagerFactoryMock);
+		Field connectionField = DbSingleJpaConn.class.getDeclaredField("connection");
+		connectionField.setAccessible(true);
+		connectionField.set(null, null);
+		Field entityManagerFactoryField = DbJpaUtil.class.getDeclaredField("entityManagerFactory");
+		entityManagerFactoryField.setAccessible(true);
+		entityManagerFactoryField.set(null, entityManagerFactoryMock);
+		Field entityManagerField = DbJpaUtil.class.getDeclaredField("entityManager");
+		entityManagerField.setAccessible(true);
+		entityManagerField.set(null, null);
 	}
 
 	@AfterEach
