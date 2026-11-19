@@ -34,11 +34,12 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface AccountingBillItemsIoOperationRepository extends JpaRepository<BillItems, Integer> {
 
-	List<BillItems> findByBill_idOrderByIdAsc(int billId);
+	@Query("SELECT bi FROM BillItems bi WHERE bi.bill.id = :billId AND bi.active = 1 ORDER BY bi.id ASC")
+	List<BillItems> findByBill_idOrderByIdAsc(@Param("billId") int billId);
 
 	List<BillItems> findAllByOrderByIdAsc();
 
-	@Query("select b from BillItems b group by b.itemDescription")
+	@Query("select b from BillItems b where b.active = 1 group by b.itemDescription")
 	List<BillItems> findAllGroupByDescription();
 
 	@Modifying
@@ -52,7 +53,8 @@ public interface AccountingBillItemsIoOperationRepository extends JpaRepository<
 	List<BillItems> findByBillParentIdOrderByItemDateAsc(@Param("parentId") Integer parentId);
 
 	@Query("SELECT COUNT(bi) > 0 FROM BillItems bi " +
-		"WHERE bi.bill.billPatient.code = :patientCode " +
+		"WHERE bi.active = 1 " +
+		"AND bi.bill.billPatient.code = :patientCode " +
 		"AND bi.prescriptionId = :prescriptionId " +
 		"AND bi.itemGroup = :itemGroup " +
 		"AND bi.bill.status = 'C'")

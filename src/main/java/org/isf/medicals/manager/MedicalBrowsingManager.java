@@ -217,6 +217,9 @@ public class MedicalBrowsingManager {
 	 */
 	private List<OHExceptionMessage> validateMedicalCommon(Medical medical) {
 		List<OHExceptionMessage> errors = new ArrayList<>();
+		if (medical.getProdCode() == null || medical.getProdCode().trim().isEmpty()) {
+			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.common.pleaseinsertacode.msg")));
+		}
 		if (medical.getMinqty() < 0) {
 			errors.add(new OHExceptionMessage(MessageBundle.getMessage("angal.medicals.minquantitycannotbelessthan0.msg")));
 		}
@@ -268,7 +271,7 @@ public class MedicalBrowsingManager {
 		List<OHExceptionMessage> errors = new ArrayList<>(validateMedicalCommon(medical));
 
 		//check existing data
-		boolean productCodeExists = !medical.getProdCode().isEmpty() && ioOperations.productCodeExists(medical, update);
+		boolean productCodeExists = medical.getProdCode() != null && !medical.getProdCode().trim().isEmpty() && ioOperations.productCodeExists(medical, update);
 		boolean medicalExists = ioOperations.medicalExists(medical, update);
 		List<Medical> similarMedicals = ioOperations.medicalCheck(medical, update);
 
@@ -299,7 +302,7 @@ public class MedicalBrowsingManager {
 	 * Retrieves a paginated list of medical records filtered by type, description, and deleted status,
 	 * with an option to sort the results either alphabetically by description or by production code.
 	 *
-	 * @param type The type of medical items to filter by. Can be {@code null} to ignore this filter.
+	 * @param type The type code of medical items to filter by. Can be {@code null} or empty to ignore this filter.
 	 * @param description The description of medical items to filter by. Can be {@code null} to ignore this filter.
 	 * @param deleted The deletion status of medical items to filter by. If {@code null}, this filter is ignored.
 	 *  Use {@code 'Y'} for deleted records and {@code 'N'} for active records.

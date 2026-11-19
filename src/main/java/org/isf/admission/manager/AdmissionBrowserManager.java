@@ -156,6 +156,19 @@ public class AdmissionBrowserManager {
 	}
 
 	/**
+	 * Count discharges within a date range whose {@link org.isf.disctype.model.DischargeType} has the given code.
+	 *
+	 * @param dateFrom the lower bound of the date range
+	 * @param dateTo the upper bound of the date range
+	 * @param disTypeCode the discharge type code to match (e.g. "D" for deaths, "B" for referrals, per OH's shipped default dataset)
+	 * @return the number of matching discharges
+	 * @throws OHServiceException
+	 */
+	public long countByDisDateBetweenAndDisTypeCode(LocalDateTime dateFrom, LocalDateTime dateTo, String disTypeCode) throws OHServiceException {
+		return ioOperations.countByDisDateBetweenAndDisTypeCode(dateFrom, dateTo, disTypeCode);
+	}
+
+	/**
 	 * Method that returns the list of completed Admissions (Discharges) not logically deleted within the specified date range, divided by pages
 	 * 
 	 * @param dateFrom
@@ -589,12 +602,39 @@ public class AdmissionBrowserManager {
 		Integer country,
 		Integer partnerId,
 		int page, int size) throws OHServiceException {
+		return getAdmittedPatientsPaginated(searchTerms, admissionStatus, wardCodes,
+			admissionDateFrom, admissionDateTo, dischargeDateFrom, dischargeDateTo,
+			ageFrom, ageTo, sex, country, partnerId, null, page, size);
+	}
+
+	/**
+	 * Same as {@link #getAdmittedPatientsPaginated(String, String, List, LocalDateTime, LocalDateTime, LocalDateTime, LocalDateTime,
+	 * Integer, Integer, Character, Integer, Integer, int, int)} with an additional filter on the reduction plan.
+	 *
+	 * @param reductionPlanId - the reduction plan id: only the patients currently benefiting from this plan are returned;
+	 *                          may be {@code null} to disable this filter.
+	 */
+	public Page<AdmittedPatient> getAdmittedPatientsPaginated(
+		String searchTerms,
+		String admissionStatus,
+		List<String> wardCodes,
+		LocalDateTime admissionDateFrom,
+		LocalDateTime admissionDateTo,
+		LocalDateTime dischargeDateFrom,
+		LocalDateTime dischargeDateTo,
+		Integer ageFrom,
+		Integer ageTo,
+		Character sex,
+		Integer country,
+		Integer partnerId,
+		Integer reductionPlanId,
+		int page, int size) throws OHServiceException {
 		Pageable pageable = PageRequest.of(page, size);
 		return ioOperations.getAdmittedPatientsByFilters(
 			searchTerms, admissionStatus, wardCodes,
 			admissionDateFrom, admissionDateTo,
 			dischargeDateFrom, dischargeDateTo,
-			ageFrom, ageTo, sex,country, partnerId, pageable
+			ageFrom, ageTo, sex, country, partnerId, reductionPlanId, pageable
 		);
 	}
 }

@@ -763,6 +763,35 @@ public class MedicalStockIoOperations {
 	}
 
 	/**
+	 * Retrieves the average cost price for each medical in the provided list.
+	 *
+	 * @param medicalCodes list of medical codes
+	 * @return map of medical code to average cost price
+	 * @throws OHServiceException if an error occurs
+	 */
+	public Map<Integer, Double> getAverageCostPricesByMedicalCodes(List<Integer> medicalCodes) throws OHServiceException {
+		if (medicalCodes == null || medicalCodes.isEmpty()) {
+			return Collections.emptyMap();
+		}
+		return movRepository.getAverageCostPricesByMedicalCodes(medicalCodes);
+	}
+
+	/**
+	 * Computes the total stock value across all medicals matching the given filters.
+	 *
+	 * @param type medical type code (optional)
+	 * @param familyId article family id (optional)
+	 * @param deleted deletion flag 'N', 'Y' or null (optional)
+	 * @param description search keyword on description or code (optional)
+	 * @return total stock value in currency
+	 * @throws OHServiceException if an error occurs
+	 */
+	public Double getTotalStockValue(String type, Integer familyId, Character deleted, String description) throws OHServiceException {
+		return movRepository.getTotalStockValue(type, familyId, deleted, description);
+	}
+
+
+	/**
 	 * Returns the date of the last movement
 	 * 
 	 * @return

@@ -168,6 +168,7 @@ public class AdmissionIoOperationRepositoryImpl implements AdmissionIoOperationR
 		Character sex,
 		Integer country,
 		Integer partner,
+		Integer reductionPlan,
 		Pageable pageable) throws OHServiceException {
 
 		boolean admitted = "admitted".equals(admissionStatus);
@@ -192,6 +193,12 @@ public class AdmissionIoOperationRepositoryImpl implements AdmissionIoOperationR
 
 		if (partner != null) {
 			where.append(" AND p.PAT_ID IN (SELECT pp.PP_PAT_ID FROM OH_PATIENT_PARTNERS pp WHERE pp.PP_PRT_ID = :partner)");
+		}
+
+		if (reductionPlan != null) {
+			// patients currently benefiting from the given reduction plan
+			where.append(" AND p.PAT_ID IN (SELECT prp.PRP_PAT_ID FROM OH_PATIENT_REDUCTIONPLANS prp")
+				.append(" WHERE prp.PRP_RP_ID = :reductionPlan AND prp.PRP_ACTIVE = 1)");
 		}
 
 		if (ageFrom != null) {
@@ -246,6 +253,7 @@ public class AdmissionIoOperationRepositoryImpl implements AdmissionIoOperationR
 		if (sex != null)    dataQuery.setParameter("sex", String.valueOf(sex));
 		if (country != null)  dataQuery.setParameter("country", country);
 		if (partner != null)   dataQuery.setParameter("partner", partner);
+		if (reductionPlan != null) dataQuery.setParameter("reductionPlan", reductionPlan);
 		if (ageFrom != null) dataQuery.setParameter("ageFrom", ageFrom);
 		if (ageTo != null)   dataQuery.setParameter("ageTo", ageTo);
 		if (wardCodes != null && !wardCodes.isEmpty() && !notAdmitted) {
@@ -260,6 +268,7 @@ public class AdmissionIoOperationRepositoryImpl implements AdmissionIoOperationR
 		if (sex != null)    countQuery.setParameter("sex", String.valueOf(sex));
 		if (country != null)  countQuery.setParameter("country", country);
 		if (partner != null) countQuery.setParameter("partner", partner);
+		if (reductionPlan != null) countQuery.setParameter("reductionPlan", reductionPlan);
 		if (ageFrom != null) countQuery.setParameter("ageFrom", ageFrom);
 		if (ageTo != null)   countQuery.setParameter("ageTo", ageTo);
 		if (wardCodes != null && !wardCodes.isEmpty() && !notAdmitted) {
