@@ -53,6 +53,16 @@ public class ReductionPlanManager {
 	}
 
 	/**
+	 * Get all active reduction plans associated with a partner.
+	 * @param partnerCode the partner code
+	 * @return the partner's active reduction plans
+	 * @throws OHServiceException when failed to get the reduction plans
+	 */
+	public List<ReductionPlan> getPartnerPlans(Integer partnerCode) throws OHServiceException {
+		return reductionPlanIoOperations.getPartnerPlans(partnerCode);
+	}
+
+	/**
 	 * Get a {@link ReductionPlan} by ID
 	 * @param id {@link ReductionPlan}'s ID
 	 * @return a {@link ReductionPlan}
