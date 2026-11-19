@@ -178,7 +178,7 @@ class Tests extends OHCoreTestCase {
 
 		String result = JasperReportsManager.replaceGenericDateReportParameters(query, "2026-10-09", "2026-11-16");
 
-		assertThat(result).isEqualTo("WHERE (BLL_STATUS = 'C' OR BLL_STATUS = 'Nothing') "
+		assertThat(result).isEqualTo("WHERE (BLL_STATUS = 'C' OR BLL_STATUS = 'O') "
 						+ "AND BLL_DATE BETWEEN DATE('2026-10-09') AND DATE('2026-11-16')");
 	}
 }

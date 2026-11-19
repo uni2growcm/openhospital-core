@@ -968,7 +968,7 @@ public class JasperReportsManager {
 						.replace("$P{fromdate}", '\'' + dateFromQuery + '\'')
 						.replace("$P{todate}", '\'' + dateToQuery + '\'')
 						.replace("$P{state}", "'C'")
-						.replace("$P{state2}", "'Nothing'");
+						.replace("$P{state2}", "'O'");
 	}
 
 	public void getGenericReportFromDateToDateExcel(LocalDate fromDate, LocalDate toDate, String reductionPlan, String jasperFileFolder, String jasperFileName, String exportFilename)
