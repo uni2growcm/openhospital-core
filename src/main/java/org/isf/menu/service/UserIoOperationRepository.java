@@ -69,6 +69,10 @@ public interface UserIoOperationRepository extends JpaRepository<User, String> {
 	void updateFailedAttempts(@Param("attempts") int failAttempts, @Param("id") String id);
 
 	@Modifying
+	@Query(value = "update User user set user.guarantorQuota=:quota where user.userName=:id")
+	int updateGuarantorQuota(@Param("quota") Double quota, @Param("id") String id);
+
+	@Modifying
 	@Query(value = "update User set isAccountLocked=:isLocked, lockedTime=:lockTime where userName=:id")
 	void updateUserLocked(@Param("isLocked") boolean isLocked, @Param("lockTime") LocalDateTime lockTime, @Param("id") String id);
 
