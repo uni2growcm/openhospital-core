@@ -26,7 +26,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.lang.reflect.Field;
+import java.nio.file.Path;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.Properties;
@@ -54,6 +56,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.FileSystemUtils;
@@ -75,6 +78,9 @@ class TestFileSystemDicomManager extends OHCoreTestCase {
 
 	private DicomManagerInterface fileSystemDicomManager;
 
+	@TempDir
+	Path tempDir;
+
 	@BeforeAll
 	public static void setUpClass() throws ParseException {
 		testFileDicom = new TestDicom();
@@ -82,9 +88,10 @@ class TestFileSystemDicomManager extends OHCoreTestCase {
 	}
 
 	@BeforeEach
-	void setUp() throws OHException, OHDicomException {
+	void setUp() throws OHException, OHDicomException, IOException {
 		cleanH2InMemoryDb();
 		Context.setApplicationContext(applicationContext);
+		FileSystemUtils.copyRecursively(new File("rsc-test/dicom/1"), tempDir.resolve("1").toFile());
 		fileSystemDicomManager = new FileSystemDicomManager(getDicomProperties());
 	}
 
@@ -96,7 +103,7 @@ class TestFileSystemDicomManager extends OHCoreTestCase {
 	private Properties getDicomProperties() {
 		Properties properties = new Properties();
 		properties.setProperty("dicom.manager.impl", "FileSystemDicomManager");
-		properties.setProperty("dicom.storage.filesystem", "rsc-test/dicom");
+		properties.setProperty("dicom.storage.filesystem", tempDir.toString());
 		return properties;
 	}
 
@@ -168,7 +175,7 @@ class TestFileSystemDicomManager extends OHCoreTestCase {
 		FileDicom dicomFile = testFileDicom.setup(dicomType, true);
 		fileSystemDicomManager.saveFile(dicomFile);
 
-		File dicomFileDir = new File("rsc-test/dicom/0/TestSeriesNumber");
+		File dicomFileDir = tempDir.resolve("0/TestSeriesNumber").toFile();
 		FileReader fr = new FileReader(new File(dicomFileDir, "1.properties"));
 		Properties dicomProperties = new Properties();
 		dicomProperties.load(fr);
@@ -485,8 +492,8 @@ class TestFileSystemDicomManager extends OHCoreTestCase {
 		assertThat(fileDicomSorted[2].getDicomStudyDate()).isEqualTo(now);
 	}
 
-	private static void cleanupDicomFiles(int patientId) {
-		FileSystemUtils.deleteRecursively(new File("rsc-test/dicom/" + patientId));
-		FileUtil.deleteContents(new File("rsc-test/dicom/dicom.storage"));
+	private void cleanupDicomFiles(int patientId) {
+		FileSystemUtils.deleteRecursively(tempDir.resolve(String.valueOf(patientId)).toFile());
+		FileUtil.deleteContents(tempDir.resolve("dicom.storage").toFile());
 	}
 }
