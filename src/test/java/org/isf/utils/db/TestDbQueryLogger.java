@@ -25,8 +25,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
-import java.lang.reflect.Field;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 
@@ -51,23 +49,16 @@ class TestDbQueryLogger {
 	private AutoCloseable closeable;
 
 	@BeforeEach
-	void setUp() throws Exception {
+	void setUp() {
 		closeable = MockitoAnnotations.openMocks(this);
 		Context.setApplicationContext(applicationContextMock);
 		when(applicationContextMock.getBean("entityManagerFactory", EntityManagerFactory.class)).thenReturn(entityManagerFactoryMock);
-		Field connectionField = DbSingleJpaConn.class.getDeclaredField("connection");
-		connectionField.setAccessible(true);
-		connectionField.set(null, null);
-		Field entityManagerFactoryField = DbJpaUtil.class.getDeclaredField("entityManagerFactory");
-		entityManagerFactoryField.setAccessible(true);
-		entityManagerFactoryField.set(null, entityManagerFactoryMock);
-		Field entityManagerField = DbJpaUtil.class.getDeclaredField("entityManager");
-		entityManagerField.setAccessible(true);
-		entityManagerField.set(null, null);
+		DbSingleJpaConn.resetConnection();
 	}
 
 	@AfterEach
 	void closeService() throws Exception {
+		DbSingleJpaConn.resetConnection();
 		closeable.close();
 	}
 
