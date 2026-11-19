@@ -32,4 +32,4 @@ source step_a179_add_variable_price_column.sql;
 source step_a180_add_hourly_frequency_column_to_therapies.sql;
 source step_a181_prescriber.sql;
 source step_a182_reduction_plan_partners.sql;
-source step_a185_add_guarantor_quota.sql;
+source step_a183_add_guarantor_quota.sql;
