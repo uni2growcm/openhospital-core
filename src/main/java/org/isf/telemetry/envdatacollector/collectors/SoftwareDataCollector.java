@@ -126,6 +126,22 @@ public class SoftwareDataCollector extends AbstractDataCollector {
 			result.put(CollectorsConstants.APP_ALLOWBILLPARTNER, String.valueOf(GeneralData.ALLOWBILLPARTNER));
 			result.put(CollectorsConstants.APP_HIGHLIGHTEXPIRINGMEDICAL, String.valueOf(GeneralData.HIGHLIGHTEXPIRINGMEDICAL));
 			result.put(CollectorsConstants.APP_HIGHLIGHTEXPIRINGMEDICALDAYS, String.valueOf(GeneralData.HIGHLIGHTEXPIRINGMEDICALDAYS));
+			result.put(CollectorsConstants.APP_BILLGUARANTORSINGLEQUOTA, String.valueOf(GeneralData.BILLGUARANTORSINGLEQUOTA));
+			result.put(CollectorsConstants.APP_BILLGUARANTORQUOTA, String.valueOf(GeneralData.BILLGUARANTORQUOTA));
+			result.put(CollectorsConstants.APP_ENABLEMEDICALREFUND, String.valueOf(GeneralData.ENABLEMEDICALREFUND));
+			result.put(CollectorsConstants.APP_ENABLEBILLITEMGROUP, String.valueOf(GeneralData.ENABLEBILLITEMGROUP));
+			result.put(CollectorsConstants.APP_BLAMAFIELDENABLED, String.valueOf(GeneralData.BLAMAFIELDENABLED));
+			result.put(CollectorsConstants.APP_CREATELABORATORYAUTO, String.valueOf(GeneralData.CREATELABORATORYAUTO));
+			result.put(CollectorsConstants.APP_CREATELABORATORYAUTOWITHOPENEDBILL, String.valueOf(GeneralData.CREATELABORATORYAUTOWITHOPENEDBILL));
+			result.put(CollectorsConstants.APP_REFERENCE_AUTOMATIC, String.valueOf(GeneralData.REFERENCE_AUTOMATIC));
+			result.put(CollectorsConstants.APP_MALNUTRITIONMODULEENABLED, String.valueOf(GeneralData.MALNUTRITIONMODULEENABLED));
+			result.put(CollectorsConstants.APP_HIVMODULEENABLED, String.valueOf(GeneralData.HIVMODULEENABLED));
+			result.put(CollectorsConstants.APP_FAMILYPLANNINGMODULEENABLED, String.valueOf(GeneralData.FAMILYPLANNINGMODULEENABLED));
+			result.put(CollectorsConstants.APP_HOMEVISITMODULEENABLED, String.valueOf(GeneralData.HOMEVISITMODULEENABLED));
+			result.put(CollectorsConstants.APP_PARTNERSMODULEENABLED, String.valueOf(GeneralData.PARTNERSMODULEENABLED));
+			result.put(CollectorsConstants.APP_COMMANDMODULEENABLED, String.valueOf(GeneralData.COMMANDMODULEENABLED));
+			result.put(CollectorsConstants.APP_MATERNITYMODULEENABLED, String.valueOf(GeneralData.MATERNITYMODULEENABLED));
+			result.put(CollectorsConstants.APP_TUBERCULOSISMODULEENABLED, String.valueOf(GeneralData.TUBERCULOSISMODULEENABLED));
 
 		} catch (RuntimeException | SQLException e) {
 			LOGGER.error("Something went wrong with " + ID);

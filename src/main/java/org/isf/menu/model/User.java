@@ -75,6 +75,14 @@ public class User extends Auditable<String> {
 	@Column(name = "US_DELETED")
 	private boolean deleted;
 
+	/**
+	 * Maximum outstanding amount this user can guarantee on open bills
+	 * (used only when ALLOWBILLGUARANTOR=yes and BILLGUARANTORSINGLEQUOTA=no).
+	 * {@code null} or a value {@code <= 0} means no limit.
+	 */
+	@Column(name = "US_GUARANTOR_QUOTA")
+	private Double guarantorQuota;
+
 	@Transient
 	private volatile int hashCode;
 
@@ -160,6 +168,14 @@ public class User extends Auditable<String> {
 
 	public void setDeleted(boolean deleted) {
 		this.deleted = deleted;
+	}
+
+	public Double getGuarantorQuota() {
+		return guarantorQuota;
+	}
+
+	public void setGuarantorQuota(Double guarantorQuota) {
+		this.guarantorQuota = guarantorQuota;
 	}
 
 	@Override

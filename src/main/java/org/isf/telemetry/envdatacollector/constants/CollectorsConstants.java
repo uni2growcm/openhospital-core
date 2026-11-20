@@ -62,6 +62,22 @@ public interface CollectorsConstants {
 
 	String APP_HIGHLIGHTEXPIRINGMEDICAL = "highlightexpiringmedical";
 	String APP_HIGHLIGHTEXPIRINGMEDICALDAYS = "highlightexpiringmedicaldays";
+	String APP_BILLGUARANTORSINGLEQUOTA = "app_billguarantorsinglequota";
+	String APP_BILLGUARANTORQUOTA = "app_billguarantorquota";
+	String APP_ENABLEMEDICALREFUND = "app_enablemedicalrefund";
+	String APP_ENABLEBILLITEMGROUP = "app_enablebillitemgroup";
+	String APP_BLAMAFIELDENABLED = "app_blamafieldenabled";
+	String APP_CREATELABORATORYAUTO = "app_createlaboratoryauto";
+	String APP_CREATELABORATORYAUTOWITHOPENEDBILL = "app_createlaboratoryautowithopenedbill";
+	String APP_REFERENCE_AUTOMATIC = "app_reference_automatic";
+	String APP_MALNUTRITIONMODULEENABLED = "app_malnutritionmoduleenabled";
+	String APP_HIVMODULEENABLED = "app_hivmoduleenabled";
+	String APP_FAMILYPLANNINGMODULEENABLED = "app_familyplanningmoduleenabled";
+	String APP_HOMEVISITMODULEENABLED = "app_homevisitmoduleenabled";
+	String APP_PARTNERSMODULEENABLED = "app_partnersmoduleenabled";
+	String APP_COMMANDMODULEENABLED = "app_commandmoduleenabled";
+	String APP_MATERNITYMODULEENABLED = "app_maternitymoduleenabled";
+	String APP_TUBERCULOSISMODULEENABLED = "app_tuberculosismoduleenabled";
 	String APP_VERSION = "app_version";
 	String APP_MODE = "app_mode";
 	String APP_DEMODATA = "app_demodata";
