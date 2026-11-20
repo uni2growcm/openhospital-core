@@ -187,6 +187,17 @@ class Tests extends OHCoreTestCase {
 	}
 
 	@Test
+	void testReplaceGenericDateReportParameters() {
+		String query = "WHERE (BLL_STATUS = $P{state} OR BLL_STATUS = $P{state2}) "
+						+ "AND BLL_DATE BETWEEN DATE($P{fromdate}) AND DATE($P{todate})";
+
+		String result = JasperReportsManager.replaceGenericDateReportParameters(query, "2026-10-09", "2026-11-16");
+
+		assertThat(result).isEqualTo("WHERE (BLL_STATUS = 'C' OR BLL_STATUS = 'O') "
+						+ "AND BLL_DATE BETWEEN DATE('2026-10-09') AND DATE('2026-11-16')");
+	}
+
+	@Test
 	void testGetSalesByProductAndServicePerYearPdf() throws Exception {
 		try (MockedStatic<JRLoader> mockedJRLoader = mockStatic(JRLoader.class);
 						MockedStatic<JasperFillManager> mockedJasperFillManager = mockStatic(JasperFillManager.class);

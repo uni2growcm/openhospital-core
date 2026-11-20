@@ -1003,10 +1003,8 @@ public class JasperReportsManager {
 
 			JasperReport jasperReport = (JasperReport) JRLoader.loadObject(jasperFile);
 			JRQuery query = jasperReport.getMainDataset().getQuery();
-			String queryString = query.getText();
-
-			queryString = queryString.replace("$P{fromdate}", "'" + java.sql.Date.valueOf(fromDate) + '\'');
-			queryString = queryString.replace("$P{todate}", "'" + java.sql.Date.valueOf(toDate) + '\'');
+			String queryString = replaceGenericDateReportParameters(
+				query.getText(), java.sql.Date.valueOf(fromDate).toString(), java.sql.Date.valueOf(toDate).toString());
 
 			DbQueryLogger dbQuery = new DbQueryLogger();
 			ResultSet resultSet = dbQuery.getData(queryString, true);
@@ -1117,8 +1115,7 @@ public class JasperReportsManager {
 			String dateFromQuery = TimeTools.formatDateTime(TimeTools.getDate(fromDate, DD_MM_YYYY), YYYY_MM_DD);
 			String dateToQuery = TimeTools.formatDateTime(TimeTools.getDate(toDate, DD_MM_YYYY), YYYY_MM_DD);
 
-			queryString = queryString.replace("$P{fromdate}", '\'' + dateFromQuery + '\'');
-			queryString = queryString.replace("$P{todate}", '\'' + dateToQuery + '\'');
+			queryString = replaceGenericDateReportParameters(queryString, dateFromQuery, dateToQuery);
 
 			DbQueryLogger dbQuery = new DbQueryLogger();
 			ResultSet resultSet = dbQuery.getData(queryString, true);
@@ -1133,6 +1130,19 @@ public class JasperReportsManager {
 		} catch (Exception exception) {
 			throw new OHReportException(exception, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
 		}
+	}
+
+	/**
+	 * Replaces the generic date parameters of a report query ({@code fromdate}, {@code todate}) and, for reports that also
+	 * declare them, the bill status parameters with the same default values used by the report itself ({@code state = 'C'},
+	 * {@code state2 = 'O'}), so that the Excel export (which runs the raw SQL) does not fail on unresolved placeholders.
+	 */
+	public static String replaceGenericDateReportParameters(String queryString, String dateFromQuery, String dateToQuery) {
+		return queryString
+			.replace("$P{fromdate}", '\'' + dateFromQuery + '\'')
+			.replace("$P{todate}", '\'' + dateToQuery + '\'')
+			.replace("$P{state}", "'C'")
+			.replace("$P{state2}", "'O'");
 	}
 
 	public void getGenericReportFromDateToDateExcel(LocalDate fromDate, LocalDate toDate, String reductionPlan, String jasperFileFolder, String jasperFileName, String exportFilename)
@@ -1227,22 +1237,6 @@ public class JasperReportsManager {
 		try {
 			Map<String, Object> parameters = compileSynthesisActivitiesParameters(year, jasperFileFolder, jasperFileName);
 			String pdfFilename = compilePDFFilename(jasperFileFolder, jasperFileName, Arrays.asList(String.valueOf(year)), "pdf");
-
-			JasperReportResultDto result = generateJasperReport(compileJasperFilename(jasperFileFolder, jasperFileName), pdfFilename, parameters);
-			JasperExportManager.exportReportToPdfFile(result.getJasperPrint(), pdfFilename);
-			return result;
-		} catch (Exception e) {
-			LOGGER.error("", e);
-			throw new OHReportException(e, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
-		}
-	}
-
-	public JasperReportResultDto getGenericReportWeekWardPdf(String fromDate, String toDate, String wardId, String wardName, String status, String statusLabel, String periodLabel, String jasperFileFolder, String jasperFileName)
-		throws OHServiceException {
-
-		try {
-			Map<String, Object> parameters = compileGenericReportWeekWardParameters(fromDate, toDate, wardId, wardName, status, statusLabel, periodLabel, jasperFileFolder, jasperFileName);
-			String pdfFilename = compilePDFFilename(jasperFileFolder, jasperFileName, Arrays.asList(fromDate, toDate, wardId != null ? wardId : "ALL", status != null ? status : "ALL"), "pdf");
 
 			JasperReportResultDto result = generateJasperReport(compileJasperFilename(jasperFileFolder, jasperFileName), pdfFilename, parameters);
 			JasperExportManager.exportReportToPdfFile(result.getJasperPrint(), pdfFilename);
@@ -1381,6 +1375,22 @@ public class JasperReportsManager {
 			}
 		}
 		return total;
+	}
+
+	public JasperReportResultDto getGenericReportWeekWardPdf(String fromDate, String toDate, String wardId, String wardName, String status, String statusLabel, String periodLabel, String jasperFileFolder, String jasperFileName)
+		throws OHServiceException {
+
+		try {
+			Map<String, Object> parameters = compileGenericReportWeekWardParameters(fromDate, toDate, wardId, wardName, status, statusLabel, periodLabel, jasperFileFolder, jasperFileName);
+			String pdfFilename = compilePDFFilename(jasperFileFolder, jasperFileName, Arrays.asList(fromDate, toDate, wardId != null ? wardId : "ALL", status != null ? status : "ALL"), "pdf");
+
+			JasperReportResultDto result = generateJasperReport(compileJasperFilename(jasperFileFolder, jasperFileName), pdfFilename, parameters);
+			JasperExportManager.exportReportToPdfFile(result.getJasperPrint(), pdfFilename);
+			return result;
+		} catch (Exception e) {
+			LOGGER.error("", e);
+			throw new OHReportException(e, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
+		}
 	}
 
 	public JasperReportResultDto getGenericReportYearWardPdf(Integer year, String wardId, String wardName, String jasperFileFolder, String jasperFileName)
