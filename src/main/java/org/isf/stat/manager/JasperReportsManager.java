@@ -72,6 +72,7 @@ import org.isf.opd.manager.OpdBrowserManager;
 import org.isf.operation.manager.OperationRowBrowserManager;
 import org.isf.patient.model.Patient;
 import org.isf.patient.service.PatientIoOperations;
+import org.isf.stat.dto.BillItemReportBean;
 import org.isf.stat.dto.IncomesPerSurgeryActReportBean;
 import org.isf.patvac.manager.PatVacManager;
 import org.isf.stat.dto.JasperReportResultDto;
@@ -123,6 +124,7 @@ public class JasperReportsManager {
 	private static final String RPT_BASE = "rpt_base";
 	private static final String RPT_STAT = "rpt_stat";
 	private static final String INCOMES_PER_SURGERY_ACT_FILENAME = "OH004_IncomesAllByPriceCodes_3_Surgery";
+	private static final String SALES_BY_PRODUCT_SERVICE_PER_YEAR_FILENAME = "OH004_IncomesAllByPriceCodes_3";
 
 	private HospitalBrowsingManager hospitalManager;
 
@@ -155,11 +157,11 @@ public class JasperReportsManager {
 	private PregnancyBrowserManager pregnancyManager;
 
 	public JasperReportsManager(HospitalBrowsingManager hospitalBrowsingManager, DataSource dataSource, WardBrowserManager wardManager,
-					OpdBrowserManager opdManager, AdmissionBrowserManager admissionManager, StatsDeliveryManager statsDeliveryManager,
-					LabManager labManager, OperationRowBrowserManager operationRowManager, PatVacManager patVacManager,
-					VaccineBrowserManager vaccineManager, TuberculosisTreatmentManager tuberculosisTreatmentManager,
-					HIVInfantManager hivInfantManager, HIVVisitManager hivVisitManager, HomeVisitBrowserManager homeVisitManager,
-					PregnancyBrowserManager pregnancyManager) {
+								OpdBrowserManager opdManager, AdmissionBrowserManager admissionManager, StatsDeliveryManager statsDeliveryManager,
+								LabManager labManager, OperationRowBrowserManager operationRowManager, PatVacManager patVacManager,
+								VaccineBrowserManager vaccineManager, TuberculosisTreatmentManager tuberculosisTreatmentManager,
+								HIVInfantManager hivInfantManager, HIVVisitManager hivVisitManager, HomeVisitBrowserManager homeVisitManager,
+								PregnancyBrowserManager pregnancyManager) {
 		this.hospitalManager = hospitalBrowsingManager;
 		this.dataSource = dataSource;
 		this.wardManager = wardManager;
@@ -236,7 +238,7 @@ public class JasperReportsManager {
 	}
 
 	public JasperReportResultDto getPrescriberListExamPdf(LocalDate fromDate, LocalDate toDate, String exam, Integer resultFilter,
-			String patientCode, String userCode, String prescriberName, String patientName, String paidCode)
+														  String patientCode, String userCode, String prescriberName, String patientName, String paidCode)
 		throws OHServiceException {
 
 		try {
@@ -398,7 +400,7 @@ public class JasperReportsManager {
 	}
 
 	public JasperReportResultDto getGenericReportBillGroupedPdf(Integer billID, String jasperFileName, Patient patient, List<Integer> billListId,
-	                                                            String dateFrom, String dateTo, boolean show, boolean askForPrint) throws OHServiceException {
+																String dateFrom, String dateTo, boolean show, boolean askForPrint) throws OHServiceException {
 
 		try {
 			HashMap<String, Object> parameters = getHospitalParameters();
@@ -419,7 +421,7 @@ public class JasperReportsManager {
 	}
 
 	public JasperReportResultDto getGenericReportBillGroupedTxt(Integer billID, String jasperFileName, Patient patient, List<Integer> billListId,
-	                                                            String dateFrom, String dateTo, boolean show, boolean askForPrint) throws OHServiceException {
+																String dateFrom, String dateTo, boolean show, boolean askForPrint) throws OHServiceException {
 
 		try {
 			HashMap<String, Object> parameters = getHospitalParameters();
@@ -529,7 +531,7 @@ public class JasperReportsManager {
 	}
 
 	public JasperReportResultDto getGenericReportPatientVersion2Pdf(Integer patientID, String parametersString, LocalDateTime dateFrom, LocalDateTime dateTo,
-	                                                                String jasperFileName) throws OHServiceException {
+																	String jasperFileName) throws OHServiceException {
 
 		try {
 
@@ -679,7 +681,7 @@ public class JasperReportsManager {
 	}
 
 	public void getGenericReportPharmaceuticalStockExcel(LocalDateTime date, String jasperFileName, String exportFilename, String filter, String groupBy,
-	                                                     String sortBy) throws OHServiceException {
+														 String sortBy) throws OHServiceException {
 
 		try {
 			if (date == null) {
@@ -763,7 +765,7 @@ public class JasperReportsManager {
 	}
 
 	public JasperReportResultDto getGenericReportPharmaceuticalStockCardPdf(String jasperFileName, String exportFileName, LocalDateTime dateFrom,
-	                                                                        LocalDateTime dateTo, Medical medical, Ward ward) throws OHServiceException {
+																			LocalDateTime dateTo, Medical medical, Ward ward) throws OHServiceException {
 
 		try {
 			if (dateFrom == null) {
@@ -798,7 +800,7 @@ public class JasperReportsManager {
 	}
 
 	public void getGenericReportPharmaceuticalStockCardExcel(String jasperFileName, String exportFileName, LocalDateTime dateFrom, LocalDateTime dateTo,
-	                                                         Medical medical, Ward ward) throws OHServiceException {
+															 Medical medical, Ward ward) throws OHServiceException {
 
 		try {
 			if (dateFrom == null) {
@@ -1002,7 +1004,7 @@ public class JasperReportsManager {
 			JasperReport jasperReport = (JasperReport) JRLoader.loadObject(jasperFile);
 			JRQuery query = jasperReport.getMainDataset().getQuery();
 			String queryString = replaceGenericDateReportParameters(
-							query.getText(), java.sql.Date.valueOf(fromDate).toString(), java.sql.Date.valueOf(toDate).toString());
+				query.getText(), java.sql.Date.valueOf(fromDate).toString(), java.sql.Date.valueOf(toDate).toString());
 
 			DbQueryLogger dbQuery = new DbQueryLogger();
 			ResultSet resultSet = dbQuery.getData(queryString, true);
@@ -1069,7 +1071,7 @@ public class JasperReportsManager {
 	}
 
 	public void getGenericReportFromDateToDateExcel(LocalDate fromDate, LocalDate toDate, String jasperFileFolder, String jasperFileName, String exportFilename,
-		String state, String state2) throws OHServiceException {
+													String state, String state2) throws OHServiceException {
 
 		try {
 			String filename = compileJasperFilename(jasperFileFolder, jasperFileName);
@@ -1130,12 +1132,17 @@ public class JasperReportsManager {
 		}
 	}
 
+	/**
+	 * Replaces the generic date parameters of a report query ({@code fromdate}, {@code todate}) and, for reports that also
+	 * declare them, the bill status parameters with the same default values used by the report itself ({@code state = 'C'},
+	 * {@code state2 = 'O'}), so that the Excel export (which runs the raw SQL) does not fail on unresolved placeholders.
+	 */
 	public static String replaceGenericDateReportParameters(String queryString, String dateFromQuery, String dateToQuery) {
 		return queryString
-						.replace("$P{fromdate}", '\'' + dateFromQuery + '\'')
-						.replace("$P{todate}", '\'' + dateToQuery + '\'')
-						.replace("$P{state}", "'C'")
-						.replace("$P{state2}", "'O'");
+			.replace("$P{fromdate}", '\'' + dateFromQuery + '\'')
+			.replace("$P{todate}", '\'' + dateToQuery + '\'')
+			.replace("$P{state}", "'C'")
+			.replace("$P{state2}", "'O'");
 	}
 
 	public void getGenericReportFromDateToDateExcel(LocalDate fromDate, LocalDate toDate, String reductionPlan, String jasperFileFolder, String jasperFileName, String exportFilename)
@@ -1262,7 +1269,7 @@ public class JasperReportsManager {
 		List<Admission> admissions = admissionManager.getAdmissionsByAdmissionDate(dateFrom, dateTo);
 		List<Admission> dischargedAdmissions = admissions.stream().filter(a -> a.getDisDate() != null).toList();
 		double avgLengthOfStay = dischargedAdmissions.isEmpty() ? 0.0
-						: dischargedAdmissions.stream().mapToLong(a -> Duration.between(a.getAdmDate(), a.getDisDate()).toDays()).average().orElse(0.0);
+			: dischargedAdmissions.stream().mapToLong(a -> Duration.between(a.getAdmDate(), a.getDisDate()).toDays()).average().orElse(0.0);
 		int totalBeds = wardManager.getWards().stream().mapToInt(w -> w.getBeds() == null ? 0 : w.getBeds()).sum();
 		parameters.put("admissionsCount", (long) admissions.size());
 		parameters.put("avgLengthOfStay", avgLengthOfStay);
@@ -1271,12 +1278,12 @@ public class JasperReportsManager {
 		// Pregnancies registered, and deliveries
 		long pregnanciesCount = pregnancyManager.getPregnanciesByDateRange(dateFrom, dateTo, 0, 1).getTotalElements();
 		long deliveriesCount = statsDeliveryManager.getDeliveriesStats(dateFrom, dateTo,
-						null, null, null, null, null, // motherAge*, sex, weight*
-						null, null, null, null, null, null, // deliveryType, deliveryResultType, deliveryMode, laborDuration, romRange, perinealIntegrity
-						null, null, null, null, null, // placentaComplete, bloodLossRange, newbornSex, birthWeightRange, neonatalStatus
-						null, null, null, null, null, null, // apgar1Range, apgar5Range, resuscitationRequired, cryTime, hivStatus, congenitalAnomalies
-						null, null, // disease, dischargeType
-						0, 1).getTotalElements();
+			null, null, null, null, null, // motherAge*, sex, weight*
+			null, null, null, null, null, null, // deliveryType, deliveryResultType, deliveryMode, laborDuration, romRange, perinealIntegrity
+			null, null, null, null, null, // placentaComplete, bloodLossRange, newbornSex, birthWeightRange, neonatalStatus
+			null, null, null, null, null, null, // apgar1Range, apgar5Range, resuscitationRequired, cryTime, hivStatus, congenitalAnomalies
+			null, null, // disease, dischargeType
+			0, 1).getTotalElements();
 		parameters.put("pregnanciesCount", pregnanciesCount);
 		parameters.put("deliveriesCount", deliveriesCount);
 
@@ -1286,15 +1293,15 @@ public class JasperReportsManager {
 
 		// Tuberculosis, backed by the structured TuberculosisTreatment module (registrationDate + classification enum)
 		long tbTotal = tuberculosisTreatmentManager.getTreatmentsByFilters(null, null, null, null, dateFromDate, dateToDate, null, null,
-						PageRequest.of(0, 1)).getTotalElements();
+			PageRequest.of(0, 1)).getTotalElements();
 		long tbNew = tuberculosisTreatmentManager.getTreatmentsByFilters(null, null, Classification.NEW, null, dateFromDate, dateToDate, null, null,
-						PageRequest.of(0, 1)).getTotalElements();
+			PageRequest.of(0, 1)).getTotalElements();
 		parameters.put("tbTotal", tbTotal);
 		parameters.put("tbNew", tbNew);
 
 		// HIV/PMTCT, backed by the structured hiv module (HIVInfant.registrationDate, HIVVisit.pcrResult enum)
 		long hivInfantsFollowed = hivInfantManager.getInfantsByFilters(null, null, null, dateFromDate, dateToDate, null, null, PageRequest.of(0, 1))
-						.getTotalElements();
+			.getTotalElements();
 		long hivPcrNegative = hivVisitManager.countByVisitDateBetweenAndPcrResult(dateFrom, dateTo, PCRResult.NEGATIVE);
 		long hivPcrPositive = hivVisitManager.countByVisitDateBetweenAndPcrResult(dateFrom, dateTo, PCRResult.POSITIVE);
 		parameters.put("hivInfantsFollowed", hivInfantsFollowed);
@@ -1313,15 +1320,15 @@ public class JasperReportsManager {
 
 		// Home visits (new in 1.15 vs. the older reference version), broken down by the structured HomeVisitStatus enum
 		long homeVisitsTotal = homeVisitManager.getHomeVisitsWithFilters(null, null, dateFrom, dateTo, null, null, null, null, 0, 1)
-						.getTotalElements();
+			.getTotalElements();
 		long homeVisitsPlanned = homeVisitManager.getHomeVisitsWithFilters(null, HomeVisitStatus.PLANNED, dateFrom, dateTo, null, null, null, null, 0, 1)
-						.getTotalElements();
+			.getTotalElements();
 		long homeVisitsCompleted = homeVisitManager.getHomeVisitsWithFilters(null, HomeVisitStatus.COMPLETED, dateFrom, dateTo, null, null, null, null, 0, 1)
-						.getTotalElements();
+			.getTotalElements();
 		long homeVisitsCancelled = homeVisitManager.getHomeVisitsWithFilters(null, HomeVisitStatus.CANCELLED, dateFrom, dateTo, null, null, null, null, 0, 1)
-						.getTotalElements();
+			.getTotalElements();
 		long homeVisitsPostponed = homeVisitManager.getHomeVisitsWithFilters(null, HomeVisitStatus.POSTPONED, dateFrom, dateTo, null, null, null, null, 0, 1)
-						.getTotalElements();
+			.getTotalElements();
 		parameters.put("homeVisitsTotal", homeVisitsTotal);
 		parameters.put("homeVisitsPlanned", homeVisitsPlanned);
 		parameters.put("homeVisitsCompleted", homeVisitsCompleted);
@@ -1339,9 +1346,9 @@ public class JasperReportsManager {
 		parameters.put("vaccineBcg", countVaccinationsByKeywordGroups(dateFrom, dateTo, List.<String[]>of(new String[] { "bcg" })));
 		parameters.put("vaccinePolio3", countVaccinationsByKeywordGroups(dateFrom, dateTo, List.<String[]>of(new String[] { "polio", "3" })));
 		parameters.put("vaccineDtc3", countVaccinationsByKeywordGroups(dateFrom, dateTo,
-						List.<String[]>of(new String[] { "dtc", "3" }, new String[] { "dtp", "3" })));
+			List.<String[]>of(new String[] { "dtc", "3" }, new String[] { "dtp", "3" })));
 		parameters.put("vaccineVar", countVaccinationsByKeywordGroups(dateFrom, dateTo,
-						List.<String[]>of(new String[] { "var" }, new String[] { "rougeole" }, new String[] { "measles" })));
+			List.<String[]>of(new String[] { "var" }, new String[] { "rougeole" }, new String[] { "measles" })));
 		parameters.put("vaccineVat2", countVaccinationsByKeywordGroups(dateFrom, dateTo, List.<String[]>of(new String[] { "vat" })));
 
 		return parameters;
@@ -1361,10 +1368,10 @@ public class JasperReportsManager {
 			}
 			String lowerDescription = description.toLowerCase(Locale.ROOT);
 			boolean matches = keywordGroups.stream()
-							.anyMatch(group -> Arrays.stream(group).allMatch(keyword -> lowerDescription.contains(keyword.toLowerCase(Locale.ROOT))));
+				.anyMatch(group -> Arrays.stream(group).allMatch(keyword -> lowerDescription.contains(keyword.toLowerCase(Locale.ROOT))));
 			if (matches) {
 				total += patVacManager.getPatientVaccinePage(null, vaccine.getCode(), dateFrom, dateTo, 'A', 0, 0, PageRequest.of(0, 1))
-								.getTotalElements();
+					.getTotalElements();
 			}
 		}
 		return total;
@@ -1754,6 +1761,227 @@ public class JasperReportsManager {
 	}
 
 	/**
+	 * Builds, for every item billed during {@code year}, the monthly (and yearly) sold/refunded quantity and amount,
+	 * filtered by bill status ({@code state}/{@code state2}, same value twice when a single status is wanted) and
+	 * by ward ({@code ward} code, or {@code "ALL"} to not filter by ward).
+	 */
+	private List<BillItemReportBean> buildSalesByProductAndServicePerYear(int year, String state, String state2, String ward) throws SQLException {
+		String query = "SELECT groupe, description, quantity, refunded_quantity, amount, refunded_amount FROM ( "
+			+ "SELECT bli.BLI_ITEM_GROUP AS groupe, "
+			+ "bli.BLI_ITEM_DESC AS description, "
+			+ "SUM(IF(bl.BLL_PARENT_ID IS NULL, bli.BLI_QTY, 0)) AS quantity, "
+			+ "SUM(IF(bl.BLL_PARENT_ID IS NOT NULL, bli.BLI_QTY, 0)) AS refunded_quantity, "
+			+ "SUM(IF(bl.BLL_PARENT_ID IS NULL, (bli.BLI_QTY * bli.BLI_ITEM_AMOUNT), 0)) AS amount, "
+			+ "SUM(IF(bl.BLL_PARENT_ID IS NOT NULL, (bli.BLI_QTY * bli.BLI_ITEM_AMOUNT), 0)) AS refunded_amount "
+			+ "FROM OH_BILLITEMS bli "
+			+ "JOIN OH_BILLS bl ON bli.BLI_ID_BILL = bl.BLL_ID "
+			+ "WHERE (bl.BLL_STATUS = ? OR bl.BLL_STATUS = ?) "
+			+ "AND (bl.BLL_WARD_ID = ? OR ? = 'ALL') "
+			+ "AND DATE(bli.BLI_DATE) BETWEEN ? AND ? "
+			+ "GROUP BY description "
+			+ ") source_table ORDER BY groupe, description";
+
+		Map<String, BillItemReportBean> items = new HashMap<>();
+		List<BillItemReportBean> orderedItems = new ArrayList<>();
+
+		try (Connection connection = dataSource.getConnection()) {
+			for (int monthIndex = 0; monthIndex <= 12; monthIndex++) {
+				LocalDate from;
+				LocalDate to;
+				if (monthIndex == 12) {
+					from = LocalDate.of(year, 1, 1);
+					to = LocalDate.of(year, 12, 31);
+				} else {
+					YearMonth yearMonth = YearMonth.of(year, monthIndex + 1);
+					from = yearMonth.atDay(1);
+					to = yearMonth.atEndOfMonth();
+				}
+
+				try (PreparedStatement statement = connection.prepareStatement(query)) {
+					statement.setString(1, state);
+					statement.setString(2, state2);
+					statement.setString(3, ward);
+					statement.setString(4, ward);
+					statement.setObject(5, from);
+					statement.setObject(6, to);
+
+					try (ResultSet resultSet = statement.executeQuery()) {
+						while (resultSet.next()) {
+							String description = resultSet.getString("description");
+							String group = resultSet.getString("groupe") == null ? "" : resultSet.getString("groupe");
+							BillItemReportBean bean = items.get(description);
+							if (bean == null) {
+								bean = new BillItemReportBean();
+								bean.setBLI_ITEM_DESC(description);
+								bean.setBLI_ITEM_GROUP(group);
+								items.put(description, bean);
+								orderedItems.add(bean);
+							}
+
+							double quantity = resultSet.getDouble("quantity");
+							double refundedQuantity = resultSet.getDouble("refunded_quantity");
+							double amount = resultSet.getDouble("amount");
+							double refundedAmount = resultSet.getDouble("refunded_amount");
+
+							if (monthIndex == 12) {
+								bean.setTOTAL_YEAR_COUNT(quantity);
+								bean.setTOTAL_YEAR_AMOUNT(amount);
+								bean.setREFUNDED_TOTAL_YEAR_COUNT(refundedQuantity);
+								bean.setREFUNDED_TOTAL_YEAR_AMOUNT(refundedAmount);
+							} else {
+								applyMonthValues(bean, monthIndex, quantity, refundedQuantity, amount, refundedAmount);
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return orderedItems;
+	}
+
+	private void applyMonthValues(BillItemReportBean bean, int monthIndex, double quantity, double refundedQuantity, double amount, double refundedAmount) {
+		switch (monthIndex) {
+			case 0:
+				bean.setCOUNT_JANUARY(quantity);
+				bean.setREFUNDED_COUNT_JANUARY(refundedQuantity);
+				bean.setAMOUNT_JANUARY(amount);
+				bean.setREFUNDED_AMOUNT_JANUARY(refundedAmount);
+				break;
+			case 1:
+				bean.setCOUNT_FEBRUARY(quantity);
+				bean.setREFUNDED_COUNT_FEBRUARY(refundedQuantity);
+				bean.setAMOUNT_FEBRUARY(amount);
+				bean.setREFUNDED_AMOUNT_FEBRUARY(refundedAmount);
+				break;
+			case 2:
+				bean.setCOUNT_MARCH(quantity);
+				bean.setREFUNDED_COUNT_MARCH(refundedQuantity);
+				bean.setAMOUNT_MARCH(amount);
+				bean.setREFUNDED_AMOUNT_MARCH(refundedAmount);
+				break;
+			case 3:
+				bean.setCOUNT_APRIL(quantity);
+				bean.setREFUNDED_COUNT_APRIL(refundedQuantity);
+				bean.setAMOUNT_APRIL(amount);
+				bean.setREFUNDED_AMOUNT_APRIL(refundedAmount);
+				break;
+			case 4:
+				bean.setCOUNT_MAY(quantity);
+				bean.setREFUNDED_COUNT_MAY(refundedQuantity);
+				bean.setAMOUNT_MAY(amount);
+				bean.setREFUNDED_AMOUNT_MAY(refundedAmount);
+				break;
+			case 5:
+				bean.setCOUNT_JUNE(quantity);
+				bean.setREFUNDED_COUNT_JUNE(refundedQuantity);
+				bean.setAMOUNT_JUNE(amount);
+				bean.setREFUNDED_AMOUNT_JUNE(refundedAmount);
+				break;
+			case 6:
+				bean.setCOUNT_JULY(quantity);
+				bean.setREFUNDED_COUNT_JULY(refundedQuantity);
+				bean.setAMOUNT_JULY(amount);
+				bean.setREFUNDED_AMOUNT_JULY(refundedAmount);
+				break;
+			case 7:
+				bean.setCOUNT_AUGUST(quantity);
+				bean.setREFUNDED_COUNT_AUGUST(refundedQuantity);
+				bean.setAMOUNT_AUGUST(amount);
+				bean.setREFUNDED_AMOUNT_AUGUST(refundedAmount);
+				break;
+			case 8:
+				bean.setCOUNT_SEPTEMBER(quantity);
+				bean.setREFUNDED_COUNT_SEPTEMBER(refundedQuantity);
+				bean.setAMOUNT_SEPTEMBER(amount);
+				bean.setREFUNDED_AMOUNT_SEPTEMBER(refundedAmount);
+				break;
+			case 9:
+				bean.setCOUNT_OCTOBER(quantity);
+				bean.setREFUNDED_COUNT_OCTOBER(refundedQuantity);
+				bean.setAMOUNT_OCTOBER(amount);
+				bean.setREFUNDED_AMOUNT_OCTOBER(refundedAmount);
+				break;
+			case 10:
+				bean.setCOUNT_NOVEMBER(quantity);
+				bean.setREFUNDED_COUNT_NOVEMBER(refundedQuantity);
+				bean.setAMOUNT_NOVEMBER(amount);
+				bean.setREFUNDED_AMOUNT_NOVEMBER(refundedAmount);
+				break;
+			case 11:
+				bean.setCOUNT_DECEMBER(quantity);
+				bean.setREFUNDED_COUNT_DECEMBER(refundedQuantity);
+				bean.setAMOUNT_DECEMBER(amount);
+				bean.setREFUNDED_AMOUNT_DECEMBER(refundedAmount);
+				break;
+			default:
+				break;
+		}
+	}
+
+	public JasperReportResultDto getSalesByProductAndServicePerYearPdf(int year, String state, String state2, String ward) throws OHServiceException {
+		try {
+			List<BillItemReportBean> beans = buildSalesByProductAndServicePerYear(year, state, state2, ward);
+
+			HashMap<String, Object> parameters = getHospitalParameters();
+			parameters.put("code_title", "angal.stat.incomesallbypricecodes_3_title");
+			parameters.put("year", String.valueOf(year));
+			addBundleParameter(RPT_STAT, SALES_BY_PRODUCT_SERVICE_PER_YEAR_FILENAME, parameters);
+
+			String pdfFilename = compilePDFFilename(RPT_STAT, SALES_BY_PRODUCT_SERVICE_PER_YEAR_FILENAME, Arrays.asList(String.valueOf(year)), "pdf");
+			String jasperFilename = compileJasperFilename(RPT_STAT, SALES_BY_PRODUCT_SERVICE_PER_YEAR_FILENAME);
+
+			JasperReport jasperReport = (JasperReport) JRLoader.loadObject(new File(jasperFilename));
+			JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, new JRBeanCollectionDataSource(beans));
+			JasperExportManager.exportReportToPdfFile(jasperPrint, pdfFilename);
+			return new JasperReportResultDto(jasperPrint, jasperFilename, pdfFilename);
+		} catch (Exception e) {
+			LOGGER.error("", e);
+			throw new OHReportException(e, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
+		}
+	}
+
+	public void getSalesByProductAndServicePerYearExcel(int year, String state, String state2, String ward, String exportFilename) throws OHServiceException {
+		try {
+			List<BillItemReportBean> beans = buildSalesByProductAndServicePerYear(year, state, state2, ward);
+
+			String[] columns = { "BLI_ITEM_GROUP", "BLI_ITEM_DESC",
+				"COUNT_JANUARY", "REFUNDED_COUNT_JANUARY", "AMOUNT_JANUARY", "REFUNDED_AMOUNT_JANUARY",
+				"COUNT_FEBRUARY", "REFUNDED_COUNT_FEBRUARY", "AMOUNT_FEBRUARY", "REFUNDED_AMOUNT_FEBRUARY",
+				"COUNT_MARCH", "REFUNDED_COUNT_MARCH", "AMOUNT_MARCH", "REFUNDED_AMOUNT_MARCH",
+				"COUNT_APRIL", "REFUNDED_COUNT_APRIL", "AMOUNT_APRIL", "REFUNDED_AMOUNT_APRIL",
+				"COUNT_MAY", "REFUNDED_COUNT_MAY", "AMOUNT_MAY", "REFUNDED_AMOUNT_MAY",
+				"COUNT_JUNE", "REFUNDED_COUNT_JUNE", "AMOUNT_JUNE", "REFUNDED_AMOUNT_JUNE",
+				"COUNT_JULY", "REFUNDED_COUNT_JULY", "AMOUNT_JULY", "REFUNDED_AMOUNT_JULY",
+				"COUNT_AUGUST", "REFUNDED_COUNT_AUGUST", "AMOUNT_AUGUST", "REFUNDED_AMOUNT_AUGUST",
+				"COUNT_SEPTEMBER", "REFUNDED_COUNT_SEPTEMBER", "AMOUNT_SEPTEMBER", "REFUNDED_AMOUNT_SEPTEMBER",
+				"COUNT_OCTOBER", "REFUNDED_COUNT_OCTOBER", "AMOUNT_OCTOBER", "REFUNDED_AMOUNT_OCTOBER",
+				"COUNT_NOVEMBER", "REFUNDED_COUNT_NOVEMBER", "AMOUNT_NOVEMBER", "REFUNDED_AMOUNT_NOVEMBER",
+				"COUNT_DECEMBER", "REFUNDED_COUNT_DECEMBER", "AMOUNT_DECEMBER", "REFUNDED_AMOUNT_DECEMBER",
+				"TOTAL_YEAR_COUNT", "REFUNDED_TOTAL_YEAR_COUNT", "TOTAL_YEAR_AMOUNT", "REFUNDED_TOTAL_YEAR_AMOUNT" };
+
+			List<Map<String, Object>> rows = new ArrayList<>();
+			for (BillItemReportBean bean : beans) {
+				Map<String, Object> row = new LinkedHashMap<>();
+				for (String column : columns) {
+					try {
+						Method getter = bean.getClass().getMethod("get" + column);
+						row.put(column, getter.invoke(bean));
+					} catch (ReflectiveOperationException e) {
+						LOGGER.error("", e);
+					}
+				}
+				rows.add(row);
+			}
+
+			new ExcelExporter().exportDataToExcel(rows, new File(exportFilename));
+		} catch (Exception e) {
+			LOGGER.error("", e);
+			throw new OHReportException(e, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
+		}
+	}
+
+	/**
 	 * Builds, for every surgical act billed during {@code year}, the monthly (and yearly)
 	 * performed/refunded quantity and amount. A bill item is considered a surgical act when its
 	 * item code matches the code of an {@code OH_OPERATION}; the operation's type is then used to
@@ -1766,9 +1994,9 @@ public class JasperReportsManager {
 	 * ({@code true}) or non-zero ({@code false}).
 	 */
 	private List<IncomesPerSurgeryActReportBean> buildIncomesPerSurgeryActPerYear(int year, String state, String state2, String operationTypeCode,
-			Boolean balanceZero) throws SQLException {
+																				  Boolean balanceZero) throws SQLException {
 		StringBuilder queryBuilder = new StringBuilder(
-				"SELECT groupe, description, quantity, refunded_quantity, amount, refunded_amount FROM ( "
+			"SELECT groupe, description, quantity, refunded_quantity, amount, refunded_amount FROM ( "
 				+ "SELECT bli.BLI_ITEM_GROUP AS groupe, "
 				+ "bli.BLI_ITEM_DESC AS description, "
 				+ "SUM(IF(bl.BLL_PARENT_ID IS NULL, bli.BLI_QTY, 0)) AS quantity, "
@@ -1784,11 +2012,11 @@ public class JasperReportsManager {
 				+ "AND DATE(bli.BLI_DATE) BETWEEN ? AND ? ");
 		if (balanceZero != null) {
 			queryBuilder.append(balanceZero
-					? "AND COALESCE(parent.BLL_BALANCE, bl.BLL_BALANCE) = 0 "
-					: "AND COALESCE(parent.BLL_BALANCE, bl.BLL_BALANCE) <> 0 ");
+				? "AND COALESCE(parent.BLL_BALANCE, bl.BLL_BALANCE) = 0 "
+				: "AND COALESCE(parent.BLL_BALANCE, bl.BLL_BALANCE) <> 0 ");
 		}
 		queryBuilder.append("GROUP BY description ")
-				.append(") source_table ORDER BY groupe, description");
+			.append(") source_table ORDER BY groupe, description");
 		String query = queryBuilder.toString();
 
 		Map<String, IncomesPerSurgeryActReportBean> items = new HashMap<>();
@@ -1851,7 +2079,7 @@ public class JasperReportsManager {
 	}
 
 	private void applyMonthValues(IncomesPerSurgeryActReportBean bean, int monthIndex, double quantity, double refundedQuantity, double amount,
-			double refundedAmount) {
+								  double refundedAmount) {
 		switch (monthIndex) {
 			case 0:
 				bean.setCOUNT_JANUARY(quantity);
@@ -1931,7 +2159,7 @@ public class JasperReportsManager {
 	}
 
 	public JasperReportResultDto getIncomesPerSurgeryActPdf(int year, String state, String state2, String operationTypeCode, String operationTypeLabel,
-			Boolean balanceZero) throws OHServiceException {
+															Boolean balanceZero) throws OHServiceException {
 		try {
 			List<IncomesPerSurgeryActReportBean> beans = buildIncomesPerSurgeryActPerYear(year, state, state2, operationTypeCode, balanceZero);
 
@@ -1942,7 +2170,7 @@ public class JasperReportsManager {
 			addBundleParameter(RPT_STAT, INCOMES_PER_SURGERY_ACT_FILENAME, parameters);
 
 			String pdfFilename = compilePDFFilename(RPT_STAT, INCOMES_PER_SURGERY_ACT_FILENAME,
-					Arrays.asList(String.valueOf(year), state, state2, operationTypeCode, String.valueOf(balanceZero)), "pdf");
+				Arrays.asList(String.valueOf(year), state, state2, operationTypeCode, String.valueOf(balanceZero)), "pdf");
 			String jasperFilename = compileJasperFilename(RPT_STAT, INCOMES_PER_SURGERY_ACT_FILENAME);
 
 			JasperReport jasperReport = (JasperReport) JRLoader.loadObject(new File(jasperFilename));
@@ -1956,24 +2184,24 @@ public class JasperReportsManager {
 	}
 
 	public void getIncomesPerSurgeryActExcel(int year, String state, String state2, String operationTypeCode, String operationTypeLabel, Boolean balanceZero,
-			String exportFilename) throws OHServiceException {
+											 String exportFilename) throws OHServiceException {
 		try {
 			List<IncomesPerSurgeryActReportBean> beans = buildIncomesPerSurgeryActPerYear(year, state, state2, operationTypeCode, balanceZero);
 
 			String[] columns = { "BLI_ITEM_GROUP", "BLI_ITEM_DESC",
-					"COUNT_JANUARY", "REFUNDED_COUNT_JANUARY", "AMOUNT_JANUARY", "REFUNDED_AMOUNT_JANUARY",
-					"COUNT_FEBRUARY", "REFUNDED_COUNT_FEBRUARY", "AMOUNT_FEBRUARY", "REFUNDED_AMOUNT_FEBRUARY",
-					"COUNT_MARCH", "REFUNDED_COUNT_MARCH", "AMOUNT_MARCH", "REFUNDED_AMOUNT_MARCH",
-					"COUNT_APRIL", "REFUNDED_COUNT_APRIL", "AMOUNT_APRIL", "REFUNDED_AMOUNT_APRIL",
-					"COUNT_MAY", "REFUNDED_COUNT_MAY", "AMOUNT_MAY", "REFUNDED_AMOUNT_MAY",
-					"COUNT_JUNE", "REFUNDED_COUNT_JUNE", "AMOUNT_JUNE", "REFUNDED_AMOUNT_JUNE",
-					"COUNT_JULY", "REFUNDED_COUNT_JULY", "AMOUNT_JULY", "REFUNDED_AMOUNT_JULY",
-					"COUNT_AUGUST", "REFUNDED_COUNT_AUGUST", "AMOUNT_AUGUST", "REFUNDED_AMOUNT_AUGUST",
-					"COUNT_SEPTEMBER", "REFUNDED_COUNT_SEPTEMBER", "AMOUNT_SEPTEMBER", "REFUNDED_AMOUNT_SEPTEMBER",
-					"COUNT_OCTOBER", "REFUNDED_COUNT_OCTOBER", "AMOUNT_OCTOBER", "REFUNDED_AMOUNT_OCTOBER",
-					"COUNT_NOVEMBER", "REFUNDED_COUNT_NOVEMBER", "AMOUNT_NOVEMBER", "REFUNDED_AMOUNT_NOVEMBER",
-					"COUNT_DECEMBER", "REFUNDED_COUNT_DECEMBER", "AMOUNT_DECEMBER", "REFUNDED_AMOUNT_DECEMBER",
-					"TOTAL_YEAR_COUNT", "REFUNDED_TOTAL_YEAR_COUNT", "TOTAL_YEAR_AMOUNT", "REFUNDED_TOTAL_YEAR_AMOUNT" };
+				"COUNT_JANUARY", "REFUNDED_COUNT_JANUARY", "AMOUNT_JANUARY", "REFUNDED_AMOUNT_JANUARY",
+				"COUNT_FEBRUARY", "REFUNDED_COUNT_FEBRUARY", "AMOUNT_FEBRUARY", "REFUNDED_AMOUNT_FEBRUARY",
+				"COUNT_MARCH", "REFUNDED_COUNT_MARCH", "AMOUNT_MARCH", "REFUNDED_AMOUNT_MARCH",
+				"COUNT_APRIL", "REFUNDED_COUNT_APRIL", "AMOUNT_APRIL", "REFUNDED_AMOUNT_APRIL",
+				"COUNT_MAY", "REFUNDED_COUNT_MAY", "AMOUNT_MAY", "REFUNDED_AMOUNT_MAY",
+				"COUNT_JUNE", "REFUNDED_COUNT_JUNE", "AMOUNT_JUNE", "REFUNDED_AMOUNT_JUNE",
+				"COUNT_JULY", "REFUNDED_COUNT_JULY", "AMOUNT_JULY", "REFUNDED_AMOUNT_JULY",
+				"COUNT_AUGUST", "REFUNDED_COUNT_AUGUST", "AMOUNT_AUGUST", "REFUNDED_AMOUNT_AUGUST",
+				"COUNT_SEPTEMBER", "REFUNDED_COUNT_SEPTEMBER", "AMOUNT_SEPTEMBER", "REFUNDED_AMOUNT_SEPTEMBER",
+				"COUNT_OCTOBER", "REFUNDED_COUNT_OCTOBER", "AMOUNT_OCTOBER", "REFUNDED_AMOUNT_OCTOBER",
+				"COUNT_NOVEMBER", "REFUNDED_COUNT_NOVEMBER", "AMOUNT_NOVEMBER", "REFUNDED_AMOUNT_NOVEMBER",
+				"COUNT_DECEMBER", "REFUNDED_COUNT_DECEMBER", "AMOUNT_DECEMBER", "REFUNDED_AMOUNT_DECEMBER",
+				"TOTAL_YEAR_COUNT", "REFUNDED_TOTAL_YEAR_COUNT", "TOTAL_YEAR_AMOUNT", "REFUNDED_TOTAL_YEAR_AMOUNT" };
 
 			List<Map<String, Object>> rows = new ArrayList<>();
 			for (IncomesPerSurgeryActReportBean bean : beans) {
@@ -2118,7 +2346,7 @@ public class JasperReportsManager {
 	}
 
 	public JasperReportResultDto getGenericReportVisitPdf(LocalDate fromDate, LocalDate toDate, boolean allUsers, List<String> userIds,
-		String jasperFileName) throws OHServiceException {
+														  String jasperFileName) throws OHServiceException {
 
 		try {
 			HashMap<String, Object> parameters = getHospitalParameters();
@@ -2172,7 +2400,7 @@ public class JasperReportsManager {
 	}
 
 	public JasperReportResultDto getGenericReportFamilyPlanningRegisterPdf(LocalDate fromDate, LocalDate toDate, String statut, String methodCode,
-	                                                                       Boolean actif, String sexe, String jasperFileName) throws OHServiceException {
+																		   Boolean actif, String sexe, String jasperFileName) throws OHServiceException {
 
 		try {
 			HashMap<String, Object> parameters = getHospitalParameters();
@@ -2195,7 +2423,7 @@ public class JasperReportsManager {
 	}
 
 	public JasperReportResultDto getGenericReportHIVInfantRegisterPdf(LocalDate fromDate, LocalDate toDate, String statut,
-	                                                                  String feedingType, Boolean actif, String sexe, String jasperFileName) throws OHServiceException {
+																	  String feedingType, Boolean actif, String sexe, String jasperFileName) throws OHServiceException {
 
 		try {
 			HashMap<String, Object> parameters = getHospitalParameters();

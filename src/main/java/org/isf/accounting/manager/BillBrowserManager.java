@@ -163,7 +163,7 @@ public class BillBrowserManager {
 	 * @param billPayments
 	 * @throws OHDataValidationException
 	 */
-	protected void validateBill(Bill bill, List<BillPayments> billPayments) throws OHDataValidationException {
+	protected void validateBill(Bill bill, List<BillPayments> billPayments) throws OHServiceException {
 		List<OHExceptionMessage> errors = new ArrayList<>();
 
 		LocalDateTime today = TimeTools.getNow();
@@ -198,6 +198,88 @@ public class BillBrowserManager {
 		}
 		if (!errors.isEmpty()) {
 			throw new OHDataValidationException(errors);
+		}
+		validateGuarantorQuota(bill);
+	}
+
+	/**
+	 * Get the quota applicable to a guarantor: the single quota shared by all guarantors when
+	 * {@code BILLGUARANTORSINGLEQUOTA} is enabled, otherwise the quota specific to the guarantor, falling back to
+	 * {@code BILLGUARANTORQUOTA} as default quota when the guarantor has no specific quota.
+	 *
+	 * @param guarantor the guarantor
+	 * @return the quota, or {@code null} when the guarantor has no limit
+	 * @throws OHServiceException
+	 */
+	public Double getGuarantorQuota(User guarantor) throws OHServiceException {
+		if (guarantor == null) {
+			return null;
+		}
+		Double quota = GeneralData.BILLGUARANTORSINGLEQUOTA ? null : ioOperations.getGuarantorQuota(guarantor.getUserName());
+		if (quota == null || quota <= 0) {
+			quota = GeneralData.BILLGUARANTORQUOTA;
+		}
+		return quota > 0 ? quota : null;
+	}
+
+	/**
+	 * Get the part of the guarantor's quota already used, i.e. the sum of the outstanding balances of the open bills
+	 * guaranteed by this user.
+	 *
+	 * @param guarantor the guarantor
+	 * @param excludedBillId a bill to exclude from the sum (the one being edited), 0 for none
+	 * @return the used amount
+	 * @throws OHServiceException
+	 */
+	public double getGuarantorUsedQuota(User guarantor, int excludedBillId) throws OHServiceException {
+		if (guarantor == null) {
+			return 0;
+		}
+		return ioOperations.sumOpenBalanceByGuarantor(guarantor.getUserName(), excludedBillId);
+	}
+
+	/**
+	 * Get the part of the quota already used by every guarantor, i.e. the sum of the outstanding balances of the open
+	 * bills they guarantee.
+	 *
+	 * @return a map guarantor user name -> used amount (guarantors without open balance are absent)
+	 * @throws OHServiceException
+	 */
+	public Map<String, Double> getGuarantorsUsedQuota() throws OHServiceException {
+		return ioOperations.sumOpenBalanceGroupByGuarantor();
+	}
+
+	/**
+	 * Verify that the outstanding balance of the bill does not make its guarantor exceed their quota.
+	 *
+	 * @param bill the bill to check
+	 * @throws OHServiceException if the quota is exceeded
+	 */
+	protected void validateGuarantorQuota(Bill bill) throws OHServiceException {
+		User guarantor = bill.getGuarantor();
+		if (!GeneralData.ALLOWBILLGUARANTOR || guarantor == null || bill.getBalance() <= 0 || !"O".equals(bill.getStatus())) {
+			return;
+		}
+		Double quota = getGuarantorQuota(guarantor);
+		if (quota == null) {
+			return;
+		}
+		if (bill.getId() > 0) {
+			// do not block an update that does not increase what the guarantor already covers on this bill
+			// (e.g. a partial payment on a bill whose guarantor is already over a quota that has been lowered)
+			Bill storedBill = ioOperations.getBill(bill.getId());
+			if (storedBill != null && "O".equals(storedBill.getStatus()) && storedBill.getGuarantor() != null
+				&& guarantor.getUserName().equals(storedBill.getGuarantor().getUserName())
+				&& bill.getBalance() <= storedBill.getBalance()) {
+				return;
+			}
+		}
+		double used = getGuarantorUsedQuota(guarantor, bill.getId());
+		double available = Math.max(quota - used, 0);
+		if (used + bill.getBalance() > quota) {
+			throw new OHDataValidationException(new OHExceptionMessage(MessageBundle.formatMessage(
+				"angal.newbill.guarantorquotaexceeded.fmt.msg",
+				guarantor.getUserName(), quota, used, available, bill.getBalance())));
 		}
 	}
 

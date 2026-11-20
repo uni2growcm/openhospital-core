@@ -52,6 +52,7 @@ import org.isf.accounting.service.AccountingBillItemsIoOperationRepository;
 import org.isf.accounting.service.AccountingBillPaymentIoOperationRepository;
 import org.isf.accounting.service.AccountingIoOperations;
 import org.isf.accounting.service.AccountingItemPaymentIoOperationRepository;
+import org.isf.generaldata.GeneralData;
 import org.isf.menu.TestUser;
 import org.isf.menu.TestUserGroup;
 import org.isf.menu.model.User;
@@ -799,5 +800,124 @@ class Tests extends OHCoreTestCase {
 
 		assertThat(billBrowserManager.getPayments(savedBill.getId())).isEmpty();
 		assertThat(accountingIoOperation.getItemPayments(savedBill.getId())).isEmpty();
+	}
+
+	// ==================== GUARANTOR QUOTA TESTS ====================
+
+	private User setupGuarantor(Double quota) throws OHException {
+		UserGroup userGroup = testUserGroup.setup(false);
+		userGroupIoOperationRepository.saveAndFlush(userGroup);
+		User guarantor = testUser.setup(userGroup, false);
+		guarantor.setGuarantorQuota(quota);
+		return userIoOperationRepository.saveAndFlush(guarantor);
+	}
+
+	private Bill newGuaranteedBill(User guarantor, double balance) throws Exception {
+		Patient patient = testPatient.setup(false);
+		PriceList priceList = testPriceList.setup(false);
+		priceListIoOperationRepository.saveAndFlush(priceList);
+		patientIoOperationRepository.saveAndFlush(patient);
+		Bill bill = testBill.setup(priceList, patient, null, false);
+		bill.setDate(TimeTools.getNow().minusDays(1));
+		bill.setStatus("O");
+		bill.setBalance(balance);
+		bill.setGuarantor(guarantor);
+		return bill;
+	}
+
+	private void withGuarantorSettings(boolean single, double singleQuota, ThrowingRunnable runnable) throws Exception {
+		boolean oldAllow = GeneralData.ALLOWBILLGUARANTOR;
+		boolean oldSingle = GeneralData.BILLGUARANTORSINGLEQUOTA;
+		double oldQuota = GeneralData.BILLGUARANTORQUOTA;
+		try {
+			GeneralData.ALLOWBILLGUARANTOR = true;
+			GeneralData.BILLGUARANTORSINGLEQUOTA = single;
+			GeneralData.BILLGUARANTORQUOTA = singleQuota;
+			runnable.run();
+		} finally {
+			GeneralData.ALLOWBILLGUARANTOR = oldAllow;
+			GeneralData.BILLGUARANTORSINGLEQUOTA = oldSingle;
+			GeneralData.BILLGUARANTORQUOTA = oldQuota;
+		}
+	}
+
+	@FunctionalInterface
+	private interface ThrowingRunnable {
+		void run() throws Exception;
+	}
+
+	@Test
+	void testGuarantorSpecificQuotaExceeded() throws Exception {
+		withGuarantorSettings(false, 0, () -> {
+			User guarantor = setupGuarantor(100.0);
+			billBrowserManager.newBill(newGuaranteedBill(guarantor, 60), new ArrayList<>(), new ArrayList<>());
+			assertThat(billBrowserManager.getGuarantorUsedQuota(guarantor, 0)).isEqualTo(60.0);
+
+			assertThatThrownBy(() -> billBrowserManager.newBill(newGuaranteedBill(guarantor, 50), new ArrayList<>(), new ArrayList<>()))
+				.isInstanceOf(OHDataValidationException.class);
+
+			billBrowserManager.newBill(newGuaranteedBill(guarantor, 40), new ArrayList<>(), new ArrayList<>());
+			assertThat(billBrowserManager.getGuarantorUsedQuota(guarantor, 0)).isEqualTo(100.0);
+			assertThat(billBrowserManager.getGuarantorsUsedQuota()).containsEntry(guarantor.getUserName(), 100.0);
+		});
+	}
+
+	@Test
+	void testGuarantorWithoutQuotaUsesDefaultQuota() throws Exception {
+		withGuarantorSettings(false, 10, () -> {
+			User guarantor = setupGuarantor(null);
+			assertThat(billBrowserManager.getGuarantorQuota(guarantor)).isEqualTo(10.0);
+			assertThatThrownBy(() -> billBrowserManager.newBill(newGuaranteedBill(guarantor, 1000), new ArrayList<>(), new ArrayList<>()))
+				.isInstanceOf(OHDataValidationException.class);
+		});
+	}
+
+	@Test
+	void testGuarantorSpecificQuotaOverridesDefaultQuota() throws Exception {
+		withGuarantorSettings(false, 10, () -> {
+			User guarantor = setupGuarantor(1000.0);
+			assertThat(billBrowserManager.getGuarantorQuota(guarantor)).isEqualTo(1000.0);
+			billBrowserManager.newBill(newGuaranteedBill(guarantor, 500), new ArrayList<>(), new ArrayList<>());
+		});
+	}
+
+	@Test
+	void testGuarantorWithoutQuotaAndNoDefaultIsUnlimited() throws Exception {
+		withGuarantorSettings(false, 0, () -> {
+			User guarantor = setupGuarantor(null);
+			assertThat(billBrowserManager.getGuarantorQuota(guarantor)).isNull();
+			billBrowserManager.newBill(newGuaranteedBill(guarantor, 1000), new ArrayList<>(), new ArrayList<>());
+		});
+	}
+
+	@Test
+	void testGuarantorSingleQuotaOverridesSpecificQuota() throws Exception {
+		withGuarantorSettings(true, 50, () -> {
+			User guarantor = setupGuarantor(1000.0);
+			assertThat(billBrowserManager.getGuarantorQuota(guarantor)).isEqualTo(50.0);
+			assertThatThrownBy(() -> billBrowserManager.newBill(newGuaranteedBill(guarantor, 60), new ArrayList<>(), new ArrayList<>()))
+				.isInstanceOf(OHDataValidationException.class);
+		});
+	}
+
+	@Test
+	void testGuarantorQuotaDoesNotBlockPaymentOnBillAlreadyOverQuota() throws Exception {
+		withGuarantorSettings(false, 0, () -> {
+			User guarantor = setupGuarantor(100.0);
+			Bill bill = billBrowserManager.newBill(newGuaranteedBill(guarantor, 90), new ArrayList<>(), new ArrayList<>());
+			guarantor.setGuarantorQuota(50.0);
+			userIoOperationRepository.saveAndFlush(guarantor);
+
+			// lowering the balance (partial payment) is still allowed
+			Bill paidBill = (Bill) bill.clone();
+			paidBill.setBalance(80.0);
+			billBrowserManager.updateBill(paidBill, new ArrayList<>(), new ArrayList<>());
+
+			// increasing it is not
+			Bill increasedBill = (Bill) bill.clone();
+			increasedBill.setBalance(85.0);
+			assertThatThrownBy(() -> billBrowserManager.updateBill(increasedBill, new ArrayList<>(), new ArrayList<>()))
+				.isInstanceOf(OHDataValidationException.class);
+		});
 	}
 }

@@ -228,6 +228,17 @@ public class MenuIoOperations {
 	}
 
 	/**
+	 * Updates the guarantor quota of an existing {@link User} in the DB
+	 * @param user - the {@link User} to update
+	 * @return the updated {@link User}
+	 * @throws OHServiceException When failed to update the quota
+	 */
+	public User updateGuarantorQuota(User user) throws OHServiceException {
+		repository.updateGuarantorQuota(user.getGuarantorQuota(), user.getUserName());
+		return getUserByName(user.getUserName(), true);
+	}
+
+	/**
 	 * Updates the password of an existing {@link User} in the DB
 	 * @param user - the {@link User} to update
 	 * @return the {@link User} that has been deleted
