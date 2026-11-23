@@ -22,17 +22,26 @@
 package org.isf.patvac.manager;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.isf.generaldata.MessageBundle;
+import org.isf.patient.model.Patient;
 import org.isf.patvac.model.PatientVaccine;
 import org.isf.patvac.service.PatVacIoOperations;
+import org.isf.stat.dto.PatientVaccineItemStatsDto;
+import org.isf.stat.dto.PatientVaccineRowDto;
+import org.isf.stat.dto.PatientVaccineStatsDto;
 import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.model.OHExceptionMessage;
+import org.isf.vaccine.model.Vaccine;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
@@ -71,7 +80,7 @@ public class PatVacManager {
 	 * @return a page of {@link PatientVaccine}s
 	 * @throws OHServiceException
 	 */
-	public Page<PatientVaccine> getPatientVaccinePage(String vaccineTypeCode, String vaccineCode, LocalDateTime dateFrom,LocalDateTime dateTo, char sex, int ageFrom, int ageTo, Pageable pageable) throws OHServiceException {
+	public Page<PatientVaccine> getPatientVaccinePage(String vaccineTypeCode, String vaccineCode, LocalDateTime dateFrom,LocalDateTime dateTo, char sex, Integer ageFrom, Integer ageTo, Pageable pageable) throws OHServiceException {
 		return ioOperations.getPatientVaccinePage(vaccineTypeCode, vaccineCode, dateFrom, dateTo, sex, ageFrom, ageTo, pageable);
 	}
 
@@ -89,7 +98,7 @@ public class PatVacManager {
 	 * @throws OHServiceException
 	 */
 	public List<PatientVaccine> getPatientVaccine(String vaccineTypeCode, String vaccineCode, LocalDateTime dateFrom, LocalDateTime dateTo, char sex,
-		int ageFrom, int ageTo) throws OHServiceException {
+		Integer ageFrom, Integer ageTo) throws OHServiceException {
 		return ioOperations.getPatientVaccine(vaccineTypeCode, vaccineCode, dateFrom, dateTo, sex, ageFrom, ageTo);
 	}
 
@@ -200,7 +209,147 @@ public class PatVacManager {
 	 * @throws OHServiceException
 	 */
 	public Page<PatientVaccine> getPatientVaccinePage(String vaccineTypeCode, String vaccineCode, LocalDateTime dateFrom,
-		LocalDateTime dateTo, char sex, int ageFrom, int ageTo, String patientSearchText, String villageText, Pageable pageable) throws OHServiceException {
+		LocalDateTime dateTo, char sex, Integer ageFrom, Integer ageTo, String patientSearchText, String villageText, Pageable pageable) throws OHServiceException {
 		return ioOperations.getPatientVaccinePage(vaccineTypeCode, vaccineCode, dateFrom, dateTo, sex, ageFrom, ageTo, patientSearchText, villageText, pageable);
 	}
+
+	/**
+	 * Computes consolidated statistics for patient vaccines matching the specified filter criteria.
+	 *
+	 * @param vaccineTypeCode the vaccine type code
+	 * @param vaccineCode the vaccine code
+	 * @param dateFrom the start date
+	 * @param dateTo the end date
+	 * @param sex the patient sex ('A', 'M', 'F')
+	 * @param ageFrom the minimum age
+	 * @param ageTo the maximum age
+	 * @param patientSearchText search text on patient name or code
+	 * @param villageText search text on village
+	 * @return a {@link PatientVaccineStatsDto} containing aggregated indicators
+	 * @throws OHServiceException
+	 */
+	public PatientVaccineStatsDto getPatientVaccineStats(String vaccineTypeCode, String vaccineCode, LocalDateTime dateFrom,
+		LocalDateTime dateTo, char sex, Integer ageFrom, Integer ageTo, String patientSearchText, String villageText) throws OHServiceException {
+
+		List<PatientVaccine> list = ioOperations.getPatientVaccineList(vaccineTypeCode, vaccineCode, dateFrom, dateTo, sex, ageFrom, ageTo, patientSearchText, villageText);
+
+		PatientVaccineStatsDto stats = new PatientVaccineStatsDto();
+		stats.setFilterDateFrom(dateFrom);
+		stats.setFilterDateTo(dateTo);
+		stats.setFilterVaccineType(vaccineTypeCode);
+		stats.setFilterVaccine(vaccineCode);
+		stats.setFilterSex(String.valueOf(sex));
+		stats.setFilterAgeFrom(ageFrom);
+		stats.setFilterAgeTo(ageTo);
+		stats.setFilterPatientSearch(patientSearchText);
+		stats.setFilterVillage(villageText);
+
+		long total = list.size();
+		stats.setTotalVaccinations(total);
+
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+		List<PatientVaccineRowDto> rows = new ArrayList<>();
+		for (PatientVaccine pv : list) {
+			Patient pat = pv.getPatient();
+			Integer patCode = pat != null ? pat.getCode() : null;
+			String patName = pat != null ? pat.getName() : "";
+			String patSexStr = pat != null ? String.valueOf(pat.getSex()) : "-";
+			Integer patAge = pat != null ? pat.getAge() : null;
+			String dateStr = pv.getVaccineDate() != null ? pv.getVaccineDate().format(dtf) : "-";
+			String vacDesc = pv.getVaccine() != null ? pv.getVaccine().getDescription() : "-";
+			String vacTypeDesc = (pv.getVaccine() != null && pv.getVaccine().getVaccineType() != null) ? pv.getVaccine().getVaccineType().getDescription() : "-";
+			String village = pv.getVillage() != null ? pv.getVillage() : "";
+
+			rows.add(new PatientVaccineRowDto(patCode, patName, patSexStr, patAge, dateStr, vacDesc, vacTypeDesc, village));
+		}
+		stats.setRows(rows);
+
+		if (total == 0) {
+			return stats;
+		}
+
+		long distinctPatients = list.stream()
+			.map(pv -> pv.getPatient() != null ? pv.getPatient().getCode() : null)
+			.filter(Objects::nonNull)
+			.distinct()
+			.count();
+		stats.setDistinctPatients(distinctPatients);
+
+		long maleCount = 0;
+		long femaleCount = 0;
+		long under1Count = 0;
+		long from1To5Count = 0;
+		long over5Count = 0;
+
+		Map<String, PatientVaccineItemStatsDto> vaccineMap = new LinkedHashMap<>();
+
+		for (PatientVaccine pv : list) {
+			Patient pat = pv.getPatient();
+			if (pat != null) {
+				char patSex = pat.getSex();
+				if (patSex == 'M') {
+					maleCount++;
+				} else if (patSex == 'F') {
+					femaleCount++;
+				}
+
+				int age = pat.getAge();
+				if (age < 1) {
+					under1Count++;
+				} else if (age <= 5) {
+					from1To5Count++;
+				} else {
+					over5Count++;
+				}
+			}
+
+			Vaccine vac = pv.getVaccine();
+			if (vac != null) {
+				String vCode = vac.getCode();
+				PatientVaccineItemStatsDto item = vaccineMap.computeIfAbsent(vCode, k -> {
+					PatientVaccineItemStatsDto dto = new PatientVaccineItemStatsDto();
+					dto.setVaccineCode(vCode);
+					dto.setVaccineDescription(vac.getDescription());
+					if (vac.getVaccineType() != null) {
+						dto.setVaccineTypeCode(vac.getVaccineType().getCode());
+						dto.setVaccineTypeDescription(vac.getVaccineType().getDescription());
+					} else {
+						dto.setVaccineTypeCode("-");
+						dto.setVaccineTypeDescription("-");
+					}
+					dto.setCount(0L);
+					return dto;
+				});
+				item.setCount(item.getCount() + 1);
+			}
+		}
+
+		stats.setMaleCount(maleCount);
+		stats.setMalePercentage(Math.round((maleCount * 100.0 / total) * 10.0) / 10.0);
+		stats.setFemaleCount(femaleCount);
+		stats.setFemalePercentage(Math.round((femaleCount * 100.0 / total) * 10.0) / 10.0);
+
+		stats.setUnder1Count(under1Count);
+		stats.setUnder1Percentage(Math.round((under1Count * 100.0 / total) * 10.0) / 10.0);
+		stats.setFrom1To5Count(from1To5Count);
+		stats.setFrom1To5Percentage(Math.round((from1To5Count * 100.0 / total) * 10.0) / 10.0);
+		stats.setOver5Count(over5Count);
+		stats.setOver5Percentage(Math.round((over5Count * 100.0 / total) * 10.0) / 10.0);
+
+		List<PatientVaccineItemStatsDto> vaccineStatsList = new ArrayList<>(vaccineMap.values());
+		for (PatientVaccineItemStatsDto item : vaccineStatsList) {
+			item.setPercentage(Math.round((item.getCount() * 100.0 / total) * 10.0) / 10.0);
+		}
+		vaccineStatsList.sort((a, b) -> {
+			int typeCmp = String.valueOf(a.getVaccineTypeDescription()).compareToIgnoreCase(String.valueOf(b.getVaccineTypeDescription()));
+			if (typeCmp != 0) {
+				return typeCmp;
+			}
+			return String.valueOf(a.getVaccineDescription()).compareToIgnoreCase(String.valueOf(b.getVaccineDescription()));
+		});
+		stats.setVaccineStats(vaccineStatsList);
+
+		return stats;
+	}
 }
+

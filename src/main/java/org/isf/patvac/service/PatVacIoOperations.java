@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -84,8 +84,8 @@ public class PatVacIoOperations {
 			LocalDateTime dateFrom,
 			LocalDateTime dateTo,
 			char sex,
-			int ageFrom,
-			int ageTo) throws OHServiceException {
+			Integer ageFrom,
+			Integer ageTo) throws OHServiceException {
 		return repository.findAllByCodesAndDatesAndSexAndAges(vaccineTypeCode, vaccineCode, TimeTools.truncateToSeconds(dateFrom),
 		                                                      TimeTools.truncateToSeconds(dateTo), sex, ageFrom, ageTo);
 	}
@@ -105,7 +105,7 @@ public class PatVacIoOperations {
 	 * @throws OHServiceException
 	 */
 	public Page<PatientVaccine> getPatientVaccinePage(String vaccineTypeCode, String vaccineCode, LocalDateTime dateFrom, LocalDateTime dateTo,
-		char sex, int ageFrom, int ageTo, Pageable pageable) throws OHServiceException {
+		char sex, Integer ageFrom, Integer ageTo, Pageable pageable) throws OHServiceException {
 		return repository.findAllByCodesAndDatesAndSexAndAgesWithPagination(
 			vaccineTypeCode, vaccineCode, TimeTools.truncateToSeconds(dateFrom), TimeTools.truncateToSeconds(dateTo), sex, ageFrom, ageTo, pageable);
 	}
@@ -197,9 +197,32 @@ public class PatVacIoOperations {
 	 * @throws OHServiceException
 	 */
 	public Page<PatientVaccine> getPatientVaccinePage(String vaccineTypeCode, String vaccineCode, LocalDateTime dateFrom, LocalDateTime dateTo,
-		char sex, int ageFrom, int ageTo, String patientSearchText, String villageText, Pageable pageable) throws OHServiceException {
+		char sex, Integer ageFrom, Integer ageTo, String patientSearchText, String villageText, Pageable pageable) throws OHServiceException {
 		return repository.findAllByCodesAndDatesAndSexAndAgesWithPagination(
 			vaccineTypeCode, vaccineCode, TimeTools.truncateToSeconds(dateFrom),
 			TimeTools.truncateToSeconds(dateTo), sex, ageFrom, ageTo, patientSearchText, villageText, pageable);
+	}
+
+	/**
+	 * Returns all {@link PatientVaccine}s filtered by vaccine type, vaccine, date range, sex, age,
+	 * patient search and village.
+	 *
+	 * @param vaccineTypeCode the vaccine type code
+	 * @param vaccineCode the vaccine code
+	 * @param dateFrom the start date
+	 * @param dateTo the end date
+	 * @param sex the patient sex
+	 * @param ageFrom the minimum age
+	 * @param ageTo the maximum age
+	 * @param patientSearchText the patient name or code to search
+	 * @param villageText the village to filter
+	 * @return the list of {@link PatientVaccine}s
+	 * @throws OHServiceException
+	 */
+	public List<PatientVaccine> getPatientVaccineList(String vaccineTypeCode, String vaccineCode, LocalDateTime dateFrom, LocalDateTime dateTo,
+		char sex, Integer ageFrom, Integer ageTo, String patientSearchText, String villageText) throws OHServiceException {
+		return repository.findAllByFilter(
+			vaccineTypeCode, vaccineCode, TimeTools.truncateToSeconds(dateFrom),
+			TimeTools.truncateToSeconds(dateTo), sex, ageFrom, ageTo, patientSearchText, villageText);
 	}
 }
