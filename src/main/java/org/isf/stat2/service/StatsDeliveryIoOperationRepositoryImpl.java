@@ -183,9 +183,10 @@ public class StatsDeliveryIoOperationRepositoryImpl implements StatsDeliveryIoOp
 			parameters.add(motherAgeMax);
 		}
 
-		if (sex != null && !sex.isEmpty() && !"Tous".equals(sex) && !"All".equals(sex)) {
+		String effectiveSex = (sex != null && !sex.isEmpty()) ? sex : newbornSex;
+		if (effectiveSex != null && !effectiveSex.isEmpty() && !"Tous".equalsIgnoreCase(effectiveSex) && !"All".equalsIgnoreCase(effectiveSex)) {
 			conditions.append(" AND _newborn.NBN_PAT_ID IN (SELECT PAT_ID FROM oh_patient WHERE PAT_SEX = ?)");
-			parameters.add(sex);
+			parameters.add(effectiveSex);
 		}
 
 		if (weightMin != null) {
@@ -197,15 +198,17 @@ public class StatsDeliveryIoOperationRepositoryImpl implements StatsDeliveryIoOp
 			parameters.add(weightMax);
 		}
 
-		if (deliveryType != null && !deliveryType.isEmpty() && !"Tous".equals(deliveryType) && !"All".equals(deliveryType)) {
+		if (deliveryType != null && !deliveryType.isEmpty() && !"Tous".equalsIgnoreCase(deliveryType) && !"All".equalsIgnoreCase(deliveryType)) {
 			fromBuilder.append(" INNER JOIN oh_typologies _deliverytype ON _deliverytype.TYPO_CODE = _delivery.PRGDLV_TYPE_ID");
-			conditions.append(" AND _deliverytype.TYPO_DESCRIPTION = ?");
+			conditions.append(" AND (_deliverytype.TYPO_DESCRIPTION = ? OR _deliverytype.TYPO_CODE = ?)");
+			parameters.add(deliveryType);
 			parameters.add(deliveryType);
 		}
 
-		if (deliveryResultType != null && !deliveryResultType.isEmpty() && !"Tous".equals(deliveryResultType) && !"All".equals(deliveryResultType)) {
+		String effectiveNeonatalStatus = (deliveryResultType != null && !deliveryResultType.isEmpty()) ? deliveryResultType : neonatalStatus;
+		if (effectiveNeonatalStatus != null && !effectiveNeonatalStatus.isEmpty() && !"Tous".equalsIgnoreCase(effectiveNeonatalStatus) && !"All".equalsIgnoreCase(effectiveNeonatalStatus)) {
 			conditions.append(" AND _newborn.NBN_NEONATAL_STATUS = ?");
-			parameters.add(deliveryResultType);
+			parameters.add(effectiveNeonatalStatus);
 		}
 
 		if (deliveryMode != null && !deliveryMode.isEmpty() && !"Tous".equals(deliveryMode) && !"All".equals(deliveryMode)) {
@@ -279,11 +282,6 @@ public class StatsDeliveryIoOperationRepositoryImpl implements StatsDeliveryIoOp
 			}
 		}
 
-		if (neonatalStatus != null && !neonatalStatus.isEmpty() && !"Tous".equals(neonatalStatus) && !"All".equals(neonatalStatus)) {
-			conditions.append(" AND _newborn.NBN_NEONATAL_STATUS = ?");
-			parameters.add(neonatalStatus);
-		}
-
 		if (apgar1Range != null && !apgar1Range.isEmpty() && !"Tous".equals(apgar1Range) && !"All".equals(apgar1Range)) {
 			switch (apgar1Range) {
 				case "0-3":
@@ -335,23 +333,25 @@ public class StatsDeliveryIoOperationRepositoryImpl implements StatsDeliveryIoOp
 			}
 		}
 
-		if (disease != null && !disease.isEmpty() && !"Tous".equals(disease) && !"All".equals(disease)) {
+		if (disease != null && !disease.isEmpty() && !"Tous".equalsIgnoreCase(disease) && !"All".equalsIgnoreCase(disease)) {
 			fromBuilder.append(" INNER JOIN oh_admission _patadm ON _mother.PAT_ID = _patadm.ADM_PAT_ID")
-				.append(" INNER JOIN oh_disease _disease ON _patadm.ADM_OUT_DIS_ID_A = _disease.DIS_ID_A")
+				.append(" INNER JOIN oh_disease _disease ON (_patadm.ADM_OUT_DIS_ID_A = _disease.DIS_ID_A")
 				.append(" OR _patadm.ADM_OUT_DIS_ID_A_2 = _disease.DIS_ID_A")
-				.append(" OR _patadm.ADM_OUT_DIS_ID_A_3 = _disease.DIS_ID_A");
-			conditions.append(" AND _disease.DIS_DESC = ?");
+				.append(" OR _patadm.ADM_OUT_DIS_ID_A_3 = _disease.DIS_ID_A)");
+			conditions.append(" AND (_disease.DIS_DESC = ? OR _disease.DIS_ID_A = ?)");
+			parameters.add(disease);
 			parameters.add(disease);
 		}
 
-		if (dischargeType != null && !dischargeType.isEmpty() && !"Tous".equals(dischargeType) && !"All".equals(dischargeType)) {
-			if (disease != null && !disease.isEmpty()) {
+		if (dischargeType != null && !dischargeType.isEmpty() && !"Tous".equalsIgnoreCase(dischargeType) && !"All".equalsIgnoreCase(dischargeType)) {
+			if (disease != null && !disease.isEmpty() && !"Tous".equalsIgnoreCase(disease) && !"All".equalsIgnoreCase(disease)) {
 				fromBuilder.append(" INNER JOIN oh_dischargetype _disctype ON _disctype.DIST_ID_A = _patadm.ADM_DIST_ID_A");
 			} else {
 				fromBuilder.append(" INNER JOIN oh_admission _patadm ON _mother.PAT_ID = _patadm.ADM_PAT_ID")
 					.append(" INNER JOIN oh_dischargetype _disctype ON _disctype.DIST_ID_A = _patadm.ADM_DIST_ID_A");
 			}
-			conditions.append(" AND _disctype.DIST_DESC = ?");
+			conditions.append(" AND (_disctype.DIST_DESC = ? OR _disctype.DIST_ID_A = ?)");
+			parameters.add(dischargeType);
 			parameters.add(dischargeType);
 		}
 
@@ -377,7 +377,7 @@ public class StatsDeliveryIoOperationRepositoryImpl implements StatsDeliveryIoOp
 		dataQuery.setFirstResult((int) pageable.getOffset());
 		dataQuery.setMaxResults(pageable.getPageSize());
 
-		String countSql = "SELECT COUNT(DISTINCT _mother.PAT_ID)" + from + where;
+		String countSql = "SELECT COUNT(DISTINCT _newborn.NBN_ID)" + from + where;
 		Query countQuery = entityManager.createNativeQuery(countSql);
 		bindParameters(countQuery, parameters);
 
