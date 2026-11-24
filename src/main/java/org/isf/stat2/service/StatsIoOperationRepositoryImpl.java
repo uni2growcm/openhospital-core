@@ -30,6 +30,7 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
 
 import org.isf.patient.model.Patient;
+import org.isf.stat2.model.PregnancyStatsRange;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.time.TimeTools;
 import org.springframework.data.domain.Page;
@@ -115,6 +116,7 @@ public class StatsIoOperationRepositoryImpl implements StatsIoOperationRepositor
 			conditions.append(" AND _patient.PAT_AGE >= ?");
 			parameters.add(ageFrom);
 		}
+
 		if (ageTo != null && ageTo > 0) {
 			conditions.append(" AND _patient.PAT_AGE <= ?");
 			parameters.add(ageTo);
@@ -124,19 +126,20 @@ public class StatsIoOperationRepositoryImpl implements StatsIoOperationRepositor
 			conditions.append(" AND DATE(_pregvisit.PRGV_DATE) >= ?");
 			parameters.add(TimeTools.formatDateTime(periodFrom, YYYY_MM_DD));
 		}
+
 		if (periodTo != null) {
 			conditions.append(" AND DATE(_pregvisit.PRGV_DATE) <= ?");
 			parameters.add(TimeTools.formatDateTime(periodTo, YYYY_MM_DD));
 		}
 
-		if (riskLevel != null && !riskLevel.isEmpty() && !"Tous".equals(riskLevel)) {
+		if (riskLevel != null && !riskLevel.isEmpty()) {
 			conditions.append(" AND _pregnancy.PRG_RISK_LEVEL = ?");
-			parameters.add(riskLevel);
+			parameters.add(riskLevel.toUpperCase());
 		}
 
-		if (status != null && !status.isEmpty() && !"Tous".equals(status)) {
+		if (status != null && !status.isEmpty()) {
 			conditions.append(" AND _pregnancy.PRG_STATUS = ?");
-			parameters.add(status);
+			parameters.add(status.toUpperCase());
 		}
 
 		if (gravidityMin != null) {
@@ -166,21 +169,30 @@ public class StatsIoOperationRepositoryImpl implements StatsIoOperationRepositor
 			parameters.add(miscarriageMax);
 		}
 
-		if (gestationalAgeMin != null || gestationalAgeMax != null) {
-			if (gestationalAgeMin != null) {
-				conditions.append(" AND DATEDIFF(NOW(), _pregnancy.PRG_LMP) >= ?");
-				parameters.add(gestationalAgeMin * 7);
-			}
-			if (gestationalAgeMax != null) {
-				conditions.append(" AND DATEDIFF(NOW(), _pregnancy.PRG_LMP) <= ?");
-				parameters.add(gestationalAgeMax * 7);
-			}
+		if (gestationalAgeMin != null) {
+			conditions.append(" AND DATEDIFF(_pregvisit.PRGV_DATE, _pregnancy.PRG_LMP) >= ?");
+			parameters.add(gestationalAgeMin * 7);
 		}
 
+		if (gestationalAgeMax != null) {
+			conditions.append(" AND DATEDIFF(_pregvisit.PRGV_DATE, _pregnancy.PRG_LMP) < ?");
+			parameters.add(gestationalAgeMax * 7);
+		}
+
+		List<Object> fromParameters = new ArrayList<>();
 		if (visitCountMin != null || visitCountMax != null) {
-			fromBuilder.append(" INNER JOIN (SELECT PRGV_PRG_ID, COUNT(*) AS visit_count"
-				+ " FROM oh_pregnancyvisit GROUP BY PRGV_PRG_ID) _visitcount"
-				+ " ON _visitcount.PRGV_PRG_ID = _pregnancy.PRG_ID");
+			StringBuilder visitCountSql = new StringBuilder(
+				" INNER JOIN (SELECT PRGV_PRG_ID, COUNT(*) AS visit_count FROM oh_pregnancyvisit WHERE 1 = 1");
+			if (periodFrom != null) {
+				visitCountSql.append(" AND DATE(PRGV_DATE) >= ?");
+				fromParameters.add(TimeTools.formatDateTime(periodFrom, YYYY_MM_DD));
+			}
+			if (periodTo != null) {
+				visitCountSql.append(" AND DATE(PRGV_DATE) <= ?");
+				fromParameters.add(TimeTools.formatDateTime(periodTo, YYYY_MM_DD));
+			}
+			visitCountSql.append(" GROUP BY PRGV_PRG_ID) _visitcount ON _visitcount.PRGV_PRG_ID = _pregnancy.PRG_ID");
+			fromBuilder.append(visitCountSql);
 			if (visitCountMin != null) {
 				conditions.append(" AND _visitcount.visit_count >= ?");
 				parameters.add(visitCountMin);
@@ -191,72 +203,73 @@ public class StatsIoOperationRepositoryImpl implements StatsIoOperationRepositor
 			}
 		}
 
-		if (visitType != null && !visitType.isEmpty() && !"Tous".equals(visitType)) {
+		if (visitType != null && !visitType.isEmpty()) {
 			conditions.append(" AND _pregvisit.PRGV_TYPE_ID = ?");
 			parameters.add(visitType);
 		}
 
-		if (maternalWeightRange != null && !maternalWeightRange.isEmpty() && !"Tous".equals(maternalWeightRange)) {
+		if (maternalWeightRange != null && !maternalWeightRange.isEmpty()) {
 			switch (maternalWeightRange) {
-				case "< 50 kg":
+				case PregnancyStatsRange.MATERNAL_WEIGHT_LT50:
 					conditions.append(" AND _pregvisit.PRGV_MATERNAL_WEIGHT < 50");
 					break;
-				case "50-70 kg":
-					conditions.append(" AND _pregvisit.PRGV_MATERNAL_WEIGHT BETWEEN 50 AND 70");
+				case PregnancyStatsRange.MATERNAL_WEIGHT_50_70:
+					conditions.append(" AND _pregvisit.PRGV_MATERNAL_WEIGHT >= 50 AND _pregvisit.PRGV_MATERNAL_WEIGHT < 70");
 					break;
-				case "70-90 kg":
-					conditions.append(" AND _pregvisit.PRGV_MATERNAL_WEIGHT BETWEEN 70 AND 90");
+				case PregnancyStatsRange.MATERNAL_WEIGHT_70_90:
+					conditions.append(" AND _pregvisit.PRGV_MATERNAL_WEIGHT >= 70 AND _pregvisit.PRGV_MATERNAL_WEIGHT < 90");
 					break;
-				case "90+ kg":
-					conditions.append(" AND _pregvisit.PRGV_MATERNAL_WEIGHT > 90");
+				case PregnancyStatsRange.MATERNAL_WEIGHT_GE90:
+					conditions.append(" AND _pregvisit.PRGV_MATERNAL_WEIGHT >= 90");
+					break;
+				default:
 					break;
 			}
 		}
 
-		if (urineProtein != null && !urineProtein.isEmpty() && !"Tous".equals(urineProtein)) {
+		if (urineProtein != null && !urineProtein.isEmpty()) {
 			conditions.append(" AND _pregvisit.PRGV_URINE_PROTEIN = ?");
 			parameters.add(urineProtein);
 		}
 
-		if (edema != null && !edema.isEmpty() && !"Tous".equals(edema)) {
-			if ("Pas d'œdème".equals(edema)) {
-				conditions.append(" AND _pregvisit.PRGV_EDEMA_PRESENCE = ?");
-				parameters.add("Pas d'œdème");
-			} else {
-				conditions.append(" AND _pregvisit.PRGV_EDEMA_PRESENCE = ?");
-				parameters.add(edema);
-			}
+		if (edema != null && !edema.isEmpty()) {
+			conditions.append(" AND _pregvisit.PRGV_EDEMA_PRESENCE = ?");
+			parameters.add(edema);
 		}
 
-		if (fetalPresentation != null && !fetalPresentation.isEmpty() && !"Tous".equals(fetalPresentation)) {
+		if (fetalPresentation != null && !fetalPresentation.isEmpty()) {
 			conditions.append(" AND _pregvisit.PRGV_FETAL_PRESENTATION = ?");
 			parameters.add(fetalPresentation);
 		}
 
-		if (systolicBpRange != null && !systolicBpRange.isEmpty() && !"Tous".equals(systolicBpRange)) {
+		if (systolicBpRange != null && !systolicBpRange.isEmpty()) {
 			switch (systolicBpRange) {
-				case "< 120":
+				case PregnancyStatsRange.SYSTOLIC_LT120:
 					conditions.append(" AND _pregvisit.PRGV_SYSTOLIC_BP < 120");
 					break;
-				case "120-139":
-					conditions.append(" AND _pregvisit.PRGV_SYSTOLIC_BP BETWEEN 120 AND 139");
+				case PregnancyStatsRange.SYSTOLIC_120_139:
+					conditions.append(" AND _pregvisit.PRGV_SYSTOLIC_BP >= 120 AND _pregvisit.PRGV_SYSTOLIC_BP < 140");
 					break;
-				case "140+":
+				case PregnancyStatsRange.SYSTOLIC_GE140:
 					conditions.append(" AND _pregvisit.PRGV_SYSTOLIC_BP >= 140");
+					break;
+				default:
 					break;
 			}
 		}
 
-		if (diastolicBpRange != null && !diastolicBpRange.isEmpty() && !"Tous".equals(diastolicBpRange)) {
+		if (diastolicBpRange != null && !diastolicBpRange.isEmpty()) {
 			switch (diastolicBpRange) {
-				case "< 80":
+				case PregnancyStatsRange.DIASTOLIC_LT80:
 					conditions.append(" AND _pregvisit.PRGV_DIASTOLIC_BP < 80");
 					break;
-				case "80-89":
-					conditions.append(" AND _pregvisit.PRGV_DIASTOLIC_BP BETWEEN 80 AND 89");
+				case PregnancyStatsRange.DIASTOLIC_80_89:
+					conditions.append(" AND _pregvisit.PRGV_DIASTOLIC_BP >= 80 AND _pregvisit.PRGV_DIASTOLIC_BP < 90");
 					break;
-				case "90+":
+				case PregnancyStatsRange.DIASTOLIC_GE90:
 					conditions.append(" AND _pregvisit.PRGV_DIASTOLIC_BP >= 90");
+					break;
+				default:
 					break;
 			}
 		}
@@ -358,17 +371,22 @@ public class StatsIoOperationRepositoryImpl implements StatsIoOperationRepositor
 		String from = fromBuilder.toString();
 		String where = " WHERE " + conditions;
 
+		// parameters of the FROM clause (sub-queries) come before those of the WHERE clause
+		List<Object> allParameters = new ArrayList<>(fromParameters);
+		allParameters.addAll(parameters);
+
+		// ORDER BY keeps pagination stable
 		String dataSql = "SELECT DISTINCT _patient.PAT_ID, _patient.PAT_FNAME, _patient.PAT_SNAME, _patient.PAT_AGE"
-			+ from + where;
+			+ from + where + " ORDER BY _patient.PAT_SNAME, _patient.PAT_FNAME, _patient.PAT_ID";
 
 		Query dataQuery = entityManager.createNativeQuery(dataSql);
-		bindParameters(dataQuery, parameters);
+		bindParameters(dataQuery, allParameters);
 		dataQuery.setFirstResult((int) pageable.getOffset());
 		dataQuery.setMaxResults(pageable.getPageSize());
 
 		String countSql = "SELECT COUNT(DISTINCT _patient.PAT_ID)" + from + where;
 		Query countQuery = entityManager.createNativeQuery(countSql);
-		bindParameters(countQuery, parameters);
+		bindParameters(countQuery, allParameters);
 
 		long total = ((Number) countQuery.getSingleResult()).longValue();
 
