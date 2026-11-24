@@ -38,6 +38,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -74,6 +75,9 @@ import org.isf.patient.model.Patient;
 import org.isf.patient.service.PatientIoOperations;
 import org.isf.stat.dto.BillItemReportBean;
 import org.isf.stat.dto.IncomesPerSurgeryActReportBean;
+import org.isf.stat.dto.PatientVaccineItemStatsDto;
+import org.isf.stat.dto.PatientVaccineRowDto;
+import org.isf.stat.dto.PatientVaccineStatsDto;
 import org.isf.patvac.manager.PatVacManager;
 import org.isf.stat.dto.JasperReportResultDto;
 import org.isf.stat2.manager.StatsDeliveryManager;
@@ -125,6 +129,7 @@ public class JasperReportsManager {
 	private static final String RPT_STAT = "rpt_stat";
 	private static final String INCOMES_PER_SURGERY_ACT_FILENAME = "OH004_IncomesAllByPriceCodes_3_Surgery";
 	private static final String SALES_BY_PRODUCT_SERVICE_PER_YEAR_FILENAME = "OH004_IncomesAllByPriceCodes_3";
+	public static final String PATIENT_VACCINE_REPORT_FILENAME = "OH011_PatientVaccineReport";
 
 	private HospitalBrowsingManager hospitalManager;
 
@@ -2470,6 +2475,66 @@ public class JasperReportsManager {
 
 			return result;
 
+		} catch (Exception e) {
+			LOGGER.error("", e);
+			throw new OHReportException(e, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));
+		}
+	}
+
+	public JasperReportResultDto getPatientVaccineReportPdf(PatientVaccineStatsDto statsDto) throws OHServiceException {
+		try {
+			HashMap<String, Object> parameters = getHospitalParameters();
+			parameters.put("totalVaccinations", statsDto.getTotalVaccinations());
+			parameters.put("distinctPatients", statsDto.getDistinctPatients());
+			parameters.put("maleCount", statsDto.getMaleCount());
+			parameters.put("malePercentage", statsDto.getMalePercentage());
+			parameters.put("femaleCount", statsDto.getFemaleCount());
+			parameters.put("femalePercentage", statsDto.getFemalePercentage());
+			parameters.put("under1Count", statsDto.getUnder1Count());
+			parameters.put("under1Percentage", statsDto.getUnder1Percentage());
+			parameters.put("from1To5Count", statsDto.getFrom1To5Count());
+			parameters.put("from1To5Percentage", statsDto.getFrom1To5Percentage());
+			parameters.put("over5Count", statsDto.getOver5Count());
+			parameters.put("over5Percentage", statsDto.getOver5Percentage());
+
+			DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+			parameters.put("filterDateFrom", statsDto.getFilterDateFrom() != null ? dtf.format(statsDto.getFilterDateFrom()) : "-");
+			parameters.put("filterDateTo", statsDto.getFilterDateTo() != null ? dtf.format(statsDto.getFilterDateTo()) : "-");
+			parameters.put("filterVaccineType", statsDto.getFilterVaccineType() != null ? statsDto.getFilterVaccineType() : "-");
+			parameters.put("filterVaccine", statsDto.getFilterVaccine() != null ? statsDto.getFilterVaccine() : "-");
+			parameters.put("filterSex", statsDto.getFilterSex() != null ? statsDto.getFilterSex() : "-");
+			parameters.put("filterAgeFrom", statsDto.getFilterAgeFrom() != null ? String.valueOf(statsDto.getFilterAgeFrom()) : "-");
+			parameters.put("filterAgeTo", statsDto.getFilterAgeTo() != null ? String.valueOf(statsDto.getFilterAgeTo()) : "-");
+			parameters.put("filterPatientSearch", statsDto.getFilterPatientSearch() != null && !statsDto.getFilterPatientSearch().isEmpty() ? statsDto.getFilterPatientSearch() : "-");
+			parameters.put("filterVillage", statsDto.getFilterVillage() != null && !statsDto.getFilterVillage().isEmpty() ? statsDto.getFilterVillage() : "-");
+			String periodLabel = "";
+			if (statsDto.getFilterDateFrom() != null && statsDto.getFilterDateTo() != null) {
+				periodLabel = dtf.format(statsDto.getFilterDateFrom()) + " - " + dtf.format(statsDto.getFilterDateTo());
+			} else if (statsDto.getFilterDateFrom() != null) {
+				periodLabel = ">= " + dtf.format(statsDto.getFilterDateFrom());
+			} else if (statsDto.getFilterDateTo() != null) {
+				periodLabel = "<= " + dtf.format(statsDto.getFilterDateTo());
+			} else {
+				periodLabel = "-";
+			}
+			parameters.put("PeriodLabel", periodLabel);
+			parameters.put("SUBREPORT_DIR", "./" + RPT_STAT + File.separator);
+			parameters.put("vaccineStatsList", statsDto.getVaccineStats() != null ? statsDto.getVaccineStats() : Collections.emptyList());
+
+			addBundleParameter(RPT_STAT, PATIENT_VACCINE_REPORT_FILENAME, parameters);
+
+			String pdfFilename = compilePDFFilename(RPT_STAT, PATIENT_VACCINE_REPORT_FILENAME, Collections.singletonList(String.valueOf(System.currentTimeMillis())), "pdf");
+			String jasperFilename = compileJasperFilename(RPT_STAT, PATIENT_VACCINE_REPORT_FILENAME);
+
+			List<PatientVaccineRowDto> rows = statsDto.getRows();
+			if (rows == null) {
+				rows = Collections.emptyList();
+			}
+
+			JasperReport jasperReport = (JasperReport) JRLoader.loadObject(new File(jasperFilename));
+			JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, new JRBeanCollectionDataSource(rows));
+			JasperExportManager.exportReportToPdfFile(jasperPrint, pdfFilename);
+			return new JasperReportResultDto(jasperPrint, jasperFilename, pdfFilename);
 		} catch (Exception e) {
 			LOGGER.error("", e);
 			throw new OHReportException(e, new OHExceptionMessage(MessageBundle.getMessage(STAT_REPORTERROR_MSG)));

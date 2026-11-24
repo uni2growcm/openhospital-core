@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -21,6 +21,7 @@
  */
 package org.isf.patvac.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,8 +54,8 @@ public class PatVacIoOperationRepositoryImpl implements PatVacIoOperationReposit
 			LocalDateTime dateFrom,
 			LocalDateTime dateTo,
 			char sex,
-			int ageFrom,
-			int ageTo) {
+			Integer ageFrom,
+			Integer ageTo) {
 		return this.entityManager.
 				createQuery(getPatientVaccineQuery(vaccineTypeCode, vaccineCode, TimeTools.truncateToSeconds(dateFrom),
 				                                   TimeTools.truncateToSeconds(dateTo), sex, ageFrom, ageTo)).getResultList();
@@ -75,7 +76,7 @@ public class PatVacIoOperationRepositoryImpl implements PatVacIoOperationReposit
 	 */
 	@Override
 	public Page<PatientVaccine> findAllByCodesAndDatesAndSexAndAgesWithPagination(String vaccineTypeCode, String vaccineCode, LocalDateTime dateFrom,
-		LocalDateTime dateTo, char sex, int ageFrom, int ageTo, Pageable pageable) throws OHServiceException {
+		LocalDateTime dateTo, char sex, Integer ageFrom, Integer ageTo, Pageable pageable) throws OHServiceException {
 
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		CriteriaQuery<PatientVaccine> query = cb.createQuery(PatientVaccine.class);
@@ -99,6 +100,51 @@ public class PatVacIoOperationRepositoryImpl implements PatVacIoOperationReposit
 		return new PageImpl<>(content, pageable, total);
 	}
 
+	private boolean hasAgeFilter(Integer ageFrom, Integer ageTo) {
+		if (ageFrom == null && ageTo == null) {
+			return false;
+		}
+		if (ageFrom != null && ageFrom == 0 && ageTo != null && ageTo == 0) {
+			return false;
+		}
+		if (ageFrom != null && ageFrom == 0 && ageTo == null) {
+			return false;
+		}
+		return (ageFrom != null && ageFrom > 0) || ageTo != null;
+	}
+
+	private Predicate buildAgePredicate(CriteriaBuilder cb, Path<?> patientPath, Integer ageFrom, Integer ageTo) {
+		LocalDate today = LocalDate.now();
+		List<Predicate> birthDatePreds = new ArrayList<>();
+		List<Predicate> fallbackAgePreds = new ArrayList<>();
+
+		birthDatePreds.add(cb.isNotNull(patientPath.get("birthDate")));
+		fallbackAgePreds.add(cb.isNull(patientPath.get("birthDate")));
+
+		if (ageFrom != null && ageFrom > 0) {
+			birthDatePreds.add(cb.lessThanOrEqualTo(patientPath.get("birthDate"), today.minusYears(ageFrom)));
+			fallbackAgePreds.add(cb.greaterThanOrEqualTo(patientPath.<Integer>get("age"), ageFrom));
+		}
+		if (ageTo != null && ageTo >= 0 && !(ageTo == 0 && (ageFrom != null && ageFrom > 0))) {
+			birthDatePreds.add(cb.greaterThan(patientPath.get("birthDate"), today.minusYears(ageTo + 1)));
+			fallbackAgePreds.add(cb.lessThanOrEqualTo(patientPath.<Integer>get("age"), ageTo));
+		}
+
+		Predicate birthDatePredicate = cb.and(birthDatePreds.toArray(new Predicate[0]));
+		Predicate fallbackAgePredicate = cb.and(fallbackAgePreds.toArray(new Predicate[0]));
+
+		return cb.or(birthDatePredicate, fallbackAgePredicate);
+	}
+
+	private From<?, ?> getOrCreatePatientJoin(From<?, ?> root) {
+		for (Join<?, ?> join : root.getJoins()) {
+			if (join.getAttribute() != null && "patient".equals(join.getAttribute().getName())) {
+				return join;
+			}
+		}
+		return root.join("patient");
+	}
+
 	/**
 	 * Builds the list of predicates for the query based on the filter criteria.
 	 *
@@ -112,7 +158,7 @@ public class PatVacIoOperationRepositoryImpl implements PatVacIoOperationReposit
 	 * @return the list of predicates
 	 */
 	private List<Predicate> buildPredicates(CriteriaBuilder cb, Root<?> root, String vaccineTypeCode, String vaccineCode, LocalDateTime dateFrom,
-	                                        LocalDateTime dateTo, char sex, int ageFrom, int ageTo) {
+	                                        LocalDateTime dateTo, char sex, Integer ageFrom, Integer ageTo) {
 
 		List<Predicate> predicates = new ArrayList<>();
 
@@ -129,16 +175,16 @@ public class PatVacIoOperationRepositoryImpl implements PatVacIoOperationReposit
 			predicates.add(cb.equal(root.join("vaccine").get("code"), vaccineCode));
 		}
 		if (sex != 'A') {
-			predicates.add(cb.equal(root.join("patient").get("sex"), sex));
+			predicates.add(cb.equal(getOrCreatePatientJoin(root).get("sex"), sex));
 		}
-		if (ageFrom != 0 || ageTo != 0) {
-			predicates.add(cb.between(root.join("patient").<Integer>get("age"), ageFrom, ageTo));
+		if (hasAgeFilter(ageFrom, ageTo)) {
+			predicates.add(buildAgePredicate(cb, getOrCreatePatientJoin(root), ageFrom, ageTo));
 		}
 		return predicates;
 	}
 
 	private CriteriaQuery<PatientVaccine> getPatientVaccineQuery(String vaccineTypeCode, String vaccineCode, LocalDateTime dateFrom, LocalDateTime dateTo,
-			char sex, int ageFrom, int ageTo) {
+			char sex, Integer ageFrom, Integer ageTo) {
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		CriteriaQuery<PatientVaccine> query = cb.createQuery(PatientVaccine.class);
 		Root<PatientVaccine> pvRoot = query.from(PatientVaccine.class);
@@ -167,12 +213,12 @@ public class PatVacIoOperationRepositoryImpl implements PatVacIoOperationReposit
 		}
 		if (sex != 'A') {
 			predicates.add(
-				cb.equal(pvRoot.join("patient").get("sex"), sex)
+				cb.equal(getOrCreatePatientJoin(pvRoot).get("sex"), sex)
 			);
 		}
-		if (ageFrom != 0 || ageTo != 0) {
+		if (hasAgeFilter(ageFrom, ageTo)) {
 			predicates.add(
-				cb.between(pvRoot.join("patient").<Integer>get("age"), ageFrom, ageTo)
+				buildAgePredicate(cb, getOrCreatePatientJoin(pvRoot), ageFrom, ageTo)
 			);
 		}
 		query.where(cb.and(predicates.toArray(new Predicate[0])));
@@ -197,7 +243,7 @@ public class PatVacIoOperationRepositoryImpl implements PatVacIoOperationReposit
 	 */
 	@Override
 	public Page<PatientVaccine> findAllByCodesAndDatesAndSexAndAgesWithPagination(String vaccineTypeCode, String vaccineCode, LocalDateTime dateFrom,
-		LocalDateTime dateTo, char sex, int ageFrom, int ageTo, String patientSearchText, String villageText, Pageable pageable) throws OHServiceException {
+		LocalDateTime dateTo, char sex, Integer ageFrom, Integer ageTo, String patientSearchText, String villageText, Pageable pageable) throws OHServiceException {
 
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		CriteriaQuery<PatientVaccine> query = cb.createQuery(PatientVaccine.class);
@@ -241,7 +287,7 @@ public class PatVacIoOperationRepositoryImpl implements PatVacIoOperationReposit
 	 * @return the list of predicates
 	 */
 	private List<Predicate> buildPredicatesWithSearch(CriteriaBuilder cb, Root<?> root, String vaccineTypeCode, String vaccineCode, LocalDateTime dateFrom,
-	                                                  LocalDateTime dateTo, char sex, int ageFrom, int ageTo, String patientSearchText, String villageText) {
+	                                                  LocalDateTime dateTo, char sex, Integer ageFrom, Integer ageTo, String patientSearchText, String villageText) {
 		List<Predicate> predicates = new ArrayList<>();
 
 		if (dateFrom != null) {
@@ -257,14 +303,14 @@ public class PatVacIoOperationRepositoryImpl implements PatVacIoOperationReposit
 			predicates.add(cb.equal(root.join("vaccine").get("code"), vaccineCode));
 		}
 		if (sex != 'A') {
-			predicates.add(cb.equal(root.join("patient").get("sex"), sex));
+			predicates.add(cb.equal(getOrCreatePatientJoin(root).get("sex"), sex));
 		}
-		if (ageFrom != 0 || ageTo != 0) {
-			predicates.add(cb.between(root.join("patient").<Integer>get("age"), ageFrom, ageTo));
+		if (hasAgeFilter(ageFrom, ageTo)) {
+			predicates.add(buildAgePredicate(cb, getOrCreatePatientJoin(root), ageFrom, ageTo));
 		}
 		if (patientSearchText != null && !patientSearchText.trim().isEmpty()) {
 			String searchPattern = "%" + patientSearchText.trim().toLowerCase() + "%";
-			Path<Object> patientPath = root.join("patient");
+			From<?, ?> patientPath = getOrCreatePatientJoin(root);
 			Predicate codePredicate = cb.like(
 				cb.lower(patientPath.get("code").as(String.class)), searchPattern);
 			Predicate namePredicate = cb.like(
@@ -277,6 +323,24 @@ public class PatVacIoOperationRepositoryImpl implements PatVacIoOperationReposit
 				"%" + villageText.trim().toLowerCase() + "%"));
 		}
 		return predicates;
+	}
+
+	@Override
+	public List<PatientVaccine> findAllByFilter(String vaccineTypeCode, String vaccineCode, LocalDateTime dateFrom,
+			LocalDateTime dateTo, char sex, Integer ageFrom, Integer ageTo, String patientSearchText, String villageText) throws OHServiceException {
+
+		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+		CriteriaQuery<PatientVaccine> query = cb.createQuery(PatientVaccine.class);
+		Root<PatientVaccine> pvRoot = query.from(PatientVaccine.class);
+		List<Predicate> predicates = buildPredicatesWithSearch(cb, pvRoot, vaccineTypeCode, vaccineCode,
+			TimeTools.truncateToSeconds(dateFrom), TimeTools.truncateToSeconds(dateTo), sex, ageFrom, ageTo,
+			patientSearchText, villageText);
+
+		query.select(pvRoot).where(cb.and(predicates.toArray(new Predicate[0])))
+			.orderBy(cb.desc(pvRoot.get("vaccineDate")), cb.asc(pvRoot.get("code")));
+
+		TypedQuery<PatientVaccine> typedQuery = entityManager.createQuery(query);
+		return typedQuery.getResultList();
 	}
 
 }
