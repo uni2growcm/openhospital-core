@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -25,13 +25,17 @@ package org.isf.mortuary.manager;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.IntStream;
 
 import org.isf.OHCoreTestCase;
 import org.isf.mortuary.model.BodyCompartment;
+import org.isf.mortuary.model.Death;
 import org.isf.mortuary.service.BodyCompartmentIoOperations;
 import org.isf.mortuary.service.BodyCompartmentRepository;
+import org.isf.mortuary.service.DeathRepository;
+import org.isf.utils.exception.OHDataIntegrityViolationException;
 import org.isf.utils.exception.OHException;
 import org.isf.utils.exception.OHServiceException;
 import org.junit.jupiter.api.BeforeAll;
@@ -53,6 +57,9 @@ public class BodyCompartmentManagerTest  extends OHCoreTestCase {
 
 	@Autowired
 	BodyCompartmentRepository bodyCompartmentRepository;
+
+	@Autowired
+	DeathRepository deathRepository;
 
 	@BeforeAll
 	static void setUpClass() {
@@ -108,6 +115,55 @@ public class BodyCompartmentManagerTest  extends OHCoreTestCase {
 		assertThat(bodyCompartment).isNotNull();
 		boolean isDeleted = bodyComportmentManager.delete(bodyCompartment);
 		assertThat(isDeleted).isEqualTo(true);
+	}
+
+	@Test
+	@DisplayName("Should not delete a body compartment if it contains a body")
+	void testDeleteWhenOccupiedThrowsException() throws OHException, OHServiceException {
+		String label = setupTestBodyCompartment(false);
+		BodyCompartment bodyCompartment = bodyCompartmentRepository.findByLabelAndDeleted(label, false);
+		assertThat(bodyCompartment).isNotNull();
+
+		Death death = new Death();
+		death.setBodyCompartment(bodyCompartment);
+		death.setDeleted(false);
+		death.setDischargeDate(null);
+		deathRepository.saveAndFlush(death);
+
+		assertThatThrownBy(() -> bodyComportmentManager.delete(bodyCompartment))
+			.isInstanceOf(OHDataIntegrityViolationException.class);
+
+		death.setDischargeDate(LocalDateTime.now());
+		deathRepository.saveAndFlush(death);
+
+		boolean isDeleted = bodyComportmentManager.delete(bodyCompartment);
+		assertThat(isDeleted).isTrue();
+	}
+
+	@Test
+	@DisplayName("Should retrieve only available body compartments")
+	void testGetAvailableBodyCompartments() throws OHException, OHServiceException {
+		BodyCompartment bc1 = new BodyCompartment("BC_FREE", "Free compartment", false);
+		bodyCompartmentIoOperations.add(bc1);
+
+		BodyCompartment bc2 = new BodyCompartment("BC_BUSY", "Busy compartment", false);
+		bodyCompartmentIoOperations.add(bc2);
+
+		Death death = new Death();
+		death.setBodyCompartment(bc2);
+		death.setDeleted(false);
+		death.setDischargeDate(null);
+		deathRepository.saveAndFlush(death);
+
+		List<BodyCompartment> available = bodyComportmentManager.getAvailableBodyCompartments();
+		assertThat(available).extracting(BodyCompartment::getLabel).contains("BC_FREE");
+		assertThat(available).extracting(BodyCompartment::getLabel).doesNotContain("BC_BUSY");
+
+		death.setDischargeDate(LocalDateTime.now());
+		deathRepository.saveAndFlush(death);
+
+		List<BodyCompartment> availableAfterDischarge = bodyComportmentManager.getAvailableBodyCompartments();
+		assertThat(availableAfterDischarge).extracting(BodyCompartment::getLabel).contains("BC_FREE", "BC_BUSY");
 	}
 
 	private String setupTestBodyCompartment(boolean usingSet) throws OHException, OHServiceException {

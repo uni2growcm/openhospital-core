@@ -28,6 +28,7 @@ import org.isf.mortuary.model.BodyCompartment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -38,4 +39,7 @@ public interface BodyCompartmentRepository extends JpaRepository<BodyCompartment
 	Page<BodyCompartment> findByLabelContainsAndDeletedOrDescriptionContainsAndDeleted( String label, boolean deleted, String description, boolean deleted2, Pageable pageable);
 
 	List<BodyCompartment> findByDeleted(boolean deleted);
+
+	@Query("SELECT bc FROM BodyCompartment bc WHERE bc.deleted = false AND bc.id NOT IN (SELECT d.bodyCompartment.id FROM Death d WHERE d.deleted = false AND d.dischargeDate IS NULL)")
+	List<BodyCompartment> findAvailableBodyCompartments();
 }

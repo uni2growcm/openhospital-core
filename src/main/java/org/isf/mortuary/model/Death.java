@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -22,7 +22,9 @@
 
 package org.isf.mortuary.model;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
@@ -247,6 +249,17 @@ public class Death extends Auditable<String> {
 	}
 	public void setDeleted(boolean deleted) {
 		this.deleted = deleted;
+	}
+
+	public long getDaysInMortuary() {
+		LocalDateTime start = admissionDate != null ? admissionDate : date;
+		if (start == null) {
+			return 0;
+		}
+		LocalDate startDate = start.toLocalDate();
+		LocalDate endDate = dischargeDate != null ? dischargeDate.toLocalDate() : LocalDate.now();
+		long days = ChronoUnit.DAYS.between(startDate, endDate);
+		return Math.max(0, days);
 	}
 	@Override
 	public String toString() {
