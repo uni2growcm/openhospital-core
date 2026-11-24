@@ -25,9 +25,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.isf.generaldata.MessageBundle;
 import org.isf.supplier.model.Supplier;
 import org.isf.supplier.service.SupplierOperations;
+import org.isf.utils.exception.OHDataIntegrityViolationException;
 import org.isf.utils.exception.OHServiceException;
+import org.isf.utils.exception.model.OHExceptionMessage;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -40,7 +43,25 @@ public class SupplierBrowserManager {
 	}
 
 	public Supplier saveOrUpdate(Supplier supplier) throws OHServiceException {
+		validateSupplier(supplier);
 		return ioOperations.saveOrUpdate(supplier);
+	}
+
+	/**
+	 * Checks that the tax code (NID) of the {@link Supplier}, when provided, is not used by another {@link Supplier}.
+	 *
+	 * @param supplier the {@link Supplier} to check
+	 * @throws OHServiceException if the tax code is already in use
+	 */
+	protected void validateSupplier(Supplier supplier) throws OHServiceException {
+		String taxcode = supplier.getSupTaxcode();
+		if (taxcode == null || taxcode.isBlank()) {
+			return;
+		}
+		if (ioOperations.isTaxcodePresent(taxcode.trim(), supplier.getSupId())) {
+			throw new OHDataIntegrityViolationException(
+				new OHExceptionMessage(MessageBundle.getMessage("angal.supplier.taxcodealreadyinuse.msg")));
+		}
 	}
 
 	public void delete(Supplier supplier) throws OHServiceException {

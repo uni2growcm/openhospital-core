@@ -68,6 +68,10 @@ public class VaccineTypeBrowserManager {
 		if (!errors.isEmpty()) {
 			throw new OHDataValidationException(errors);
 		}
+		if (isDescriptionPresent(description.trim(), insert ? null : key)) {
+			throw new OHDataIntegrityViolationException(
+				new OHExceptionMessage(MessageBundle.getMessage("angal.vactype.descriptionalreadyinuse.msg")));
+		}
 	}
 
 	/**
@@ -123,6 +127,18 @@ public class VaccineTypeBrowserManager {
 	 */
 	public boolean isCodePresent(String code) throws OHServiceException {
 		return ioOperations.isCodePresent(code);
+	}
+
+	/**
+	 * Checks if the description is already used by another {@link VaccineType}.
+	 *
+	 * @param description the {@link VaccineType} description
+	 * @param excludedCode the code of the {@link VaccineType} to ignore (the one being updated), {@code null} for none
+	 * @return {@code true} if the description is already in use, {@code false} otherwise
+	 * @throws OHServiceException
+	 */
+	public boolean isDescriptionPresent(String description, String excludedCode) throws OHServiceException {
+		return ioOperations.isDescriptionPresent(description, excludedCode);
 	}
 
 	/**

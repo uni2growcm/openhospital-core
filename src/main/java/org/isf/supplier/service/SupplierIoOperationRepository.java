@@ -35,4 +35,8 @@ public interface SupplierIoOperationRepository extends JpaRepository<Supplier, I
     List<Supplier> findAllWhereNotDeleted();
 
     Supplier findFirstBySupIdAndSupDeleted(int id, char deleted);
+
+    boolean existsBySupTaxcodeIgnoreCase(String taxcode);
+
+    boolean existsBySupTaxcodeIgnoreCaseAndSupIdNot(String taxcode, Integer id);
 }

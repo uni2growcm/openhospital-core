@@ -24,6 +24,7 @@ import java.util.List;
 import org.isf.generaldata.MessageBundle;
 import org.isf.maternity.model.PregnancyVisit;
 import org.isf.maternity.service.PregnancyVisitIoOperation;
+import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.model.OHExceptionMessage;
 import org.springframework.stereotype.Component;
@@ -227,6 +228,15 @@ public class PregnancyVisitBrowserManager {
 			throw new OHServiceException(
 				new OHExceptionMessage(
 					MessageBundle.getMessage("angal.maternity.visitdatecannotbeinfuture.msg")
+				)
+			);
+		}
+
+		LocalDateTime pregnancyDate = visit.getPregnancy().getDate();
+		if (pregnancyDate != null && visit.getVisitDate().toLocalDate().isBefore(pregnancyDate.toLocalDate())) {
+			throw new OHDataValidationException(
+				new OHExceptionMessage(
+					MessageBundle.getMessage("angal.maternity.visitdatebeforepregnancy.msg")
 				)
 			);
 		}

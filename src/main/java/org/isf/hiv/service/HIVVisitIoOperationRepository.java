@@ -40,6 +40,8 @@ public interface HIVVisitIoOperationRepository extends JpaRepository<HIVVisit, I
 
 	Page<HIVVisit> findByHivInfant_Id(Integer infantId, Pageable pageable);
 
+	boolean existsByHivInfant_Id(Integer infantId);
+
 	@Query("SELECT v FROM HIVVisit v WHERE v.hivInfant.id = :infantId "
 		+ "AND (:dateFrom IS NULL OR v.visitDate >= :dateFrom) "
 		+ "AND (:dateTo IS NULL OR v.visitDate <= :dateTo)")

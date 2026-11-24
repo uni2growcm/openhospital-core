@@ -27,6 +27,8 @@ import org.isf.maternity.model.Pregnancy;
 import org.isf.maternity.model.PregnancyStatus;
 import org.isf.maternity.model.RiskLevel;
 import org.isf.maternity.service.PregnancyIoOperation;
+import org.isf.maternity.service.PregnancyVisitIoOperation;
+import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHServiceException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -41,8 +43,11 @@ public class PregnancyBrowserManager {
 
 	private final PregnancyIoOperation ioOperation;
 
-	public PregnancyBrowserManager(PregnancyIoOperation ioOperation) {
+	private final PregnancyVisitIoOperation visitIoOperation;
+
+	public PregnancyBrowserManager(PregnancyIoOperation ioOperation, PregnancyVisitIoOperation visitIoOperation) {
 		this.ioOperation = ioOperation;
+		this.visitIoOperation = visitIoOperation;
 	}
 
 	/**
@@ -74,7 +79,21 @@ public class PregnancyBrowserManager {
 	 * @throws OHServiceException if deletion fails
 	 */
 	public void deletePregnancy(Pregnancy pregnancy) throws OHServiceException {
+		validateDeletion(pregnancy);
 		ioOperation.deletePregnancy(pregnancy);
+	}
+
+	/**
+	 * Checks that a pregnancy can be deleted: it must not have any visit.
+	 *
+	 * @param pregnancy the pregnancy entity
+	 * @throws OHServiceException if the pregnancy cannot be deleted
+	 */
+	public void validateDeletion(Pregnancy pregnancy) throws OHServiceException {
+		if (pregnancy != null && pregnancy.getId() != null && visitIoOperation.hasVisits(pregnancy.getId())) {
+			throw new OHDataValidationException(
+				new OHExceptionMessage(MessageBundle.getMessage("angal.maternity.pregnancycannotdeletewithvisits.msg")));
+		}
 	}
 
 	/**

@@ -284,4 +284,17 @@ class Tests extends OHCoreTestCase {
 		assertThat(foundVaccineType).isNotNull();
 		testVaccineType.check(foundVaccineType);
 	}
+
+	@Test
+	void testMgrValidationDescriptionAlreadyInUse() throws Exception {
+		String code = setupTestVaccineType(false);
+		VaccineType existing = vaccineTypeBrowserManager.findVaccineType(code);
+
+		VaccineType duplicate = new VaccineType("Y", existing.getDescription().toUpperCase());
+		assertThatThrownBy(() -> vaccineTypeBrowserManager.newVaccineType(duplicate))
+			.isInstanceOf(OHDataIntegrityViolationException.class);
+
+		// updating a vaccine type with its own description is allowed
+		assertThat(vaccineTypeBrowserManager.updateVaccineType(existing)).isNotNull();
+	}
 }

@@ -32,4 +32,8 @@ public interface VaccineTypeIoOperationRepository extends JpaRepository<VaccineT
 
 	List<VaccineType> findAllByOrderByDescriptionAsc();
 
+	boolean existsByDescriptionIgnoreCase(String description);
+
+	boolean existsByDescriptionIgnoreCaseAndCodeNot(String description, String code);
+
 }

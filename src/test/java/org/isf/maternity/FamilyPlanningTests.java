@@ -32,17 +32,21 @@ import org.isf.patient.service.PatientIoOperationRepository;
 import org.isf.typology.model.Family;
 import org.isf.typology.model.Typology;
 import org.isf.typology.service.TypologyIoOperationRepository;
+import org.isf.utils.exception.OHDataValidationException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 
+import jakarta.persistence.EntityManager;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class FamilyPlanningTests extends OHCoreTestCase {
@@ -62,6 +66,8 @@ class FamilyPlanningTests extends OHCoreTestCase {
     FamilyPlanningVisitBrowserManager familyPlanningVisitBrowserManager;
     @Autowired
     FamilyPlanningMethodHistoryBrowserManager familyPlanningMethodHistoryBrowserManager;
+    @Autowired
+    EntityManager entityManager;
 
     private Typology pillMethod;
     private Typology implantMethod;
@@ -333,5 +339,96 @@ class FamilyPlanningTests extends OHCoreTestCase {
         List<FamilyPlanningMethodHistory> afterDelete =
             familyPlanningMethodHistoryBrowserManager.getMethodHistoryByFamilyPlanning(fp.getId());
         assertThat(afterDelete).isEmpty();
+    }
+
+    @Test
+    void testStopFamilyPlanningReasonRequired() throws Exception {
+        Patient patient = testPatient.setup(false);
+        patientIoOperationRepository.save(patient);
+        FamilyPlanning fp = familyPlanningBrowserManager.newFamilyPlanning(testFamilyPlanning.setup(patient, pillMethod, false));
+
+        assertThatThrownBy(() -> familyPlanningBrowserManager.stopFamilyPlanning(fp.getId(), LocalDateTime.now(), "  "))
+            .isInstanceOf(OHDataValidationException.class);
+        assertThatThrownBy(() -> familyPlanningBrowserManager.stopFamilyPlanning(fp.getId(), LocalDateTime.now(), null))
+            .isInstanceOf(OHDataValidationException.class);
+        assertThat(familyPlanningBrowserManager.hasActiveFamilyPlanning(patient.getCode())).isTrue();
+    }
+
+    @Test
+    void testStopFamilyPlanningKeepsReason() throws Exception {
+        Patient patient = testPatient.setup(false);
+        patientIoOperationRepository.save(patient);
+        FamilyPlanning fp = familyPlanningBrowserManager.newFamilyPlanning(testFamilyPlanning.setup(patient, pillMethod, false));
+
+        LocalDateTime stopDate = LocalDateTime.now();
+        familyPlanningBrowserManager.stopFamilyPlanning(fp.getId(), stopDate, "Side effects");
+
+        List<FamilyPlanningMethodHistory> history = familyPlanningMethodHistoryBrowserManager.getMethodHistoryByFamilyPlanning(fp.getId());
+        assertThat(history).hasSize(1);
+        assertThat(history.get(0).getStopReason()).isEqualTo("Side effects");
+        assertThat(history.get(0).getEndDate()).isEqualTo(stopDate.toLocalDate());
+    }
+
+    @Test
+    void testDeleteStoppedFamilyPlanningNotAllowed() throws Exception {
+        Patient patient = testPatient.setup(false);
+        patientIoOperationRepository.save(patient);
+        FamilyPlanning fp = familyPlanningBrowserManager.newFamilyPlanning(testFamilyPlanning.setup(patient, pillMethod, false));
+        FamilyPlanning stopped = familyPlanningBrowserManager.stopFamilyPlanning(fp.getId(), LocalDateTime.now(), "Stopped");
+
+        assertThatThrownBy(() -> familyPlanningBrowserManager.deleteFamilyPlanning(stopped))
+            .isInstanceOf(OHDataValidationException.class);
+        assertThat(familyPlanningBrowserManager.getFamilyPlanningsByPatient(patient.getCode())).hasSize(1);
+    }
+
+    @Test
+    void testDeleteFamilyPlanningWithVisitsNotAllowed() throws Exception {
+        Patient patient = testPatient.setup(false);
+        patientIoOperationRepository.save(patient);
+        FamilyPlanning fp = familyPlanningBrowserManager.newFamilyPlanning(testFamilyPlanning.setup(patient, pillMethod, false));
+        familyPlanningVisitBrowserManager.newVisit(testFamilyPlanningVisit.setup(fp, followupVisitType, false));
+
+        assertThatThrownBy(() -> familyPlanningBrowserManager.deleteFamilyPlanning(fp))
+            .isInstanceOf(OHDataValidationException.class);
+        assertThat(familyPlanningBrowserManager.getFamilyPlanningsByPatient(patient.getCode())).hasSize(1);
+    }
+
+    @Test
+    void testFamilyPlanningVisitBeforeFamilyPlanningDateNotAllowed() throws Exception {
+        Patient patient = testPatient.setup(false);
+        patientIoOperationRepository.save(patient);
+        FamilyPlanning fp = familyPlanningBrowserManager.newFamilyPlanning(testFamilyPlanning.setup(patient, pillMethod, false));
+
+        FamilyPlanningVisit visit = testFamilyPlanningVisit.setup(fp, followupVisitType, false);
+        visit.setVisitDate(fp.getRegistrationDate().minusDays(1));
+
+        assertThatThrownBy(() -> familyPlanningVisitBrowserManager.newVisit(visit))
+            .isInstanceOf(OHDataValidationException.class);
+    }
+
+    @Test
+    void testFamilyPlanningCannotBeStoppedThroughUpdate() throws Exception {
+        Patient patient = testPatient.setup(false);
+        patientIoOperationRepository.save(patient);
+
+        FamilyPlanning newStopped = testFamilyPlanning.setup(patient, pillMethod, false);
+        newStopped.setStatus(FPStatus.STOPPED);
+        assertThatThrownBy(() -> familyPlanningBrowserManager.newFamilyPlanning(newStopped))
+            .isInstanceOf(OHDataValidationException.class);
+
+        FamilyPlanning fp = familyPlanningBrowserManager.newFamilyPlanning(testFamilyPlanning.setup(patient, pillMethod, false));
+        // like in the GUI, the edited object is not the one held by the persistence context
+        entityManager.flush();
+        entityManager.detach(fp);
+        fp.setStatus(FPStatus.STOPPED);
+        assertThatThrownBy(() -> familyPlanningBrowserManager.updateFamilyPlanning(fp))
+            .isInstanceOf(OHDataValidationException.class);
+
+        // a family planning stopped with the dedicated method can still be updated (e.g. notes)
+        FamilyPlanning stopped = familyPlanningBrowserManager.stopFamilyPlanning(fp.getId(), LocalDateTime.now(), "Stopped");
+        entityManager.flush();
+        entityManager.detach(stopped);
+        stopped.setNotes("Updated notes");
+        assertThat(familyPlanningBrowserManager.updateFamilyPlanning(stopped).getNotes()).isEqualTo("Updated notes");
     }
 }
