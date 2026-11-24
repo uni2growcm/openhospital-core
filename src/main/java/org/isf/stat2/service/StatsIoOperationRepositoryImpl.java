@@ -168,12 +168,12 @@ public class StatsIoOperationRepositoryImpl implements StatsIoOperationRepositor
 
 		if (gestationalAgeMin != null || gestationalAgeMax != null) {
 			if (gestationalAgeMin != null) {
-				conditions.append(" AND DATEDIFF(NOW(), _pregnancy.PRG_LMP) >= ?");
-				parameters.add(gestationalAgeMin * 7);
+				conditions.append(" AND TIMESTAMPDIFF(WEEK, _pregnancy.PRG_LMP, NOW()) >= ?");
+				parameters.add(gestationalAgeMin);
 			}
 			if (gestationalAgeMax != null) {
-				conditions.append(" AND DATEDIFF(NOW(), _pregnancy.PRG_LMP) <= ?");
-				parameters.add(gestationalAgeMax * 7);
+				conditions.append(" AND TIMESTAMPDIFF(WEEK, _pregnancy.PRG_LMP, NOW()) <= ?");
+				parameters.add(gestationalAgeMax);
 			}
 		}
 
@@ -302,9 +302,9 @@ public class StatsIoOperationRepositoryImpl implements StatsIoOperationRepositor
 		boolean admissionJoined = false;
 		if (disease != null && !disease.isEmpty()) {
 			fromBuilder.append(" INNER JOIN oh_admission _patadm ON _patadm.ADM_PAT_ID = _patient.PAT_ID")
-				.append(" INNER JOIN oh_disease _disease ON _patadm.ADM_OUT_DIS_ID_A = _disease.DIS_ID_A")
+				.append(" INNER JOIN oh_disease _disease ON (_patadm.ADM_OUT_DIS_ID_A = _disease.DIS_ID_A")
 				.append(" OR _patadm.ADM_OUT_DIS_ID_A_2 = _disease.DIS_ID_A")
-				.append(" OR _patadm.ADM_OUT_DIS_ID_A_3 = _disease.DIS_ID_A");
+				.append(" OR _patadm.ADM_OUT_DIS_ID_A_3 = _disease.DIS_ID_A)");
 			conditions.append(" AND _disease.DIS_DESC = ?");
 			parameters.add(disease);
 			admissionJoined = true;
@@ -351,8 +351,8 @@ public class StatsIoOperationRepositoryImpl implements StatsIoOperationRepositor
 		}
 
 		if (parameterArtPress) {
-			addRangeCondition(conditions, parameters, "_patexam.PEX_AP_MIN", systolicMin, systolicMax);
-			addRangeCondition(conditions, parameters, "_patexam.PEX_AP_MAX", diastolicMin, diastolicMax);
+			addRangeCondition(conditions, parameters, "_patexam.PEX_AP_MAX", systolicMin, systolicMax);
+			addRangeCondition(conditions, parameters, "_patexam.PEX_AP_MIN", diastolicMin, diastolicMax);
 		}
 
 		String from = fromBuilder.toString();
@@ -394,6 +394,11 @@ public class StatsIoOperationRepositoryImpl implements StatsIoOperationRepositor
 
 	private void addRangeCondition(StringBuilder conditions, List<Object> parameters,
 	                               String columnName, Double min, Double max) {
+		if (min == null && max == null) {
+			conditions.append(" AND ").append(columnName).append(" IS NOT NULL")
+				.append(" AND ").append(columnName).append(" > 0");
+			return;
+		}
 		if (min != null) {
 			conditions.append(" AND ").append(columnName).append(" >= ?");
 			parameters.add(min);
