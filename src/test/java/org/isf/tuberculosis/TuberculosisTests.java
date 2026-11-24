@@ -27,6 +27,7 @@ import org.isf.patient.TestPatient;
 import org.isf.patient.model.Patient;
 import org.isf.patient.service.PatientIoOperationRepository;
 import org.isf.utils.exception.OHDataIntegrityViolationException;
+import org.isf.utils.exception.OHDataValidationException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -102,6 +103,22 @@ class TuberculosisTests extends OHCoreTestCase {
 
         List<TuberculosisTreatment> afterDelete = treatmentManager.getTreatmentsByPatientCode(patient.getCode());
         assertThat(afterDelete).isEmpty();
+    }
+
+    @Test
+    void testCannotDeleteTreatmentWithVisits() throws Exception {
+        Patient patient = testPatient.setup(false);
+        patient = patientIoOperationRepository.save(patient);
+
+        TuberculosisTreatment treatment = testTuberculosisTreatment.setup(patient, false);
+        treatment = treatmentManager.newTreatment(treatment);
+
+        TuberculosisVisit visit = testTuberculosisVisit.setup(treatment, false);
+        visitManager.newVisit(visit);
+
+        TuberculosisTreatment treatmentToDelete = treatment;
+        assertThatThrownBy(() -> treatmentManager.deleteTreatment(treatmentToDelete))
+            .isInstanceOf(OHDataValidationException.class);
     }
 
     @Test
