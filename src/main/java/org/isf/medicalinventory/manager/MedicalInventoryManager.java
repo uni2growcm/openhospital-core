@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -802,10 +802,21 @@ public class MedicalInventoryManager {
 	 * @return the value associated with the key or empty string if key is not on statusHashMap.
 	 */
 	public String getStatusByKey(String key) {
+		if (key == null) {
+			return "";
+		}
 		if (statusHashMap == null) {
 			buildStatusHashMap();
 		}
-		return statusHashMap.get(key);
+		String status = statusHashMap.get(key.toLowerCase());
+		if (status != null) {
+			return status;
+		}
+		try {
+			return MessageBundle.getMessage("angal.inventory.status." + key.toLowerCase() + ".txt");
+		} catch (Exception e) {
+			return key;
+		}
 	}
 
 	/**
@@ -815,12 +826,24 @@ public class MedicalInventoryManager {
 	 * @return the value of the key or null if description is not on statusHashMap.
 	 */
 	public String getKeyByStatus(String status) {
+		if (status == null) {
+			return null;
+		}
 		if (statusHashMap == null) {
 			buildStatusHashMap();
 		}
 		for (Map.Entry<String, String> entry : statusHashMap.entrySet()) {
-			if (entry.getValue().equals(status)) {
+			if (entry.getValue().equalsIgnoreCase(status)) {
 				return entry.getKey();
+			}
+		}
+		for (InventoryStatus invStatus : InventoryStatus.values()) {
+			try {
+				String localized = MessageBundle.getMessage("angal.inventory.status." + invStatus.toString() + ".txt");
+				if (localized.equalsIgnoreCase(status)) {
+					return invStatus.toString();
+				}
+			} catch (Exception ignored) {
 			}
 		}
 		return null;

@@ -24,12 +24,17 @@ package org.isf.tuberculosis.manager;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.isf.generaldata.MessageBundle;
 import org.isf.tuberculosis.model.Classification;
 import org.isf.tuberculosis.model.DiseaseLocation;
 import org.isf.tuberculosis.model.TuberculosisTreatment;
+import org.isf.tuberculosis.model.TuberculosisVisit;
 import org.isf.tuberculosis.model.TreatmentStatus;
 import org.isf.tuberculosis.service.TuberculosisTreatmentIoOperations;
+import org.isf.tuberculosis.service.TuberculosisVisitIoOperations;
+import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHServiceException;
+import org.isf.utils.exception.model.OHExceptionMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -41,6 +46,9 @@ public class TuberculosisTreatmentManager {
     @Autowired
     private TuberculosisTreatmentIoOperations ioOperations;
 
+    @Autowired
+    private TuberculosisVisitIoOperations visitIoOperations;
+
     public TuberculosisTreatment newTreatment(TuberculosisTreatment treatment) throws OHServiceException {
         return ioOperations.saveTreatment(treatment);
     }
@@ -50,6 +58,11 @@ public class TuberculosisTreatmentManager {
     }
 
     public void deleteTreatment(TuberculosisTreatment treatment) throws OHServiceException {
+        List<TuberculosisVisit> visits = visitIoOperations.findVisitsByTreatmentId(treatment.getId());
+        if (visits != null && !visits.isEmpty()) {
+            throw new OHDataValidationException(new OHExceptionMessage(
+                MessageBundle.getMessage("angal.tb.browser.cannotdeletetreatmentwithvisits.msg")));
+        }
         ioOperations.deleteTreatment(treatment);
     }
 
