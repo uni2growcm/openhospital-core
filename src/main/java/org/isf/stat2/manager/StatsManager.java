@@ -74,11 +74,12 @@ public class StatsManager {
 		int startIndex, int limit, int ageFrom, int ageTo, String periodFrom, String periodTo,
 		String sex, String ward, String exam, String examResult, String examPeriodFrom, String examPeriodTo,
 		String vaccine, String vaccinePeriodFrom, String vaccinePeriodTo, String operation, String operationResult,
-		String operationPeriodFrom, String operationPeriodTo, String disease, String dischargeType) throws OHServiceException {
+		String operationPeriodFrom, String operationPeriodTo, String disease, String dischargeType,
+		Boolean hasHomeVisit, Boolean hasTuberculosis) throws OHServiceException {
 
 		Page<Patient> page = statsIoOperations.getPatientsStats(startIndex, limit, ageFrom, ageTo, periodFrom, periodTo,
 			sex, ward, exam, examResult, examPeriodFrom, examPeriodTo, vaccine, vaccinePeriodFrom, vaccinePeriodTo, operation, operationResult,
-			operationPeriodFrom, operationPeriodTo, disease, dischargeType );
+			operationPeriodFrom, operationPeriodTo, disease, dischargeType, hasHomeVisit, hasTuberculosis);
 		return page.getContent();
 	}
 
@@ -111,11 +112,12 @@ public class StatsManager {
 		int ageFrom, int ageTo, String periodFrom, String periodTo, String sex, String ward,
 		String exam, String examResult, String examPeriodFrom, String examPeriodTo, String vaccine, String vaccinePeriodFrom, String vaccinePeriodTo,
 		String operation, String operationResult, String operationPeriodFrom, String operationPeriodTo,
-		String disease, String dischargeType) throws OHServiceException {
+		String disease, String dischargeType, Boolean hasHomeVisit, Boolean hasTuberculosis) throws OHServiceException {
 
 		long count = statsIoOperations.getPatientsStatsCount(ageFrom, ageTo, periodFrom, periodTo, sex, ward,
 			exam, examResult, examPeriodFrom, examPeriodTo, vaccine, vaccinePeriodFrom, vaccinePeriodTo,
-			operation, operationResult, operationPeriodFrom, operationPeriodTo, disease, dischargeType );
+			operation, operationResult, operationPeriodFrom, operationPeriodTo, disease, dischargeType,
+			hasHomeVisit, hasTuberculosis);
 		return (int) count;
 	}
 
@@ -148,11 +150,13 @@ public class StatsManager {
 		int startIndex, int limit, int ageFrom, int ageTo, String periodFrom, String periodTo,
 		String ward, String exam, String examResult, String examPeriodFrom, String examPeriodTo,
 		String vaccinePeriodFrom, String vaccinePeriodTo, String operation, String operationResult,
-		String operationPeriodFrom, String operationPeriodTo, String disease, String dischargeType) throws OHServiceException {
+		String operationPeriodFrom, String operationPeriodTo, String disease, String dischargeType,
+		Boolean hasHomeVisit, Boolean hasTuberculosis) throws OHServiceException {
 
 		Page<VaccineStat> page = statsIoOperations.getVaccinesStats(startIndex, limit, ageFrom, ageTo,
 			periodFrom, periodTo, ward, exam, examResult, examPeriodFrom, examPeriodTo, vaccinePeriodFrom, vaccinePeriodTo,
-			operation, operationResult, operationPeriodFrom, operationPeriodTo, disease, dischargeType );
+			operation, operationResult, operationPeriodFrom, operationPeriodTo, disease, dischargeType,
+			hasHomeVisit, hasTuberculosis);
 		return page.getContent();
 	}
 
@@ -183,11 +187,12 @@ public class StatsManager {
 		int ageFrom, int ageTo, String periodFrom, String periodTo, String ward, String exam, String examResult,
 		String examPeriodFrom, String examPeriodTo, String vaccinePeriodFrom, String vaccinePeriodTo,
 		String operation, String operationResult, String operationPeriodFrom, String operationPeriodTo,
-		String disease, String dischargeType) throws OHServiceException {
+		String disease, String dischargeType, Boolean hasHomeVisit, Boolean hasTuberculosis) throws OHServiceException {
 
 		long count = statsIoOperations.getVaccinesStatsCount(ageFrom, ageTo, periodFrom, periodTo, ward,
 			exam, examResult, examPeriodFrom, examPeriodTo, vaccinePeriodFrom, vaccinePeriodTo,
-			operation, operationResult, operationPeriodFrom, operationPeriodTo, disease, dischargeType);
+			operation, operationResult, operationPeriodFrom, operationPeriodTo, disease, dischargeType,
+			hasHomeVisit, hasTuberculosis);
 		return (int) count;
 	}
 
@@ -220,11 +225,13 @@ public class StatsManager {
 	public List<ExamStat> getExamsStats(
 		int startIndex, int limit, int ageFrom, int ageTo, String periodFrom, String periodTo, String ward,
 		String examResult, String examPeriodFrom, String examPeriodTo, String vaccine, String vaccinePeriodFrom, String vaccinePeriodTo,
-		String operation, String operationResult, String operationPeriodFrom, String operationPeriodTo, String disease, String dischargeType) throws OHServiceException {
+		String operation, String operationResult, String operationPeriodFrom, String operationPeriodTo, String disease, String dischargeType,
+		Boolean hasHomeVisit, Boolean hasTuberculosis) throws OHServiceException {
 
 		Page<ExamStat> page = statsIoOperations.getExamsStats(startIndex, limit, ageFrom, ageTo, periodFrom, periodTo,
 			ward, examResult, examPeriodFrom, examPeriodTo, vaccine, vaccinePeriodFrom, vaccinePeriodTo,
-			operation, operationResult, operationPeriodFrom, operationPeriodTo, disease, dischargeType);
+			operation, operationResult, operationPeriodFrom, operationPeriodTo, disease, dischargeType,
+			hasHomeVisit, hasTuberculosis);
 		return page.getContent();
 	}
 
@@ -254,11 +261,13 @@ public class StatsManager {
 	public int getExamsStatsCount(
 		int ageFrom, int ageTo, String periodFrom, String periodTo, String ward, String examResult,
 		String examPeriodFrom, String examPeriodTo, String vaccine, String vaccinePeriodFrom, String vaccinePeriodTo,
-		String operation, String operationResult, String operationPeriodFrom, String operationPeriodTo, String disease, String dischargeType) throws OHServiceException {
+		String operation, String operationResult, String operationPeriodFrom, String operationPeriodTo, String disease, String dischargeType,
+		Boolean hasHomeVisit, Boolean hasTuberculosis) throws OHServiceException {
 
 		long count = statsIoOperations.getExamsStatsCount(ageFrom, ageTo, periodFrom, periodTo, ward,
 			examResult, examPeriodFrom, examPeriodTo, vaccine, vaccinePeriodFrom, vaccinePeriodTo,
-			operation, operationResult, operationPeriodFrom, operationPeriodTo, disease, dischargeType );
+			operation, operationResult, operationPeriodFrom, operationPeriodTo, disease, dischargeType,
+			hasHomeVisit, hasTuberculosis);
 		return (int) count;
 	}
 
@@ -292,11 +301,13 @@ public class StatsManager {
 		int startIndex, int limit, int ageFrom, int ageTo, String periodFrom, String periodTo,
 		String ward, String exam, String examResult, String examPeriodFrom, String examPeriodTo,
 		String vaccine, String vaccinePeriodFrom, String vaccinePeriodTo, String operation, String operationResult,
-		String operationPeriodFrom, String operationPeriodTo, String dischargeType) throws OHServiceException {
+		String operationPeriodFrom, String operationPeriodTo, String dischargeType,
+		Boolean hasHomeVisit, Boolean hasTuberculosis) throws OHServiceException {
 
 		Page<DiseaseStat> page = statsIoOperations.getDiseasesStats(startIndex, limit, ageFrom, ageTo,
 			periodFrom, periodTo, ward, exam, examResult, examPeriodFrom, examPeriodTo, vaccine, vaccinePeriodFrom, vaccinePeriodTo,
-			operation, operationResult, operationPeriodFrom, operationPeriodTo, dischargeType);
+			operation, operationResult, operationPeriodFrom, operationPeriodTo, dischargeType,
+			hasHomeVisit, hasTuberculosis);
 		return page.getContent();
 	}
 
@@ -327,11 +338,12 @@ public class StatsManager {
 		int ageFrom, int ageTo, String periodFrom, String periodTo, String ward, String exam, String examResult,
 		String examPeriodFrom, String examPeriodTo, String vaccine, String vaccinePeriodFrom, String vaccinePeriodTo,
 		String operation, String operationResult, String operationPeriodFrom, String operationPeriodTo,
-		String dischargeType) throws OHServiceException {
+		String dischargeType, Boolean hasHomeVisit, Boolean hasTuberculosis) throws OHServiceException {
 
 		long count = statsIoOperations.getDiseasesStatsCount(ageFrom, ageTo, periodFrom, periodTo, ward,
 			exam, examResult, examPeriodFrom, examPeriodTo, vaccine, vaccinePeriodFrom, vaccinePeriodTo,
-			operation, operationResult, operationPeriodFrom, operationPeriodTo, dischargeType);
+			operation, operationResult, operationPeriodFrom, operationPeriodTo, dischargeType,
+			hasHomeVisit, hasTuberculosis);
 		return (int) count;
 	}
 
@@ -364,11 +376,13 @@ public class StatsManager {
 		int startIndex, int limit, int ageFrom, int ageTo, String periodFrom, String periodTo,
 		String ward, String exam, String examResult, String examPeriodFrom, String examPeriodTo,
 		String vaccine, String vaccinePeriodFrom, String vaccinePeriodTo, String operationResult,
-		String operationPeriodFrom, String operationPeriodTo, String disease, String dischargeType) throws OHServiceException {
+		String operationPeriodFrom, String operationPeriodTo, String disease, String dischargeType,
+		Boolean hasHomeVisit, Boolean hasTuberculosis) throws OHServiceException {
 
 		Page<OperationStat> page = statsIoOperations.getOperationsStats(startIndex, limit, ageFrom, ageTo,
 			periodFrom, periodTo, ward, exam, examResult, examPeriodFrom, examPeriodTo,
-			vaccine, vaccinePeriodFrom, vaccinePeriodTo, operationResult, operationPeriodFrom, operationPeriodTo, disease, dischargeType);
+			vaccine, vaccinePeriodFrom, vaccinePeriodTo, operationResult, operationPeriodFrom, operationPeriodTo, disease, dischargeType,
+			hasHomeVisit, hasTuberculosis);
 		return page.getContent();
 	}
 
@@ -398,11 +412,12 @@ public class StatsManager {
 	public int getOperationsStatsCount(
 		int ageFrom, int ageTo, String periodFrom, String periodTo, String ward, String exam, String examResult,
 		String examPeriodFrom, String examPeriodTo, String vaccine, String vaccinePeriodFrom, String vaccinePeriodTo,
-		String operationResult, String operationPeriodFrom, String operationPeriodTo, String disease, String dischargeType) throws OHServiceException {
+		String operationResult, String operationPeriodFrom, String operationPeriodTo, String disease, String dischargeType,
+		Boolean hasHomeVisit, Boolean hasTuberculosis) throws OHServiceException {
 
 		long count = statsIoOperations.getOperationsStatsCount(ageFrom, ageTo, periodFrom, periodTo, ward,
 			exam, examResult, examPeriodFrom, examPeriodTo, vaccine, vaccinePeriodFrom, vaccinePeriodTo, operationResult,
-			operationPeriodFrom, operationPeriodTo, disease, dischargeType );
+			operationPeriodFrom, operationPeriodTo, disease, dischargeType, hasHomeVisit, hasTuberculosis);
 		return (int) count;
 	}
 
