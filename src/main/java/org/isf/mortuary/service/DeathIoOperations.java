@@ -164,69 +164,18 @@ public class DeathIoOperations {
 		Boolean isDischarged,
 		Pageable pageable
 	) throws OHServiceException {
-		if (isEnter) {
-			if (Boolean.TRUE.equals(isDischarged)) {
-				return deathRepository.findAllByPatientNameContainsAndWardCodeContainsAndAdmissionDateBetweenAndDeathReasonTitleContainsAndDeletedAndDischargeDateIsNotNull(
-					patientName,
-					wardCode,
-					dateFrom,
-					dateTo,
-					deathReasonTitle,
-					false,
-					pageable
-				);
-			} else if (Boolean.FALSE.equals(isDischarged)) {
-				return deathRepository.findAllByPatientNameContainsAndWardCodeContainsAndAdmissionDateBetweenAndDeathReasonTitleContainsAndDeletedAndDischargeDateIsNull(
-					patientName,
-					wardCode,
-					dateFrom,
-					dateTo,
-					deathReasonTitle,
-					false,
-					pageable
-				);
-			}
-			return deathRepository.findAllByPatientNameContainsAndWardCodeContainsAndAdmissionDateBetweenAndDeathReasonTitleContainsAndDeleted(
-				patientName,
-				wardCode,
-				dateFrom,
-				dateTo,
-				deathReasonTitle,
-				false,
-				pageable
-			);
-		}
-		if (Boolean.TRUE.equals(isDischarged)) {
-			return deathRepository.findAllByPatientNameContainsAndWardCodeContainsAndEstimatedDischargeDateBetweenAndDeathReasonTitleContainsAndDeletedAndDischargeDateIsNotNull(
-				patientName,
-				wardCode,
-				dateFrom,
-				dateTo,
-				deathReasonTitle,
-				false,
-				pageable
-			);
-		} else if (Boolean.FALSE.equals(isDischarged)) {
-			return deathRepository.findAllByPatientNameContainsAndWardCodeContainsAndEstimatedDischargeDateBetweenAndDeathReasonTitleContainsAndDeletedAndDischargeDateIsNull(
-				patientName,
-				wardCode,
-				dateFrom,
-				dateTo,
-				deathReasonTitle,
-				false,
-				pageable
-			);
-		}
-		return deathRepository.findAllByPatientNameContainsAndWardCodeContainsAndEstimatedDischargeDateBetweenAndDeathReasonTitleContainsAndDeleted(
+		return deathRepository.findMortuaries(
 			patientName,
 			wardCode,
 			dateFrom,
 			dateTo,
 			deathReasonTitle,
-			false,
+			isEnter,
+			isDischarged,
 			pageable
 		);
 	}
+
 
 	/**
 	 * Retrieves a page of {@link Death}s.<br>
