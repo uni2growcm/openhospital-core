@@ -27,8 +27,12 @@ import java.util.List;
 import org.isf.hiv.model.HIVInfant;
 import org.isf.hiv.model.HIVInfant.HIVInfantStatus;
 import org.isf.hiv.model.HIVInfant.FeedingType;
+import org.isf.generaldata.MessageBundle;
 import org.isf.hiv.service.HIVInfantIoOperations;
+import org.isf.hiv.service.HIVVisitIoOperations;
+import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHServiceException;
+import org.isf.utils.exception.model.OHExceptionMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -40,6 +44,9 @@ public class HIVInfantManager {
 	@Autowired
 	private HIVInfantIoOperations ioOperations;
 
+	@Autowired
+	private HIVVisitIoOperations visitIoOperations;
+
 	public HIVInfant newInfant(HIVInfant infant) throws OHServiceException {
 		return ioOperations.saveInfant(infant);
 	}
@@ -49,7 +56,21 @@ public class HIVInfantManager {
 	}
 
 	public void deleteInfant(HIVInfant infant) throws OHServiceException {
+		validateDeletion(infant);
 		ioOperations.deleteInfant(infant);
+	}
+
+	/**
+	 * Checks that an {@link HIVInfant} follow-up can be deleted: it must not have any visit.
+	 *
+	 * @param infant the {@link HIVInfant} to delete
+	 * @throws OHServiceException if the {@link HIVInfant} cannot be deleted
+	 */
+	public void validateDeletion(HIVInfant infant) throws OHServiceException {
+		if (infant != null && infant.getId() != null && visitIoOperations.hasVisits(infant.getId())) {
+			throw new OHDataValidationException(
+				new OHExceptionMessage(MessageBundle.getMessage("angal.hiv.message.delete.hasvisits")));
+		}
 	}
 
 	public HIVInfant getInfantById(Integer id) throws OHServiceException {

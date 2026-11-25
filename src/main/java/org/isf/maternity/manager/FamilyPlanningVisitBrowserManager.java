@@ -24,6 +24,7 @@ package org.isf.maternity.manager;
 import org.isf.generaldata.MessageBundle;
 import org.isf.maternity.model.FamilyPlanningVisit;
 import org.isf.maternity.service.FamilyPlanningVisitIoOperation;
+import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.model.OHExceptionMessage;
 import org.springframework.stereotype.Component;
@@ -116,6 +117,15 @@ public class FamilyPlanningVisitBrowserManager {
             throw new OHServiceException(
                 new OHExceptionMessage(
                     MessageBundle.getMessage("angal.maternity.fpvisitdatecannotbeinfuture.msg")
+                )
+            );
+        }
+
+        LocalDateTime fpDate = visit.getFamilyPlanning().getRegistrationDate();
+        if (fpDate != null && visit.getVisitDate().toLocalDate().isBefore(fpDate.toLocalDate())) {
+            throw new OHDataValidationException(
+                new OHExceptionMessage(
+                    MessageBundle.getMessage("angal.maternity.fpvisitdatebeforefp.msg")
                 )
             );
         }

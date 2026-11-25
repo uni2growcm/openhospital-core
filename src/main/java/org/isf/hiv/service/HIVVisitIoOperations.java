@@ -72,6 +72,17 @@ public class HIVVisitIoOperations {
 	}
 
 	/**
+	 * Checks if an HIV infant has at least one visit.
+	 *
+	 * @param infantId the infant ID
+	 * @return {@code true} if the infant has visits, {@code false} otherwise
+	 * @throws OHServiceException if an error occurs during the search
+	 */
+	public boolean hasVisits(Integer infantId) throws OHServiceException {
+		return repository.existsByHivInfant_Id(infantId);
+	}
+
+	/**
 	 * Deletes an HIV visit record from the database.
 	 *
 	 * @param visit the HIVVisit object to be deleted

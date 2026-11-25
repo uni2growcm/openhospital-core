@@ -536,4 +536,21 @@ public class PatientBrowserManager {
 	public Page<Patient> getPatientsByOneOfFieldsLikeWith(String keyword, boolean femalesOnly, Integer minAge, Integer maxAge, Pageable pageable) throws OHServiceException {
 		return ioOperations.getPatientsByOneOfFieldsLikeWith(keyword, femalesOnly, minAge, maxAge, pageable);
 	}
+
+	/**
+	 * Retrieves a paginated list of patients based on search criteria, keeping only the patients
+	 * whose age, computed from the birth date, does not exceed the given number of months.
+	 *
+	 * @param keyword the search term to match against patient fields
+	 * @param femalesOnly if true, only female patients are returned
+	 * @param maxAgeInMonths the maximum age in completed months (inclusive)
+	 * @param pageable pagination information
+	 * @return a page of patients matching the search criteria
+	 * @throws OHServiceException if an error occurs during the database operation
+	 */
+	public Page<Patient> getPatientsByOneOfFieldsLikeWithMaxAgeInMonths(String keyword, boolean femalesOnly, int maxAgeInMonths, Pageable pageable)
+		throws OHServiceException {
+		LocalDate minBirthDate = LocalDate.now().minusMonths(maxAgeInMonths + 1L).plusDays(1);
+		return ioOperations.getPatientsByOneOfFieldsLikeWithBirthDateFrom(keyword, femalesOnly, minBirthDate, pageable);
+	}
 }

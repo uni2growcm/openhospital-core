@@ -21,6 +21,7 @@
  */
 package org.isf.patient.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.isf.patient.model.Patient;
@@ -37,4 +38,6 @@ public interface PatientIoOperationRepositoryCustom {
 	Page<Patient> findByFieldsContainingWordsFromLiteral(String keyword, boolean femalesOnly, Pageable pageable);
 
 	Page<Patient> findByFieldsContainingWordsFromLiteral(String keyword, boolean femalesOnly, Integer minAge, Integer maxAge, Pageable pageable);
+
+	Page<Patient> findByFieldsContainingWordsFromLiteralBornFrom(String keyword, boolean femalesOnly, LocalDate minBirthDate, Pageable pageable);
 }

@@ -25,6 +25,8 @@ import org.isf.generaldata.MessageBundle;
 import org.isf.maternity.model.FPStatus;
 import org.isf.maternity.model.FamilyPlanning;
 import org.isf.maternity.service.FamilyPlanningIoOperation;
+import org.isf.maternity.service.FamilyPlanningVisitIoOperation;
+import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.model.OHExceptionMessage;
 import org.springframework.data.domain.Page;
@@ -40,8 +42,11 @@ public class FamilyPlanningBrowserManager {
 
     private final FamilyPlanningIoOperation ioOperation;
 
-    public FamilyPlanningBrowserManager(FamilyPlanningIoOperation ioOperation) {
+    private final FamilyPlanningVisitIoOperation visitIoOperation;
+
+    public FamilyPlanningBrowserManager(FamilyPlanningIoOperation ioOperation, FamilyPlanningVisitIoOperation visitIoOperation) {
         this.ioOperation = ioOperation;
+        this.visitIoOperation = visitIoOperation;
     }
 
     public FamilyPlanning newFamilyPlanning(FamilyPlanning familyPlanning) throws OHServiceException {
@@ -55,7 +60,28 @@ public class FamilyPlanningBrowserManager {
     }
 
     public void deleteFamilyPlanning(FamilyPlanning familyPlanning) throws OHServiceException {
+        validateDeletion(familyPlanning);
         ioOperation.deleteFamilyPlanning(familyPlanning);
+    }
+
+    /**
+     * Checks that a {@link FamilyPlanning} can be deleted: it must not be stopped and must not have any visit.
+     *
+     * @param familyPlanning the {@link FamilyPlanning} to delete
+     * @throws OHServiceException if the {@link FamilyPlanning} cannot be deleted
+     */
+    public void validateDeletion(FamilyPlanning familyPlanning) throws OHServiceException {
+        if (familyPlanning == null || familyPlanning.getId() == null) {
+            return;
+        }
+        if (familyPlanning.getStatus() == FPStatus.STOPPED) {
+            throw new OHDataValidationException(
+                new OHExceptionMessage(MessageBundle.getMessage("angal.maternity.fpcannotdeletestopped.msg")));
+        }
+        if (visitIoOperation.hasVisits(familyPlanning.getId())) {
+            throw new OHDataValidationException(
+                new OHExceptionMessage(MessageBundle.getMessage("angal.maternity.fpcannotdeletewithvisits.msg")));
+        }
     }
 
     public List<FamilyPlanning> getFamilyPlanningsByPatient(Integer patientCode) throws OHServiceException {
@@ -99,7 +125,11 @@ public class FamilyPlanningBrowserManager {
 
     public FamilyPlanning stopFamilyPlanning(Integer familyPlanningId, LocalDateTime endDate, String stopReason)
         throws OHServiceException {
-        return ioOperation.stopFamilyPlanning(familyPlanningId, endDate, stopReason);
+        if (stopReason == null || stopReason.isBlank()) {
+            throw new OHDataValidationException(
+                new OHExceptionMessage(MessageBundle.getMessage("angal.maternity.fpstopreasonrequired.msg")));
+        }
+        return ioOperation.stopFamilyPlanning(familyPlanningId, endDate, stopReason.trim());
     }
 
     private void validateFamilyPlanning(FamilyPlanning fp) throws OHServiceException {
@@ -141,6 +171,15 @@ public class FamilyPlanningBrowserManager {
                     MessageBundle.getMessage("angal.maternity.fpstatusrequired.msg")
                 )
             );
+        }
+
+        if (fp.getStatus() == FPStatus.STOPPED) {
+            // a family planning is stopped only through stopFamilyPlanning(), which records the stop date and reason
+            FamilyPlanning stored = fp.getId() != null ? ioOperation.getFamilyPlanning(fp.getId()) : null;
+            if (stored == null || stored.getStatus() != FPStatus.STOPPED) {
+                throw new OHDataValidationException(
+                    new OHExceptionMessage(MessageBundle.getMessage("angal.maternity.fpstopwithstopbutton.msg")));
+            }
         }
 
         if (fp.getId() == null && hasActiveFamilyPlanning(fp.getPatient().getCode())) {

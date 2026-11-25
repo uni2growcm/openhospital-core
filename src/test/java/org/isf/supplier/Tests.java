@@ -22,6 +22,7 @@
 package org.isf.supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
 import java.util.Map;
@@ -33,6 +34,7 @@ import org.isf.supplier.manager.SupplierBrowserManager;
 import org.isf.supplier.model.Supplier;
 import org.isf.supplier.service.SupplierIoOperationRepository;
 import org.isf.supplier.service.SupplierOperations;
+import org.isf.utils.exception.OHDataIntegrityViolationException;
 import org.isf.utils.exception.OHException;
 import org.isf.utils.exception.OHServiceException;
 import org.junit.jupiter.api.BeforeAll;
@@ -231,5 +233,27 @@ class Tests extends OHCoreTestCase {
 		Supplier foundSupplier = supplierIoOperation.getByID(code);
 		assertThat(foundSupplier).isNotNull();
 		testSupplier.check(foundSupplier);
+	}
+
+	@Test
+	void testMgrSupplierTaxcodeAlreadyInUse() throws Exception {
+		Supplier supplier = supplierBrowserManager.saveOrUpdate(testSupplier.setup(true));
+
+		Supplier duplicate = testSupplier.setup(true);
+		duplicate.setSupTaxcode(supplier.getSupTaxcode().toLowerCase());
+		assertThatThrownBy(() -> supplierBrowserManager.saveOrUpdate(duplicate))
+			.isInstanceOf(OHDataIntegrityViolationException.class);
+
+		// updating a supplier with its own tax code is allowed
+		supplier.setSupNote("Updated");
+		assertThat(supplierBrowserManager.saveOrUpdate(supplier)).isNotNull();
+
+		// suppliers without tax code are allowed
+		Supplier first = testSupplier.setup(true);
+		first.setSupTaxcode("");
+		supplierBrowserManager.saveOrUpdate(first);
+		Supplier second = testSupplier.setup(true);
+		second.setSupTaxcode("");
+		assertThat(supplierBrowserManager.saveOrUpdate(second)).isNotNull();
 	}
 }

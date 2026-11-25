@@ -23,6 +23,7 @@ package org.isf.maternity.service;
 
 import org.isf.maternity.model.FPStatus;
 import org.isf.maternity.model.FamilyPlanning;
+import org.isf.maternity.model.FamilyPlanningMethodHistory;
 import org.isf.utils.db.TranslateOHServiceException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.model.OHExceptionMessage;
@@ -31,6 +32,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -41,8 +43,12 @@ public class FamilyPlanningIoOperation {
 
     private final FamilyPlanningIoOperationRepository repository;
 
-    public FamilyPlanningIoOperation(FamilyPlanningIoOperationRepository repository) {
+    private final FamilyPlanningMethodHistoryIoOperationRepository methodHistoryRepository;
+
+    public FamilyPlanningIoOperation(FamilyPlanningIoOperationRepository repository,
+                                     FamilyPlanningMethodHistoryIoOperationRepository methodHistoryRepository) {
         this.repository = repository;
+        this.methodHistoryRepository = methodHistoryRepository;
     }
 
     public FamilyPlanning newFamilyPlanning(FamilyPlanning familyPlanning) throws OHServiceException {
@@ -51,6 +57,10 @@ public class FamilyPlanningIoOperation {
 
     public FamilyPlanning updateFamilyPlanning(FamilyPlanning familyPlanning) throws OHServiceException {
         return repository.save(familyPlanning);
+    }
+
+    public FamilyPlanning getFamilyPlanning(Integer familyPlanningId) throws OHServiceException {
+        return repository.findById(familyPlanningId).orElse(null);
     }
 
     public void deleteFamilyPlanning(FamilyPlanning familyPlanning) throws OHServiceException {
@@ -106,6 +116,31 @@ public class FamilyPlanningIoOperation {
                 )
             );
         fp.setStatus(FPStatus.STOPPED);
-        return repository.save(fp);
+        FamilyPlanning stopped = repository.save(fp);
+        saveStopInMethodHistory(stopped, endDate, stopReason);
+        return stopped;
+    }
+
+    /**
+     * Keeps track of the stop date and reason by closing the open method history record of the
+     * {@link FamilyPlanning} or, if none is open, by recording the current method as stopped.
+     */
+    private void saveStopInMethodHistory(FamilyPlanning fp, LocalDateTime endDate, String stopReason) {
+        LocalDate stopDate = endDate != null ? endDate.toLocalDate() : LocalDate.now();
+        FamilyPlanningMethodHistory openHistory = methodHistoryRepository.findByFamilyPlanningIdOrderByStartDateDesc(fp.getId())
+            .stream()
+            .filter(history -> history.getEndDate() == null)
+            .findFirst()
+            .orElse(null);
+        if (openHistory == null) {
+            if (fp.getCurrentMethod() == null) {
+                return;
+            }
+            LocalDate startDate = fp.getRegistrationDate() != null ? fp.getRegistrationDate().toLocalDate() : stopDate;
+            openHistory = new FamilyPlanningMethodHistory(fp, fp.getCurrentMethod(), startDate);
+        }
+        openHistory.setEndDate(stopDate);
+        openHistory.setStopReason(stopReason);
+        methodHistoryRepository.save(openHistory);
     }
 }

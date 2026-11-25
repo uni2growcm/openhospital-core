@@ -21,6 +21,7 @@
  */
 package org.isf.patient.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -230,6 +231,16 @@ public class PatientIoOperationRepositoryImpl implements PatientIoOperationRepos
 
 	@Override
 	public Page<Patient> findByFieldsContainingWordsFromLiteral(String keyword, boolean femalesOnly, Integer minAge, Integer maxAge, Pageable pageable) {
+		return findByFieldsContainingWordsFromLiteral(keyword, femalesOnly, minAge, maxAge, null, pageable);
+	}
+
+	@Override
+	public Page<Patient> findByFieldsContainingWordsFromLiteralBornFrom(String keyword, boolean femalesOnly, LocalDate minBirthDate, Pageable pageable) {
+		return findByFieldsContainingWordsFromLiteral(keyword, femalesOnly, null, null, minBirthDate, pageable);
+	}
+
+	private Page<Patient> findByFieldsContainingWordsFromLiteral(String keyword, boolean femalesOnly, Integer minAge, Integer maxAge,
+		LocalDate minBirthDate, Pageable pageable) {
 		String[] words = getWordsToSearchForInPatientsRepository(keyword);
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 
@@ -257,6 +268,9 @@ public class PatientIoOperationRepositoryImpl implements PatientIoOperationRepos
 		if (maxAge != null) {
 			countPredicates.add(cb.lessThanOrEqualTo(countRoot.get("age"), maxAge));
 		}
+		if (minBirthDate != null) {
+			countPredicates.add(cb.greaterThanOrEqualTo(countRoot.<LocalDate>get("birthDate"), minBirthDate));
+		}
 
 		countQuery.select(cb.count(countRoot)).where(cb.and(countPredicates.toArray(new Predicate[0])));
 		Long total = entityManager.createQuery(countQuery).getSingleResult();
@@ -283,6 +297,9 @@ public class PatientIoOperationRepositoryImpl implements PatientIoOperationRepos
 		}
 		if (maxAge != null) {
 			contentPredicates.add(cb.lessThanOrEqualTo(patientRoot.get("age"), maxAge));
+		}
+		if (minBirthDate != null) {
+			contentPredicates.add(cb.greaterThanOrEqualTo(patientRoot.<LocalDate>get("birthDate"), minBirthDate));
 		}
 
 		contentQuery.select(patientRoot)

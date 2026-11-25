@@ -21,6 +21,7 @@
  */
 package org.isf.patient.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -410,5 +411,20 @@ public class PatientIoOperations {
 	 */
 	public Page<Patient> getPatientsByOneOfFieldsLikeWith(String keyword, boolean femalesOnly, Integer minAge, Integer maxAge, Pageable pageable) throws OHServiceException {
 		return repository.findByFieldsContainingWordsFromLiteral(keyword, femalesOnly, minAge, maxAge, pageable);
+	}
+
+	/**
+	 * Retrieves a paginated list of patients based on search criteria, keeping only the patients born on or after the given date.
+	 *
+	 * @param keyword the search term to match against patient fields
+	 * @param femalesOnly if true, only female patients are returned
+	 * @param minBirthDate the minimum birth date (inclusive)
+	 * @param pageable pagination information
+	 * @return a page of patients matching the search criteria
+	 * @throws OHServiceException if an error occurs during the database operation
+	 */
+	public Page<Patient> getPatientsByOneOfFieldsLikeWithBirthDateFrom(String keyword, boolean femalesOnly, LocalDate minBirthDate, Pageable pageable)
+		throws OHServiceException {
+		return repository.findByFieldsContainingWordsFromLiteralBornFrom(keyword, femalesOnly, minBirthDate, pageable);
 	}
 }

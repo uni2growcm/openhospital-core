@@ -30,6 +30,7 @@ import org.isf.patient.service.PatientIoOperationRepository;
 import org.isf.typology.TestTypology;
 import org.isf.typology.manager.TypologyBrowserManager;
 import org.isf.typology.model.Typology;
+import org.isf.utils.exception.OHDataValidationException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,6 +41,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class Tests extends OHCoreTestCase {
 
@@ -639,5 +641,32 @@ class Tests extends OHCoreTestCase {
 		assertThat(saved.getLivingChildren()).isNull();
 		assertThat(saved.getBreastfeeding()).isNull();
 		assertThat(saved.getLastChildYears()).isNull();
+	}
+
+	@Test
+	void testDeletePregnancyWithVisitsNotAllowed() throws Exception {
+		Patient patient = testPatient.setup(false);
+		patientIoOperationRepository.save(patient);
+		Pregnancy pregnancy = pregnancyBrowserManager.newPregnancy(testPregnancy.setup(patient, false));
+		Typology vt = typologyBrowserManager.newTypology(testTypology.setupVisitType());
+		pregnancyVisitBrowserManager.newVisit(testVisit.setup(pregnancy, vt, false));
+
+		assertThatThrownBy(() -> pregnancyBrowserManager.deletePregnancy(pregnancy))
+			.isInstanceOf(OHDataValidationException.class);
+		assertThat(pregnancyBrowserManager.getPregnanciesByPatient(patient.getCode())).hasSize(1);
+	}
+
+	@Test
+	void testPregnancyVisitBeforePregnancyDateNotAllowed() throws Exception {
+		Patient patient = testPatient.setup(false);
+		patientIoOperationRepository.save(patient);
+		Pregnancy pregnancy = pregnancyBrowserManager.newPregnancy(testPregnancy.setup(patient, false));
+		Typology vt = typologyBrowserManager.newTypology(testTypology.setupVisitType());
+
+		PregnancyVisit visit = testVisit.setup(pregnancy, vt, false);
+		visit.setVisitDate(pregnancy.getDate().minusDays(1));
+
+		assertThatThrownBy(() -> pregnancyVisitBrowserManager.newVisit(visit))
+			.isInstanceOf(OHDataValidationException.class);
 	}
 }

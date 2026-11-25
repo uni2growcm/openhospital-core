@@ -93,6 +93,21 @@ public class VacTypeIoOperation {
 	public boolean isCodePresent(String code) throws OHServiceException {
 		return repository.existsById(code);
 	}
+
+	/**
+	 * Checks if the description is already used by another {@link VaccineType} (case-insensitive).
+	 *
+	 * @param description the description to check
+	 * @param excludedCode the code of the {@link VaccineType} to ignore (the one being updated), {@code null} for none
+	 * @return {@code true} if the description is already in use, {@code false} otherwise
+	 * @throws OHServiceException
+	 */
+	public boolean isDescriptionPresent(String description, String excludedCode) throws OHServiceException {
+		if (excludedCode == null) {
+			return repository.existsByDescriptionIgnoreCase(description);
+		}
+		return repository.existsByDescriptionIgnoreCaseAndCodeNot(description, excludedCode);
+	}
 	
 	/**
 	 * Returns the {@link VaccineType} based on code

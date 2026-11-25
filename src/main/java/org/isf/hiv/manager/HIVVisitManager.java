@@ -24,10 +24,14 @@ package org.isf.hiv.manager;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.isf.generaldata.MessageBundle;
+import org.isf.hiv.model.HIVInfant;
 import org.isf.hiv.model.HIVVisit;
 import org.isf.hiv.model.HIVVisit.PCRResult;
 import org.isf.hiv.service.HIVVisitIoOperations;
+import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHServiceException;
+import org.isf.utils.exception.model.OHExceptionMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -47,6 +51,7 @@ public class HIVVisitManager {
 	 * @throws OHServiceException if an error occurs during the save operation
 	 */
 	public HIVVisit newVisit(HIVVisit visit) throws OHServiceException {
+		validateVisitDate(visit);
 		return ioOperations.saveVisit(visit);
 	}
 
@@ -58,7 +63,26 @@ public class HIVVisitManager {
 	 * @throws OHServiceException if an error occurs during the update operation
 	 */
 	public HIVVisit updateVisit(HIVVisit visit) throws OHServiceException {
+		validateVisitDate(visit);
 		return ioOperations.updateVisit(visit);
+	}
+
+	/**
+	 * Checks that the visit does not take place before the registration date of the HIV follow-up.
+	 *
+	 * @param visit the HIV visit to check
+	 * @throws OHServiceException if the visit date is before the follow-up registration date
+	 */
+	private void validateVisitDate(HIVVisit visit) throws OHServiceException {
+		if (visit == null || visit.getVisitDate() == null) {
+			return;
+		}
+		HIVInfant infant = visit.getHivInfant();
+		if (infant != null && infant.getRegistrationDate() != null
+			&& visit.getVisitDate().toLocalDate().isBefore(infant.getRegistrationDate().toLocalDate())) {
+			throw new OHDataValidationException(
+				new OHExceptionMessage(MessageBundle.getMessage("angal.hiv.message.visit.date.before.registration")));
+		}
 	}
 
 	/**

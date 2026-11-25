@@ -56,6 +56,21 @@ public class SupplierOperations {
 	}
 
 	/**
+	 * Checks if the tax code (NID) is already used by another {@link Supplier} (case-insensitive).
+	 *
+	 * @param taxcode the tax code to check
+	 * @param excludedId the id of the {@link Supplier} to ignore (the one being updated), {@code null} for none
+	 * @return {@code true} if the tax code is already in use, {@code false} otherwise
+	 * @throws OHServiceException When failed to check the tax code
+	 */
+	public boolean isTaxcodePresent(String taxcode, Integer excludedId) throws OHServiceException {
+		if (excludedId == null) {
+			return repository.existsBySupTaxcodeIgnoreCase(taxcode);
+		}
+		return repository.existsBySupTaxcodeIgnoreCaseAndSupIdNot(taxcode, excludedId);
+	}
+
+	/**
 	 * Delete a supplier
 	 * <p>This is a soft deletion, we're just setting <code>supDeleted</code> to <code>true</code></p>
 	 * @param supplier The Supplier to be deleted

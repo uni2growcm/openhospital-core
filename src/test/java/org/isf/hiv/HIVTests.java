@@ -44,6 +44,7 @@ import org.isf.patient.TestPatient;
 import org.isf.patient.model.Patient;
 import org.isf.patient.service.PatientIoOperationRepository;
 import org.isf.utils.exception.OHDataIntegrityViolationException;
+import org.isf.utils.exception.OHDataValidationException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -272,5 +273,28 @@ class HIVTests extends OHCoreTestCase {
 
 		assertThatThrownBy(() -> hivVisitManager.newVisit(visit))
 			.isInstanceOf(OHDataIntegrityViolationException.class);
+	}
+
+	@Test
+	void testDeleteInfantWithVisitsNotAllowed() throws Exception {
+		Patient patient = patientIoOperationRepository.save(testPatient.setup(false));
+		HIVInfant infant = hivInfantManager.newInfant(testHIVInfant.setup(patient, null, HIVInfantStatus.ACTIVE, false));
+		hivVisitManager.newVisit(testHIVVisit.setup(infant, PCRResult.NEGATIVE, false));
+
+		assertThatThrownBy(() -> hivInfantManager.deleteInfant(infant))
+			.isInstanceOf(OHDataValidationException.class);
+		assertThat(hivInfantManager.getInfantById(infant.getId())).isNotNull();
+	}
+
+	@Test
+	void testHIVVisitBeforeRegistrationDateNotAllowed() throws Exception {
+		Patient patient = patientIoOperationRepository.save(testPatient.setup(false));
+		HIVInfant infant = hivInfantManager.newInfant(testHIVInfant.setup(patient, null, HIVInfantStatus.ACTIVE, false));
+
+		HIVVisit visit = testHIVVisit.setup(infant, PCRResult.NEGATIVE, false);
+		visit.setVisitDate(infant.getRegistrationDate().minusDays(1));
+
+		assertThatThrownBy(() -> hivVisitManager.newVisit(visit))
+			.isInstanceOf(OHDataValidationException.class);
 	}
 }
