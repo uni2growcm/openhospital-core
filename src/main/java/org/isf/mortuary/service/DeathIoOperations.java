@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -137,27 +137,45 @@ public class DeathIoOperations {
 		boolean isEnter,
 		Pageable pageable
 	) throws OHServiceException {
-		if (isEnter) {
-			return deathRepository.findAllByPatientNameContainsAndWardCodeContainsAndAdmissionDateBetweenAndDeathReasonTitleContainsAndDeleted(
-				patientName,
-				wardCode,
-				dateFrom,
-				dateTo,
-				deathReasonTitle,
-				false,
-				pageable
-			);
-		}
-		return deathRepository.findAllByPatientNameContainsAndWardCodeContainsAndEstimatedDischargeDateBetweenAndDeathReasonTitleContainsAndDeleted(
+		return getMortuariesPageable(patientName, wardCode, dateFrom, dateTo, deathReasonTitle, isEnter, null, pageable);
+	}
+
+	/**
+	 * Retrieves a page of {@link Death}s filtered by body lift status.<br>
+	 * <br>
+	 * @param patientName the patient name.
+	 * @param wardCode the code of provenance ward.
+	 * @param dateFrom the lower bound for the mortuary date range.
+	 * @param dateTo the upper bound for the mortuary date range.
+	 * @param deathReasonTitle the title of death reason.
+	 * @param isEnter to specify if it's admission date or discharge date
+	 * @param isDischarged to specify if body lift was performed (null for all, true for performed, false for not performed)
+	 * @param pageable for pagination.
+	 * @return the retrieved mortuaries page.
+	 * @throws OHServiceException
+	 */
+	public Page<Death> getMortuariesPageable(
+		String patientName,
+		String wardCode,
+		LocalDateTime dateFrom,
+		LocalDateTime dateTo,
+		String deathReasonTitle,
+		boolean isEnter,
+		Boolean isDischarged,
+		Pageable pageable
+	) throws OHServiceException {
+		return deathRepository.findMortuaries(
 			patientName,
 			wardCode,
 			dateFrom,
 			dateTo,
 			deathReasonTitle,
-			false,
+			isEnter,
+			isDischarged,
 			pageable
 		);
 	}
+
 
 	/**
 	 * Retrieves a page of {@link Death}s.<br>

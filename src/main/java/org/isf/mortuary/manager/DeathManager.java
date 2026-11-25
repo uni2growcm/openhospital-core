@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -105,7 +105,36 @@ public class DeathManager {
 		int page,
 		int size
 	) throws OHServiceException {
-		Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdDate"));
+		return getMortuariesPageable(patientName, wardCode, dateFrom, dateTo, deathReasonTitle, isEnter, null, page, size);
+	}
+
+	/**
+	 * Retrieves a page of {@link Death}s filtered by body lift status.<br>
+	 * <br>
+	 * @param patientName the patient name.
+	 * @param wardCode the code of provenance ward.
+	 * @param dateFrom the lower bound for the mortuary date range.
+	 * @param dateTo the upper bound for the mortuary date range.
+	 * @param deathReasonTitle the title of death reason.
+	 * @param isEnter to specify if it's admission date or discharge date
+	 * @param isDischarged to specify if body lift was performed (null for all, true for performed, false for not performed)
+	 * @param page current page.
+	 * @param size the size of the page.
+	 * @return the retrieved mortuaries page.
+	 * @throws OHServiceException
+	 */
+	public Page<Death> getMortuariesPageable(
+		String patientName,
+		String wardCode,
+		LocalDateTime dateFrom,
+		LocalDateTime dateTo,
+		String deathReasonTitle,
+		boolean isEnter,
+		Boolean isDischarged,
+		int page,
+		int size
+	) throws OHServiceException {
+		Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "admissionDate"));
 		return deathIoOperations.getMortuariesPageable(
 			patientName,
 			wardCode,
@@ -113,6 +142,7 @@ public class DeathManager {
 			dateTo,
 			deathReasonTitle,
 			isEnter,
+			isDischarged,
 			pageable
 		);
 	}
@@ -137,7 +167,7 @@ public class DeathManager {
 		int page,
 		int size
 	) throws OHServiceException {
-		Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdDate"));
+		Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "admissionDate"));
 		return deathIoOperations.findAllByPatientNameAndDateToDateFromPageable(
 			patientName,
 			dateFrom,

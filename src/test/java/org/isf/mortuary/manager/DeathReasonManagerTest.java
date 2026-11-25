@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere
+ * Copyright © 2006-2026 Informatici Senza Frontiere
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -25,9 +25,12 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 import org.isf.OHCoreTestCase;
+import org.isf.mortuary.model.Death;
 import org.isf.mortuary.model.DeathReason;
 import org.isf.mortuary.service.DeathReasonIoOperations;
 import org.isf.mortuary.service.DeathReasonRepository;
+import org.isf.mortuary.service.DeathRepository;
+import org.isf.utils.exception.OHDataIntegrityViolationException;
 import org.isf.utils.exception.OHException;
 import org.isf.utils.exception.OHServiceException;
 import org.junit.jupiter.api.BeforeAll;
@@ -49,6 +52,12 @@ public class DeathReasonManagerTest extends OHCoreTestCase {
 
 	@Autowired
 	private DeathReasonRepository deathReasonRepository;
+
+	@Autowired
+	private DeathRepository deathRepository;
+
+	@Autowired
+	private org.isf.mortuary.service.BodyCompartmentRepository bodyCompartmentRepository;
 
 	@BeforeAll
 	static void setUpClass() {
@@ -121,6 +130,32 @@ public class DeathReasonManagerTest extends OHCoreTestCase {
 		DeathReason toDelete = deathReasonRepository.findByTitleAndDeleted(savedList.get(0).getTitle(), false);
 
 		assertThat(toDelete).isNotNull();
+		boolean deleted = deathReasonManager.delete(toDelete);
+		assertThat(deleted).isTrue();
+	}
+
+	@Test
+	@DisplayName("Should not delete a death reason if it is used in a death record")
+	void testDeleteWhenUsedThrowsException() throws OHException, OHServiceException {
+		List<DeathReason> savedList = generateDeathReasons(1);
+		DeathReason toDelete = savedList.get(0);
+
+		org.isf.mortuary.model.BodyCompartment bc = bodyCompartmentRepository.saveAndFlush(
+			new org.isf.mortuary.model.BodyCompartment("BC_TEST", "Test BC", false)
+		);
+
+		Death death = new Death();
+		death.setDeathReason(toDelete);
+		death.setBodyCompartment(bc);
+		death.setDeleted(false);
+		deathRepository.saveAndFlush(death);
+
+		assertThatThrownBy(() -> deathReasonManager.delete(toDelete))
+			.isInstanceOf(OHDataIntegrityViolationException.class);
+
+		death.setDeleted(true);
+		deathRepository.saveAndFlush(death);
+
 		boolean deleted = deathReasonManager.delete(toDelete);
 		assertThat(deleted).isTrue();
 	}

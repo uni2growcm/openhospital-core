@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.isf.generaldata.MessageBundle;
 import org.isf.mortuary.model.DeathReason;
+import org.isf.utils.exception.OHDataIntegrityViolationException;
 import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.model.OHExceptionMessage;
@@ -38,11 +39,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class DeathReasonIoOperations {
 
-	private static DeathReasonRepository deathReasonRepository;
+	private final DeathReasonRepository deathReasonRepository;
+	private final DeathRepository deathRepository;
 
 	@Autowired
-	public DeathReasonIoOperations(DeathReasonRepository deathReasonRepository) {
-		DeathReasonIoOperations.deathReasonRepository = deathReasonRepository;
+	public DeathReasonIoOperations(DeathReasonRepository deathReasonRepository, DeathRepository deathRepository) {
+		this.deathReasonRepository = deathReasonRepository;
+		this.deathRepository = deathRepository;
 	}
 
 	/**
@@ -89,6 +92,9 @@ public class DeathReasonIoOperations {
 		DeathReason deathReasonFound = deathReasonRepository.findByTitleAndDeleted(deathReason.getTitle(), false);
 		if (deathReasonFound == null) {
 			throw new OHServiceException(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuary.causeofdeath.notfound.msg")));
+		}
+		if (deathRepository.isDeathReasonUsed(deathReasonFound.getId())) {
+			throw new OHDataIntegrityViolationException(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuary.causeofdeath.cannotdeleteused.msg")));
 		}
 		deathReasonFound.setDeleted(true);
 		DeathReason deleted = deathReasonRepository.save(deathReasonFound);

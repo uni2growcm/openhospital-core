@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -39,11 +39,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class BodyCompartmentIoOperations {
 
-	private static BodyCompartmentRepository bodyCompartmentRepository;
+	private final BodyCompartmentRepository bodyCompartmentRepository;
+	private final DeathRepository deathRepository;
 
 	@Autowired
-	public BodyCompartmentIoOperations(BodyCompartmentRepository bodyCompartmentRepository) {
-		BodyCompartmentIoOperations.bodyCompartmentRepository = bodyCompartmentRepository;
+	public BodyCompartmentIoOperations(BodyCompartmentRepository bodyCompartmentRepository, DeathRepository deathRepository) {
+		this.bodyCompartmentRepository = bodyCompartmentRepository;
+		this.deathRepository = deathRepository;
 	}
 
 	/**
@@ -68,6 +70,9 @@ public class BodyCompartmentIoOperations {
 		BodyCompartment bodyCompartmentFound = bodyCompartmentRepository.findByLabelAndDeleted(bodyCompartment.getLabel(), false);
 		if (bodyCompartmentFound == null) {
 			throw new OHServiceException(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuary.bodycompartment.thisbodycompartmentdontexist.msg")));
+		}
+		if (deathRepository.isBodyCompartmentOccupied(bodyCompartmentFound.getId())) {
+			throw new OHDataIntegrityViolationException(new OHExceptionMessage(MessageBundle.getMessage("angal.mortuary.bodycompartment.cannotdeleteoccupied.msg")));
 		}
 		bodyCompartmentFound.setDeleted(true);
 		BodyCompartment deleted = bodyCompartmentRepository.save(bodyCompartmentFound);
@@ -122,6 +127,10 @@ public class BodyCompartmentIoOperations {
 
 	public List<BodyCompartment> getBodyCompartments() throws OHServiceException {
 		return bodyCompartmentRepository.findByDeleted(false);
+	}
+
+	public List<BodyCompartment> getAvailableBodyCompartments() throws OHServiceException {
+		return bodyCompartmentRepository.findAvailableBodyCompartments();
 	}
 
 	/**

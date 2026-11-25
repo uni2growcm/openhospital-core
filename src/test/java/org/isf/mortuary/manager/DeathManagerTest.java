@@ -1,6 +1,6 @@
 /*
  * Open Hospital (www.open-hospital.org)
- * Copyright © 2006-2025 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
+ * Copyright © 2006-2026 Informatici Senza Frontiere (info@informaticisenzafrontiere.org)
  *
  * Open Hospital is a free and open source software for healthcare data management.
  *
@@ -88,6 +88,24 @@ public class DeathManagerTest extends OHCoreTestCase {
 	@BeforeEach
 	void setUp() {
 		cleanH2InMemoryDb();
+	}
+
+	@Test
+	@DisplayName("Should successfully calculate days in mortuary")
+	void testGetDaysInMortuary() {
+		Death testDeath = new Death();
+		assertThat(testDeath.getDaysInMortuary()).isZero();
+
+		testDeath.setAdmissionDate(LocalDateTime.now().minusDays(1));
+		assertThat(testDeath.getDaysInMortuary()).isEqualTo(1L);
+
+		testDeath.setAdmissionDate(LocalDateTime.now().minusDays(5));
+		testDeath.setDischargeDate(LocalDateTime.now().minusDays(2));
+		assertThat(testDeath.getDaysInMortuary()).isEqualTo(3L);
+
+		testDeath.setAdmissionDate(LocalDateTime.now());
+		testDeath.setDischargeDate(LocalDateTime.now());
+		assertThat(testDeath.getDaysInMortuary()).isZero();
 	}
 
 	@Test
@@ -222,6 +240,35 @@ public class DeathManagerTest extends OHCoreTestCase {
 		assertThat(deaths.getTotalPages()).isEqualTo(1);
 		assertThat(deaths.getTotalElements()).isEqualTo(1);
 		assertThat(deaths.getSize()).isEqualTo(3);
+	}
+
+	@Test
+	@DisplayName("Should retrieve death pages filtered by body lift status (isDischarged)")
+	void testGetMortuariesPageableWithBodyLiftFilter() throws OHServiceException, OHException {
+		List<Death> deaths = generateDeaths(4);
+		deaths.get(0).setDischargeDate(LocalDateTime.now());
+		deaths.get(1).setDischargeDate(LocalDateTime.now());
+		deaths.get(2).setDischargeDate(null);
+		deaths.get(3).setDischargeDate(null);
+		deathRepository.saveAllAndFlush(deaths);
+
+		LocalDateTime fromDate = LocalDateTime.of(2023, 1, 1, 0, 0, 0);
+		LocalDateTime toDate = LocalDateTime.of(2025, 3, 3, 0, 0, 0);
+
+		Page<Death> allDeaths = deathManager.getMortuariesPageable(
+			"", "", fromDate, toDate, "", true, null, 0, 10
+		);
+		assertThat(allDeaths.getContent()).hasSizeGreaterThanOrEqualTo(4);
+
+		Page<Death> liftedDeaths = deathManager.getMortuariesPageable(
+			"", "", fromDate, toDate, "", true, true, 0, 10
+		);
+		assertThat(liftedDeaths.getContent()).allMatch(d -> d.getDischargeDate() != null);
+
+		Page<Death> notLiftedDeaths = deathManager.getMortuariesPageable(
+			"", "", fromDate, toDate, "", true, false, 0, 10
+		);
+		assertThat(notLiftedDeaths.getContent()).allMatch(d -> d.getDischargeDate() == null);
 	}
 
 	private List<Death> generateDeaths(int size) throws OHException {
