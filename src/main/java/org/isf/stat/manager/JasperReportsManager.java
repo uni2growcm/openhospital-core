@@ -124,6 +124,9 @@ public class JasperReportsManager {
 	private static final String E_D_MMMM_YYYY = "E d, MMMM yyyy";
 	private static final String STAT_REPORTERROR_MSG = "angal.stat.reporterror.msg";
 	private static final String LOGO = "./rsc/images/logo_report.png";
+	/** Logo of the hospital printed on report headers and receipts (nothing is printed when the file is missing). */
+	public static final String HOSPITAL_LOGO = "./rsc/images/logo_hospital.png";
+	public static final String HOSPITAL_LOGO_PARAMETER = "HOSPITAL_LOGO";
 
 	private static final String RPT_BASE = "rpt_base";
 	private static final String RPT_STAT = "rpt_stat";
@@ -1613,6 +1616,28 @@ public class JasperReportsManager {
 		return parameters;
 	}
 
+	/**
+	 * Add the parameters used by the standard report header (hospital identity and logo) when the caller did not provide them.
+	 *
+	 * @param parameters the report parameters
+	 */
+	public void addHospitalParameters(Map<String, Object> parameters) {
+		try {
+			Hospital hosp = hospitalManager.getHospital();
+			if (hosp != null) {
+				parameters.putIfAbsent("Hospital", hosp.getDescription());
+				parameters.putIfAbsent("Address", hosp.getAddress());
+				parameters.putIfAbsent("City", hosp.getCity());
+				parameters.putIfAbsent("Email", hosp.getEmail());
+				parameters.putIfAbsent("Telephone", hosp.getTelephone());
+				parameters.putIfAbsent("Currency", hosp.getCurrencyCod());
+			}
+		} catch (OHServiceException e) {
+			LOGGER.error("Unable to load hospital information for the report header", e);
+		}
+		parameters.putIfAbsent(HOSPITAL_LOGO_PARAMETER, HOSPITAL_LOGO);
+	}
+
 	private void addBundleParameter(String jasperFileFolder, String jasperFileName, HashMap<String, Object> parameters) {
 
 		/*
@@ -1710,6 +1735,7 @@ public class JasperReportsManager {
 		throws JRException, SQLException {
 		File jasperFile = new File(jasperFilename);
 		final JasperReport jasperReport = (JasperReport) JRLoader.loadObject(jasperFile);
+		addHospitalParameters(parameters);
 		Connection connection = dataSource.getConnection();
 		JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, connection);
 		connection.close();
@@ -1937,6 +1963,7 @@ public class JasperReportsManager {
 			String jasperFilename = compileJasperFilename(RPT_STAT, SALES_BY_PRODUCT_SERVICE_PER_YEAR_FILENAME);
 
 			JasperReport jasperReport = (JasperReport) JRLoader.loadObject(new File(jasperFilename));
+			addHospitalParameters(parameters);
 			JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, new JRBeanCollectionDataSource(beans));
 			JasperExportManager.exportReportToPdfFile(jasperPrint, pdfFilename);
 			return new JasperReportResultDto(jasperPrint, jasperFilename, pdfFilename);
@@ -2179,6 +2206,7 @@ public class JasperReportsManager {
 			String jasperFilename = compileJasperFilename(RPT_STAT, INCOMES_PER_SURGERY_ACT_FILENAME);
 
 			JasperReport jasperReport = (JasperReport) JRLoader.loadObject(new File(jasperFilename));
+			addHospitalParameters(parameters);
 			JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, new JRBeanCollectionDataSource(beans));
 			JasperExportManager.exportReportToPdfFile(jasperPrint, pdfFilename);
 			return new JasperReportResultDto(jasperPrint, jasperFilename, pdfFilename);
@@ -2532,6 +2560,7 @@ public class JasperReportsManager {
 			}
 
 			JasperReport jasperReport = (JasperReport) JRLoader.loadObject(new File(jasperFilename));
+			addHospitalParameters(parameters);
 			JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, new JRBeanCollectionDataSource(rows));
 			JasperExportManager.exportReportToPdfFile(jasperPrint, pdfFilename);
 			return new JasperReportResultDto(jasperPrint, jasperFilename, pdfFilename);

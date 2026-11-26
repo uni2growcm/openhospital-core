@@ -33,6 +33,7 @@ import org.isf.generaldata.GeneralData;
 import org.isf.generaldata.MessageBundle;
 import org.isf.hospital.manager.HospitalBrowsingManager;
 import org.isf.hospital.model.Hospital;
+import org.isf.stat.manager.JasperReportsManager;
 import org.isf.utils.exception.OHServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,6 +80,14 @@ public class PrintManager {
 		parameters.put("ospedaleFax", hospital.getFax());
 		parameters.put("ospedaleMail", hospital.getEmail());
 		parameters.put("ospedaleCurrency", hospital.getCurrencyCod());
+		// parameters used by the standard report header
+		parameters.put("Hospital", hospital.getDescription());
+		parameters.put("Address", hospital.getAddress());
+		parameters.put("City", hospital.getCity());
+		parameters.put("Telephone", hospital.getTelephone());
+		parameters.put("Email", hospital.getEmail());
+		parameters.put("Currency", hospital.getCurrencyCod());
+		parameters.put(JasperReportsManager.HOSPITAL_LOGO_PARAMETER, JasperReportsManager.HOSPITAL_LOGO);
 		if (extraParameters != null) {
 			parameters.putAll(extraParameters);
 		}
