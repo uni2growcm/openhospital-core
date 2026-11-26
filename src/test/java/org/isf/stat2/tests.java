@@ -22,6 +22,8 @@
 package org.isf.stat2;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.isf.OHCoreTestCase;
@@ -38,6 +40,7 @@ import org.isf.exa.model.Exam;
 import org.isf.exa.service.ExamIoOperationRepository;
 import org.isf.exatype.TestExamType;
 import org.isf.exatype.model.ExamType;
+import org.isf.exatype.service.ExamTypeIoOperationRepository;
 import org.isf.lab.TestLaboratory;
 import org.isf.lab.model.Laboratory;
 import org.isf.lab.service.LabIoOperationRepository;
@@ -98,6 +101,9 @@ class StatsIoOperationsTest extends OHCoreTestCase {
 	private ExamIoOperationRepository examIoOperationRepository;
 
 	@Autowired
+	private ExamTypeIoOperationRepository examTypeIoOperationRepository;
+
+	@Autowired
 	private DiseaseIoOperationRepository diseaseIoOperationRepository;
 
 	@Autowired
@@ -154,8 +160,9 @@ class StatsIoOperationsTest extends OHCoreTestCase {
 	}
 
 	private Exam setupTestExam() throws Exception {
-		ExamType examType = testExamType.setup(true);
-		Exam exam = testExam.setup(examType, 1, true);
+		ExamType examType = testExamType.setup(false);
+		examTypeIoOperationRepository.saveAndFlush(examType);
+		Exam exam = testExam.setup(examType, 1, false);
 		examIoOperationRepository.saveAndFlush(exam);
 		return exam;
 	}
@@ -200,7 +207,7 @@ class StatsIoOperationsTest extends OHCoreTestCase {
 
 		Page<Patient> result = statsIoOperations.getPatientsStats(0, 10, 0, 0, "", "", "", "",
 			"", "", "", "", "", "", "", "", "",
-			"", "", "", "");
+			"", "", "", "", null, null);
 		assertThat(result).isNotNull();
 		assertThat(result.getTotalElements()).isGreaterThanOrEqualTo(2);
 		assertThat(result.getContent()).extracting(Patient::getCode).contains(patient1.getCode(), patient2.getCode());
@@ -210,7 +217,7 @@ class StatsIoOperationsTest extends OHCoreTestCase {
 	void testIoGetPatientsStats_WithNoPatients() throws Exception {
 		Page<Patient> result = statsIoOperations.getPatientsStats(0, 10, 0, 0, "", "", "", "",
 			"", "", "", "", "", "", "", "", "",
-			"", "", "", "");
+			"", "", "", "", null, null);
 		assertThat(result).isNotNull();
 		assertThat(result.getTotalElements()).isEqualTo(0);
 		assertThat(result.getContent()).isEmpty();
@@ -230,8 +237,55 @@ class StatsIoOperationsTest extends OHCoreTestCase {
 
 		long count = statsIoOperations.getPatientsStatsCount(0, 0, "", "", "", "", "", "",
 			"", "", "", "", "", "", "", "", "",
-			"", "");
+			"", "", null, null);
 		assertThat(count).isGreaterThanOrEqualTo(2);
+	}
+
+	@Test
+	void testPatientsStatsUsesInclusiveBirthdayAgeBounds() throws Exception {
+		LocalDate today = LocalDate.now();
+		Patient patientAge14 = setupTestPatient();
+		patientAge14.setBirthDate(today.minusYears(14));
+		patientIoOperationRepository.saveAndFlush(patientAge14);
+
+		Patient patientAge20 = setupTestPatient();
+		patientAge20.setBirthDate(today.minusYears(20));
+		patientIoOperationRepository.saveAndFlush(patientAge20);
+
+		Patient patientAge21 = setupTestPatient();
+		patientAge21.setBirthDate(today.minusYears(21));
+		patientIoOperationRepository.saveAndFlush(patientAge21);
+
+		Page<Patient> result = statsIoOperations.getPatientsStats(0, 100, 14, 20, "", "", "", "",
+			"", "", "", "", "", "", "", "", "",
+			"", "", "", "", null, null);
+
+		assertThat(result.getContent()).extracting(Patient::getCode)
+			.contains(patientAge14.getCode(), patientAge20.getCode())
+			.doesNotContain(patientAge21.getCode());
+	}
+
+	@Test
+	void testPatientsStatsAppliesExamDateRangeWithoutExamSelection() throws Exception {
+		Exam exam = setupTestExam();
+		Patient patientWithRecentExam = setupTestPatient();
+		Laboratory recentExam = testLaboratory.setup(exam, patientWithRecentExam, false);
+		recentExam.setLabDate(LocalDateTime.now().withNano(0));
+		labIoOperationRepository.saveAndFlush(recentExam);
+
+		Patient patientWithOldExam = setupTestPatient();
+		Laboratory oldExam = testLaboratory.setup(exam, patientWithOldExam, false);
+		oldExam.setLabDate(LocalDateTime.now().minusDays(10).withNano(0));
+		labIoOperationRepository.saveAndFlush(oldExam);
+
+		String today = LocalDate.now().toString();
+		Page<Patient> result = statsIoOperations.getPatientsStats(0, 100, 0, 0, "", "", "", "",
+			"", "", today, today,
+			"", "", "", "", "", "", "", "", "", null, null);
+
+		assertThat(result.getContent()).extracting(Patient::getCode)
+			.contains(patientWithRecentExam.getCode())
+			.doesNotContain(patientWithOldExam.getCode());
 	}
 
 	@Test
@@ -242,7 +296,7 @@ class StatsIoOperationsTest extends OHCoreTestCase {
 
 		Page<VaccineStat> result = statsIoOperations.getVaccinesStats(0, 10, 0, 0, "", "", "",
 			"", "", "", "", "", "", "", "",
-			"", "", "", "");
+			"", "", "", "", null, null);
 		assertThat(result).isNotNull();
 		assertThat(result.getTotalElements()).isGreaterThanOrEqualTo(1);
 		assertThat(result.getContent())
@@ -255,7 +309,7 @@ class StatsIoOperationsTest extends OHCoreTestCase {
 	void testIoGetVaccinesStats_WithNoVaccines() throws Exception {
 		Page<VaccineStat> result = statsIoOperations.getVaccinesStats(0, 10, 0, 0, "", "",
 			"", "", "", "", "", "", "", "", "",
-			"", "", "", "");
+			"", "", "", "", null, null);
 		assertThat(result).isNotNull();
 		assertThat(result.getTotalElements()).isEqualTo(0);
 		assertThat(result.getContent()).isEmpty();
@@ -265,7 +319,7 @@ class StatsIoOperationsTest extends OHCoreTestCase {
 	void testIoGetExamsStats_WithNoExams() throws Exception {
 		Page<ExamStat> result = statsIoOperations.getExamsStats(0, 10, 0, 0, "", "",
 			"", "", "", "", "", "", "", "", "",
-			"", "", "", "");
+			"", "", "", "", null, null);
 		assertThat(result).isNotNull();
 		assertThat(result.getTotalElements()).isEqualTo(0);
 		assertThat(result.getContent()).isEmpty();
@@ -275,7 +329,7 @@ class StatsIoOperationsTest extends OHCoreTestCase {
 	void testIoGetDiseasesStats_WithNoDiseases() throws Exception {
 		Page<DiseaseStat> result = statsIoOperations.getDiseasesStats(0, 10, 0, 0, "", "",
 			"", "", "", "", "", "", "", "",
-			"", "", "", "", "");
+			"", "", "", "", "", null, null);
 		assertThat(result).isNotNull();
 		assertThat(result.getTotalElements()).isEqualTo(0);
 		assertThat(result.getContent()).isEmpty();
@@ -286,7 +340,7 @@ class StatsIoOperationsTest extends OHCoreTestCase {
 		Patient patient = setupTestPatient();
 		List<Patient> result = statsManager.getPatientsStats(0, 10, 0, 0, "", "",
 			"", "", "", "", "", "", "", "", "",
-			"", "", "", "", "", "" );
+			"", "", "", "", "", "", null, null);
 		assertThat(result).isNotNull();
 		assertThat(result).isNotEmpty();
 		assertThat(result).extracting(Patient::getCode).contains(patient.getCode());
@@ -299,7 +353,7 @@ class StatsIoOperationsTest extends OHCoreTestCase {
 
 		int count = statsManager.getPatientsStatsCount(0, 0, "", "", "", "",
 			"", "", "", "", "", "", "",
-			"", "", "", "", "", "");
+			"", "", "", "", "", "", null, null);
 
 		assertThat(count).isGreaterThanOrEqualTo(2);
 	}
@@ -312,7 +366,7 @@ class StatsIoOperationsTest extends OHCoreTestCase {
 
 		List<VaccineStat> result = statsManager.getVaccinesStats(0, 10, 0, 0, "",
 			"", "", "", "", "", "", "", "",
-			"", "", "", "", "", "");
+			"", "", "", "", "", "", null, null);
 		assertThat(result).isNotNull();
 		assertThat(result).isNotEmpty();
 		assertThat(result).extracting(VaccineStat::getVaccine)
@@ -330,7 +384,7 @@ class StatsIoOperationsTest extends OHCoreTestCase {
 
 		Page<Patient> result = statsIoOperations.getPatientsStats(0, 10, 0, 0, "", "",
 			"", "", "", "", "", "", "", "", "",
-			"", "", "", "", "", ""
+			"", "", "", "", "", "", null, null
 		);
 		assertThat(result).isNotNull();
 		assertThat(result.getContent()).hasSize(10);
@@ -347,7 +401,7 @@ class StatsIoOperationsTest extends OHCoreTestCase {
 
 		Page<Patient> result = statsIoOperations.getPatientsStats(10, 10, 0, 0, "", "", "", "",
 			"", "", "", "", "", "", "",
-			"", "", "", "", "", ""
+			"", "", "", "", "", "", null, null
 		);
 		assertThat(result).isNotNull();
 		assertThat(result.getContent()).hasSize(10);

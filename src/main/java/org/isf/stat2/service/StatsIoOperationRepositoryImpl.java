@@ -132,12 +132,12 @@ public class StatsIoOperationRepositoryImpl implements StatsIoOperationRepositor
 			parameters.add(TimeTools.formatDateTime(periodTo, YYYY_MM_DD));
 		}
 
-		if (riskLevel != null && !riskLevel.isEmpty()) {
+		if (riskLevel != null && !riskLevel.isEmpty() && !"Tous".equals(riskLevel)) {
 			conditions.append(" AND _pregnancy.PRG_RISK_LEVEL = ?");
 			parameters.add(riskLevel.toUpperCase());
 		}
 
-		if (status != null && !status.isEmpty()) {
+		if (status != null && !status.isEmpty() && !"Tous".equals(status)) {
 			conditions.append(" AND _pregnancy.PRG_STATUS = ?");
 			parameters.add(status.toUpperCase());
 		}
@@ -203,12 +203,12 @@ public class StatsIoOperationRepositoryImpl implements StatsIoOperationRepositor
 			}
 		}
 
-		if (visitType != null && !visitType.isEmpty()) {
+		if (visitType != null && !visitType.isEmpty() && !"Tous".equals(visitType)) {
 			conditions.append(" AND _pregvisit.PRGV_TYPE_ID = ?");
 			parameters.add(visitType);
 		}
 
-		if (maternalWeightRange != null && !maternalWeightRange.isEmpty()) {
+		if (maternalWeightRange != null && !maternalWeightRange.isEmpty() && !"Tous".equals(maternalWeightRange)) {
 			switch (maternalWeightRange) {
 				case PregnancyStatsRange.MATERNAL_WEIGHT_LT50:
 					conditions.append(" AND _pregvisit.PRGV_MATERNAL_WEIGHT < 50");
@@ -227,22 +227,27 @@ public class StatsIoOperationRepositoryImpl implements StatsIoOperationRepositor
 			}
 		}
 
-		if (urineProtein != null && !urineProtein.isEmpty()) {
+		if (urineProtein != null && !urineProtein.isEmpty() && !"Tous".equals(urineProtein)) {
 			conditions.append(" AND _pregvisit.PRGV_URINE_PROTEIN = ?");
 			parameters.add(urineProtein);
 		}
 
-		if (edema != null && !edema.isEmpty()) {
-			conditions.append(" AND _pregvisit.PRGV_EDEMA_PRESENCE = ?");
-			parameters.add(edema);
+		if (edema != null && !edema.isEmpty() && !"Tous".equals(edema)) {
+			if ("Pas d'œdème".equals(edema)) {
+				conditions.append(" AND _pregvisit.PRGV_EDEMA_PRESENCE = ?");
+				parameters.add("Pas d'œdème");
+			} else {
+				conditions.append(" AND _pregvisit.PRGV_EDEMA_PRESENCE = ?");
+				parameters.add(edema);
+			}
 		}
 
-		if (fetalPresentation != null && !fetalPresentation.isEmpty()) {
+		if (fetalPresentation != null && !fetalPresentation.isEmpty() && !"Tous".equals(fetalPresentation)) {
 			conditions.append(" AND _pregvisit.PRGV_FETAL_PRESENTATION = ?");
 			parameters.add(fetalPresentation);
 		}
 
-		if (systolicBpRange != null && !systolicBpRange.isEmpty()) {
+		if (systolicBpRange != null && !systolicBpRange.isEmpty() && !"Tous".equals(systolicBpRange)) {
 			switch (systolicBpRange) {
 				case PregnancyStatsRange.SYSTOLIC_LT120:
 					conditions.append(" AND _pregvisit.PRGV_SYSTOLIC_BP < 120");
@@ -258,7 +263,7 @@ public class StatsIoOperationRepositoryImpl implements StatsIoOperationRepositor
 			}
 		}
 
-		if (diastolicBpRange != null && !diastolicBpRange.isEmpty()) {
+		if (diastolicBpRange != null && !diastolicBpRange.isEmpty() && !"Tous".equals(diastolicBpRange)) {
 			switch (diastolicBpRange) {
 				case PregnancyStatsRange.DIASTOLIC_LT80:
 					conditions.append(" AND _pregvisit.PRGV_DIASTOLIC_BP < 80");
@@ -315,9 +320,9 @@ public class StatsIoOperationRepositoryImpl implements StatsIoOperationRepositor
 		boolean admissionJoined = false;
 		if (disease != null && !disease.isEmpty()) {
 			fromBuilder.append(" INNER JOIN oh_admission _patadm ON _patadm.ADM_PAT_ID = _patient.PAT_ID")
-				.append(" INNER JOIN oh_disease _disease ON _patadm.ADM_OUT_DIS_ID_A = _disease.DIS_ID_A")
+				.append(" INNER JOIN oh_disease _disease ON (_patadm.ADM_OUT_DIS_ID_A = _disease.DIS_ID_A")
 				.append(" OR _patadm.ADM_OUT_DIS_ID_A_2 = _disease.DIS_ID_A")
-				.append(" OR _patadm.ADM_OUT_DIS_ID_A_3 = _disease.DIS_ID_A");
+				.append(" OR _patadm.ADM_OUT_DIS_ID_A_3 = _disease.DIS_ID_A)");
 			conditions.append(" AND _disease.DIS_DESC = ?");
 			parameters.add(disease);
 			admissionJoined = true;
@@ -364,8 +369,8 @@ public class StatsIoOperationRepositoryImpl implements StatsIoOperationRepositor
 		}
 
 		if (parameterArtPress) {
-			addRangeCondition(conditions, parameters, "_patexam.PEX_AP_MIN", systolicMin, systolicMax);
-			addRangeCondition(conditions, parameters, "_patexam.PEX_AP_MAX", diastolicMin, diastolicMax);
+			addRangeCondition(conditions, parameters, "_patexam.PEX_AP_MAX", systolicMin, systolicMax);
+			addRangeCondition(conditions, parameters, "_patexam.PEX_AP_MIN", diastolicMin, diastolicMax);
 		}
 
 		String from = fromBuilder.toString();
@@ -412,6 +417,11 @@ public class StatsIoOperationRepositoryImpl implements StatsIoOperationRepositor
 
 	private void addRangeCondition(StringBuilder conditions, List<Object> parameters,
 	                               String columnName, Double min, Double max) {
+		if (min == null && max == null) {
+			conditions.append(" AND ").append(columnName).append(" IS NOT NULL")
+				.append(" AND ").append(columnName).append(" > 0");
+			return;
+		}
 		if (min != null) {
 			conditions.append(" AND ").append(columnName).append(" >= ?");
 			parameters.add(min);
