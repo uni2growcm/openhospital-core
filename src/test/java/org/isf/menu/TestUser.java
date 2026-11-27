@@ -32,6 +32,7 @@ public class TestUser {
 	private String name = "testname";
 	private String passwd = "TestPaswd";
 	private String desc = "TestDesc";
+	private String phone = "0123456789";
 
 	public User setup(UserGroup userGroupName, boolean usingSet) throws OHException {
 		User user;
@@ -42,6 +43,7 @@ public class TestUser {
 		} else {
 			// Create User with all parameters 
 			user = new User(name, userGroupName, passwd, desc);
+			user.setPhone(phone);
 		}
 
 		return user;
@@ -52,11 +54,13 @@ public class TestUser {
 		user.setDesc(desc);
 		user.setUserGroupName(userGroupName);
 		user.setPasswd(passwd);
+		user.setPhone(phone);
 	}
 
 	public void check(User user) {
 		assertThat(user.getUserName()).isEqualTo(name);
 		assertThat(user.getDesc()).isEqualTo(desc);
 		assertThat(user.getPasswd()).isEqualTo(passwd);
+		assertThat(user.getPhone()).isEqualTo(phone);
 	}
 }

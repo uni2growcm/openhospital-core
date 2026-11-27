@@ -26,6 +26,8 @@ import java.util.List;
 
 import org.isf.menu.model.User;
 import org.isf.menu.model.UserGroup;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -51,14 +53,22 @@ public interface UserIoOperationRepository extends JpaRepository<User, String> {
 	@Query(value = "select user from User user where user.userGroupName.code=:groupId and deleted=:deleted order by user.userName")
 	List<User> findAllByUserGroupIdAndDeletedOrderByUserNameAsc(@Param("groupId") String groupId, @Param("deleted") boolean deleted);
 
-	@Modifying
-	@Query(value = "update User user set user.desc=:description, user.userGroupName=:groupName where user.userName=:id")
-	int updateUser(@Param("description") String description, @Param("groupName") UserGroup groupName, @Param("id") String id);
+	@Query("select u from User u where "
+		+ "(:groupId is null or u.userGroupName.code = :groupId) and "
+		+ "(:search is null or lower(u.userName) like lower(concat('%', :search, '%')) "
+		+ "or lower(u.desc) like lower(concat('%', :search, '%')) "
+		+ "or lower(u.phone) like lower(concat('%', :search, '%'))) "
+		+ "order by u.userName")
+	Page<User> findByFilters(@Param("groupId") String groupId, @Param("search") String search, Pageable pageable);
 
 	@Modifying
-	@Query(value = "update User user set user.desc=:description, user.userGroupName=:groupName, user.deleted=:deleted where user.userName=:id")
+	@Query(value = "update User user set user.desc=:description, user.userGroupName=:groupName, user.phone=:phone where user.userName=:id")
+	int updateUser(@Param("description") String description, @Param("groupName") UserGroup groupName, @Param("phone") String phone, @Param("id") String id);
+
+	@Modifying
+	@Query(value = "update User user set user.desc=:description, user.userGroupName=:groupName, user.deleted=:deleted, user.phone=:phone where user.userName=:id")
 	int updateUser(@Param("description") String description, @Param("groupName") UserGroup groupName, @Param("deleted") boolean deleted,
-		@Param("id") String id);
+		@Param("phone") String phone, @Param("id") String id);
 
 	@Modifying
 	@Query(value = "update User set passwd=:password where userName=:id")
