@@ -39,6 +39,8 @@ import org.isf.utils.exception.OHDataValidationException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.model.OHExceptionMessage;
 import org.isf.utils.time.TimeTools;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -78,6 +80,20 @@ public class UserBrowsingManager {
 	 */
 	public List<User> getUser(String groupID) throws OHServiceException {
 		return ioOperations.getUser(groupID);
+	}
+
+	/**
+	 * Returns a page of {@link User}s filtered by group and by a search keyword
+	 * (user name, description or phone number).
+	 *
+	 * @param groupID the group code, {@code null} or empty for all groups
+	 * @param search the search keyword, {@code null} or empty for no search
+	 * @param pageable the pagination information
+	 * @return a page of {@link User}s
+	 * @throws OHServiceException When error occurs
+	 */
+	public Page<User> getUsersPageable(String groupID, String search, Pageable pageable) throws OHServiceException {
+		return ioOperations.getUsersByFilters(groupID, search, pageable);
 	}
 
 	/**

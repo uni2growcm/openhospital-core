@@ -36,6 +36,8 @@ import org.isf.permissions.service.GroupPermissionIoOperationRepository;
 import org.isf.utils.db.TranslateOHServiceException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.model.OHExceptionMessage;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -101,6 +103,22 @@ public class MenuIoOperations {
 	 */
 	public List<User> getUser(String groupID) throws OHServiceException {
 		return repository.findAllByUserGroupIdOrderByUserNameAsc(groupID);
+	}
+
+	/**
+	 * Returns a page of {@link User}s filtered by group and by a search keyword
+	 * (user name, description or phone number).
+	 *
+	 * @param groupID the group code, {@code null} or empty for all groups
+	 * @param search the search keyword, {@code null} or empty for no search
+	 * @param pageable the pagination information
+	 * @return a page of {@link User}s
+	 * @throws OHServiceException When error occurs
+	 */
+	public Page<User> getUsersByFilters(String groupID, String search, Pageable pageable) throws OHServiceException {
+		String group = (groupID == null || groupID.isEmpty()) ? null : groupID;
+		String keyword = (search == null || search.trim().isEmpty()) ? null : search.trim();
+		return repository.findByFilters(group, keyword, pageable);
 	}
 
 	/**
@@ -222,7 +240,7 @@ public class MenuIoOperations {
 	 * @throws OHServiceException When failed to update user
 	 */
 	public User updateUser(User user) throws OHServiceException {
-		repository.updateUser(user.getDesc(), user.getUserGroupName(), user.isDeleted(), user.getUserName());
+		repository.updateUser(user.getDesc(), user.getUserGroupName(), user.isDeleted(), user.getPhone(), user.getUserName());
 
 		return getUserByName(user.getUserName(), true);
 	}
